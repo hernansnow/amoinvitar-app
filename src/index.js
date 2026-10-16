@@ -1,20 +1,27 @@
 // Worker de Amo Invitar 2.0
 //
-//   /demo/<modelo>?evento=boda&paquete=deluxe&pais=AR   demo de un modelo
-//   /<tipo>/<slug>                                       invitación de un cliente
-//   POST /api/rsvp                                       confirmaciones y canciones
-//   GET  /api/invitados.csv?e=<id>                        lista de invitados
+//   /demo/<modelo>?evento=&paquete=&pais=        demo de un modelo
+//   /<tipo>/<slug>[?inv=codigo]                  invitación publicada (con su seguridad)
+//   POST /acceso/<id>                             PIN de la pantalla de acceso
+//   /panel/<id>?k=<clave>                         panel del cliente
+//   /vista/<id>?k=<clave>                         vista previa del borrador (para el panel)
+//   /media/…                                      fotos y MP3 subidos
+//   /api/panel/<id>[/archivo|/slug|/invitados|/respuestas]
+//   POST /api/eventos                             alta de un evento (la tienda, o a mano)
+//   POST /api/rsvp · GET /api/invitados.csv       lo que usan las invitaciones
 //
-// Los archivos estáticos (public/) los sirve Cloudflare antes de llegar acá.
-// Lo que no reconoce se pide al hosting actual: las invitaciones viejas siguen
-// funcionando sin migrarlas.
+// Lo que no reconoce se pide al hosting actual (las invitaciones viejas siguen igual).
 
-import { diccionario, varianteDePais, VARIANTES } from './textos/index.js';
+import { diccionario, varianteDePais, VARIANTES, esPlural } from './textos/index.js';
 import { armarVista } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
+import { almacenD1 } from './almacen.js';
+import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin } from './acceso.js';
+import { puertaHTML } from './componentes/puerta.js';
+import { esquemaPanel, limpiarDatos, faltantes } from './panel/esquemas.js';
 
-const PAQUETES = ['basic', 'premium', 'deluxe'];
+const PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
 const cache = new Map();
 
 async function archivo(env, ruta, origen, tipo = 'text') {
@@ -26,101 +33,291 @@ async function archivo(env, ruta, origen, tipo = 'text') {
   if (!env.SIN_CACHE) cache.set(clave, v);
   return v;
 }
+const modeloJSON = (env, id, origen) => (id && /^[a-z0-9-]+$/.test(id) ? archivo(env, `/modelos/${id}/modelo.json`, origen, 'json') : null);
 
-// t(clave): diccionario + lo que reescribió el cliente, con {nombres} resuelto
-function traductor(tipo, variante, propios = {}, nombres = '') {
-  const d = { ...diccionario(tipo, variante), ...propios };
+const json = (o, status = 200, extra = {}) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...extra } });
+const html = (cuerpo, status = 200, extra = {}) => new Response(cuerpo, { status, headers: { 'content-type': 'text/html; charset=utf-8', ...extra } });
+const almacenDe = (env) => env.almacen || almacenD1(env);
+const secretoDe = (env) => env.SECRETO_ACCESO || 'solo-para-pruebas-locales';
+const variante = (v) => (VARIANTES.includes(v) ? v : 'es');
+
+function traductor(tipo, varnt, propios = {}, nombres = '') {
+  const d = { ...diccionario(tipo, varnt), ...propios };
   return (k) => String(d[k] ?? '').replaceAll('{nombres}', nombres);
 }
+const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');
 
-async function invitacion(env, url, evento, { demo = false } = {}) {
-  const modelo = await archivo(env, `/modelos/${evento.modelo}/modelo.json`, url.origin, 'json');
-  const html = modelo && await archivo(env, `/modelos/${evento.modelo}/index.html`, url.origin);
-  if (!html) return new Response('Modelo no encontrado', { status: 404 });
-  const variante = VARIANTES.includes(evento.variante) ? evento.variante : 'es';
-  const nombres = [evento.nombres?.a, evento.nombres?.b].filter(Boolean).join(' & ');
-  const t = traductor(evento.tipo, variante, evento.textos, nombres);
+// El evento guardado → lo que espera el motor
+const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, variante: ev.datos.variante });
+
+async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false } = {}) {
+  const modelo = await modeloJSON(env, evento.modelo, url.origin);
+  const plantilla = modelo && await archivo(env, `/modelos/${evento.modelo}/index.html`, url.origin);
+  if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
+  const v = variante(evento.variante);
+  const t = traductor(evento.tipo, v, evento.textos, nombresDe(evento.nombres));
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
-  const v = armarVista({ evento, modelo, t, variante, rutas, demo });
-  const pagina = renderizar(html, v, t, { origen: url.origin });
-  return new Response(pagina, {
-    headers: {
-      'content-type': 'text/html; charset=utf-8',
-      'cache-control': demo ? 'public, max-age=300' : 'private, no-cache',
-      ...(demo ? { vary: 'cf-ipcountry' } : {}),
-    },
+  const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
+  if (sinSobre) vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false }; // la vista previa del panel abre directo
+  return html(renderizar(plantilla, vista, t, { origen: url.origin }), 200, {
+    'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
+    'x-robots-tag': 'noindex',
+    ...(demo ? { vary: 'cf-ipcountry' } : {}),
   });
 }
 
+// ── Demo ──────────────────────────────────────────────────────────────
 async function demo(env, url, request, idModelo) {
-  const modelo = await archivo(env, `/modelos/${idModelo}/modelo.json`, url.origin, 'json');
-  if (!modelo) return new Response('Modelo no encontrado', { status: 404 });
+  const modelo = await modeloJSON(env, idModelo, url.origin);
+  if (!modelo) return html('Modelo no encontrado', 404);
   const q = url.searchParams;
   const tipo = modelo.eventos.includes(q.get('evento')) ? q.get('evento') : modelo.eventos[0];
-  const paquete = PAQUETES.includes(q.get('paquete')) ? q.get('paquete') : 'deluxe';
+  const paquete = ['basic', 'premium', 'deluxe'].includes(q.get('paquete')) ? q.get('paquete') : 'deluxe';
   const pais = q.get('pais') || request.cf?.country || request.headers.get('cf-ipcountry') || '';
-  const variante = VARIANTES.includes(q.get('idioma')) ? q.get('idioma') : varianteDePais(pais);
+  const v = VARIANTES.includes(q.get('idioma')) ? q.get('idioma') : varianteDePais(pais);
   const rutas = { comun: '/comun', modelo: `/modelos/${idModelo}` };
-  return invitacion(env, url, eventoDemo({ tipo, variante, paquete, modelo, rutas }), { demo: true });
+  return pagina(env, url, eventoDemo({ tipo, variante: v, paquete, modelo, rutas }), { demo: true });
 }
 
-// ── Datos guardados (D1) ────────────────────────────────────────────────
-async function buscarEvento(env, tipo, slug) {
-  if (!env.DB) return null;
-  const fila = await env.DB.prepare('SELECT datos FROM eventos WHERE tipo = ? AND slug = ? AND estado = ?').bind(tipo, slug, 'publicado').first();
-  return fila ? JSON.parse(fila.datos) : null;
+// ── Invitación publicada (con su seguridad) ───────────────────────────
+async function publicada(env, url, request, tipo, slug) {
+  const almacen = almacenDe(env);
+  const ev = await almacen.eventoPorSlug(tipo, slug);
+  if (!ev || ev.estado !== 'publicado' || (ev.vence && ev.vence < new Date().toISOString())) return null;
+  const empresa = ev.empresaId ? await almacen.empresa(ev.empresaId) : null;
+  const marca = empresa?.marca?.blanca ? empresa.marca : null;
+  const acc = await revisarAcceso({ ev, request, url, almacen, secreto: secretoDe(env) });
+  if (!acc.ok) {
+    const v = variante(ev.datos.variante);
+    const t = traductor(ev.tipo, v, ev.datos.textos);
+    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v === 'en' ? 'en' : 'es', marca }),
+      acc.pantalla === 'pin' ? 401 : 403, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
+  }
+  const r = await pagina(env, url, paraMotor(ev), { invitado: acc.invitado, marca });
+  if (acc.cookie) r.headers.append('set-cookie', acc.cookie);
+  return r;
 }
 
-const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json' } });
+async function entrarConPin(env, request, id) {
+  const almacen = almacenDe(env);
+  const ev = await almacen.evento(id);
+  if (!ev || ev.estado !== 'publicado') return html('No encontrado', 404);
+  if (env.LIMITE_PIN) {
+    const ip = request.headers.get('cf-connecting-ip') || '';
+    const { success } = await env.LIMITE_PIN.limit({ key: `${id}:${ip}` });
+    if (!success) return html('Demasiados intentos. Probar en unos minutos.', 429);
+  }
+  const f = await request.formData();
+  const inv = String(f.get('inv') || '');
+  const cookie = await validarPin({ ev, pin: String(f.get('pin') || ''), inv, almacen, secreto: secretoDe(env) });
+  const destino = `/${ev.tipo}/${ev.slug}${inv ? `?inv=${encodeURIComponent(inv)}` : ''}`;
+  if (!cookie) return new Response(null, { status: 303, headers: { location: `${destino}${inv ? '&' : '?'}error=1` } });
+  return new Response(null, { status: 303, headers: { location: destino, 'set-cookie': cookie } });
+}
 
+// ── Lo que usan las invitaciones: RSVP y lista ─────────────────────────
 async function rsvp(env, request) {
   const f = await request.formData();
   const eventoId = String(f.get('event_id') || '');
   const accion = f.get('action') === 'cancion' ? 'cancion' : 'rsvp';
   if (!eventoId) return json({ result: 'error' }, 400);
-  if (eventoId.startsWith('demo-') || !env.DB) return json({ result: 'ok', demo: true });
+  if (eventoId.startsWith('demo-')) return json({ result: 'ok', demo: true });
+  const almacen = almacenDe(env);
+  const ev = await almacen.evento(eventoId);
+  if (!ev || ev.estado !== 'publicado') return json({ result: 'error' }, 404);
+  const ver = await puedeVer({ ev, request, secreto: secretoDe(env) });
+  if (!ver.ok) return json({ result: 'error' }, 403);
   const datos = {};
-  for (const [k, val] of f.entries()) if (typeof val === 'string' && k !== 'event_id' && k !== 'action') datos[k] = val.slice(0, 2000);
-  await env.DB.prepare('INSERT INTO respuestas (evento_id, tipo, datos, creado) VALUES (?, ?, ?, ?)')
-    .bind(eventoId, accion, JSON.stringify(datos), new Date().toISOString()).run();
+  for (const [k, val] of f.entries()) if (typeof val === 'string' && !['event_id', 'action'].includes(k)) datos[k] = val.slice(0, 2000);
+  if (ver.codigo) datos.inv = ver.codigo; // con link personal, la respuesta queda atada a ese invitado
+  await almacen.guardarRespuesta(eventoId, accion, datos);
   return json({ result: 'ok' });
 }
 
-async function invitadosCSV(env, url) {
-  const id = url.searchParams.get('e') || '';
-  if (!env.DB || !id) return new Response('id,nombre,pases,mesa,pin\n', { headers: { 'content-type': 'text/csv; charset=utf-8' } });
-  const { results } = await env.DB.prepare('SELECT codigo, nombre, pases, mesa, pin FROM invitados WHERE evento_id = ? ORDER BY nombre').bind(id).all();
+async function invitadosCSV(env, request, url) {
+  const cabecera = 'id,nombre,pases,mesa';
+  const vacio = new Response(cabecera + '\n', { headers: { 'content-type': 'text/csv; charset=utf-8', 'cache-control': 'no-store' } });
+  const id = url.searchParams.get('e') || '', inv = url.searchParams.get('inv') || '';
+  if (!id || !inv) return vacio;
+  const almacen = almacenDe(env);
+  const ev = await almacen.evento(id);
+  if (!ev || !ev.datos.acceso?.lista) return vacio;
+  const ver = await puedeVer({ ev, request, secreto: secretoDe(env) });
+  if (!ver.ok || (ver.codigo && ver.codigo !== inv)) return vacio;
+  // Solo la fila de quien abrió su link, y nunca el PIN
+  const i = await almacen.invitado(id, inv);
+  if (!i) return vacio;
   const celda = (x) => { const s = String(x ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
-  const csv = ['id,nombre,pases,mesa,pin', ...results.map((r) => [r.codigo, r.nombre, r.pases, r.mesa, r.pin].map(celda).join(','))].join('\n');
-  return new Response(csv, { headers: { 'content-type': 'text/csv; charset=utf-8', 'cache-control': 'no-store' } });
+  return new Response(`${cabecera}\n${[i.codigo, i.nombre, i.pases, i.mesa].map(celda).join(',')}\n`, { headers: { 'content-type': 'text/csv; charset=utf-8', 'cache-control': 'no-store' } });
+}
+
+// ── Panel ─────────────────────────────────────────────────────────────
+function igual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
+  let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
+}
+
+async function eventoConClave(env, request, url, id) {
+  const ev = await almacenDe(env).evento(id);
+  const clave = request.headers.get('x-clave') || url.searchParams.get('k') || '';
+  return ev && igual(clave, ev.clave) ? ev : null;
+}
+
+async function esquemaDe(env, url, ev) {
+  const modelo = ev.producto === 'invitacion' ? await modeloJSON(env, ev.modelo, url.origin) : null;
+  return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, modelo, aMedida: ev.aMedida });
+}
+
+const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const aSlug = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/&/g, 'y').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+
+async function sugerirSlug(almacen, ev, pedido) {
+  const s = aSlug(pedido);
+  const n = ev.datos.nombres || {};
+  const fecha = (ev.datos.celebracion?.inicio || ev.datos.std?.fecha || '').slice(0, 10);
+  const [a, m, d] = fecha.split('-');
+  const A = aSlug(n.a), B = aSlug(n.b);
+  const ideas = [
+    s, a && `${s}-${a}`, d && `${s}-${+d}-${MESES[+m - 1]}`,
+    A && B && `${A}-y-${B}`, A && B && `${B}-y-${A}`, A && B && `${A}-${B}`, A && B && `${A}${B}`,
+    A && !B && `${A}-${ev.tipo === '15' ? 'mis-15' : ev.tipo}`, `${s}-${ev.tipo}`,
+  ].filter((x) => x && x.length >= 3);
+  const libres = [];
+  for (const x of [...new Set(ideas)]) {
+    if (!(await almacen.slugOcupado(ev.tipo, x, ev.id))) libres.push(x);
+    if (libres.length >= 5) break;
+  }
+  return { pedido: s, disponible: libres[0] === s, alternativas: libres.filter((x) => x !== s).slice(0, 4) };
+}
+
+const TIPOS_ARCHIVO = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png', 'audio/mpeg': 'mp3' };
+
+async function apiPanel(env, request, url, partes) {
+  const [, , id, accion] = partes;
+  const ev = await eventoConClave(env, request, url, id);
+  if (!ev) return json({ error: 'Sin permiso' }, 403);
+  const almacen = almacenDe(env);
+  const esquema = await esquemaDe(env, url, ev);
+
+  if (!accion && request.method === 'GET') {
+    const v = variante(ev.datos.variante);
+    const dic = diccionario(ev.tipo, v);
+    return json({
+      evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
+      esquema, datos: ev.datos, textos: dic, faltan: faltantes(esquema, ev.datos),
+      invitados: await almacen.invitados(ev.id),
+      modelo: ev.modelo ? { id: ev.modelo, miniatura: (await modeloJSON(env, ev.modelo, url.origin))?.miniatura || null } : null,
+      marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
+    });
+  }
+  if (!accion && request.method === 'PUT') {
+    const { datos } = await request.json();
+    const limpio = limpiarDatos(esquema, datos || {}, ev.datos);
+    if (limpio.slug && limpio.slug !== ev.slug) {
+      if (await almacen.slugOcupado(ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(almacen, ev, limpio.slug)) }, 409);
+      ev.slug = limpio.slug;
+    }
+    ev.datos = limpio;
+    await almacen.guardarEvento(ev);
+    return json({ ok: true, datos: limpio, faltan: faltantes(esquema, limpio) });
+  }
+  if (accion === 'slug') return json(await sugerirSlug(almacen, ev, url.searchParams.get('s')));
+  if (accion === 'archivo' && request.method === 'POST') {
+    const f = await request.formData();
+    const archivoSubido = f.get('archivo');
+    const ext = archivoSubido && TIPOS_ARCHIVO[archivoSubido.type];
+    if (!ext) return json({ error: 'Formato no permitido (JPG, PNG, WEBP o MP3)' }, 415);
+    const max = ext === 'mp3' ? 12 : 4;
+    if (archivoSubido.size > max * 1024 * 1024) return json({ error: `El archivo supera ${max} MB` }, 413);
+    const clave = `eventos/${ev.id}/${crypto.randomUUID()}.${ext}`;
+    await almacen.subir(clave, archivoSubido.stream(), archivoSubido.type);
+    return json({ url: `/media/${clave}` });
+  }
+  if (accion === 'invitados' && request.method === 'PUT') {
+    const { invitados = [] } = await request.json();
+    const previos = new Map((await almacen.invitados(ev.id)).map((i) => [i.codigo, i]));
+    const lista = invitados.slice(0, 2000).filter((i) => String(i.nombre || '').trim()).map((i) => {
+      const viejo = i.codigo && previos.get(i.codigo);
+      return {
+        codigo: viejo ? viejo.codigo : nuevoCodigo(i.nombre),
+        nombre: String(i.nombre).trim().slice(0, 80),
+        pases: Math.max(0, Math.min(50, parseInt(i.pases, 10) || 0)),
+        mesa: String(i.mesa ?? '').trim().slice(0, 20) || null,
+        pin: viejo?.pin || nuevoPin(),
+      };
+    });
+    await almacen.guardarInvitados(ev.id, lista);
+    return json({ ok: true, invitados: lista });
+  }
+  if (accion === 'respuestas') return json({ respuestas: await almacen.respuestas(ev.id) });
+  if (accion === 'publicar' && request.method === 'POST') {
+    const faltan = faltantes(esquema, ev.datos);
+    if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
+    if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);
+    ev.estado = ev.producto === 'invitacion' || ev.producto === 'std-web' ? 'publicado' : 'en-diseno';
+    await almacen.guardarEvento(ev);
+    return json({ ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null });
+  }
+  return json({ error: 'no encontrado' }, 404);
+}
+
+// Alta de un evento: la va a llamar la tienda después del pago
+async function crearEvento(env, request, url) {
+  if (!env.ADMIN_CLAVE || !igual(request.headers.get('x-admin') || '', env.ADMIN_CLAVE)) return json({ error: 'Sin permiso' }, 403);
+  const b = await request.json();
+  if (!PAQUETES.includes(b.paquete)) return json({ error: 'paquete' }, 400);
+  const id = `ev_${crypto.randomUUID().replace(/-/g, '').slice(0, 10)}`;
+  const clave = crypto.randomUUID().replace(/-/g, '');
+  const ev = {
+    id, producto: b.producto || 'invitacion', tipo: b.tipo || 'boda', modelo: b.modelo || null, paquete: b.paquete, aMedida: b.aMedida || null,
+    estado: 'borrador', clave, empresaId: b.empresaId || null, slug: null,
+    datos: { variante: b.variante || varianteDePais(b.pais), zonaHoraria: b.zonaHoraria, acceso: { modo: 'abierta' }, ...(b.datos || {}) },
+  };
+  await almacenDe(env).guardarEvento(ev);
+  return json({ id, panel: `${url.origin}/panel/${id}?k=${clave}` }, 201);
+}
+
+async function vistaPrevia(env, url, request, id) {
+  const ev = await eventoConClave(env, request, url, id);
+  if (!ev) return html('Sin permiso', 403);
+  if (!ev.modelo) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
+  const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
+  return pagina(env, url, paraMotor(ev), { marca: empresa?.marca?.blanca ? empresa.marca : null, sinSobre: true });
+}
+
+async function media(env, partes) {
+  const o = await almacenDe(env).archivo(partes.slice(1).join('/'));
+  return o ? new Response(o.cuerpo, { headers: { 'content-type': o.tipo, 'cache-control': 'public, max-age=31536000, immutable' } }) : new Response('', { status: 404 });
 }
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const partes = url.pathname.split('/').filter(Boolean);
+    const [p0, p1] = partes;
     try {
-      if (partes[0] === 'api') {
-        if (partes[1] === 'rsvp' && request.method === 'POST') return await rsvp(env, request);
-        if (partes[1] === 'invitados.csv') return await invitadosCSV(env, url);
+      if (p0 === 'api') {
+        if (p1 === 'rsvp' && request.method === 'POST') return await rsvp(env, request);
+        if (p1 === 'invitados.csv') return await invitadosCSV(env, request, url);
+        if (p1 === 'panel' && partes[2]) return await apiPanel(env, request, url, partes);
+        if (p1 === 'eventos' && request.method === 'POST') return await crearEvento(env, request, url);
         return json({ error: 'no encontrado' }, 404);
       }
-      if (partes[0] === 'demo' && partes.length === 2 && /^[a-z0-9-]+$/.test(partes[1])) {
-        return await demo(env, url, request, partes[1]);
-      }
-      if (partes.length === 2 && /^[a-z0-9-]+$/.test(partes[0] + partes[1])) {
-        const evento = await buscarEvento(env, partes[0], partes[1]);
-        if (evento) return await invitacion(env, url, evento);
+      if (p0 === 'media') return await media(env, partes);
+      if (p0 === 'demo' && partes.length === 2) return await demo(env, url, request, p1);
+      if (p0 === 'panel' && partes.length === 2) return env.ASSETS.fetch(new URL('/panel/', url.origin));
+      if (p0 === 'vista' && partes.length === 2) return await vistaPrevia(env, url, request, p1);
+      if (p0 === 'acceso' && partes.length === 2 && request.method === 'POST') return await entrarConPin(env, request, p1);
+      if (partes.length === 2 && /^[a-z0-9-]+$/.test(p0) && /^[a-z0-9-]+$/.test(p1)) {
+        const r = await publicada(env, url, request, p0, p1);
+        if (r) return r;
       }
     } catch (err) {
       console.error(err);
-      return new Response('Error al armar la invitación', { status: 500 });
+      return html('Error al armar la página', 500);
     }
-    // Todo lo demás: el sitio y las invitaciones de siempre
-    if (env.ORIGEN_ANTIGUO) {
-      const destino = new URL(url.pathname + url.search, env.ORIGEN_ANTIGUO);
-      return fetch(new Request(destino, request));
-    }
-    return new Response('No encontrado', { status: 404 });
+    if (env.ORIGEN_ANTIGUO) return fetch(new Request(new URL(url.pathname + url.search, env.ORIGEN_ANTIGUO), request));
+    return html('No encontrado', 404);
   },
 };

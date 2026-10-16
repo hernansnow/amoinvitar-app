@@ -29,6 +29,7 @@
   <meta property="og:title" content="Invitación ❤ Boda | Sofi y Ale">
   <meta property="og:description" content="¡Te esperamos para celebrar juntos!">
   <meta property="og:image" content="demo/boda/hero-banner1.jpg">
+  <link rel="image_src" href="demo/boda/hero-banner1.jpg">
   <meta property="og:site_name" content="Amo Invitar! | Invitaciones digitales">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
@@ -40,7 +41,6 @@
   <!-- Todos los estilos de Garden en un solo archivo, y la paleta y fuentes aparte -->
   <link rel="stylesheet" href="estilo.css">
   <link rel="stylesheet" href="tema.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/add-to-calendar-button@1/assets/css/atcb.min.css">
   <link rel="preload" href="../../comun/fonts/bodoni-moda/bodoni-moda-italic-600.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../comun/fonts/bodoni-moda/bodoni-moda-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../../comun/css/sobre_v1.2.css">
@@ -499,7 +499,9 @@
     </div>
   </div>
 
-  <footer class="site-footer pt-4 pb-4">
+  <!-- Con marca blanca (empresas) el pie lleva su logo en lugar del de Amo Invitar -->
+  <div data-componente="pie-marca"></div>
+  <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
     <div class="container">
       <div class="col-md-6 ml-auto mr-auto p-0">
         <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
@@ -524,10 +526,9 @@
 <script src="../../comun/js/jquery.easing.1.3.js" defer></script>
 <script src="../../comun/js/jquery.sticky.js"></script>
 <script src="../../comun/js/aos.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/add-to-calendar-button@1" async defer></script>
 <script src="../../comun/js/snow_2.7.1.js" defer></script>
 <script src="../../comun/js/rsvp-fecha-fin-evento.js" defer></script>
-<!-- Motor del lado del navegador: cuenta regresiva, agendar, mapas, fondos diferidos -->
+<!-- Motor del lado del navegador: cuenta regresiva, agendar (Google, Apple, Outlook), mapas, álbum -->
 <script src="../../comun/js/invitacion.js" defer></script>
 <script>
   $('.presupuesto').owlCarousel({

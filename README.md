@@ -10,6 +10,9 @@ npm install
 npm run local
 ```
 
+Al arrancar muestra dos links: la demo y un **panel de prueba** con un evento
+recién creado (todo se guarda en memoria mientras corre).
+
 - http://localhost:8787/demo/garden — demo (idioma según el país; local = neutro)
 - `?evento=boda|15|bautismo|comunion|cumple`
 - `&paquete=basic|premium|deluxe`
@@ -29,6 +32,11 @@ npm run local
 | `src/motor/` | `datos.js` arma los datos; `render.js` los pone en el HTML |
 | `src/componentes/` | bloques comunes: sobre, acceso con PIN, formulario RSVP, canciones, álbum |
 | `src/catalogo.js` | precios (EUR), extras, modelos del plan gratis |
+| `src/panel/esquemas.js` | pasos y campos del panel para cada producto (invitación, Save The Date, a medida) |
+| `public/panel/` | el panel del cliente (se arma solo con el esquema) |
+| `src/acceso.js` | seguridad: abierta, link personal o PIN (decidida en el servidor) |
+| `src/almacen.js` | base (D1) y archivos (R2); versión en memoria para probar |
+| `docs/empresas.md` | propuesta para wedding planners, salones, fotógrafos y agencias |
 | `schema.sql` | tablas de la base (D1) |
 
 ## Marcas del HTML del modelo
@@ -48,7 +56,24 @@ npm run local
 Los ítems de muestra seguidos de un `data-repetir` se usan en rueda: así el
 itinerario sigue alternando izquierda y derecha.
 
+## Seguridad de la invitación
+
+El cliente elige en el panel:
+
+| Opción | Qué pasa |
+|---|---|
+| Cualquiera con el link | sin seguridad |
+| Solo con link personal | cada invitado recibe `…/boda/sofi-y-ale?inv=juan-rodriguez-fpzv`; sin eso, pantalla de bloqueo |
+| Con PIN | uno para todos o uno por invitado; se pide antes de mostrar nada |
+
+La decisión es del servidor: quien no tiene permiso no recibe el HTML de la
+invitación (ni fotos, ni lugares), solo la pantalla de acceso con los nombres.
+Al entrar bien queda una cookie firmada por 90 días. La lista de invitados ya
+no se descarga entera: cada invitado recibe solo su fila, sin el PIN. Los
+intentos de PIN tienen un límite por minuto.
+
 ## Pendiente
 
-Panel del cliente, tienda (Stripe, PayPal, Mercado Pago, transferencia,
-facturas), vencimientos, descargas, envíos y recordatorios.
+Login (Google y link mágico), tienda (Stripe, PayPal, Mercado Pago,
+transferencia, facturas), tablero de empresas, modelos de Save The Date web,
+vencimientos, descargas, envíos y recordatorios.

@@ -59,22 +59,31 @@ function lugarTexto(l) {
   return [nombre, l.direccion].filter(Boolean).join(', ');
 }
 
-function calendario({ nombre, descripcion, inicio, fin, lugar, zona }) {
-  const a = partes(inicio), b = partes(fin || sumarHoras(inicio, 1) || inicio);
-  if (!a) return null;
-  return {
-    name: nombre, description: descripcion,
-    startDate: `${a.a}-${a.m}-${a.d}`, endDate: `${b.a}-${b.m}-${b.d}`,
-    ...(a.hh != null ? { startTime: `${a.hh}:${a.mm}` } : {}),
-    ...(b.hh != null ? { endTime: `${b.hh}:${b.mm}` } : {}),
-    location: lugar, options: ['Google', 'Apple', 'Outlook.com|Outlook', 'Yahoo'],
-    timeZone: zona, iCalFileName: 'Recordatorio',
+// "2027-09-12T20:00" en una zona horaria → instante UTC "20270912T230000Z"
+function aUTC(fh, zona) {
+  const p = partes(fh);
+  if (!p || p.hh == null) return null;
+  const local = Date.UTC(+p.a, +p.m - 1, +p.d, +p.hh, +p.mm);
+  // diferencia entre la hora "de pared" en la zona y UTC para ese momento
+  const enZona = (ms) => {
+    const f = new Intl.DateTimeFormat('en-US', { timeZone: zona, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+      .formatToParts(new Date(ms)).reduce((o, x) => ((o[x.type] = x.value), o), {});
+    return Date.UTC(+f.year, +f.month - 1, +f.day, +f.hour, +f.minute);
   };
+  let t = local - (enZona(local) - local);
+  t = local - (enZona(t) - t); // segunda pasada por si cae en un cambio de horario
+  return new Date(t).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+
+function calendario({ nombre, descripcion, inicio, fin, lugar, zona }) {
+  const desde = aUTC(inicio, zona);
+  if (!desde) return null;
+  return { titulo: nombre, descripcion, lugar, inicio: desde, fin: aUTC(fin || sumarHoras(inicio, 1), zona) };
 }
 
 const lleno = (x) => (Array.isArray(x) ? x.length > 0 : x != null && x !== '' && x !== false);
 
-export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false }) {
+export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false, invitado = null, marca = null }) {
   const plural = !!e.nombres?.b;
   const paquete = modelo.paquetes[e.paquete] || modelo.paquetes.basic;
   const incluye = paquete.incluye;
@@ -208,16 +217,15 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     redes: { ...redes, hay: !!(redes.instagram || redes.facebook || redes.tiktok) },
     pie: { texto: esc(propio(e.pie?.texto, 'pie.texto')) },
 
-    acceso: {
-      lista: !!e.acceso?.lista,
-      soloInvitados: !!e.acceso?.soloInvitados,
-      pinPorInvitado: !!e.acceso?.pinPorInvitado,
-      pinUnico: !!e.acceso?.pinUnico,
-    },
+    // La seguridad ya la resolvió el servidor: acá solo va a quién mostrar
+    acceso: { lista: !!e.acceso?.lista, inv: invitado?.codigo || '' },
+    marca: marca ? { blanca: true, ...marca } : { blanca: false },
     meta: {
       titulo: t('meta.titulo').replace('{evento}', t('evento.nombre')).replace('{nombres}', nombresTexto),
-      descripcion: t('meta.descripcion'),
-      imagen: portada[0]?.url || '',
+      descripcion: (e.meta?.descripcion || '').slice(0, 120) || t('meta.descripcion'),
+      // Miniatura al compartir: la armada en el panel (con o sin nombres), si no la foto
+      // elegida, la portada, la del RSVP, la galería, y por último la genérica del modelo
+      imagen: e.miniatura?.generada || e.miniatura?.foto || portada[0]?.url || fotos.rsvp || galeria[0]?.url || `${rutas.modelo}/miniatura.jpg`,
     },
   };
 }
