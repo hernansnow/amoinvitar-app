@@ -1,12 +1,14 @@
 // Servidor para probar en la compu sin Cloudflare: sirve public/ igual que
-// los "assets" del Worker, le pasa el resto al Worker y guarda todo en memoria.
-//   npm run local   →   muestra el link de la demo y de un panel de prueba
+// los "assets" del Worker y le pasa el resto al Worker. La base es SQLite (la
+// misma estructura que D1) y los pagos se dan por aprobados sin pasarela.
+//   npm run local   →   muestra el link de la demo, la tienda y un panel de prueba
+//   BASE=prueba.db npm run local   →   guarda la base en un archivo (si no, en memoria)
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import worker from '../src/index.js';
-import { almacenMemoria } from '../src/almacen.js';
+import { d1Local, r2Local } from './d1-local.mjs';
 
 const PUBLICO = fileURLToPath(new URL('../public/', import.meta.url));
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' };
@@ -19,7 +21,10 @@ async function estatico(pathname) {
 }
 
 const env = {
-  SIN_CACHE: true, ADMIN_CLAVE: 'local', almacen: almacenMemoria(),
+  SIN_CACHE: true, MODO_LOCAL: true, ADMIN_CLAVE: 'local', DEV_FAKE_PAYMENTS: '1', SIN_COTIZACION: process.env.COTIZAR ? '' : '1',
+  TRANSFER_EUR: 'Titular: Amo Invitar (prueba) | IBAN: ES00 0000 0000 0000 0000 0000', TRANSFER_ARS: 'Alias: amoinvitar.prueba | CBU: 0000000000000000000000',
+  ADMINS: process.env.ADMINS || '', ULTIMOS_MAILS: [],
+  DB: d1Local(process.env.BASE || ':memory:'), MEDIA: r2Local(),
   ASSETS: { fetch: async (u) => (await estatico(new URL(u).pathname)) || new Response('', { status: 404 }) },
 };
 const puerto = Number(process.env.PORT || 8787);
@@ -40,6 +45,7 @@ http.createServer(async (req, res) => {
     method: 'POST', headers: { 'x-admin': 'local', 'content-type': 'application/json' },
     body: JSON.stringify({ producto: 'invitacion', tipo: process.env.TIPO || 'boda', modelo: 'garden', paquete: process.env.PAQUETE || 'deluxe', pais: 'AR', zonaHoraria: 'America/Argentina/Buenos_Aires' }),
   }), env).then((r) => r.json());
-  console.log(`Demo  → http://localhost:${puerto}/demo/garden`);
-  console.log(`Panel → ${alta.panel}`);
+  console.log(`Demo   → http://localhost:${puerto}/demo/garden`);
+  console.log(`Tienda → http://localhost:${puerto}/tienda/`);
+  console.log(`Panel  → ${alta.panel}`);
 });

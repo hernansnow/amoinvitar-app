@@ -53,10 +53,12 @@ CREATE TABLE IF NOT EXISTS empresas (
 );
 
 CREATE TABLE IF NOT EXISTS usuarios (
-  id     TEXT PRIMARY KEY,
-  email  TEXT NOT NULL UNIQUE,
-  nombre TEXT,
-  creado TEXT NOT NULL
+  id         TEXT PRIMARY KEY,
+  email      TEXT NOT NULL UNIQUE,
+  nombre     TEXT,
+  google_sub TEXT,
+  pais       TEXT,
+  creado     INTEGER NOT NULL            -- segundos desde 1970
 );
 
 CREATE TABLE IF NOT EXISTS miembros (
@@ -72,4 +74,68 @@ CREATE TABLE IF NOT EXISTS accesos_evento (
   usuario_id TEXT NOT NULL REFERENCES usuarios(id),
   rol        TEXT NOT NULL DEFAULT 'cliente', -- cliente | editor | lectura
   PRIMARY KEY (evento_id, usuario_id)
+);
+
+-- ── Login: sesiones y links de acceso por mail ────────────────────────
+CREATE TABLE IF NOT EXISTS sesiones (
+  id         TEXT PRIMARY KEY,           -- hash SHA-256 del token de la cookie
+  usuario_id TEXT NOT NULL REFERENCES usuarios(id),
+  vence      INTEGER NOT NULL,
+  creado     INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS sesiones_usuario ON sesiones (usuario_id);
+
+CREATE TABLE IF NOT EXISTS tokens_login (
+  token_hash TEXT PRIMARY KEY,
+  email      TEXT NOT NULL,
+  siguiente  TEXT,                       -- a dónde volver después de entrar
+  vence      INTEGER NOT NULL,
+  usado      INTEGER
+);
+
+-- ── Tienda ────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS pedidos (
+  id          TEXT PRIMARY KEY,
+  numero      INTEGER UNIQUE,            -- número visible (desde 1001)
+  usuario_id  TEXT REFERENCES usuarios(id),
+  email       TEXT NOT NULL,
+  tipo        TEXT NOT NULL,             -- nuevo | mejora
+  detalle     TEXT NOT NULL,             -- JSON: producto, tipo de evento, modelo, paquete, extras
+  evento_id   TEXT,                      -- se completa al cobrar (o el evento que se mejora)
+  medio       TEXT NOT NULL,             -- stripe | paypal | mercadopago | transferencia | gratis | cupon
+  moneda      TEXT NOT NULL,
+  importe     REAL NOT NULL,             -- lo que paga, en la moneda cobrada
+  iva         REAL NOT NULL DEFAULT 0,   -- IVA incluido en el importe
+  iva_tasa    REAL NOT NULL DEFAULT 0,
+  eur         REAL NOT NULL,             -- precio de lista en euros (para reportes y mejoras)
+  cupon       TEXT,
+  descuento   REAL NOT NULL DEFAULT 0,
+  pais        TEXT,                      -- ubicación real del cliente (IVA, factura)
+  factura     TEXT,                      -- JSON opcional: nombre, NIF/CUIT, dirección
+  ref_externa TEXT,                      -- id de la pasarela
+  estado      TEXT NOT NULL DEFAULT 'pendiente', -- pendiente | pagado | cancelado
+  creado      INTEGER NOT NULL,
+  pagado      INTEGER
+);
+CREATE INDEX IF NOT EXISTS pedidos_usuario ON pedidos (usuario_id);
+CREATE INDEX IF NOT EXISTS pedidos_estado ON pedidos (estado);
+
+CREATE TABLE IF NOT EXISTS cupones (
+  codigo   TEXT PRIMARY KEY,
+  clase    TEXT NOT NULL,                -- porcentaje | fijo (fijo en euros)
+  valor    REAL NOT NULL,
+  paquetes TEXT,                         -- separados por coma; vacío = todos
+  max_usos INTEGER,
+  usos     INTEGER NOT NULL DEFAULT 0,
+  vence    INTEGER,
+  activo   INTEGER NOT NULL DEFAULT 1,
+  nota     TEXT,
+  creado   INTEGER NOT NULL
+);
+
+-- Cotizaciones (base USD), se renuevan cada hora
+CREATE TABLE IF NOT EXISTS fx (
+  id      INTEGER PRIMARY KEY,
+  datos   TEXT NOT NULL,
+  creado  INTEGER NOT NULL
 );

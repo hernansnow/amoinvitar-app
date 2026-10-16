@@ -20,6 +20,10 @@ import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
 import { esquemaPanel, limpiarDatos, faltantes } from './panel/esquemas.js';
+import { HttpError } from './lib/util.js';
+import { usuarioActual } from './lib/auth.js';
+import * as cuenta from './rutas/cuenta.js';
+import * as tienda from './rutas/tienda.js';
 
 const PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
 const cache = new Map();
@@ -158,10 +162,14 @@ function igual(a, b) {
   return d === 0;
 }
 
+// Se entra al panel con la cuenta (si tiene acceso al evento) o con la clave del link del mail
 async function eventoConClave(env, request, url, id) {
   const ev = await almacenDe(env).evento(id);
+  if (!ev) return null;
   const clave = request.headers.get('x-clave') || url.searchParams.get('k') || '';
-  return ev && igual(clave, ev.clave) ? ev : null;
+  if (clave && igual(clave, ev.clave)) return ev;
+  const u = await usuarioActual(request, env);
+  return u && (u.esAdmin || await almacenDe(env).tieneAcceso(ev.id, u.id)) ? ev : null;
 }
 
 async function esquemaDe(env, url, ev) {
@@ -255,6 +263,12 @@ async function apiPanel(env, request, url, partes) {
     const faltan = faltantes(esquema, ev.datos);
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
     if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);
+    if (await tienda.pagoPendiente(env, ev.id)) return json({ error: 'Se puede publicar cuando se acredite el pago. Mientras tanto, todo lo cargado queda guardado.' }, 402);
+    // Plan gratis: online hasta 15 días después del evento
+    if (ev.paquete === 'gratis') {
+      const fecha = (ev.datos.celebracion?.inicio || '').slice(0, 10);
+      if (fecha) ev.vence = new Date(Date.parse(fecha) + 16 * 86400000).toISOString();
+    }
     ev.estado = ev.producto === 'invitacion' || ev.producto === 'std-web' ? 'publicado' : 'en-diseno';
     await almacen.guardarEvento(ev);
     return json({ ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null });
@@ -297,7 +311,27 @@ export default {
     const partes = url.pathname.split('/').filter(Boolean);
     const [p0, p1] = partes;
     try {
+      const M = request.method;
+      if (p0 === 'auth') {
+        if (p1 === 'enlace' && M === 'POST') return await cuenta.pedirEnlace(request, env);
+        if (p1 === 'enlace') return await cuenta.entrarConEnlace(request, env);
+        if (p1 === 'google' && partes[2] === 'vuelta') return await cuenta.googleVuelta(request, env);
+        if (p1 === 'google') return await cuenta.google(request, env);
+        if (p1 === 'salir') return await cuenta.salir(request, env);
+      }
       if (p0 === 'api') {
+        if (p1 === 'cuenta') return await cuenta.cuenta(request, env);
+        if (p1 === 'tienda') {
+          const a = partes[2];
+          if (a === 'catalogo') return await tienda.catalogo(request, env);
+          if (a === 'cotizar' && M === 'POST') return await tienda.cotizar(request, env);
+          if (a === 'mejora' && M === 'POST') return await tienda.cotizarMejora(request, env);
+          if (a === 'comprar' && M === 'POST') return await tienda.comprar(request, env);
+          if (a === 'confirmar') return await tienda.confirmar(request, env);
+        }
+        if (p1 === 'stripe' && partes[2] === 'webhook' && M === 'POST') return await tienda.webhookStripe(request, env);
+        if (p1 === 'mp' && partes[2] === 'webhook') return await tienda.webhookMp(request, env);
+        if (p1 === 'admin' && partes[2] === 'pedidos' && partes[4] === 'cobrado' && M === 'POST') return await tienda.marcarCobrado(request, env, partes[3]);
         if (p1 === 'rsvp' && request.method === 'POST') return await rsvp(env, request);
         if (p1 === 'invitados.csv') return await invitadosCSV(env, request, url);
         if (p1 === 'panel' && partes[2]) return await apiPanel(env, request, url, partes);
@@ -314,8 +348,11 @@ export default {
         if (r) return r;
       }
     } catch (err) {
+      if (err instanceof HttpError) {
+        return p0 === 'api' || request.method !== 'GET' ? json({ error: err.message, ...err.extra }, err.status) : html(err.message, err.status);
+      }
       console.error(err);
-      return html('Error al armar la página', 500);
+      return p0 === 'api' ? json({ error: 'Algo falló. Probar de nuevo en un momento.' }, 500) : html('Error al armar la página', 500);
     }
     if (env.ORIGEN_ANTIGUO) return fetch(new Request(new URL(url.pathname + url.search, env.ORIGEN_ANTIGUO), request));
     return html('No encontrado', 404);

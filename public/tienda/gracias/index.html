@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>¡Gracias! · Amo Invitar</title>
+  <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
+  <link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
+  <link rel="stylesheet" href="/comun/css/cuenta.css">
+</head>
+<body>
+  <header class="barra">
+    <a href="https://amoinvitar.com/"><img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!" width="120"></a>
+    <nav><a href="/mi-cuenta">Mis invitaciones</a></nav>
+  </header>
+  <main class="angosto">
+    <div class="tarjeta" id="caja" aria-live="polite">
+      <h1 id="titulo">Confirmando el pago…</h1>
+      <p class="sub" id="texto">Un momento, por favor.</p>
+    </div>
+  </main>
+  <script>
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var caja = document.getElementById('caja');
+      function poner(titulo, partes) {
+        caja.replaceChildren();
+        var h = document.createElement('h1'); h.textContent = titulo; caja.append(h);
+        partes.forEach(function (p) { caja.append(p); });
+      }
+      function parrafo(t, clase) { var p = document.createElement('p'); p.textContent = t; if (clase) p.className = clase; return p; }
+      function boton(t, href) { var a = document.createElement('a'); a.className = 'btn btn-bloque'; a.textContent = t; a.href = href; a.id = 'abrir-panel'; return a; }
+      var intentos = 0;
+      function revisar() {
+        fetch('/api/tienda/confirmar?' + new URLSearchParams({ orden: q.get('orden') || '', session: q.get('session') || '' }))
+          .then(function (r) { return r.json(); })
+          .then(function (p) {
+            if (p.error) return poner('No encontramos el pedido', [parrafo('Si el pago se hizo, llega un mail en unos minutos. Ante cualquier duda: hola@amoinvitar.com')]);
+            if (p.estado === 'pagado') {
+              return poner(p.medio === 'gratis' ? '¡Lista para completar!' : '¡Pago recibido!', [
+                parrafo((p.numero && p.importe ? 'Pedido #' + p.numero + ' · ' : '') + p.producto, 'sub'),
+                parrafo('Ahora se cargan los nombres, las fotos y los lugares en el panel. Se guarda solo. También llegó un mail a ' + p.email + ' con el acceso.'),
+                p.panel ? boton('Abrir el panel', p.panel) : boton('Entrar con el mail', '/entrar?siguiente=/mi-cuenta'),
+              ]);
+            }
+            if (p.medio === 'transferencia') {
+              var pre = document.createElement('pre'); pre.className = 'datos-banco'; pre.textContent = p.transferencia || '';
+              return poner('Datos para la transferencia', [
+                parrafo('Pedido #' + p.numero + ' · ' + p.producto + ' · ' + p.importe, 'sub'), pre,
+                parrafo('En el concepto: "Pedido ' + p.numero + '". Cuando llegue se activa y llega un mail. Mientras tanto ya se puede ir cargando todo.'),
+                p.panel ? boton('Empezar a cargar', p.panel) : boton('Entrar con el mail', '/entrar?siguiente=/mi-cuenta'),
+              ]);
+            }
+            if (++intentos < 6) return setTimeout(revisar, 2500);
+            poner('El pago todavía no se confirmó', [parrafo('Puede tardar unos minutos. Cuando se acredite llega un mail con el acceso. Si se canceló, se puede volver a la tienda.'), boton('Volver a la tienda', '/tienda/')]);
+          })
+          .catch(function () { poner('Sin conexión', [parrafo('Actualizar la página en un momento.')]); });
+      }
+      revisar();
+    })();
+  </script>
+</body>
+</html>

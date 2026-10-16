@@ -12,6 +12,15 @@ export const PAQUETES = {
   deluxe: { precio: 110, incluye: ['albunear'] },
 };
 
+// Lo que se muestra en la tienda para cada paquete
+export const NOMBRES_PAQUETE = { gratis: 'Gratis', basic: 'Basic', premium: 'Premium', deluxe: 'Deluxe' };
+export const RESUMEN_PAQUETES = {
+  gratis: ['Todo lo de Basic', 'Hasta 50 invitados', 'Online hasta 15 días después del evento', 'Sin cambio de colores ni tipografía'],
+  basic: ['Portada, historia y galería', 'Lugares con mapa y Agendar', 'Confirmación de asistencia', 'Dress code', 'Lista de invitados con link personal o PIN'],
+  premium: ['Todo lo de Basic', 'Sobre de bienvenida, música y cuenta regresiva', 'Álbum de fotos compartido', 'Sugerir canciones', 'Regalos y datos bancarios'],
+  deluxe: ['Todo lo de Premium', 'Itinerario, padrinos, hospedaje y traslado', 'Sugerencias de dress code y redes', 'Álbum Albunear incluido'],
+};
+
 // Diseño a medida (también eventos empresariales) y personaje favorito (infantiles)
 export const A_MEDIDA = {
   personalizado: { premium: 170, deluxe: 220 },
@@ -51,6 +60,17 @@ export const MODELOS_GRATIS = ['oliva', 'armonia', 'white', 'minimal', 'floral']
 // Nombres de los modelos según el evento (el mismo diseño, otro nombre)
 export const EQUIVALENCIAS_15 = { lovestory: 'luxury', elegance: 'style', garden: 'eucalipto', civil: 'party' };
 export const EXCLUSIVOS = { sweet: ['15'], vintage: ['boda'] };
+
+// Productos que se pueden comprar directo (el video se cotiza aparte)
+export const comprable = (producto) => producto === 'invitacion' || (PRODUCTOS[producto] && !PRODUCTOS[producto].manual);
+
+// Precio de lista en euros de un pedido de la tienda
+export function precioPedido({ producto = 'invitacion', paquete, aMedida = null, extras = [] }) {
+  if (producto === 'invitacion' || producto === 'a-medida') return precioInvitacion({ paquete, aMedida, extras: paquete === 'gratis' ? [] : extras });
+  const p = PRODUCTOS[producto];
+  if (!p || p.manual) throw new Error(`Producto no disponible: ${producto}`);
+  return extras.filter((e) => e === 'idioma').reduce((t) => t + EXTRAS.idioma.precio, p.precio);
+}
 
 export function precioInvitacion({ paquete, aMedida = null, extras = [] }) {
   const base = aMedida ? A_MEDIDA[aMedida]?.[paquete] : PAQUETES[paquete]?.precio;
