@@ -1,0 +1,17 @@
+{
+  "name": "amoinvitar-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "local": "node scripts/servidor-local.mjs",
+    "estilos": "node scripts/convertir-estilos.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "linkedom": "0.18.12"
+  },
+  "devDependencies": {
+    "purgecss": "7.0.2"
+  }
+}

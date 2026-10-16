@@ -1,0 +1,44 @@
+{
+  "id": "garden",
+  "nombre": "Garden",
+  "nombres": { "15": "Eucalipto" },
+  "eventos": ["boda", "15", "bautismo", "comunion", "cumple"],
+  "gratis": false,
+
+  "demo": {
+    "cumple": { "portada": "foto1.jpg", "rsvp": "foto2.jpg" },
+    "comunion": { "album": "foto3.jpg" }
+  },
+
+  "paquetes": {
+    "basic": {
+      "secciones": ["historia", "galeria", "rsvp", "dresscode"],
+      "incluye": { "sobre": false, "musica": false, "cuenta": false, "fotosPortada": 1, "fotosGaleria": 6 }
+    },
+    "premium": {
+      "secciones": ["historia", "galeria", "rsvp", "dresscode", "album", "canciones", "regalos"],
+      "incluye": { "sobre": true, "musica": true, "cuenta": true, "fotosPortada": 4, "fotosGaleria": 9 }
+    },
+    "deluxe": {
+      "secciones": ["historia", "galeria", "rsvp", "dresscode", "hospedaje", "bus", "itinerario", "testigos", "album", "canciones", "regalos", "redes"],
+      "incluye": { "sobre": true, "musica": true, "cuenta": true, "fotosPortada": 4, "fotosGaleria": 12, "sugerenciasDress": true }
+    }
+  },
+
+  "nombresHTML": {
+    "portada": "{a} <span class=\"circle-singleline2\">&amp;</span> {b}",
+    "cierre": "{a} <span class=\"text-bronce\">&amp;</span> {b}",
+    "solo": "{a}"
+  },
+
+  "sobre": {
+    "colores": { "lacre": "#c2a46c" },
+    "bienvenida": "font-family:Jost, sans-serif; color:rgb(167, 137, 119); font-weight:500; --bv-escala:1;"
+  },
+
+  "iconosItinerario": [
+    "ceremonia", "iglesia", "iglesia2", "recepcion", "brindis", "brindis2", "tragos", "cena", "vals", "baile",
+    "fiesta", "disco", "torta", "torta2", "torta3", "ramo", "zapatos", "camara", "mic", "novios-a", "novios-b",
+    "novios-c", "15", "baby", "infantil", "last-call", "last-call2"
+  ]
+}

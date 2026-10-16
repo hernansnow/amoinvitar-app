@@ -1,0 +1,45 @@
+/* ─── Propio de Garden: lo que antes estaba escrito dentro del HTML ─── */
+
+/* Portada: cada foto del carrusel ocupa la pantalla (la foto la pone el motor) */
+.portada-foto { height: 100vh; background-repeat: no-repeat; background-size: cover; background-position: center center; }
+
+/* Olas de la portada */
+.g-ola-media { background-image: url(img/wave-mid-b.png); }
+.g-ola-baja  { background-image: url(img/wave-bot-b.png); }
+
+/* Fondos de cada sección */
+.g-fondo-lugares {
+  background-image: linear-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8)), url(img/bg-oliva-6.jpg);
+  background-color: #fff; background-position: 70% 50%; background-repeat: no-repeat; background-size: cover; position: relative;
+}
+.g-fondo-rsvp {
+  background-image: linear-gradient(rgba(184, 154, 128, 0.3), rgba(184, 154, 128, 0.3)), url(img/bg-oliva-2.jpg);
+  background-color: #BFAAA6; background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; position: relative;
+}
+.g-fondo-testigos { background: linear-gradient(rgba(var(--color-suave-rgb), 0.4), rgba(var(--color-suave-rgb), 0.4)); }
+.g-fondo-album {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.8)), url(img/bg21.jpg);
+  background-color: #fff; background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; position: relative;
+}
+.g-fondo-regalos {
+  background-image: linear-gradient(rgba(var(--color-suave-rgb), 0.4), rgba(var(--color-suave-rgb), 0.4)), url(img/bg33.jpg);
+  background-color: var(--color-suave); background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; position: relative;
+}
+.g-fondo-perdiste {
+  background-image: linear-gradient(rgba(var(--color-suave-rgb), 0.9), rgba(var(--color-suave-rgb), 0.9)), url(img/bg20.jpg);
+  background-color: var(--color-suave); background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; position: relative;
+}
+
+/* Tarjetas con marco fino (ceremonia, celebración, regalos) */
+.g-marco { outline: 2px solid var(--color-principal); outline-offset: -12px; }
+.g-marco-claro { background-color: rgba(250, 250, 250, 0.85); }
+
+/* Flores que asoman por las esquinas de las tarjetas */
+.g-flor { position: absolute; }
+.g-flor-1 { top: -54px; left: 10px; transform: rotate(180deg); }
+.g-flor-2 { bottom: -55px; right: -58px; transform: rotate(180deg); }
+.g-flor-3 { top: -55px; left: -58px; }
+.g-flor-4 { bottom: -54px; right: 20px; }
+
+/* Recuadro del invitado en la confirmación */
+.g-tarjeta-invitado { border: 2px dashed #dee2e6; border-radius: 36px; }

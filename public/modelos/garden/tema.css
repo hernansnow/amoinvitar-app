@@ -1,0 +1,15 @@
+/* ════════════════════════════════════════════════════════════════
+   GARDEN · paleta y tipografías
+   Para cambiar los colores o las fuentes de esta invitación, tocá solo
+   estas líneas. El resto de los estilos (estilo.css) las usa.
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #a78977;      /* bronce: títulos, botones, marcos */
+  --color-secundario: #86a388;     /* musgo: fondos de franjas y botones */
+  --color-suave: #9ab09c;          /* verde salvia de los fondos */
+  --color-suave-rgb: 154, 176, 156;/* el mismo verde, para transparencias */
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Great Vibes', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}
