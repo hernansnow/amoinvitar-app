@@ -1,7 +1,7 @@
 // Imitación local de D1 (base) y R2 (archivos) para probar sin Cloudflare.
 // Usa el SQLite que trae Node: la misma base y las mismas consultas que en producción.
 import { DatabaseSync } from 'node:sqlite';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 const valor = (v) => (v === undefined ? null : typeof v === 'boolean' ? (v ? 1 : 0) : v);
 
@@ -13,9 +13,10 @@ class Consulta {
   async run() { const r = this.db.prepare(this.sql).run(...this.args); return { meta: { changes: Number(r.changes), last_row_id: Number(r.lastInsertRowid) } }; }
 }
 
-export function d1Local(archivo = ':memory:', esquema = new URL('../schema.sql', import.meta.url)) {
+// Aplica las migraciones en orden, igual que Cloudflare
+export function d1Local(archivo = ':memory:', carpeta = new URL('../migrations/', import.meta.url)) {
   const db = new DatabaseSync(archivo);
-  db.exec(readFileSync(esquema, 'utf8'));
+  for (const f of readdirSync(carpeta).filter((x) => x.endsWith('.sql')).sort()) db.exec(readFileSync(new URL(f, carpeta), 'utf8'));
   return {
     prepare: (sql) => new Consulta(db, sql),
     async batch(lista) {

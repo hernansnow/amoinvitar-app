@@ -73,8 +73,11 @@
         </details>
         <details class="campo">
           <summary>Datos para la factura (opcional)</summary>
-          <div class="campo" style="margin-top:10px"><label for="f-nombre">Nombre o razón social</label><input type="text" id="f-nombre" maxlength="120"></div>
-          <div class="campo"><label for="f-id">NIF / CUIT / RUT</label><input type="text" id="f-id" maxlength="40"></div>
+          <div class="campo" style="margin-top:10px"><label for="f-tipo">Factura a nombre de</label>
+            <select id="f-tipo"><option value="particular">Particular</option><option value="empresa">Empresa</option></select></div>
+          <div class="campo"><label for="f-nombre">Nombre o razón social</label><input type="text" id="f-nombre" maxlength="120"></div>
+          <div class="campo"><label for="f-id" id="f-id-etiqueta">NIF / CUIT / RUT / documento</label><input type="text" id="f-id" maxlength="40">
+            <p class="ayuda" id="f-empresa">Empresas de otro país de la UE: con el n.º de IVA intracomunitario válido, el precio va sin IVA.</p></div>
           <div class="campo"><label for="f-dir">Dirección</label><input type="text" id="f-dir" maxlength="300"></div>
         </details>
       </div>

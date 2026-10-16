@@ -80,8 +80,9 @@ export function vatRateFor(country, env) {
 
 /**
  * Precio de lista (en euros) en una moneda.
- * Con IVA_INCLUIDO = "1" (por defecto) el precio de lista ya es el final: en la UE el IVA va dentro.
- * Con IVA_INCLUIDO = "0" en la UE se suma el IVA al precio de lista (como en Albunear).
+ * Como en Albunear: a los clientes de la UE se les suma el IVA al precio de lista y se muestra
+ * redondo con la leyenda "IVA incluido" (25 € → 30 €). El resto del mundo paga el precio de lista.
+ * Con IVA_INCLUIDO = "1" el precio de lista ya sería el final (el IVA va dentro).
  * Devuelve { currency, amount (para mostrar), minor (para la pasarela), vat, vatRate }
  */
 export function priceIn(clave, eur, currency, rates, country, env) {
@@ -92,7 +93,7 @@ export function priceIn(clave, eur, currency, rates, country, env) {
   const vatRate = vatRateFor(country, env);
   let vat = 0;
   if (vatRate) {
-    if (env?.IVA_INCLUIDO === '0') {
+    if (env?.IVA_INCLUIDO !== '1') {
       const gross = amount * (1 + vatRate / 100);
       amount = isZeroDecimal(currency) || gross >= 100 ? nice(gross) : Math.round(gross);
     }

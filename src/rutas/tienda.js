@@ -14,7 +14,10 @@ import { formatMoney } from '../lib/dinero.js';
 import { methodsFor, transferInfo, createMpPreference, findMpApproved, getMpPayment } from '../lib/pagos.js';
 import { createCheckoutSession, retrieveCheckoutSession, verifyWebhook } from '../lib/stripe.js';
 import { createPaypalOrder, capturePaypalOrder } from '../lib/paypal.js';
-import { sendEmail, mailPedidoListo, mailTransferencia, mailAvisoInterno } from '../lib/email.js';
+import { sendEmail, mailPedidoListo, mailTransferencia, mailAvisoInterno, mailFactura } from '../lib/email.js';
+import { issueInvoice, invoiceUrl } from '../lib/facturas.js';
+import { verifactuMode, sendPending } from '../lib/verifactu.js';
+import { reverseChargeFor } from '../lib/vies.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
 import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, precioPedido, comprable } from '../catalogo.js';
@@ -74,15 +77,16 @@ function aplicarCupon(precio, c, rates) {
 }
 
 // Precio final de un importe en euros, en cada medio de pago disponible
-async function opciones(env, request, { eur, clave, moneda, cupon }) {
+async function opciones(env, request, { eur, clave, moneda, cupon, sinIva = false }) {
   const rates = await getRates(env);
   const pais = paisReal(request);
+  const paisIva = sinIva ? null : pais; // empresa de la UE con IVA válido: sin IVA
   const medios = eur > 0 ? methodsFor(env, pais, moneda) : [];
   const conPrecio = medios.map((m) => {
-    const pr = aplicarCupon(priceIn(clave, eur, m.currency, rates, pais, env), cupon, rates);
+    const pr = aplicarCupon(priceIn(clave, eur, m.currency, rates, paisIva, env), cupon, rates);
     return { id: m.id, moneda: m.currency, importe: pr.amount, texto: formatMoney(pr.amount, m.currency), iva: pr.vat, ivaTasa: pr.vatRate, antes: pr.before ? formatMoney(pr.before, m.currency) : null, minor: pr.minor };
   });
-  const lista = priceIn(clave, eur, moneda, rates, pais, env);
+  const lista = priceIn(clave, eur, moneda, rates, paisIva, env);
   return { pais, rates, medios: conPrecio, lista: { importe: lista.amount, texto: formatMoney(lista.amount, moneda) } };
 }
 
@@ -108,8 +112,10 @@ export async function cotizar(request, env) {
   const eur = precioPedido(pedido);
   let cupon = null, errorCupon = null;
   try { cupon = await buscarCupon(env, b.cupon, pedido.paquete); } catch (e) { if (!(e instanceof HttpError)) throw e; errorCupon = e.message; }
-  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda: monedaPedida(request, b.moneda), cupon });
-  return json({ pedido, eur, gratis: eur === 0, medios: o.medios, lista: o.lista, cupon: cupon ? { codigo: cupon.codigo } : null, errorCupon });
+  const rc = await inversion(env, request, b.factura);
+  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda: monedaPedida(request, b.moneda), cupon, sinIva: !!rc });
+  return json({ pedido, eur, gratis: eur === 0, medios: o.medios, lista: o.lista, cupon: cupon ? { codigo: cupon.codigo } : null, errorCupon,
+    empresa: rc ? { valida: true, nombre: rc.name || '', direccion: rc.address || '' } : null });
 }
 
 // ── Comprar ──────────────────────────────────────────────────────────
@@ -128,7 +134,8 @@ export async function comprar(request, env) {
   const eur = mejora ? mejora.eur : precioPedido(pedido);
   const cupon = await buscarCupon(env, b.cupon, pedido.paquete);
   const moneda = monedaPedida(request, b.moneda);
-  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda, cupon });
+  const rc = await inversion(env, request, b.factura);
+  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda, cupon, sinIva: !!rc });
   const elegido = o.medios.find((m) => m.id === b.medio) || o.medios[0];
   const total = elegido ? elegido.importe : 0;
   if (eur > 0 && !elegido) throw new HttpError(503, 'No hay medios de pago disponibles en este momento');
@@ -136,11 +143,16 @@ export async function comprar(request, env) {
   const id = randomId(10);
   const numero = await siguienteNumero(env);
   const medio = total === 0 ? (eur === 0 ? 'gratis' : 'cupon') : elegido.id === 'transfer' ? 'transferencia' : elegido.id;
-  const factura = b.factura && typeof b.factura === 'object' ? { nombre: str(b.factura.nombre, 120), id: str(b.factura.id, 40), direccion: str(b.factura.direccion, 300) } : null;
-  await env.DB.prepare(`INSERT INTO pedidos (id, numero, usuario_id, email, tipo, detalle, evento_id, medio, moneda, importe, iva, iva_tasa, eur, cupon, descuento, pais, factura, creado)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+  const f = b.factura && typeof b.factura === 'object' ? b.factura : null;
+  const factura = f && (f.nombre || f.id) ? {
+    tipo: f.tipo === 'empresa' ? 'empresa' : 'particular',
+    nombre: str(f.nombre, 120) || rc?.name || '', id: rc ? rc.vatId : str(f.id, 40).toUpperCase().replace(/\s+/g, ''), direccion: str(f.direccion, 300) || rc?.address || '',
+  } : null;
+  await env.DB.prepare(`INSERT INTO pedidos (id, numero, usuario_id, email, tipo, detalle, evento_id, medio, moneda, importe, iva, iva_tasa, eur, cupon, descuento, pais, factura, inversion, vies, creado)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
     .bind(id, numero, usuario?.id || null, email, mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null }), mejora?.evento.id || null, medio,
-      elegido?.moneda || moneda, total, elegido?.iva || 0, elegido?.ivaTasa || 0, eur, cupon?.codigo || null, 0, paisReal(request), factura ? JSON.stringify(factura) : null, now()).run();
+      elegido?.moneda || moneda, total, elegido?.iva || 0, elegido?.ivaTasa || 0, eur, cupon?.codigo || null, 0, paisReal(request), factura ? JSON.stringify(factura) : null,
+      rc ? 1 : 0, rc ? (rc.consultation || 'VIES ' + new Date().toISOString().slice(0, 10)) : null, now()).run();
 
   const base = sitio(env, request);
   const gracias = `${base}/tienda/gracias?orden=${id}`;
@@ -231,11 +243,36 @@ export async function cumplirPedido(env, request, id) {
   }
   if (p.cupon) await env.DB.prepare('UPDATE cupones SET usos = usos + 1 WHERE codigo = ?').bind(p.cupon).run();
   const base = sitio(env, request);
+  // Factura automática (numerada, con huella VeriFactu) y su link para verla o descargarla en PDF
+  try {
+    const inv = await issueInvoice(env, ordenParaFactura(await leerPedido(env, id)));
+    if (inv) await sendEmail(env, { to: p.email, ...mailFactura(env, { url: await invoiceUrl(env, base, inv), numero: inv.number, producto: p.detalle.nombre }) });
+    if (verifactuMode(env)) await sendPending(env);
+  } catch (e) { console.error('[factura]', e); }
   try {
     await sendEmail(env, { to: p.email, ...mailPedidoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, gratis: p.medio === 'gratis' }) });
     if (env.SUPPORT_EMAIL && p.importe) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Venta #${p.numero} · ${formatMoney(p.importe, p.moneda)}`, lineas: [`${p.email} · ${p.detalle.nombre} · ${p.medio}`] }) });
   } catch (e) { console.error('[mail]', e); }
   return true;
+}
+
+// El pedido con los nombres que usa el módulo de facturas (el mismo de Albunear)
+function ordenParaFactura(p) {
+  const f = p.factura ? JSON.parse(p.factura) : {};
+  return {
+    id: p.id, event_id: p.evento_id, user_id: p.usuario_id || '', email: p.email,
+    amount: p.importe, vat: p.iva, vat_rate: p.iva_tasa, currency: p.moneda,
+    method: p.medio === 'transferencia' ? 'transfer' : p.medio, country: p.pais,
+    bill_type: f.tipo === 'empresa' ? 'company' : 'person', bill_name: f.nombre || null, bill_tax_id: f.id || null, bill_address: f.direccion || null,
+    reverse_charge: p.inversion, vies_ref: p.vies,
+    concept: `Invitaciones digitales Amo Invitar · ${p.detalle.nombre} · Pedido #${p.numero}`,
+  };
+}
+
+// Empresa de otro país de la UE con su n.º de IVA válido en VIES → sin IVA (inversión del sujeto pasivo)
+async function inversion(env, request, f) {
+  if (!f || f.tipo !== 'empresa' || !f.id) return null;
+  return reverseChargeFor(env, { type: 'company', taxId: str(f.id, 40) }, paisReal(request));
 }
 
 // ── Volver de la pasarela ────────────────────────────────────────────

@@ -6,12 +6,15 @@
     "local": "node scripts/servidor-local.mjs",
     "estilos": "node scripts/convertir-estilos.mjs",
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler d1 migrations apply amoinvitar --remote && wrangler deploy",
+    "db:local": "wrangler d1 migrations apply amoinvitar --local"
   },
   "dependencies": {
-    "linkedom": "0.18.12"
+    "linkedom": "0.18.12",
+    "qrcode-generator": "2.0.4"
   },
   "devDependencies": {
-    "purgecss": "7.0.2"
+    "purgecss": "7.0.2",
+    "wrangler": "4.148.0"
   }
 }

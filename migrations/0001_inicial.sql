@@ -1,4 +1,5 @@
 -- Base de datos de Amo Invitar 2.0 (D1).
+-- Cloudflare la aplica sola al publicar (npm run deploy). Para cambios nuevos: otro archivo 0002_…sql, nunca editar uno ya aplicado.
 
 CREATE TABLE IF NOT EXISTS eventos (
   id          TEXT PRIMARY KEY,          -- ev_8f3k2q
@@ -111,7 +112,9 @@ CREATE TABLE IF NOT EXISTS pedidos (
   cupon       TEXT,
   descuento   REAL NOT NULL DEFAULT 0,
   pais        TEXT,                      -- ubicación real del cliente (IVA, factura)
-  factura     TEXT,                      -- JSON opcional: nombre, NIF/CUIT, dirección
+  factura     TEXT,                      -- JSON opcional: tipo (particular/empresa), nombre, NIF/CUIT, dirección
+  inversion   INTEGER NOT NULL DEFAULT 0,-- empresa de otro país de la UE con IVA válido: sin IVA (inversión del sujeto pasivo)
+  vies        TEXT,                      -- comprobante de la consulta VIES
   ref_externa TEXT,                      -- id de la pasarela
   estado      TEXT NOT NULL DEFAULT 'pendiente', -- pendiente | pagado | cancelado
   creado      INTEGER NOT NULL,
@@ -139,3 +142,20 @@ CREATE TABLE IF NOT EXISTS fx (
   datos   TEXT NOT NULL,
   creado  INTEGER NOT NULL
 );
+
+-- ── Facturas (VeriFactu) · igual que en Albunear ──────────────────────
+CREATE TABLE IF NOT EXISTS invoices (
+  id TEXT PRIMARY KEY, number TEXT NOT NULL UNIQUE, series TEXT NOT NULL, year INTEGER NOT NULL, seq INTEGER NOT NULL,
+  order_id TEXT NOT NULL UNIQUE, event_id TEXT NOT NULL, user_id TEXT NOT NULL, kind TEXT NOT NULL, issued_at INTEGER NOT NULL,
+  customer_email TEXT, customer_type TEXT, customer_name TEXT, customer_tax_id TEXT, customer_address TEXT, country TEXT,
+  concept TEXT NOT NULL, method TEXT NOT NULL, currency TEXT NOT NULL, total REAL NOT NULL, base REAL NOT NULL, vat REAL NOT NULL, vat_rate REAL NOT NULL,
+  eur_rate REAL NOT NULL DEFAULT 1, note TEXT, prev_hash TEXT, hash TEXT NOT NULL,
+  vf_mode TEXT, vf_type TEXT, vf_date TEXT, vf_hashed_at TEXT, vf_base TEXT, vf_vat TEXT, vf_total TEXT,
+  prev_number TEXT, prev_vf_date TEXT, vf_status TEXT NOT NULL DEFAULT 'off', vf_error TEXT, vf_csv TEXT, vf_sent_at INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_invoices_issued ON invoices (issued_at);
+CREATE INDEX IF NOT EXISTS idx_invoices_event ON invoices (event_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_invoices_prev ON invoices (prev_hash) WHERE prev_hash IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_invoices_vf ON invoices (vf_status);
+CREATE TABLE IF NOT EXISTS invoice_seq (series TEXT NOT NULL, year INTEGER NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (series, year));
+CREATE TABLE IF NOT EXISTS app_state (key TEXT PRIMARY KEY, value TEXT, updated_at INTEGER);

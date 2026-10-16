@@ -37,7 +37,8 @@ recién creado (todo se guarda en memoria mientras corre).
 | `src/acceso.js` | seguridad: abierta, link personal o PIN (decidida en el servidor) |
 | `src/almacen.js` | base (D1) y archivos (R2); versión en memoria para probar |
 | `docs/empresas.md` | propuesta para wedding planners, salones, fotógrafos y agencias |
-| `schema.sql` | tablas de la base (D1) |
+| `migrations/` | tablas de la base (D1); se aplican solas al publicar |
+| `docs/cloudflare.md` | guía paso a paso para publicar en Cloudflare |
 
 ## Marcas del HTML del modelo
 
@@ -84,7 +85,8 @@ intentos de PIN tienen un límite por minuto.
 
 - Precios de lista en euros (`src/catalogo.js`), cobrados en la moneda del visitante con cotización del día y redondeo comercial. `PRICE_OVERRIDES` en `src/lib/fx.js` fija precios por moneda.
 - Medios: Mercado Pago y transferencia en Argentina; tarjeta (Stripe) y PayPal en el resto; transferencia en Uruguay y la zona euro si hay cuenta cargada (`TRANSFER_EUR`, `TRANSFER_ARS`, `TRANSFER_UYU`).
-- Con `IVA_INCLUIDO = "1"` el precio de lista ya es el final; en la UE el IVA va dentro y queda registrado en el pedido.
+- IVA como en Albunear: a los clientes de la UE se les suma el 21 % al precio de lista (redondo, con la leyenda "IVA incluido"); el resto del mundo paga el precio de lista. Empresas de otro país de la UE con n.º de IVA válido en VIES: sin IVA (inversión del sujeto pasivo).
+- Facturas propias en cada cobro (serie AI, huella VeriFactu encadenada), copiadas de Albunear: el cliente recibe el link; en `/admin/facturas` y `/admin/facturas.csv` están el PDF y el libro del trimestre.
 - Al cobrar se crea el evento, la cuenta del cliente (por su mail) y se manda el mail con el acceso al panel.
 - Transferencia: el evento se crea enseguida para ir cargando, pero se publica cuando se marca como cobrado (`POST /api/admin/pedidos/<id>/cobrado`, con sesión de administrador o `x-admin`).
 - Cupones: tabla `cupones` (porcentaje o monto fijo en euros, por paquete, con vencimiento y usos).
@@ -92,6 +94,6 @@ intentos de PIN tienen un límite por minuto.
 
 ## Pendiente
 
-Facturas y VeriFactu (como en Albunear), administración de cupones y pedidos,
+Reorganizar la tienda, administración de cupones y pedidos,
 tablero de empresas, modelos de Save The Date web, vencimientos de los planes
 pagos, descargas, envíos y recordatorios.

@@ -86,3 +86,12 @@ export const mailAvisoInterno = (env, { asunto, lineas }) => ({
   subject: asunto,
   ...plantilla(env, { titulo: asunto, lineas: lineas.map(escapeHtml) }),
 });
+
+export const mailFactura = (env, { url, numero, producto }) => ({
+  subject: `Factura ${numero} · Amo Invitar`,
+  ...plantilla(env, {
+    titulo: 'Tu factura',
+    lineas: [`Factura ${b(numero)} de ${b(producto)}.`, 'Se puede ver y descargar en PDF desde el botón. El link queda disponible siempre.'],
+    boton: 'Ver la factura', url,
+  }),
+});

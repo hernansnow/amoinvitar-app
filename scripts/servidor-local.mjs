@@ -24,17 +24,19 @@ const env = {
   SIN_CACHE: true, MODO_LOCAL: true, ADMIN_CLAVE: 'local', DEV_FAKE_PAYMENTS: '1', SIN_COTIZACION: process.env.COTIZAR ? '' : '1',
   TRANSFER_EUR: 'Titular: Amo Invitar (prueba) | IBAN: ES00 0000 0000 0000 0000 0000', TRANSFER_ARS: 'Alias: amoinvitar.prueba | CBU: 0000000000000000000000',
   ADMINS: process.env.ADMINS || '', ULTIMOS_MAILS: [],
+  // Facturas de prueba (en producción, los datos reales se cargan en Cloudflare)
+  INVOICE_NAME: 'Amo Invitar (prueba)', INVOICE_TAX_ID: '00000000T', INVOICE_ADDRESS: 'Calle de prueba 1\n28001 Madrid', INVOICE_SERIES: 'AI', SECRETO_ACCESO: 'local',
   DB: d1Local(process.env.BASE || ':memory:'), MEDIA: r2Local(),
-  ASSETS: { fetch: async (u) => (await estatico(new URL(u).pathname)) || new Response('', { status: 404 }) },
+  ASSETS: { fetch: async (u) => (await estatico(new URL(typeof u === 'string' || u instanceof URL ? u : u.url).pathname)) || new Response('', { status: 404 }) },
 };
 const puerto = Number(process.env.PORT || 8787);
-const DINAMICO = /^\/(demo|api|vista|media|acceso)(\/|$)|^\/panel\/ev_/;
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${puerto}`);
   const cuerpo = req.method === 'GET' || req.method === 'HEAD' ? undefined : await new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); });
   const request = new Request(url, { method: req.method, headers: req.headers, body: cuerpo, duplex: 'half' });
-  const r = (DINAMICO.test(url.pathname) ? null : await estatico(url.pathname)) || await worker.fetch(request, env);
+  // Como en Cloudflare (run_worker_first): todo pasa por el Worker, que sirve los archivos con ASSETS
+  const r = await worker.fetch(request, env);
   const h = {}; r.headers.forEach((v, k) => { h[k] = k === 'set-cookie' ? r.headers.getSetCookie() : v; });
   // en http://localhost la cookie "Secure" no se guardaría
   if (h['set-cookie']) h['set-cookie'] = h['set-cookie'].map((c) => c.replace('; Secure', ''));

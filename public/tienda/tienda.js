@@ -98,7 +98,7 @@ function cotizar() {
     try {
       const r = S.mejora
         ? await post('/api/tienda/mejora', { mejora: S.mejora, moneda: S.moneda })
-        : await post('/api/tienda/cotizar', { pedido: pedido(), moneda: S.moneda, cupon: S.cupon });
+        : await post('/api/tienda/cotizar', { pedido: pedido(), moneda: S.moneda, cupon: S.cupon, factura: datosFactura() });
       S.cotizacion = r;
       mensaje('');
       dibujarPago();
@@ -106,8 +106,19 @@ function cotizar() {
   }, 150);
 }
 
+function datosFactura() {
+  const tipo = $('#f-tipo').value, nombre = $('#f-nombre').value.trim(), id = $('#f-id').value.trim();
+  return nombre || id ? { tipo, nombre, id, direccion: $('#f-dir').value.trim() } : null;
+}
+
 function dibujarPago() {
   const r = S.cotizacion;
+  const empresa = $('#f-tipo').value === 'empresa';
+  $('#f-empresa').hidden = !empresa;
+  $('#f-empresa').textContent = !empresa ? '' : r.empresa?.valida ? `✓ Empresa verificada en VIES${r.empresa.nombre ? ': ' + r.empresa.nombre : ''}. Precio sin IVA (inversión del sujeto pasivo).`
+    : 'Empresas de otro país de la UE: con el n.º de IVA intracomunitario válido, el precio va sin IVA.';
+  if (r.empresa?.valida && !$('#f-nombre').value && r.empresa.nombre) $('#f-nombre').value = r.empresa.nombre;
+  if (r.empresa?.valida && !$('#f-dir').value && r.empresa.direccion) $('#f-dir').value = r.empresa.direccion;
   $('#campo-email').hidden = !!S.usuario;
   $('#cupon-campo').hidden = !!S.mejora || r.gratis;
   $('#cupon-estado').textContent = r.errorCupon || (r.cupon ? `✓ Cupón ${r.cupon.codigo} aplicado` : '');
@@ -131,12 +142,14 @@ $('#pagar').addEventListener('click', async () => {
   const b = $('#pagar');
   b.disabled = true; b.textContent = 'Un momento…';
   try {
-    const factura = $('#f-nombre').value || $('#f-id').value ? { nombre: $('#f-nombre').value, id: $('#f-id').value, direccion: $('#f-dir').value } : null;
+    const factura = datosFactura();
     const r = await post('/api/tienda/comprar', { pedido: pedido(), mejora: S.mejora, email, medio: S.medio, moneda: S.moneda, cupon: S.cupon, factura });
     location.href = r.url;
   } catch (e) { mensaje(e.message); b.disabled = false; dibujarPago(); }
 });
 $('#aplicar-cupon').addEventListener('click', () => { S.cupon = $('#cupon').value.trim(); cotizar(); });
+$('#f-tipo').addEventListener('change', cotizar);
+$('#f-id').addEventListener('change', cotizar);
 $('#moneda').addEventListener('change', async (e) => { S.moneda = e.target.value; document.cookie = `cur=${S.moneda}; path=/; max-age=31536000; samesite=lax`; await cargar(); });
 
 async function cargar() {
