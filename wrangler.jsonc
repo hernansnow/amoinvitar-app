@@ -32,8 +32,8 @@
   },
 
   "d1_databases": [
-    // database_id: se copia de Cloudflare → Storage & Databases → D1 → amoinvitar (paso 3 de la guía)
-    { "binding": "DB", "database_name": "amoinvitar", "database_id": "COMPLETAR", "migrations_dir": "migrations" }
+    // Base creada en Europa occidental (WEUR)
+    { "binding": "DB", "database_name": "amoinvitar", "database_id": "6f1d6fa9-f4c4-4243-9a6d-cf8314076ada", "migrations_dir": "migrations" }
   ],
   "r2_buckets": [
     { "binding": "MEDIA", "bucket_name": "amoinvitar-media" }
