@@ -1,6 +1,6 @@
 // Dónde se guardan los eventos, invitados, respuestas y archivos.
 // En Cloudflare: D1 (base) y R2 (fotos y MP3). Para probar en la compu,
-// servidor-local.mjs pasa un almacén en memoria con la misma forma.
+// servidor-local.mjs usa la misma base con el SQLite de Node (scripts/d1-local.mjs).
 
 const fila = (r) => r && {
   id: r.id, producto: r.producto, tipo: r.tipo, slug: r.slug, modelo: r.modelo, paquete: r.paquete,
@@ -46,30 +46,22 @@ export function almacenD1(env) {
       const r = id && await db.prepare('SELECT * FROM empresas WHERE id = ?').bind(id).first();
       return r && { ...r, marca: JSON.parse(r.marca || '{}') };
     },
+    // Quién puede editar cada evento
+    async darAcceso(eventoId, usuarioId, rol = 'cliente') {
+      await db.prepare('INSERT INTO accesos_evento (evento_id, usuario_id, rol) VALUES (?, ?, ?) ON CONFLICT DO NOTHING').bind(eventoId, usuarioId, rol).run();
+    },
+    async tieneAcceso(eventoId, usuarioId) {
+      return !!(usuarioId && await db.prepare('SELECT 1 FROM accesos_evento WHERE evento_id = ? AND usuario_id = ?').bind(eventoId, usuarioId).first());
+    },
+    async eventosDe(usuarioId) {
+      const { results } = await db.prepare(`SELECT e.* FROM eventos e JOIN accesos_evento a ON a.evento_id = e.id
+        WHERE a.usuario_id = ? ORDER BY e.actualizado DESC`).bind(usuarioId).all();
+      return results.map(fila);
+    },
     async subir(clave, cuerpo, tipo) { await env.MEDIA.put(clave, cuerpo, { httpMetadata: { contentType: tipo, cacheControl: 'public, max-age=31536000, immutable' } }); },
     async archivo(clave) {
       const o = await env.MEDIA.get(clave);
       return o && { cuerpo: o.body, tipo: o.httpMetadata?.contentType || 'application/octet-stream' };
     },
-  };
-}
-
-// Mismo almacén, en memoria (para npm run local)
-export function almacenMemoria() {
-  const eventos = new Map(), invitados = new Map(), respuestas = new Map(), archivos = new Map(), empresas = new Map();
-  return {
-    _empresas: empresas,
-    async evento(id) { return eventos.has(id) ? structuredClone(eventos.get(id)) : null; },
-    async eventoPorSlug(tipo, slug) { return [...eventos.values()].find((e) => e.tipo === tipo && e.slug === slug) || null; },
-    async slugOcupado(tipo, slug, excepto) { return [...eventos.values()].some((e) => e.tipo === tipo && e.slug === slug && e.id !== excepto); },
-    async guardarEvento(e) { eventos.set(e.id, structuredClone(e)); },
-    async invitados(id) { return invitados.get(id) || []; },
-    async invitado(id, codigo) { return (invitados.get(id) || []).find((i) => i.codigo === codigo) || null; },
-    async guardarInvitados(id, lista) { invitados.set(id, lista); },
-    async guardarRespuesta(id, tipo, datos) { (respuestas.get(id) || respuestas.set(id, []).get(id)).unshift({ tipo, datos, creado: new Date().toISOString() }); },
-    async respuestas(id) { return respuestas.get(id) || []; },
-    async empresa(id) { return empresas.get(id) || null; },
-    async subir(clave, cuerpo, tipo) { archivos.set(clave, { cuerpo: new Uint8Array(await new Response(cuerpo).arrayBuffer()), tipo }); },
-    async archivo(clave) { return archivos.get(clave) || null; },
   };
 }

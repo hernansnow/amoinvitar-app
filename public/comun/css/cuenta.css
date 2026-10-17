@@ -1,0 +1,79 @@
+/* Páginas de la cuenta y la tienda · Amo Invitar 2.0 */
+:root {
+  --acento: #7a9c7e; --acento-oscuro: #5f8264; --acento-texto: #fff;
+  --fondo: #f6f5f3; --tarjeta: #fff; --texto: #1f2421; --suave: #6b706c; --borde: #e2e0dc;
+  --peligro: #b3261e; --ok: #2e7d32; --premium: #b08a4f; --radio: 14px;
+  font-family: Jost, system-ui, sans-serif; color: var(--texto); background: var(--fondo);
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--fondo); }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--acento-oscuro); }
+.barra { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--tarjeta); border-bottom: 1px solid var(--borde); position: sticky; top: 0; z-index: 10; }
+.barra img { display: block; width: 120px; height: auto; }
+.barra nav { display: flex; gap: 14px; align-items: center; font-size: .95rem; }
+.barra nav a { text-decoration: none; color: var(--texto); }
+main { max-width: 980px; margin: 0 auto; padding: 24px 16px 120px; }
+.angosto { max-width: 440px; }
+h1 { font-size: 1.7rem; font-weight: 600; margin: 8px 0 6px; }
+h2 { font-size: 1.2rem; font-weight: 600; margin: 28px 0 12px; }
+.sub { color: var(--suave); margin: 0 0 20px; }
+.tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); padding: 20px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--acento); background: var(--acento); color: var(--acento-texto); padding: 11px 20px; border-radius: 999px; cursor: pointer; font-weight: 600; text-decoration: none; }
+.btn:hover { background: var(--acento-oscuro); border-color: var(--acento-oscuro); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn-sec { background: transparent; color: var(--acento-oscuro); }
+.btn-sec:hover { background: rgba(0,0,0,.04); color: var(--acento-oscuro); }
+.btn-bloque { width: 100%; }
+.btn-google { background: #fff; color: var(--texto); border-color: var(--borde); }
+.btn-google:hover { background: #fafafa; border-color: #ccc; color: var(--texto); }
+label { display: block; font-weight: 600; margin: 0 0 6px; }
+input[type=email], input[type=text], select { width: 100%; padding: 11px 12px; border: 1px solid var(--borde); border-radius: 10px; background: #fff; }
+input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+.campo { margin-bottom: 16px; }
+.ayuda { font-size: .85rem; color: var(--suave); margin: 6px 0 0; }
+.separador { display: flex; align-items: center; gap: 10px; color: var(--suave); font-size: .85rem; margin: 18px 0; }
+.separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--borde); }
+.mensaje { padding: 12px 14px; border-radius: 10px; margin: 14px 0; }
+.mensaje.ok { background: #e8f3ea; color: #1e4d24; }
+.mensaje.error { background: #fbe9e7; color: var(--peligro); }
+.vacio { text-align: center; padding: 40px 20px; color: var(--suave); }
+
+/* Grillas de opciones */
+.grilla { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.opcion { position: relative; display: block; background: var(--tarjeta); border: 2px solid var(--borde); border-radius: var(--radio); padding: 16px; cursor: pointer; font-weight: 400; margin: 0; transition: border-color .15s; }
+.opcion:hover { border-color: #c9c6bf; }
+.opcion:has(input:checked) { border-color: var(--acento); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acento) 18%, transparent); }
+.opcion input { position: absolute; opacity: 0; pointer-events: none; }
+.opcion strong { display: block; font-size: 1.05rem; }
+.opcion .precio { font-weight: 700; font-size: 1.15rem; margin-top: 6px; }
+.opcion ul { margin: 10px 0 0; padding-left: 18px; color: var(--suave); font-size: .9rem; }
+.opcion small { color: var(--suave); display: block; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips .opcion { padding: 8px 16px; border-radius: 999px; border-width: 1px; }
+.chips .opcion:has(input:checked) { background: var(--acento); color: #fff; box-shadow: none; }
+.modelo img { width: 100%; aspect-ratio: 1200/630; object-fit: cover; border-radius: 10px; display: block; margin-bottom: 10px; background: var(--fondo); }
+.modelo a { font-size: .9rem; }
+.insignia { display: inline-block; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; background: var(--premium); color: #fff; border-radius: 999px; padding: 2px 8px; vertical-align: middle; }
+.extra { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+.extra input { position: static; opacity: 1; pointer-events: auto; accent-color: var(--acento); width: 18px; height: 18px; }
+.extra .precio { margin: 0 0 0 auto; font-size: 1rem; }
+
+/* Resumen fijo abajo */
+.resumen { position: fixed; left: 0; right: 0; bottom: 0; background: var(--tarjeta); border-top: 1px solid var(--borde); padding: 12px 16px; z-index: 20; box-shadow: 0 -6px 20px rgba(0,0,0,.06); }
+.resumen .dentro { max-width: 980px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.resumen .total { font-size: 1.3rem; font-weight: 700; }
+.resumen .detalle { color: var(--suave); font-size: .85rem; }
+.tachado { text-decoration: line-through; color: var(--suave); font-weight: 400; font-size: .9em; margin-right: 6px; }
+
+/* Mis invitaciones */
+.evento { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.evento + .evento { margin-top: 12px; }
+.evento .datos strong { display: block; font-size: 1.1rem; }
+.evento .datos span { color: var(--suave); font-size: .9rem; }
+.estado { display: inline-block; font-size: .75rem; border-radius: 999px; padding: 2px 10px; background: var(--fondo); border: 1px solid var(--borde); margin-left: 6px; }
+.estado.publicado { background: #e8f3ea; border-color: #c7e3cc; color: #1e4d24; }
+.estado.pendiente { background: #fff4e0; border-color: #f2d9a8; color: #7a5310; }
+.acciones-evento { display: flex; gap: 8px; flex-wrap: wrap; }
+pre.datos-banco { white-space: pre-wrap; background: var(--fondo); border-radius: 10px; padding: 12px; font-family: inherit; }
+@media (max-width: 600px) { h1 { font-size: 1.45rem; } .barra img { width: 96px; } }

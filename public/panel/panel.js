@@ -52,7 +52,7 @@ const mejorarA = (paquete) => {
   const nombre = paquete[0].toUpperCase() + paquete.slice(1);
   return v === 'en' ? `Upgrade to ${nombre}` : (v === 'es-ar' || v === 'es-cr') ? `Pasate a ${nombre}` : `Pásate a ${nombre}`;
 };
-const linkMejorar = (paquete) => `/tienda/mejorar?e=${encodeURIComponent(id)}&a=${paquete}`;
+const linkMejorar = (paquete) => `/tienda/?mejorar=${encodeURIComponent(id)}&a=${paquete}`;
 
 // ── Guardado automático ───────────────────────────────────────────────
 function cambio(ruta, valor, { rearmar = false } = {}) {
@@ -460,7 +460,8 @@ function aplicarMarca(m) {
 // ── Inicio ────────────────────────────────────────────────────────────
 (async () => {
   try { S = await api(); } catch (e) {
-    $('#formulario').replaceChildren(el('div', { class: 'tarjeta mejorar' }, el('h2', {}, 'No se pudo abrir el panel'), el('p', {}, e.status === 403 ? 'El link no es válido o venció. Pedir uno nuevo desde el mail de compra.' : 'Revisar la conexión y volver a intentar.')));
+    if (e.status === 403 && !clave) { location.href = `/entrar?siguiente=${encodeURIComponent(location.pathname)}`; return; }
+    $('#formulario').replaceChildren(el('div', { class: 'tarjeta mejorar' }, el('h2', {}, 'No se pudo abrir el panel'), el('p', {}, e.status === 403 ? 'El link no es válido o venció. Entrar con el mail de la compra en amoinvitar.com/entrar.' : 'Revisar la conexión y volver a intentar.')));
     $('#titulo-evento').textContent = '';
     return;
   }

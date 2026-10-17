@@ -37,7 +37,8 @@ recién creado (todo se guarda en memoria mientras corre).
 | `src/acceso.js` | seguridad: abierta, link personal o PIN (decidida en el servidor) |
 | `src/almacen.js` | base (D1) y archivos (R2); versión en memoria para probar |
 | `docs/empresas.md` | propuesta para wedding planners, salones, fotógrafos y agencias |
-| `schema.sql` | tablas de la base (D1) |
+| `migrations/` | tablas de la base (D1); se aplican solas al publicar |
+| `docs/cloudflare.md` | guía paso a paso para publicar en Cloudflare |
 
 ## Marcas del HTML del modelo
 
@@ -72,8 +73,27 @@ Al entrar bien queda una cookie firmada por 90 días. La lista de invitados ya
 no se descarga entera: cada invitado recibe solo su fila, sin el PIN. Los
 intentos de PIN tienen un límite por minuto.
 
+## Cuenta y tienda
+
+| Página | Qué hace |
+|---|---|
+| `/tienda/` | elegir producto, tipo de evento, diseño, paquete y extras; pagar |
+| `/tienda/gracias` | confirma el pago al volver de la pasarela y abre el panel |
+| `/tienda/?mejorar=<evento>&a=deluxe` | pasar a un paquete mayor pagando la diferencia |
+| `/entrar` | entrar con Google o con un link por mail (sin contraseña) |
+| `/mi-cuenta` | las invitaciones de la cuenta, con acceso al panel |
+
+- Precios de lista en euros (`src/catalogo.js`), cobrados en la moneda del visitante con cotización del día y redondeo comercial. `PRICE_OVERRIDES` en `src/lib/fx.js` fija precios por moneda.
+- Medios: Mercado Pago y transferencia en Argentina; tarjeta (Stripe) y PayPal en el resto; transferencia en Uruguay y la zona euro si hay cuenta cargada (`TRANSFER_EUR`, `TRANSFER_ARS`, `TRANSFER_UYU`).
+- IVA como en Albunear: a los clientes de la UE se les suma el 21 % al precio de lista (redondo, con la leyenda "IVA incluido"); el resto del mundo paga el precio de lista. Empresas de otro país de la UE con n.º de IVA válido en VIES: sin IVA (inversión del sujeto pasivo).
+- Facturas propias en cada cobro (serie AI, huella VeriFactu encadenada), copiadas de Albunear: el cliente recibe el link; en `/admin/facturas` y `/admin/facturas.csv` están el PDF y el libro del trimestre.
+- Al cobrar se crea el evento, la cuenta del cliente (por su mail) y se manda el mail con el acceso al panel.
+- Transferencia: el evento se crea enseguida para ir cargando, pero se publica cuando se marca como cobrado (`POST /api/admin/pedidos/<id>/cobrado`, con sesión de administrador o `x-admin`).
+- Cupones: tabla `cupones` (porcentaje o monto fijo en euros, por paquete, con vencimiento y usos).
+- En `npm run local` los pagos se dan por aprobados y los mails se muestran en la consola; el link de entrar aparece en la pantalla.
+
 ## Pendiente
 
-Login (Google y link mágico), tienda (Stripe, PayPal, Mercado Pago,
-transferencia, facturas), tablero de empresas, modelos de Save The Date web,
-vencimientos, descargas, envíos y recordatorios.
+Reorganizar la tienda, administración de cupones y pedidos,
+tablero de empresas, modelos de Save The Date web, vencimientos de los planes
+pagos, descargas, envíos y recordatorios.

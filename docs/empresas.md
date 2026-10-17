@@ -3,7 +3,7 @@
 Para **wedding planners, salones, fotógrafos y agencias**: un panel multi-evento,
 con marca blanca (su logo y sus colores) y precios mayoristas.
 
-> Estado: **propuesta**. Las tablas ya están en `schema.sql`. La marca blanca
+> Estado: **propuesta**. Las tablas ya están en `migrations/0001_inicial.sql`. La marca blanca
 > ya funciona en la invitación (pie con su logo), en el panel del cliente
 > (logo y colores) y en la pantalla de PIN. El tablero `/empresa`, los
 > créditos y los dominios propios están pendientes.
@@ -85,7 +85,7 @@ el host. Cloudflare emite el certificado solo.
 Los créditos que no se usan se acumulan hasta 3 meses. Cambiar un evento a un
 paquete mayor descuenta la diferencia.
 
-## Datos (ya en `schema.sql`)
+## Datos (ya en `migrations/0001_inicial.sql`)
 
 ```mermaid
 erDiagram

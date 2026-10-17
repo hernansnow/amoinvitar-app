@@ -1,23 +1,73 @@
-// Amo Invitar 2.0 · Worker de invitaciones
-// Secretos (wrangler secret put …): SECRETO_ACCESO (firma de cookies de acceso), ADMIN_CLAVE (alta de eventos)
+// Amo Invitar 2.0 · configuración del Worker en Cloudflare
+// Guía paso a paso: docs/cloudflare.md
+//
+// Secretos (Cloudflare → Workers → amoinvitar-app → Settings → Variables and Secrets → tipo "Secret"):
+//   SECRETO_ACCESO          firma de las cookies del PIN y de los links de factura (texto largo al azar)
+//   ADMIN_CLAVE             para marcar transferencias cobradas sin entrar a la cuenta (texto largo al azar)
+//   RESEND_API_KEY          mails
+//   GOOGLE_CLIENT_ID · GOOGLE_CLIENT_SECRET               entrar con Google
+//   STRIPE_SECRET_KEY · STRIPE_WEBHOOK_SECRET · STRIPE_TAX_RATE_ES   tarjetas
+//   PAYPAL_CLIENT_ID · PAYPAL_CLIENT_SECRET               PayPal
+//   MP_ACCESS_TOKEN                                       Mercado Pago
+// Variables de texto que se cargan en el mismo lugar (tipo "Text"), para no guardarlas en el repositorio:
+//   ADMINS                  mails de los administradores, separados por coma
+//   INVOICE_NAME · INVOICE_TAX_ID · INVOICE_ADDRESS        datos fiscales para las facturas (sin esto no se emiten)
+//   TRANSFER_EUR · TRANSFER_ARS · TRANSFER_UYU             datos de las cuentas (líneas separadas con " | ")
+//   PREVIEW_KEY             clave del modo "Próximamente" (vacío = abierto al público)
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "amoinvitar-app",
   "main": "src/index.js",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": { "directory": "public", "binding": "ASSETS" },
+  // Que no se borren al publicar las variables cargadas a mano en el panel de Cloudflare
+  "keep_vars": true,
+
+  // public/: páginas, estilos e imágenes. Las páginas pasan primero por el Worker (modo Próximamente);
+  // estilos, scripts, fuentes e imágenes de los modelos se sirven directo.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/*", "!/comun/*", "!/modelos/*", "!/panel/*.js", "!/panel/*.css", "!/tienda/*.js"]
+  },
+
   "d1_databases": [
-    { "binding": "DB", "database_name": "amoinvitar", "database_id": "COMPLETAR" }
+    // Base creada en Europa occidental (WEUR)
+    { "binding": "DB", "database_name": "amoinvitar", "database_id": "6f1d6fa9-f4c4-4243-9a6d-cf8314076ada", "migrations_dir": "migrations" }
   ],
   "r2_buckets": [
     { "binding": "MEDIA", "bucket_name": "amoinvitar-media" }
   ],
+
   // Freno contra quien prueba PINs al azar: 8 intentos por minuto por invitación e IP
   "ratelimits": [
     { "name": "LIMITE_PIN", "namespace_id": "1001", "simple": { "limit": 8, "period": 60 } }
   ],
+
+  // Cada minuto: envío a la AEAT de lo pendiente de VeriFactu (si está activo). A las 4: control del umbral OSS.
+  "triggers": { "crons": ["* * * * *", "0 4 * * *"] },
+
+  // VeriFactu: tu certificado digital para enviar los registros a la AEAT (mTLS). Para activarlo:
+  //   1) Exportá el certificado a PEM: certificado (cert.pem) y clave privada SIN contraseña (key.pem)
+  //   2) npx wrangler mtls-certificate upload --cert cert.pem --key key.pem --name aeat-amoinvitar
+  //   3) Descomentá esto con el id que te devuelve y publicá. Borrá key.pem de la computadora después.
+  // "mtls_certificates": [{ "binding": "AEAT_CERT", "certificate_id": "REEMPLAZAR_CON_EL_ID" }],
+
   "vars": {
-    // Mientras convivan los dos sistemas, lo que no sea nuevo va al hosting actual
-    "ORIGEN_ANTIGUO": "https://amoinvitar.com"
+    // Mientras convivan los dos sistemas: lo que no es del sistema nuevo se manda al sitio de siempre
+    "ORIGEN_ANTIGUO": "https://amoinvitar.com",
+    "SITE_URL": "https://app.amoinvitar.com",
+    "MAIL_FROM": "Amo Invitar <hola@amoinvitar.com>",
+    "SUPPORT_EMAIL": "hola@amoinvitar.com",
+    // IVA de la UE: se suma al precio de lista y se muestra "IVA incluido" (como en Albunear)
+    "IVA_INCLUIDO": "0",
+    // Serie de las facturas (A en Albunear, AI acá: numeraciones separadas)
+    "INVOICE_SERIES": "AI",
+    // VeriFactu: "" apagado · "test" pruebas de la AEAT · "prod" envío real (obligatorio desde el 1/7/2027)
+    "VERIFACTU": "",
+    // "1" al superar 10.000 € de ventas a particulares de otros países de la UE (IVA de cada país)
+    "VAT_OSS": "",
+    // "1" activa la factura de Stripe además del recibo
+    "STRIPE_INVOICES": ""
   }
 }

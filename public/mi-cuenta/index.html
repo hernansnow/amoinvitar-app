@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Mis invitaciones · Amo Invitar</title>
+  <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
+  <link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
+  <link rel="stylesheet" href="/comun/css/cuenta.css">
+</head>
+<body>
+  <header class="barra">
+    <a href="https://amoinvitar.com/"><img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!" width="120"></a>
+    <nav><a href="/tienda/">Tienda</a><form method="post" action="/auth/salir" style="margin:0"><button class="btn btn-sec" type="submit" style="padding:6px 14px">Salir</button></form></nav>
+  </header>
+  <main>
+    <h1>Mis invitaciones</h1>
+    <p class="sub" id="quien"></p>
+    <div id="lista"><p class="vacio">Cargando…</p></div>
+    <p style="margin-top:24px"><a class="btn" href="/tienda/">＋ Nueva invitación</a></p>
+  </main>
+  <script>
+    (function () {
+      var NOMBRES = { invitacion: 'Invitación web', 'std-web': 'Save The Date web', 'std-tarjeta': 'Save The Date tarjeta', 'std-foto': 'Save The Date foto', 'std-tarjeta-medida': 'Save The Date a medida', 'std-web-medida': 'Save The Date web a medida', agradecimiento: 'Tarjeta de agradecimiento', 'compromiso-web': 'Invitación web simple', 'a-medida': 'Diseño a medida' };
+      var ESTADOS = { borrador: 'Borrador', publicado: 'Publicada', 'en-diseno': 'En diseño', vencido: 'Vencida' };
+      function el(tag, attrs, hijos) {
+        var e = document.createElement(tag);
+        Object.keys(attrs || {}).forEach(function (k) { if (attrs[k] != null) e.setAttribute(k, attrs[k]); });
+        [].concat(hijos || []).forEach(function (h) { if (h != null) e.append(h); });
+        return e;
+      }
+      fetch('/api/cuenta').then(function (r) { return r.json(); }).then(function (c) {
+        if (!c.usuario) { location.href = '/entrar?siguiente=/mi-cuenta'; return; }
+        document.getElementById('quien').textContent = c.usuario.email;
+        var lista = document.getElementById('lista');
+        lista.replaceChildren();
+        if (!c.eventos.length) { lista.append(el('div', { class: 'tarjeta vacio' }, 'Todavía no hay invitaciones en esta cuenta.')); return; }
+        c.eventos.forEach(function (e) {
+          var titulo = e.nombres || NOMBRES[e.producto] || 'Invitación';
+          var detalle = [NOMBRES[e.producto], e.paquete && e.producto === 'invitacion' ? e.paquete[0].toUpperCase() + e.paquete.slice(1) : null, e.fecha ? e.fecha.split('-').reverse().join('/') : null].filter(Boolean).join(' · ');
+          var estado = e.pagoPendiente ? el('span', { class: 'estado pendiente' }, 'Pago pendiente') : el('span', { class: 'estado ' + e.estado }, ESTADOS[e.estado] || e.estado);
+          var acciones = el('div', { class: 'acciones-evento' }, [
+            e.estado === 'publicado' && e.slug ? el('a', { class: 'btn btn-sec', href: '/' + e.tipo + '/' + e.slug, target: '_blank', rel: 'noopener' }, 'Ver') : null,
+            el('a', { class: 'btn', href: '/panel/' + e.id }, 'Editar'),
+          ]);
+          lista.append(el('div', { class: 'tarjeta evento' }, [el('div', { class: 'datos' }, [el('strong', {}, [titulo, estado]), el('span', {}, detalle)]), acciones]));
+        });
+      }).catch(function () { document.getElementById('lista').replaceChildren(el('p', { class: 'mensaje error' }, 'No se pudo cargar. Revisar la conexión.')); });
+    })();
+  </script>
+</body>
+</html>

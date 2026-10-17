@@ -20,6 +20,12 @@ import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
 import { esquemaPanel, limpiarDatos, faltantes } from './panel/esquemas.js';
+import { HttpError } from './lib/util.js';
+import { usuarioActual } from './lib/auth.js';
+import * as cuenta from './rutas/cuenta.js';
+import * as tienda from './rutas/tienda.js';
+import * as admin from './rutas/admin.js';
+import { getCookie } from './lib/util.js';
 
 const PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
 const cache = new Map();
@@ -158,10 +164,14 @@ function igual(a, b) {
   return d === 0;
 }
 
+// Se entra al panel con la cuenta (si tiene acceso al evento) o con la clave del link del mail
 async function eventoConClave(env, request, url, id) {
   const ev = await almacenDe(env).evento(id);
+  if (!ev) return null;
   const clave = request.headers.get('x-clave') || url.searchParams.get('k') || '';
-  return ev && igual(clave, ev.clave) ? ev : null;
+  if (clave && igual(clave, ev.clave)) return ev;
+  const u = await usuarioActual(request, env);
+  return u && (u.esAdmin || await almacenDe(env).tieneAcceso(ev.id, u.id)) ? ev : null;
 }
 
 async function esquemaDe(env, url, ev) {
@@ -255,6 +265,12 @@ async function apiPanel(env, request, url, partes) {
     const faltan = faltantes(esquema, ev.datos);
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
     if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);
+    if (await tienda.pagoPendiente(env, ev.id)) return json({ error: 'Se puede publicar cuando se acredite el pago. Mientras tanto, todo lo cargado queda guardado.' }, 402);
+    // Plan gratis: online hasta 15 días después del evento
+    if (ev.paquete === 'gratis') {
+      const fecha = (ev.datos.celebracion?.inicio || '').slice(0, 10);
+      if (fecha) ev.vence = new Date(Date.parse(fecha) + 16 * 86400000).toISOString();
+    }
     ev.estado = ev.producto === 'invitacion' || ev.producto === 'std-web' ? 'publicado' : 'en-diseno';
     await almacen.guardarEvento(ev);
     return json({ ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null });
@@ -291,13 +307,63 @@ async function media(env, partes) {
   return o ? new Response(o.cuerpo, { headers: { 'content-type': o.tipo, 'cache-control': 'public, max-age=31536000, immutable' } }) : new Response('', { status: 404 });
 }
 
+// ── Modo "Próximamente": con PREVIEW_KEY cargada, el público ve una página de espera ──
+// Se entra una vez por navegador con ?preview=CLAVE (queda 90 días). Salir: ?preview=salir.
+// Las invitaciones publicadas, las demos y los avisos de las pasarelas siguen funcionando.
+const SIEMPRE_ABIERTO = /^\/(api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
+function proximamente(request, env, url) {
+  const clave = String(env.PREVIEW_KEY || '').trim();
+  if (!clave) return null;
+  const q = url.searchParams.get('preview');
+  if (q !== null) {
+    const limpia = new URL(url); limpia.searchParams.delete('preview');
+    const ok = q === clave;
+    return new Response(null, { status: 302, headers: { location: limpia.pathname + limpia.search, 'set-cookie': `preview=${ok ? encodeURIComponent(clave) : ''}; Path=/; Max-Age=${ok ? 7776000 : 0}; HttpOnly; Secure; SameSite=Lax` } });
+  }
+  if (getCookie(request, 'preview') === clave || SIEMPRE_ABIERTO.test(url.pathname)) return null;
+  // Invitaciones publicadas (/<tipo>/<slug>): abiertas
+  if (/^\/[a-z0-9-]+\/[a-z0-9-]+\/?$/.test(url.pathname) && !/^\/(tienda|panel|vista|entrar|mi-cuenta|admin|auth)\//.test(url.pathname)) return null;
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/')) return json({ error: 'Próximamente' }, 503);
+  return html(`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>Amo Invitar · Muy pronto</title>
+<link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;background:#f6f5f3;color:#1f2421;font:17px/1.6 Jost,system-ui,sans-serif;padding:24px}img{width:min(280px,70vw);height:auto}h1{font:400 clamp(40px,8vw,64px)/1.1 'Great Vibes',cursive;color:#7a9c7e;margin:24px 0 8px}a{color:#4e9c87}</style></head>
+<body><main><img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!"><h1>Muy pronto</h1><p>Estamos preparando la nueva tienda de invitaciones digitales.</p><p><a href="https://amoinvitar.com">amoinvitar.com</a></p></main></body></html>`, 503, { 'retry-after': '86400', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' });
+}
+
 export default {
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(admin.tareas(controller, env).catch((e) => console.error('[tareas]', e)));
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     const partes = url.pathname.split('/').filter(Boolean);
     const [p0, p1] = partes;
+    const cerrado = proximamente(request, env, url);
+    if (cerrado) return cerrado;
     try {
+      const M = request.method;
+      if (p0 === 'auth') {
+        if (p1 === 'enlace' && M === 'POST') return await cuenta.pedirEnlace(request, env);
+        if (p1 === 'enlace') return await cuenta.entrarConEnlace(request, env);
+        if (p1 === 'google' && partes[2] === 'vuelta') return await cuenta.googleVuelta(request, env);
+        if (p1 === 'google') return await cuenta.google(request, env);
+        if (p1 === 'salir') return await cuenta.salir(request, env);
+      }
       if (p0 === 'api') {
+        if (p1 === 'cuenta') return await cuenta.cuenta(request, env);
+        if (p1 === 'tienda') {
+          const a = partes[2];
+          if (a === 'catalogo') return await tienda.catalogo(request, env);
+          if (a === 'cotizar' && M === 'POST') return await tienda.cotizar(request, env);
+          if (a === 'mejora' && M === 'POST') return await tienda.cotizarMejora(request, env);
+          if (a === 'comprar' && M === 'POST') return await tienda.comprar(request, env);
+          if (a === 'confirmar') return await tienda.confirmar(request, env);
+        }
+        if (p1 === 'stripe' && partes[2] === 'webhook' && M === 'POST') return await tienda.webhookStripe(request, env);
+        if (p1 === 'mp' && partes[2] === 'webhook') return await tienda.webhookMp(request, env);
+        if (p1 === 'admin' && partes[2] === 'pedidos' && partes[4] === 'cobrado' && M === 'POST') return await tienda.marcarCobrado(request, env, partes[3]);
+        if (p1 === 'admin' && partes[2] === 'facturas') return await admin.facturasJson(request, env);
+        if (p1 === 'admin' && partes[2] === 'verifactu' && M === 'POST') return await admin.verifactuEnviar(request, env);
         if (p1 === 'rsvp' && request.method === 'POST') return await rsvp(env, request);
         if (p1 === 'invitados.csv') return await invitadosCSV(env, request, url);
         if (p1 === 'panel' && partes[2]) return await apiPanel(env, request, url, partes);
@@ -305,8 +371,11 @@ export default {
         return json({ error: 'no encontrado' }, 404);
       }
       if (p0 === 'media') return await media(env, partes);
+      if (p0 === 'factura' && p1) return await admin.facturaCliente(request, env, p1);
+      if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
+      if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);
       if (p0 === 'demo' && partes.length === 2) return await demo(env, url, request, p1);
-      if (p0 === 'panel' && partes.length === 2) return env.ASSETS.fetch(new URL('/panel/', url.origin));
+      if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return env.ASSETS.fetch(new URL('/panel/', url.origin));
       if (p0 === 'vista' && partes.length === 2) return await vistaPrevia(env, url, request, p1);
       if (p0 === 'acceso' && partes.length === 2 && request.method === 'POST') return await entrarConPin(env, request, p1);
       if (partes.length === 2 && /^[a-z0-9-]+$/.test(p0) && /^[a-z0-9-]+$/.test(p1)) {
@@ -314,10 +383,22 @@ export default {
         if (r) return r;
       }
     } catch (err) {
+      if (err instanceof HttpError) {
+        return p0 === 'api' || request.method !== 'GET' ? json({ error: err.message, ...err.extra }, err.status) : html(err.message, err.status);
+      }
       console.error(err);
-      return html('Error al armar la página', 500);
+      return p0 === 'api' ? json({ error: 'Algo falló. Probar de nuevo en un momento.' }, 500) : html('Error al armar la página', 500);
     }
-    if (env.ORIGEN_ANTIGUO) return fetch(new Request(new URL(url.pathname + url.search, env.ORIGEN_ANTIGUO), request));
+    // Archivos de public/ (páginas, estilos, imágenes)
+    const archivo = await env.ASSETS.fetch(request);
+    if (archivo.status !== 404) return archivo;
+    // Lo demás es del sitio de siempre: en otro dominio (app.amoinvitar.com) se manda allá;
+    // en el mismo dominio se pide al hosting actual sin que el visitante lo note
+    if (env.ORIGEN_ANTIGUO) {
+      const viejo = new URL(url.pathname + url.search, env.ORIGEN_ANTIGUO);
+      if (viejo.host !== url.host) return Response.redirect(viejo.href, 302);
+      return fetch(new Request(viejo, request));
+    }
     return html('No encontrado', 404);
   },
 };

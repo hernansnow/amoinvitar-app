@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tienda · Amo Invitar</title>
+  <meta name="description" content="Invitaciones digitales para bodas, 15 años, bautismos, comuniones y cumpleaños. Elegí el diseño, completá los datos y compartí el link.">
+  <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
+  <link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
+  <link rel="stylesheet" href="/comun/css/cuenta.css">
+</head>
+<body>
+  <header class="barra">
+    <a href="https://amoinvitar.com/"><img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!" width="120"></a>
+    <nav>
+      <label for="moneda" class="sr" style="position:absolute;left:-9999px">Moneda</label>
+      <select id="moneda" style="width:auto;padding:6px 10px"></select>
+      <a id="link-cuenta" href="/entrar?siguiente=/tienda/">Entrar</a>
+    </nav>
+  </header>
+
+  <main id="tienda">
+    <h1 id="titulo">Tienda</h1>
+    <p class="sub" id="bajada">Elegir el diseño, el paquete y pagar. Al terminar se abre el panel para cargar todo.</p>
+    <div id="mensaje" role="alert"></div>
+
+    <section id="paso-producto">
+      <h2>¿Qué se necesita?</h2>
+      <div class="grilla" id="productos"></div>
+    </section>
+
+    <section id="paso-evento" hidden>
+      <h2>Tipo de evento</h2>
+      <div class="chips" id="tipos"></div>
+    </section>
+
+    <section id="paso-modelo" hidden>
+      <h2>Diseño</h2>
+      <div class="grilla" id="modelos"></div>
+    </section>
+
+    <section id="paso-std" hidden>
+      <h2>Opción</h2>
+      <div class="grilla" id="std"></div>
+    </section>
+
+    <section id="paso-paquete" hidden>
+      <h2>Paquete</h2>
+      <div class="grilla" id="paquetes"></div>
+    </section>
+
+    <section id="paso-extras" hidden>
+      <h2>Extras</h2>
+      <div class="grilla" id="extras" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))"></div>
+    </section>
+
+    <section id="paso-pago" hidden>
+      <h2>Datos y pago</h2>
+      <div class="tarjeta">
+        <div class="campo" id="campo-email">
+          <label for="email">Mail</label>
+          <input type="email" id="email" autocomplete="email" placeholder="nombre@mail.com" required>
+          <p class="ayuda">Acá llega el acceso al panel y el comprobante.</p>
+        </div>
+        <div id="medios-campo" class="campo">
+          <div class="etiqueta" style="font-weight:600;margin-bottom:6px">Medio de pago</div>
+          <div class="grilla" id="medios" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))"></div>
+        </div>
+        <details class="campo" id="cupon-campo">
+          <summary>¿Hay un cupón de descuento?</summary>
+          <div style="display:flex;gap:8px;margin-top:8px"><input type="text" id="cupon" placeholder="CÓDIGO" style="text-transform:uppercase"><button class="btn btn-sec" type="button" id="aplicar-cupon">Aplicar</button></div>
+          <p class="ayuda" id="cupon-estado"></p>
+        </details>
+        <details class="campo">
+          <summary>Datos para la factura (opcional)</summary>
+          <div class="campo" style="margin-top:10px"><label for="f-tipo">Factura a nombre de</label>
+            <select id="f-tipo"><option value="particular">Particular</option><option value="empresa">Empresa</option></select></div>
+          <div class="campo"><label for="f-nombre">Nombre o razón social</label><input type="text" id="f-nombre" maxlength="120"></div>
+          <div class="campo"><label for="f-id" id="f-id-etiqueta">NIF / CUIT / RUT / documento</label><input type="text" id="f-id" maxlength="40">
+            <p class="ayuda" id="f-empresa">Empresas de otro país de la UE: con el n.º de IVA intracomunitario válido, el precio va sin IVA.</p></div>
+          <div class="campo"><label for="f-dir">Dirección</label><input type="text" id="f-dir" maxlength="300"></div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <div class="resumen" id="resumen" hidden>
+    <div class="dentro">
+      <div><div class="total" id="total"></div><div class="detalle" id="detalle"></div></div>
+      <button class="btn" type="button" id="pagar" disabled>Continuar</button>
+    </div>
+  </div>
+
+  <script type="module" src="/tienda/tienda.js"></script>
+</body>
+</html>
