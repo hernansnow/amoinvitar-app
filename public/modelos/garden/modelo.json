@@ -31,6 +31,14 @@
     "solo": "{a}"
   },
 
+  "miniatura": {
+    "fondo": "/modelos/garden/img/bg-oliva-2.jpg",
+    "colorFondo": "#86a388",
+    "colorTitulos": "#a78977",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+
   "sobre": {
     "colores": { "lacre": "#c2a46c" },
     "bienvenida": "font-family:Jost, sans-serif; color:rgb(167, 137, 119); font-weight:500; --bv-escala:1;"

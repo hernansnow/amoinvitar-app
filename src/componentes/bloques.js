@@ -26,18 +26,19 @@ export function sobre({ t, v }) {
   });
 }
 
-// ── Datos para los scripts + pantalla de acceso (PIN) ─────────────────
+// ── Datos para los scripts de lista y RSVP ────────────────────────────
+// El PIN y el bloqueo los resuelve el servidor antes de mandar la página
+// (ver src/acceso.js): acá los scripts reciben todo ya habilitado, y la
+// lista trae solo la fila del invitado que abrió su link.
 export function acceso({ t, v }) {
   const raiz = v.rutas.comun;
   const cfg = {
     event_id: v.id,
-    csv: v.acceso.lista ? `${v.rutas.api}/invitados.csv?e=${encodeURIComponent(v.id)}` : '',
+    csv: v.acceso.lista && v.acceso.inv
+      ? `${v.rutas.api}/invitados.csv?e=${encodeURIComponent(v.id)}&inv=${encodeURIComponent(v.acceso.inv)}` : '',
     rsvp_url: `${v.rutas.api}/rsvp`,
-    soloInvitados: v.acceso.soloInvitados,
-    requierePin: v.acceso.pinPorInvitado,
-    requierePinBasico: v.acceso.pinUnico,
+    soloInvitados: false, requierePin: false, requierePinBasico: false,
     gateTitulo: v.nombres.texto,
-    gateFechaEvent: v.cuenta.fecha,
     txtFaltaCSV: t('lista.faltaCSV'),
     txtErrorCSV: t('lista.errorCSV'),
     txtPasesPrefix: '',
@@ -47,31 +48,18 @@ export function acceso({ t, v }) {
   };
   return `
 <script>window.INVITACION_CONFIG = ${json(cfg)};</script>
-<div id="gate-overlay" style="display:none; position:fixed; inset:0; z-index:7000; background:#fff; align-items:center; justify-content:center; padding:24px; overflow-y:auto;">
-  <div style="max-width:360px; width:100%;" class="text-center">
-    <div class="col-md-8 text-center ml-auto mr-auto mb-2"><img class="img-fluid" src="${raiz}/img/icon-login-pin.png" width="200" alt=""></div>
-    <p class="mb-2">${esc(t('acceso.de'))}</p>
-    <h4 id="gate-titulo" class="text-center mb-3 text-uppercase font-weight-bolder"></h4>
-    <div class="col-md-8 text-center ml-auto mr-auto mb-2"><hr class="border border-dark"></div>
-    <div id="gate-pin" style="display:none;" class="text-center">
-      <p class="mb-2">${esc(t('acceso.pin'))}</p>
-      <input type="text" id="input-pin" maxlength="4" inputmode="numeric" class="form-control mb-2 text-center form-control-sm border border-dark" style="max-width:180px; margin:0 auto;" placeholder="PIN" aria-label="PIN">
-      <button id="btn-validar-pin" class="btn btn-outline-dark btn-small text-uppercase font-weight-bolder rounded-pill"><i class="icon-send-o" aria-hidden="true"></i> ${esc(t('acceso.confirmar'))}</button>
-      <p id="msg-pin-error" style="display:none;" class="text-danger small mt-2"></p>
-    </div>
-    <div id="gate-bloqueado" style="display:none;" class="text-center"><p class="mb-0">${esc(t('acceso.bloqueado'))}</p></div>
-  </div>
-</div>
-<script>
-  if (window.INVITACION_CONFIG && window.INVITACION_CONFIG.soloInvitados) {
-    document.getElementById("gate-overlay").style.display = "flex";
-    document.body.style.overflow = "hidden";
-    var gt = document.getElementById("gate-titulo");
-    if (gt) gt.textContent = window.INVITACION_CONFIG.gateTitulo || "";
-  }
-</script>
 <script src="${raiz}/js/lista-de-invitados-universal_v2.0.js"></script>
 <script src="${raiz}/js/rsvp-universal_v2.2.js"></script>`;
+}
+
+// ── Pie con la marca de la empresa (marca blanca) ─────────────────────
+export function pieMarca({ v }) {
+  const m = v.marca;
+  if (!m?.blanca) return '';
+  const logo = m.logo ? `<img class="img-fluid mb-1" style="max-height:40px" src="${esc(m.logo)}" alt="${esc(m.nombre || '')}">` : '';
+  const texto = m.pie || m.nombre || '';
+  const contenido = `${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}`;
+  return `<footer class="site-footer pt-4 pb-4"><div class="container text-center">${m.web ? `<a href="${esc(m.web)}" target="_blank" rel="noopener">${contenido}</a>` : contenido}</div></footer>`;
 }
 
 // ── Formulario de confirmación (modal) ────────────────────────────────
@@ -188,4 +176,4 @@ export function albumQr({ t, v }) {
 </div>`;
 }
 
-export const COMPONENTES = { sobre, acceso, 'rsvp-form': rsvpForm, canciones, 'album-qr': albumQr };
+export const COMPONENTES = { sobre, acceso, 'rsvp-form': rsvpForm, canciones, 'album-qr': albumQr, 'pie-marca': pieMarca };

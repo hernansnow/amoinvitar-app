@@ -155,11 +155,16 @@ function cabecera(doc, v, origen) {
   meta('meta[name="description"]', v.meta.descripcion);
   meta('meta[property="og:title"]', v.meta.titulo);
   meta('meta[property="og:description"]', v.meta.descripcion);
-  if (v.meta.imagen) meta('meta[property="og:image"]', new URL(v.meta.imagen, origen).href);
+  const img = new URL(v.meta.imagen, origen).href;
+  meta('meta[property="og:image"]', img);
+  doc.querySelector('link[rel="image_src"]')?.setAttribute('href', img);
   const inv = {
     cuenta: v.cuenta.activa ? v.cuenta.fecha : '',
     calendarios: v.calendarios,
-    textos: { dia: v.t('cuenta.dia'), dias: v.t('cuenta.dias'), horas: v.t('cuenta.horas'), min: v.t('cuenta.min'), seg: v.t('cuenta.seg') },
+    textos: {
+      dia: v.t('cuenta.dia'), dias: v.t('cuenta.dias'), horas: v.t('cuenta.horas'), min: v.t('cuenta.min'), seg: v.t('cuenta.seg'),
+      google: v.t('agendar.google'), apple: v.t('agendar.apple'), outlook: v.t('agendar.outlook'), otro: v.t('agendar.otro'), cerrar: v.t('boton.cerrar'),
+    },
   };
   doc.head.insertAdjacentHTML('beforeend', `<script>window.INV = ${JSON.stringify(inv).replace(/</g, '\\u003c')};</script>`);
 }

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel · Amo Invitar</title>
+  <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
+  <link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
+  <link rel="stylesheet" href="/panel/panel.css">
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="https://amoinvitar.com/" id="marca"><img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!" width="110"></a>
+    <div class="titulo"><strong id="titulo-evento">Cargando…</strong><span id="estado-guardado" aria-live="polite"></span></div>
+    <div class="acciones">
+      <button type="button" class="btn btn-sec" id="btn-vista">Vista previa</button>
+      <button type="button" class="btn" id="btn-publicar">Publicar</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="pasos" id="pasos" aria-label="Pasos"></nav>
+    <main class="formulario" id="formulario" tabindex="-1"></main>
+    <aside class="previa" id="previa" aria-label="Vista previa">
+      <div class="previa-barra"><span>Vista previa</span><button type="button" class="btn-icono" id="btn-cerrar-vista" aria-label="Cerrar">✕</button></div>
+      <div class="telefono"><iframe id="iframe-vista" title="Vista previa de la invitación" src="about:blank"></iframe></div>
+    </aside>
+  </div>
+
+  <div class="aviso" id="aviso" role="status" hidden></div>
+  <script type="module" src="/panel/panel.js"></script>
+</body>
+</html>

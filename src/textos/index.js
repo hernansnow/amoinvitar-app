@@ -73,6 +73,8 @@ const BASE = {
     'sobre.tocar': 'Tocar para abrir la invitación', 'sobre.aria': 'Invitación cerrada', 'sobre.ariaLacre': 'Abrir la invitación',
     'acceso.de': 'Acceso a la invitación de', 'acceso.pin': 'Ingresar el PIN enviado junto a la invitación:',
     'acceso.confirmar': 'Confirmar PIN', 'acceso.bloqueado': 'Este enlace no es válido. Contactar a los organizadores del evento.',
+    'acceso.pinError': 'El PIN no es correcto.',
+    'agendar.google': 'Google Calendar', 'agendar.apple': 'Apple (iPhone, Mac)', 'agendar.outlook': 'Outlook', 'agendar.otro': 'Otro calendario (.ics)',
     'lista.faltaCSV': 'Falta configurar lista de invitados', 'lista.errorCSV': 'Error cargando datos. Actualizar la página',
     'lista.paseExtra': 'pase extra reservado', 'lista.pasesExtras': 'pases extras reservados', 'lista.mesa': 'Mesa asignada: N°',
   },
@@ -149,6 +151,8 @@ const BASE = {
     'sobre.tocar': 'Tap to open the invitation', 'sobre.aria': 'Closed invitation', 'sobre.ariaLacre': 'Open the invitation',
     'acceso.de': 'Invitation access for', 'acceso.pin': 'Enter the PIN sent with your invitation:',
     'acceso.confirmar': 'Confirm PIN', 'acceso.bloqueado': 'This link is not valid. Please contact the event organizers.',
+    'acceso.pinError': 'Incorrect PIN.',
+    'agendar.google': 'Google Calendar', 'agendar.apple': 'Apple (iPhone, Mac)', 'agendar.outlook': 'Outlook', 'agendar.otro': 'Other calendar (.ics)',
     'lista.faltaCSV': 'Guest list not set up yet', 'lista.errorCSV': 'Error loading data. Please refresh the page',
     'lista.paseExtra': 'extra pass reserved', 'lista.pasesExtras': 'extra passes reserved', 'lista.mesa': 'Table: No.',
   },
@@ -198,6 +202,7 @@ const EVENTOS = {
   15: {
     plural: false,
     es: {
+      'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'evento.nombre': 'Mis 15', 'evento.descripcion': 'Te espero para celebrar mis 15 años',
       'portada.subtitulo': 'MIS 15 AÑOS', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Desde muy pequeña tengo dos grandes pasiones: patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años.',
@@ -221,6 +226,7 @@ const EVENTOS = {
       'album.texto': '¡Prepárate para mi fiesta!<br>Haz clic en el botón y sube todas las fotos y vídeos que hagas durante la fiesta a mi álbum colaborativo, al instante, sin descargar ninguna app.',
     },
     en: {
+      'meta.descripcion': 'I look forward to celebrating with you!',
       'evento.nombre': 'My Sweet 15', 'evento.descripcion': 'Join me to celebrate my 15th birthday',
       'portada.subtitulo': 'MY SWEET 15', 'historia.titulo': 'My Story', 'ceremonia.religiosa': 'Mass',
       'historia.texto': 'Since I was little I have had two big passions: skating and furry friends, and rolling along I reached my 15th birthday.',
@@ -238,6 +244,7 @@ const EVENTOS = {
   bautismo: {
     plural: false,
     es: {
+      'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'evento.nombre': 'Bautismo', 'evento.descripcion': 'Te espero para celebrar mi bautismo',
       'portada.subtitulo': 'MI BAUTISMO', 'historia.titulo': 'Mi Bautismo',
       'historia.texto': 'Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.',
@@ -257,6 +264,7 @@ const EVENTOS = {
     },
     'es-es': { 'evento.nombre': 'Bautizo', 'portada.subtitulo': 'MI BAUTIZO', 'historia.titulo': 'Mi Bautizo', 'bus.destinoTexto': '¡Mi Bautizo!', 'evento.descripcion': 'Te espero para celebrar mi bautizo' },
     en: {
+      'meta.descripcion': 'I look forward to celebrating with you!',
       'evento.nombre': 'Baptism', 'evento.descripcion': 'Join us to celebrate my baptism', 'portada.subtitulo': 'MY BAPTISM',
       'historia.titulo': 'My Baptism', 'historia.texto': 'Hoping that God\'s blessing will always guide me with its light.',
       'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My baptism!', 'testigos.titulo': 'My Godparents',
@@ -272,6 +280,7 @@ const EVENTOS = {
   comunion: {
     plural: false,
     es: {
+      'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'evento.nombre': 'Primera Comunión', 'evento.descripcion': 'Te espero para celebrar mi primera comunión',
       'portada.subtitulo': 'MI PRIMERA COMUNIÓN', 'historia.titulo': 'Mi Primera Comunión',
       'historia.texto': 'Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.',
@@ -292,6 +301,7 @@ const EVENTOS = {
     },
     'es-es': {},
     en: {
+      'meta.descripcion': 'I look forward to celebrating with you!',
       'evento.nombre': 'First Communion', 'evento.descripcion': 'Join me to celebrate my First Communion', 'portada.subtitulo': 'MY FIRST COMMUNION',
       'historia.titulo': 'My First Communion', 'historia.texto': 'Today I receive Jesus in my heart and I want to share this joy with the people I love most.',
       'ceremonia.religiosa': 'Mass', 'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My Communion!',
@@ -307,6 +317,7 @@ const EVENTOS = {
   cumple: {
     plural: false,
     es: {
+      'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'evento.nombre': 'Cumpleaños', 'evento.descripcion': 'Te espero para festejar mi cumpleaños',
       'portada.subtitulo': '¡MI CUMPLEAÑOS!', 'historia.titulo': 'Unas palabras',
       'historia.texto': 'Un año más para celebrar la vida, y qué mejor que hacerlo con las personas que más quiero.',
@@ -326,6 +337,7 @@ const EVENTOS = {
     },
     'es-es': { 'bus.destinoTexto': '¡Mi Cumple!' },
     en: {
+      'meta.descripcion': 'I look forward to celebrating with you!',
       'evento.nombre': 'Birthday', 'evento.descripcion': 'Join me to celebrate my birthday', 'portada.subtitulo': "IT'S MY BIRTHDAY!",
       'historia.titulo': 'A few words', 'historia.texto': 'One more year to celebrate life, and what better way than with the people I love most.',
       'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My party!', 'testigos.titulo': 'Hosts',
