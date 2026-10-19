@@ -23,6 +23,9 @@
   // Que no se borren al publicar las variables cargadas a mano en el panel de Cloudflare
   "keep_vars": true,
 
+  // Dominio propio (Cloudflare crea solo el registro DNS)
+  "routes": [{ "pattern": "app.amoinvitar.com", "custom_domain": true }],
+
   // public/: páginas, estilos e imágenes. Las páginas pasan primero por el Worker (modo Próximamente);
   // estilos, scripts, fuentes e imágenes de los modelos se sirven directo.
   "assets": {
