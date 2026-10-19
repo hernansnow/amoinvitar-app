@@ -94,16 +94,17 @@
       <div class="waveWrapperInner bgMiddle"><div class="wave waveMiddle g-ola-media"></div></div>
       <div class="waveWrapperInner bgBottom"><div class="wave waveBottom g-ola-baja"></div></div>
     </div>
-    <div class="circulo-cuenta-regresiva mt-4" style="z-index: -1" data-si="cuenta.activa">
+    <!-- El círculo va siempre (como en Basic); la cuenta regresiva solo en Premium y Deluxe -->
+    <div class="circulo-cuenta-regresiva mt-4" style="z-index: -1">
       <div class="container">
         <div class="row d-flex justify-content-center align-items-center">
           <div class="caja-aro2 d-flex justify-content-center align-items-center pt-5">
             <div class="text-center pt-4">
-              <p class="caja-texto text-bronce mb-2" data-t="cuenta.faltan">Faltan</p>
-              <div class="text-bronce text-center mb-3">
+              <p class="caja-texto text-bronce mb-2" data-si="cuenta.activa" data-t="cuenta.faltan">Faltan</p>
+              <div class="text-bronce text-center mb-3" data-si="cuenta.activa">
                 <div id="clock-b" class="countdown-deluxe-circles d-flex justify-content-center align-items-center"></div>
               </div>
-              <div class="d-flex justify-content-center align-items-center">
+              <div class="d-flex justify-content-center align-items-center" data-si="cuenta.activa">
                 <svg class="svg-like mb-4" viewBox="0 0 43 43" width="43" height="43">
                   <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                     <path class="like-heart" d="M25.0076002,14.3181818 C24.6113593,14.3181818 24.2069981,14.389455 23.7947522,14.5318794 C23.3823885,14.6744259 22.9988574,14.8667659 22.6442765,15.1086555 C22.2894601,15.3505451 21.984424,15.5776679 21.7222453,15.7898969 C21.4598311,16.0021259 21.2106475,16.2273592 20.975,16.4655969 C20.7393525,16.2273592 20.4903333,16.0021259 20.2277547,15.7898969 C19.9653404,15.5776679 19.6603043,15.3505451 19.3054879,15.1086555 C18.9507069,14.8666445 18.5671758,14.6743045 18.1548121,14.5318794 C17.7425662,14.389455 17.3382051,14.3181818 16.9419641,14.3181818 C15.5506565,14.3181818 14.4593667,14.7133338 13.6680948,15.5036378 C12.8768228,16.2939418 12.4811869,17.3900061 12.4811869,18.7918309 C12.4811869,19.2187932 12.5550909,19.6593904 12.7030606,20.1135014 C12.8510303,20.5676124 13.0196616,20.9548553 13.2091162,21.27523 C13.3985707,21.5956047 13.6132778,21.9078287 13.8532374,22.2119022 C14.093197,22.5159756 14.2685505,22.725379 14.3790152,22.8401124 C14.4894798,22.9548458 14.5765758,23.0367286 14.6400707,23.0857607 L20.5677879,28.8398694 C20.6826793,28.9506225 20.8183808,29.0060596 20.975,29.0060596 C21.1316192,29.0060596 21.2673207,28.9506225 21.3822121,28.8398694 L27.3002348,23.104123 C28.7509141,21.6438136 29.4762538,20.2063829 29.4762538,18.7918309 C29.4762538,17.3900061 29.0805551,16.2939418 28.2893359,15.5036378 C27.4980303,14.7133338 26.4067404,14.3181818 25.0076002,14.3181818 Z" fill="#fff"></path>
