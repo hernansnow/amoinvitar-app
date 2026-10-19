@@ -311,6 +311,10 @@ textarea {
  * Add the correct display in Edge, IE 10+, and Firefox.
  */
 
+details {
+  display: block;
+}
+
 /*
  * Add the correct display in all browsers.
  */
@@ -1054,14 +1058,6 @@ pre code {
 select.form-control:focus::-ms-value {
     color: #495057;
     background-color: #fff
-}
-
-.form-control-sm {
-    height: calc(1.5em + 0.5rem + 2px);
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    border-radius: 0.2rem
 }
 
 select.form-control[multiple],
@@ -2898,7 +2894,8 @@ a.close.disabled {
     margin-top: auto !important
 }
 
-.mr-auto {
+.mr-auto,
+.mx-auto {
     margin-right: auto !important
 }
 
@@ -2906,7 +2903,8 @@ a.close.disabled {
     margin-bottom: auto !important
 }
 
-.ml-auto {
+.ml-auto,
+.mx-auto {
     margin-left: auto !important
 }
 
@@ -2950,15 +2948,6 @@ a.close.disabled {
 
 .text-white {
     color: #fff !important
-}
-
-.text-danger {
-    color: #D64F49 !important
-}
-
-a.text-danger:focus,
-a.text-danger:hover {
-    color: #a71d2a !important
 }
 
 .text-black-50 {
@@ -3311,6 +3300,9 @@ body:after {
   .site-blocks-cover, .site-blocks-cover > .container > .row {
     min-height: 600px;
     height: calc(100vh); }
+  .site-blocks-cover.inner-page-cover, .site-blocks-cover.inner-page-cover > .container > .row {
+    min-height: 500px;
+    height: calc(20vh); }
   .site-blocks-cover h1 {
     font-size: 2.8rem;
     font-weight: 400;
@@ -3629,6 +3621,27 @@ xclip
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%); }
 
+.section-hero, .section-hero > .container > .row {
+  height: calc(80vh);
+  min-height: 100%;
+}
+
+.section-hero.overlay {
+  position: relative; }
+  .section-hero.overlay:before {
+    z-index: 1;
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(125, 131, 132, 0.02); }
+
+.section-hero > .container {
+  z-index: 2;
+  position: relative; }
+
 .home-section {
   position: relative; }
   .home-section h1 {
@@ -3794,6 +3807,9 @@ span.text {
     color:#fff;
     width: 100%;
 }
+
+.text-gold {
+  color: #9c916b !important; }
 
 .bg-flor-2 {
   background: #FAF2F3 !important; }
@@ -4727,11 +4743,44 @@ audio::-webkit-media-controls-play-button:hover {
   animation-delay: 0s;
   -webkit-animation-delay: 0s; /* Safari 和 Chrome */
 }
+
+.arrows-2 {
+  width: 30px;
+  height: 36px;
+  position: absolute;
+  left: 50%;
+  margin-left: -11px;
+  bottom: 10px;
+}
+
+.arrows-2 path {
+  fill: transparent;
+  stroke-width: 2px;
+  animation: arrow 2s infinite;
+  -webkit-animation: arrow 2s infinite;
+}
+
+.arrows-2 path.a1 {
+  animation-delay: -1s;
+  -webkit-animation-delay: -1s; /* Safari 和 Chrome */
+}
+
+.arrows-2 path.a2 {
+  animation-delay: -0.5s;
+  -webkit-animation-delay: -0.5s; /* Safari 和 Chrome */
+}
+
+.arrows-2 path.a3 {
+  animation-delay: 0s;
+  -webkit-animation-delay: 0s; /* Safari 和 Chrome */
+}
 @media (max-width: 768px) {
   .arrows {
     top: 15px;
   }
 }
+
+.invert { filter: invert(100%); }
 @charset "utf-8";
 /* CSS Document */
 
@@ -4886,13 +4935,14 @@ audio::-webkit-media-controls-play-button:hover {
 /* content block animation */
 
 /* ALL animation types called */
+.invert { filter: invert(100%); }
 
 /* ─── Propio de Garden: lo que antes estaba escrito dentro del HTML ─── */
 
 /* Portada: cada foto del carrusel ocupa la pantalla (la foto la pone el motor) */
 .portada-foto { height: 100vh; background-repeat: no-repeat; background-size: cover; background-position: center center; }
-/* En la computadora, el encuadre horizontal que eligió el cliente */
-@media (min-width: 768px) { .portada-foto { background-position: var(--pos-pc, center center) !important; } }
+/* En la computadora, el encuadre horizontal que eligió el cliente (portada-pc: Basic, sin cambiar la altura) */
+@media (min-width: 768px) { .portada-foto, .portada-pc { background-position: var(--pos-pc, center center) !important; } }
 
 /* Olas de la portada */
 .g-ola-media { background-image: url(img/wave-mid-b.png); }

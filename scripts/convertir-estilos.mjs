@@ -13,7 +13,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const APP = fileURLToPath(new URL('..', import.meta.url));
-const REPO = resolve(APP, '..');          // repo de siempre (css/, img/, fonts/)
+const REPO = process.env.REPO_VIEJO || resolve(APP, '..'); // repo de siempre (css/, img/, fonts/)
 const COMUN = join(APP, 'public/comun');
 
 const HOJAS = [
@@ -45,7 +45,8 @@ async function convertir(modelo) {
   const hojas = await Promise.all(HOJAS.map((h) => readFile(join(COMUN, 'css', h), 'utf8')));
   const [resultado] = await new PurgeCSS().purge({
     content: [
-      join(carpeta, 'index.html'),
+      // los tres diseños del modelo: Deluxe (index.html), Premium y Basic
+      join(carpeta, 'index*.html'),
       join(APP, 'src/componentes/*.js'),
       join(COMUN, 'js/*.js'),
     ],
