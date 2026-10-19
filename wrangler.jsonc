@@ -31,6 +31,9 @@
     "run_worker_first": ["/*", "!/comun/*", "!/modelos/*", "!/panel/*.js", "!/panel/*.css", "!/tienda/*.js"]
   },
 
+  // Dominio provisorio de prueba (después pasa a amoinvitar.com)
+  "routes": [{ "pattern": "app.amoinvitar.com", "custom_domain": true }],
+
   "d1_databases": [
     // Base creada en Europa occidental (WEUR)
     { "binding": "DB", "database_name": "amoinvitar", "database_id": "6f1d6fa9-f4c4-4243-9a6d-cf8314076ada", "migrations_dir": "migrations" }
