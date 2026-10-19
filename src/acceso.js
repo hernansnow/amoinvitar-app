@@ -35,6 +35,9 @@ async function leerCookie(ev, request, secreto) {
   return sig && sig === await firma(secreto, `${ev.id}|${codigo}|${version(ev)}`) ? codigo : null;
 }
 
+// Con link personal o PIN por invitado la lista va siempre, aunque el switch esté apagado
+export const usaLista = (d) => { const a = d?.acceso || {}; return !!(a.lista || a.modo === 'codigo' || (a.modo === 'pin' && a.pinPorInvitado)); };
+
 // Devuelve { ok, invitado, cookie } o { ok:false, pantalla:'pin'|'bloqueado' }
 export async function revisarAcceso({ ev, request, url, almacen, secreto }) {
   const modo = modoAcceso(ev);

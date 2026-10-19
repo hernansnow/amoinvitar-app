@@ -2,6 +2,7 @@
 // (src/panel/esquemas.js). No hay un panel distinto por modelo.
 
 import { armarMiniatura, achicarFoto } from './miniatura.js';
+import { leerPlanilla } from './planilla.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const el = (tag, attrs = {}, ...hijos) => {
@@ -55,7 +56,14 @@ const mejorarA = (paquete) => {
 const linkMejorar = (paquete) => `/tienda/?mejorar=${encodeURIComponent(id)}&a=${paquete}`;
 
 // ── Guardado automático ───────────────────────────────────────────────
+// Campos que copian a otro mientras el cliente no los cambie (texto de la dirección)
+let espejos = [];
 function cambio(ruta, valor, { rearmar = false } = {}) {
+  const antes = leer(datos, ruta) ?? '';
+  for (const e of espejos.filter((x) => x.de === ruta)) {
+    const actual = leer(datos, e.id) ?? '';
+    if (actual === '' || actual === antes) { escribir(datos, e.id, valor); e.input.value = valor; }
+  }
   escribir(datos, ruta, valor);
   if (rearmar) dibujarPaso();
   else actualizarCondiciones();
@@ -73,6 +81,7 @@ async function guardar() {
     S.faltan = r.faltan;
     estado('Guardado ✓');
     dibujarPasos();
+    pintarFaltan();
     refrescarPrevia();
   } catch (e) {
     if (e.datos?.error === 'slug') { aviso('Ese link ya está ocupado. Elegir otro.', true); mostrarSlugOcupado(e.datos); }
@@ -124,10 +133,16 @@ async function subirArchivo(archivo) {
 }
 
 // ── Condiciones (campos que aparecen según otros) ─────────────────────
-const visible = (c) => !c.si || (c.si.es !== undefined ? leer(datos, c.si.campo) === c.si.es
-  : c.si.no !== undefined ? (leer(datos, c.si.campo) ?? '') !== c.si.no : !!leer(datos, c.si.campo));
+// si: { campo, es | no } · [todas] · { o: [alguna] } (igual que en el servidor)
+function cumple(s) {
+  if (Array.isArray(s)) return s.every(cumple);
+  if (s.o) return s.o.some(cumple);
+  const v = leer(datos, s.campo);
+  return s.es !== undefined ? v === s.es : s.no !== undefined ? (v ?? '') !== s.no : !!v;
+}
+const visible = (c) => !c.si || cumple(c.si);
 function actualizarCondiciones() {
-  document.querySelectorAll('[data-si]').forEach((n) => { n.hidden = !visible(JSON.parse(n.dataset.si)); });
+  document.querySelectorAll('[data-si]').forEach((n) => { n.hidden = !cumple(JSON.parse(n.dataset.si)); });
 }
 
 // ── Campos ────────────────────────────────────────────────────────────
@@ -238,7 +253,19 @@ function campoInvitados() {
   const guardarLista = () => { clearTimeout(t); t = setTimeout(async () => {
     try { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: lista }) }); lista = r.invitados; S.invitados = r.invitados; dibujar(); estado('Guardado ✓'); } catch { aviso('No se pudo guardar la lista', true); }
   }, 800); };
-  const pegar = el('textarea', { placeholder: 'Pegar desde Excel o Sheets: nombre, pases extra, mesa (una fila por invitado)', rows: 3 });
+  const pegar = el('textarea', { placeholder: 'Nombre, pases extra, mesa (una fila por invitado)', rows: 3 });
+  const sumar = (filas) => {
+    const nuevas = filas.filter((x) => x.nombre);
+    lista.push(...nuevas);
+    dibujar(); guardarLista();
+    aviso(nuevas.length ? `${nuevas.length} invitados sumados` : 'No se encontraron nombres en el archivo', !nuevas.length);
+  };
+  const archivo = el('input', { type: 'file', accept: '.xlsx,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv' });
+  archivo.addEventListener('change', async () => {
+    const a = archivo.files[0]; if (!a) return;
+    try { sumar(await leerPlanilla(a)); } catch (e) { aviso(e.message || 'No se pudo leer el archivo', true); }
+    archivo.value = '';
+  });
   const dibujar = () => {
     const pinVisible = datos.acceso?.modo === 'pin' && datos.acceso?.pinPorInvitado;
     const filas = lista.map((i, n) => el('tr', {},
@@ -254,12 +281,17 @@ function campoInvitados() {
         el('thead', {}, el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Pases extra'), el('th', {}, 'Mesa'), pinVisible ? el('th', {}, 'PIN') : null, el('th', {}, ''))),
         el('tbody', {}, filas))),
       el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { lista.push({ nombre: '', pases: 0 }); dibujar(); caja.querySelector('tbody tr:last-child input')?.focus(); } }, '＋ Agregar invitado')),
-      pegar,
-      el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => {
-        const nuevas = pegar.value.split('\n').map((l) => l.split(/\t|;|,/).map((x) => x.trim())).filter((x) => x[0]);
-        lista.push(...nuevas.map(([nombre, pases, mesa]) => ({ nombre, pases: parseInt(pases, 10) || 0, mesa })));
-        pegar.value = ''; dibujar(); guardarLista();
-      } }, 'Sumar filas pegadas')),
+      el('div', { class: 'subir-excel' },
+        el('label', { class: 'btn btn-chico' }, archivo, '⬆ Subir Excel o CSV'),
+        el('a', { class: 'btn btn-sec btn-chico', href: '/panel/plantilla-invitados.xlsx', download: 'invitados.xlsx' }, 'Descargar planilla modelo')),
+      el('p', { class: 'ayuda' }, 'Columnas: nombre, pases extra y mesa. Si la planilla tiene títulos ("Nombre", "Pases", "Mesa"…) se reconocen solos, en cualquier orden.'),
+      el('details', { class: 'pegar' }, el('summary', {}, 'Otra opción: pegar filas copiadas'),
+        pegar,
+        el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => {
+          sumar(pegar.value.split('\n').map((l) => l.split(/\t|;|,/).map((x) => x.trim())).filter((x) => x[0])
+            .map(([nombre, pases, mesa]) => ({ nombre, pases: parseInt(pases, 10) || 0, mesa })));
+          pegar.value = '';
+        } }, 'Sumar filas pegadas'))),
       el('p', { class: 'ayuda' }, `${lista.length} invitados · ${lista.reduce((s, i) => s + 1 + (parseInt(i.pases, 10) || 0), 0)} personas`));
   };
   dibujar();
@@ -288,6 +320,10 @@ function control(c, valor, alCambiar, idHtml) {
     case 'texto': case 'url': {
       const i = el('input', { id: idHtml, type: c.tipo === 'url' ? 'url' : 'text', value: valor ?? '', maxlength: c.max, placeholder: placeholder(c) || (c.tipo === 'url' ? 'https://' : ''), disabled: dis, inputmode: c.patron ? 'numeric' : null });
       i.addEventListener('input', () => alCambiar(i.value));
+      if (c.espejo) {
+        espejos.push({ id: c.id, de: c.espejo, input: i });
+        if (!i.value) i.value = leer(datos, c.espejo) || '';
+      }
       return [i, contador(i, c.tipo === 'texto' && c.max > 20 ? c.max : 0)];
     }
     case 'area': {
@@ -317,7 +353,7 @@ function control(c, valor, alCambiar, idHtml) {
       const [a, b] = c.opciones || [];
       const ladoA = a ? el('span', { class: 'lado' }, a) : null, ladoB = b ? el('span', { class: 'lado' }, b) : null;
       const marcar = () => { ladoA?.classList.toggle('activo', !i.checked); ladoB?.classList.toggle('activo', i.checked); };
-      i.addEventListener('change', () => { marcar(); alCambiar(i.checked); });
+      i.addEventListener('change', () => { marcar(); alCambiar(i.checked, c.rearmar ? { rearmar: true } : undefined); });
       marcar();
       return el('label', { class: 'interruptor' }, ladoA, i, ladoB || (a ? null : el('span', {}, c.etiqueta)));
     }
@@ -331,12 +367,7 @@ function control(c, valor, alCambiar, idHtml) {
           return el('label', { class: 'opcion' }, i, el('span', {}, o.etiqueta));
         }));
       }
-      if (c.iconos) {
-        const img = el('img', { alt: '', src: actual ? c.iconos.replace('{v}', actual) : '' });
-        const s = el('select', { id: idHtml, disabled: dis }, el('option', { value: '' }, 'Elegir…'), c.valores.map((o) => el('option', { value: o.v, selected: o.v === actual }, o.etiqueta)));
-        s.addEventListener('change', () => { img.src = s.value ? c.iconos.replace('{v}', s.value) : ''; alCambiar(s.value); });
-        return el('div', { class: 'icono-elegido' }, img, s);
-      }
+      if (c.iconos) return selectorIconos(c, actual, alCambiar, idHtml);
       if (c.valores.length <= 4) {
         const nombre = `r-${idHtml}`;
         return el('div', { class: 'opciones', role: 'radiogroup' }, c.valores.map((o) => {
@@ -355,8 +386,31 @@ function control(c, valor, alCambiar, idHtml) {
     case 'lista': return campoLista(c, valor, alCambiar);
     case 'slug': return campoSlug(c, valor, alCambiar);
     case 'invitados': return campoInvitados();
+    case 'nota': return el('p', { class: 'nota' }, c.texto);
     default: return el('span', {}, '');
   }
+}
+
+// Íconos del itinerario: se ven grandes y con nombre, en una grilla
+function selectorIconos(c, actual, alCambiar, idHtml) {
+  let elegido = actual || '';
+  const src = (v) => c.iconos.replace('{v}', v);
+  const nombre = (v) => c.valores.find((o) => o.v === v)?.etiqueta || '';
+  const grilla = el('div', { class: 'grilla-iconos', role: 'listbox', 'aria-label': 'Íconos', hidden: true });
+  const muestra = el('span', { class: 'icono-tile' });
+  const texto = el('span', {});
+  const boton = el('button', { type: 'button', class: 'icono-actual', id: idHtml, 'aria-expanded': 'false', disabled: !!c.bloqueado,
+    onclick: () => { grilla.hidden = !grilla.hidden; boton.setAttribute('aria-expanded', String(!grilla.hidden)); } }, muestra, texto, el('span', { class: 'cambiar' }, 'Cambiar'));
+  const pintar = () => {
+    muestra.replaceChildren(elegido ? el('img', { src: src(elegido), alt: '' }) : el('span', { class: 'sin-icono' }, '?'));
+    texto.textContent = elegido ? nombre(elegido) : 'Elegir ícono';
+    grilla.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.v === elegido)));
+  };
+  grilla.append(...c.valores.map((o) => el('button', { type: 'button', role: 'option', 'data-v': o.v, title: o.etiqueta,
+    onclick: () => { elegido = o.v; grilla.hidden = true; boton.setAttribute('aria-expanded', 'false'); pintar(); alCambiar(o.v); } },
+  el('span', { class: 'icono-tile' }, el('img', { src: src(o.v), alt: '', loading: 'lazy' })), el('small', {}, o.etiqueta))));
+  pintar();
+  return el('div', { class: 'selector-iconos' }, boton, grilla);
 }
 
 let contadorIds = 0;
@@ -364,7 +418,7 @@ function campo(c, valor, alCambiar, prefijo = '') {
   if (c.oculto) return null;
   const idHtml = `c-${prefijo}${c.id.replace(/\W/g, '-')}-${++contadorIds}`;
   const insignia = c.bloqueado ? el('a', { class: 'insignia', href: linkMejorar(c.bloqueado) }, mejorarA(c.bloqueado)) : null;
-  const sinEtiqueta = c.tipo === 'switch' && !c.opciones;
+  const sinEtiqueta = (c.tipo === 'switch' && !c.opciones) || c.tipo === 'nota';
   const etiqueta = sinEtiqueta ? null
     : ['texto', 'url', 'area', 'numero', 'fecha', 'fechaHora', 'hora', 'color'].includes(c.tipo) || (c.tipo === 'opciones' && !c.multiple && (c.iconos || c.valores.length > 4))
       ? el('label', { for: idHtml, class: c.requerido ? 'requerido' : '' }, c.etiqueta, insignia)
@@ -379,11 +433,26 @@ function campo(c, valor, alCambiar, prefijo = '') {
 function dibujarPasos() {
   const nav = $('#pasos');
   const conFaltas = new Set((S.faltan || []).map((f) => f.paso));
-  nav.replaceChildren(...S.esquema.pasos.map((p) => el('button', {
-    type: 'button', 'aria-current': p.id === pasoActual?.id ? 'step' : null,
-    onclick: () => { irA(p.id); },
-  }, p.titulo, p.bloqueado ? el('span', { class: 'candado', 'aria-label': 'No incluido en el paquete' }, '🔒') : null, conFaltas.has(p.id) ? el('span', { class: 'falta', 'aria-label': 'Faltan datos' }) : null)));
+  const pasos = S.esquema.pasos;
+  nav.replaceChildren(
+    el('div', { class: 'pasos-cabeza' }, el('strong', {}, 'Secciones'), el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Cerrar', onclick: cerrarPasos }, '✕')),
+    ...pasos.map((p, i) => el('button', {
+      type: 'button', class: 'paso', 'aria-current': p.id === pasoActual?.id ? 'step' : null,
+      onclick: () => { cerrarPasos(); irA(p.id); },
+    }, el('span', { class: 'num' }, i + 1), el('span', { class: 'nombre' }, p.titulo),
+    p.bloqueado ? el('span', { class: 'candado', 'aria-label': 'No incluido en el paquete' }, '🔒') : null,
+    conFaltas.has(p.id) ? el('span', { class: 'falta', 'aria-label': 'Faltan datos' }) : null)));
+  // Celular: botón con el paso actual que abre la lista completa
+  const i = pasos.indexOf(pasoActual);
+  $('#selector-pasos').replaceChildren(
+    el('span', { class: 'donde' }, el('small', {}, `Sección ${i + 1} de ${pasos.length}`), el('strong', {}, pasoActual?.titulo || '')),
+    el('span', { class: 'ver-todas' }, '☰ Ver todas'),
+    el('span', { class: 'progreso', style: `--avance:${((i + 1) / pasos.length) * 100}%` }));
 }
+function abrirPasos() { $('#pasos').classList.add('abierta'); document.body.classList.add('sin-scroll'); $('#pasos [aria-current="step"]')?.focus(); }
+function cerrarPasos() { $('#pasos').classList.remove('abierta'); document.body.classList.remove('sin-scroll'); }
+$('#selector-pasos').addEventListener('click', abrirPasos);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarPasos(); });
 
 function irA(idPaso) {
   pasoActual = S.esquema.pasos.find((p) => p.id === idPaso) || S.esquema.pasos[0];
@@ -394,7 +463,15 @@ function irA(idPaso) {
   const boton = $('#pasos [aria-current="step"]'); boton?.scrollIntoView({ block: 'nearest', inline: 'center' });
 }
 
+// Aviso de lo que falta en el paso actual (se actualiza al guardar)
+function pintarFaltan() {
+  const caja = $('#faltan-aca'); if (!caja) return;
+  const faltan = (S.faltan || []).filter((x) => x.paso === pasoActual?.id);
+  caja.replaceChildren(...(faltan.length ? [el('div', { class: 'tarjeta faltan' }, 'Faltan datos:', el('ul', {}, faltan.map((x) => el('li', {}, x.etiqueta))))] : []));
+}
+
 function dibujarPaso() {
+  espejos = [];
   const p = pasoActual;
   const f = $('#formulario');
   const i = S.esquema.pasos.indexOf(p);
@@ -414,15 +491,15 @@ function dibujarPaso() {
     : el('div', { class: 'tarjeta' }, p.campos.map((c) => campo(c, leer(datos, c.id), (v, op) => cambio(c.id, v, op))),
       p.id === 'publicar' ? el('img', { class: 'miniatura-previa', id: 'miniatura-previa', alt: 'Así se ve al compartir', src: datos.miniatura?.generada || datos.miniatura?.foto || datos.fotos?.portada?.[0]?.url || '' }) : null);
 
-  const faltanAca = (S.faltan || []).filter((x) => x.paso === p.id);
   f.replaceChildren(...[
     el('div', { class: 'paso-titulo' }, el('h1', {}, p.titulo), toggleSeccion),
-    faltanAca.length ? el('div', { class: 'tarjeta faltan' }, 'Faltan datos:', el('ul', {}, faltanAca.map((x) => el('li', {}, x.etiqueta)))) : null,
+    el('div', { id: 'faltan-aca' }),
     cuerpo,
     el('div', { class: 'navegar' },
-      anterior ? el('button', { type: 'button', class: 'btn btn-sec', onclick: () => irA(anterior.id) }, `← ${anterior.titulo}`) : el('span'),
-      siguiente ? el('button', { type: 'button', class: 'btn', onclick: () => irA(siguiente.id) }, `${siguiente.titulo} →`) : el('span')),
+      anterior ? el('button', { type: 'button', class: 'btn btn-sec', onclick: () => irA(anterior.id) }, el('small', {}, '← Anterior'), el('span', {}, anterior.titulo)) : el('span'),
+      siguiente ? el('button', { type: 'button', class: 'btn siguiente', onclick: () => irA(siguiente.id) }, el('small', {}, 'Siguiente →'), el('span', {}, siguiente.titulo)) : el('span')),
   ].filter(Boolean));
+  pintarFaltan();
 }
 
 // ── Publicar y vista previa ───────────────────────────────────────────
@@ -466,7 +543,11 @@ function aplicarMarca(m) {
     return;
   }
   datos = S.datos || {};
+  if (S.modelo?.miniatura?.colorTitulos) document.documentElement.style.setProperty('--icono-fondo', S.modelo.miniatura.colorTitulos);
   aplicarMarca(S.marca);
+  // El botón de secciones queda pegado justo debajo de la barra (que en celular ocupa dos líneas)
+  const medirBarra = () => document.documentElement.style.setProperty('--alto-barra', `${$('.barra').offsetHeight}px`);
+  medirBarra(); addEventListener('resize', medirBarra);
   const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ');
   $('#titulo-evento').textContent = nombres || 'Mi invitación';
   if (!S.evento.modelo) { $('#btn-vista').hidden = true; $('#previa').remove(); }

@@ -56,7 +56,8 @@ function mapa(lugar) {
 
 function lugarTexto(l) {
   const nombre = l.nombre ? `"${l.nombre}"` : '';
-  return [nombre, l.direccion].filter(Boolean).join(', ');
+  // El texto que eligió el cliente para mostrar; el mapa sigue usando la dirección
+  return [nombre, l.direccionTexto || l.direccion].filter(Boolean).join(', ');
 }
 
 // "2027-09-12T20:00" en una zona horaria → instante UTC "20270912T230000Z"
@@ -104,7 +105,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const modo = cer.modo || 'separada'; // separada | mismo-lugar | sin
   const zona = e.zonaHoraria || 'Europe/Madrid';
   const tituloCer = t(`ceremonia.${cer.tipo || 'religiosa'}`);
-  const tituloCel = modo === 'mismo-lugar' ? t('unificado.titulo') : t('celebracion.titulo');
+  const tituloCel = modo === 'mismo-lugar' ? t('unificado.titulo') : modo === 'sin' ? t('celebracion.sola') : t('celebracion.titulo');
   const descripcion = t('evento.descripcion');
   const nombreCal = (titulo) => `${titulo} - ${nombresTexto}`;
 
@@ -139,7 +140,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
 
   const fotos = e.fotos || {};
   const portada = (fotos.portada || []).slice(0, incluye.fotosPortada).map((f) => (typeof f === 'string' ? { url: f, pos: '50% 50%' } : { pos: '50% 50%', ...f }));
-  const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((url) => ({ url }));
+  const urlDe = (f) => (typeof f === 'string' ? f : f?.url || '');
+  const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((f) => ({ url: urlDe(f) }));
 
   const itinerario = (e.itinerario || []).map((i) => ({
     hora: i.hora || '', texto: i.texto || '',
@@ -195,7 +197,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     dresscode: {
       texto: esc(propio(e.dresscode?.texto, 'dresscode.texto')),
       sugerencias: !!incluye.sugerenciasDress && lleno(e.dresscode?.fotos),
-      fotos: (e.dresscode?.fotos || []).map((url) => ({ url })),
+      fotos: (e.dresscode?.fotos || []).map((f) => ({ url: urlDe(f) })),
     },
     hospedaje: { texto: esc(e.hospedaje?.texto || ''), items: e.hospedaje?.items || [] },
     bus: {
@@ -218,7 +220,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     pie: { texto: esc(propio(e.pie?.texto, 'pie.texto')) },
 
     // La seguridad ya la resolvió el servidor: acá solo va a quién mostrar
-    acceso: { lista: !!e.acceso?.lista, inv: invitado?.codigo || '' },
+    // Con link personal o PIN por invitado la lista va siempre
+    acceso: { lista: !!(e.acceso?.lista || e.acceso?.modo === 'codigo' || (e.acceso?.modo === 'pin' && e.acceso?.pinPorInvitado)), inv: invitado?.codigo || '' },
     marca: marca ? { blanca: true, ...marca } : { blanca: false },
     meta: {
       titulo: t('meta.titulo').replace('{evento}', t('evento.nombre')).replace('{nombres}', nombresTexto),

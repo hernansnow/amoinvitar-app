@@ -20,10 +20,11 @@
   </header>
 
   <div class="layout">
-    <nav class="pasos" id="pasos" aria-label="Pasos"></nav>
+    <button type="button" class="selector-pasos" id="selector-pasos" aria-controls="pasos" aria-haspopup="true"></button>
+    <nav class="pasos" id="pasos" aria-label="Secciones"></nav>
     <main class="formulario" id="formulario" tabindex="-1"></main>
     <aside class="previa" id="previa" aria-label="Vista previa">
-      <div class="previa-barra"><span>Vista previa</span><button type="button" class="btn-icono" id="btn-cerrar-vista" aria-label="Cerrar">✕</button></div>
+      <div class="previa-barra"><span>Vista previa <small>Fotos de muestra hasta subir las propias</small></span><button type="button" class="btn-icono" id="btn-cerrar-vista" aria-label="Cerrar">✕</button></div>
       <div class="telefono"><iframe id="iframe-vista" title="Vista previa de la invitación" src="about:blank"></iframe></div>
     </aside>
   </div>

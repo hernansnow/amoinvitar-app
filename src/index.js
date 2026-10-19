@@ -17,7 +17,7 @@ import { armarVista } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
-import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin } from './acceso.js';
+import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
 import { esquemaPanel, limpiarDatos, faltantes } from './panel/esquemas.js';
 import { HttpError } from './lib/util.js';
@@ -147,7 +147,7 @@ async function invitadosCSV(env, request, url) {
   if (!id || !inv) return vacio;
   const almacen = almacenDe(env);
   const ev = await almacen.evento(id);
-  if (!ev || !ev.datos.acceso?.lista) return vacio;
+  if (!ev || !usaLista(ev.datos)) return vacio;
   const ver = await puedeVer({ ev, request, secreto: secretoDe(env) });
   if (!ver.ok || (ver.codigo && ver.codigo !== inv)) return vacio;
   // Solo la fila de quien abrió su link, y nunca el PIN
@@ -299,7 +299,28 @@ async function vistaPrevia(env, url, request, id) {
   if (!ev) return html('Sin permiso', 403);
   if (!ev.modelo) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  return pagina(env, url, paraMotor(ev), { marca: empresa?.marca?.blanca ? empresa.marca : null, sinSobre: true });
+  const evento = await conFotosDeMuestra(env, url, paraMotor(ev));
+  return pagina(env, url, evento, { marca: empresa?.marca?.blanca ? empresa.marca : null, sinSobre: true });
+}
+
+// Vista previa del panel: donde el cliente todavía no subió fotos van las de la demo,
+// así ve dónde va cada una. La invitación publicada nunca las usa.
+async function conFotosDeMuestra(env, url, ev) {
+  const modelo = await modeloJSON(env, ev.modelo, url.origin);
+  if (!modelo) return ev;
+  const m = eventoDemo({ tipo: ev.tipo, variante: ev.variante, paquete: ev.paquete, modelo, rutas: { comun: '/comun', modelo: `/modelos/${ev.modelo}` } });
+  const vacio = (x) => !x || (Array.isArray(x) && !x.length);
+  const f = { ...(ev.fotos || {}) };
+  for (const k of ['portada', 'galeria', 'rsvp', 'album']) if (vacio(f[k])) f[k] = m.fotos[k];
+  const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || foto });
+  const fotosTestigos = m.testigos.map((x) => x.foto);
+  return {
+    ...ev,
+    fotos: f,
+    ceremonia: lugar(ev.ceremonia, m.ceremonia.foto || '/comun/img/demo-iglesia.jpg'),
+    celebracion: lugar(ev.celebracion, m.celebracion.foto),
+    testigos: (ev.testigos || []).map((x, i) => ({ ...x, foto: x.foto || fotosTestigos[i % fotosTestigos.length] })),
+  };
 }
 
 async function media(env, partes) {

@@ -25,6 +25,8 @@ const PLURAL = new Set(['boda']);
 const lugar = (p, { conFoto = true } = {}) => [
   { id: `${p}.nombre`, tipo: 'texto', etiqueta: 'Nombre del lugar', max: 80, placeholder: 'Estancia La Soñada' },
   { id: `${p}.direccion`, tipo: 'texto', etiqueta: 'Dirección', max: 140, ayuda: 'Con la dirección se arma solo el mapa y el botón "Cómo llegar".' },
+  { id: `${p}.direccionTexto`, tipo: 'texto', etiqueta: 'Cómo se ve la dirección en la invitación', max: 140, espejo: `${p}.direccion`,
+    ayuda: 'Se completa sola con la dirección. Se puede cambiar (por ejemplo "Pilar, Buenos Aires") sin que cambie el mapa.' },
   { id: `${p}.mapaLink`, tipo: 'url', etiqueta: 'Link de Google Maps (opcional)', ayuda: 'Solo si el mapa armado con la dirección no marca bien el lugar.' },
   ...(conFoto ? [{ id: `${p}.foto`, tipo: 'foto', etiqueta: 'Foto del lugar (opcional)', proporcion: '4:3' }] : []),
 ];
@@ -41,6 +43,18 @@ const IDIOMAS = [
   { v: 'es', etiqueta: 'Español neutro (tú)' }, { v: 'es-es', etiqueta: 'Español de España (tú / vosotros)' }, { v: 'en', etiqueta: 'English' },
 ];
 
+// Nombres de los íconos del itinerario (el archivo es timeline-icon-<id>.png)
+const ICONOS = {
+  ceremonia: 'Ceremonia', iglesia: 'Iglesia', recepcion: 'Recepción', brindis: 'Brindis', tragos: 'Tragos', cena: 'Cena',
+  vals: 'Vals', baile: 'Baile', fiesta: 'Fiesta', disco: 'Disco', torta: 'Torta', ramo: 'Ramo', zapatos: 'Zapatos',
+  camara: 'Fotos', mic: 'Micrófono', novios: 'Novios', 15: '15 años', baby: 'Bebé', infantil: 'Infantil', 'last-call': 'Última ronda',
+};
+const nombreIcono = (v) => {
+  const [, base, n] = /^(.*?)(?:-?([a-z]|\d))?$/.exec(v) || [];
+  const nombre = ICONOS[v] || ICONOS[base] || v;
+  return ICONOS[v] || !n ? nombre : `${nombre} ${/\d/.test(n) ? n : n.charCodeAt(0) - 96}`;
+};
+
 // ── Pasos de la invitación web ────────────────────────────────────────
 function pasosInvitacion({ tipo, modelo, paquete }) {
   const plural = PLURAL.has(tipo);
@@ -52,8 +66,8 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
     {
       id: 'nombres', titulo: plural ? 'Los novios' : 'Quién celebra',
       campos: [
-        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Primer nombre' : 'Nombre', max: 30, requerido: true, ayuda: 'Tal como va a aparecer: "Sofi", "Mariana"…' },
-        ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Segundo nombre', max: 30, requerido: true }] : []),
+        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : 'Nombre', max: 30, requerido: true, ayuda: 'Tal como va a aparecer: "Sofi", "Mariana"…' },
+        ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2', max: 30, requerido: true }] : []),
       ],
     },
     {
@@ -126,12 +140,12 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
       { id: 'itinerario', tipo: 'lista', etiqueta: 'Momentos', max: 12, campos: [
         { id: 'hora', tipo: 'texto', etiqueta: 'Hora', max: 10, placeholder: '21:00' },
         { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 40 },
-        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, valores: (modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: v })) },
+        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, valores: (modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })) },
       ] },
     ] },
     { id: 'testigos', seccion: 'testigos', titulo: padrinos, campos: [
       { id: 'testigos', tipo: 'lista', etiqueta: padrinos, max: 8, campos: [
-        { id: 'nombre', tipo: 'texto', etiqueta: 'Nombre', max: 40 }, { id: 'rol', tipo: 'texto', etiqueta: 'Quién es', max: 40, placeholder: 'Hermano del novio' }, { id: 'foto', tipo: 'foto', etiqueta: 'Foto', proporcion: '1:1' },
+        { id: 'nombre', tipo: 'texto', etiqueta: 'Nombre', max: 40 }, { id: 'rol', tipo: 'texto', etiqueta: 'Quién es (opcional)', max: 40, placeholder: 'Hermano del novio' }, { id: 'foto', tipo: 'foto', etiqueta: 'Foto', proporcion: '1:1' },
       ] },
     ] },
     { id: 'album', seccion: 'album', titulo: 'Álbum de fotos compartido', campos: [
@@ -169,10 +183,16 @@ const pasoInvitados = {
       { v: 'codigo', etiqueta: 'Solo con link personal', ayuda: 'Cada invitado recibe su propio link. Sin él, la invitación se ve bloqueada.' },
       { v: 'pin', etiqueta: 'Con PIN', ayuda: 'Se pide un PIN de 4 números antes de mostrar la invitación.' },
     ] },
-    { id: 'acceso.pinPorInvitado', tipo: 'switch', etiqueta: 'Un PIN distinto para cada invitado', ayuda: 'Apagado: un solo PIN para todos.', si: { campo: 'acceso.modo', es: 'pin' } },
-    { id: 'acceso.pin', tipo: 'texto', etiqueta: 'PIN para todos', max: 4, patron: '^[0-9]{4}$', placeholder: '1234', si: { campo: 'acceso.modo', es: 'pin' } },
-    { id: 'acceso.lista', tipo: 'switch', etiqueta: 'Usar lista de invitados (nombre, pases y mesa en la invitación)' },
-    { id: 'invitados', tipo: 'invitados', etiqueta: 'Lista de invitados', ayuda: 'Se puede pegar desde Excel: nombre, pases extra, mesa.' },
+    { id: 'acceso.pinPorInvitado', tipo: 'switch', etiqueta: 'Un PIN distinto para cada invitado', ayuda: 'Apagado: un solo PIN para todos.', rearmar: true, si: { campo: 'acceso.modo', es: 'pin' } },
+    { id: 'acceso.pin', tipo: 'texto', etiqueta: 'PIN para todos', max: 4, patron: '^[0-9]{4}$', placeholder: '1234', si: [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] },
+    // Con link personal o PIN por invitado la lista es obligatoria: cada uno ve su nombre, pases y mesa
+    { id: 'acceso.lista', tipo: 'switch', etiqueta: 'Usar lista de invitados (nombre, pases y mesa en la invitación)', rearmar: true,
+      ayuda: 'El link general sigue funcionando para todos. Con el link personal de cada invitado se ven además su nombre, pases y mesa.',
+      si: { o: [{ campo: 'acceso.modo', es: 'abierta' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }]] } },
+    { id: 'nota.lista', tipo: 'nota', texto: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. Cargar la lista acá abajo.',
+      si: { o: [{ campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
+    { id: 'invitados', tipo: 'invitados', etiqueta: 'Lista de invitados', ayuda: 'Se puede subir un Excel con las columnas nombre, pases extra y mesa.',
+      si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
   ],
 };
 
@@ -193,8 +213,8 @@ const pasoPublicar = (tipo) => ({
 const datosBasicos = (plural = true) => ({
   id: 'datos', titulo: 'Datos',
   campos: [
-    { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Primer nombre' : 'Nombre', max: 30, requerido: true },
-    { id: 'nombres.b', tipo: 'texto', etiqueta: 'Segundo nombre (si son dos)', max: 30 },
+    { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : 'Nombre', max: 30, requerido: true },
+    { id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2 (si son dos)', max: 30 },
     { id: 'std.fecha', tipo: 'fecha', etiqueta: 'Fecha del evento', requerido: true },
     { id: 'std.ciudad', tipo: 'texto', etiqueta: 'Ciudad', max: 50, placeholder: 'Buenos Aires' },
     { id: 'std.frase', tipo: 'area', etiqueta: 'Frase', max: 140, placeholder: 'Save the date' },
@@ -315,6 +335,14 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   return { producto, tipo, paquete, pasos: aplicarBloqueos(pasos, { modelo: m, paquete }) };
 }
 
+// Condición "si" de un campo: { campo, es | no } · [todas] · { o: [alguna] }
+export function cumple(s, datos) {
+  if (Array.isArray(s)) return s.every((x) => cumple(x, datos));
+  if (s.o) return s.o.some((x) => cumple(x, datos));
+  const v = leer(datos, s.campo);
+  return s.es !== undefined ? v === s.es : s.no !== undefined ? (v ?? '') !== s.no : !!v;
+}
+
 // ── Limpieza al guardar: solo lo que el esquema permite ───────────────
 const leer = (o, ruta) => ruta.split('.').reduce((x, k) => (x == null ? undefined : x[k]), o);
 function escribir(o, ruta, v) {
@@ -374,8 +402,7 @@ export function limpiarDatos(esquema, datos, previos = {}) {
 }
 
 export function faltantes(esquema, datos) {
-  const visibles = (c) => !c.si || (c.si.es !== undefined ? leer(datos, c.si.campo) === c.si.es
-    : c.si.no !== undefined ? leer(datos, c.si.campo) !== c.si.no : !!leer(datos, c.si.campo));
+  const visibles = (c) => !c.si || cumple(c.si, datos);
   return esquema.pasos.flatMap((p) => (p.bloqueado ? [] : p.campos.filter((c) => c.requerido && visibles(c) && !c.bloqueado && (leer(datos, c.id) ?? '') === '')
     .map((c) => ({ paso: p.id, campo: c.id, etiqueta: c.etiqueta }))));
 }

@@ -22,7 +22,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* ── Barra superior ── */
 .barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--tarjeta); border-bottom: 1px solid var(--borde); }
 .marca img { display: block; width: 110px; height: auto; max-height: 40px; object-fit: contain; }
-@media (max-width: 600px) { .marca img { width: 72px; } .barra { gap: 8px; padding: 8px 12px; } .btn { padding: 7px 12px; } }
+
 .marca.propia img { filter: none; }
 .titulo { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
 .titulo strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -38,9 +38,26 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ── Disposición: pasos · formulario · vista previa ── */
 .layout { display: grid; grid-template-columns: 1fr; }
-.pasos { display: flex; overflow-x: auto; gap: 6px; padding: 10px 16px; background: var(--tarjeta); border-bottom: 1px solid var(--borde); scrollbar-width: none; }
-.pasos button { flex: none; border: 1px solid var(--borde); background: var(--tarjeta); border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: .9rem; display: flex; align-items: center; gap: 6px; }
-.pasos button[aria-current="step"] { background: var(--acento); border-color: var(--acento); color: var(--acento-texto); }
+.pasos { display: none; flex-direction: column; gap: 2px; background: var(--tarjeta); }
+.pasos .paso { border: 0; background: none; border-radius: 10px; padding: 9px 10px; cursor: pointer; font-size: .95rem; display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; }
+.pasos .paso:hover { background: var(--fondo); }
+.pasos .paso .num { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: .75rem; background: var(--fondo); color: var(--suave); }
+.pasos .paso .nombre { flex: 1; }
+.pasos .paso[aria-current="step"] { background: var(--acento); color: var(--acento-texto); }
+.pasos .paso[aria-current="step"] .num { background: rgba(255,255,255,.25); color: inherit; }
+.pasos-cabeza { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px 10px; }
+/* Celular y tablet: botón con la sección actual; al tocarlo se abre la lista completa */
+.selector-pasos { position: sticky; top: var(--alto-barra, 57px); z-index: 15; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 10px; width: 100%;
+  border: 0; border-bottom: 1px solid var(--borde); background: var(--tarjeta); padding: 10px 16px 12px; text-align: left; cursor: pointer; }
+.selector-pasos .donde { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.selector-pasos .donde small { color: var(--suave); font-size: .78rem; }
+.selector-pasos .donde strong { font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.selector-pasos .ver-todas { border: 1px solid var(--acento); color: var(--acento); border-radius: 999px; padding: 6px 12px; font-weight: 600; font-size: .9rem; white-space: nowrap; }
+.selector-pasos .progreso { grid-column: 1 / -1; height: 4px; border-radius: 4px; background: var(--fondo); position: relative; overflow: hidden; margin-top: 6px; }
+.selector-pasos .progreso::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--avance); background: var(--acento); border-radius: 4px; }
+.pasos.abierta { display: flex; position: fixed; inset: 0; z-index: 45; overflow: auto; padding: 16px; }
+.pasos-cabeza strong { font-size: 1.2rem; }
+body.sin-scroll { overflow: hidden; }
 .pasos .candado { font-size: .75rem; }
 .pasos .falta { width: 7px; height: 7px; border-radius: 50%; background: var(--peligro); }
 .formulario { padding: 20px 16px 120px; max-width: 720px; width: 100%; margin: 0 auto; outline: none; }
@@ -48,8 +65,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 @media (min-width: 900px) {
   .layout { grid-template-columns: 230px 1fr; }
-  .pasos { flex-direction: column; overflow: auto; height: calc(100vh - 57px); position: sticky; top: 57px; border-bottom: 0; border-right: 1px solid var(--borde); padding: 16px 12px; }
-  .pasos button { border-radius: 10px; border-color: transparent; justify-content: flex-start; text-align: left; }
+  .selector-pasos, .pasos-cabeza { display: none; }
+  .pasos, .pasos.abierta { display: flex; position: sticky; inset: auto; z-index: auto; top: 57px; overflow: auto; height: calc(100vh - 57px); border-right: 1px solid var(--borde); padding: 16px 10px; }
+  .pasos .paso { font-size: .9rem; padding: 7px 8px; }
 }
 @media (min-width: 1280px) {
   .layout { grid-template-columns: 230px minmax(0, 1fr) 420px; }
@@ -96,8 +114,25 @@ input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px s
 .opcion:has(input:checked) { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 8%, #fff); }
 .opcion input { margin-top: 4px; accent-color: var(--acento); }
 .opcion small { display: block; color: var(--suave); }
-.icono-elegido { display: flex; gap: 8px; align-items: center; }
-.icono-elegido img { width: 40px; height: 40px; object-fit: contain; background: #8c6f5f; border-radius: 50%; padding: 4px; }
+/* Íconos del itinerario */
+.icono-tile { flex: none; width: 52px; height: 52px; border-radius: 12px; background: var(--icono-fondo, #a78977); padding: 9px; display: grid; place-items: center; }
+.icono-tile img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.icono-tile .sin-icono { color: #fff; font-weight: 600; }
+.icono-actual { display: flex; align-items: center; gap: 12px; width: 100%; border: 1px solid var(--borde); border-radius: 10px; background: #fff; padding: 6px 12px 6px 6px; cursor: pointer; text-align: left; }
+.icono-actual > span:nth-child(2) { flex: 1; }
+.icono-actual .cambiar { color: var(--acento); font-weight: 600; font-size: .85rem; }
+.grilla-iconos { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; margin-top: 8px; padding: 8px; border: 1px solid var(--borde); border-radius: 10px; background: var(--fondo); max-height: 320px; overflow: auto; }
+.grilla-iconos button { border: 2px solid transparent; background: #fff; border-radius: 10px; padding: 6px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.grilla-iconos button[aria-selected="true"] { border-color: var(--acento); }
+.grilla-iconos small { font-size: .72rem; line-height: 1.1; text-align: center; color: var(--suave); }
+.nota { margin: 0; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--acento) 10%, #fff); font-size: .9rem; }
+.subir-excel { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.subir-excel label input { display: none; }
+.subir-excel a { text-decoration: none; }
+details.pegar { margin-top: 10px; }
+details.pegar summary { cursor: pointer; color: var(--suave); font-size: .9rem; }
+details.pegar textarea { margin-top: 8px; }
+.previa-barra small { display: block; font-weight: 400; font-size: .75rem; }
 
 /* Fotos */
 .fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
@@ -154,10 +189,23 @@ input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px s
 
 .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: #1f2421; color: #fff; padding: 10px 18px; border-radius: 999px; z-index: 60; max-width: calc(100% - 32px); box-shadow: 0 6px 24px rgba(0,0,0,.2); }
 .aviso.error { background: var(--peligro); }
-.navegar { display: flex; justify-content: space-between; margin-top: 20px; }
+.navegar { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; }
+.navegar .btn { display: flex; flex-direction: column; align-items: flex-start; white-space: normal; text-align: left; max-width: 48%; border-radius: 14px; padding: 8px 14px; line-height: 1.2; }
+.navegar .btn.siguiente { align-items: flex-end; text-align: right; margin-left: auto; }
+.navegar .btn small { font-weight: 500; opacity: .8; font-size: .75rem; }
 .miniatura-previa { width: 100%; max-width: 420px; aspect-ratio: 1200 / 630; border-radius: 10px; border: 1px solid var(--borde); object-fit: cover; display: block; margin-top: 8px; background: var(--fondo); }
 
 /* Ajustes de celular */
 .layout > * { min-width: 0; }
 .marca { flex: none; }
 .campo > label.interruptor { display: flex; font-weight: 600; }
+
+/* Celular: logo y botones arriba; el nombre y "Guardado" en una segunda línea */
+@media (max-width: 600px) {
+  .marca img { width: 84px; }
+  .barra { flex-wrap: wrap; gap: 4px 8px; padding: 8px 12px; }
+  .acciones { margin-left: auto; }
+  .barra .btn { padding: 6px 12px; font-size: .9rem; }
+  .titulo { order: 3; flex: 1 1 100%; flex-direction: row; align-items: baseline; gap: 8px; }
+  .titulo strong { font-size: .95rem; }
+}
