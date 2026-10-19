@@ -110,6 +110,15 @@ export function rsvpForm({ t, v, el }) {
     'data-preguntas-ninos': !!preguntas.ninos,
     'data-preguntas-traslado': !!preguntas.traslado,
   };
+  // Preguntas propias del cliente: el formulario las lee como extra, extra2… extra5
+  (r.extras || []).forEach((x, i) => {
+    const suf = i === 0 ? '' : String(i + 1);
+    attrs[`data-preguntas-extra${suf}`] = 'true';
+    attrs[`data-label-extra${suf}`] = x.pregunta;
+    attrs[`data-extra-tipo${suf}`] = x.opciones.length ? 'select' : 'texto';
+    if (x.opciones.length) attrs[`data-extra-opciones${suf}`] = x.opciones.join('|');
+    else attrs[`data-extra-placeholder${suf}`] = '';
+  });
   const attrHTML = Object.entries(attrs).map(([k, val]) => `${k}="${esc(val)}"`).join('\n      ');
   return `
 <div style="display:none;" id="confirmar-rsvp" class="animated-modal p-4">

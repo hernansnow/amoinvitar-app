@@ -24,7 +24,7 @@ const BASE = {
 
     'lugar.diaHorario': 'DÍA Y HORARIO', 'lugar.lugar': 'LUGAR',
     'ceremonia.religiosa': 'Ceremonia', 'ceremonia.civil': 'Ceremonia civil', 'ceremonia.simbolica': 'Ceremonia',
-    'celebracion.titulo': 'Celebración', 'unificado.titulo': 'Ceremonia y Celebración', 'celebracion.sola': 'Celebración',
+    'celebracion.titulo': 'Celebración', 'unificado.titulo': 'Ceremonia y Celebración', 'celebracion.sola': 'Celebración', 'bienvenida.texto': 'Quiero invitarte a compartir este día especial',
     'boton.agendar': 'Agendar', 'boton.comoLlegar': '¿CÓMO LLEGAR?', 'boton.cerrar': 'cerrar',
     'mapa.titulo': '¿Cómo llegar?', 'mapa.abrir': 'Ver en la app de Google Maps',
 
@@ -109,7 +109,7 @@ const BASE = {
     'musica.boton': 'Music',
     'lugar.diaHorario': 'DATE AND TIME', 'lugar.lugar': 'VENUE',
     'ceremonia.religiosa': 'Ceremony', 'ceremonia.civil': 'Civil ceremony', 'ceremonia.simbolica': 'Ceremony',
-    'celebracion.titulo': 'Reception', 'unificado.titulo': 'Ceremony & Reception', 'celebracion.sola': 'Celebration',
+    'celebracion.titulo': 'Reception', 'unificado.titulo': 'Ceremony & Reception', 'celebracion.sola': 'Celebration', 'bienvenida.texto': 'I would love you to share this special day with me',
     'boton.agendar': 'Save the date', 'boton.comoLlegar': 'DIRECTIONS', 'boton.cerrar': 'close',
     'mapa.titulo': 'Directions', 'mapa.abrir': 'Open in Google Maps',
     'rsvp.titulo': 'RSVP',
@@ -164,7 +164,7 @@ const EVENTOS = {
   boda: {
     plural: true,
     es: {
-      'celebracion.sola': 'Boda', 'evento.nombre': 'Boda', 'evento.descripcion': 'Te esperamos para nuestra boda',
+      'celebracion.sola': 'Boda', 'bienvenida.texto': '¡Queremos invitarte a nuestra boda!', 'evento.nombre': 'Boda', 'evento.descripcion': 'Te esperamos para nuestra boda',
       'portada.subtitulo': '¡NOS CASAMOS!', 'historia.titulo': 'Nuestra Historia',
       'historia.texto': 'Andábamos sin buscarnos, pero sabiendo que andábamos para encontrarnos.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial e inolvidable.',
@@ -185,7 +185,7 @@ const EVENTOS = {
       'album.texto': '¡Prepárate para nuestra boda!<br>Haz clic en el botón y sube todas las fotos y vídeos que hagas durante la fiesta a nuestro álbum colaborativo, al instante, sin descargar ninguna app.',
     },
     en: {
-      'celebracion.sola': 'Wedding', 'evento.nombre': 'Wedding', 'evento.descripcion': 'Join us for our wedding',
+      'celebracion.sola': 'Wedding', 'bienvenida.texto': 'We would love to invite you to our wedding!', 'evento.nombre': 'Wedding', 'evento.descripcion': 'Join us for our wedding',
       'portada.subtitulo': "WE'RE GETTING MARRIED!", 'historia.titulo': 'Our Story',
       'historia.texto': 'We were not looking for each other, but we were meant to meet.',
       'rsvp.texto': 'Your presence will make this day truly special and unforgettable.',
@@ -203,7 +203,7 @@ const EVENTOS = {
     plural: false,
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
-      'celebracion.sola': 'Fiesta', 'evento.nombre': 'Mis 15', 'evento.descripcion': 'Te espero para celebrar mis 15 años',
+      'celebracion.sola': 'Fiesta', 'bienvenida.texto': '¡Quiero invitarte a mi fiesta!', 'evento.nombre': 'Mis 15', 'evento.descripcion': 'Te espero para celebrar mis 15 años',
       'portada.subtitulo': 'MIS 15 AÑOS', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Desde muy pequeña tengo dos grandes pasiones: patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial e inolvidable.',
@@ -227,7 +227,7 @@ const EVENTOS = {
     },
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
-      'celebracion.sola': 'Party', 'evento.nombre': 'My Sweet 15', 'evento.descripcion': 'Join me to celebrate my 15th birthday',
+      'celebracion.sola': 'Party', 'bienvenida.texto': 'I would love to invite you to my party!', 'evento.nombre': 'My Sweet 15', 'evento.descripcion': 'Join me to celebrate my 15th birthday',
       'portada.subtitulo': 'MY SWEET 15', 'historia.titulo': 'My Story', 'ceremonia.religiosa': 'Mass',
       'historia.texto': 'Since I was little I have had two big passions: skating and furry friends, and rolling along I reached my 15th birthday.',
       'rsvp.texto': 'Your presence will make this day truly special and unforgettable.',
@@ -246,7 +246,7 @@ const EVENTOS = {
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'evento.nombre': 'Bautismo', 'evento.descripcion': 'Te espero para celebrar mi bautismo',
-      'portada.subtitulo': 'MI BAUTISMO', 'historia.titulo': 'Mi Bautismo',
+      'portada.subtitulo': 'MI BAUTISMO', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial.',
       'bus.destinoTexto': '¡Mi Bautismo!', 'testigos.titulo': 'Mis Padrinos',
@@ -262,11 +262,11 @@ const EVENTOS = {
       'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayudanos con la selección de canciones',
       'regalos.texto': 'El mejor regalo es que me acompañes en este día tan especial, pero si querés hacerme un regalo, acá te dejo los datos.',
     },
-    'es-es': { 'evento.nombre': 'Bautizo', 'portada.subtitulo': 'MI BAUTIZO', 'historia.titulo': 'Mi Bautizo', 'bus.destinoTexto': '¡Mi Bautizo!', 'evento.descripcion': 'Te espero para celebrar mi bautizo' },
+    'es-es': { 'evento.nombre': 'Bautizo', 'portada.subtitulo': 'MI BAUTIZO', 'bus.destinoTexto': '¡Mi Bautizo!', 'evento.descripcion': 'Te espero para celebrar mi bautizo' },
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
       'evento.nombre': 'Baptism', 'evento.descripcion': 'Join us to celebrate my baptism', 'portada.subtitulo': 'MY BAPTISM',
-      'historia.titulo': 'My Baptism', 'historia.texto': 'Hoping that God\'s blessing will always guide me with its light.',
+      'historia.titulo': 'My Story', 'historia.texto': 'Hoping that God\'s blessing will always guide me with its light.',
       'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My baptism!', 'testigos.titulo': 'My Godparents',
       'album.texto': 'Get ready for my baptism!<br>Tap the button and upload all the photos and videos you take to my shared album, instantly, no app needed.',
       'canciones.texto': 'Which songs can\'t be missed?<br>Help us choose the music',
@@ -282,7 +282,7 @@ const EVENTOS = {
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'evento.nombre': 'Primera Comunión', 'evento.descripcion': 'Te espero para celebrar mi primera comunión',
-      'portada.subtitulo': 'MI PRIMERA COMUNIÓN', 'historia.titulo': 'Mi Primera Comunión',
+      'portada.subtitulo': 'MI PRIMERA COMUNIÓN', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial.',
       'ceremonia.religiosa': 'Misa',
@@ -303,7 +303,7 @@ const EVENTOS = {
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
       'evento.nombre': 'First Communion', 'evento.descripcion': 'Join me to celebrate my First Communion', 'portada.subtitulo': 'MY FIRST COMMUNION',
-      'historia.titulo': 'My First Communion', 'historia.texto': 'Today I receive Jesus in my heart and I want to share this joy with the people I love most.',
+      'historia.titulo': 'My Story', 'historia.texto': 'Today I receive Jesus in my heart and I want to share this joy with the people I love most.',
       'ceremonia.religiosa': 'Mass', 'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My Communion!',
       'testigos.titulo': 'My Godparents', 'album.texto': 'Get ready for my communion!<br>Tap the button and upload all the photos and videos you take to my shared album, instantly, no app needed.',
       'canciones.texto': 'Which songs can\'t be missed?<br>Help me choose the music',
@@ -318,8 +318,8 @@ const EVENTOS = {
     plural: false,
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
-      'celebracion.sola': 'Cumpleaños', 'evento.nombre': 'Cumpleaños', 'evento.descripcion': 'Te espero para festejar mi cumpleaños',
-      'portada.subtitulo': '¡MI CUMPLEAÑOS!', 'historia.titulo': 'Unas palabras',
+      'celebracion.sola': 'Cumpleaños', 'bienvenida.texto': '¡Quiero invitarte a mi fiesta!', 'evento.nombre': 'Cumpleaños', 'evento.descripcion': 'Te espero para festejar mi cumpleaños',
+      'portada.subtitulo': '¡MI CUMPLEAÑOS!', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Un año más para celebrar la vida, y qué mejor que hacerlo con las personas que más quiero.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial.',
       'bus.destinoTexto': '¡Mi Cumple!', 'testigos.titulo': 'Anfitriones',
@@ -338,8 +338,8 @@ const EVENTOS = {
     'es-es': { 'bus.destinoTexto': '¡Mi Cumple!' },
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
-      'celebracion.sola': 'Birthday', 'evento.nombre': 'Birthday', 'evento.descripcion': 'Join me to celebrate my birthday', 'portada.subtitulo': "IT'S MY BIRTHDAY!",
-      'historia.titulo': 'A few words', 'historia.texto': 'One more year to celebrate life, and what better way than with the people I love most.',
+      'celebracion.sola': 'Birthday', 'bienvenida.texto': 'I would love to invite you to my party!', 'evento.nombre': 'Birthday', 'evento.descripcion': 'Join me to celebrate my birthday', 'portada.subtitulo': "IT'S MY BIRTHDAY!",
+      'historia.titulo': 'My Story', 'historia.texto': 'One more year to celebrate life, and what better way than with the people I love most.',
       'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My party!', 'testigos.titulo': 'Hosts',
       'album.texto': 'Get ready for my party!<br>Tap the button and upload all the photos and videos you take during the party to my shared album, instantly, no app needed.',
       'canciones.texto': 'Which songs can\'t be missed?<br>Help me choose the music',

@@ -84,6 +84,13 @@ function calendario({ nombre, descripcion, inicio, fin, lugar, zona }) {
 
 const lleno = (x) => (Array.isArray(x) ? x.length > 0 : x != null && x !== '' && x !== false);
 
+// Proporciones fijas por tipo de foto (las del panel) → estilo para recortar con el encuadre elegido
+const PROP = { galeria: '1/1', lugar: '9/4', dress: '4/9', testigo: '1/1', rsvp: '1/1', album: '3/2' };
+const encuadre = (prop, pos) => `aspect-ratio:${prop};object-fit:cover;object-position:${pos || '50% 50%'}`;
+const urlDe = (f) => (typeof f === 'string' ? f : f?.url || '');
+// Solo boda, 15, bautismo y comunión tienen ceremonia o misa
+const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion']);
+
 export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false, invitado = null, marca = null }) {
   const plural = !!e.nombres?.b;
   const paquete = modelo.paquetes[e.paquete] || modelo.paquetes.basic;
@@ -95,6 +102,10 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   // Secciones: las del paquete, menos las que el cliente apagó
   const apagadas = new Set(Object.entries(e.secciones || {}).filter(([, on]) => on === false).map(([k]) => k));
   const secciones = Object.fromEntries(paquete.secciones.map((s) => [s, !apagadas.has(s)]));
+  // La historia apagada no desaparece: queda el saludo de bienvenida de los modelos Basic
+  const historiaActiva = !!secciones.historia;
+  if ('historia' in secciones) secciones.historia = true;
+  const fotosOn = (g) => e.fotosOn?.[g] !== false;
 
   // Textos que el cliente puede reescribir: lo suyo, o el del idioma
   const propio = (ruta, clave) => (lleno(ruta) ? ruta : t(clave));
@@ -102,46 +113,55 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   // Ceremonia y celebración
   const cel = e.celebracion || {};
   const cer = e.ceremonia || {};
-  const modo = cer.modo || 'separada'; // separada | mismo-lugar | sin
+  const modo = CON_CEREMONIA.has(e.tipo) ? cer.modo || 'separada' : 'sin'; // separada | mismo-lugar | sin
   const zona = e.zonaHoraria || 'Europe/Madrid';
   const tituloCer = t(`ceremonia.${cer.tipo || 'religiosa'}`);
   const tituloCel = modo === 'mismo-lugar' ? t('unificado.titulo') : modo === 'sin' ? t('celebracion.sola') : t('celebracion.titulo');
   const descripcion = t('evento.descripcion');
   const nombreCal = (titulo) => `${titulo} - ${nombresTexto}`;
 
+  const fotoLugar = (l) => (fotosOn('lugares') && l.foto ? l.foto : '');
   const ceremonia = {
     separada: modo === 'separada',
     unificada: modo === 'mismo-lugar',
     titulo: tituloCer,
-    foto: cer.foto || '',
+    foto: fotoLugar(cer),
+    fotoEstilo: encuadre(PROP.lugar, cer.fotoPos),
     fechaHora: fechaHora(cer.inicio, variante),
     lugarTexto: lugarTexto(cer),
     mapa: mapa(cer),
   };
   const celebracion = {
     titulo: tituloCel,
-    foto: cel.foto || '',
-    fechaHora: fechaHora(modo === 'mismo-lugar' && cer.inicio ? cer.inicio : cel.inicio, variante),
+    foto: fotoLugar(cel),
+    fotoEstilo: encuadre(PROP.lugar, cel.fotoPos),
+    fechaHora: fechaHora(cel.inicio, variante),
     lugarTexto: lugarTexto(cel),
     mapa: mapa(cel),
   };
   const calendarios = {
-    ceremonia: modo === 'separada' ? calendario({ nombre: nombreCal(tituloCer), descripcion, inicio: cer.inicio, fin: cer.fin, lugar: [cer.nombre, cer.direccion].filter(Boolean).join(', '), zona }) : null,
+    // La ceremonia termina cuando empieza la fiesta; si es otro día (o no hay hora de fiesta), dura 2 horas
+    ceremonia: modo === 'separada' ? calendario({ nombre: nombreCal(tituloCer), descripcion, inicio: cer.inicio,
+      fin: cel.inicio && (cel.inicio || '').slice(0, 10) === (cer.inicio || '').slice(0, 10) && cel.inicio > cer.inicio ? cel.inicio : sumarHoras(cer.inicio, 2),
+      lugar: [cer.nombre, cer.direccion].filter(Boolean).join(', '), zona }) : null,
     celebracion: calendario({
       nombre: nombreCal(t('evento.nombre')), descripcion,
-      inicio: modo === 'mismo-lugar' && cer.inicio ? cer.inicio : cel.inicio,
+      inicio: cel.inicio,
       fin: cel.fin || sumarHoras(cel.inicio, 7),
       lugar: [cel.nombre, cel.direccion].filter(Boolean).join(', '), zona,
     }),
   };
 
   // Fecha principal: la de la ceremonia si hay, si no la de la fiesta
-  const principal = partes((modo !== 'sin' && cer.inicio) || cel.inicio || e.fecha);
+  const principal = partes((modo === 'separada' && cer.inicio) || cel.inicio || e.fecha);
 
   const fotos = e.fotos || {};
-  const portada = (fotos.portada || []).slice(0, incluye.fotosPortada).map((f) => (typeof f === 'string' ? { url: f, pos: '50% 50%' } : { pos: '50% 50%', ...f }));
-  const urlDe = (f) => (typeof f === 'string' ? f : f?.url || '');
-  const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((f) => ({ url: urlDe(f) }));
+  // Portada: un encuadre para el celular (pos) y otro para la computadora (posPc)
+  const portadaSinFoto = `${rutas.modelo}/${modelo.portadaSinFoto || 'img/bg-oliva-2.jpg'}`;
+  const portada = (fotosOn('portada') ? fotos.portada || [] : []).slice(0, incluye.fotosPortada)
+    .map((f) => (typeof f === 'string' ? { url: f } : f)).map((f) => ({ url: f.url, pos: f.pos || '50% 50%', estilo: `--pos-pc:${f.posPc || f.pos || '50% 50%'}` }));
+  if (!portada.length) portada.push({ url: portadaSinFoto, pos: '50% 50%', estilo: '--pos-pc:50% 50%' });
+  const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((f) => ({ url: urlDe(f), estilo: encuadre(PROP.galeria, f?.pos) }));
 
   const itinerario = (e.itinerario || []).map((i) => ({
     hora: i.hora || '', texto: i.texto || '',
@@ -183,9 +203,14 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       inicio: e.musica?.inicio ?? '',
     },
 
-    historia: { texto: esc(propio(e.historia?.texto, 'historia.texto')).replace(/\n/g, '<br>') },
+    historia: { activa: historiaActiva, bienvenida: !historiaActiva, texto: esc(propio(e.historia?.texto, 'historia.texto')).replace(/\n/g, '<br>') },
     ceremonia, celebracion, calendarios,
-    fotos: { portada, galeria, rsvp: fotos.rsvp || portada[0]?.url || '', album: fotos.album || '' },
+    fotos: {
+      portada, galeria,
+      rsvp: fotosOn('rsvp') ? fotos.rsvp || '' : '', rsvpEstilo: encuadre(PROP.rsvp, fotos.rsvpPos),
+      album: fotosOn('album') ? fotos.album || '' : '', albumEstilo: encuadre(PROP.album, fotos.albumPos),
+      cantidadGaleria: galeria.length,
+    },
 
     rsvp: {
       texto: propio(e.rsvp?.texto, 'rsvp.texto'),
@@ -193,11 +218,14 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       formato: 'corto',
       acompanantes: e.rsvp?.acompanantes ?? 0,
       preguntas: e.rsvp?.preguntas || {},
+      // Preguntas propias (hasta 5): con opciones es un desplegable, sin opciones respuesta libre
+      extras: (e.rsvp?.extras || []).filter((x) => x.pregunta).slice(0, 5)
+        .map((x) => ({ pregunta: x.pregunta, opciones: String(x.opciones || '').split(',').map((o) => o.trim()).filter(Boolean) })),
     },
     dresscode: {
       texto: esc(propio(e.dresscode?.texto, 'dresscode.texto')),
-      sugerencias: !!incluye.sugerenciasDress && lleno(e.dresscode?.fotos),
-      fotos: (e.dresscode?.fotos || []).map((f) => ({ url: urlDe(f) })),
+      sugerencias: !!incluye.sugerenciasDress && fotosOn('dresscode') && lleno(e.dresscode?.fotos),
+      fotos: (e.dresscode?.fotos || []).map((f) => ({ url: urlDe(f), estilo: encuadre(PROP.dress, f?.pos) })),
     },
     hospedaje: { texto: esc(e.hospedaje?.texto || ''), items: e.hospedaje?.items || [] },
     bus: {
@@ -208,7 +236,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       })),
     },
     itinerario: { items: itinerario },
-    testigos: { items: e.testigos || [] },
+    testigos: { items: (e.testigos || []).map((x) => ({ ...x, foto: fotosOn('testigos') ? x.foto || '' : '', estilo: encuadre(PROP.testigo, x.fotoPos) })) },
     album: { url: e.album?.url || '' },
     canciones: { spotify: e.canciones?.spotify || '' },
     regalos: {

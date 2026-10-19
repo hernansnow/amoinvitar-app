@@ -4891,6 +4891,8 @@ audio::-webkit-media-controls-play-button:hover {
 
 /* Portada: cada foto del carrusel ocupa la pantalla (la foto la pone el motor) */
 .portada-foto { height: 100vh; background-repeat: no-repeat; background-size: cover; background-position: center center; }
+/* En la computadora, el encuadre horizontal que eligió el cliente */
+@media (min-width: 768px) { .portada-foto { background-position: var(--pos-pc, center center) !important; } }
 
 /* Olas de la portada */
 .g-ola-media { background-image: url(img/wave-mid-b.png); }

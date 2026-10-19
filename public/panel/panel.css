@@ -120,11 +120,6 @@ input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px s
 .icono-tile .sin-icono { color: #fff; font-weight: 600; }
 .icono-actual { display: flex; align-items: center; gap: 12px; width: 100%; border: 1px solid var(--borde); border-radius: 10px; background: #fff; padding: 6px 12px 6px 6px; cursor: pointer; text-align: left; }
 .icono-actual > span:nth-child(2) { flex: 1; }
-.icono-actual .cambiar { color: var(--acento); font-weight: 600; font-size: .85rem; }
-.grilla-iconos { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; margin-top: 8px; padding: 8px; border: 1px solid var(--borde); border-radius: 10px; background: var(--fondo); max-height: 320px; overflow: auto; }
-.grilla-iconos button { border: 2px solid transparent; background: #fff; border-radius: 10px; padding: 6px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.grilla-iconos button[aria-selected="true"] { border-color: var(--acento); }
-.grilla-iconos small { font-size: .72rem; line-height: 1.1; text-align: center; color: var(--suave); }
 .nota { margin: 0; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--acento) 10%, #fff); font-size: .9rem; }
 .subir-excel { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .subir-excel label input { display: none; }
@@ -199,6 +194,65 @@ details.pegar textarea { margin-top: 8px; }
 .layout > * { min-width: 0; }
 .marca { flex: none; }
 .campo > label.interruptor { display: flex; font-weight: 600; }
+
+/* Fotos con encuadre: grandes, con la proporción del diseño, se mueven arrastrando */
+.fotos-grilla { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.fotos-grilla[data-forma="alta"] { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+.fotos-grilla[data-forma="ancha"], .fotos-grilla.portada { grid-template-columns: 1fr; }
+.fotos-grilla .agregar { aspect-ratio: auto; min-height: 120px; }
+.con-quitar { position: relative; }
+.con-quitar.chica { max-width: 240px; }
+.con-quitar .quitar, .con-quitar .mover { position: absolute; top: 6px; z-index: 2; border: 0; border-radius: 50%; width: 30px; height: 30px; background: rgba(0,0,0,.65); color: #fff; cursor: pointer; font-size: .85rem; }
+.con-quitar .quitar { right: 6px; }
+.con-quitar .mover { left: 6px; }
+.marco { position: relative; width: 100%; border-radius: 10px; background-size: cover; background-repeat: no-repeat; background-color: var(--fondo); border: 1px solid var(--borde); cursor: grab; touch-action: none; user-select: none; overflow: hidden; }
+.marco.redonda { border-radius: 50%; }
+.marco.moviendo { cursor: grabbing; outline: 3px solid var(--acento); }
+.marco .pista { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); background: rgba(0,0,0,.6); color: #fff; font-size: .75rem; padding: 3px 10px; border-radius: 999px; white-space: nowrap; pointer-events: none; transition: opacity .2s; }
+.marco.redonda .pista { bottom: 14%; }
+.marco.moviendo .pista { opacity: 0; }
+.foto-una { max-width: 520px; }
+.foto-una .agregar { aspect-ratio: auto; min-height: 120px; max-width: 260px; }
+.foto-una .foto { aspect-ratio: auto; }
+.dos-marcos { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border: 1px solid var(--borde); border-radius: 12px; background: var(--fondo); }
+.dos-marcos figure { margin: 0; }
+.dos-marcos .cel { flex: 0 0 34%; }
+.dos-marcos .pc { flex: 1; }
+.dos-marcos figcaption { font-size: .8rem; color: var(--suave); text-align: center; margin-top: 4px; }
+
+/* Número con − y + */
+.contador-num { display: inline-flex; align-items: center; border: 1px solid var(--borde); border-radius: 999px; background: #fff; overflow: hidden; }
+.contador-num output { min-width: 48px; text-align: center; font-weight: 600; font-size: 1.1rem; }
+.btn-contador { border: 0; background: var(--fondo); width: 44px; height: 40px; font-size: 1.3rem; cursor: pointer; color: var(--acento); font-weight: 700; }
+.btn-contador:disabled { color: var(--borde); cursor: default; }
+
+/* Desplegable de íconos del itinerario */
+.selector-iconos { position: relative; }
+.icono-actual .nombre { flex: 1; }
+.icono-actual .flecha { color: var(--suave); }
+.lista-iconos { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 4px); max-height: 300px; overflow: auto; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 4px; }
+.lista-iconos button { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 6px 8px; border-radius: 8px; cursor: pointer; text-align: left; }
+.lista-iconos button:hover, .lista-iconos button[aria-selected="true"] { background: color-mix(in srgb, var(--acento) 12%, #fff); }
+.icono-tile.chico { width: 40px; height: 40px; padding: 6px; border-radius: 10px; }
+
+/* Bloqueos con explicación */
+.motivo { font-size: .85rem; color: var(--premium); margin: 6px 0 0; }
+.opcion.apagada { opacity: .6; cursor: default; background: var(--fondo); }
+.opcion .motivo { display: block; }
+.btn-link { border: 0; background: none; color: var(--acento); font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline; font-size: .85rem; }
+.subtitulo-nota { margin: 8px 0 0; padding-top: 14px; border-top: 1px solid var(--borde); font-weight: 600; font-size: 1.05rem; }
+.ayuda-seccion { margin: -8px 0 14px; }
+
+/* Respuestas */
+.resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.resumen .dato { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); padding: 14px; display: flex; flex-direction: column; }
+.resumen .dato strong { font-size: 1.8rem; color: var(--acento); line-height: 1.1; }
+.resumen .dato span { font-size: .85rem; color: var(--suave); }
+.cabeza-tabla { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+.tarjeta h2 { font-size: 1.15rem; margin: 0 0 10px; }
+.lista-simple { margin: 0; padding-left: 18px; }
+.lista-simple li { padding: 3px 0; }
+.lista-simple small { color: var(--suave); }
 
 /* Celular: logo y botones arriba; el nombre y "Guardado" en una segunda línea */
 @media (max-width: 600px) {

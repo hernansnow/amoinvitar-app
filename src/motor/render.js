@@ -64,6 +64,12 @@ function llenarItem(el, item, n) {
       if (pos) x.setAttribute('style', cambiarPosicion(x.getAttribute('style') || '', pos));
       x.removeAttribute('data-i-pos');
     }
+    if (x.hasAttribute('data-i-estilo')) {
+      // Estilo extra del ítem (por ejemplo el encuadre de la portada en la computadora)
+      const extra = String(item[x.getAttribute('data-i-estilo')] ?? '').replace(/[<>"]/g, '');
+      if (extra) x.setAttribute('style', `${x.getAttribute('style') || ''}; ${extra}`);
+      x.removeAttribute('data-i-estilo');
+    }
     for (const { name, value } of [...x.attributes]) {
       if (value.includes('{n}')) x.setAttribute(name, value.replaceAll('{n}', n));
     }

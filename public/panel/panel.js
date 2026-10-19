@@ -109,8 +109,10 @@ let firmaMiniatura = null;
 async function quizasMiniatura() {
   if (!S.esquema.pasos.some((p) => p.campos.some((c) => c.id === 'miniatura.generada'))) return;
   const portada = (datos.fotos?.portada || [])[0];
-  const foto = datos.miniatura?.foto || portada?.url || datos.fotos?.rsvp || (datos.fotos?.galeria || [])[0]?.url || '';
-  const pos = datos.miniatura?.foto ? '50% 50%' : portada?.pos;
+  const conFotoPortada = datos.fotosOn?.portada !== false;
+  const foto = datos.miniatura?.foto || (conFotoPortada ? portada?.url : '') || datos.fotos?.rsvp || (datos.fotos?.galeria || [])[0]?.url || '';
+  // La miniatura es horizontal: el encuadre elegido para ella, o el de la portada en computadora
+  const pos = datos.miniatura?.foto ? datos.miniatura?.fotoPos || '50% 50%' : portada?.posPc || portada?.pos;
   const conTexto = !!datos.miniatura?.conTexto;
   const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ');
   const fecha = (datos.celebracion?.inicio || datos.std?.fecha || '').slice(0, 10).split('-').reverse().join(' • ');
@@ -118,13 +120,18 @@ async function quizasMiniatura() {
   if (firma === firmaMiniatura || !nombres) return;
   firmaMiniatura = firma;
   // Foto sola sin nombres: alcanza con la foto, no hace falta armar nada
-  if (foto && !conTexto) { escribir(datos, 'miniatura.generada', ''); return; }
+  if (foto && !conTexto && !datos.miniatura?.foto) { escribir(datos, 'miniatura.generada', ''); pintarMiniatura(); return; }
   try {
     const blob = await armarMiniatura({ foto, pos, nombres, fecha, conTexto, estilo: S.modelo?.miniatura });
     const url = await subirArchivo(new File([blob], 'miniatura.jpg', { type: 'image/jpeg' }));
     escribir(datos, 'miniatura.generada', url);
-    const img = $('#miniatura-previa'); if (img) img.src = url;
   } catch (e) { console.warn('miniatura', e); }
+  pintarMiniatura();
+}
+// Lo que se ve al compartir: la armada (con o sin nombres) o, si no hace falta armarla, la foto
+const fuenteMiniatura = () => datos.miniatura?.generada || datos.miniatura?.foto || (datos.fotosOn?.portada !== false ? datos.fotos?.portada?.[0]?.url : '') || '';
+function pintarMiniatura() {
+  const img = $('#miniatura-previa'); if (img) img.src = fuenteMiniatura();
 }
 
 async function subirArchivo(archivo) {
@@ -156,43 +163,151 @@ function contador(input, max) {
   return n;
 }
 
-function campoFotos(c, valor, alCambiar, { una = false } = {}) {
-  let lista = una ? (valor ? [{ url: valor }] : []) : [].concat(valor || []).map((f) => (typeof f === 'string' ? { url: f } : f));
-  const caja = el('div', { class: una ? 'fotos foto-sola' : 'fotos' });
-  const emitir = () => alCambiar(una ? (lista[0]?.url || '') : lista);
+// ── Fotos con encuadre ────────────────────────────────────────────────
+// Cada foto se ve grande en su marco con la proporción fija del diseño y se
+// encuadra arrastrándola (con el dedo o el mouse; también con las flechas).
+const proporcionCSS = (p) => (p ? p.replace(':', ' / ') : '');
+const leerPos = (p) => (p || '50% 50%').split(' ').map((x) => parseFloat(x) || 0);
+
+function marcoEncuadre({ url, pos, proporcion, etiqueta, redonda = false, alSoltar }) {
+  let [px, py] = leerPos(pos);
+  const marco = el('div', { class: `marco${redonda ? ' redonda' : ''}`, tabindex: 0, role: 'slider', 'aria-label': `${etiqueta || 'Encuadre'}: arrastrar la foto para encuadrarla`,
+    style: `aspect-ratio:${proporcionCSS(proporcion)};background-image:url("${url}");background-position:${px}% ${py}%` },
+  el('span', { class: 'pista' }, '✥ Arrastrar'));
+  const img = new Image(); img.src = url;
+  const pintar = () => { marco.style.backgroundPosition = `${px}% ${py}%`; };
+  const guardar = () => alSoltar(`${Math.round(px)}% ${Math.round(py)}%`);
+  const sobrante = () => {
+    const r = marco.getBoundingClientRect();
+    if (!img.naturalWidth) return { ox: 0, oy: 0 };
+    const s = Math.max(r.width / img.naturalWidth, r.height / img.naturalHeight);
+    return { ox: img.naturalWidth * s - r.width, oy: img.naturalHeight * s - r.height };
+  };
+  let inicio = null;
+  marco.addEventListener('pointerdown', (e) => {
+    inicio = { x: e.clientX, y: e.clientY, px, py, ...sobrante() };
+    marco.setPointerCapture(e.pointerId); marco.classList.add('moviendo');
+  });
+  marco.addEventListener('pointermove', (e) => {
+    if (!inicio) return;
+    const lim = (v) => Math.max(0, Math.min(100, v));
+    if (inicio.ox > 1) px = lim(inicio.px - ((e.clientX - inicio.x) / inicio.ox) * 100);
+    if (inicio.oy > 1) py = lim(inicio.py - ((e.clientY - inicio.y) / inicio.oy) * 100);
+    pintar();
+  });
+  const soltar = () => { if (!inicio) return; inicio = null; marco.classList.remove('moviendo'); guardar(); };
+  marco.addEventListener('pointerup', soltar); marco.addEventListener('pointercancel', soltar);
+  marco.addEventListener('keydown', (e) => {
+    const d = { ArrowLeft: [-5, 0], ArrowRight: [5, 0], ArrowUp: [0, -5], ArrowDown: [0, 5] }[e.key];
+    if (!d) return; e.preventDefault();
+    px = Math.max(0, Math.min(100, px + d[0])); py = Math.max(0, Math.min(100, py + d[1])); pintar(); guardar();
+  });
+  return marco;
+}
+
+async function subirVarias(input, cuantas) {
+  const urls = [];
+  for (const a of [...input.files].slice(0, cuantas)) {
+    try { urls.push(await subirArchivo(await achicarFoto(a))); } catch (e) { aviso(e.message || 'No se pudo subir la foto', true); }
+  }
+  return urls;
+}
+
+function botonSubir({ texto, multiple, alSubir, cuantas }) {
+  const input = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', multiple });
+  const boton = el('label', { class: 'agregar' }, input, el('span', {}, texto));
+  input.addEventListener('change', async () => {
+    boton.classList.add('subiendo'); boton.lastChild.textContent = 'Subiendo…';
+    alSubir(await subirVarias(input, cuantas));
+  });
+  return boton;
+}
+
+// Una sola foto. Con encuadre, la posición se guarda aparte (ruta + "Pos")
+function campoFoto(c, valor, alCambiar, { pos, alPos } = {}) {
+  const caja = el('div', { class: 'foto-una' });
+  const dibujar = (url) => {
+    caja.replaceChildren();
+    if (url) {
+      const vista = c.encuadre && c.proporcion
+        ? marcoEncuadre({ url, pos: pos?.(), proporcion: c.proporcion, redonda: c.redonda, etiqueta: c.etiqueta, alSoltar: (p) => alPos?.(p) })
+        : el('div', { class: 'foto' }, el('img', { src: url, alt: '' }));
+      caja.append(el('div', { class: `con-quitar${c.redonda ? ' chica' : ''}` }, vista,
+        el('button', { type: 'button', class: 'quitar', 'aria-label': 'Quitar foto', onclick: () => { alCambiar(''); alPos?.(undefined); dibujar(''); } }, '✕')));
+    } else if (!c.bloqueado && !c.cerrado) {
+      caja.append(botonSubir({ texto: '＋ Subir foto', multiple: false, cuantas: 1, alSubir: (urls) => { if (urls[0]) { alPos?.(undefined); alCambiar(urls[0]); } dibujar(urls[0] || ''); } }));
+    }
+  };
+  dibujar(valor);
+  return caja;
+}
+
+// Varias fotos (galería, portada, dress code…)
+function campoFotos(c, valor, alCambiar) {
+  let lista = [].concat(valor || []).map((f) => (typeof f === 'string' ? { url: f } : { ...f }));
+  const caja = el('div', { class: `fotos-grilla${c.dosEncuadres ? ' portada' : ''}`, 'data-forma': forma(c.proporcion) });
+  const emitir = () => alCambiar(lista.map((f) => ({ ...f })));
   const dibujar = () => {
     caja.replaceChildren();
     lista.forEach((f, i) => {
-      const img = el('img', { src: f.url, alt: '', loading: 'lazy', title: c.foco ? 'Tocar para elegir el centro de la foto' : '' });
-      const marco = el('div', { class: 'foto' }, img,
-        el('button', { type: 'button', class: 'quitar', 'aria-label': 'Quitar foto', onclick: () => { lista.splice(i, 1); dibujar(); emitir(); } }, '✕'),
-        !una && i > 0 ? el('button', { type: 'button', class: 'mover', 'aria-label': 'Mover antes', onclick: () => { [lista[i - 1], lista[i]] = [lista[i], lista[i - 1]]; dibujar(); emitir(); } }, '◀') : null);
-      if (c.foco) {
-        const [x, y] = (f.pos || '50% 50%').split(' ');
-        marco.append(el('span', { class: 'punto', style: `left:${x};top:${y}` }));
-        img.addEventListener('click', (e) => {
-          const r = img.getBoundingClientRect();
-          f.pos = `${Math.round(((e.clientX - r.left) / r.width) * 100)}% ${Math.round(((e.clientY - r.top) / r.height) * 100)}%`;
-          dibujar(); emitir();
-        });
+      const quitar = el('button', { type: 'button', class: 'quitar', 'aria-label': 'Quitar foto', onclick: () => { lista.splice(i, 1); dibujar(); emitir(); } }, '✕');
+      const mover = i > 0 ? el('button', { type: 'button', class: 'mover', 'aria-label': 'Mover antes', onclick: () => { [lista[i - 1], lista[i]] = [lista[i], lista[i - 1]]; dibujar(); emitir(); } }, '◀') : null;
+      let vista;
+      if (c.dosEncuadres) {
+        vista = el('div', { class: 'dos-marcos' },
+          el('figure', { class: 'cel' }, marcoEncuadre({ url: f.url, pos: f.pos, proporcion: '9:16', etiqueta: 'Celular', alSoltar: (p) => { f.pos = p; emitir(); } }), el('figcaption', {}, '📱 Celular')),
+          el('figure', { class: 'pc' }, marcoEncuadre({ url: f.url, pos: f.posPc || f.pos, proporcion: '16:9', etiqueta: 'Computadora', alSoltar: (p) => { f.posPc = p; emitir(); } }), el('figcaption', {}, '💻 Computadora')));
+      } else if (c.proporcion) {
+        vista = marcoEncuadre({ url: f.url, pos: f.pos, proporcion: c.proporcion, etiqueta: `Foto ${i + 1}`, alSoltar: (p) => { f.pos = p; emitir(); } });
+      } else {
+        vista = el('div', { class: 'foto' }, el('img', { src: f.url, alt: '', loading: 'lazy' }));
       }
-      caja.append(marco);
+      caja.append(el('div', { class: 'con-quitar' }, vista, quitar, mover));
     });
-    if (lista.length < (una ? 1 : c.max || 12) && !c.bloqueado) {
-      const input = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', multiple: !una });
-      const boton = el('label', { class: 'agregar' }, input, una ? '＋ Subir foto' : `＋ Agregar (${lista.length}/${c.max})`);
-      input.addEventListener('change', async () => {
-        const archivos = [...input.files].slice(0, (una ? 1 : c.max) - lista.length);
-        boton.classList.add('subiendo'); boton.lastChild.textContent = 'Subiendo…';
-        for (const a of archivos) {
-          try { lista.push({ url: await subirArchivo(await achicarFoto(a)) }); } catch (e) { aviso(e.message || 'No se pudo subir la foto', true); }
-        }
-        dibujar(); emitir();
-      });
-      caja.append(boton);
+    if (lista.length < (c.max || 12) && !c.bloqueado && !c.cerrado) {
+      caja.append(botonSubir({ texto: `＋ Agregar (${lista.length}/${c.max || 12})`, multiple: true, cuantas: (c.max || 12) - lista.length,
+        alSubir: (urls) => { lista.push(...urls.map((url) => ({ url }))); dibujar(); emitir(); } }));
     }
   };
   dibujar();
+  return caja;
+}
+const forma = (p) => { if (!p) return 'libre'; const [a, b] = p.split(':').map(Number); return a / b > 1.2 ? 'ancha' : a / b < 0.8 ? 'alta' : 'cuadrada'; };
+
+// Número con − y + (acompañantes, segundo de inicio de la canción…)
+function campoContador(c, valor, alCambiar, idHtml) {
+  const min = c.min ?? 0, max = c.max ?? 99, paso = c.paso || 1;
+  let n = Number(valor ?? c.defecto ?? min) || min;
+  const salida = el('output', { id: idHtml, 'aria-live': 'polite' }, String(n));
+  const cambiar = (d) => { n = Math.max(min, Math.min(max, n + d)); salida.textContent = String(n); menos.disabled = n <= min; mas.disabled = n >= max; alCambiar(n); };
+  const menos = el('button', { type: 'button', class: 'btn-contador', 'aria-label': 'Menos', disabled: !!c.bloqueado || n <= min, onclick: () => cambiar(-paso) }, '−');
+  const mas = el('button', { type: 'button', class: 'btn-contador', 'aria-label': 'Más', disabled: !!c.bloqueado || n >= max, onclick: () => cambiar(paso) }, '+');
+  return el('div', { class: 'contador-num' }, menos, salida, mas);
+}
+
+// Íconos del itinerario: desplegable con el ícono y su nombre
+function selectorIconos(c, actual, alCambiar, idHtml) {
+  let elegido = actual || '';
+  const src = (v) => c.iconos.replace('{v}', v);
+  const nombre = (v) => c.valores.find((o) => o.v === v)?.etiqueta || '';
+  const lista = el('div', { class: 'lista-iconos', role: 'listbox', hidden: true });
+  const muestra = el('span', { class: 'icono-tile' });
+  const texto = el('span', { class: 'nombre' });
+  const cerrar = () => { lista.hidden = true; boton.setAttribute('aria-expanded', 'false'); };
+  const boton = el('button', { type: 'button', class: 'icono-actual', id: idHtml, 'aria-haspopup': 'listbox', 'aria-expanded': 'false', disabled: !!c.bloqueado,
+    onclick: () => { lista.hidden = !lista.hidden; boton.setAttribute('aria-expanded', String(!lista.hidden)); if (!lista.hidden) lista.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' }); } },
+  muestra, texto, el('span', { class: 'flecha' }, '▾'));
+  const pintar = () => {
+    muestra.replaceChildren(elegido ? el('img', { src: src(elegido), alt: '' }) : el('span', { class: 'sin-icono' }, '?'));
+    texto.textContent = elegido ? nombre(elegido) : 'Elegir ícono';
+    lista.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.v === elegido)));
+  };
+  lista.append(...c.valores.map((o) => el('button', { type: 'button', role: 'option', 'data-v': o.v,
+    onclick: () => { elegido = o.v; cerrar(); pintar(); alCambiar(o.v); } },
+  el('span', { class: 'icono-tile chico' }, el('img', { src: src(o.v), alt: '', loading: 'lazy' })), el('span', {}, o.etiqueta))));
+  document.addEventListener('click', (e) => { if (!caja.contains(e.target)) cerrar(); });
+  pintar();
+  const caja = el('div', { class: 'selector-iconos' }, boton, lista);
   return caja;
 }
 
@@ -307,30 +422,44 @@ function campoLista(c, valor, alCambiar) {
       el('div', { class: 'cabeza' }, `${i + 1}`, el('span', {},
         i > 0 ? el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Subir', onclick: () => { [lista[i - 1], lista[i]] = [lista[i], lista[i - 1]]; dibujar(); emitir(); } }, '↑') : null,
         el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Quitar', onclick: () => { lista.splice(i, 1); dibujar(); emitir(); } }, '✕'))),
-      el('div', { class: 'sub' }, c.campos.map((sc) => campo(sc, item[sc.id] ?? sc.defecto, (v) => { item[sc.id] = v; emitir(); }, `${c.id}-${i}`))))));
-    if (lista.length < (c.max || 10)) caja.append(el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { lista.push({}); dibujar(); emitir(); } }, '＋ Agregar'));
+      el('div', { class: 'sub' }, c.campos.map((sc) => campo(sc, item[sc.id] ?? sc.defecto, (v) => { item[sc.id] = v; emitir(); }, `${c.id}-${i}`,
+        { pos: () => item[`${sc.id}Pos`], alPos: (p) => { item[`${sc.id}Pos`] = p; emitir(); } }))))));
+    if (lista.length < (c.max || 10) && !c.bloqueado && !c.cerrado && !c.sinExtra) caja.append(el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { lista.push({}); dibujar(); emitir(); } }, `＋ ${c.agregar || 'Agregar'}`));
   };
   dibujar();
   return caja;
 }
 
-function control(c, valor, alCambiar, idHtml) {
-  const dis = !!c.bloqueado;
+// Texto sugerido (el del diseño) ya escrito en el campo, para que se entienda de qué se trata
+const textoBase = (c) => (c.base ? String(S.textos?.[c.base] || '').replace(/<br\s*\/?>/gi, '\n') : '');
+function conBase(c, i, valor, alCambiar) {
+  if (!c.base) return null;
+  const base = textoBase(c);
+  if (valor == null || valor === '') i.value = base;
+  const volver = el('button', { type: 'button', class: 'btn-link', hidden: (i.value === base), onclick: () => { i.value = base; volver.hidden = true; alCambiar(''); } }, '↺ Volver al texto sugerido');
+  i.addEventListener('input', () => { volver.hidden = i.value === base; });
+  return volver;
+}
+
+function control(c, valor, alCambiar, idHtml, extra = {}) {
+  const dis = !!(c.bloqueado || c.cerrado || c.sinExtra || extra.desactivado);
   switch (c.tipo) {
     case 'texto': case 'url': {
       const i = el('input', { id: idHtml, type: c.tipo === 'url' ? 'url' : 'text', value: valor ?? '', maxlength: c.max, placeholder: placeholder(c) || (c.tipo === 'url' ? 'https://' : ''), disabled: dis, inputmode: c.patron ? 'numeric' : null });
-      i.addEventListener('input', () => alCambiar(i.value));
+      const volver = conBase(c, i, valor, alCambiar);
+      i.addEventListener('input', () => alCambiar(c.base && i.value === textoBase(c) ? '' : i.value));
       if (c.espejo) {
         espejos.push({ id: c.id, de: c.espejo, input: i });
         if (!i.value) i.value = leer(datos, c.espejo) || '';
       }
-      return [i, contador(i, c.tipo === 'texto' && c.max > 20 ? c.max : 0)];
+      return [i, contador(i, c.tipo === 'texto' && c.max > 20 ? c.max : 0), volver];
     }
     case 'area': {
       const i = el('textarea', { id: idHtml, maxlength: c.max, placeholder: placeholder(c), disabled: dis });
       i.value = valor ?? '';
-      i.addEventListener('input', () => alCambiar(i.value));
-      return [i, contador(i, c.max)];
+      const volver = conBase(c, i, valor, alCambiar);
+      i.addEventListener('input', () => alCambiar(c.base && i.value === textoBase(c) ? '' : i.value));
+      return [i, contador(i, c.max), volver];
     }
     case 'numero': {
       const i = el('input', { id: idHtml, type: 'number', value: valor ?? '', min: c.min, max: c.max, disabled: dis });
@@ -347,9 +476,10 @@ function control(c, valor, alCambiar, idHtml) {
       i.addEventListener('input', () => alCambiar(i.value));
       return i;
     }
+    case 'contador': return campoContador({ ...c, bloqueado: dis }, valor, alCambiar, idHtml);
     case 'switch': {
-      const i = el('input', { id: idHtml, type: 'checkbox', role: 'switch', disabled: dis });
-      i.checked = !!(valor ?? c.defecto);
+      const i = el('input', { id: idHtml, type: 'checkbox', role: 'switch', disabled: dis || extra.fijo });
+      i.checked = extra.fijo ? true : !!(valor ?? c.defecto);
       const [a, b] = c.opciones || [];
       const ladoA = a ? el('span', { class: 'lado' }, a) : null, ladoB = b ? el('span', { class: 'lado' }, b) : null;
       const marcar = () => { ladoA?.classList.toggle('activo', !i.checked); ladoB?.classList.toggle('activo', i.checked); };
@@ -371,60 +501,51 @@ function control(c, valor, alCambiar, idHtml) {
       if (c.valores.length <= 4) {
         const nombre = `r-${idHtml}`;
         return el('div', { class: 'opciones', role: 'radiogroup' }, c.valores.map((o) => {
-          const i = el('input', { type: 'radio', name: nombre, value: o.v, checked: o.v === actual, disabled: dis });
+          // Opción que necesita otra cosa activada antes (p. ej. link personal → lista de invitados)
+          const falta = o.requiere && !cumple(o.requiere) && o.v !== actual;
+          const i = el('input', { type: 'radio', name: nombre, value: o.v, checked: o.v === actual, disabled: dis || falta });
           i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
-          return el('label', { class: 'opcion' }, i, el('span', {}, o.etiqueta, o.ayuda ? el('small', {}, o.ayuda) : null));
+          return el('label', { class: `opcion${falta ? ' apagada' : ''}` }, i, el('span', {}, o.etiqueta, o.ayuda ? el('small', {}, o.ayuda) : null,
+            falta ? el('small', { class: 'motivo' }, o.motivo, ' ', o.irA ? el('button', { type: 'button', class: 'btn-link', onclick: (e) => { e.preventDefault(); irA(o.irA); } }, 'Ir a RSVP →') : null) : null));
         }));
       }
       const s = el('select', { id: idHtml, disabled: dis }, el('option', { value: '' }, 'Elegir…'), c.valores.map((o) => el('option', { value: o.v, selected: o.v === actual }, o.etiqueta)));
-      s.addEventListener('change', () => alCambiar(s.value));
+      s.addEventListener('change', () => alCambiar(s.value, c.rearmar ? { rearmar: true } : undefined));
       return s;
     }
-    case 'foto': return campoFotos(c, valor, alCambiar, { una: true });
+    case 'foto': return campoFoto({ ...c, bloqueado: dis }, valor, alCambiar, extra);
     case 'fotos': return campoFotos(c, valor, alCambiar);
     case 'mp3': return campoMp3(c, valor, alCambiar);
     case 'lista': return campoLista(c, valor, alCambiar);
     case 'slug': return campoSlug(c, valor, alCambiar);
     case 'invitados': return campoInvitados();
-    case 'nota': return el('p', { class: 'nota' }, c.texto);
+    case 'nota': return el('p', { class: c.estilo === 'subtitulo' ? 'subtitulo-nota' : 'nota' }, c.texto);
     default: return el('span', {}, '');
   }
 }
 
-// Íconos del itinerario: se ven grandes y con nombre, en una grilla
-function selectorIconos(c, actual, alCambiar, idHtml) {
-  let elegido = actual || '';
-  const src = (v) => c.iconos.replace('{v}', v);
-  const nombre = (v) => c.valores.find((o) => o.v === v)?.etiqueta || '';
-  const grilla = el('div', { class: 'grilla-iconos', role: 'listbox', 'aria-label': 'Íconos', hidden: true });
-  const muestra = el('span', { class: 'icono-tile' });
-  const texto = el('span', {});
-  const boton = el('button', { type: 'button', class: 'icono-actual', id: idHtml, 'aria-expanded': 'false', disabled: !!c.bloqueado,
-    onclick: () => { grilla.hidden = !grilla.hidden; boton.setAttribute('aria-expanded', String(!grilla.hidden)); } }, muestra, texto, el('span', { class: 'cambiar' }, 'Cambiar'));
-  const pintar = () => {
-    muestra.replaceChildren(elegido ? el('img', { src: src(elegido), alt: '' }) : el('span', { class: 'sin-icono' }, '?'));
-    texto.textContent = elegido ? nombre(elegido) : 'Elegir ícono';
-    grilla.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.v === elegido)));
-  };
-  grilla.append(...c.valores.map((o) => el('button', { type: 'button', role: 'option', 'data-v': o.v, title: o.etiqueta,
-    onclick: () => { elegido = o.v; grilla.hidden = true; boton.setAttribute('aria-expanded', 'false'); pintar(); alCambiar(o.v); } },
-  el('span', { class: 'icono-tile' }, el('img', { src: src(o.v), alt: '', loading: 'lazy' })), el('small', {}, o.etiqueta))));
-  pintar();
-  return el('div', { class: 'selector-iconos' }, boton, grilla);
-}
-
 let contadorIds = 0;
-function campo(c, valor, alCambiar, prefijo = '') {
+function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   if (c.oculto) return null;
   const idHtml = `c-${prefijo}${c.id.replace(/\W/g, '-')}-${++contadorIds}`;
-  const insignia = c.bloqueado ? el('a', { class: 'insignia', href: linkMejorar(c.bloqueado) }, mejorarA(c.bloqueado)) : null;
+  const insignia = c.bloqueado ? el('a', { class: 'insignia', href: linkMejorar(c.bloqueado) }, mejorarA(c.bloqueado))
+    : c.sinExtra ? el('a', { class: 'insignia', href: `/tienda/?mejorar=${encodeURIComponent(id)}&extra=${c.sinExtra}` }, 'Contratar adicional') : null;
+  // Necesita algo de otra sección, o queda fijo por lo que se eligió en otra
+  const desactivado = c.requiere && !cumple(c.requiere) && !leer(datos, c.id);
+  const fijo = c.fijoSi && cumple(c.fijoSi);
+  const motivo = desactivado || fijo ? el('p', { class: 'motivo' }, c.motivo, ' ',
+    desactivado && c.irA ? el('button', { type: 'button', class: 'btn-link', onclick: () => irA(c.irA) }, 'Ir a RSVP →') : null) : null;
+  const aviso = c.cerrado ? el('p', { class: 'motivo' }, c.cerrado)
+    : c.sinExtra ? el('p', { class: 'motivo' }, c.sinExtra === 'idioma' ? 'Idioma adicional: se activa al contratarlo.' : 'Es un adicional: se activa al contratarlo.') : null;
+  const extra = { ...posicion, desactivado, fijo };
+  if (!posicion.pos && (c.tipo === 'foto' && c.encuadre)) { extra.pos = () => leer(datos, `${c.id}Pos`); extra.alPos = (p) => cambio(`${c.id}Pos`, p); }
   const sinEtiqueta = (c.tipo === 'switch' && !c.opciones) || c.tipo === 'nota';
   const etiqueta = sinEtiqueta ? null
     : ['texto', 'url', 'area', 'numero', 'fecha', 'fechaHora', 'hora', 'color'].includes(c.tipo) || (c.tipo === 'opciones' && !c.multiple && (c.iconos || c.valores.length > 4))
       ? el('label', { for: idHtml, class: c.requerido ? 'requerido' : '' }, c.etiqueta, insignia)
       : el('div', { class: `etiqueta${c.requerido ? ' requerido' : ''}` }, c.etiqueta, insignia);
-  const nodo = el('div', { class: `campo${c.bloqueado ? ' bloqueado' : ''}`, 'data-si': c.si ? JSON.stringify(c.si) : null },
-    etiqueta, control(c, valor, alCambiar, idHtml), sinEtiqueta && insignia, c.ayuda ? el('p', { class: 'ayuda' }, c.ayuda) : null);
+  const nodo = el('div', { class: `campo${c.bloqueado || c.cerrado || c.sinExtra || desactivado ? ' bloqueado' : ''}`, 'data-si': c.si ? JSON.stringify(c.si) : null },
+    etiqueta, control(c, valor, alCambiar, idHtml, extra), sinEtiqueta && insignia, motivo, aviso, c.ayuda ? el('p', { class: 'ayuda' }, c.ayuda) : null);
   if (c.si) nodo.hidden = !visible(c);
   return nodo;
 }
@@ -482,17 +603,20 @@ function dibujarPaso() {
     chk.addEventListener('change', () => cambio(`secciones.${p.seccion}`, chk.checked));
     return el('label', { class: 'interruptor' }, el('span', { class: 'lado' }, 'Mostrar'), chk);
   })() : null;
+  const ayudaSeccion = p.ayudaSeccion && !p.bloqueado ? el('p', { class: 'ayuda ayuda-seccion' }, p.ayudaSeccion) : null;
 
-  const cuerpo = p.bloqueado
+  const cuerpo = p.especial === 'respuestas' ? panelRespuestas()
+    : p.bloqueado
     ? el('div', { class: 'tarjeta mejorar' }, el('div', { class: 'icono' }, '🔒'),
       el('h2', {}, `${p.titulo} viene en ${p.bloqueado[0].toUpperCase()}${p.bloqueado.slice(1)}`),
       el('p', {}, 'Se puede sumar ahora y lo cargado hasta acá queda guardado.'),
       el('a', { class: 'btn btn-premium', href: linkMejorar(p.bloqueado) }, mejorarA(p.bloqueado)))
     : el('div', { class: 'tarjeta' }, p.campos.map((c) => campo(c, leer(datos, c.id), (v, op) => cambio(c.id, v, op))),
-      p.id === 'publicar' ? el('img', { class: 'miniatura-previa', id: 'miniatura-previa', alt: 'Así se ve al compartir', src: datos.miniatura?.generada || datos.miniatura?.foto || datos.fotos?.portada?.[0]?.url || '' }) : null);
+      p.id === 'publicar' ? el('div', { class: 'campo' }, el('div', { class: 'etiqueta' }, 'Así se ve al compartir'), el('img', { class: 'miniatura-previa', id: 'miniatura-previa', alt: 'Así se ve al compartir', src: fuenteMiniatura() })) : null);
 
   f.replaceChildren(...[
     el('div', { class: 'paso-titulo' }, el('h1', {}, p.titulo), toggleSeccion),
+    ayudaSeccion,
     el('div', { id: 'faltan-aca' }),
     cuerpo,
     el('div', { class: 'navegar' },
@@ -500,6 +624,59 @@ function dibujarPaso() {
       siguiente ? el('button', { type: 'button', class: 'btn siguiente', onclick: () => irA(siguiente.id) }, el('small', {}, 'Siguiente →'), el('span', {}, siguiente.titulo)) : el('span')),
   ].filter(Boolean));
   pintarFaltan();
+}
+
+// ── Respuestas: confirmaciones y canciones que mandan los invitados ───
+function panelRespuestas() {
+  const caja = el('div', {}, el('div', { class: 'tarjeta' }, el('p', { class: 'ayuda' }, 'Cargando respuestas…')));
+  (async () => {
+    let r;
+    try { r = (await api('/respuestas')).respuestas || []; } catch { caja.replaceChildren(el('div', { class: 'tarjeta' }, el('p', {}, 'No se pudieron cargar las respuestas.'))); return; }
+    const rsvp = r.filter((x) => x.tipo === 'rsvp'), canciones = r.filter((x) => x.tipo === 'cancion');
+    const publicada = S.evento.estado === 'publicado';
+    // Si un invitado respondió más de una vez, vale la última
+    const ultimas = new Map();
+    for (const x of rsvp) { const k = x.datos.inv && !String(x.datos.inv).startsWith('inv-') ? x.datos.inv : `${x.datos.nombre}|${x.creado}`; if (!ultimas.has(k)) ultimas.set(k, x); }
+    const filas = [...ultimas.values()];
+    const personas = (x) => (x.datos.asiste === 'Si' ? 1 + (x.datos.acompanantes && x.datos.acompanantes !== 'No' ? String(x.datos.acompanantes).split(',').filter((n) => n.trim()).length : 0) : 0);
+    const si = filas.filter((x) => x.datos.asiste === 'Si'), no = filas.filter((x) => x.datos.asiste === 'No');
+    const total = si.reduce((t, x) => t + personas(x), 0);
+    const respondieron = new Set(filas.map((x) => x.datos.inv));
+    const pendientes = (S.invitados || []).filter((i) => !respondieron.has(i.codigo));
+    // Columnas: las que mandó el formulario, con sus títulos
+    const titulos = {};
+    for (const x of filas) { try { Object.assign(titulos, JSON.parse(x.datos.labels || '{}')); } catch { /* sin títulos */ } }
+    const columnas = Object.keys(titulos).filter((k) => !['nombre', 'asiste'].includes(k));
+    const fecha = (iso) => new Date(iso).toLocaleString('es', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const csv = () => {
+      const cab = ['Nombre', 'Asiste', 'Personas', ...columnas.map((k) => titulos[k]), 'Fecha'];
+      const celda = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      const cuerpo = filas.map((x) => [x.datos.nombre, x.datos.asiste === 'Si' ? 'Sí' : 'No', personas(x), ...columnas.map((k) => x.datos[k]), fecha(x.creado)].map(celda).join(';'));
+      const blob = new Blob([`\uFEFF${[cab.map(celda).join(';'), ...cuerpo].join('\n')}`], { type: 'text/csv;charset=utf-8' });
+      const a = el('a', { href: URL.createObjectURL(blob), download: 'confirmaciones.csv' }); document.body.append(a); a.click(); a.remove();
+    };
+    caja.replaceChildren(...[
+      publicada ? null : el('div', { class: 'tarjeta nota' }, 'La invitación todavía no está publicada: cuando se publique, acá van llegando las confirmaciones y las canciones que sugieran los invitados.'),
+      el('div', { class: 'resumen' },
+        el('div', { class: 'dato' }, el('strong', {}, String(total)), el('span', {}, 'personas confirmadas')),
+        el('div', { class: 'dato' }, el('strong', {}, String(si.length)), el('span', {}, 'respuestas "sí"')),
+        el('div', { class: 'dato' }, el('strong', {}, String(no.length)), el('span', {}, 'no pueden ir')),
+        S.invitados?.length ? el('div', { class: 'dato' }, el('strong', {}, String(pendientes.length)), el('span', {}, 'sin responder')) : null),
+      el('div', { class: 'tarjeta' },
+        el('div', { class: 'cabeza-tabla' }, el('h2', {}, 'Confirmaciones'), filas.length ? el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: csv }, '⬇ Descargar Excel') : null),
+        filas.length ? el('div', { class: 'envolver-tabla' }, el('table', { class: 'tabla-invitados' },
+          el('thead', {}, el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Asiste'), el('th', {}, 'Personas'), columnas.map((k) => el('th', {}, titulos[k])), el('th', {}, 'Fecha'))),
+          el('tbody', {}, filas.map((x) => el('tr', {}, el('td', {}, x.datos.nombre || ''), el('td', {}, x.datos.asiste === 'Si' ? '✅ Sí' : '❌ No'), el('td', {}, String(personas(x))),
+            columnas.map((k) => el('td', {}, x.datos[k] || '')), el('td', {}, fecha(x.creado)))))))
+          : el('p', { class: 'ayuda' }, 'Todavía no hay confirmaciones.')),
+      pendientes.length && S.invitados?.length ? el('div', { class: 'tarjeta' }, el('h2', {}, 'Sin responder'),
+        el('ul', { class: 'lista-simple' }, pendientes.map((i) => el('li', {}, i.nombre)))) : null,
+      el('div', { class: 'tarjeta' }, el('h2', {}, 'Canciones sugeridas'),
+        canciones.length ? el('ul', { class: 'lista-simple' }, canciones.map((x) => el('li', {}, `🎵 ${x.datos.cancion || ''}`, el('small', {}, ` · ${fecha(x.creado)}`))))
+          : el('p', { class: 'ayuda' }, 'Todavía no hay canciones sugeridas.')),
+    ].filter(Boolean));
+  })();
+  return caja;
 }
 
 // ── Publicar y vista previa ───────────────────────────────────────────
@@ -543,6 +720,10 @@ function aplicarMarca(m) {
     return;
   }
   datos = S.datos || {};
+  // Opciones que ya vienen elegidas (p. ej. "hay ceremonia"): cuentan desde el principio
+  for (const p of S.esquema.pasos) for (const c of p.campos) {
+    if (['opciones', 'contador'].includes(c.tipo) && c.defecto !== undefined && leer(datos, c.id) === undefined && !c.multiple) escribir(datos, c.id, c.defecto);
+  }
   if (S.modelo?.miniatura?.colorTitulos) document.documentElement.style.setProperty('--icono-fondo', S.modelo.miniatura.colorTitulos);
   aplicarMarca(S.marca);
   // El botón de secciones queda pegado justo debajo de la barra (que en celular ocupa dos líneas)

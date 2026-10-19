@@ -21,6 +21,7 @@ import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin,
 import { puertaHTML } from './componentes/puerta.js';
 import { esquemaPanel, limpiarDatos, faltantes } from './panel/esquemas.js';
 import { HttpError } from './lib/util.js';
+import { sendEmail } from './lib/email.js';
 import { usuarioActual } from './lib/auth.js';
 import * as cuenta from './rutas/cuenta.js';
 import * as tienda from './rutas/tienda.js';
@@ -53,6 +54,18 @@ function traductor(tipo, varnt, propios = {}, nombres = '') {
 }
 const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');
 
+// Títulos y textos que el cliente reescribió en el panel ({ historia: { titulo } } → 'historia.titulo').
+// Los que la plantilla pone como HTML (con saltos de línea) se escapan acá.
+const TEXTOS_HTML = new Set(['album.texto', 'canciones.texto']);
+function textosPropios(o, pre = '', salida = {}) {
+  for (const [k, v] of Object.entries(o || {})) {
+    const clave = pre ? `${pre}.${k}` : k;
+    if (v && typeof v === 'object') textosPropios(v, clave, salida);
+    else if (typeof v === 'string' && v.trim()) salida[clave] = TEXTOS_HTML.has(clave) ? escHtml(v).replace(/\n/g, '<br>') : v;
+  }
+  return salida;
+}
+
 // El evento guardado → lo que espera el motor
 const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, variante: ev.datos.variante });
 
@@ -61,7 +74,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   const plantilla = modelo && await archivo(env, `/modelos/${evento.modelo}/index.html`, url.origin);
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
   const v = variante(evento.variante);
-  const t = traductor(evento.tipo, v, evento.textos, nombresDe(evento.nombres));
+  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres));
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
   if (sinSobre) vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false }; // la vista previa del panel abre directo
@@ -176,7 +189,8 @@ async function eventoConClave(env, request, url, id) {
 
 async function esquemaDe(env, url, ev) {
   const modelo = ev.producto === 'invitacion' ? await modeloJSON(env, ev.modelo, url.origin) : null;
-  return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, modelo, aMedida: ev.aMedida });
+  return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, modelo, aMedida: ev.aMedida,
+    gratis: ev.paquete === 'gratis', extras: ev.datos.extras || [], disenoEnviado: !!ev.datos.diseno?.enviado });
 }
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -224,6 +238,7 @@ async function apiPanel(env, request, url, partes) {
   if (!accion && request.method === 'PUT') {
     const { datos } = await request.json();
     const limpio = limpiarDatos(esquema, datos || {}, ev.datos);
+    if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
     if (limpio.slug && limpio.slug !== ev.slug) {
       if (await almacen.slugOcupado(ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(almacen, ev, limpio.slug)) }, 409);
       ev.slug = limpio.slug;
@@ -272,11 +287,32 @@ async function apiPanel(env, request, url, partes) {
       if (fecha) ev.vence = new Date(Date.parse(fecha) + 16 * 86400000).toISOString();
     }
     ev.estado = ev.producto === 'invitacion' || ev.producto === 'std-web' ? 'publicado' : 'en-diseno';
+    await avisarDiseno(env, url, ev);
     await almacen.guardarEvento(ev);
     return json({ ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null });
   }
   return json({ error: 'no encontrado' }, 404);
 }
+
+// Al publicar: si pidió otros colores o tipografía (adicional pago), el pedido le llega al equipo
+// una sola vez y desde ahí queda cerrado en el panel.
+async function avisarDiseno(env, url, ev) {
+  const d = ev.datos.diseno || {};
+  if (d.enviado || (d.paleta?.modo !== 'cambiar' && d.tipografia?.modo !== 'cambiar')) return;
+  const lineas = [
+    `Evento: ${nombresDe(ev.datos.nombres)} · ${ev.tipo} · ${ev.modelo} ${ev.paquete}`,
+    `Link: ${url.origin}/${ev.tipo}/${ev.slug}`,
+    `Panel: ${url.origin}/panel/${ev.id}?k=${ev.clave}`,
+    d.paleta?.modo === 'cambiar' ? `Colores: ${(d.paleta.colores || []).map((c) => c.color).filter(Boolean).join(', ') || '(sin elegir)'}${d.paleta.notas ? ` · ${d.paleta.notas}` : ''}` : 'Colores: originales',
+    d.tipografia?.modo === 'cambiar' ? `Tipografía: ${d.tipografia.nombre || '(sin indicar)'}` : 'Tipografía: original',
+  ];
+  const para = String(env.ADMINS || '').split(/[,\s]+/).filter(Boolean)[0] || env.SUPPORT_EMAIL;
+  try {
+    if (para) await sendEmail(env, { to: para, subject: `Cambio de diseño pedido · ${nombresDe(ev.datos.nombres)}`, text: lineas.join('\n'), html: lineas.map((l) => `<p>${escHtml(l)}</p>`).join('') });
+    ev.datos.diseno = { ...d, enviado: new Date().toISOString() };
+  } catch (e) { console.error('[diseño]', e); }
+}
+const escHtml = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Alta de un evento: la va a llamar la tienda después del pago
 async function crearEvento(env, request, url) {
@@ -299,27 +335,34 @@ async function vistaPrevia(env, url, request, id) {
   if (!ev) return html('Sin permiso', 403);
   if (!ev.modelo) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  const evento = await conFotosDeMuestra(env, url, paraMotor(ev));
+  const evento = conFotosDeMuestra(paraMotor(ev));
   return pagina(env, url, evento, { marca: empresa?.marca?.blanca ? empresa.marca : null, sinSobre: true });
 }
 
-// Vista previa del panel: donde el cliente todavía no subió fotos van las de la demo,
-// así ve dónde va cada una. La invitación publicada nunca las usa.
-async function conFotosDeMuestra(env, url, ev) {
-  const modelo = await modeloJSON(env, ev.modelo, url.origin);
-  if (!modelo) return ev;
-  const m = eventoDemo({ tipo: ev.tipo, variante: ev.variante, paquete: ev.paquete, modelo, rutas: { comun: '/comun', modelo: `/modelos/${ev.modelo}` } });
+// Vista previa del panel: donde el cliente todavía no subió fotos van las siluetas de las
+// plantillas, así ve dónde va cada una. Si ya subió alguna en un grupo (galería, portada…)
+// se muestran solo las suyas. Con "Incluir fotos" apagado no va ninguna. La invitación
+// publicada nunca las usa.
+const BASE = '/comun/img/base';
+function conFotosDeMuestra(ev) {
+  const on = (g) => ev.fotosOn?.[g] !== false;
   const vacio = (x) => !x || (Array.isArray(x) && !x.length);
+  const serie = (nombre, n) => Array.from({ length: n }, (_, i) => `${BASE}/${nombre}${i + 1}.jpg`);
   const f = { ...(ev.fotos || {}) };
-  for (const k of ['portada', 'galeria', 'rsvp', 'album']) if (vacio(f[k])) f[k] = m.fotos[k];
-  const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || foto });
-  const fotosTestigos = m.testigos.map((x) => x.foto);
+  if (on('portada') && vacio(f.portada)) f.portada = serie('hero-banner', 4).map((url) => ({ url, pos: '50% 30%' }));
+  if (vacio(f.galeria)) f.galeria = serie('foto', 6).map((url) => ({ url }));
+  if (on('rsvp') && !f.rsvp) f.rsvp = `${BASE}/rsvp.jpg`;
+  if (on('album') && !f.album) f.album = `${BASE}/instagram.jpg`;
+  const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || (on('lugares') ? foto : '') });
+  const testigos = serie('testigo', 4);
+  const dc = ev.dresscode || {};
   return {
     ...ev,
     fotos: f,
-    ceremonia: lugar(ev.ceremonia, m.ceremonia.foto || '/comun/img/demo-iglesia.jpg'),
-    celebracion: lugar(ev.celebracion, m.celebracion.foto),
-    testigos: (ev.testigos || []).map((x, i) => ({ ...x, foto: x.foto || fotosTestigos[i % fotosTestigos.length] })),
+    ceremonia: lugar(ev.ceremonia, `${BASE}/iglesia.jpg`),
+    celebracion: lugar(ev.celebracion, `${BASE}/lugar.jpg`),
+    testigos: (ev.testigos || []).map((x, i) => ({ ...x, foto: x.foto || (on('testigos') ? testigos[i % 4] : '') })),
+    dresscode: { ...dc, fotos: on('dresscode') && vacio(dc.fotos) ? serie('dress-code', 6).map((url) => ({ url })) : dc.fotos },
   };
 }
 
