@@ -103,6 +103,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const apagadas = new Set(Object.entries(e.secciones || {}).filter(([, on]) => on === false).map(([k]) => k));
   const secciones = Object.fromEntries(paquete.secciones.map((s) => [s, !apagadas.has(s)]));
   // La historia apagada no desaparece: queda el saludo de bienvenida de los modelos Basic
+  // Testigos o padrinos solo en boda, 15, bautismo y comunión
+  if (!CON_CEREMONIA.has(e.tipo) && 'testigos' in secciones) secciones.testigos = false;
   const historiaActiva = !!secciones.historia;
   if ('historia' in secciones) secciones.historia = true;
   const fotosOn = (g) => e.fotosOn?.[g] !== false;

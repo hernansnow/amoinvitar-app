@@ -50,6 +50,8 @@ const nombreIcono = (v) => {
 // ── Pasos de la invitación web ────────────────────────────────────────
 // Solo estos eventos tienen ceremonia o misa; cumpleaños, infantiles, egresos y empresariales no
 export const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion']);
+// Lo mismo para testigos / padrinos
+export const CON_PADRINOS = new Set(['boda', '15', 'bautismo', 'comunion']);
 
 // Proporciones fijas de las fotos (las mismas de las fotos de muestra del modelo)
 export const PROPORCION = { galeria: '1:1', lugar: '9:4', dress: '4:9', testigo: '1:1', rsvp: '1:1', album: '3:2', miniatura: '1.91:1' };
@@ -183,14 +185,15 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
         { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, valores: (modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })) },
       ] },
     ] },
-    { id: 'testigos', seccion: 'testigos', titulo: padrinos, campos: [
+    // Testigos (boda) o padrinos (15, bautismo, comunión); cumpleaños, infantiles y egresos no tienen
+    ...(!CON_PADRINOS.has(tipo) ? [] : [{ id: 'testigos', seccion: 'testigos', titulo: padrinos, campos: [
       { id: 'textos.testigos.titulo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'testigos.titulo' },
       conFotos('testigos'),
       { id: 'testigos', tipo: 'lista', etiqueta: padrinos, max: 8, campos: [
         { id: 'nombre', tipo: 'texto', etiqueta: 'Nombre', max: 40 }, { id: 'rol', tipo: 'texto', etiqueta: 'Quién es (opcional)', max: 40, placeholder: 'Hermano del novio' },
         { id: 'foto', tipo: 'foto', etiqueta: 'Foto', proporcion: PROPORCION.testigo, encuadre: true, redonda: true, si: siFotos('testigos') },
       ] },
-    ] },
+    ] }]),
     { id: 'album', seccion: 'album', titulo: 'Álbum de fotos compartido', campos: [
       { id: 'textos.album.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'album.texto' },
       { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', ayuda: 'En Deluxe el álbum de Albunear se crea solo. En Premium se puede activar aparte o pegar otro link.' },
