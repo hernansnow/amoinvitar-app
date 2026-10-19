@@ -16,7 +16,7 @@ export const PAQUETES = {
 export const NOMBRES_PAQUETE = { gratis: 'Gratis', basic: 'Basic', premium: 'Premium', deluxe: 'Deluxe' };
 export const RESUMEN_PAQUETES = {
   gratis: ['Todo lo de Basic', 'Hasta 50 invitados', 'Online hasta 15 días después del evento', 'Sin cambio de colores ni tipografía'],
-  basic: ['Portada, historia y galería', 'Lugares con mapa y Agendar', 'Confirmación de asistencia', 'Dress code', 'Lista de invitados con link personal o PIN'],
+  basic: ['Portada, bienvenida y galería', 'Lugares con mapa y Agendar', 'Confirmación de asistencia', 'Dress code', 'Lista de invitados con link personal o PIN'],
   premium: ['Todo lo de Basic', 'Sobre de bienvenida, música y cuenta regresiva', 'Álbum de fotos compartido', 'Sugerir canciones', 'Regalos y datos bancarios'],
   deluxe: ['Todo lo de Premium', 'Itinerario, padrinos, hospedaje y traslado', 'Sugerencias de dress code y redes', 'Álbum Albunear incluido'],
 };
@@ -49,7 +49,7 @@ export const EXTRAS = {
 
 // Qué paquete hace falta para cada sección (para el "Pasate a Premium/Deluxe")
 export const SECCION_MINIMA = {
-  historia: 'basic', galeria: 'basic', rsvp: 'basic', dresscode: 'basic',
+  historia: 'premium', galeria: 'basic', rsvp: 'basic', dresscode: 'basic',
   album: 'premium', canciones: 'premium', regalos: 'premium', sobre: 'premium', musica: 'premium', cuenta: 'premium',
   hospedaje: 'deluxe', bus: 'deluxe', itinerario: 'deluxe', testigos: 'deluxe', redes: 'deluxe', 'dress-sugerencias': 'deluxe',
 };

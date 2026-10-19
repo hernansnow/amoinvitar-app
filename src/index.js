@@ -35,7 +35,7 @@ async function archivo(env, ruta, origen, tipo = 'text') {
   const clave = `${tipo}:${ruta}`;
   if (cache.has(clave)) return cache.get(clave);
   const r = await env.ASSETS.fetch(new URL(ruta, origen));
-  if (!r.ok) return null;
+  if (!r.ok) { if (!env.SIN_CACHE) cache.set(clave, null); return null; } // p. ej. un modelo sin index-premium.html
   const v = tipo === 'json' ? await r.json() : await r.text();
   if (!env.SIN_CACHE) cache.set(clave, v);
   return v;
@@ -71,7 +71,9 @@ const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.m
 
 async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false } = {}) {
   const modelo = await modeloJSON(env, evento.modelo, url.origin);
-  const plantilla = modelo && await archivo(env, `/modelos/${evento.modelo}/index.html`, url.origin);
+  // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html
+  const plantilla = modelo && (await archivo(env, `/modelos/${evento.modelo}/index-${evento.paquete}.html`, url.origin)
+    || await archivo(env, `/modelos/${evento.modelo}/index.html`, url.origin));
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
   const v = variante(evento.variante);
   const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres));

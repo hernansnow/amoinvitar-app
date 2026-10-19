@@ -134,6 +134,7 @@ function dibujarPago() {
   const p = $('#pagar');
   p.disabled = false;
   p.textContent = r.gratis ? 'Crear la invitación' : S.medio === 'transfer' ? 'Ver datos para transferir' : 'Pagar';
+  $('#sin-pagar').hidden = !S.usuario?.admin || r.gratis;
 }
 
 $('#pagar').addEventListener('click', async () => {
@@ -146,6 +147,14 @@ $('#pagar').addEventListener('click', async () => {
     const r = await post('/api/tienda/comprar', { pedido: pedido(), mejora: S.mejora, email, medio: S.medio, moneda: S.moneda, cupon: S.cupon, factura });
     location.href = r.url;
   } catch (e) { mensaje(e.message); b.disabled = false; dibujarPago(); }
+});
+// Solo administradores: crea la invitación sin cobrar ni facturar, para probar
+$('#sin-pagar').addEventListener('click', async () => {
+  const b = $('#sin-pagar'); b.disabled = true;
+  try {
+    const r = await post('/api/tienda/comprar', { pedido: pedido(), mejora: S.mejora, medio: 'admin', moneda: S.moneda, sinPagar: true });
+    location.href = r.url;
+  } catch (e) { mensaje(e.message); b.disabled = false; }
 });
 $('#aplicar-cupon').addEventListener('click', () => { S.cupon = $('#cupon').value.trim(); cotizar(); });
 $('#f-tipo').addEventListener('change', cotizar);

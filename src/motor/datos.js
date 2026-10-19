@@ -240,6 +240,12 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     itinerario: { items: itinerario },
     testigos: { items: (e.testigos || []).map((x) => ({ ...x, foto: fotosOn('testigos') ? x.foto || '' : '', estilo: encuadre(PROP.testigo, x.fotoPos) })) },
     album: { url: e.album?.url || '' },
+    // Premium: hashtag de Instagram (por defecto los nombres y el año, como #SofiyAle2027)
+    hashtag: (() => {
+      const limpio = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9]/g, '');
+      const tag = limpio(e.album?.hashtag) || `${limpio(nA)}${nB ? `y${limpio(nB)}` : ''}${principal?.a || ''}`;
+      return { texto: tag ? `#${tag}` : '', link: tag ? `https://www.instagram.com/explore/tags/${tag}/` : '' };
+    })(),
     canciones: { spotify: e.canciones?.spotify || '' },
     regalos: {
       texto: esc(propio(regalos.texto, 'regalos.texto')),

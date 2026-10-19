@@ -12,7 +12,7 @@
 
   "paquetes": {
     "basic": {
-      "secciones": ["historia", "galeria", "rsvp", "dresscode"],
+      "secciones": ["galeria", "rsvp", "dresscode"],
       "incluye": { "sobre": false, "musica": false, "cuenta": false, "fotosPortada": 1, "fotosGaleria": 6 }
     },
     "premium": {

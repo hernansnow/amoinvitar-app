@@ -136,13 +136,15 @@ export async function comprar(request, env) {
   const moneda = monedaPedida(request, b.moneda);
   const rc = await inversion(env, request, b.factura);
   const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda, cupon, sinIva: !!rc });
-  const elegido = o.medios.find((m) => m.id === b.medio) || o.medios[0];
+  // Administradores: pueden crear cualquier invitación sin pagar, para probar (no genera factura)
+  const sinPagar = !!(b.sinPagar && usuario?.esAdmin);
+  const elegido = sinPagar ? null : o.medios.find((m) => m.id === b.medio) || o.medios[0];
   const total = elegido ? elegido.importe : 0;
-  if (eur > 0 && !elegido) throw new HttpError(503, 'No hay medios de pago disponibles en este momento');
+  if (eur > 0 && !elegido && !sinPagar) throw new HttpError(503, 'No hay medios de pago disponibles en este momento');
 
   const id = randomId(10);
   const numero = await siguienteNumero(env);
-  const medio = total === 0 ? (eur === 0 ? 'gratis' : 'cupon') : elegido.id === 'transfer' ? 'transferencia' : elegido.id;
+  const medio = sinPagar ? 'admin' : total === 0 ? (eur === 0 ? 'gratis' : 'cupon') : elegido.id === 'transfer' ? 'transferencia' : elegido.id;
   const f = b.factura && typeof b.factura === 'object' ? b.factura : null;
   const factura = f && (f.nombre || f.id) ? {
     tipo: f.tipo === 'empresa' ? 'empresa' : 'particular',
@@ -250,7 +252,7 @@ export async function cumplirPedido(env, request, id) {
     if (verifactuMode(env)) await sendPending(env);
   } catch (e) { console.error('[factura]', e); }
   try {
-    await sendEmail(env, { to: p.email, ...mailPedidoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, gratis: p.medio === 'gratis' }) });
+    await sendEmail(env, { to: p.email, ...mailPedidoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, gratis: ['gratis', 'admin'].includes(p.medio) }) });
     if (env.SUPPORT_EMAIL && p.importe) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Venta #${p.numero} · ${formatMoney(p.importe, p.moneda)}`, lineas: [`${p.email} · ${p.detalle.nombre} · ${p.medio}`] }) });
   } catch (e) { console.error('[mail]', e); }
   return true;

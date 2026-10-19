@@ -23,7 +23,8 @@ recién creado (todo se guarda en memoria mientras corre).
 | Carpeta | Qué hay |
 |---|---|
 | `public/comun/` | CSS, JS, fuentes e imágenes que comparten todos los modelos |
-| `public/modelos/<modelo>/index.html` | el diseño (se puede abrir y editar en Dreamweaver) |
+| `public/modelos/<modelo>/index.html` | el diseño Deluxe (se puede abrir y editar en Dreamweaver) |
+| `public/modelos/<modelo>/index-premium.html` · `index-basic.html` | el diseño de cada paquete, en su propio archivo |
 | `public/modelos/<modelo>/tema.css` | paleta y fuentes del modelo |
 | `public/modelos/<modelo>/estilo.css` | estilos del modelo (se arma con `npm run estilos -- <modelo>`) |
 | `public/modelos/<modelo>/modelo.json` | qué secciones trae cada paquete, colores del sobre, fotos de la demo |
@@ -97,3 +98,19 @@ intentos de PIN tienen un límite por minuto.
 Reorganizar la tienda, administración de cupones y pedidos,
 tablero de empresas, modelos de Save The Date web, vencimientos de los planes
 pagos, descargas, envíos y recordatorios.
+
+## Un archivo por paquete (regla para todos los modelos)
+
+Cada modelo lleva **tres diseños**, uno por paquete, igual que las plantillas originales
+(`garden-basic.html`, `garden-premium.html`, `garden-deluxe.html`):
+
+- `index.html` → Deluxe
+- `index-premium.html` → Premium
+- `index-basic.html` → Basic (y el plan gratis)
+
+No se arma el Basic "sacándole cosas" al Deluxe: cada paquete tiene su propio diseño (por ejemplo
+Garden Basic tiene una sola foto de portada, el saludo de bienvenida en lugar de la historia y el
+RSVP sin foto; Premium usa hashtag de Instagram en lugar del álbum QR). Si falta el archivo de un
+paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan además con
+`data-seccion` y la lista `secciones` de `modelo.json`.
+

@@ -66,7 +66,7 @@ const lugarCampos = (p, { conFoto = true } = {}) => [
   { id: `${p}.direccionTexto`, tipo: 'texto', etiqueta: 'Cómo se ve la dirección en la invitación', max: 140, espejo: `${p}.direccion`,
     ayuda: 'Se completa sola con la dirección. Se puede cambiar (por ejemplo "Pilar, Buenos Aires") sin que cambie el mapa.' },
   { id: `${p}.mapaLink`, tipo: 'url', etiqueta: 'Link de Google Maps (opcional)', ayuda: 'Solo si el mapa armado con la dirección no marca bien el lugar.' },
-  ...(conFoto ? [{ id: `${p}.foto`, tipo: 'foto', etiqueta: 'Foto del lugar (opcional)', proporcion: PROPORCION.lugar, encuadre: true, si: siFotos('lugares') }] : []),
+  ...(conFoto ? [{ id: `${p}.foto`, tipo: 'foto', etiqueta: 'Foto del lugar (opcional)', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', si: siFotos('lugares') }] : []),
 ];
 
 function pasosInvitacion({ tipo, modelo, paquete }) {
@@ -123,11 +123,11 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
           ] }] : []),
           { id: 'ceremonia.inicio', tipo: 'fechaHora', etiqueta: misa ? 'Día y hora de la misa' : 'Día y hora de la ceremonia', requerido: true, si: hayCeremonia,
             ayuda: 'Para el calendario, termina cuando empieza la fiesta (o a las 2 horas si es otro día).' },
-          conFotos('lugares', 'Incluir fotos de los lugares'),
+          { ...conFotos('lugares', 'Incluir fotos de los lugares'), paquete: 'premium' },
           ...lugarCampos('ceremonia').map((c) => ({ ...c, si: c.si ? [hayCeremonia, c.si] : hayCeremonia })),
           { id: 'separador.fiesta', tipo: 'nota', texto: misa ? 'La fiesta' : 'La celebración', si: hayCeremonia, estilo: 'subtitulo' },
           { id: 'celebracion.inicio', tipo: 'fechaHora', etiqueta: 'Día y hora de inicio', requerido: true, si: unificada },
-        ] : [conFotos('lugares', 'Incluir foto del lugar')]),
+        ] : [{ ...conFotos('lugares', 'Incluir foto del lugar'), paquete: 'premium' }]),
         { id: 'celebracion.inicio', tipo: 'fechaHora', etiqueta: conCeremonia ? 'Día y hora de la fiesta' : 'Día y hora de inicio', requerido: true,
           ...(conCeremonia ? { si: { campo: 'ceremonia.modo', no: 'mismo-lugar' } } : {}) },
         { id: 'celebracion.fin', tipo: 'fechaHora', etiqueta: 'Fecha y hora estimada de finalización', requerido: true, ayuda: 'Se usa para el calendario de los invitados.' },
@@ -146,8 +146,8 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
         { id: 'invitados', tipo: 'invitados', etiqueta: 'Lista de invitados', si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
         { id: 'rsvp.acompanantes', tipo: 'contador', etiqueta: 'Cantidad de acompañantes que puede sumar cada invitado', min: 0, max: 10, defecto: 0,
           si: [{ campo: 'acceso.lista', no: true }, { campo: 'acceso.modo', no: 'codigo' }, { o: [{ campo: 'acceso.modo', no: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] }] },
-        conFotos('rsvp'),
-        { id: 'fotos.rsvp', tipo: 'foto', etiqueta: 'Foto', proporcion: PROPORCION.rsvp, encuadre: true, si: siFotos('rsvp') },
+        { ...conFotos('rsvp'), paquete: 'premium' },
+        { id: 'fotos.rsvp', tipo: 'foto', etiqueta: 'Foto', proporcion: PROPORCION.rsvp, encuadre: true, paquete: 'premium', si: siFotos('rsvp') },
         { id: 'rsvp.preguntas.comida', tipo: 'switch', etiqueta: 'Preguntar restricciones alimentarias' },
         { id: 'rsvp.preguntas.alcohol', tipo: 'switch', etiqueta: 'Preguntar si toma alcohol' },
         { id: 'rsvp.preguntas.ninos', tipo: 'switch', etiqueta: 'Preguntar si va con niños' },
@@ -194,9 +194,16 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
         { id: 'foto', tipo: 'foto', etiqueta: 'Foto', proporcion: PROPORCION.testigo, encuadre: true, redonda: true, si: siFotos('testigos') },
       ] },
     ] }]),
-    { id: 'album', seccion: 'album', titulo: 'Álbum de fotos compartido', campos: [
+    // Premium: hashtag de Instagram · Deluxe: álbum compartido de Albunear
+    paquete === 'premium' ? { id: 'album', seccion: 'album', titulo: 'Fotos con hashtag', campos: [
+      { id: 'album.hashtag', tipo: 'texto', etiqueta: 'Hashtag de Instagram', max: 40, placeholder: 'SofiyAle2027',
+        ayuda: 'Sin el #. Vacío: se arma solo con los nombres y el año. Los invitados etiquetan sus fotos y el botón "Ver fotos" las muestra.' },
+      { id: 'textos.hashtag.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'hashtag.texto' },
+      conFotos('album'),
+      { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', proporcion: PROPORCION.album, encuadre: true, si: siFotos('album') },
+    ] } : { id: 'album', seccion: 'album', titulo: 'Álbum de fotos compartido', campos: [
       { id: 'textos.album.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'album.texto' },
-      { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', ayuda: 'En Deluxe el álbum de Albunear se crea solo. En Premium se puede activar aparte o pegar otro link.' },
+      { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', ayuda: 'El álbum de Albunear se crea solo. También se puede pegar otro link.' },
       conFotos('album'),
       { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', proporcion: PROPORCION.album, encuadre: true, si: siFotos('album') },
     ] },
