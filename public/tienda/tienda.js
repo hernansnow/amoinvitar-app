@@ -20,7 +20,7 @@ const S = {
   producto: q.get('producto') || (q.get('modelo') ? 'invitacion' : null),
   tipo: q.get('evento') || null, modelo: q.get('modelo') || null, paquete: q.get('paquete') || null,
   std: null, extras: new Set(), medio: null, cupon: '', cotizacion: null,
-  mejora: q.get('mejorar') ? { evento: q.get('mejorar'), paquete: q.get('a') || 'premium' } : null,
+  mejora: q.get('mejorar') ? { evento: q.get('mejorar'), paquete: q.get('a') || 'premium', extra: q.get('extra') || undefined } : null,
 };
 try { const k = sessionStorage.getItem(`clave_${S.mejora?.evento}`); if (S.mejora && k) S.mejora.clave = k; } catch { /* sin almacenamiento */ }
 
@@ -67,7 +67,7 @@ function dibujar() {
   const modelo = c.modelos.find((m) => m.id === S.modelo);
   const mejoraDesde = S.mejoraActual ? ['gratis', 'basic', 'premium', 'deluxe'].indexOf(S.mejoraActual) : -1;
   const paquetes = c.paquetes.filter((p) => (S.mejora ? ['gratis', 'basic', 'premium', 'deluxe'].indexOf(p.id) > mejoraDesde : p.id !== 'gratis' || modelo?.gratis));
-  $('#paso-paquete').hidden = !(S.mejora || (esInv && S.modelo));
+  $('#paso-paquete').hidden = !(S.mejora || (esInv && S.modelo)) || !!S.mejora?.extra;
   $('#paquetes').replaceChildren(...paquetes.map((p) => radio('paquete', p.id, S.paquete === p.id, (v) => { S.paquete = v; if (S.mejora) S.mejora.paquete = v; actualizar(); },
     el('strong', {}, p.nombre), el('div', { class: 'precio' }, S.mejora ? `+ ${S.difs?.[p.id] || ''}` : p.precio.texto), el('ul', {}, p.incluye.map((x) => el('li', {}, x))))));
 
@@ -169,7 +169,12 @@ async function cargar() {
   S.catalogo = c; S.moneda = c.moneda; S.usuario = cu.usuario || false;
   $('#moneda').replaceChildren(...c.monedas.map((m) => el('option', { value: m, selected: m === c.moneda }, m)));
   if (S.usuario) { const a = $('#link-cuenta'); a.textContent = 'Mis invitaciones'; a.href = '/mi-cuenta'; }
-  if (S.mejora) {
+  if (S.mejora?.extra) {
+    // Solo un adicional: no se elige paquete
+    $('#titulo').textContent = 'Sumar un adicional';
+    $('#bajada').textContent = 'Se activa en el panel apenas se acredita el pago. Todo lo cargado queda igual.';
+    try { const r = await post('/api/tienda/mejora', { mejora: S.mejora, moneda: S.moneda }); S.mejoraActual = r.actual; S.paquete = r.actual; } catch (e) { mensaje(e.message); }
+  } else if (S.mejora) {
     $('#titulo').textContent = 'Mejorar el paquete';
     $('#bajada').textContent = 'Se paga solo la diferencia. Todo lo cargado queda igual.';
     try {

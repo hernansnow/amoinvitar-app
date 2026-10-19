@@ -235,6 +235,7 @@ async function apiPanel(env, request, url, partes) {
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? { id: ev.modelo, miniatura: (await modeloJSON(env, ev.modelo, url.origin))?.miniatura || null } : null,
       marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
+      ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
   }
   if (!accion && request.method === 'PUT') {
@@ -355,14 +356,14 @@ function conFotosDeMuestra(ev) {
   if (vacio(f.galeria)) f.galeria = serie('foto', 6).map((url) => ({ url }));
   if (on('rsvp') && !f.rsvp) f.rsvp = `${BASE}/rsvp.jpg`;
   if (on('album') && !f.album) f.album = `${BASE}/instagram.jpg`;
-  const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || (on('lugares') ? foto : '') });
+  const lugar = (l, foto, cual) => ({ ...(l || {}), foto: l?.foto || (on(cual) && on('lugares') ? foto : '') });
   const testigos = serie('testigo', 4);
   const dc = ev.dresscode || {};
   return {
     ...ev,
     fotos: f,
-    ceremonia: lugar(ev.ceremonia, `${BASE}/iglesia.jpg`),
-    celebracion: lugar(ev.celebracion, `${BASE}/lugar.jpg`),
+    ceremonia: lugar(ev.ceremonia, `${BASE}/iglesia.jpg`, 'ceremonia'),
+    celebracion: lugar(ev.celebracion, `${BASE}/lugar.jpg`, 'celebracion'),
     testigos: (ev.testigos || []).map((x, i) => ({ ...x, foto: x.foto || (on('testigos') ? testigos[i % 4] : '') })),
     dresscode: { ...dc, fotos: on('dresscode') && vacio(dc.fotos) ? serie('dress-code', 6).map((url) => ({ url })) : dc.fotos },
   };

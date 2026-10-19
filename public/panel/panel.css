@@ -254,6 +254,12 @@ details.pegar textarea { margin-top: 8px; }
 .lista-simple li { padding: 3px 0; }
 .lista-simple small { color: var(--suave); }
 
+/* Necesito ayuda: en la barra (computadora) y flotante abajo (celular) */
+.btn-ayuda { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.ayuda-flotante { display: none; position: fixed; right: 14px; bottom: 16px; z-index: 30; align-items: center; gap: 6px; background: #25d366; color: #fff; text-decoration: none; font-weight: 600; padding: 10px 14px; border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+@media (max-width: 899px) { .btn-ayuda { display: none; } .ayuda-flotante { display: inline-flex; } }
+.previa.abierta ~ .ayuda-flotante, body.sin-scroll .ayuda-flotante { display: none; }
+
 /* Celular: logo y botones arriba; el nombre y "Guardado" en una segunda línea */
 @media (max-width: 600px) {
   .marca img { width: 84px; }

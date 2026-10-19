@@ -24,10 +24,20 @@ const PLURAL = new Set(['boda']);
 // ── Campos reutilizables ──────────────────────────────────────────────
 
 const ZONAS = [
-  ['America/Argentina/Buenos_Aires', 'Argentina'], ['America/Montevideo', 'Uruguay'], ['America/Asuncion', 'Paraguay'],
-  ['Europe/Madrid', 'España (península y Baleares)'], ['Atlantic/Canary', 'España (Canarias)'], ['America/Mexico_City', 'México (centro)'],
-  ['America/Bogota', 'Colombia'], ['America/Santiago', 'Chile'], ['America/Lima', 'Perú'], ['America/Costa_Rica', 'Costa Rica'],
-  ['America/Managua', 'Nicaragua'], ['America/New_York', 'EE. UU. (este)'], ['America/Los_Angeles', 'EE. UU. (oeste)'], ['Europe/London', 'Reino Unido'],
+  ['America/Argentina/Buenos_Aires', 'Argentina'], ['America/La_Paz', 'Bolivia'], ['America/Sao_Paulo', 'Brasil (Brasilia, São Paulo)'],
+  ['America/Toronto', 'Canadá (este)'], ['America/Vancouver', 'Canadá (oeste)'], ['America/Santiago', 'Chile'], ['America/Bogota', 'Colombia'],
+  ['America/Costa_Rica', 'Costa Rica'], ['America/Havana', 'Cuba'], ['America/Guayaquil', 'Ecuador'], ['Pacific/Galapagos', 'Ecuador (Galápagos)'],
+  ['America/El_Salvador', 'El Salvador'], ['Europe/Madrid', 'España (península y Baleares)'], ['Atlantic/Canary', 'España (Canarias)'],
+  ['America/New_York', 'Estados Unidos (este: Nueva York, Miami)'], ['America/Chicago', 'Estados Unidos (centro: Chicago, Texas)'],
+  ['America/Denver', 'Estados Unidos (montaña: Denver)'], ['America/Phoenix', 'Estados Unidos (Arizona)'], ['America/Los_Angeles', 'Estados Unidos (oeste: Los Ángeles)'],
+  ['Pacific/Honolulu', 'Estados Unidos (Hawái)'], ['America/Guatemala', 'Guatemala'], ['America/Tegucigalpa', 'Honduras'],
+  ['America/Mexico_City', 'México (centro: CDMX, Guadalajara, Monterrey)'], ['America/Cancun', 'México (Quintana Roo: Cancún)'],
+  ['America/Mazatlan', 'México (Pacífico: Sinaloa, Baja California Sur)'], ['America/Hermosillo', 'México (Sonora)'], ['America/Tijuana', 'México (Baja California: Tijuana)'],
+  ['America/Managua', 'Nicaragua'], ['America/Panama', 'Panamá'], ['America/Asuncion', 'Paraguay'], ['America/Lima', 'Perú'],
+  ['America/Puerto_Rico', 'Puerto Rico'], ['America/Santo_Domingo', 'República Dominicana'], ['America/Montevideo', 'Uruguay'], ['America/Caracas', 'Venezuela'],
+  ['Europe/Andorra', 'Andorra'], ['Europe/Berlin', 'Alemania'], ['Europe/Brussels', 'Bélgica'], ['Europe/Paris', 'Francia'], ['Europe/Rome', 'Italia'],
+  ['Europe/Amsterdam', 'Países Bajos'], ['Europe/Lisbon', 'Portugal'], ['Europe/London', 'Reino Unido'], ['Europe/Zurich', 'Suiza'],
+  ['Asia/Jerusalem', 'Israel'], ['Australia/Sydney', 'Australia (Sídney)'],
 ].map(([v, etiqueta]) => ({ v, etiqueta }));
 
 const IDIOMAS = [
@@ -57,16 +67,18 @@ export const CON_PADRINOS = new Set(['boda', '15', 'bautismo', 'comunion']);
 export const PROPORCION = { galeria: '1:1', lugar: '9:4', dress: '4:9', testigo: '1:1', rsvp: '1:1', album: '3:2', miniatura: '1.91:1' };
 
 // "Incluir fotos": muchos prefieren la invitación sin fotos en alguna sección
-const conFotos = (grupo, etiqueta = 'Incluir fotos en esta sección') => ({ id: `fotosOn.${grupo}`, tipo: 'switch', etiqueta, defecto: true, rearmar: true });
+const conFotos = (grupo, etiqueta = 'Incluir foto en esta sección') => ({ id: `fotosOn.${grupo}`, tipo: 'switch', etiqueta, defecto: true, rearmar: true });
 const siFotos = (grupo) => ({ campo: `fotosOn.${grupo}`, no: false });
 
-const lugarCampos = (p, { conFoto = true } = {}) => [
+// Lugar: nombre, dirección, mapa, cómo se ve la dirección y su foto (con su interruptor)
+const lugarCampos = (p) => [
   { id: `${p}.nombre`, tipo: 'texto', etiqueta: 'Nombre del lugar', max: 80, placeholder: 'Estancia La Soñada' },
   { id: `${p}.direccion`, tipo: 'texto', etiqueta: 'Dirección', max: 140, ayuda: 'Con la dirección se arma solo el mapa y el botón "Cómo llegar".' },
-  { id: `${p}.direccionTexto`, tipo: 'texto', etiqueta: 'Cómo se ve la dirección en la invitación', max: 140, espejo: `${p}.direccion`,
-    ayuda: 'Se completa sola con la dirección. Se puede cambiar (por ejemplo "Pilar, Buenos Aires") sin que cambie el mapa.' },
   { id: `${p}.mapaLink`, tipo: 'url', etiqueta: 'Link de Google Maps (opcional)', ayuda: 'Solo si el mapa armado con la dirección no marca bien el lugar.' },
-  ...(conFoto ? [{ id: `${p}.foto`, tipo: 'foto', etiqueta: 'Foto del lugar (opcional)', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', si: siFotos('lugares') }] : []),
+  { id: `${p}.direccionTexto`, tipo: 'texto', etiqueta: 'Editar cómo se ve la dirección en la invitación', max: 140, espejo: `${p}.direccion`,
+    ayuda: 'Se completa sola con la dirección. Se puede cambiar (por ejemplo "Pilar, Buenos Aires") sin que cambie el mapa.' },
+  { id: `fotosOn.${p}`, tipo: 'switch', etiqueta: 'Incluir foto del lugar', defecto: true, rearmar: true, paquete: 'premium' },
+  { id: `${p}.foto`, tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', si: siFotos(p) },
 ];
 
 function pasosInvitacion({ tipo, modelo, paquete }) {
@@ -89,8 +101,8 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
     {
       id: 'portada', titulo: 'Portada y música',
       campos: [
-        { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 30, base: 'portada.subtitulo', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
-        conFotos('portada', 'Incluir fotos en la portada'),
+        { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
+        conFotos('portada', (incluye.fotosPortada || 1) > 1 ? 'Incluir fotos en la portada' : 'Incluir foto en la portada'),
         { id: 'fotos.portada', tipo: 'fotos', etiqueta: incluye.fotosPortada > 1 ? 'Fotos de portada' : 'Foto de portada', max: incluye.fotosPortada || 1, dosEncuadres: true,
           ayuda: 'Cada foto se ve distinta en el celular (vertical) y en la computadora (horizontal): arrastrar cada una para encuadrarla.', si: siFotos('portada') },
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
@@ -118,19 +130,22 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
             { v: 'mismo-lugar', etiqueta: 'Sí, en el mismo lugar de la fiesta' },
             { v: 'sin', etiqueta: 'No' },
           ] },
-          ...(tipo === 'boda' ? [{ id: 'ceremonia.tipo', tipo: 'opciones', etiqueta: 'Tipo de ceremonia', si: { campo: 'ceremonia.modo', no: 'sin' }, valores: [
-            { v: 'religiosa', etiqueta: 'Religiosa' }, { v: 'civil', etiqueta: 'Civil' }, { v: 'simbolica', etiqueta: 'Simbólica' },
-          ] }] : []),
-          { id: 'ceremonia.inicio', tipo: 'fechaHora', etiqueta: misa ? 'Día y hora de la misa' : 'Día y hora de la ceremonia', requerido: true, si: hayCeremonia,
+          // La ceremonia (o misa), cuando es en otro lugar
+          { id: 'separador.ceremonia', tipo: 'nota', texto: misa ? 'La misa' : 'La ceremonia', si: hayCeremonia, estilo: 'subtitulo' },
+          { id: 'ceremonia.titulo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'ceremonia.religiosa', si: hayCeremonia },
+          { id: 'ceremonia.inicio', tipo: 'fechaHora', etiqueta: 'Día y hora de inicio', etiquetaFalta: misa ? 'Día y hora de la misa' : 'Día y hora de la ceremonia', requerido: true, si: hayCeremonia,
             ayuda: 'Para el calendario, termina cuando empieza la fiesta (o a las 2 horas si es otro día).' },
-          { ...conFotos('lugares', 'Incluir fotos de los lugares'), paquete: 'premium' },
           ...lugarCampos('ceremonia').map((c) => ({ ...c, si: c.si ? [hayCeremonia, c.si] : hayCeremonia })),
           { id: 'separador.fiesta', tipo: 'nota', texto: misa ? 'La fiesta' : 'La celebración', si: hayCeremonia, estilo: 'subtitulo' },
-          { id: 'celebracion.inicio', tipo: 'fechaHora', etiqueta: 'Día y hora de inicio', requerido: true, si: unificada },
-        ] : [{ ...conFotos('lugares', 'Incluir foto del lugar'), paquete: 'premium' }]),
-        { id: 'celebracion.inicio', tipo: 'fechaHora', etiqueta: conCeremonia ? 'Día y hora de la fiesta' : 'Día y hora de inicio', requerido: true,
-          ...(conCeremonia ? { si: { campo: 'ceremonia.modo', no: 'mismo-lugar' } } : {}) },
-        { id: 'celebracion.fin', tipo: 'fechaHora', etiqueta: 'Fecha y hora estimada de finalización', requerido: true, ayuda: 'Se usa para el calendario de los invitados.' },
+          // El título de la fiesta cambia según haya ceremonia aparte, en el mismo lugar o ninguna
+          { id: 'celebracion.titulo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'celebracion.titulo', si: hayCeremonia },
+          { id: 'celebracion.tituloUnico', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'unificado.titulo', si: unificada },
+          { id: 'celebracion.tituloSolo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'celebracion.sola', si: { campo: 'ceremonia.modo', es: 'sin' } },
+        ] : [
+          { id: 'celebracion.tituloSolo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'celebracion.sola' },
+        ]),
+        { id: 'celebracion.inicio', tipo: 'fechaHora', etiqueta: 'Día y hora de inicio', etiquetaFalta: conCeremonia ? 'Día y hora de la fiesta' : 'Día y hora de inicio', requerido: true },
+        { id: 'celebracion.fin', tipo: 'fechaHora', etiqueta: 'Fecha y hora estimada de finalización', etiquetaFalta: 'Fecha y hora de finalización de la fiesta', requerido: true, ayuda: 'Se usa para el calendario de los invitados.' },
         ...lugarCampos('celebracion'),
       ],
     },
@@ -188,7 +203,7 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
     // Testigos (boda) o padrinos (15, bautismo, comunión); cumpleaños, infantiles y egresos no tienen
     ...(!CON_PADRINOS.has(tipo) ? [] : [{ id: 'testigos', seccion: 'testigos', titulo: padrinos, campos: [
       { id: 'textos.testigos.titulo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'testigos.titulo' },
-      conFotos('testigos'),
+      conFotos('testigos', 'Incluir fotos'),
       { id: 'testigos', tipo: 'lista', etiqueta: padrinos, max: 8, campos: [
         { id: 'nombre', tipo: 'texto', etiqueta: 'Nombre', max: 40 }, { id: 'rol', tipo: 'texto', etiqueta: 'Quién es (opcional)', max: 40, placeholder: 'Hermano del novio' },
         { id: 'foto', tipo: 'foto', etiqueta: 'Foto', proporcion: PROPORCION.testigo, encuadre: true, redonda: true, si: siFotos('testigos') },
@@ -509,5 +524,5 @@ export function limpiarDatos(esquema, datos, previos = {}) {
 export function faltantes(esquema, datos) {
   const visibles = (c) => !c.si || cumple(c.si, datos);
   return esquema.pasos.flatMap((p) => (p.bloqueado ? [] : p.campos.filter((c) => c.requerido && visibles(c) && !c.bloqueado && !c.cerrado && (leer(datos, c.id) ?? '') === '')
-    .map((c) => ({ paso: p.id, campo: c.id, etiqueta: c.etiqueta }))));
+    .map((c) => ({ paso: p.id, campo: c.id, etiqueta: c.etiquetaFalta || c.etiqueta }))));
 }

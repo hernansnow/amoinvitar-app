@@ -117,17 +117,20 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const cer = e.ceremonia || {};
   const modo = CON_CEREMONIA.has(e.tipo) ? cer.modo || 'separada' : 'sin'; // separada | mismo-lugar | sin
   const zona = e.zonaHoraria || 'Europe/Madrid';
-  const tituloCer = t(`ceremonia.${cer.tipo || 'religiosa'}`);
-  const tituloCel = modo === 'mismo-lugar' ? t('unificado.titulo') : modo === 'sin' ? t('celebracion.sola') : t('celebracion.titulo');
+  // Títulos: los que escribió el cliente, si no los del idioma
+  const tituloCer = cer.titulo || t(`ceremonia.${cer.tipo || 'religiosa'}`);
+  const tituloCel = modo === 'mismo-lugar' ? cel.tituloUnico || t('unificado.titulo')
+    : modo === 'sin' ? cel.tituloSolo || t('celebracion.sola') : cel.titulo || t('celebracion.titulo');
   const descripcion = t('evento.descripcion');
   const nombreCal = (titulo) => `${titulo} - ${nombresTexto}`;
 
-  const fotoLugar = (l) => (fotosOn('lugares') && l.foto ? l.foto : '');
+  // Cada lugar tiene su interruptor de foto (antes había uno para los dos: fotosOn.lugares)
+  const fotoLugar = (l, cual) => (fotosOn(cual) && fotosOn('lugares') && l.foto ? l.foto : '');
   const ceremonia = {
     separada: modo === 'separada',
     unificada: modo === 'mismo-lugar',
     titulo: tituloCer,
-    foto: fotoLugar(cer),
+    foto: fotoLugar(cer, 'ceremonia'),
     fotoEstilo: encuadre(PROP.lugar, cer.fotoPos),
     fechaHora: fechaHora(cer.inicio, variante),
     lugarTexto: lugarTexto(cer),
@@ -135,7 +138,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   };
   const celebracion = {
     titulo: tituloCel,
-    foto: fotoLugar(cel),
+    foto: fotoLugar(cel, 'celebracion'),
     fotoEstilo: encuadre(PROP.lugar, cel.fotoPos),
     fechaHora: fechaHora(cel.inicio, variante),
     lugarTexto: lugarTexto(cel),

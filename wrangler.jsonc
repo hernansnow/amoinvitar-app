@@ -62,6 +62,8 @@
     "SITE_URL": "https://app.amoinvitar.com",
     "MAIL_FROM": "Amo Invitar <hola@amoinvitar.com>",
     "SUPPORT_EMAIL": "hola@amoinvitar.com",
+    // WhatsApp de Amo Invitar para el botón "Necesito ayuda" del panel (con código de país, sin +)
+    "WHATSAPP": "34621326549",
     // IVA de la UE: se suma al precio de lista y se muestra "IVA incluido" (como en Albunear)
     "IVA_INCLUIDO": "0",
     // Serie de las facturas (A en Albunear, AI acá: numeraciones separadas)

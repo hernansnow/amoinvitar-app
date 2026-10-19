@@ -238,7 +238,8 @@ export async function cumplirPedido(env, request, id) {
   if (p.tipo === 'mejora') {
     ev = await almacen.evento(p.evento_id);
     ev.paquete = p.detalle.paquete;
-    ev.datos.extras = [...new Set([...(ev.datos.extras || []), ...(p.detalle.extras || [])])];
+    const previos = ev.datos.extras || [];
+    ev.datos.extras = [...previos, ...(p.detalle.extras || []).filter((x) => x === 'idioma' || !previos.includes(x))];
     await almacen.guardarEvento(ev);
   } else {
     ev = await crearEventoDePedido(env, p);
@@ -345,6 +346,16 @@ async function validarMejora(env, request, m) {
   const clave = request.headers.get('x-clave') || str(m.clave, 64);
   const permitido = (clave && clave === ev.clave) || (usuario && await almacenD1(env).tieneAcceso(ev.id, usuario.id));
   if (!permitido) throw new HttpError(403, 'Sin permiso para este evento');
+  const mod0 = buscarModelo(ev.modelo);
+  // Un adicional suelto (colores, tipografía, otro idioma) para una invitación que ya existe
+  if (m.extra) {
+    const x = EXTRAS[m.extra];
+    if (!x) throw new HttpError(400, 'Adicional desconocido');
+    if (ev.paquete === 'gratis') throw new HttpError(400, 'Los adicionales no están disponibles en el plan gratis. Se puede pasar a Basic o superior.');
+    if (m.extra !== 'idioma' && (ev.datos.extras || []).includes(m.extra)) throw new HttpError(400, 'Ese adicional ya está contratado');
+    return { evento: ev, eur: x.precio, pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, extras: [m.extra],
+      nombre: `${x.nombre}${mod0 ? ` · ${nombreModelo(mod0, ev.tipo)}` : ''}` } };
+  }
   const nuevo = m.paquete;
   if (ORDEN.indexOf(nuevo) <= ORDEN.indexOf(ev.paquete)) throw new HttpError(400, 'Ese paquete no es superior al actual');
   const eur = PAQUETES[nuevo].precio - PAQUETES[ev.paquete].precio;
