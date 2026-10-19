@@ -4,7 +4,9 @@
 // se suma acá como un modelo más con un solo tipo de evento.
 
 export const MODELOS = [
-  { id: 'garden', nombre: 'Garden', nombres: { 15: 'Eucalipto' }, eventos: ['boda', '15', 'bautismo', 'comunion', 'cumple'], gratis: false },
+  // PROVISORIO: Garden con plan gratis para poder probarlo hasta convertir los modelos gratis
+  // (Oliva, Armonía, White, Minimal, Floral). Antes del lanzamiento: gratis: false.
+  { id: 'garden', nombre: 'Garden', nombres: { 15: 'Eucalipto' }, eventos: ['boda', '15', 'bautismo', 'comunion', 'cumple'], gratis: true },
 ];
 
 export const TIPOS_EVENTO = [
