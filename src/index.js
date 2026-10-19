@@ -396,7 +396,11 @@ export default {
     // en el mismo dominio se pide al hosting actual sin que el visitante lo note
     if (env.ORIGEN_ANTIGUO) {
       const viejo = new URL(url.pathname + url.search, env.ORIGEN_ANTIGUO);
-      if (viejo.host !== url.host) return Response.redirect(viejo.href, 302);
+      if (viejo.host !== url.host) {
+        // La app todavía no tiene portada propia: en app.amoinvitar.com el inicio es la tienda
+        if (url.pathname === '/') return Response.redirect(new URL('/tienda/', url.origin).href, 302);
+        return Response.redirect(viejo.href, 302);
+      }
       return fetch(new Request(viejo, request));
     }
     return html('No encontrado', 404);
