@@ -108,6 +108,11 @@ Cada modelo lleva **tres diseños**, uno por paquete, igual que las plantillas o
 - `index-premium.html` → Premium
 - `index-basic.html` → Basic (y el plan gratis)
 
+**De dónde salen:** de las demos publicadas, `ar/<modelo>/index.html` (Deluxe), `ar/<modelo>/premium.html`
+y `ar/<modelo>/basic.html`. Las copias de las carpetas `boda/++base-*` están desactualizadas.
+Después de agregar o cambiar un diseño: `REPO_VIEJO=../amoinvitar-v2.0 npm run estilos -- <modelo>`
+(el CSS se arma mirando los tres archivos).
+
 No se arma el Basic "sacándole cosas" al Deluxe: cada paquete tiene su propio diseño (por ejemplo
 Garden Basic tiene una sola foto de portada, el saludo de bienvenida en lugar de la historia y el
 RSVP sin foto; Premium usa hashtag de Instagram en lugar del álbum QR). Si falta el archivo de un
