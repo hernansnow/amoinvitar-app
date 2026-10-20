@@ -4815,15 +4815,17 @@ audio::-webkit-media-controls-play-button:hover {
   -ms-transition: all 0.4s ease;
   transition: all 0.4s ease;
 }
-#timeline:before {
-  content: "";
-  width: 2px;
-  height: 87%;
-  background: var(--color-principal);
-  left: 49.5%;
-  top: 0;
-  position: absolute;
+/* La línea ya no tiene un alto fijo: cada momento dibuja el tramo hasta el siguiente
+   y el último no dibuja nada, así siempre termina en el último ícono (con textos
+   largos o muchos momentos). Color y grosor: --linea-color y --linea-ancho. */
+#timeline:before { content: none; }
+#timeline .timeline-item {
+  background-image: linear-gradient(var(--linea-color, var(--color-principal)), var(--linea-color, var(--color-principal)));
+  background-repeat: no-repeat;
+  background-size: var(--linea-ancho, 2px) 100%;
+  background-position: calc(49.5% + 1px) 25px;
 }
+#timeline .timeline-item:last-of-type { background-image: none; }
  #timeline .timeline-item .timeline-content:before {
   border-left: 7px solid #fff;
 }
@@ -4838,9 +4840,11 @@ audio::-webkit-media-controls-play-button:hover {
   width: 100%;
 }
 #timeline .timeline-item {
-  margin-bottom: 30px;
+  margin-bottom: 0;
+  padding-bottom: 30px;
   position: relative;
 }
+#timeline .timeline-item:last-of-type { padding-bottom: 0; margin-bottom: 30px; }
 #timeline .timeline-item .timeline-icon {
   background: var(--color-principal);
   width: 50px;
