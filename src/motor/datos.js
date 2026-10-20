@@ -5,7 +5,11 @@
 // Entrada: el evento tal como lo guarda el panel, el modelo (modelo.json) y
 // el diccionario de textos ya resuelto para su tipo y variante.
 
-const LOCALES = { es: 'es-MX', 'es-ar': 'es-AR', 'es-cr': 'es-CR', 'es-es': 'es-ES', en: 'en-GB' };
+import { embedMapa } from '../lib/mapas.js';
+
+const LOCALES = { es: 'es-MX', 'es-ar': 'es-AR', 'es-cr': 'es-CR', 'es-es': 'es-ES', en: 'en-GB', pt: 'pt-BR', fr: 'fr-FR', it: 'it-IT', ca: 'ca-ES', de: 'de-DE', nl: 'nl-NL' };
+// Duración típica de la fiesta para el calendario de los invitados (ya no se pide la hora de fin)
+const DURACION = { boda: 8, 15: 8, cumple: 6, bautismo: 4, comunion: 4 };
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const dos = (n) => String(n).padStart(2, '0');
@@ -17,12 +21,16 @@ function partes(fh) {
   return { a: m[1], m: m[2], d: m[3], hh: m[4] ?? null, mm: m[5] ?? null };
 }
 
+// "inicio" (AAAA-MM-DDTHH:MM) o, desde la ronda 4, fecha y hora por separado
+const inicioDe = (l = {}) => (l.fecha ? (l.hora ? `${l.fecha}T${l.hora}` : l.fecha) : l.inicio || '');
+
 function hora(p, variante) {
   if (!p || p.hh == null) return '';
   if (variante === 'en') {
     const h = Number(p.hh), ampm = h < 12 ? 'AM' : 'PM';
     return `${h % 12 || 12}:${p.mm} ${ampm}`;
   }
+  if (!variante.startsWith('es')) return `${p.hh}:${p.mm}`;
   return variante === 'es-ar' || variante === 'es-cr' ? `${p.hh}:${p.mm}hs` : `${p.hh}:${p.mm} h`;
 }
 
@@ -44,21 +52,19 @@ function sumarHoras(fh, horas) {
   return `${t.getUTCFullYear()}-${dos(t.getUTCMonth() + 1)}-${dos(t.getUTCDate())}T${dos(t.getUTCHours())}:${dos(t.getUTCMinutes())}`;
 }
 
-// Mapa: si el cliente pegó un embed lo usamos; si no, uno armado con la dirección
+// Mapa: el servidor ya leyó el link de Google Maps (mapaQ: coordenadas o lugar buscado).
+// Si no se pudo leer, se busca por el nombre del lugar. El botón abre el link tal cual.
 function mapa(lugar) {
-  const q = [lugar.nombre, lugar.direccion].filter(Boolean).join(', ');
+  const q = lugar.mapaQ || [lugar.nombre, lugar.direccion].filter(Boolean).join(', ');
   if (!q && !lugar.mapaEmbed) return { embed: '', link: '' };
   return {
-    embed: lugar.mapaEmbed || `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed`,
+    embed: lugar.mapaEmbed || embedMapa({ q, ll: lugar.mapaLL }),
     link: lugar.mapaLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`,
   };
 }
 
-function lugarTexto(l) {
-  const nombre = l.nombre ? `"${l.nombre}"` : '';
-  // El texto que eligió el cliente para mostrar; el mapa sigue usando la dirección
-  return [nombre, l.direccionTexto || l.direccion].filter(Boolean).join(', ');
-}
+// En la invitación va solo el nombre del lugar (sin comillas); la ubicación la da el mapa
+const lugarTexto = (l) => l.nombre || l.direccionTexto || l.direccion || '';
 
 // "2027-09-12T20:00" en una zona horaria → instante UTC "20270912T230000Z"
 function aUTC(fh, zona) {
@@ -85,8 +91,19 @@ function calendario({ nombre, descripcion, inicio, fin, lugar, zona }) {
 const lleno = (x) => (Array.isArray(x) ? x.length > 0 : x != null && x !== '' && x !== false);
 
 // Proporciones fijas por tipo de foto (las del panel) → estilo para recortar con el encuadre elegido
-const PROP = { galeria: '1/1', lugar: '9/4', dress: '4/9', testigo: '1/1', rsvp: '1/1', album: '3/2' };
+const PROP = { galeria: '1/1', lugar: '9/4', dress: '4/9', testigo: '1/1' };
+const PROP_GALERIA = { cuadrada: '1/1', horizontal: '3/2', vertical: '2/3' };
 const encuadre = (prop, pos) => `aspect-ratio:${prop};object-fit:cover;object-position:${pos || '50% 50%'}`;
+// Encuadre con zoom (testigos): se agranda desde el punto elegido y se recorta con un círculo
+// del mismo tamaño que el original, así no cambia el lugar que ocupa en la página
+function encuadreZoom(prop, pos, zoom) {
+  const base = encuadre(prop, pos);
+  const z = Number(zoom);
+  if (!(z > 1)) return base;
+  const [px, py] = (pos || '50% 50%').split(' ').map((x) => parseFloat(x) || 0);
+  const c = (p) => Math.round((p + (50 - p) / z) * 100) / 100;
+  return `${base};transform:scale(${z});transform-origin:${pos || '50% 50%'};clip-path:circle(${Math.round((50 / z) * 100) / 100}% at ${c(px)}% ${c(py)}%)`;
+}
 const urlDe = (f) => (typeof f === 'string' ? f : f?.url || '');
 // Solo boda, 15, bautismo y comunión tienen ceremonia o misa
 const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion']);
@@ -125,40 +142,41 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const nombreCal = (titulo) => `${titulo} - ${nombresTexto}`;
 
   // Cada lugar tiene su interruptor de foto (antes había uno para los dos: fotosOn.lugares)
-  const fotoLugar = (l, cual) => (fotosOn(cual) && fotosOn('lugares') && l.foto ? l.foto : '');
+  const fotoLugar = (l) => (fotosOn('lugares') && l.foto ? l.foto : '');
+  const cerInicio = inicioDe(cer), celInicio = inicioDe(cel);
   const ceremonia = {
     separada: modo === 'separada',
     unificada: modo === 'mismo-lugar',
     titulo: tituloCer,
-    foto: fotoLugar(cer, 'ceremonia'),
+    foto: fotoLugar(cer),
     fotoEstilo: encuadre(PROP.lugar, cer.fotoPos),
-    fechaHora: fechaHora(cer.inicio, variante),
+    fechaHora: fechaHora(cerInicio, variante),
     lugarTexto: lugarTexto(cer),
     mapa: mapa(cer),
   };
   const celebracion = {
     titulo: tituloCel,
-    foto: fotoLugar(cel, 'celebracion'),
+    foto: fotoLugar(cel),
     fotoEstilo: encuadre(PROP.lugar, cel.fotoPos),
-    fechaHora: fechaHora(cel.inicio, variante),
+    fechaHora: fechaHora(celInicio, variante),
     lugarTexto: lugarTexto(cel),
     mapa: mapa(cel),
   };
   const calendarios = {
     // La ceremonia termina cuando empieza la fiesta; si es otro día (o no hay hora de fiesta), dura 2 horas
-    ceremonia: modo === 'separada' ? calendario({ nombre: nombreCal(tituloCer), descripcion, inicio: cer.inicio,
-      fin: cel.inicio && (cel.inicio || '').slice(0, 10) === (cer.inicio || '').slice(0, 10) && cel.inicio > cer.inicio ? cel.inicio : sumarHoras(cer.inicio, 2),
+    ceremonia: modo === 'separada' ? calendario({ nombre: nombreCal(tituloCer), descripcion, inicio: cerInicio,
+      fin: celInicio && celInicio.slice(0, 10) === cerInicio.slice(0, 10) && celInicio > cerInicio ? celInicio : sumarHoras(cerInicio, 2),
       lugar: [cer.nombre, cer.direccion].filter(Boolean).join(', '), zona }) : null,
     celebracion: calendario({
       nombre: nombreCal(t('evento.nombre')), descripcion,
-      inicio: cel.inicio,
-      fin: cel.fin || sumarHoras(cel.inicio, 7),
+      inicio: celInicio,
+      fin: sumarHoras(celInicio, DURACION[e.tipo] || 5),
       lugar: [cel.nombre, cel.direccion].filter(Boolean).join(', '), zona,
     }),
   };
 
   // Fecha principal: la de la ceremonia si hay, si no la de la fiesta
-  const principal = partes((modo === 'separada' && cer.inicio) || cel.inicio || e.fecha);
+  const principal = partes((modo === 'separada' && cerInicio) || celInicio || e.fecha);
 
   const fotos = e.fotos || {};
   // Portada: un encuadre para el celular (pos) y otro para la computadora (posPc)
@@ -166,7 +184,10 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const portada = (fotosOn('portada') ? fotos.portada || [] : []).slice(0, incluye.fotosPortada)
     .map((f) => (typeof f === 'string' ? { url: f } : f)).map((f) => ({ url: f.url, pos: f.pos || '50% 50%', estilo: `--pos-pc:${f.posPc || f.pos || '50% 50%'}` }));
   if (!portada.length) portada.push({ url: portadaSinFoto, pos: '50% 50%', estilo: '--pos-pc:50% 50%' });
-  const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((f) => ({ url: urlDe(f), estilo: encuadre(PROP.galeria, f?.pos) }));
+  // Galería: cómo se muestra (carrusel, mosaico, grilla, polaroids) y la proporción de todas las fotos
+  const tipoGaleria = ['carrusel', 'mosaico', 'grilla', 'polaroids'].includes(e.galeria?.tipo) && !modelo.galeria?.enRsvp ? e.galeria.tipo : 'carrusel';
+  const propGaleria = PROP_GALERIA[e.galeria?.proporcion] || PROP.galeria;
+  const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((f) => ({ url: urlDe(f), pos: f?.pos || '50% 50%', estilo: encuadre(propGaleria, f?.pos) }));
 
   const itinerario = (e.itinerario || []).map((i) => ({
     hora: i.hora || '', texto: i.texto || '',
@@ -174,10 +195,12 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   }));
 
   const regalos = e.regalos || {};
-  const cuentas = (regalos.cuentas || []).map((c) => ({ copiable: true, ...c }));
-  const lista = regalos.lista && (regalos.lista.dato || regalos.lista.link)
-    ? { texto: esc(propio(regalos.lista.texto, 'regalos.listaTexto')), etiqueta: regalos.lista.etiqueta || '', dato: regalos.lista.dato || '', link: regalos.lista.link || '' }
-    : null;
+  // Todos los datos se pueden copiar con un toque
+  const cuentas = (regalos.cuentas || []).filter((c) => c.dato).map((c) => ({ ...c, copiable: true }));
+  // Listas de regalos (varias tiendas); las viejas tenían una sola en regalos.lista
+  const listas = (regalos.listas || (regalos.lista ? [regalos.lista] : []))
+    .filter((l) => l && (l.dato || l.link)).map((l) => ({ etiqueta: l.etiqueta || '', dato: l.dato || '', link: l.link || '' }));
+  const lista = listas.length ? { texto: esc(propio(regalos.lista?.texto, 'regalos.listaTexto')) } : null;
 
   const redes = e.redes || {};
   const bus = e.bus || {};
@@ -186,7 +209,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     id: e.id,
     demo,
     rutas,
-    idioma: { variante, fechas: LOCALES[variante] || 'es-ES', html: variante === 'en' ? 'en' : 'es' },
+    idioma: { variante, fechas: LOCALES[variante] || 'es-ES', html: variante.slice(0, 2) },
     paquete: { id: e.paquete, incluye },
     modelo: { id: modelo.id, sobre: modelo.sobre },
     secciones,
@@ -212,14 +235,18 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     ceremonia, celebracion, calendarios,
     fotos: {
       portada, galeria,
-      rsvp: fotosOn('rsvp') ? fotos.rsvp || '' : '', rsvpEstilo: encuadre(PROP.rsvp, fotos.rsvpPos),
-      album: fotosOn('album') ? fotos.album || '' : '', albumEstilo: encuadre(PROP.album, fotos.albumPos),
+      // Confirmación y álbum: la foto va tal cual se subió, sin recortar
+      rsvp: fotosOn('rsvp') ? fotos.rsvp || '' : '', rsvpEstilo: '',
+      album: fotosOn('album') ? fotos.album || '' : '', albumEstilo: '',
       cantidadGaleria: galeria.length,
     },
 
+    galeria: { tipo: tipoGaleria, carrusel: tipoGaleria === 'carrusel', proporcion: propGaleria, color: !!e.galeria?.color },
     rsvp: {
       texto: propio(e.rsvp?.texto, 'rsvp.texto'),
-      cierre: e.rsvp?.cierre || '',
+      // Con el aforo completo se cierra igual que al pasar la fecha límite
+      cierre: e.rsvp?.lleno ? '2000-01-01' : e.rsvp?.cierre || '',
+      lleno: !!e.rsvp?.lleno,
       formato: 'corto',
       acompanantes: e.rsvp?.acompanantes ?? 0,
       preguntas: e.rsvp?.preguntas || {},
@@ -230,9 +257,11 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     dresscode: {
       texto: esc(propio(e.dresscode?.texto, 'dresscode.texto')),
       sugerencias: !!incluye.sugerenciasDress && fotosOn('dresscode') && lleno(e.dresscode?.fotos),
+      // Colores a evitar: una fila de círculos
+      evitar: (e.dresscode?.evitar || []).filter((c) => /^#[0-9a-f]{6}$/i.test(c)).slice(0, 4).map((c) => ({ color: c, estilo: `background-color:${c}` })),
       fotos: (e.dresscode?.fotos || []).map((f) => ({ url: urlDe(f), estilo: encuadre(PROP.dress, f?.pos) })),
     },
-    hospedaje: { texto: esc(e.hospedaje?.texto || ''), items: e.hospedaje?.items || [] },
+    hospedaje: { texto: esc(e.hospedaje?.texto || ''), items: (e.hospedaje?.items || []).filter((x) => x.nombre) },
     bus: {
       textoLibre: esc(bus.texto || ''),
       paradas: (bus.paradas || []).map((p, i, todas) => ({
@@ -241,7 +270,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       })),
     },
     itinerario: { items: itinerario },
-    testigos: { items: (e.testigos || []).map((x) => ({ ...x, foto: fotosOn('testigos') ? x.foto || '' : '', estilo: encuadre(PROP.testigo, x.fotoPos) })) },
+    testigos: { items: (e.testigos || []).filter((x) => x.nombre || x.foto).map((x) => ({ ...x, foto: fotosOn('testigos') ? x.foto || '' : '', estilo: encuadreZoom(PROP.testigo, x.fotoPos, x.fotoZoom) })) },
     album: { url: e.album?.url || '' },
     // Premium: hashtag de Instagram (por defecto los nombres y el año, como #SofiyAle2027)
     hashtag: (() => {
@@ -252,7 +281,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     canciones: { spotify: e.canciones?.spotify || '' },
     regalos: {
       texto: esc(propio(regalos.texto, 'regalos.texto')),
-      cuentas, lista,
+      cuentas, lista, listas,
       hayBotones: cuentas.length > 0 || !!lista,
     },
     redes: { ...redes, hay: !!(redes.instagram || redes.facebook || redes.tiktok) },

@@ -5,6 +5,10 @@
   "eventos": ["boda", "15", "bautismo", "comunion", "cumple"],
   "gratis": false,
 
+  "paleta": ["#a78977", "#86a388", "#9ab09c", "#ffffff"],
+  "galeria": { "byn": false, "enRsvp": false },
+  "videoPortada": false,
+
   "demo": {
     "cumple": { "portada": "foto1.jpg", "rsvp": "foto2.jpg" },
     "comunion": { "album": "foto3.jpg" }

@@ -121,13 +121,17 @@
   </section>
 
   <!-- ═══ GALERÍA ═══ -->
-  <div class="presupuesto slide-one-item home-slider owl-carousel p-0 mb-5 bg-white" data-seccion="galeria">
+  <div data-seccion="galeria">
+  <div class="presupuesto slide-one-item home-slider owl-carousel p-0 mb-5 bg-white" data-si="galeria.carrusel">
     <img src="demo/boda/foto1.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
     <img src="demo/boda/foto2.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
     <img src="demo/boda/foto3.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
     <img src="demo/boda/foto4.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
     <img src="demo/boda/foto5.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
     <img src="demo/boda/foto6.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
+  </div>
+  <!-- Mosaico, grilla o polaroids: componente común (comun/css/galeria.css) -->
+  <div data-componente="galeria"></div>
   </div>
 
   <!-- ═══ CEREMONIA Y CELEBRACIÓN ═══ -->
@@ -235,6 +239,10 @@
           <div class="text-center mb-0"><img class="img-fluid mb-0" src="img/dress1.png" width="55" alt=""><img class="img-fluid mb-0 ml-2" src="img/dress2.png" width="55" alt=""></div>
           <h2 class="mb-3 text-center euforia text-white" data-t="dress.titulo">Dress Code</h2>
           <p class="text-center text-white" data-campo-html="dresscode.texto">Formal y elegante. Por favor no usar blanco.</p>
+          <div class="g-evitar mb-3" data-si="dresscode.evitar">
+            <p class="text-white mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
+          </div>
           <div class="col-12 text-center" data-si="dresscode.sugerencias">
             <button class="button button-bronce mb-3 text-uppercase rounded-pill" data-fancybox data-src="#dress" data-animation-duration="700" data-t="dress.boton">Sugerencias</button>
           </div>
@@ -428,8 +436,8 @@
             <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="regalos.modalLista">Lista de regalos</p>
             <ul class="list-unstyled text-center">
               <li><p class="mb-4" data-campo-html="regalos.lista.texto">Creamos una lista de regalos en una tienda online, para que puedas regalar el que gustes</p></li>
-              <li data-si="regalos.lista.dato"><p class="font-weight-bolder"><span class="font-weight-lighter"><span data-campo="regalos.lista.etiqueta">Novios Falabella</span>: </span><span id="lista" data-campo="regalos.lista.dato">000000-00</span> <a href="#" onclick="copiarId('lista'); return false;"><i class="icon-copy"></i></a></p></li>
-              <li data-si="regalos.lista.link"><p><a href="#" target="_blank" rel="noopener" class="btn btn-block mb-4 text-uppercase button-gris" data-attr="href:c:regalos.lista.link" data-t="regalos.irLista">Ir a la lista</a></p></li>
+              <!-- Una por cada lista que carga el cliente; el número se copia con un toque -->
+              <li class="mb-3" data-repetir="regalos.listas"><p class="font-weight-bolder mb-1"><span class="font-weight-lighter" data-si="etiqueta"><span data-i="etiqueta">Novios Falabella</span></span><span data-si="dato"><span data-si="etiqueta">: </span><span id="lista-{n}" data-i="dato">000000-00</span> <a href="#" onclick="copiarId('lista-{n}'); return false;"><i class="icon-copy"></i></a></span></p><p data-si="link"><a href="#" target="_blank" rel="noopener" class="btn btn-block mb-2 text-uppercase button-gris" data-i-attr="href:link" data-t="regalos.irLista">Ir a la lista</a></p></li>
             </ul>
           </div>
           <button data-fancybox-close class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small" data-t="boton.cerrar">cerrar</button>

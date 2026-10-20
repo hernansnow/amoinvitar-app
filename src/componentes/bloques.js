@@ -49,7 +49,28 @@ export function acceso({ t, v }) {
   return `
 <script>window.INVITACION_CONFIG = ${json(cfg)};</script>
 <script src="${raiz}/js/lista-de-invitados-universal_v2.0.js"></script>
-<script src="${raiz}/js/rsvp-universal_v2.2.js"></script>`;
+<script src="${raiz}/js/rsvp-universal_v2.2.js"></script>${selectorIdioma(v)}`;
+}
+
+// ── Idiomas: el invitado la ve en el suyo (si la invitación lo tiene) y puede cambiarlo ──
+const NOMBRE_IDIOMA = { es: 'Español', en: 'English', pt: 'Português', fr: 'Français', it: 'Italiano', ca: 'Català', de: 'Deutsch', nl: 'Nederlands' };
+function selectorIdioma(v) {
+  const lista = v.idiomas?.lista || [];
+  if (lista.length < 2) return '';
+  const actual = (v.idiomas.actual || lista[0]).slice(0, 2);
+  const botones = lista.map((x) => {
+    const c = x.slice(0, 2);
+    return `<a href="?lang=${c}" data-lang="${c}" hreflang="${c}" lang="${c}" title="${esc(NOMBRE_IDIOMA[c] || c)}"${c === actual ? ' aria-current="true"' : ''}>${c.toUpperCase()}</a>`;
+  }).join('');
+  return `
+<nav class="ai-idiomas" aria-label="Idioma / Language">${botones}</nav>
+<style>.ai-idiomas{position:fixed;top:12px;right:12px;z-index:1040;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.85);box-shadow:0 2px 10px rgba(0,0,0,.15);font:600 12px/1 system-ui,sans-serif;backdrop-filter:blur(4px)}
+.ai-idiomas a{color:#333;text-decoration:none;padding:6px 9px;border-radius:999px;letter-spacing:.04em}.ai-idiomas a[aria-current]{background:#333;color:#fff}</style>
+<script>(function(){var d=${json(lista.map((x) => x.slice(0, 2)))},a=${json(actual)},u=new URL(location.href);
+document.querySelectorAll('.ai-idiomas a').forEach(function(x){x.addEventListener('click',function(e){e.preventDefault();try{localStorage.setItem('ai-idioma',x.dataset.lang)}catch(_){}u.searchParams.set('lang',x.dataset.lang);location.href=u.href;});});
+if(u.searchParams.has('lang'))return;var g=null;try{g=localStorage.getItem('ai-idioma')}catch(_){}
+var pref=[g].concat(navigator.languages||[navigator.language]).filter(Boolean).map(function(l){return String(l).slice(0,2).toLowerCase()});
+for(var i=0;i<pref.length;i++){if(d.indexOf(pref[i])>-1){if(pref[i]!==a){u.searchParams.set('lang',pref[i]);location.replace(u.href);}return;}}})();</script>`;
 }
 
 // ── Pie con la marca de la empresa (marca blanca) ─────────────────────
@@ -77,6 +98,8 @@ export function rsvpForm({ t, v, el }) {
     'data-label-alcohol': t('rsvp.form.alcohol'),
     'data-label-ninos': t('rsvp.form.ninos'),
     'data-label-ninos-input': t('rsvp.form.ninosCantidad'),
+    'data-ninos-numero': 'true',
+    'data-label-comida-acomp': t('rsvp.form.comidaAcomp'),
     'data-label-traslado': t('rsvp.form.traslado'),
     'data-text-seleccionar': t('rsvp.form.seleccionar'),
     'data-text-otra': t('rsvp.form.otra'),
@@ -87,6 +110,7 @@ export function rsvpForm({ t, v, el }) {
     'data-msg-no-asiste': t('rsvp.form.msgNoAsiste'),
     'data-msg-ok': t('rsvp.form.msgOk'),
     'data-msg-error': t('rsvp.form.msgError'),
+    'data-msg-lleno': t('rsvp.form.msgLleno'),
     'data-msg-respuesta-invalida': t('rsvp.form.msgInvalida'),
     'data-msg-campos-vacios': t('rsvp.form.msgVacios'),
     'data-comida-opciones': t('rsvp.form.comidaOpciones'),
@@ -143,6 +167,18 @@ export function rsvpForm({ t, v, el }) {
 </div>`;
 }
 
+// ── Galería: mosaico, grilla o polaroids (el carrusel es el de cada modelo) ──
+export function galeria({ v }) {
+  const g = v.galeria || {};
+  const fotos = v.fotos.galeria || [];
+  if (g.carrusel || !fotos.length) return '';
+  const clases = ['ai-galeria', `ai-galeria--${g.tipo}`, `ai-n${Math.min(fotos.length, 7)}`, g.color ? 'ai-color' : ''].filter(Boolean).join(' ');
+  return `<link rel="stylesheet" href="${v.rutas.comun}/css/galeria.css">
+<div class="${clases}" style="--prop:${esc(g.proporcion)}" data-aos="fade-up">${fotos.map((f) => `
+  <a href="${esc(f.url)}" data-fancybox="galeria"><img src="${esc(f.url)}" alt="" loading="lazy" style="object-position:${esc(f.pos)}"></a>`).join('')}
+</div>`;
+}
+
 // ── Sugerir canciones (modal) ─────────────────────────────────────────
 export function canciones({ t, v }) {
   return `
@@ -185,4 +221,4 @@ export function albumQr({ t, v }) {
 </div>`;
 }
 
-export const COMPONENTES = { sobre, acceso, 'rsvp-form': rsvpForm, canciones, 'album-qr': albumQr, 'pie-marca': pieMarca };
+export const COMPONENTES = { sobre, acceso, galeria, 'rsvp-form': rsvpForm, canciones, 'album-qr': albumQr, 'pie-marca': pieMarca };

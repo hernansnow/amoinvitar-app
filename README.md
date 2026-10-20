@@ -119,3 +119,15 @@ RSVP sin foto; Premium usa hashtag de Instagram en lugar del álbum QR). Si falt
 paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan además con
 `data-seccion` y la lista `secciones` de `modelo.json`.
 
+
+## modelo.json: opciones del panel (ronda 4)
+
+- `paleta`: los 4 colores del diseño. En Diseño → "Quiero otros colores" aparecen ya cargados para cambiarlos.
+- `galeria.enRsvp: true`: modelos con la galería dentro de la confirmación. No se muestra "Cómo se muestran"
+  (carrusel, mosaico, grilla, polaroids) porque la galería no es una sección propia.
+- `galeria.byn: true`: solo Romantic y B&N (css byn, fotos en blanco y negro). Suma la casilla
+  "Mostrar las fotos en color". Al convertir esos modelos, la clase `ai-color` tiene que sacar el filtro.
+- `videoPortada: true`: modelos con video en la portada. El panel deja subir un MP4 de hasta 30 s.
+  En pantallas horizontales, un video vertical va al centro con una copia desenfocada de fondo.
+- La galería que no es carrusel la arma el componente común `data-componente="galeria"`
+  (comun/css/galeria.css): el modelo solo marca su carrusel con `data-si="galeria.carrusel"`.

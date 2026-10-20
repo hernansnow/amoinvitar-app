@@ -1,0 +1,42 @@
+/* Galería común a todos los modelos: mosaico, grilla y polaroids.
+   (El carrusel es el de cada modelo.) La proporción la elige el cliente: --prop */
+.ai-galeria { --gap: 10px; max-width: 1140px; margin: 0 auto 3rem; padding: 0 15px; }
+.ai-galeria img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ai-galeria a { display: block; overflow: hidden; }
+.ai-galeria a img { transition: transform .6s ease; }
+.ai-galeria a:hover img { transform: scale(1.04); }
+.ai-galeria.ai-color img { filter: none !important; -webkit-filter: none !important; }
+
+/* Grilla: todas iguales, en filas */
+.ai-galeria--grilla { display: grid; gap: var(--gap); grid-template-columns: repeat(3, 1fr); }
+.ai-galeria--grilla a { aspect-ratio: var(--prop, 1 / 1); border-radius: 6px; }
+.ai-galeria--grilla.ai-n1 { grid-template-columns: minmax(0, 520px); justify-content: center; }
+.ai-galeria--grilla.ai-n2, .ai-galeria--grilla.ai-n4 { grid-template-columns: repeat(2, 1fr); max-width: 860px; }
+
+/* Mosaico: la primera grande y las demás alrededor */
+.ai-galeria--mosaico { display: grid; gap: var(--gap); grid-template-columns: repeat(4, 1fr); grid-auto-flow: dense; }
+.ai-galeria--mosaico a { aspect-ratio: var(--prop, 1 / 1); border-radius: 6px; }
+.ai-galeria--mosaico a:nth-child(6n + 1) { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+.ai-galeria--mosaico.ai-n1 { grid-template-columns: minmax(0, 520px); justify-content: center; }
+.ai-galeria--mosaico.ai-n1 a { grid-column: auto; grid-row: auto; aspect-ratio: var(--prop, 1 / 1); }
+.ai-galeria--mosaico.ai-n2 { grid-template-columns: repeat(2, 1fr); max-width: 860px; }
+.ai-galeria--mosaico.ai-n2 a { grid-column: auto; grid-row: auto; aspect-ratio: var(--prop, 1 / 1); }
+
+/* Polaroids: fotos impresas con marco blanco, apenas giradas */
+.ai-galeria--polaroids { display: flex; flex-wrap: wrap; justify-content: center; gap: 26px 22px; padding-top: 10px; padding-bottom: 10px; }
+.ai-galeria--polaroids a { width: calc(33.333% - 22px); max-width: 300px; background: #fff; padding: 10px 10px 38px; box-shadow: 0 6px 18px rgba(0, 0, 0, .18); transform: rotate(-3deg); transition: transform .3s ease; overflow: visible; }
+.ai-galeria--polaroids a:nth-child(3n + 2) { transform: rotate(2.5deg) translateY(8px); }
+.ai-galeria--polaroids a:nth-child(3n) { transform: rotate(-1.5deg); }
+.ai-galeria--polaroids a:hover { transform: rotate(0) scale(1.03); z-index: 2; }
+.ai-galeria--polaroids a:hover img { transform: none; }
+.ai-galeria--polaroids img { aspect-ratio: var(--prop, 1 / 1); height: auto; }
+
+@media (max-width: 767px) {
+  .ai-galeria { --gap: 6px; }
+  .ai-galeria--grilla, .ai-galeria--grilla.ai-n4 { grid-template-columns: repeat(2, 1fr); }
+  .ai-galeria--grilla.ai-n1 { grid-template-columns: 1fr; }
+  .ai-galeria--mosaico { grid-template-columns: repeat(2, 1fr); }
+  .ai-galeria--mosaico a:nth-child(6n + 1) { grid-column: span 2; grid-row: auto; aspect-ratio: var(--prop, 1 / 1); }
+  .ai-galeria--polaroids { gap: 18px 14px; }
+  .ai-galeria--polaroids a { width: calc(50% - 14px); padding: 7px 7px 26px; }
+}

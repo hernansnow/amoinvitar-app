@@ -17,33 +17,24 @@
 // ════════════════════════════════════════════════════════════════════
 
 import { SECCION_MINIMA } from '../catalogo.js';
+import { ZONAS } from '../datos/zonas.js';
+import { FUENTES } from '../datos/fuentes.js';
 
 const ORDEN_PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
 const PLURAL = new Set(['boda']);
 
 // ── Campos reutilizables ──────────────────────────────────────────────
 
-const ZONAS = [
-  ['America/Argentina/Buenos_Aires', 'Argentina'], ['America/La_Paz', 'Bolivia'], ['America/Sao_Paulo', 'Brasil (Brasilia, São Paulo)'],
-  ['America/Toronto', 'Canadá (este)'], ['America/Vancouver', 'Canadá (oeste)'], ['America/Santiago', 'Chile'], ['America/Bogota', 'Colombia'],
-  ['America/Costa_Rica', 'Costa Rica'], ['America/Havana', 'Cuba'], ['America/Guayaquil', 'Ecuador'], ['Pacific/Galapagos', 'Ecuador (Galápagos)'],
-  ['America/El_Salvador', 'El Salvador'], ['Europe/Madrid', 'España (península y Baleares)'], ['Atlantic/Canary', 'España (Canarias)'],
-  ['America/New_York', 'Estados Unidos (este: Nueva York, Miami)'], ['America/Chicago', 'Estados Unidos (centro: Chicago, Texas)'],
-  ['America/Denver', 'Estados Unidos (montaña: Denver)'], ['America/Phoenix', 'Estados Unidos (Arizona)'], ['America/Los_Angeles', 'Estados Unidos (oeste: Los Ángeles)'],
-  ['Pacific/Honolulu', 'Estados Unidos (Hawái)'], ['America/Guatemala', 'Guatemala'], ['America/Tegucigalpa', 'Honduras'],
-  ['America/Mexico_City', 'México (centro: CDMX, Guadalajara, Monterrey)'], ['America/Cancun', 'México (Quintana Roo: Cancún)'],
-  ['America/Mazatlan', 'México (Pacífico: Sinaloa, Baja California Sur)'], ['America/Hermosillo', 'México (Sonora)'], ['America/Tijuana', 'México (Baja California: Tijuana)'],
-  ['America/Managua', 'Nicaragua'], ['America/Panama', 'Panamá'], ['America/Asuncion', 'Paraguay'], ['America/Lima', 'Perú'],
-  ['America/Puerto_Rico', 'Puerto Rico'], ['America/Santo_Domingo', 'República Dominicana'], ['America/Montevideo', 'Uruguay'], ['America/Caracas', 'Venezuela'],
-  ['Europe/Andorra', 'Andorra'], ['Europe/Berlin', 'Alemania'], ['Europe/Brussels', 'Bélgica'], ['Europe/Paris', 'Francia'], ['Europe/Rome', 'Italia'],
-  ['Europe/Amsterdam', 'Países Bajos'], ['Europe/Lisbon', 'Portugal'], ['Europe/London', 'Reino Unido'], ['Europe/Zurich', 'Suiza'],
-  ['Asia/Jerusalem', 'Israel'], ['Australia/Sydney', 'Australia (Sídney)'],
-].map(([v, etiqueta]) => ({ v, etiqueta }));
-
-const IDIOMAS = [
-  { v: 'es-ar', etiqueta: 'Español rioplatense (vos)' }, { v: 'es-cr', etiqueta: 'Español centroamericano (vos)' },
-  { v: 'es', etiqueta: 'Español neutro (tú)' }, { v: 'es-es', etiqueta: 'Español de España (tú / vosotros)' }, { v: 'en', etiqueta: 'English' },
+// Idiomas de la invitación. El español tiene variantes (tú, vos, vosotros)
+export const IDIOMAS_BASE = [
+  { v: 'es', etiqueta: 'Español' }, { v: 'en', etiqueta: 'Inglés' }, { v: 'pt', etiqueta: 'Portugués' }, { v: 'fr', etiqueta: 'Francés' },
+  { v: 'it', etiqueta: 'Italiano' }, { v: 'ca', etiqueta: 'Catalán' }, { v: 'de', etiqueta: 'Alemán' }, { v: 'nl', etiqueta: 'Neerlandés' },
 ];
+export const VARIANTES_ES = [
+  { v: 'es', etiqueta: 'Español neutro (tú)' }, { v: 'es-es', etiqueta: 'Español de España (tú / vosotros)' },
+  { v: 'es-ar', etiqueta: 'Español rioplatense (vos)' }, { v: 'es-cr', etiqueta: 'Español centroamericano (vos)' },
+];
+const IDIOMAS = [...VARIANTES_ES, ...IDIOMAS_BASE.filter((x) => x.v !== 'es')];
 
 // Nombres de los íconos del itinerario (el archivo es timeline-icon-<id>.png)
 const ICONOS = {
@@ -64,21 +55,32 @@ export const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion']);
 export const CON_PADRINOS = new Set(['boda', '15', 'bautismo', 'comunion']);
 
 // Proporciones fijas de las fotos (las mismas de las fotos de muestra del modelo)
-export const PROPORCION = { galeria: '1:1', lugar: '9:4', dress: '4:9', testigo: '1:1', rsvp: '1:1', album: '3:2', miniatura: '1.91:1' };
+export const PROPORCION = { galeria: '1:1', lugar: '9:4', dress: '4:9', testigo: '1:1', miniatura: '1.91:1' };
+// La galería: el cliente elige la proporción de todas las fotos
+export const PROPORCION_GALERIA = { cuadrada: '1:1', horizontal: '3:2', vertical: '2:3' };
 
 // "Incluir fotos": muchos prefieren la invitación sin fotos en alguna sección
 const conFotos = (grupo, etiqueta = 'Incluir foto en esta sección') => ({ id: `fotosOn.${grupo}`, tipo: 'switch', etiqueta, defecto: true, rearmar: true });
 const siFotos = (grupo) => ({ campo: `fotosOn.${grupo}`, no: false });
 
-// Lugar: nombre, dirección, mapa, cómo se ve la dirección y su foto (con su interruptor)
-const lugarCampos = (p) => [
-  { id: `${p}.nombre`, tipo: 'texto', etiqueta: 'Nombre del lugar', max: 80, placeholder: 'Estancia La Soñada' },
-  { id: `${p}.direccion`, tipo: 'texto', etiqueta: 'Dirección', max: 140, ayuda: 'Con la dirección se arma solo el mapa y el botón "Cómo llegar".' },
-  { id: `${p}.mapaLink`, tipo: 'url', etiqueta: 'Link de Google Maps (opcional)', ayuda: 'Solo si el mapa armado con la dirección no marca bien el lugar.' },
-  { id: `${p}.direccionTexto`, tipo: 'texto', etiqueta: 'Editar cómo se ve la dirección en la invitación', max: 140, espejo: `${p}.direccion`,
-    ayuda: 'Se completa sola con la dirección. Se puede cambiar (por ejemplo "Pilar, Buenos Aires") sin que cambie el mapa.' },
-  { id: `fotosOn.${p}`, tipo: 'switch', etiqueta: 'Incluir foto del lugar', defecto: true, rearmar: true, paquete: 'premium' },
-  { id: `${p}.foto`, tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', si: siFotos(p) },
+// Título de una sección: sin etiqueta, el texto va dentro del campo ("Cambiar título")
+const titulo = (clave, extra = {}) => ({ id: `textos.${clave}`, tipo: 'texto', etiqueta: 'Título', titulo: true, max: 30, base: clave, ...extra });
+
+// Lugar: fecha y hora, nombre y el link de Google Maps (con él se arma el mapa y el botón)
+const AYUDA_MAPA = 'En Google Maps: buscar el lugar, tocar "Compartir" y "Copiar link" (o copiar la dirección de la barra del navegador). Con eso se arman el mapa y el botón "¿Cómo llegar?".';
+const lugarCampos = (p, { fecha, ejemplo, cual = fecha.replace(/^Fecha de(l| la)? /, '') }) => [
+  { id: `${p}.fecha`, tipo: 'fecha', etiqueta: fecha, requerido: true, ancho: 'mitad' },
+  { id: `${p}.hora`, tipo: 'hora', etiqueta: 'Hora de inicio', etiquetaFalta: `Hora de inicio (${cual})`, requerido: true, ancho: 'mitad' },
+  { id: `${p}.nombre`, tipo: 'texto', etiqueta: 'Nombre del lugar', etiquetaFalta: `Nombre del lugar (${cual})`, requerido: true, max: 80, placeholder: ejemplo },
+  { id: `${p}.mapaLink`, tipo: 'url', etiqueta: 'Link de Google Maps', etiquetaFalta: `Link de Google Maps (${cual})`, requerido: true, placeholder: 'https://maps.app.goo.gl/…', ayuda: AYUDA_MAPA },
+];
+
+// Cómo se muestran las fotos de la galería
+const TIPOS_GALERIA = [
+  { v: 'carrusel', etiqueta: 'Carrusel', ayuda: 'Una foto por vez, se desliza.' },
+  { v: 'mosaico', etiqueta: 'Mosaico', ayuda: 'Una foto grande y las demás más chicas alrededor.' },
+  { v: 'grilla', etiqueta: 'Grilla', ayuda: 'Todas del mismo tamaño, en filas.' },
+  { v: 'polaroids', etiqueta: 'Polaroids', ayuda: 'Como fotos impresas con marco blanco, apenas giradas.' },
 ];
 
 function pasosInvitacion({ tipo, modelo, paquete }) {
@@ -89,41 +91,58 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
   const padrinos = tipo === 'boda' ? 'Testigos' : 'Padrinos';
   const hayCeremonia = { campo: 'ceremonia.modo', es: 'separada' };
   const unificada = { campo: 'ceremonia.modo', es: 'mismo-lugar' };
+  const nCer = misa ? 'misa' : 'ceremonia';
+  const g = modelo.galeria || {};
 
   return [
     {
       id: 'nombres', titulo: plural ? 'Los novios' : 'Quién celebra',
+      ayudaSeccion: plural ? '¿Cómo se tienen que ver los nombres? (nombres, diminutivos, apodos…). Por ejemplo: Lau y Pablo.'
+        : '¿Cómo se tiene que ver el nombre? (nombre, diminutivo, apodo…). Por ejemplo: Sofi.',
       campos: [
-        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : 'Nombre', max: 30, requerido: true, ayuda: 'Tal como va a aparecer: "Sofi", "Mariana"…' },
-        ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2', max: 30, requerido: true }] : []),
+        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : 'Nombre', max: 30, requerido: true, ancho: plural ? 'mitad' : null, placeholder: plural ? 'Lau' : 'Sofi' },
+        ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2', max: 30, requerido: true, ancho: 'mitad', placeholder: 'Pablo' }] : []),
       ],
     },
     {
       id: 'portada', titulo: 'Portada y música',
       campos: [
-        { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
+        { id: 'nota.portada', tipo: 'nota', texto: incluye.fotosPortada > 1 ? 'Fotos de portada' : 'Foto de portada', estilo: 'etiqueta' },
         conFotos('portada', (incluye.fotosPortada || 1) > 1 ? 'Incluir fotos en la portada' : 'Incluir foto en la portada'),
-        { id: 'fotos.portada', tipo: 'fotos', etiqueta: incluye.fotosPortada > 1 ? 'Fotos de portada' : 'Foto de portada', max: incluye.fotosPortada || 1, dosEncuadres: true,
-          ayuda: 'Cada foto se ve distinta en el celular (vertical) y en la computadora (horizontal): arrastrar cada una para encuadrarla.', si: siFotos('portada') },
+        // Modelos con video de portada: se elige foto o video
+        ...(modelo.videoPortada ? [{ id: 'portada.tipo', tipo: 'opciones', etiqueta: 'En la portada va', defecto: 'fotos', rearmar: true, si: siFotos('portada'),
+          valores: [{ v: 'fotos', etiqueta: 'Fotos' }, { v: 'video', etiqueta: 'Un video (hasta 30 segundos)' }] },
+        { id: 'portada.video', tipo: 'video', etiqueta: 'Video de portada', maxSeg: 30, maxMB: 40, si: [siFotos('portada'), { campo: 'portada.tipo', es: 'video' }],
+          ayuda: 'MP4 de hasta 30 segundos. En pantallas horizontales un video vertical se ve al centro, con una copia desenfocada de fondo.' }] : []),
+        { id: 'fotos.portada', tipo: 'fotos', etiqueta: incluye.fotosPortada > 1 ? 'Fotos de portada' : 'Foto de portada', sinEtiqueta: true, max: incluye.fotosPortada || 1, dosEncuadres: true, pestanas: true,
+          si: modelo.videoPortada ? [siFotos('portada'), { campo: 'portada.tipo', no: 'video' }] : siFotos('portada') },
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
         { id: 'musica.archivo', tipo: 'mp3', etiqueta: 'Música de fondo (MP3)', paquete: 'premium', maxMB: 12 },
         { id: 'musica.inicio', tipo: 'contador', etiqueta: 'Empezar la canción en el segundo…', min: 0, max: 600, paso: 5, paquete: 'premium', si: { campo: 'musica.archivo' } },
+        { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
+        { id: 'zonaHoraria', tipo: 'zona', etiqueta: 'País / zona horaria del evento', valores: ZONAS, requerido: true, ancho: 'mitad', ayuda: 'Para la cuenta regresiva y los calendarios.' },
       ],
     },
     { id: 'historia', seccion: 'historia', titulo: plural ? 'Nuestra historia' : 'Mi historia',
       ayudaSeccion: 'Apagada: en su lugar va un saludo corto de bienvenida.',
       campos: [
-        { id: 'textos.historia.titulo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'historia.titulo' },
+        titulo('historia.titulo'),
         { id: 'historia.texto', tipo: 'area', etiqueta: 'Texto', max: 400, base: 'historia.texto' },
       ] },
     { id: 'galeria', seccion: 'galeria', titulo: 'Galería de fotos', ayudaSeccion: 'Sin fotos: apagar "Mostrar".', campos: [
-      { id: 'fotos.galeria', tipo: 'fotos', etiqueta: 'Fotos', max: incluye.fotosGaleria || 6, proporcion: PROPORCION.galeria,
-        ayuda: 'Todas se ven cuadradas, del mismo tamaño. Arrastrar cada foto para encuadrarla. Con una sola foto también queda bien.' },
+      // En los modelos con la galería dentro de la confirmación no se elige cómo se ve
+      ...(g.enRsvp ? [] : [{ id: 'galeria.tipo', tipo: 'opciones', etiqueta: 'Cómo se muestran', tarjetas: 'galeria', defecto: 'carrusel', valores: TIPOS_GALERIA }]),
+      // Solo en los diseños que muestran las fotos en blanco y negro (Romantic, B&N)
+      ...(g.byn ? [{ id: 'galeria.color', tipo: 'switch', estilo: 'check', etiqueta: 'Mostrar las fotos en color', detalle: 'este diseño las muestra en blanco y negro' }] : []),
+      { id: 'galeria.proporcion', tipo: 'opciones', etiqueta: 'Proporción de todas las fotos', tarjetas: 'proporcion', defecto: 'cuadrada', rearmar: true, valores: [
+        { v: 'cuadrada', etiqueta: '1:1' }, { v: 'horizontal', etiqueta: 'Horizontal' }, { v: 'vertical', etiqueta: 'Vertical' },
+      ] },
+      { id: 'fotos.galeria', tipo: 'fotos', etiqueta: 'Fotos', max: incluye.fotosGaleria || 6, proporcion: PROPORCION.galeria, proporcionDe: { campo: 'galeria.proporcion', valores: PROPORCION_GALERIA },
+        ayuda: 'Arrastrar cada foto para encuadrarla. Con una sola foto también queda bien.' },
     ] },
     {
       id: 'lugares', titulo: 'Lugar y fecha',
       campos: [
-        { id: 'zonaHoraria', tipo: 'opciones', etiqueta: 'País / zona horaria del evento', valores: ZONAS, requerido: true },
         ...(conCeremonia ? [
           { id: 'ceremonia.modo', tipo: 'opciones', etiqueta: misa ? '¿Hay misa?' : '¿Hay ceremonia?', defecto: 'separada', valores: [
             { v: 'separada', etiqueta: 'Sí, en otro lugar que la fiesta' },
@@ -131,29 +150,31 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
             { v: 'sin', etiqueta: 'No' },
           ] },
           // La ceremonia (o misa), cuando es en otro lugar
-          { id: 'separador.ceremonia', tipo: 'nota', texto: misa ? 'La misa' : 'La ceremonia', si: hayCeremonia, estilo: 'subtitulo' },
-          { id: 'ceremonia.titulo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'ceremonia.religiosa', si: hayCeremonia },
-          { id: 'ceremonia.inicio', tipo: 'fechaHora', etiqueta: 'Día y hora de inicio', etiquetaFalta: misa ? 'Día y hora de la misa' : 'Día y hora de la ceremonia', requerido: true, si: hayCeremonia,
-            ayuda: 'Para el calendario, termina cuando empieza la fiesta (o a las 2 horas si es otro día).' },
-          ...lugarCampos('ceremonia').map((c) => ({ ...c, si: c.si ? [hayCeremonia, c.si] : hayCeremonia })),
-          { id: 'separador.fiesta', tipo: 'nota', texto: misa ? 'La fiesta' : 'La celebración', si: hayCeremonia, estilo: 'subtitulo' },
+          { id: 'separador.ceremonia', tipo: 'nota', texto: misa ? 'Misa' : 'Ceremonia', si: hayCeremonia, estilo: 'subtitulo' },
+          { id: 'ceremonia.titulo', tipo: 'texto', etiqueta: 'Título', titulo: true, max: 30, base: 'ceremonia.religiosa', si: hayCeremonia },
+          ...lugarCampos('ceremonia', { fecha: `Fecha de la ${nCer}`, ejemplo: 'Iglesia San Pedro' }).map((c) => ({ ...c, si: hayCeremonia })),
+          { id: 'separador.fiesta', tipo: 'nota', texto: misa ? 'Fiesta' : 'Celebración', si: hayCeremonia, estilo: 'subtitulo' },
           // El título de la fiesta cambia según haya ceremonia aparte, en el mismo lugar o ninguna
-          { id: 'celebracion.titulo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'celebracion.titulo', si: hayCeremonia },
-          { id: 'celebracion.tituloUnico', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'unificado.titulo', si: unificada },
-          { id: 'celebracion.tituloSolo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'celebracion.sola', si: { campo: 'ceremonia.modo', es: 'sin' } },
+          { id: 'celebracion.titulo', tipo: 'texto', etiqueta: 'Título', titulo: true, max: 30, base: 'celebracion.titulo', si: hayCeremonia },
+          { id: 'celebracion.tituloUnico', tipo: 'texto', etiqueta: 'Título', titulo: true, max: 30, base: 'unificado.titulo', si: unificada },
+          { id: 'celebracion.tituloSolo', tipo: 'texto', etiqueta: 'Título', titulo: true, max: 30, base: 'celebracion.sola', si: { campo: 'ceremonia.modo', es: 'sin' } },
         ] : [
-          { id: 'celebracion.tituloSolo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'celebracion.sola' },
+          { id: 'celebracion.tituloSolo', tipo: 'texto', etiqueta: 'Título', titulo: true, max: 30, base: 'celebracion.sola' },
         ]),
-        { id: 'celebracion.inicio', tipo: 'fechaHora', etiqueta: 'Día y hora de inicio', etiquetaFalta: conCeremonia ? 'Día y hora de la fiesta' : 'Día y hora de inicio', requerido: true },
-        { id: 'celebracion.fin', tipo: 'fechaHora', etiqueta: 'Fecha y hora estimada de finalización', etiquetaFalta: 'Fecha y hora de finalización de la fiesta', requerido: true, ayuda: 'Se usa para el calendario de los invitados.' },
-        ...lugarCampos('celebracion'),
+        ...lugarCampos('celebracion', { fecha: conCeremonia ? `Fecha de la ${misa ? 'fiesta' : 'celebración'}` : 'Fecha del evento', ejemplo: 'Estancia La Soñada' }),
+        { id: 'separador.fotosLugar', tipo: 'nota', estilo: 'linea' },
+        { id: 'fotosOn.lugares', tipo: 'switch', etiqueta: 'Incluir fotos', defecto: true, rearmar: true, paquete: 'premium' },
+        ...(conCeremonia ? [{ id: 'ceremonia.foto', tipo: 'foto', etiqueta: misa ? 'Foto de la iglesia' : 'Foto de la ceremonia', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: [siFotos('lugares'), hayCeremonia] }] : []),
+        { id: 'celebracion.foto', tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: siFotos('lugares') },
       ],
     },
     {
-      id: 'rsvp', seccion: 'rsvp', titulo: 'RSVP',
+      id: 'rsvp', seccion: 'rsvp', titulo: 'Confirmación',
       campos: [
+        titulo('rsvp.titulo'),
         { id: 'rsvp.texto', tipo: 'area', etiqueta: 'Texto de la sección', max: 250, base: 'rsvp.texto' },
-        { id: 'rsvp.cierre', tipo: 'fecha', etiqueta: 'Recibir confirmaciones hasta el', ayuda: 'Vacío: se puede confirmar hasta el día del evento.' },
+        { id: 'rsvp.cierre', tipo: 'fecha', etiqueta: 'Recibir confirmaciones hasta el', ancho: 'mitad', ayuda: 'Vacío: se puede confirmar hasta el día del evento.' },
+        { id: 'rsvp.aforo', tipo: 'numero', etiqueta: 'Aforo máximo', min: 1, max: 5000, ancho: 'mitad', placeholder: 'Sin límite', ayuda: 'Al llegar al límite se cierra (cuenta invitados, acompañantes y niños).' },
         { id: 'acceso.lista', tipo: 'switch', etiqueta: 'Usar lista de invitados (nombre, pases y mesa en la invitación)', rearmar: true,
           fijoSi: { o: [{ campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] },
           motivo: 'Queda activada porque en Seguridad se eligió link personal o PIN por invitado.',
@@ -161,83 +182,95 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
         { id: 'invitados', tipo: 'invitados', etiqueta: 'Lista de invitados', si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
         { id: 'rsvp.acompanantes', tipo: 'contador', etiqueta: 'Cantidad de acompañantes que puede sumar cada invitado', min: 0, max: 10, defecto: 0,
           si: [{ campo: 'acceso.lista', no: true }, { campo: 'acceso.modo', no: 'codigo' }, { o: [{ campo: 'acceso.modo', no: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] }] },
-        { ...conFotos('rsvp'), paquete: 'premium' },
-        { id: 'fotos.rsvp', tipo: 'foto', etiqueta: 'Foto', proporcion: PROPORCION.rsvp, encuadre: true, paquete: 'premium', si: siFotos('rsvp') },
-        { id: 'rsvp.preguntas.comida', tipo: 'switch', etiqueta: 'Preguntar restricciones alimentarias' },
+        { id: 'rsvp.preguntas.comida', tipo: 'switch', etiqueta: 'Preguntar restricciones alimentarias', ayuda: 'Si va con acompañantes, puede aclarar si alguno tiene otra restricción.' },
         { id: 'rsvp.preguntas.alcohol', tipo: 'switch', etiqueta: 'Preguntar si toma alcohol' },
-        { id: 'rsvp.preguntas.ninos', tipo: 'switch', etiqueta: 'Preguntar si va con niños' },
+        { id: 'rsvp.preguntas.ninos', tipo: 'switch', etiqueta: 'Preguntar si va con niños y cuántos serán' },
         { id: 'rsvp.preguntas.traslado', tipo: 'switch', etiqueta: 'Preguntar si necesita traslado', paquete: 'deluxe' },
         { id: 'rsvp.extras', tipo: 'lista', etiqueta: 'Preguntas propias', max: 5, agregar: 'Agregar pregunta', campos: [
           { id: 'pregunta', tipo: 'texto', etiqueta: 'Pregunta', max: 80, placeholder: '¿Qué canción no puede faltar?' },
           { id: 'opciones', tipo: 'texto', etiqueta: 'Opciones (separadas con coma; vacío = respuesta libre)', max: 160, placeholder: 'Sí, No, Tal vez' },
         ] },
+        { ...conFotos('rsvp'), paquete: 'premium' },
+        { id: 'fotos.rsvp', tipo: 'foto', etiqueta: 'Foto', sinRecorte: true, paquete: 'premium', si: siFotos('rsvp'), ayuda: 'Se ve tal cual se sube, sin recortar.' },
       ],
     },
     {
       id: 'dresscode', seccion: 'dresscode', titulo: 'Dress code',
       campos: [
+        titulo('dress.titulo'),
         { id: 'dresscode.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'dresscode.texto' },
+        { id: 'dresscode.evitar', tipo: 'colores', etiqueta: 'Colores a evitar (opcional)', max: 4 },
         { id: 'fotosOn.dresscode', tipo: 'switch', etiqueta: 'Incluir fotos de sugerencias de estilo', defecto: true, rearmar: true, paquete: 'deluxe' },
         { id: 'dresscode.fotos', tipo: 'fotos', etiqueta: 'Fotos de sugerencias de estilo', max: 6, paquete: 'deluxe', proporcion: PROPORCION.dress, si: siFotos('dresscode') },
       ],
     },
     { id: 'hospedaje', seccion: 'hospedaje', titulo: 'Hospedaje', campos: [
-      { id: 'hospedaje.texto', tipo: 'area', etiqueta: 'Texto (opcional)', max: 300 },
-      { id: 'hospedaje.items', tipo: 'lista', etiqueta: 'Hoteles', max: 6, campos: [
+      titulo('hospedaje.titulo'),
+      { id: 'textos.hospedaje.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'hospedaje.texto' },
+      { id: 'hospedaje.items', tipo: 'lista', etiqueta: 'Hoteles', max: 6, agregar: 'Agregar hotel', campos: [
         { id: 'nombre', tipo: 'texto', etiqueta: 'Hotel', max: 60 }, { id: 'direccion', tipo: 'texto', etiqueta: 'Dirección', max: 100 }, { id: 'link', tipo: 'url', etiqueta: 'Link de reservas' },
       ] },
     ] },
     { id: 'bus', seccion: 'bus', titulo: 'Servicio de traslado', campos: [
-      { id: 'bus.texto', tipo: 'area', etiqueta: 'Texto (opcional)', max: 300 },
-      { id: 'bus.paradas', tipo: 'lista', etiqueta: 'Recorrido', max: 5, campos: [
+      titulo('bus.titulo'),
+      { id: 'textos.bus.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'bus.texto' },
+      { id: 'bus.paradas', tipo: 'lista', etiqueta: 'Recorrido', max: 5, agregar: 'Agregar parada', campos: [
         { id: 'etiqueta', tipo: 'texto', etiqueta: 'Parada (vacío: "Partida", "Destino"…)', max: 30 }, { id: 'detalle', tipo: 'texto', etiqueta: 'Lugar y hora', max: 100 },
       ] },
     ] },
     { id: 'itinerario', seccion: 'itinerario', titulo: 'Itinerario', campos: [
-      { id: 'itinerario', tipo: 'lista', etiqueta: 'Momentos', max: 12, campos: [
+      titulo('itinerario.titulo'),
+      { id: 'itinerario', tipo: 'lista', etiqueta: 'Momentos', max: 12, agregar: 'Agregar momento', campos: [
         { id: 'hora', tipo: 'texto', etiqueta: 'Hora', max: 10, placeholder: '21:00' },
-        { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 40 },
+        { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 25 },
         { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, valores: (modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })) },
       ] },
     ] },
     // Testigos (boda) o padrinos (15, bautismo, comunión); cumpleaños, infantiles y egresos no tienen
     ...(!CON_PADRINOS.has(tipo) ? [] : [{ id: 'testigos', seccion: 'testigos', titulo: padrinos, campos: [
-      { id: 'textos.testigos.titulo', tipo: 'texto', etiqueta: 'Título', max: 30, base: 'testigos.titulo' },
+      titulo('testigos.titulo'),
       conFotos('testigos', 'Incluir fotos'),
-      { id: 'testigos', tipo: 'lista', etiqueta: padrinos, max: 8, campos: [
+      { id: 'testigos', tipo: 'lista', etiqueta: padrinos, max: 8, agregar: 'Agregar', campos: [
         { id: 'nombre', tipo: 'texto', etiqueta: 'Nombre', max: 40 }, { id: 'rol', tipo: 'texto', etiqueta: 'Quién es (opcional)', max: 40, placeholder: 'Hermano del novio' },
-        { id: 'foto', tipo: 'foto', etiqueta: 'Foto', proporcion: PROPORCION.testigo, encuadre: true, redonda: true, si: siFotos('testigos') },
+        { id: 'foto', tipo: 'foto', etiqueta: 'Foto', proporcion: PROPORCION.testigo, encuadre: true, redonda: true, zoom: true, si: siFotos('testigos') },
       ] },
     ] }]),
     // Premium: hashtag de Instagram · Deluxe: álbum compartido de Albunear
     paquete === 'premium' ? { id: 'album', seccion: 'album', titulo: 'Fotos con hashtag', campos: [
+      titulo('hashtag.titulo'),
       { id: 'album.hashtag', tipo: 'texto', etiqueta: 'Hashtag de Instagram', max: 40, placeholder: 'SofiyAle2027',
         ayuda: 'Sin el #. Vacío: se arma solo con los nombres y el año. Los invitados etiquetan sus fotos y el botón "Ver fotos" las muestra.' },
       { id: 'textos.hashtag.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'hashtag.texto' },
       conFotos('album'),
-      { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', proporcion: PROPORCION.album, encuadre: true, si: siFotos('album') },
+      { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album'), ayuda: 'Se ve tal cual se sube, sin recortar.' },
     ] } : { id: 'album', seccion: 'album', titulo: 'Álbum de fotos compartido', campos: [
+      titulo('album.titulo'),
       { id: 'textos.album.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'album.texto' },
       { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', ayuda: 'El álbum de Albunear se crea solo. También se puede pegar otro link.' },
       conFotos('album'),
-      { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', proporcion: PROPORCION.album, encuadre: true, si: siFotos('album') },
+      { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album'), ayuda: 'Se ve tal cual se sube, sin recortar.' },
     ] },
     { id: 'canciones', seccion: 'canciones', titulo: 'Música', campos: [
       { id: 'nota.canciones', tipo: 'nota', texto: 'Esta sección trae un formulario para que los invitados sugieran canciones. Las sugerencias llegan a "Respuestas", en este panel.' },
+      titulo('canciones.titulo'),
       { id: 'textos.canciones.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'canciones.texto' },
       { id: 'canciones.spotify', tipo: 'url', etiqueta: 'Lista de Spotify (opcional)', ayuda: 'Además del formulario, un botón a una lista de Spotify.' },
     ] },
     { id: 'regalos', seccion: 'regalos', titulo: 'Regalos', campos: [
+      titulo('regalos.titulo'),
       { id: 'regalos.texto', tipo: 'area', etiqueta: 'Texto', max: 250, base: 'regalos.texto' },
-      { id: 'regalos.cuentas', tipo: 'lista', etiqueta: 'Datos bancarios', max: 6, campos: [
-        { id: 'etiqueta', tipo: 'texto', etiqueta: 'Dato', max: 30, placeholder: 'Alias / IBAN / CBU / Titular' }, { id: 'dato', tipo: 'texto', etiqueta: 'Valor', max: 60 }, { id: 'copiable', tipo: 'switch', etiqueta: 'Botón copiar', defecto: true },
+      { id: 'regalos.cuentas', tipo: 'lista', etiqueta: 'Datos bancarios', max: 6, agregar: 'Agregar', ayuda: 'Cada dato se puede copiar con un toque en la invitación.', campos: [
+        { id: 'etiqueta', tipo: 'texto', etiqueta: 'Dato', max: 30, placeholder: 'Cuenta bancaria / IBAN / Alias / Titular…' }, { id: 'dato', tipo: 'texto', etiqueta: 'Valor', max: 60 },
       ] },
-      { id: 'regalos.lista.etiqueta', tipo: 'texto', etiqueta: 'Lista de regalos: tienda', max: 40 },
-      { id: 'regalos.lista.dato', tipo: 'texto', etiqueta: 'Número o código de la lista', max: 40 },
-      { id: 'regalos.lista.link', tipo: 'url', etiqueta: 'Link de la lista' },
-      { id: 'regalos.lista.texto', tipo: 'area', etiqueta: 'Texto de la lista', max: 200, base: 'regalos.listaTexto' },
+      { id: 'separador.listas', tipo: 'nota', estilo: 'linea' },
+      { id: 'regalos.listas', tipo: 'lista', etiqueta: 'Lista de regalos', max: 4, agregar: 'Agregar', campos: [
+        { id: 'etiqueta', tipo: 'texto', etiqueta: 'Tienda', max: 40, placeholder: 'Falabella, Amazon…' },
+        { id: 'dato', tipo: 'texto', etiqueta: 'Número o código (opcional)', max: 40 },
+        { id: 'link', tipo: 'url', etiqueta: 'Link de la lista (opcional)' },
+      ] },
     ] },
     { id: 'redes', seccion: 'redes', titulo: 'Redes del evento', campos: [
+      titulo('redes.titulo', { max: 40 }),
       { id: 'redes.instagram', tipo: 'url', etiqueta: 'Instagram' }, { id: 'redes.facebook', tipo: 'url', etiqueta: 'Facebook' }, { id: 'redes.tiktok', tipo: 'url', etiqueta: 'TikTok' },
     ] },
     { id: 'pie', titulo: 'Cierre', campos: [
@@ -246,32 +279,34 @@ function pasosInvitacion({ tipo, modelo, paquete }) {
   ];
 }
 
-// ── Diseño: colores y tipografía (adicional; por ahora los cambios los hace el equipo) ──
-const pasoDiseno = {
+// ── Diseño: colores y tipografía (adicional; los cambios los hace el equipo) ──
+const PALETA_DEFECTO = ['#a78977', '#86a388', '#9ab09c', '#ffffff'];
+const pasoDiseno = (modelo) => ({
   id: 'diseno', titulo: 'Diseño',
   campos: [
     { id: 'nota.diseno', tipo: 'nota', texto: 'Los cambios los hace el equipo de diseño: el pedido se envía al publicar y desde ese momento ya no se puede modificar.' },
     { id: 'diseno.paleta.modo', tipo: 'opciones', etiqueta: 'Colores', defecto: 'original', extra: 'paleta', valores: [
       { v: 'original', etiqueta: 'Los colores originales del diseño' }, { v: 'cambiar', etiqueta: 'Quiero otros colores' },
     ] },
-    { id: 'diseno.paleta.colores', tipo: 'lista', etiqueta: 'Colores elegidos', max: 4, extra: 'paleta', agregar: 'Agregar color', si: { campo: 'diseno.paleta.modo', es: 'cambiar' }, campos: [{ id: 'color', tipo: 'color', etiqueta: 'Color' }] },
-    { id: 'diseno.paleta.notas', tipo: 'area', etiqueta: 'Detalles de los colores (opcional)', max: 400, extra: 'paleta', si: { campo: 'diseno.paleta.modo', es: 'cambiar' }, placeholder: 'Verde oliva más oscuro y detalles en dorado…' },
+    { id: 'diseno.paleta.colores', tipo: 'paleta', etiqueta: 'Modificar colores', extra: 'paleta', original: modelo?.paleta || PALETA_DEFECTO, si: { campo: 'diseno.paleta.modo', es: 'cambiar' } },
+    { id: 'diseno.paleta.notas', tipo: 'area', etiqueta: 'Algún detalle más (opcional)', max: 400, extra: 'paleta', si: { campo: 'diseno.paleta.modo', es: 'cambiar' }, placeholder: 'Verde oliva más oscuro y detalles en dorado…' },
+    { id: 'separador.tipografia', tipo: 'nota', estilo: 'linea' },
     { id: 'diseno.tipografia.modo', tipo: 'opciones', etiqueta: 'Tipografía', defecto: 'original', extra: 'tipografia', valores: [
       { v: 'original', etiqueta: 'La tipografía original del diseño' }, { v: 'cambiar', etiqueta: 'Quiero otra tipografía' },
     ] },
-    { id: 'diseno.tipografia.nombre', tipo: 'texto', etiqueta: 'Tipografía o estilo que se busca', max: 120, extra: 'tipografia', si: { campo: 'diseno.tipografia.modo', es: 'cambiar' }, placeholder: 'Una cursiva más simple, tipo Great Vibes…' },
+    { id: 'diseno.tipografia.nombre', tipo: 'fuente', etiqueta: 'Elegir la tipografía', valores: FUENTES, extra: 'tipografia', si: { campo: 'diseno.tipografia.modo', es: 'cambiar' } },
+    { id: 'diseno.tipografia.otra', tipo: 'texto', etiqueta: '¿Otra fuente? Escribir el nombre', max: 80, extra: 'tipografia', si: { campo: 'diseno.tipografia.modo', es: 'cambiar' }, placeholder: 'Por ejemplo: Parisienne' },
   ],
-};
+});
 
-// ── Idioma: el principal (variantes del español) y los adicionales contratados ──
-const IDIOMAS_EXTRA = ['Inglés', 'Portugués', 'Italiano', 'Francés', 'Alemán', 'Catalán', 'Neerlandés', 'Hebreo'].map((v) => ({ v, etiqueta: v }));
+// ── Idioma: el principal (con las variantes del español) y los adicionales contratados ──
 const pasoIdioma = {
   id: 'idioma', titulo: 'Idioma',
   campos: [
-    { id: 'variante', tipo: 'opciones', etiqueta: 'Idioma principal de la invitación', valores: IDIOMAS.filter((x) => x.v !== 'en') },
-    { id: 'nota.idiomas', tipo: 'nota', texto: 'Idiomas adicionales: la invitación se traduce sola y después se pueden ajustar los textos de cada idioma.' },
+    { id: 'variante', tipo: 'idioma', etiqueta: 'Idioma principal de la invitación', idiomas: IDIOMAS_BASE, variantes: VARIANTES_ES, defecto: 'es', rearmar: true },
+    { id: 'nota.idiomas', tipo: 'nota', texto: 'Se pueden sumar idiomas adicionales: los textos de la invitación se traducen solos y después se pueden ajustar. Cada invitado la ve en su idioma y puede cambiarlo.' },
     ...[2, 3, 4].map((n) => ({
-      id: `idiomas.l${n}`, tipo: 'opciones', etiqueta: n === 2 ? 'Idioma secundario' : `Idioma ${n}`, valores: IDIOMAS_EXTRA, extra: 'idioma', extraN: n - 1, rearmar: true,
+      id: `idiomas.l${n}`, tipo: 'opciones', etiqueta: n === 2 ? 'Idioma secundario' : `Idioma ${n}`, valores: IDIOMAS_BASE, extra: 'idioma', extraN: n - 1, rearmar: true, distintoDe: 'variante',
       ...(n > 2 ? { si: { campo: `idiomas.l${n - 1}` } } : {}),
     })),
   ],
@@ -285,11 +320,11 @@ const pasoSeguridad = {
     { id: 'acceso.modo', tipo: 'opciones', etiqueta: 'Quién puede ver la invitación', defecto: 'abierta', valores: [
       { v: 'abierta', etiqueta: 'Cualquiera con el link', ayuda: 'Sin seguridad. Lo más simple para compartir.' },
       { v: 'codigo', etiqueta: 'Solo con link personal', ayuda: 'Cada invitado recibe su propio link. Sin él, la invitación se ve bloqueada.',
-        requiere: conLista, motivo: 'Requiere la lista de invitados: activar "Usar lista de invitados" en RSVP.', irA: 'rsvp' },
+        requiere: conLista, motivo: 'Requiere la lista de invitados: activar "Usar lista de invitados" en Confirmación.', irA: 'rsvp' },
       { v: 'pin', etiqueta: 'Con PIN', ayuda: 'Se pide un PIN de 4 números antes de mostrar la invitación.' },
     ] },
     { id: 'acceso.pinPorInvitado', tipo: 'switch', etiqueta: 'Un PIN distinto para cada invitado', ayuda: 'Apagado: un solo PIN para todos.', rearmar: true, si: { campo: 'acceso.modo', es: 'pin' },
-      requiere: conLista, motivo: 'Requiere la lista de invitados: activar "Usar lista de invitados" en RSVP.', irA: 'rsvp' },
+      requiere: conLista, motivo: 'Requiere la lista de invitados: activar "Usar lista de invitados" en Confirmación.', irA: 'rsvp' },
     { id: 'acceso.pin', tipo: 'texto', etiqueta: 'PIN para todos', max: 4, patron: '^[0-9]{4}$', placeholder: '1234', si: [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] },
   ],
 };
@@ -298,9 +333,10 @@ const pasoPublicar = (tipo) => ({
   id: 'publicar', titulo: 'Link y vista al compartir',
   campos: [
     { id: 'slug', tipo: 'slug', etiqueta: 'Link de la invitación', prefijo: `amoinvitar.com/${tipo}/`, requerido: true, max: 40 },
-    { id: 'meta.descripcion', tipo: 'texto', etiqueta: 'Frase al compartir el link', max: 120, base: 'meta.descripcion', ayuda: 'Aparece debajo del título en WhatsApp, Facebook, etc.' },
     { id: 'miniatura.foto', tipo: 'foto', etiqueta: 'Foto al compartir el link (opcional)', proporcion: PROPORCION.miniatura, encuadre: true, ayuda: 'Sin foto se usa la de portada; sin fotos, una imagen del diseño con los nombres.' },
     { id: 'miniatura.conTexto', tipo: 'switch', etiqueta: 'Poner los nombres sobre la foto', opciones: ['Imagen sola', 'Imagen y nombres'] },
+    { id: 'meta.descripcion', tipo: 'texto', etiqueta: 'Frase para acompañar el link', max: 120, base: 'meta.descripcion', ayuda: 'Aparece debajo del título en WhatsApp, Facebook, etc.' },
+    { id: 'vista.compartir', tipo: 'vistaCompartir', etiqueta: 'Vista previa' },
     // La arma el panel (1200×630) cada vez que cambian la foto, los nombres o el switch
     { id: 'miniatura.generada', tipo: 'foto', oculto: true },
   ],
@@ -340,7 +376,7 @@ const PRODUCTOS_STD = {
       { id: 'musica.archivo', tipo: 'mp3', etiqueta: 'Música (MP3, opcional)', maxMB: 12 },
     ] },
     { id: 'agendar', titulo: 'Agendar', campos: [
-      { id: 'zonaHoraria', tipo: 'opciones', etiqueta: 'Zona horaria', valores: ZONAS },
+      { id: 'zonaHoraria', tipo: 'zona', etiqueta: 'País / zona horaria', valores: ZONAS },
       { id: 'std.agendar', tipo: 'switch', etiqueta: 'Mostrar botón "Agendar"', defecto: true },
     ] },
     pasoPublicar('save-the-date'),
@@ -438,7 +474,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   const pasos = [
     ...(producto === 'a-medida' ? [pasoBrief({ aMedida })] : []),
     ...base,
-    pasoDiseno,
+    pasoDiseno(m),
     pasoIdioma,
     pasoSeguridad,
     pasoPublicar(tipo),
@@ -464,6 +500,9 @@ function escribir(o, ruta, v) {
 }
 const URL_OK = /^(https?:\/\/|\/media\/)/i;
 const POS_OK = /^\d{1,3}% \d{1,3}%$/;
+const HEX = /^#[0-9a-f]{6}$/i;
+const ZONAS_OK = new Set(ZONAS.map((z) => z.v));
+const IDIOMAS_OK = new Set(IDIOMAS.map((x) => x.v));
 
 function limpiarValor(c, v) {
   if (v == null || v === '') return undefined;
@@ -479,8 +518,14 @@ function limpiarValor(c, v) {
     case 'fecha': return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : undefined;
     case 'fechaHora': return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v) ? v : undefined;
     case 'hora': return /^\d{2}:\d{2}$/.test(v) ? v : undefined;
-    case 'color': return /^#[0-9a-f]{6}$/i.test(v) ? v : undefined;
-    case 'url': case 'foto': case 'mp3': return URL_OK.test(v) ? String(v).slice(0, 500) : undefined;
+    case 'color': return HEX.test(v) ? v : undefined;
+    case 'url': case 'foto': case 'mp3': case 'video': return URL_OK.test(v) ? String(v).slice(0, 500) : undefined;
+    case 'zona': return ZONAS_OK.has(v) ? v : undefined;
+    case 'idioma': return IDIOMAS_OK.has(v) ? v : undefined;
+    case 'fuente': return c.valores.includes(v) ? v : undefined;
+    // Paleta: los 4 colores del diseño (vacío = ese color se quitó)
+    case 'paleta': return [].concat(v).slice(0, 4).map((x) => (HEX.test(x || '') ? x.toLowerCase() : ''));
+    case 'colores': return [].concat(v).filter((x) => HEX.test(x || '')).slice(0, c.max || 4).map((x) => x.toLowerCase());
     case 'opciones': {
       const ok = new Set(c.valores.map((x) => x.v));
       return c.multiple ? [].concat(v).filter((x) => ok.has(x)) : (ok.has(v) ? v : undefined);
@@ -492,6 +537,8 @@ function limpiarValor(c, v) {
       for (const sc of c.campos) {
         const x = limpiarValor(sc, item?.[sc.id]); if (x !== undefined) limpio[sc.id] = x;
         if (sc.encuadre && POS_OK.test(item?.[`${sc.id}Pos`] || '')) limpio[`${sc.id}Pos`] = item[`${sc.id}Pos`];
+        const zoom = Number(item?.[`${sc.id}Zoom`]);
+        if (sc.zoom && zoom > 1 && zoom <= 3) limpio[`${sc.id}Zoom`] = Math.round(zoom * 100) / 100;
       }
       return limpio;
     }).filter((x) => Object.keys(x).length);
@@ -508,7 +555,7 @@ export function limpiarDatos(esquema, datos, previos = {}) {
     }
     if (paso.bloqueado) continue;
     for (const c of paso.campos) {
-      if (c.bloqueado || c.cerrado || c.sinExtra || c.tipo === 'invitados' || c.tipo === 'nota') continue;
+      if (c.bloqueado || c.cerrado || c.sinExtra || ['invitados', 'nota', 'vistaCompartir'].includes(c.tipo)) continue;
       const v = leer(datos, c.id);
       if (c.tipo === 'foto' && c.encuadre) {
         const pos = leer(datos, `${c.id}Pos`);
@@ -517,6 +564,14 @@ export function limpiarDatos(esquema, datos, previos = {}) {
       if (v === undefined) continue;
       escribir(salida, c.id, limpiarValor(c, v));
     }
+  }
+  // Fecha y hora van en campos separados; el resto del sistema (calendarios, cuenta
+  // regresiva, vencimiento del plan gratis) lee "inicio" = AAAA-MM-DDTHH:MM
+  for (const p of ['ceremonia', 'celebracion']) {
+    const l = salida[p];
+    if (l?.fecha) l.inicio = l.hora ? `${l.fecha}T${l.hora}` : l.fecha;
+    else if (l && 'fecha' in l) delete l.inicio;
+    if (l) delete l.fin; // la duración sale del tipo de evento
   }
   return salida;
 }

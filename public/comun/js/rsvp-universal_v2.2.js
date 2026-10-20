@@ -259,6 +259,14 @@ if (invField) {
       sel.addEventListener("change", () => {
         otro.style.display = sel.value === txt("textOtra") ? "block" : "none";
       });
+
+      // Si puede ir acompañado: aclarar si algún acompañante tiene otra restricción
+      const puedeAcomp = (invitado?.nombre ? pases > 0 : (esLibre || maxLibre > 0));
+      if (puedeAcomp && txt("labelComidaAcomp")) {
+        const acomp = createInput("comida_acomp", txt("labelComidaAcomp"));
+        acomp.maxLength = 200;
+        dinamicos.appendChild(acomp);
+      }
     }
 
     // 🍷 ALCOHOL
@@ -287,6 +295,8 @@ if (invField) {
       );
 
       const input         = createInput("ninos_detalle", txt("labelNinosInput"));
+      // Solo la cantidad de niños (sin nombres)
+      if (cfg.ninosNumero === "true") { input.type = "number"; input.min = "1"; input.max = "15"; input.inputMode = "numeric"; }
       input.style.display = "none";
       dinamicos.appendChild(input);
 
@@ -437,6 +447,11 @@ if (invField) {
       labels["comida"]   = txt("labelComida") || "Restricción alimentaria";
     }
 
+    if (raw["comida_acomp"]?.trim()) {
+      enviando["comida_acomp"] = raw["comida_acomp"].trim();
+      labels["comida_acomp"]   = txt("labelComidaAcomp") || "Restricción de acompañantes";
+    }
+
     // ALCOHOL
     if (raw["alcohol"]) {
       enviando["alcohol"] = raw["alcohol"];
@@ -490,12 +505,13 @@ if (invField) {
         ok.innerHTML       = `<p class="text-center font-weight-bold mt-3">${txt("msgOk")}</p>`;
         ok.style.display   = "block";
       } else {
-        throw new Error(txt("msgRespuestaInvalida"));
+        throw Object.assign(new Error(txt("msgRespuestaInvalida")), { lleno: !!res.lleno });
       }
     })
     .catch(err => {
       console.error(err);
-      mostrarError(txt("msgError"));
+      // Aforo completo: ya no se reciben más confirmaciones
+      mostrarError(err.lleno && txt("msgLleno") ? txt("msgLleno") : txt("msgError"));
       btn.disabled  = false;
       btn.innerHTML = original;
     });

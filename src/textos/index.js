@@ -11,7 +11,19 @@
 // Variantes: es (neutro, tú/ustedes) · es-ar (vos: AR, UY, PY)
 //            es-cr (vos con subjuntivo: CR, NI) · es-es (tú/vosotros) · en
 // En los textos, {nombres} se reemplaza por los nombres del evento.
+//
+// Otros idiomas (pt, fr, it, ca, de, nl): textos/idiomas/<código>.js, sobre
+// el inglés (lo que falte en esos archivos se ve en inglés, nunca vacío).
 // ════════════════════════════════════════════════════════════════════
+
+import pt from './idiomas/pt.js';
+import fr from './idiomas/fr.js';
+import it from './idiomas/it.js';
+import ca from './idiomas/ca.js';
+import de from './idiomas/de.js';
+import nl from './idiomas/nl.js';
+
+const OTROS = { pt, fr, it, ca, de, nl };
 
 const BASE = {
   es: {
@@ -51,7 +63,9 @@ const BASE = {
     'rsvp.form.msgVacios': 'Por favor completa los datos.',
     'rsvp.form.comidaOpciones': 'No|Celíaco|Vegano|Vegetariano',
 
-    'dress.titulo': 'Dress Code', 'dress.boton': 'Sugerencias', 'dress.modal': 'Sugerencias de estilos',
+    'dress.titulo': 'Dress Code', 'dress.boton': 'Sugerencias', 'dress.modal': 'Sugerencias de estilos', 'dress.evitar': 'Colores a evitar',
+    'rsvp.form.comidaAcomp': '¿Algún acompañante tiene otra restricción? (opcional)',
+    'rsvp.form.msgLleno': 'Ya se completó el cupo de invitados: no se reciben más confirmaciones.',
     'dresscode.texto': 'Formal y elegante. Por favor no usar blanco.',
     'hospedaje.titulo': 'Hospedaje', 'hospedaje.texto': 'Referencias de hoteles cercanos.',
     'hospedaje.boton': 'Referencias', 'hospedaje.modal': 'Referencias de hoteles cercanos', 'hospedaje.reservas': 'Reservas',
@@ -132,7 +146,9 @@ const BASE = {
     'rsvp.form.msgOk': 'Thank you! 🎉 Your RSVP has been received',
     'rsvp.form.msgError': 'Connection error. Please try again.', 'rsvp.form.msgInvalida': 'Invalid server response.',
     'rsvp.form.msgVacios': 'Please fill in your details.', 'rsvp.form.comidaOpciones': 'No|Gluten-free|Vegan|Vegetarian',
-    'dress.titulo': 'Dress Code', 'dress.boton': 'Inspiration', 'dress.modal': 'Style inspiration',
+    'dress.titulo': 'Dress Code', 'dress.boton': 'Inspiration', 'dress.modal': 'Style inspiration', 'dress.evitar': 'Colors to avoid',
+    'rsvp.form.comidaAcomp': 'Does any of your guests have a different restriction? (optional)',
+    'rsvp.form.msgLleno': 'The guest limit has been reached: no more RSVPs can be accepted.',
     'dresscode.texto': 'Formal attire. Please avoid wearing white.',
     'hospedaje.titulo': 'Accommodation', 'hospedaje.texto': 'Nearby hotels.', 'hospedaje.boton': 'See hotels',
     'hospedaje.modal': 'Nearby hotels', 'hospedaje.reservas': 'Book',
@@ -364,9 +380,11 @@ const PAISES = {
   ES: 'es-es',
   US: 'es', MX: 'es', CO: 'es', CL: 'es', PE: 'es', BO: 'es', EC: 'es', VE: 'es', DO: 'es', GT: 'es', HN: 'es', SV: 'es', PA: 'es', CU: 'es', PR: 'es',
   GB: 'en', IE: 'en', AU: 'en', NZ: 'en', CA: 'en', ZA: 'en',
+  BR: 'pt', PT: 'pt', AO: 'pt', MZ: 'pt', FR: 'fr', MC: 'fr', LU: 'fr', IT: 'it', SM: 'it', AD: 'ca',
+  DE: 'de', AT: 'de', LI: 'de', NL: 'nl', SR: 'nl',
 };
 
-export const VARIANTES = ['es', 'es-ar', 'es-cr', 'es-es', 'en'];
+export const VARIANTES = ['es', 'es-ar', 'es-cr', 'es-es', 'en', ...Object.keys(OTROS)];
 export const TIPOS = Object.keys(EVENTOS);
 
 export function varianteDePais(pais) { return PAISES[(pais || '').toUpperCase()] || 'es'; }
@@ -376,8 +394,9 @@ export function esPlural(tipo) { return !!EVENTOS[tipo]?.plural; }
 export function diccionario(tipo, variante) {
   const ev = EVENTOS[tipo] || EVENTOS.boda;
   const v = VARIANTES.includes(variante) ? variante : 'es';
-  const capas = v === 'en'
-    ? [BASE.es, BASE.en, ev.es, ev.en]
+  const otro = OTROS[v];
+  const capas = v === 'en' || otro
+    ? [BASE.es, BASE.en, ev.es, ev.en, otro?.base, otro?.eventos?.[tipo in EVENTOS ? tipo : 'boda']]
     : [BASE.es, v === 'es-cr' ? BASE['es-ar'] : null, BASE[v], ev.es, v === 'es-cr' ? ev['es-ar'] : null, ev[v]];
   return Object.assign({}, ...capas.filter(Boolean));
 }

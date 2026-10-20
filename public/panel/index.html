@@ -7,6 +7,7 @@
   <title>Panel · Amo Invitar</title>
   <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
   <link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
+  <link rel="stylesheet" href="/comun/fonts/catalogo/catalogo.css">
   <link rel="stylesheet" href="/panel/panel.css">
 </head>
 <body>
@@ -24,8 +25,21 @@
     <nav class="pasos" id="pasos" aria-label="Secciones"></nav>
     <main class="formulario" id="formulario" tabindex="-1"></main>
     <aside class="previa" id="previa" aria-label="Vista previa">
-      <div class="previa-barra"><span>Vista previa <small>Fotos de muestra hasta subir las propias</small></span><button type="button" class="btn-icono" id="btn-cerrar-vista" aria-label="Cerrar">✕</button></div>
-      <div class="telefono"><iframe id="iframe-vista" title="Vista previa de la invitación" src="about:blank"></iframe></div>
+      <div class="previa-barra">
+        <span>Vista previa <small>Fotos de muestra hasta subir las propias</small></span>
+        <div class="previa-botones">
+          <div class="modo-vista" role="group" aria-label="Ver como">
+            <button type="button" data-modo="celular" aria-pressed="true" title="Celular" aria-label="Ver en celular"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="18.2" r="1" fill="currentColor"/></svg></button>
+            <button type="button" data-modo="pc" aria-pressed="false" title="Computadora" aria-label="Ver en computadora"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 20h6M12 16v4" stroke="currentColor" stroke-width="1.8"/></svg></button>
+          </div>
+          <button type="button" class="btn-redondo" id="btn-completa" title="Pantalla completa" aria-label="Pantalla completa" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+          <button type="button" class="btn-icono" id="btn-cerrar-vista" aria-label="Cerrar">✕</button>
+        </div>
+      </div>
+      <div class="pantalla celular" id="pantalla"><div class="escala" id="escala">
+        <iframe id="iframe-vista" title="Vista previa de la invitación" src="about:blank"></iframe>
+        <iframe id="iframe-vista-b" title="Vista previa de la invitación" src="about:blank" class="atras" aria-hidden="true" tabindex="-1"></iframe>
+      </div></div>
     </aside>
   </div>
 

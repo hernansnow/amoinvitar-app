@@ -4988,3 +4988,13 @@ audio::-webkit-media-controls-play-button:hover {
 
 /* Recuadro del invitado en la confirmación */
 .g-tarjeta-invitado { border: 2px dashed #dee2e6; border-radius: 36px; }
+
+/* Frase de la portada: un espacio entre las líneas decorativas y el texto */
+.date-line:before { margin-right: .5em; }
+.date-line:after { margin-left: .5em; }
+
+/* Dress code: colores a evitar (una fila de círculos) */
+.g-evitar-titulo { font-size: .95rem; letter-spacing: .04em; }
+.g-evitar-colores { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.g-evitar-color { display: inline-block; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .9); box-shadow: 0 1px 5px rgba(0, 0, 0, .25); }
+@media (min-width: 768px) { .g-evitar-color { width: 40px; height: 40px; } }

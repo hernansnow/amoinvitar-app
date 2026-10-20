@@ -27,6 +27,7 @@ import * as cuenta from './rutas/cuenta.js';
 import * as tienda from './rutas/tienda.js';
 import * as admin from './rutas/admin.js';
 import { getCookie } from './lib/util.js';
+import { resolverMapa } from './lib/mapas.js';
 
 const PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
 const cache = new Map();
@@ -69,16 +70,31 @@ function textosPropios(o, pre = '', salida = {}) {
 // El evento guardado → lo que espera el motor
 const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, variante: ev.datos.variante });
 
+// Idiomas de la invitación: el principal y los adicionales contratados (el visitante
+// la ve en el suyo si está, y puede cambiarlo con ?lang=)
+function idiomasDe(datos = {}) {
+  const principal = variante(datos.variante);
+  const extra = [2, 3, 4].map((n) => datos.idiomas?.[`l${n}`]).filter((x) => VARIANTES.includes(x) && x.slice(0, 2) !== principal.slice(0, 2));
+  return [principal, ...new Set(extra)];
+}
+function idiomaPedido(url, datos) {
+  const todos = idiomasDe(datos);
+  const q = String(url.searchParams.get('lang') || '').toLowerCase();
+  return todos.find((x) => x.slice(0, 2) === q.slice(0, 2)) || todos[0];
+}
+
 async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false } = {}) {
   const modelo = await modeloJSON(env, evento.modelo, url.origin);
   // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html
   const plantilla = modelo && (await archivo(env, `/modelos/${evento.modelo}/index-${evento.paquete}.html`, url.origin)
     || await archivo(env, `/modelos/${evento.modelo}/index.html`, url.origin));
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
-  const v = variante(evento.variante);
+  const idiomas = demo ? [variante(evento.variante)] : idiomasDe(evento);
+  const v = demo ? variante(evento.variante) : idiomaPedido(url, evento);
   const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres));
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
+  vista.idiomas = { lista: idiomas, actual: v };
   if (sinSobre) vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false }; // la vista previa del panel abre directo
   return html(renderizar(plantilla, vista, t, { origen: url.origin }), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
@@ -111,10 +127,12 @@ async function publicada(env, url, request, tipo, slug) {
   if (!acc.ok) {
     const v = variante(ev.datos.variante);
     const t = traductor(ev.tipo, v, ev.datos.textos);
-    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v === 'en' ? 'en' : 'es', marca }),
+    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca }),
       acc.pantalla === 'pin' ? 401 : 403, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
   }
-  const r = await pagina(env, url, paraMotor(ev), { invitado: acc.invitado, marca });
+  const evento = paraMotor(ev);
+  if (await aforoLleno(almacen, ev)) evento.rsvp = { ...(evento.rsvp || {}), lleno: true };
+  const r = await pagina(env, url, evento, { invitado: acc.invitado, marca });
   if (acc.cookie) r.headers.append('set-cookie', acc.cookie);
   return r;
 }
@@ -136,6 +154,29 @@ async function entrarConPin(env, request, id) {
   return new Response(null, { status: 303, headers: { location: destino, 'set-cookie': cookie } });
 }
 
+// ── Aforo: personas confirmadas (invitado + acompañantes + niños) ─────
+// Si alguien respondió más de una vez vale su última respuesta (vienen de la más nueva a la más vieja)
+function personasConfirmadas(respuestas = []) {
+  const ultimas = new Map();
+  for (const x of respuestas.filter((r) => r.tipo === 'rsvp')) {
+    const k = x.datos.inv && !String(x.datos.inv).startsWith('inv-') ? x.datos.inv : `${x.datos.nombre}|${x.creado}`;
+    if (!ultimas.has(k)) ultimas.set(k, x);
+  }
+  let total = 0;
+  for (const { datos: d } of ultimas.values()) {
+    if (d.asiste !== 'Si') continue;
+    const acomp = d.acompanantes && d.acompanantes !== 'No' ? String(d.acompanantes).split(',').filter((n) => n.trim()).length : 0;
+    const ninos = /^\d+$/.test(String(d.ninos || '').trim()) ? Number(d.ninos) : 0;
+    total += 1 + acomp + ninos;
+  }
+  return total;
+}
+async function aforoLleno(almacen, ev) {
+  const aforo = Number(ev.datos.rsvp?.aforo);
+  if (!(aforo > 0)) return false;
+  return personasConfirmadas(await almacen.respuestas(ev.id)) >= aforo;
+}
+
 // ── Lo que usan las invitaciones: RSVP y lista ─────────────────────────
 async function rsvp(env, request) {
   const f = await request.formData();
@@ -151,6 +192,8 @@ async function rsvp(env, request) {
   const datos = {};
   for (const [k, val] of f.entries()) if (typeof val === 'string' && !['event_id', 'action'].includes(k)) datos[k] = val.slice(0, 2000);
   if (ver.codigo) datos.inv = ver.codigo; // con link personal, la respuesta queda atada a ese invitado
+  // Aforo completo: no entran más confirmaciones de asistencia (los "no voy" sí)
+  if (accion === 'rsvp' && datos.asiste === 'Si' && await aforoLleno(almacen, ev)) return json({ result: 'error', lleno: true }, 409);
   await almacen.guardarRespuesta(eventoId, accion, datos);
   return json({ result: 'ok' });
 }
@@ -217,7 +260,21 @@ async function sugerirSlug(almacen, ev, pedido) {
   return { pedido: s, disponible: libres[0] === s, alternativas: libres.filter((x) => x !== s).slice(0, 4) };
 }
 
-const TIPOS_ARCHIVO = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png', 'audio/mpeg': 'mp3' };
+const TIPOS_ARCHIVO = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png', 'audio/mpeg': 'mp3', 'video/mp4': 'mp4' };
+const MAX_MB = { mp3: 12, mp4: 40 };
+
+// Link de Google Maps de cada lugar → lo que necesita el mapa (se lee una vez por link)
+async function leerMapas(datos) {
+  for (const p of ['ceremonia', 'celebracion']) {
+    const l = datos[p];
+    if (!l) continue;
+    if (!l.mapaLink) { delete l.mapaQ; delete l.mapaLL; delete l.mapaDe; continue; }
+    if (l.mapaDe === l.mapaLink) continue;
+    const r = await resolverMapa(l.mapaLink, { fetch: (u, o) => fetch(u, { ...o, signal: AbortSignal.timeout(4000) }) }).catch(() => null);
+    if (r) { l.mapaQ = r.q; if (r.ll) l.mapaLL = r.ll; else delete l.mapaLL; } else { delete l.mapaQ; delete l.mapaLL; }
+    l.mapaDe = l.mapaLink;
+  }
+}
 
 async function apiPanel(env, request, url, partes) {
   const [, , id, accion] = partes;
@@ -242,6 +299,7 @@ async function apiPanel(env, request, url, partes) {
     const { datos } = await request.json();
     const limpio = limpiarDatos(esquema, datos || {}, ev.datos);
     if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
+    await leerMapas(limpio);
     if (limpio.slug && limpio.slug !== ev.slug) {
       if (await almacen.slugOcupado(ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(almacen, ev, limpio.slug)) }, 409);
       ev.slug = limpio.slug;
@@ -255,8 +313,8 @@ async function apiPanel(env, request, url, partes) {
     const f = await request.formData();
     const archivoSubido = f.get('archivo');
     const ext = archivoSubido && TIPOS_ARCHIVO[archivoSubido.type];
-    if (!ext) return json({ error: 'Formato no permitido (JPG, PNG, WEBP o MP3)' }, 415);
-    const max = ext === 'mp3' ? 12 : 4;
+    if (!ext) return json({ error: 'Formato no permitido (JPG, PNG, WEBP, MP3 o MP4)' }, 415);
+    const max = MAX_MB[ext] || 4;
     if (archivoSubido.size > max * 1024 * 1024) return json({ error: `El archivo supera ${max} MB` }, 413);
     const clave = `eventos/${ev.id}/${crypto.randomUUID()}.${ext}`;
     await almacen.subir(clave, archivoSubido.stream(), archivoSubido.type);
@@ -306,8 +364,8 @@ async function avisarDiseno(env, url, ev) {
     `Evento: ${nombresDe(ev.datos.nombres)} · ${ev.tipo} · ${ev.modelo} ${ev.paquete}`,
     `Link: ${url.origin}/${ev.tipo}/${ev.slug}`,
     `Panel: ${url.origin}/panel/${ev.id}?k=${ev.clave}`,
-    d.paleta?.modo === 'cambiar' ? `Colores: ${(d.paleta.colores || []).map((c) => c.color).filter(Boolean).join(', ') || '(sin elegir)'}${d.paleta.notas ? ` · ${d.paleta.notas}` : ''}` : 'Colores: originales',
-    d.tipografia?.modo === 'cambiar' ? `Tipografía: ${d.tipografia.nombre || '(sin indicar)'}` : 'Tipografía: original',
+    d.paleta?.modo === 'cambiar' ? `Colores: ${(d.paleta.colores || []).map((c, i) => `${i + 1}) ${(typeof c === 'string' ? c : c?.color) || 'quitar'}`).join(' · ') || '(sin elegir)'}${d.paleta.notas ? ` · ${d.paleta.notas}` : ''}` : 'Colores: originales',
+    d.tipografia?.modo === 'cambiar' ? `Tipografía: ${[d.tipografia.nombre, d.tipografia.otra && `otra: ${d.tipografia.otra}`].filter(Boolean).join(' · ') || '(sin indicar)'}` : 'Tipografía: original',
   ];
   const para = String(env.ADMINS || '').split(/[,\s]+/).filter(Boolean)[0] || env.SUPPORT_EMAIL;
   try {
@@ -356,14 +414,14 @@ function conFotosDeMuestra(ev) {
   if (vacio(f.galeria)) f.galeria = serie('foto', 6).map((url) => ({ url }));
   if (on('rsvp') && !f.rsvp) f.rsvp = `${BASE}/rsvp.jpg`;
   if (on('album') && !f.album) f.album = `${BASE}/instagram.jpg`;
-  const lugar = (l, foto, cual) => ({ ...(l || {}), foto: l?.foto || (on(cual) && on('lugares') ? foto : '') });
+  const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || (on('lugares') ? foto : '') });
   const testigos = serie('testigo', 4);
   const dc = ev.dresscode || {};
   return {
     ...ev,
     fotos: f,
-    ceremonia: lugar(ev.ceremonia, `${BASE}/iglesia.jpg`, 'ceremonia'),
-    celebracion: lugar(ev.celebracion, `${BASE}/lugar.jpg`, 'celebracion'),
+    ceremonia: lugar(ev.ceremonia, `${BASE}/iglesia.jpg`),
+    celebracion: lugar(ev.celebracion, `${BASE}/lugar.jpg`),
     testigos: (ev.testigos || []).map((x, i) => ({ ...x, foto: x.foto || (on('testigos') ? testigos[i % 4] : '') })),
     dresscode: { ...dc, fotos: on('dresscode') && vacio(dc.fotos) ? serie('dress-code', 6).map((url) => ({ url })) : dc.fotos },
   };
