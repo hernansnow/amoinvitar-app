@@ -550,3 +550,14 @@ textarea { min-height: 96px; line-height: 1.4; }
 
 .falta-traducir[hidden] { display: none; }
 [hidden] { display: none !important; }
+
+/* Íconos */
+.ico { flex: none; vertical-align: -3px; }
+.con-ico { display: inline-flex; align-items: center; gap: 7px; }
+.btn .ico, .btn-link .ico { margin-right: 2px; }
+.btn-link { display: inline-flex; align-items: center; gap: 4px; }
+.ico-titulo { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: color-mix(in srgb, var(--acento) 14%, #fff); color: var(--acento); margin-right: 10px; vertical-align: -6px; }
+.paso-fila .num .ico { vertical-align: 0; }
+.paso-fila .paso[aria-current="step"] .num { color: #fff; }
+/* Pantalla completa y modo de vista: centrados en la barra de la computadora */
+@media (min-width: 1024px) { .btn-redondo.solo-escritorio { display: grid !important; } }

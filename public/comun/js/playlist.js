@@ -22,6 +22,8 @@
 
   // Si no carga la API de Spotify, queda el reproductor común de Spotify
   function sinApi() {
+    lugar.classList.add('visible');
+    if (lugar.querySelector('iframe') && !control) { var f = lugar.querySelector('iframe'); f.style.border = '0'; f.style.borderRadius = '12px'; return; }
     if (lugar.querySelector('iframe')) return;
     lugar.innerHTML = '<iframe title="Spotify" src="' + lugar.dataset.embed + '" width="100%" height="80" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style="border:0;border-radius:12px"></iframe>';
   }

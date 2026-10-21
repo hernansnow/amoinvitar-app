@@ -31,6 +31,10 @@
 .ai-pl-cancion small { color: #777; font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ai-pl-d { color: #888; font-size: .8rem; }
 .ai-pl-ver { border: 0; background: none; color: #555; text-decoration: underline; font-size: .85rem; margin-top: .6rem; cursor: pointer; }
-.ai-pl-reproductor { margin-top: 1rem; min-height: 80px; }
+.ai-pl-tarjeta { position: relative; }
+/* El reproductor de Spotify queda funcionando pero sin verse: se maneja con el play del disco.
+   Si la API de Spotify no carga, se muestra el reproductor común (clase "visible"). */
+.ai-pl-reproductor { position: absolute; left: 0; bottom: 0; width: 300px; height: 80px; opacity: 0; pointer-events: none; overflow: hidden; clip-path: inset(50%); }
+.ai-pl-reproductor.visible { position: static; width: auto; opacity: 1; pointer-events: auto; clip-path: none; margin-top: 1rem; }
 .ai-pl-reproductor iframe { border: 0; border-radius: 12px; }
 .ai-pl-abrir { display: inline-block; margin-top: .5rem; font-size: .8rem; color: #555; }

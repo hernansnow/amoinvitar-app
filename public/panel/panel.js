@@ -218,6 +218,40 @@ function contador(input, max) {
 const proporcionCSS = (p) => (p ? p.replace(':', ' / ') : '');
 const leerPos = (p) => (p || '50% 50%').split(' ').map((x) => parseFloat(x) || 0);
 
+// ── Íconos (trazo fino, del mismo estilo que el de la música) ────────────
+const TRAZOS = {
+  portada: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+  musica: '<path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+  historia: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
+  galeria: '<rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h12"/><path d="M21 13l-4-4-6 6"/>',
+  lugares: '<path d="M12 21s-6-5.3-6-11a6 6 0 1 1 12 0c0 5.7-6 11-6 11Z"/><circle cx="12" cy="10" r="2.2"/>',
+  rsvp: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  invitados: '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2A5 5 0 0 1 21 19"/>',
+  dresscode: '<path d="M12 6a2 2 0 1 1 2-2"/><path d="M12 6v2l-9 7a1.5 1.5 0 0 0 1 3h16a1.5 1.5 0 0 0 1-3l-9-7"/>',
+  estilos: '<path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.5 0-1.2-1-1.6-1-2.6 0-.9.7-1.4 1.6-1.4H16a5 5 0 0 0 5-5c0-4.1-4-7.5-9-7.5Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/>',
+  hospedaje: '<path d="M3 18V7"/><path d="M3 14h18v4"/><path d="M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="1.8"/>',
+  bus: '<rect x="5" y="3" width="14" height="15" rx="2"/><path d="M5 11h14"/><circle cx="8.5" cy="14.5" r="1"/><circle cx="15.5" cy="14.5" r="1"/><path d="M7 18v2M17 18v2"/>',
+  itinerario: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  testigos: '<circle cx="9" cy="14" r="5"/><circle cx="15" cy="14" r="5"/><path d="M10 5l2-2 2 2-2 2z"/>',
+  instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".8"/>',
+  album: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  canciones: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/>',
+  playlist: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r=".6"/>',
+  regalos: '<rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12"/><path d="M12 9S9 3 6.5 5.5 12 9 12 9Zm0 0s3-6 5.5-3.5S12 9 12 9Z"/>',
+  redes: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.3 10.8l7.4-3.6M8.3 13.2l7.4 3.6"/>',
+  pie: '<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
+  diseno: '<path d="M4 20c2 0 4-1 4-3.5S6 13 4.5 14 2 20 4 20Z"/><path d="M8.5 15.5 20 4l-1.5-1.5L7 14"/>',
+  idiomaAdicional: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.7 3 2.7 15 0 18M12 3c-2.7 3-2.7 15 0 18"/>',
+  seguridad: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  publicar: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  camara: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  centrar: '<circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+  quitar: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  prender: '<path d="M12 3v9"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/>',
+  enviar: '<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>',
+};
+const icono = (n, tam = 18) => (TRAZOS[n] ? `<svg class="ico" viewBox="0 0 24 24" width="${tam}" height="${tam}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TRAZOS[n]}</svg>` : '');
+
 // Arrastrar fotos sin desencuadrarlas al hacer scroll en el celular: con el dedo hay que
 // mantener apretado un instante (vibra) y recién ahí se mueve; si se desliza enseguida, la
 // página scrollea normal. Con el mouse se arrastra directo.
@@ -368,7 +402,7 @@ function encuadrePortada({ url, pos, posPc, alCambiar }) {
   });
   img.addEventListener('load', pintar);
   new ResizeObserver(pintar).observe(lienzo);
-  const centrar = el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { p.cel = [50, 50]; p.pc = [50, 50]; pintar(); emitir(); } }, 'Centrar');
+  const centrar = el('button', { type: 'button', class: 'btn btn-sec btn-chico', html: `${icono('centrar', 15)}<span>Centrar</span>`, onclick: () => { p.cel = [50, 50]; p.pc = [50, 50]; pintar(); emitir(); } });
   return el('div', { class: 'encuadre-portada' },
     el('div', { class: 'encuadre-cabeza' }, el('strong', {}, 'Encuadre de la portada'), centrar),
     lienzo,
@@ -385,9 +419,9 @@ async function subirVarias(input, cuantas) {
 
 function botonSubir({ texto, multiple, alSubir, cuantas, proporcion, clase = '' }) {
   const input = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', multiple });
-  const boton = el('label', { class: `agregar ${clase}`, style: proporcion ? `aspect-ratio:${proporcionCSS(proporcion)}` : null }, input, el('span', {}, texto));
+  const boton = el('label', { class: `agregar ${clase}`, style: proporcion ? `aspect-ratio:${proporcionCSS(proporcion)}` : null }, input, el('span', { class: 'con-ico', html: `${icono('camara')}` }, String(texto).replace(/^＋\s*/, '')));
   input.addEventListener('change', async () => {
-    boton.classList.add('subiendo'); boton.lastChild.textContent = 'Subiendo…';
+    boton.classList.add('subiendo'); boton.lastChild.lastChild.textContent = 'Subiendo…';
     alSubir(await subirVarias(input, cuantas));
   });
   return boton;
@@ -457,7 +491,7 @@ function fotosEnPestanas(c, lista, alCambiar) {
     const subir = botonSubir({ texto: f ? `Cambiar foto${n}` : `Cargar foto${n}`, multiple: false, cuantas: 1, clase: 'cargar',
       alSubir: (urls) => { if (urls[0]) { const k = Math.min(activa, lista.length); lista[k] = { url: urls[0] }; activa = k; emitir(); } dibujar(); } });
     const quitar = f && !c.bloqueado ? el('button', { type: 'button', class: 'btn-link quitar-foto', onclick: () => {
-      lista.splice(activa, 1); activa = Math.min(activa, Math.max(0, lista.length - 1)); emitir(); dibujar(); } }, 'Quitar esta foto') : null;
+      lista.splice(activa, 1); activa = Math.min(activa, Math.max(0, lista.length - 1)); emitir(); dibujar(); }, html: `${icono('quitar', 15)}<span>Quitar esta foto</span>` }) : null;
     caja.replaceChildren(...[tabs, el('div', { class: `pestana-cuerpo${max > 1 ? '' : ' sola'}` },
       el('div', { class: 'subir-portada' }, subir, quitar || el('span', { class: 'sin-archivo' }, 'Ninguna foto elegida')),
       f ? encuadrePortada({ url: f.url, pos: f.pos, posPc: f.posPc, alCambiar: ({ pos, posPc }) => { f.pos = pos; f.posPc = posPc; emitir(); } }) : null)].filter(Boolean));
@@ -1054,7 +1088,7 @@ function dibujarPasos() {
     el('div', { class: 'pasos-cabeza' }, el('strong', {}, 'Pasos'), el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Cerrar', onclick: cerrarPasos }, '✕')),
     ...pasos.map((p, i) => el('div', { class: `paso-fila${pasoActivo(p) ? '' : ' apagado'}` },
       el('button', { type: 'button', class: 'paso', 'aria-current': p.id === pasoActual?.id ? 'step' : null, onclick: () => { cerrarPasos(); irA(p.id); } },
-        el('span', { class: 'num' }, i + 1), el('span', { class: 'nombre' }, p.titulo, insigniaNivel(p.nivel)),
+        el('span', { class: 'num', title: `Paso ${i + 1}`, html: icono(p.id, 15) || String(i + 1) }), el('span', { class: 'nombre' }, p.titulo, insigniaNivel(p.nivel)),
         conFaltas.has(p.id) ? el('span', { class: 'falta', 'aria-label': 'Faltan datos' }) : null),
       interruptorPaso(p))));
   const i = pasos.indexOf(pasoActual);
@@ -1105,11 +1139,11 @@ function dibujarPaso() {
     el('span', { html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' }));
   const ayudaSeccion = p.ayudaSeccion ? el('p', { class: 'ayuda ayuda-seccion' }, p.ayudaSeccion) : null;
   const apagada = !activo ? el('div', { class: 'tarjeta nota apagada-aviso' }, p.complemento ? `${p.titulo} es un complemento: al prenderlo se suma al total.` : 'Esta sección está apagada: no se ve en la invitación.', ' ',
-    el('button', { type: 'button', class: 'btn btn-chico', disabled: p.complemento && esGratis(), onclick: () => prenderPaso(p, true) }, 'Prender')) : null;
+    el('button', { type: 'button', class: 'btn btn-chico', disabled: p.complemento && esGratis(), onclick: () => prenderPaso(p, true), html: `${icono('prender', 15)}<span>Prender</span>` })) : null;
   const motivo = p.fijoSi && cumple(p.fijoSi) ? el('p', { class: 'motivo' }, p.motivo) : null;
   const cuerpo = el('div', { class: `tarjeta${activo ? '' : ' atenuada'}` }, p.campos.map((c) => campo(c, leer(datos, c.id), (v, op) => cambio(c.id, v, op))));
   f.replaceChildren(...[
-    el('div', { class: 'paso-titulo' }, el('h1', {}, p.titulo, insigniaNivel(p.nivel)), el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'lado' }, 'Mostrar') : null, apagar, plegar)),
+    el('div', { class: 'paso-titulo' }, el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, insigniaNivel(p.nivel)), el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'lado' }, 'Mostrar') : null, apagar, plegar)),
     ayudaSeccion, motivo, banderaGuardar(), apagada,
     el('div', { id: 'faltan-aca' }),
     cuerpo,
@@ -1238,7 +1272,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
   const cupon = el('input', { type: 'text', placeholder: 'Cupón (opcional)', maxlength: 30 });
   const medios = el('div', { class: 'opciones medios' });
   const total = partes.at(-1);
-  const boton = el('button', { type: 'button', class: 'btn btn-grande' }, plan.aPagar.eur ? 'Pagar y publicar' : 'Publicar');
+  const boton = el('button', { type: 'button', class: 'btn btn-grande', html: `${icono('enviar')}<span>${plan.aPagar.eur ? 'Pagar y publicar' : 'Publicar'}</span>` });
   const error = el('p', { class: 'motivo' });
   const cotizar = async () => {
     try {
