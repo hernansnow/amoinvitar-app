@@ -55,3 +55,7 @@
 .g-evitar-colores { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .g-evitar-color { display: inline-block; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .9); box-shadow: 0 1px 5px rgba(0, 0, 0, .25); }
 @media (min-width: 768px) { .g-evitar-color { width: 40px; height: 40px; } }
+
+/* Historia: párrafo (antes h3, muy grande) */
+.g-historia { font-size: 1.2rem; line-height: 1.6; }
+@media (max-width: 767px) { .g-historia { font-size: 1.1rem; } }

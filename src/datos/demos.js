@@ -76,7 +76,12 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
         { nombre: 'Marcela García', rol: en ? 'GODMOTHER' : 'MADRINA', foto: comun('img/demo-testigo2.jpg') },
       ],
     album: { url: 'https://albunear.com/demo' },
-    canciones: { spotify: 'https://open.spotify.com/' },
+    // Playlist de muestra (en la demo la lista viene escrita; en una invitación se lee de Spotify)
+    playlist: { link: 'https://open.spotify.com/playlist/37i9dQZF1DX50QitC6Oqtn', cantidad: 10, minutos: 42, pistas: [
+      { t: 'Gloria', a: 'Laura Branigan', d: '4:50' }, { t: 'La Isla del Sol', a: 'El Símbolo', d: '4:17' }, { t: 'Flaca', a: 'Andrés Calamaro', d: '4:38' },
+      { t: 'Perfect', a: 'Ed Sheeran', d: '4:23' }, { t: 'Tu Misterioso Alguien', a: 'Miranda!', d: '4:05' }, { t: 'Vivir mi vida', a: 'Marc Anthony', d: '4:12' },
+      { t: 'Thinking Out Loud', a: 'Ed Sheeran', d: '4:41' }, { t: 'Bailando', a: 'Enrique Iglesias', d: '4:03' }, { t: 'Despacito', a: 'Luis Fonsi', d: '3:48' }, { t: 'Shallow', a: 'Lady Gaga', d: '3:35' },
+    ] },
     regalos: {
       cuentas: [
         { etiqueta: en ? 'IBAN' : 'Alias', dato: en ? 'XX00 0000 0000 0000' : 'XXX-XXX-XXX' },

@@ -40,3 +40,24 @@
   .ai-galeria--polaroids { gap: 18px 14px; }
   .ai-galeria--polaroids a { width: calc(50% - 14px); padding: 7px 7px 26px; }
 }
+
+/* Carrusel: una foto al centro y las vecinas asomando; se desliza con el dedo */
+.ai-carrusel { position: relative; max-width: 1140px; margin: 0 auto 3rem; container-type: inline-size; }
+.ai-c-pista { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 6px 11cqw; scrollbar-width: none; -ms-overflow-style: none; outline: none; }
+.ai-c-pista::-webkit-scrollbar { display: none; }
+.ai-c-item { flex: 0 0 78cqw; scroll-snap-align: center; border-radius: 12px; overflow: hidden; aspect-ratio: var(--prop, 1 / 1); box-shadow: 0 4px 16px rgba(0, 0, 0, .12); transition: transform .4s, opacity .4s; opacity: .85; transform: scale(.96); }
+.ai-c-item.actual { opacity: 1; transform: none; }
+.ai-c-item img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ai-una .ai-c-pista { justify-content: center; padding: 6px 15px; }
+.ai-una .ai-c-item { flex-basis: min(100%, 520px); opacity: 1; transform: none; }
+.ai-carrusel.ai-color img { filter: none !important; }
+.ai-c-flecha { position: absolute; top: calc(50% - 30px); width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(40, 40, 40, .55); color: #fff; font-size: 1.5rem; display: grid; place-items: center; cursor: pointer; z-index: 2; }
+.ai-c-ant { left: 6px; } .ai-c-sig { right: 6px; }
+.ai-c-puntos { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
+.ai-c-puntos button { width: 9px; height: 9px; border-radius: 999px; border: 0; padding: 0; background: rgba(0, 0, 0, .18); cursor: pointer; transition: width .3s; }
+.ai-c-puntos button[aria-current] { width: 34px; background: rgba(0, 0, 0, .45); }
+@media (min-width: 768px) {
+  .ai-c-pista { padding: 6px 34cqw; }
+  .ai-c-item { flex-basis: 32cqw; }
+  .ai-c-flecha { left: auto; } .ai-c-ant { left: 14px; } .ai-c-sig { right: 14px; }
+}

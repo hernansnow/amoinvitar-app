@@ -23,8 +23,12 @@ import { almacenD1 } from '../almacen.js';
 import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, precioPedido, comprable } from '../catalogo.js';
 import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
+import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
+import { ZONAS } from '../datos/zonas.js';
 
 const ORDEN = ['gratis', 'basic', 'premium', 'deluxe'];
+// index.js pasa cómo armar el esquema del panel (necesita los modelos de public/)
+export const opcionesTienda = { esquemaDe: null, publicar: null };
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
 const paisReal = (request) => request.cf?.country || request.headers.get('cf-ipcountry') || 'XX';
 const COOKIE_PEDIDO = 'ai_p';
@@ -108,8 +112,10 @@ export async function catalogo(request, env) {
 
 export async function cotizar(request, env) {
   const b = await readJson(request);
-  const pedido = validarPedido(b.pedido);
-  const eur = precioPedido(pedido);
+  // Invitación armada en el panel: lo que falta pagar del plan y los complementos
+  const borrador = b.borrador ? await validarBorrador(env, request, b.borrador, { esquemaDe: opcionesTienda.esquemaDe }) : null;
+  const pedido = borrador ? borrador.pedido : validarPedido(b.pedido);
+  const eur = borrador ? borrador.eur : precioPedido(pedido);
   let cupon = null, errorCupon = null;
   try { cupon = await buscarCupon(env, b.cupon, pedido.paquete); } catch (e) { if (!(e instanceof HttpError)) throw e; errorCupon = e.message; }
   const rc = await inversion(env, request, b.factura);
@@ -129,7 +135,8 @@ export async function comprar(request, env) {
   const usuario = await usuarioActual(request, env);
   const email = (usuario?.email || str(b.email, 200)).toLowerCase();
   if (!isEmail(email)) throw new HttpError(400, 'Falta un mail válido para mandar el acceso');
-  const mejora = b.mejora ? await validarMejora(env, request, b.mejora) : null;
+  const borrador = b.borrador ? await validarBorrador(env, request, b.borrador, { esquemaDe: opcionesTienda.esquemaDe }) : null;
+  const mejora = borrador || (b.mejora ? await validarMejora(env, request, b.mejora) : null);
   const pedido = mejora ? mejora.pedido : validarPedido(b.pedido);
   const eur = mejora ? mejora.eur : precioPedido(pedido);
   const cupon = await buscarCupon(env, b.cupon, pedido.paquete);
@@ -152,7 +159,7 @@ export async function comprar(request, env) {
   } : null;
   await env.DB.prepare(`INSERT INTO pedidos (id, numero, usuario_id, email, tipo, detalle, evento_id, medio, moneda, importe, iva, iva_tasa, eur, cupon, descuento, pais, factura, inversion, vies, creado)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .bind(id, numero, usuario?.id || null, email, mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null }), mejora?.evento.id || null, medio,
+    .bind(id, numero, usuario?.id || null, email, borrador ? 'borrador' : mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null }), mejora?.evento.id || null, medio,
       elegido?.moneda || moneda, total, elegido?.iva || 0, elegido?.ivaTasa || 0, eur, cupon?.codigo || null, 0, paisReal(request), factura ? JSON.stringify(factura) : null,
       rc ? 1 : 0, rc ? (rc.consultation || 'VIES ' + new Date().toISOString().slice(0, 10)) : null, now()).run();
 
@@ -235,7 +242,18 @@ export async function cumplirPedido(env, request, id) {
   const p = await leerPedido(env, id);
   const almacen = almacenD1(env);
   let ev;
-  if (p.tipo === 'mejora') {
+  if (p.tipo === 'borrador') {
+    // La invitación ya existe: se le pone el plan pagado, los complementos y se publica
+    ev = await almacen.evento(p.evento_id);
+    const previo = NIVELES.indexOf(ev.paquete);
+    if (NIVELES.indexOf(p.detalle.paquete) > previo) ev.paquete = p.detalle.paquete;
+    ev.datos.extras = [...(ev.datos.extras || []), ...(p.detalle.extras || [])];
+    const usuario = await crearUsuario(env, p.email, { pais: p.pais });
+    await almacen.darAcceso(ev.id, usuario.id, 'cliente');
+    await env.DB.prepare('UPDATE pedidos SET usuario_id = COALESCE(usuario_id, ?) WHERE id = ?').bind(usuario.id, p.id).run();
+    await almacen.guardarEvento(ev);
+    if (opcionesTienda.publicar) { try { await opcionesTienda.publicar(env, request, ev); } catch (e) { console.error('[publicar]', e); } }
+  } else if (p.tipo === 'mejora') {
     ev = await almacen.evento(p.evento_id);
     ev.paquete = p.detalle.paquete;
     const previos = ev.datos.extras || [];
@@ -307,6 +325,7 @@ export async function confirmar(request, env) {
     importe: p.importe ? formatMoney(p.importe, p.moneda) : null,
     transferencia: p.medio === 'transferencia' && p.estado !== 'pagado' ? transferInfo(env, p.moneda) : null,
     panel: mismo && ev ? `/panel/${ev.id}?k=${ev.clave}` : null,
+    link: p.tipo === 'borrador' && ev?.estado === 'publicado' ? `/${ev.tipo}/${ev.slug}` : null,
   });
 }
 
@@ -379,7 +398,100 @@ export async function marcarCobrado(request, env, id) {
   return json({ ok });
 }
 
+
 // ¿El evento tiene un pago pendiente? (no se publica hasta que llegue)
 export async function pagoPendiente(env, eventoId) {
   return !!(await env.DB.prepare("SELECT 1 FROM pedidos WHERE evento_id = ? AND tipo = 'nuevo' AND estado = 'pendiente'").bind(eventoId).first());
+}
+
+
+// ══ Invitación armada antes de pagar ════════════════════════════════
+// El cliente elige el modelo, carga sus nombres y la fecha y entra al panel sin pagar.
+// El plan sale de las secciones que active; recién al publicar paga lo que corresponda.
+
+const precioPaquete = (p) => (p === 'gratis' ? 0 : PAQUETES[p]?.precio || 0);
+
+// Lo que pide el panel para mostrar el plan, los complementos y lo que falta pagar
+export async function estadoPlan(env, request, ev, esquema) {
+  const m = buscarModelo(ev.modelo);
+  const gratisPosible = !!(m && (m.gratis || MODELOS_GRATIS.includes(m.id)));
+  const necesario = planNecesario(esquema, ev.datos, { gratisPosible });
+  const pagado = NIVELES.includes(ev.paquete) ? ev.paquete : null;
+  // Lo pagado no se pierde: si apaga secciones, el plan queda en el que ya pagó
+  const plan = pagado && NIVELES.indexOf(pagado) > NIVELES.indexOf(necesario) ? pagado : necesario;
+  const elegidos = complementos(esquema, ev.datos);
+  const yaPagados = [...(ev.datos.extras || [])];
+  const extrasAPagar = elegidos.filter((x) => { const i = yaPagados.indexOf(x); if (i >= 0) { yaPagados.splice(i, 1); return false; } return true; });
+  const eurPlan = Math.max(0, precioPaquete(plan) - (pagado ? precioPaquete(pagado) : 0));
+  const eur = eurPlan + extrasAPagar.reduce((t, x) => t + (EXTRAS[x]?.precio || 0), 0);
+  const moneda = monedaPedida(request);
+  const rates = await getRates(env);
+  const pais = paisReal(request);
+  const texto = (clave, e) => (e ? formatMoney(priceIn(clave, e, moneda, rates, pais, env).amount, moneda) : 'Gratis');
+  const secciones = esquema.pasos.filter((p) => p.seccion && !p.complemento && !p.obligatoria && seccionActivaDe(p, ev.datos)).map((p) => ({ id: p.id, titulo: p.titulo, nivel: p.nivel }));
+  return {
+    plan, nombre: NOMBRES_PAQUETE[plan], precio: texto(plan, precioPaquete(plan)), pagado, gratisPosible,
+    complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: texto(x, EXTRAS[x]?.precio || 0), pagado: !extrasAPagar.includes(x) })),
+    aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
+    secciones,
+    // Primera vez: aunque sea gratis pasa por la "compra" (queda el mail de la cuenta y la factura si corresponde)
+    activar: !pagado,
+  };
+}
+const seccionActivaDe = (p, d) => (p.complemento ? d.secciones?.[p.seccion] === true : d.secciones?.[p.seccion] !== false);
+
+// Pedido para el borrador: el plan y los complementos que faltan pagar
+export async function validarBorrador(env, request, b, { esquemaDe }) {
+  const ev = await almacenD1(env).evento(str(b.evento, 40));
+  if (!ev) throw new HttpError(404, 'Invitación no encontrada');
+  const usuario = await usuarioActual(request, env);
+  const clave = str(b.clave, 64);
+  const permitido = (clave && clave === ev.clave) || (usuario && (usuario.esAdmin || await almacenD1(env).tieneAcceso(ev.id, usuario.id)));
+  if (!permitido) throw new HttpError(403, 'Sin permiso para esta invitación');
+  const est = await estadoPlan(env, request, ev, await esquemaDe(ev));
+  const m = buscarModelo(ev.modelo);
+  const tipoNombre = TIPOS_EVENTO.find((t) => t.id === ev.tipo)?.nombre || ev.tipo;
+  const extras = est.aPagar.extras.map((x) => EXTRAS[x]?.nombre || x);
+  return {
+    evento: ev, eur: est.aPagar.eur,
+    pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: est.plan, extras: est.aPagar.extras,
+      nombre: `Invitación ${tipoNombre} · ${m ? nombreModelo(m, ev.tipo) : ev.modelo} ${NOMBRES_PAQUETE[est.plan]}${extras.length ? ` + ${extras.join(', ')}` : ''}` },
+  };
+}
+
+// POST /api/tienda/empezar { tipo, modelo, nombres: {a, b}, fecha }
+export async function empezar(request, env) {
+  if (env.LIMITE_PIN) {
+    const { success } = await env.LIMITE_PIN.limit({ key: `empezar:${request.headers.get('cf-connecting-ip') || ''}` });
+    if (!success) throw new HttpError(429, 'Demasiados intentos. Probar en unos minutos.');
+  }
+  const b = await readJson(request);
+  const m = buscarModelo(b.modelo);
+  const tipo = str(b.tipo, 20);
+  if (!m || !m.eventos.includes(tipo)) throw new HttpError(400, 'Elegir un diseño disponible para ese evento');
+  const a = str(b.nombres?.a, 15), bb = str(b.nombres?.b, 15);
+  if (!a) throw new HttpError(400, 'Falta el nombre');
+  const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';
+  const pais = paisReal(request);
+  // Zona horaria del visitante, si está en la lista
+  const zona = ZONAS.some((z) => z.v === request.cf?.timezone) ? request.cf.timezone : (ZONAS.find((z) => z.v === 'Europe/Madrid')?.v || '');
+  // Arranca con lo de Basic prendido; lo demás lo suma el cliente (y sube el plan)
+  const modeloJson = await env.ASSETS.fetch(new URL(`/modelos/${m.id}/modelo.json`, request.url)).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  const basicas = new Set(modeloJson?.paquetes?.basic?.secciones || ['galeria', 'rsvp', 'dresscode', 'estilos']);
+  const todas = new Set(Object.values(modeloJson?.paquetes || {}).flatMap((p) => p.secciones));
+  const secciones = Object.fromEntries([...todas].map((x) => [x, basicas.has(x)]));
+  const ev = {
+    id: `ev_${randomId(5)}`, producto: 'invitacion', tipo, modelo: m.id, paquete: 'borrador', aMedida: null,
+    estado: 'borrador', clave: randomId(16), empresaId: null, slug: null,
+    datos: {
+      variante: varianteDePais(pais), zonaHoraria: zona, acceso: { modo: 'abierta' }, extras: [], secciones,
+      nombres: bb ? { a, b: bb } : { a }, celebracion: fecha ? { fecha, inicio: fecha } : {},
+      planElegido: b.gratis && (m.gratis || MODELOS_GRATIS.includes(m.id)) ? 'gratis' : null,
+    },
+  };
+  const almacen = almacenD1(env);
+  await almacen.guardarEvento(ev);
+  const usuario = await usuarioActual(request, env);
+  if (usuario) await almacen.darAcceso(ev.id, usuario.id, 'cliente');
+  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201);
 }

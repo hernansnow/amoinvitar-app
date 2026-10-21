@@ -1,6 +1,7 @@
 // Català. Lo que falte cae en inglés.
 export default {
   base: {
+    'playlist.titulo': 'La meva playlist', 'playlist.texto': 'Les cançons que sonaran a la festa.', 'playlist.resumen': '{n} cançons · {min} min', 'playlist.verTodas': 'Veure les {n} cançons', 'playlist.verMenos': 'Veure menys', 'playlist.play': 'Reproduir la playlist', 'playlist.pausa': 'Pausa', 'playlist.abrir': 'Obrir a Spotify', 'galeria.ver': 'Veure la foto', 'galeria.anterior': 'Anterior', 'galeria.siguiente': 'Següent',
     'general.si': 'Sí', 'general.no': 'No',
     'meta.titulo': 'Invitació ❤ {evento} | {nombres}', 'meta.descripcion': 'Us esperem per celebrar-ho junts!',
     'cuenta.faltan': 'Falten', 'cuenta.dia': 'DIA', 'cuenta.dias': 'DIES', 'cuenta.horas': 'HORES', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEG',
@@ -59,6 +60,7 @@ export default {
   },
   eventos: {
     boda: {
+      'playlist.titulo': 'La nostra playlist',
       'celebracion.sola': 'Casament', 'bienvenida.texto': 'Et volem convidar al nostre casament!', 'evento.nombre': 'Casament', 'evento.descripcion': "T'esperem al nostre casament",
       'portada.subtitulo': 'ENS CASEM!', 'historia.titulo': 'La Nostra Història',
       'historia.texto': 'No ens buscàvem, però sabíem que estàvem fets per trobar-nos.',

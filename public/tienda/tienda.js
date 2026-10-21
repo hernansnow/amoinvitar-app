@@ -52,10 +52,14 @@ function dibujar() {
 
   const modelos = c.modelos.filter((m) => !S.tipo || m.eventos.includes(S.tipo));
   $('#paso-modelo').hidden = !esInv || !S.tipo || !!S.mejora;
-  $('#modelos').replaceChildren(...(modelos.length ? modelos.map((m) => radio('modelo', m.id, S.modelo === m.id, (v) => { S.modelo = v; actualizar(); },
-    el('img', { class: 'modelo-img', src: `/modelos/${m.id}/miniatura.jpg`, alt: '', loading: 'lazy', style: 'width:100%;aspect-ratio:1200/630;object-fit:cover;border-radius:10px;margin-bottom:10px;display:block' }),
+  // Invitación: se elige el diseño y se personaliza gratis; se paga al publicar
+  $('#modelos').replaceChildren(...(modelos.length ? modelos.map((m) => el('div', { class: 'opcion modelo' },
+    el('button', { type: 'button', class: 'miniatura', 'aria-label': `Vista previa de ${m.nombres[S.tipo] || m.nombre}`, onclick: () => verDemo(m) },
+      el('img', { class: 'modelo-img', src: `/modelos/${m.id}/miniatura.jpg`, alt: '', loading: 'lazy' })),
     el('strong', {}, m.nombres[S.tipo] || m.nombre, m.gratis ? el('span', { class: 'insignia', style: 'margin-left:6px' }, 'Gratis') : null),
-    el('a', { href: `/demo/${m.id}?evento=${S.tipo}`, target: '_blank', rel: 'noopener', onclick: (e) => e.stopPropagation() }, 'Ver demo ↗'))) : [el('p', { class: 'vacio' }, 'Pronto habrá diseños para este evento.')]));
+    el('div', { class: 'botones-modelo' },
+      el('button', { type: 'button', class: 'btn btn-sec', onclick: () => verDemo(m) }, 'Vista previa'),
+      el('button', { type: 'button', class: 'btn', onclick: () => empezar(m) }, 'Personalizar')))) : [el('p', { class: 'vacio' }, 'Pronto habrá diseños para este evento.')]));
 
   $('#paso-std').hidden = S.producto !== 'std';
   $('#std').replaceChildren(...OPCIONES_STD.map((id) => {
@@ -67,11 +71,11 @@ function dibujar() {
   const modelo = c.modelos.find((m) => m.id === S.modelo);
   const mejoraDesde = S.mejoraActual ? ['gratis', 'basic', 'premium', 'deluxe'].indexOf(S.mejoraActual) : -1;
   const paquetes = c.paquetes.filter((p) => (S.mejora ? ['gratis', 'basic', 'premium', 'deluxe'].indexOf(p.id) > mejoraDesde : p.id !== 'gratis' || modelo?.gratis));
-  $('#paso-paquete').hidden = !(S.mejora || (esInv && S.modelo)) || !!S.mejora?.extra;
+  $('#paso-paquete').hidden = !S.mejora || !!S.mejora?.extra;
   $('#paquetes').replaceChildren(...paquetes.map((p) => radio('paquete', p.id, S.paquete === p.id, (v) => { S.paquete = v; if (S.mejora) S.mejora.paquete = v; actualizar(); },
     el('strong', {}, p.nombre), el('div', { class: 'precio' }, S.mejora ? `+ ${S.difs?.[p.id] || ''}` : p.precio.texto), el('ul', {}, p.incluye.map((x) => el('li', {}, x))))));
 
-  const conExtras = !S.mejora && ((esInv && S.paquete && S.paquete !== 'gratis') || (S.producto && !esInv && S.producto !== 'std') || (S.producto === 'std' && S.std));
+  const conExtras = !S.mejora && ((S.producto && !esInv && S.producto !== 'std') || (S.producto === 'std' && S.std));
   $('#paso-extras').hidden = !conExtras;
   const extras = esInv ? c.extras : c.extras.filter((x) => x.id === 'idioma');
   $('#extras').replaceChildren(...extras.map((x) => el('label', { class: 'opcion extra' },
@@ -85,7 +89,7 @@ function pedido() {
   if (S.producto) return { producto: S.producto, tipo: S.tipo, extras: [...S.extras] };
   return null;
 }
-const listo = () => S.mejora ? !!S.mejora.paquete : S.producto === 'invitacion' ? !!(S.tipo && S.modelo && S.paquete) : S.producto === 'std' ? !!S.std : S.producto === 'agradecimiento' ? !!S.tipo : !!S.producto;
+const listo = () => S.mejora ? !!S.mejora.paquete : S.producto === 'invitacion' ? false : S.producto === 'std' ? !!S.std : S.producto === 'agradecimiento' ? !!S.tipo : !!S.producto;
 
 let t = null;
 function actualizar() { dibujar(); cotizar(); }
@@ -192,3 +196,47 @@ async function cargar() {
   actualizar();
 }
 cargar();
+
+
+// ── Vista previa en un celular y "Personalizar" ───────────────────────
+let elegido = null;
+function verDemo(m) {
+  elegido = m;
+  $('#iframe-demo').src = `/demo/${m.id}?evento=${encodeURIComponent(S.tipo)}&paquete=deluxe`;
+  $('#modal-vista').showModal();
+}
+$('#btn-personalizar-este').addEventListener('click', () => { $('#modal-vista').close(); empezar(elegido); });
+function empezar(m) {
+  elegido = m;
+  const dos = S.tipo === 'boda';
+  $('#empezar-modelo').textContent = m.nombres[S.tipo] || m.nombre;
+  const campo = (id, etiqueta, ph) => el('div', { class: 'campo' }, el('label', { for: id }, etiqueta), el('input', { type: 'text', id, maxlength: 15, required: true, placeholder: ph }));
+  $('#campos-nombres').replaceChildren(...(dos ? [campo('emp-a', 'Nombre 1', 'Lau'), campo('emp-b', 'Nombre 2', 'Pablo')] : [campo('emp-a', 'Nombre', 'Sofi')]));
+  $('#emp-error').hidden = true;
+  $('#modal-empezar').showModal();
+  setTimeout(() => $('#emp-a')?.focus(), 50);
+}
+$('#form-empezar').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const b = $('#btn-empezar'); b.disabled = true; b.textContent = 'Un momento…';
+  try {
+    const r = await post('/api/tienda/empezar', { tipo: S.tipo, modelo: elegido.id, nombres: { a: $('#emp-a').value.trim(), b: $('#emp-b')?.value.trim() || '' }, fecha: $('#emp-fecha').value });
+    try {
+      const lista = JSON.parse(localStorage.getItem('ai-borradores') || '[]');
+      lista.unshift({ id: r.id, clave: r.clave, nombres: [$('#emp-a').value, $('#emp-b')?.value].filter(Boolean).join(' & '), modelo: elegido.id, tipo: S.tipo, t: Date.now() });
+      localStorage.setItem('ai-borradores', JSON.stringify(lista.slice(0, 10)));
+    } catch { /* sin almacenamiento */ }
+    location.href = r.panel;
+  } catch (err) { $('#emp-error').textContent = err.message; $('#emp-error').hidden = false; b.disabled = false; b.textContent = 'Comenzar a personalizar'; }
+});
+document.querySelectorAll('dialog [data-cerrar]').forEach((x) => x.addEventListener('click', () => x.closest('dialog').close()));
+document.querySelectorAll('dialog.modal-tienda').forEach((d) => d.addEventListener('click', (e) => { if (e.target === d) d.close(); }));
+
+// Invitaciones empezadas en este navegador: para seguir donde quedó
+(function borradores() {
+  let lista = [];
+  try { lista = JSON.parse(localStorage.getItem('ai-borradores') || '[]'); } catch { /* sin almacenamiento */ }
+  if (!lista.length || S.mejora) return;
+  $('#borradores').replaceChildren(el('div', { class: 'tarjeta seguir' }, el('strong', {}, 'Seguir con tu invitación'),
+    el('ul', {}, lista.slice(0, 3).map((x) => el('li', {}, el('a', { href: `/panel/${x.id}?k=${x.clave}` }, x.nombres || 'Mi invitación'), el('small', {}, ` · ${x.modelo || ''} · ${new Date(x.t).toLocaleDateString()}`))))));
+})();

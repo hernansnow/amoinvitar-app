@@ -1,6 +1,7 @@
 // Deutsch (du-Form, wie bei Einladungen üblich). Lo que falte cae en inglés.
 export default {
   base: {
+    'playlist.titulo': 'Meine Playlist', 'playlist.texto': 'Die Songs, die auf der Feier laufen.', 'playlist.resumen': '{n} Songs · {min} Min.', 'playlist.verTodas': 'Alle {n} Songs ansehen', 'playlist.verMenos': 'Weniger anzeigen', 'playlist.play': 'Playlist abspielen', 'playlist.pausa': 'Pause', 'playlist.abrir': 'In Spotify öffnen', 'galeria.ver': 'Foto ansehen', 'galeria.anterior': 'Zurück', 'galeria.siguiente': 'Weiter',
     'general.si': 'Ja', 'general.no': 'Nein',
     'meta.titulo': 'Einladung ❤ {evento} | {nombres}', 'meta.descripcion': 'Wir freuen uns, mit dir zu feiern!',
     'cuenta.faltan': 'Noch', 'cuenta.dia': 'TAG', 'cuenta.dias': 'TAGE', 'cuenta.horas': 'STUNDEN', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEK',
@@ -59,6 +60,7 @@ export default {
   },
   eventos: {
     boda: {
+      'playlist.titulo': 'Unsere Playlist',
       'celebracion.sola': 'Hochzeit', 'bienvenida.texto': 'Wir möchten dich zu unserer Hochzeit einladen!', 'evento.nombre': 'Hochzeit', 'evento.descripcion': 'Feiere mit uns unsere Hochzeit',
       'portada.subtitulo': 'WIR HEIRATEN!', 'historia.titulo': 'Unsere Geschichte',
       'historia.texto': 'Wir haben uns nicht gesucht, aber wir waren dafür bestimmt, uns zu finden.',

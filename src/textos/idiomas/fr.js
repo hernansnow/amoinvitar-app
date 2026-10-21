@@ -1,6 +1,7 @@
 // Français. Lo que falte cae en inglés.
 export default {
   base: {
+    'playlist.titulo': 'Ma playlist', 'playlist.texto': 'Les chansons qui passeront à la fête.', 'playlist.resumen': '{n} titres · {min} min', 'playlist.verTodas': 'Voir les {n} titres', 'playlist.verMenos': 'Voir moins', 'playlist.play': 'Écouter la playlist', 'playlist.pausa': 'Pause', 'playlist.abrir': 'Ouvrir dans Spotify', 'galeria.ver': 'Voir la photo', 'galeria.anterior': 'Précédente', 'galeria.siguiente': 'Suivante',
     'general.si': 'Oui', 'general.no': 'Non',
     'meta.titulo': 'Invitation ❤ {evento} | {nombres}', 'meta.descripcion': 'Nous avons hâte de célébrer avec vous !',
     'cuenta.faltan': 'Plus que', 'cuenta.dia': 'JOUR', 'cuenta.dias': 'JOURS', 'cuenta.horas': 'HEURES', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEC',
@@ -59,6 +60,7 @@ export default {
   },
   eventos: {
     boda: {
+      'playlist.titulo': 'Notre playlist',
       'celebracion.sola': 'Mariage', 'bienvenida.texto': 'Nous avons le plaisir de vous inviter à notre mariage !', 'evento.nombre': 'Mariage', 'evento.descripcion': 'Rejoignez-nous pour notre mariage',
       'portada.subtitulo': 'ON SE MARIE !', 'historia.titulo': 'Notre Histoire',
       'historia.texto': 'Nous ne nous cherchions pas, mais nous étions faits pour nous trouver.',

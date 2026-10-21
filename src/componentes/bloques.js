@@ -167,16 +167,62 @@ export function rsvpForm({ t, v, el }) {
 </div>`;
 }
 
-// ── Galería: mosaico, grilla o polaroids (el carrusel es el de cada modelo) ──
-export function galeria({ v }) {
+// ── Galería: carrusel, mosaico, grilla o polaroids (igual en todos los modelos) ──
+// Al tocar una foto se abre entera, sin recorte, y se puede ampliar (fancybox).
+export function galeria({ v, t }) {
   const g = v.galeria || {};
   const fotos = v.fotos.galeria || [];
-  if (g.carrusel || !fotos.length) return '';
+  if (!fotos.length) return '';
+  const items = (clase = '') => fotos.map((f, i) => `
+  <a class="${clase}" href="${esc(f.url)}" data-fancybox="galeria" aria-label="${esc(`${t('galeria.ver') || 'Ver foto'} ${i + 1}`)}"><img src="${esc(f.url)}" alt="" loading="lazy" style="object-position:${esc(f.pos)}"></a>`).join('');
+  const css = `<link rel="stylesheet" href="${v.rutas.comun}/css/galeria.css">`;
+  if (g.carrusel) {
+    const varias = fotos.length > 1;
+    return `${css}
+<div class="ai-carrusel${varias ? '' : ' ai-una'}${g.color ? ' ai-color' : ''}" style="--prop:${esc(g.proporcion)}" data-aos="fade-up">
+  <div class="ai-c-pista" tabindex="0">${items('ai-c-item')}
+  </div>${varias ? `
+  <button type="button" class="ai-c-flecha ai-c-ant" aria-label="${esc(t('galeria.anterior') || 'Anterior')}"><span class="icon-keyboard_arrow_left"></span></button>
+  <button type="button" class="ai-c-flecha ai-c-sig" aria-label="${esc(t('galeria.siguiente') || 'Siguiente')}"><span class="icon-keyboard_arrow_right"></span></button>
+  <div class="ai-c-puntos">${fotos.map((_, i) => `<button type="button" aria-label="${i + 1}"${i ? '' : ' aria-current="true"'}></button>`).join('')}</div>` : ''}
+</div>
+<script src="${v.rutas.comun}/js/carrusel.js" defer></script>`;
+  }
   const clases = ['ai-galeria', `ai-galeria--${g.tipo}`, `ai-n${Math.min(fotos.length, 7)}`, g.color ? 'ai-color' : ''].filter(Boolean).join(' ');
-  return `<link rel="stylesheet" href="${v.rutas.comun}/css/galeria.css">
-<div class="${clases}" style="--prop:${esc(g.proporcion)}" data-aos="fade-up">${fotos.map((f) => `
-  <a href="${esc(f.url)}" data-fancybox="galeria"><img src="${esc(f.url)}" alt="" loading="lazy" style="object-position:${esc(f.pos)}"></a>`).join('')}
+  return `${css}
+<div class="${clases}" style="--prop:${esc(g.proporcion)}" data-aos="fade-up">${items()}
 </div>`;
+}
+
+// ── Playlist de Spotify: el mismo diseño en todos los modelos ─────────
+// Fondo blanco, textos negros y el título en la fuente de énfasis del modelo
+// (data-clase-titulo). Un disco de vinilo con el logo (sin logo en marca blanca)
+// y el play verde de Spotify: al tocarlo para la música de fondo y gira el disco.
+export function playlist({ t, v, el }) {
+  const pl = v.playlist;
+  if (!pl) return '';
+  const claseTitulo = el.getAttribute('data-clase-titulo') || 'euforia';
+  const logo = v.marca.blanca ? '' : `<svg class="ai-v-logo" viewBox="0 0 64 64" aria-hidden="true"><text x="50%" y="56%" text-anchor="middle" dominant-baseline="middle" font-family="Jost, system-ui, sans-serif" font-weight="500" font-size="34" fill="#fff">a!</text></svg>`;
+  const lista = pl.pistas.length ? `
+    <p class="ai-pl-resumen">${esc(t('playlist.resumen').replace('{n}', pl.cantidad || pl.pistas.length).replace('{min}', pl.minutos || ''))}</p>
+    <ol class="ai-pl-lista">${pl.pistas.map((x, i) => `
+      <li${i >= 5 ? ' class="ai-pl-mas" hidden' : ''}><span class="ai-pl-n">${i + 1}</span><span class="ai-pl-cancion"><strong>${esc(x.t)}</strong><small>${esc(x.a)}</small></span><span class="ai-pl-d">${esc(x.d)}</span></li>`).join('')}
+    </ol>${pl.pistas.length > 5 ? `
+    <button type="button" class="ai-pl-ver" data-mas="${esc(t('playlist.verTodas').replace('{n}', pl.pistas.length))}" data-menos="${esc(t('playlist.verMenos'))}">${esc(t('playlist.verTodas').replace('{n}', pl.pistas.length))}</button>` : ''}` : '';
+  return `<link rel="stylesheet" href="${v.rutas.comun}/css/playlist.css">
+<section class="ai-playlist">
+  <div class="ai-pl-tarjeta" data-aos="fade-up">
+    <h2 class="ai-pl-titulo ${esc(claseTitulo)}">${esc(t('playlist.titulo'))}</h2>
+    <p class="ai-pl-texto">${esc(t('playlist.texto'))}</p>
+    <div class="ai-vinilo${v.marca.blanca ? ' sin-logo' : ''}">
+      <div class="ai-v-disco"><div class="ai-v-etiqueta">${logo}</div></div>
+      <button type="button" class="ai-v-play" aria-label="${esc(t('playlist.play'))}" data-pausa="${esc(t('playlist.pausa'))}" data-play="${esc(t('playlist.play'))}"><span class="ai-v-icono"></span></button>
+    </div>${lista}
+    <div class="ai-pl-reproductor" data-uri="spotify:${esc(pl.tipo)}:${esc(pl.id)}" data-embed="${esc(pl.embed)}"><div class="ai-pl-lugar"></div></div>
+    <a class="ai-pl-abrir" href="${esc(pl.link)}" target="_blank" rel="noopener">${esc(t('playlist.abrir'))}</a>
+  </div>
+</section>
+<script src="${v.rutas.comun}/js/playlist.js" defer></script>`;
 }
 
 // ── Sugerir canciones (modal) ─────────────────────────────────────────
@@ -221,4 +267,4 @@ export function albumQr({ t, v }) {
 </div>`;
 }
 
-export const COMPONENTES = { sobre, acceso, galeria, 'rsvp-form': rsvpForm, canciones, 'album-qr': albumQr, 'pie-marca': pieMarca };
+export const COMPONENTES = { sobre, acceso, galeria, playlist, 'rsvp-form': rsvpForm, canciones, 'album-qr': albumQr, 'pie-marca': pieMarca };

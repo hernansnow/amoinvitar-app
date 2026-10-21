@@ -1,6 +1,7 @@
 // Português (Brasil). Lo que falte cae en inglés.
 export default {
   base: {
+    'playlist.titulo': 'Minha playlist', 'playlist.texto': 'As músicas que vão tocar na festa.', 'playlist.resumen': '{n} músicas · {min} min', 'playlist.verTodas': 'Ver as {n} músicas', 'playlist.verMenos': 'Ver menos', 'playlist.play': 'Tocar a playlist', 'playlist.pausa': 'Pausar', 'playlist.abrir': 'Abrir no Spotify', 'galeria.ver': 'Ver foto', 'galeria.anterior': 'Anterior', 'galeria.siguiente': 'Próxima',
     'general.si': 'Sim', 'general.no': 'Não',
     'meta.titulo': 'Convite ❤ {evento} | {nombres}', 'meta.descripcion': 'Esperamos você para celebrar juntos!',
     'cuenta.faltan': 'Faltam', 'cuenta.dia': 'DIA', 'cuenta.dias': 'DIAS', 'cuenta.horas': 'HORAS', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEG',
@@ -59,6 +60,7 @@ export default {
   },
   eventos: {
     boda: {
+      'playlist.titulo': 'Nossa playlist',
       'celebracion.sola': 'Casamento', 'bienvenida.texto': 'Queremos convidar você para o nosso casamento!', 'evento.nombre': 'Casamento', 'evento.descripcion': 'Esperamos você no nosso casamento',
       'portada.subtitulo': 'VAMOS CASAR!', 'historia.titulo': 'Nossa História',
       'historia.texto': 'Não estávamos nos procurando, mas sabíamos que íamos nos encontrar.',

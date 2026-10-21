@@ -1,6 +1,7 @@
 // Nederlands (je-vorm). Lo que falte cae en inglés.
 export default {
   base: {
+    'playlist.titulo': 'Mijn playlist', 'playlist.texto': 'De nummers die op het feest gaan klinken.', 'playlist.resumen': '{n} nummers · {min} min', 'playlist.verTodas': 'Bekijk alle {n} nummers', 'playlist.verMenos': 'Minder tonen', 'playlist.play': 'Playlist afspelen', 'playlist.pausa': 'Pauze', 'playlist.abrir': 'Openen in Spotify', 'galeria.ver': 'Foto bekijken', 'galeria.anterior': 'Vorige', 'galeria.siguiente': 'Volgende',
     'general.si': 'Ja', 'general.no': 'Nee',
     'meta.titulo': 'Uitnodiging ❤ {evento} | {nombres}', 'meta.descripcion': 'We kijken ernaar uit om samen te vieren!',
     'cuenta.faltan': 'Nog', 'cuenta.dia': 'DAG', 'cuenta.dias': 'DAGEN', 'cuenta.horas': 'UUR', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEC',
@@ -59,6 +60,7 @@ export default {
   },
   eventos: {
     boda: {
+      'playlist.titulo': 'Onze playlist',
       'celebracion.sola': 'Bruiloft', 'bienvenida.texto': 'We nodigen je graag uit voor onze bruiloft!', 'evento.nombre': 'Bruiloft', 'evento.descripcion': 'Vier onze bruiloft met ons',
       'portada.subtitulo': 'WE GAAN TROUWEN!', 'historia.titulo': 'Ons Verhaal',
       'historia.texto': 'We zochten elkaar niet, maar we waren voorbestemd om elkaar te vinden.',

@@ -8,6 +8,7 @@
   <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
   <link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
   <link rel="stylesheet" href="/comun/css/cuenta.css">
+  <link rel="stylesheet" href="/tienda/tienda.css">
 </head>
 <body>
   <header class="barra">
@@ -21,8 +22,9 @@
 
   <main id="tienda">
     <h1 id="titulo">Tienda</h1>
-    <p class="sub" id="bajada">Elegir el diseño, el paquete y pagar. Al terminar se abre el panel para cargar todo.</p>
+    <p class="sub" id="bajada">Elegir el diseño y personalizarlo gratis. Se paga recién al publicar, según las secciones elegidas.</p>
     <div id="mensaje" role="alert"></div>
+    <div id="borradores"></div>
 
     <section id="paso-producto">
       <h2>¿Qué se necesita?</h2>
@@ -92,6 +94,21 @@
     </div>
   </div>
 
+  <dialog class="modal-tienda" id="modal-vista" aria-label="Vista previa del diseño">
+    <div class="vista-celular"><iframe id="iframe-demo" title="Vista previa" src="about:blank"></iframe></div>
+    <div class="modal-botones"><button type="button" class="btn" id="btn-personalizar-este">Personalizar este diseño</button><button type="button" class="btn-link" data-cerrar>Cerrar</button></div>
+  </dialog>
+  <dialog class="modal-tienda chico" id="modal-empezar" aria-labelledby="empezar-titulo">
+    <form method="dialog" id="form-empezar">
+      <h2 id="empezar-titulo">Personalizar <span id="empezar-modelo"></span></h2>
+      <div class="fila-2" id="campos-nombres"></div>
+      <div class="campo"><label for="emp-fecha">Fecha del evento</label><input type="date" id="emp-fecha" required></div>
+      <p class="ayuda">Después se puede cambiar todo en el panel. No se paga nada hasta publicar.</p>
+      <p class="mensaje error" id="emp-error" hidden></p>
+      <button type="submit" class="btn btn-grande" id="btn-empezar">Comenzar a personalizar</button>
+      <button type="button" class="btn-link" data-cerrar>← Elegir otro modelo</button>
+    </form>
+  </dialog>
   <script type="module" src="/tienda/tienda.js"></script>
 </body>
 </html>

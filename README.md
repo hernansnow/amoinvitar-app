@@ -131,3 +131,23 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
   En pantallas horizontales, un video vertical va al centro con una copia desenfocada de fondo.
 - La galería que no es carrusel la arma el componente común `data-componente="galeria"`
   (comun/css/galeria.css): el modelo solo marca su carrusel con `data-si="galeria.carrusel"`.
+
+## Reglas para convertir los demás modelos (ronda 5)
+
+- **Galería**: siempre `<div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>`. El componente común
+  arma carrusel, mosaico, grilla o polaroids, con zoom al tocar. Sacar el owl de la galería (owl.carousel.min.js queda cargado:
+  lo usa snow_2.7.1.js).
+- **Galería dentro de la confirmación** (`galeria.enRsvp: true`): carrusel por defecto, sin elegir tipo; la confirmación no tiene
+  opción de foto. Si el cliente apaga la galería, la confirmación usa el bloque de Basic.
+- **Confirmación sin foto** (Premium y Deluxe): el bloque con foto va en `<div data-si="fotos.rsvp">` y, al lado, el bloque idéntico
+  de la versión Basic en `<div data-no="fotos.rsvp">`. El `id="rsvp"` y `data-seccion="rsvp"` van en el contenedor de los dos.
+- **Dress code, hospedaje y bus**: en casi todos los modelos el `id="dresscode"` envuelve a los tres. La sección lleva
+  `data-si="grupos.dress"` (se ve si alguno está prendido); el título y el texto `data-seccion="dresscode"`; colores a evitar y
+  sugerencias `data-seccion="estilos"`; hospedaje y bus su propio `data-seccion`.
+- **Historia**: el texto en `<p class="… g-historia">`, sin `font-weight-lighter` (antes era un h3 muy grande).
+- **Instagram Wall** (`data-seccion="instagram"`, `id="hashtag"`) y **álbum compartido** (`data-seccion="album"`): uno u otro.
+- **Playlist**: `<div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="CLASE-DE-LA-FUENTE-DE-ÉNFASIS"></div></div>`
+  después de Sugerir canciones. Sin botón de Spotify en Sugerir canciones.
+- **Cierre**: `id="cierre"` y el texto final con `data-si="pie.mostrar"`.
+- **Planes**: cada sección es del paquete más bajo que la trae en `modelo.json`. Secciones nuevas: `musica`, `estilos`,
+  `instagram`, `playlist`. Galería: `fotosGaleria: 20` en los tres paquetes.

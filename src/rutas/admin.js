@@ -88,4 +88,19 @@ export async function tareas(controller, env) {
     return;
   }
   await alertasOss(env);
+  await borrarBorradoresViejos(env);
+}
+
+// Invitaciones armadas sin pagar ni guardar en una cuenta: se borran a los 60 días sin cambios
+async function borrarBorradoresViejos(env) {
+  const limite = new Date(Date.now() - 60 * 86400000).toISOString();
+  const viejos = `SELECT id FROM eventos WHERE paquete = 'borrador' AND estado = 'borrador' AND actualizado < ?
+    AND id NOT IN (SELECT evento_id FROM accesos_evento) AND id NOT IN (SELECT evento_id FROM pedidos WHERE evento_id IS NOT NULL)`;
+  try {
+    await env.DB.batch([
+      env.DB.prepare(`DELETE FROM invitados WHERE evento_id IN (${viejos})`).bind(limite),
+      env.DB.prepare(`DELETE FROM respuestas WHERE evento_id IN (${viejos})`).bind(limite),
+      env.DB.prepare(`DELETE FROM eventos WHERE id IN (${viejos})`).bind(limite),
+    ]);
+  } catch (e) { console.error('[borradores]', e); }
 }

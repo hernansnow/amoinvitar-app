@@ -28,6 +28,7 @@ const OTROS = { pt, fr, it, ca, de, nl };
 const BASE = {
   es: {
     'general.si': 'Sí', 'general.no': 'No',
+    'playlist.titulo': 'Mi playlist', 'playlist.texto': 'Las canciones que van a sonar en la fiesta.', 'playlist.resumen': '{n} canciones · {min} min', 'playlist.verTodas': 'Ver las {n} canciones', 'playlist.verMenos': 'Ver menos', 'playlist.play': 'Reproducir la playlist', 'playlist.pausa': 'Pausar', 'playlist.abrir': 'Abrir en Spotify', 'galeria.ver': 'Ver foto', 'galeria.anterior': 'Anterior', 'galeria.siguiente': 'Siguiente',
     'meta.titulo': 'Invitación ❤ {evento} | {nombres}',
     'meta.descripcion': '¡Te esperamos para celebrar juntos!',
 
@@ -120,6 +121,7 @@ const BASE = {
 
   en: {
     'general.si': 'Yes', 'general.no': 'No',
+    'playlist.titulo': 'My playlist', 'playlist.texto': 'The songs that will play at the party.', 'playlist.resumen': '{n} songs · {min} min', 'playlist.verTodas': 'See all {n} songs', 'playlist.verMenos': 'See less', 'playlist.play': 'Play the playlist', 'playlist.pausa': 'Pause', 'playlist.abrir': 'Open in Spotify', 'galeria.ver': 'See photo', 'galeria.anterior': 'Previous', 'galeria.siguiente': 'Next',
     'meta.titulo': 'Invitation ❤ {evento} | {nombres}', 'meta.descripcion': 'We look forward to celebrating with you!',
     'cuenta.faltan': 'Countdown', 'cuenta.dia': 'DAY', 'cuenta.dias': 'DAYS', 'cuenta.horas': 'HOURS', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEC',
     'musica.boton': 'Music',
@@ -184,7 +186,7 @@ const EVENTOS = {
     plural: true,
     es: {
       'celebracion.sola': 'Boda', 'bienvenida.texto': '¡Queremos invitarte a nuestra boda!', 'evento.nombre': 'Boda', 'evento.descripcion': 'Te esperamos para nuestra boda',
-      'portada.subtitulo': '¡NOS CASAMOS!', 'historia.titulo': 'Nuestra Historia',
+      'portada.subtitulo': '¡NOS CASAMOS!', 'historia.titulo': 'Nuestra Historia', 'playlist.titulo': 'Nuestra playlist',
       'historia.texto': 'Andábamos sin buscarnos, pero sabiendo que andábamos para encontrarnos.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial e inolvidable.',
       'bus.destinoTexto': '¡Nuestra Boda!', 'testigos.titulo': 'Los Testigos',
@@ -207,7 +209,7 @@ const EVENTOS = {
     },
     en: {
       'celebracion.sola': 'Wedding', 'bienvenida.texto': 'We would love to invite you to our wedding!', 'evento.nombre': 'Wedding', 'evento.descripcion': 'Join us for our wedding',
-      'portada.subtitulo': "WE'RE GETTING MARRIED!", 'historia.titulo': 'Our Story',
+      'portada.subtitulo': "WE'RE GETTING MARRIED!", 'historia.titulo': 'Our Story', 'playlist.titulo': 'Our playlist',
       'historia.texto': 'We were not looking for each other, but we were meant to meet.',
       'rsvp.texto': 'Your presence will make this day truly special and unforgettable.',
       'bus.destinoTexto': 'Our wedding!', 'testigos.titulo': 'Wedding Party',

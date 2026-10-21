@@ -16,16 +16,16 @@
 
   "paquetes": {
     "basic": {
-      "secciones": ["galeria", "rsvp", "dresscode"],
-      "incluye": { "sobre": false, "musica": false, "cuenta": false, "fotosPortada": 1, "fotosGaleria": 6 }
+      "secciones": ["galeria", "rsvp", "dresscode", "estilos"],
+      "incluye": { "sobre": false, "musica": false, "cuenta": false, "fotosPortada": 1, "fotosGaleria": 20 }
     },
     "premium": {
-      "secciones": ["historia", "galeria", "rsvp", "dresscode", "album", "canciones", "regalos"],
-      "incluye": { "sobre": true, "musica": true, "cuenta": true, "fotosPortada": 4, "fotosGaleria": 9 }
+      "secciones": ["musica", "historia", "galeria", "rsvp", "dresscode", "estilos", "instagram", "canciones", "playlist", "regalos"],
+      "incluye": { "sobre": true, "musica": true, "cuenta": true, "fotosPortada": 4, "fotosGaleria": 20 }
     },
     "deluxe": {
-      "secciones": ["historia", "galeria", "rsvp", "dresscode", "hospedaje", "bus", "itinerario", "testigos", "album", "canciones", "regalos", "redes"],
-      "incluye": { "sobre": true, "musica": true, "cuenta": true, "fotosPortada": 4, "fotosGaleria": 12, "sugerenciasDress": true }
+      "secciones": ["musica", "historia", "galeria", "rsvp", "dresscode", "estilos", "hospedaje", "bus", "itinerario", "testigos", "instagram", "album", "canciones", "playlist", "regalos", "redes"],
+      "incluye": { "sobre": true, "musica": true, "cuenta": true, "fotosPortada": 4, "fotosGaleria": 20, "sugerenciasDress": true }
     }
   },
 

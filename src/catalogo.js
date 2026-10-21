@@ -49,8 +49,8 @@ export const EXTRAS = {
 
 // Qué paquete hace falta para cada sección (para el "Pasate a Premium/Deluxe")
 export const SECCION_MINIMA = {
-  historia: 'premium', galeria: 'basic', rsvp: 'basic', dresscode: 'basic',
-  album: 'premium', canciones: 'premium', regalos: 'premium', sobre: 'premium', musica: 'premium', cuenta: 'premium',
+  historia: 'premium', galeria: 'basic', rsvp: 'basic', dresscode: 'basic', estilos: 'basic',
+  instagram: 'premium', playlist: 'premium', album: 'deluxe', canciones: 'premium', regalos: 'premium', sobre: 'premium', musica: 'premium', cuenta: 'premium',
   hospedaje: 'deluxe', bus: 'deluxe', itinerario: 'deluxe', testigos: 'deluxe', redes: 'deluxe', 'dress-sugerencias': 'deluxe',
 };
 

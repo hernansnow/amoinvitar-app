@@ -19,7 +19,9 @@ import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
-import { esquemaPanel, limpiarDatos, faltantes } from './panel/esquemas.js';
+import { esquemaPanel, limpiarDatos, faltantes, planNecesario } from './panel/esquemas.js';
+import { MODELOS, nombreModelo } from './modelos.js';
+import { MODELOS_GRATIS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
 import { sendEmail } from './lib/email.js';
 import { usuarioActual } from './lib/auth.js';
@@ -28,6 +30,7 @@ import * as tienda from './rutas/tienda.js';
 import * as admin from './rutas/admin.js';
 import { getCookie } from './lib/util.js';
 import { resolverMapa } from './lib/mapas.js';
+import { leerPlaylist } from './lib/spotify.js';
 
 const PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
 const cache = new Map();
@@ -67,6 +70,15 @@ function textosPropios(o, pre = '', salida = {}) {
   return salida;
 }
 
+// { textos: { rsvp: { titulo } } } → { 'textos.rsvp.titulo': … }
+function aplanar(o, pre = '', salida = {}) {
+  for (const [k, v] of Object.entries(o || {})) {
+    const r = pre ? `${pre}.${k}` : k;
+    if (v && typeof v === 'object' && !Array.isArray(v)) aplanar(v, r, salida); else salida[r] = v;
+  }
+  return salida;
+}
+
 // El evento guardado → lo que espera el motor
 const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, variante: ev.datos.variante });
 
@@ -91,6 +103,11 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
   const idiomas = demo ? [variante(evento.variante)] : idiomasDe(evento);
   const v = demo ? variante(evento.variante) : idiomaPedido(url, evento);
+  // Idioma adicional: lo que el cliente tradujo pisa sus textos del idioma principal
+  if (v !== idiomas[0]) {
+    evento = structuredClone(evento);
+    for (const [ruta, val] of Object.entries(aplanar(evento.traducciones?.[v.slice(0, 2)] || {}))) if (typeof val === 'string' && val.trim()) escribirRuta(evento, ruta, val);
+  }
   const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres));
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
@@ -232,11 +249,42 @@ async function eventoConClave(env, request, url, id) {
   return u && (u.esAdmin || await almacenDe(env).tieneAcceso(ev.id, u.id)) ? ev : null;
 }
 
-async function esquemaDe(env, url, ev) {
+async function esquemaDe(env, url, ev, datos = ev.datos) {
   const modelo = ev.producto === 'invitacion' ? await modeloJSON(env, ev.modelo, url.origin) : null;
-  return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, modelo, aMedida: ev.aMedida,
-    gratis: ev.paquete === 'gratis', extras: ev.datos.extras || [], disenoEnviado: !!ev.datos.diseno?.enviado });
+  return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
+    gratis: ev.paquete === 'gratis' || datos.planElegido === 'gratis', disenoEnviado: !!datos.diseno?.enviado });
 }
+
+// Plan con el que se ve la invitación: el que ya pagó o, en el borrador, el que piden las secciones elegidas
+async function planVista(env, url, ev) {
+  if (ev.producto !== 'invitacion' || ev.estado === 'publicado') return ev.paquete === 'gratis' ? 'basic' : ev.paquete;
+  const m = MODELOS.find((x) => x.id === ev.modelo);
+  const plan = planNecesario(await esquemaDe(env, url, ev), ev.datos, { gratisPosible: !!(m && (m.gratis || MODELOS_GRATIS.includes(m.id))) });
+  const pagado = ['basic', 'premium', 'deluxe'].indexOf(ev.paquete);
+  const necesario = ['basic', 'premium', 'deluxe'].indexOf(plan === 'gratis' ? 'basic' : plan);
+  return ['basic', 'premium', 'deluxe'][Math.max(pagado, necesario, 0)];
+}
+
+// Publicar (desde el panel, o solo después del pago). Devuelve lo que falta, si falta algo.
+async function publicarEvento(env, request, ev) {
+  const url = new URL(request.url);
+  const esquema = await esquemaDe(env, url, ev);
+  const faltan = faltantes(esquema, ev.datos);
+  if (faltan.length || !ev.slug) return { faltan };
+  if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return { error: 'Falta el PIN' };
+  // Plan gratis: online hasta 15 días después del evento
+  if (ev.paquete === 'gratis') {
+    const fecha = (ev.datos.celebracion?.inicio || '').slice(0, 10);
+    if (fecha) ev.vence = new Date(Date.parse(fecha) + 16 * 86400000).toISOString();
+  }
+  ev.estado = ev.producto === 'invitacion' || ev.producto === 'std-web' ? 'publicado' : 'en-diseno';
+  await avisarDiseno(env, url, ev);
+  await almacenDe(env).guardarEvento(ev);
+  return { ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null };
+}
+
+// Modelos a los que se puede cambiar (los del mismo tipo de evento)
+const modelosPara = (tipo) => MODELOS.filter((m) => m.eventos.includes(tipo)).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)) }));
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const aSlug = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/&/g, 'y').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
@@ -263,6 +311,18 @@ async function sugerirSlug(almacen, ev, pedido) {
 const TIPOS_ARCHIVO = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png', 'audio/mpeg': 'mp3', 'video/mp4': 'mp4' };
 const MAX_MB = { mp3: 12, mp4: 40 };
 
+// Playlist de Spotify: se lee la lista de canciones una vez por link
+async function leerSpotify(datos) {
+  const pl = datos.playlist;
+  if (!pl) return;
+  if (!pl.link) { for (const k of ['pistas', 'cantidad', 'minutos', 'nombre', 'leidoDe']) delete pl[k]; return; }
+  if (pl.leidoDe === pl.link) return;
+  const r = await leerPlaylist(pl.link, { fetch: (u, o) => fetch(u, { ...o, signal: AbortSignal.timeout(5000) }) }).catch(() => null);
+  if (r) Object.assign(pl, { pistas: r.pistas, cantidad: r.cantidad, minutos: r.minutos, nombre: r.nombre });
+  else for (const k of ['pistas', 'cantidad', 'minutos', 'nombre']) delete pl[k];
+  pl.leidoDe = pl.link;
+}
+
 // Link de Google Maps de cada lugar → lo que necesita el mapa (se lee una vez por link)
 async function leerMapas(datos) {
   for (const p of ['ceremonia', 'celebracion']) {
@@ -286,9 +346,15 @@ async function apiPanel(env, request, url, partes) {
   if (!accion && request.method === 'GET') {
     const v = variante(ev.datos.variante);
     const dic = diccionario(ev.tipo, v);
+    const usuario = await usuarioActual(request, env);
     return json({
       evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
       esquema, datos: ev.datos, textos: dic, faltan: faltantes(esquema, ev.datos),
+      // Textos de cada idioma adicional (para traducir en el panel)
+      textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
+      plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,
+      modelos: modelosPara(ev.tipo),
+      usuario: usuario ? { email: usuario.email } : null,
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? { id: ev.modelo, miniatura: (await modeloJSON(env, ev.modelo, url.origin))?.miniatura || null } : null,
       marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
@@ -300,13 +366,46 @@ async function apiPanel(env, request, url, partes) {
     const limpio = limpiarDatos(esquema, datos || {}, ev.datos);
     if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
     await leerMapas(limpio);
+    await leerSpotify(limpio);
     if (limpio.slug && limpio.slug !== ev.slug) {
       if (await almacen.slugOcupado(ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(almacen, ev, limpio.slug)) }, 409);
       ev.slug = limpio.slug;
     }
     ev.datos = limpio;
     await almacen.guardarEvento(ev);
-    return json({ ok: true, datos: limpio, faltan: faltantes(esquema, limpio) });
+    // El esquema cambia con los idiomas elegidos (campos para traducir)
+    const nuevo = await esquemaDe(env, url, ev);
+    return json({ ok: true, datos: limpio, faltan: faltantes(nuevo, limpio), esquema: nuevo,
+      textosIdiomas: Object.fromEntries(idiomasDe(limpio).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
+      plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, nuevo) : null });
+  }
+  // Cambiar de modelo (el mismo tipo de evento); lo cargado queda igual
+  if (accion === 'modelo' && request.method === 'POST') {
+    const { modelo } = await request.json();
+    if (!modelosPara(ev.tipo).some((m) => m.id === modelo)) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
+    ev.modelo = modelo;
+    await almacen.guardarEvento(ev);
+    return json({ ok: true });
+  }
+  // Pasar al plan gratis (modelos que lo tienen): se apaga lo que no es de Basic
+  if (accion === 'gratis' && request.method === 'POST') {
+    const { gratis = true } = await request.json();
+    if (gratis && !modelosPara(ev.tipo).find((m) => m.id === ev.modelo)?.gratis) return json({ error: 'Este diseño no tiene plan gratis' }, 400);
+    ev.datos.planElegido = gratis ? 'gratis' : null;
+    if (gratis) {
+      for (const p of esquema.pasos) if (p.seccion && (p.complemento || p.nivel !== 'basic')) (ev.datos.secciones ??= {})[p.seccion] = false;
+      for (const p of esquema.pasos) for (const c of p.campos) if (c.paquete && c.paquete !== 'basic') escribirRuta(ev.datos, c.id, c.tipo === 'switch' ? false : undefined);
+      if (Array.isArray(ev.datos.fotos?.portada)) ev.datos.fotos.portada = ev.datos.fotos.portada.slice(0, 1);
+    }
+    await almacen.guardarEvento(ev);
+    return json({ ok: true });
+  }
+  // Guardar el borrador en la cuenta (después de entrar con Google o con el mail)
+  if (accion === 'vincular' && request.method === 'POST') {
+    const u = await usuarioActual(request, env);
+    if (!u) return json({ error: 'Primero hay que entrar con la cuenta' }, 401);
+    await almacen.darAcceso(ev.id, u.id, 'cliente');
+    return json({ ok: true, email: u.email });
   }
   if (accion === 'slug') return json(await sugerirSlug(almacen, ev, url.searchParams.get('s')));
   if (accion === 'archivo' && request.method === 'POST') {
@@ -342,15 +441,13 @@ async function apiPanel(env, request, url, partes) {
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
     if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);
     if (await tienda.pagoPendiente(env, ev.id)) return json({ error: 'Se puede publicar cuando se acredite el pago. Mientras tanto, todo lo cargado queda guardado.' }, 402);
-    // Plan gratis: online hasta 15 días después del evento
-    if (ev.paquete === 'gratis') {
-      const fecha = (ev.datos.celebracion?.inicio || '').slice(0, 10);
-      if (fecha) ev.vence = new Date(Date.parse(fecha) + 16 * 86400000).toISOString();
+    // Primero el resumen y el pago de lo que falte (plan y complementos)
+    if (ev.producto === 'invitacion') {
+      const plan = await tienda.estadoPlan(env, request, ev, esquema);
+      if (plan.activar || plan.aPagar.eur > 0) return json({ error: 'pagar', plan }, 402);
     }
-    ev.estado = ev.producto === 'invitacion' || ev.producto === 'std-web' ? 'publicado' : 'en-diseno';
-    await avisarDiseno(env, url, ev);
-    await almacen.guardarEvento(ev);
-    return json({ ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null });
+    const r = await publicarEvento(env, request, ev);
+    return r.ok ? json(r) : json({ error: r.error || 'faltan', faltan: r.faltan }, 422);
   }
   return json({ error: 'no encontrado' }, 404);
 }
@@ -372,6 +469,11 @@ async function avisarDiseno(env, url, ev) {
     if (para) await sendEmail(env, { to: para, subject: `Cambio de diseño pedido · ${nombresDe(ev.datos.nombres)}`, text: lineas.join('\n'), html: lineas.map((l) => `<p>${escHtml(l)}</p>`).join('') });
     ev.datos.diseno = { ...d, enviado: new Date().toISOString() };
   } catch (e) { console.error('[diseño]', e); }
+}
+function escribirRuta(o, ruta, v) {
+  const ks = ruta.split('.'); let x = o;
+  for (const k of ks.slice(0, -1)) { if (typeof x[k] !== 'object' || x[k] === null) { if (v === undefined) return; x[k] = {}; } x = x[k]; }
+  if (v === undefined) delete x[ks.at(-1)]; else x[ks.at(-1)] = v;
 }
 const escHtml = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -396,7 +498,7 @@ async function vistaPrevia(env, url, request, id) {
   if (!ev) return html('Sin permiso', 403);
   if (!ev.modelo) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  const evento = conFotosDeMuestra(paraMotor(ev));
+  const evento = conFotosDeMuestra({ ...paraMotor(ev), paquete: await planVista(env, url, ev) });
   return pagina(env, url, evento, { marca: empresa?.marca?.blanca ? empresa.marca : null, sinSobre: true });
 }
 
@@ -412,7 +514,8 @@ function conFotosDeMuestra(ev) {
   const f = { ...(ev.fotos || {}) };
   if (on('portada') && vacio(f.portada)) f.portada = serie('hero-banner', 4).map((url) => ({ url, pos: '50% 30%' }));
   if (vacio(f.galeria)) f.galeria = serie('foto', 6).map((url) => ({ url }));
-  if (on('rsvp') && !f.rsvp) f.rsvp = `${BASE}/rsvp.jpg`;
+  if (ev.fotosOn?.rsvp === true && !f.rsvp) f.rsvp = `${BASE}/rsvp.jpg`;
+  if (on('instagram') && !f.instagram) f.instagram = `${BASE}/instagram.jpg`;
   if (on('album') && !f.album) f.album = `${BASE}/instagram.jpg`;
   const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || (on('lugares') ? foto : '') });
   const testigos = serie('testigo', 4);
@@ -463,6 +566,8 @@ export default {
     const url = new URL(request.url);
     const partes = url.pathname.split('/').filter(Boolean);
     const [p0, p1] = partes;
+    tienda.opcionesTienda.esquemaDe = (ev) => esquemaDe(env, url, ev);
+    tienda.opcionesTienda.publicar = publicarEvento;
     const cerrado = proximamente(request, env, url);
     if (cerrado) return cerrado;
     try {
@@ -483,6 +588,7 @@ export default {
           if (a === 'mejora' && M === 'POST') return await tienda.cotizarMejora(request, env);
           if (a === 'comprar' && M === 'POST') return await tienda.comprar(request, env);
           if (a === 'confirmar') return await tienda.confirmar(request, env);
+          if (a === 'empezar' && M === 'POST') return await tienda.empezar(request, env);
         }
         if (p1 === 'stripe' && partes[2] === 'webhook' && M === 'POST') return await tienda.webhookStripe(request, env);
         if (p1 === 'mp' && partes[2] === 'webhook') return await tienda.webhookMp(request, env);

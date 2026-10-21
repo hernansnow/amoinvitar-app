@@ -1,0 +1,21 @@
+/* Tienda: modelos con vista previa y "Personalizar" */
+.opcion.modelo { display: grid; gap: 8px; align-content: start; cursor: default; }
+.opcion.modelo .miniatura { border: 0; padding: 0; background: none; cursor: pointer; display: block; border-radius: 10px; overflow: hidden; }
+.opcion.modelo .modelo-img { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; display: block; transition: transform .3s; }
+.opcion.modelo .miniatura:hover .modelo-img { transform: scale(1.03); }
+.botones-modelo { display: flex; gap: 8px; flex-wrap: wrap; }
+.botones-modelo .btn { flex: 1; }
+.modal-tienda { border: 0; border-radius: 18px; padding: 14px; background: #f6f5f3; box-shadow: 0 20px 60px rgba(0,0,0,.3); max-width: calc(100vw - 20px); }
+.modal-tienda::backdrop { background: rgba(20, 24, 22, .5); }
+.vista-celular { width: min(380px, calc(100vw - 48px), calc((100dvh - 150px) * 9 / 19.5)); aspect-ratio: 9 / 19.5; border: 9px solid #1f2421; border-radius: 34px; overflow: hidden; background: #fff; margin: 0 auto; }
+.vista-celular iframe { width: 100%; height: 100%; border: 0; display: block; }
+.modal-botones { display: grid; gap: 8px; justify-items: center; margin-top: 12px; }
+.modal-tienda.chico { width: min(440px, calc(100vw - 24px)); padding: 22px; background: #fff; }
+.modal-tienda form { display: grid; gap: 12px; }
+.modal-tienda h2 { margin: 0; }
+.fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fila-2:has(> :only-child) { grid-template-columns: 1fr; }
+.btn-grande { width: 100%; padding: 12px; font-size: 1.05rem; }
+.btn-link { border: 0; background: none; color: #4e7a59; text-decoration: underline; cursor: pointer; font: inherit; justify-self: center; }
+.tarjeta.seguir { margin: 12px 0 18px; }
+.tarjeta.seguir ul { margin: 6px 0 0; padding-left: 18px; }

@@ -4247,6 +4247,53 @@ h3.euforia:after {
 .countdown-deluxe-circles6 span:first-of-type {
     margin-left: 0;
 }
+
+
+.disco {
+      font-family: 'Monoton', cursive;
+	 font-weight: normal;
+}
+
+.disco h1 {
+
+	font-size: 5rem;
+}
+
+.disco h2 {
+	font-size: 3.75rem;
+}
+
+.disco h3 {
+	font-size: 2.188rem;
+}
+
+.disco p {
+	font-size: 1.25rem;
+}
+.disco i {
+	font-size: 5.625rem;
+}
+
+
+@media screen and (max-width: 768px) {
+.disco h3 {
+font-size: 1.75rem;
+ }
+.disco h1 {
+    font-size: 3.125rem;
+}
+.disco h2 {
+    font-size: 2.375rem;
+}
+.disco i {
+	font-size: 4.063rem;
+}
+.disco p {
+  font-size: 1.125rem;
+}
+
+	
+}
 /* Flickering animation */
 
 .circle-singleline2 {
@@ -4998,3 +5045,7 @@ audio::-webkit-media-controls-play-button:hover {
 .g-evitar-colores { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .g-evitar-color { display: inline-block; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .9); box-shadow: 0 1px 5px rgba(0, 0, 0, .25); }
 @media (min-width: 768px) { .g-evitar-color { width: 40px; height: 40px; } }
+
+/* Historia: párrafo (antes h3, muy grande) */
+.g-historia { font-size: 1.2rem; line-height: 1.6; }
+@media (max-width: 767px) { .g-historia { font-size: 1.1rem; } }

@@ -137,7 +137,7 @@
           <h4 class="text-bronce font-weight-bolder mb-0 pb-4" data-si="historia.bienvenida" data-t="bienvenida.texto">¡Queremos invitarte a nuestra boda!</h4>
           <h2 class="text-center euforia text-bronce" data-si="historia.activa" data-t="historia.titulo">Nuestra Historia</h2>
           <div class="col-md-8 ml-auto mr-auto text-center mt-0 pt-0 mb-0 pb-4" data-si="historia.activa">
-            <h3 class="text-bronce font-weight-lighter mb-0"><span class="text-bronce display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Andábamos sin buscarnos, pero sabiendo que andábamos para encontrarnos.</span> <span class="text-bronce display-5 icon-quote-right"></span></h3>
+            <p class="text-bronce mb-0 g-historia"><span class="text-bronce display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Andábamos sin buscarnos, pero sabiendo que andábamos para encontrarnos.</span> <span class="text-bronce display-5 icon-quote-right"></span></p>
           </div>
         </div>
       </div>
@@ -145,16 +145,8 @@
   </section>
 
   <!-- ═══ GALERÍA ═══ -->
-  <div data-seccion="galeria">
-  <div class="presupuesto slide-one-item home-slider owl-carousel p-0 mb-5 bg-white" data-si="galeria.carrusel">
-    <img src="demo/boda/foto1.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
-    <img src="demo/boda/foto2.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
-    <img src="demo/boda/foto3.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
-    <img src="demo/boda/foto4.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
-    <img src="demo/boda/foto5.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
-    <img src="demo/boda/foto6.jpg" alt="" class="img-fluid" data-repetir="fotos.galeria" data-i-attr="src:url;style:estilo">
-  </div>
-  <!-- Mosaico, grilla o polaroids: componente común (comun/css/galeria.css) -->
+  <div data-seccion="galeria" id="galeria">
+  <!-- Carrusel, mosaico, grilla o polaroids: componente común (comun/css/galeria.css) -->
   <div data-componente="galeria"></div>
   </div>
 
@@ -219,7 +211,10 @@
   </section>
 
   <!-- ═══ CONFIRMACIÓN (RSVP) ═══ -->
-  <section class="site-section g-fondo-rsvp" id="rsvp" data-seccion="rsvp">
+  <div id="rsvp" data-seccion="rsvp">
+  <!-- Con foto -->
+  <div data-si="fotos.rsvp">
+  <section class="site-section g-fondo-rsvp">
     <div class="container p-4">
       <div class="col-md-12 col-lg-12 ml-auto mr-auto p-0 shadow" data-aos="fade-up">
         <div class="rounded p-3" style="background-color:rgba(255, 255, 255, 0.8);">
@@ -259,23 +254,65 @@
       </div>
     </div>
   </section>
+  </div>
+  <!-- Sin foto: el mismo bloque que Basic -->
+  <div data-no="fotos.rsvp">
+  <section class="site-section g-fondo-rsvp">
+    <div class="container">
+      <div class="col-md-6 ml-auto mr-auto" data-aos="fade-up">
+        <div class="rounded p-4 shadow" style="background-color:rgba(255, 255, 255, 0.8);">
+          <div>
+            <div>
+              <div class="text-center shake-move mt-3"><img class="img-fluid mb-0" src="img/icon-rsvp-b.png" width="80" alt=""></div>
+              <h2 class="mb-3 text-center euforia text-bronce" data-t="rsvp.titulo">Confirmación</h2>
+              <p class="text-center"
+                 data-rsvp="texto"
+                 data-bloque-invitado-class="mb-4"
+                 data-bloque-invitado-inner="<div class='text-center pl-2 pr-2 pb-3 pt-3 ml-2 mr-2 mb-4 mt-0 g-tarjeta-invitado'><i class='icon-user-circle-o h3 font-weight-normal' aria-hidden='true' style='opacity:.7'></i><br><p class='text-uppercase font-weight-bold mb-0' id='nombre'></p><p class='border-bottom mb-2 mt-1 ml-5 mr-5'></p><p class='small text-uppercase mb-0 mt-0' id='pases'></p><p class='font-weight-bolder small text-uppercase mb-0 mt-0' id='mesa'></p></div>"
+                 data-bloque-general-class="mb-4"
+                 data-attr="data-texto-abierto-libre:c:rsvp.texto; data-fecha-texto:t:rsvp.hasta; data-texto-cerrado:t:rsvp.finalizado"
+                 data-texto-abierto-libre="Tu presencia hará que este día sea realmente especial e inolvidable."
+                 data-fecha-texto="Se reciben confirmaciones hasta el"
+                 data-texto-cerrado="El plazo de confirmación ha finalizado.">
+              </p>
+              <div class="text-center">
+                <button class="button button-musgo mb-2 text-uppercase rounded-pill" data-fancybox data-src="#confirmar-rsvp" data-animation-duration="700"
+                        data-rsvp="boton"
+                        data-attr="data-fecha:c:rsvp.cierre; data-idioma:c:idioma.fechas; data-formato:c:rsvp.formato; data-texto-abierto:t:rsvp.botonHtml; data-texto-cerrado:t:rsvp.cerradoHtml"
+                        data-fecha="2027-08-10" data-idioma="es-ES" data-formato="corto"
+                        data-texto-abierto="&lt;i class='icon-send-o' aria-hidden='true'&gt;&lt;/i&gt; CONFIRMAR ASISTENCIA"
+                        data-texto-cerrado="&lt;i class='icon-send-o' aria-hidden='true'&gt;&lt;/i&gt; CONFIRMACIONES CERRADAS">
+                </button>
+              </div>
+              <div class="text-center mt-2 mb-3"><i class="small" style="opacity:.7" data-rsvp="fecha"></i></div>
+
+              <!-- Formulario de confirmación: común a todos los modelos -->
+              <div data-componente="rsvp-form" data-clase-titulo="text-center text-black mb-4 font-weight-bolder border-bottom border-dark"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>
+  </div>
 
   <!-- ═══ DRESS CODE · HOSPEDAJE · BUS ═══ -->
-  <section class="bg-musgo site-section pb-0 text-center" id="dresscode" data-seccion="dresscode">
+  <section class="bg-musgo site-section pb-0 text-center" id="dresscode" data-si="grupos.dress">
     <div class="container">
       <div class="row ml-auto mr-auto pt-5">
-        <div class="col-md-4 ml-auto mr-auto pb-5" data-aos="fade-in">
-          <div class="text-center mb-0"><img class="img-fluid mb-0" src="img/dress1.png" width="55" alt=""><img class="img-fluid mb-0 ml-2" src="img/dress2.png" width="55" alt=""></div>
-          <h2 class="mb-3 text-center euforia text-white" data-t="dress.titulo">Dress Code</h2>
-          <p class="text-center text-white" data-campo-html="dresscode.texto">Formal y elegante. Por favor no usar blanco.</p>
-          <div class="g-evitar mb-3" data-si="dresscode.evitar">
+        <div class="col-md-4 ml-auto mr-auto pb-5" data-aos="fade-in" data-si="grupos.dressCol">
+          <div class="text-center mb-0" data-seccion="dresscode"><img class="img-fluid mb-0" src="img/dress1.png" width="55" alt=""><img class="img-fluid mb-0 ml-2" src="img/dress2.png" width="55" alt=""></div>
+          <h2 class="mb-3 text-center euforia text-white" data-seccion="dresscode" data-t="dress.titulo">Dress Code</h2>
+          <p class="text-center text-white" data-seccion="dresscode" data-campo-html="dresscode.texto">Formal y elegante. Por favor no usar blanco.</p>
+          <div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
             <p class="text-white mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
             <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
           </div>
-          <div class="col-12 text-center" data-si="dresscode.sugerencias">
+          <div class="col-12 text-center" data-seccion="estilos" data-si="dresscode.sugerencias">
             <button class="button button-bronce mb-3 text-uppercase rounded-pill" data-fancybox data-src="#dress" data-animation-duration="700" data-t="dress.boton">Sugerencias</button>
           </div>
-          <div style="display: none;" id="dress" class="animated-modal p-4" data-si="dresscode.sugerencias">
+          <div style="display: none;" id="dress" class="animated-modal p-4" data-seccion="estilos" data-si="dresscode.sugerencias">
             <div class="mt-4 text-center" data-selectable="true">
               <p class="text-center h3 mb-0"><i class="text-black icon-female" aria-hidden="true"></i><i class="text-black icon-male" aria-hidden="true"></i></p>
               <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="dress.modal">Sugerencias de estilos</p>
@@ -289,7 +326,7 @@
           </div>
         </div>
 
-        <div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150" data-seccion="hospedaje">
+        <div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150" data-seccion="hospedaje" id="hospedaje-bus">
           <img class="img-fluid mt-2 mb-1" src="img/icon-hotel-bronce-o.png" width="55" alt="">
           <h2 class="mb-3 text-center euforia text-white" data-t="hospedaje.titulo">Hospedaje</h2>
           <p class="text-center text-white" data-t="hospedaje.texto">Referencias de hoteles cercanos.</p>
@@ -394,6 +431,22 @@
     </div>
   </section>
 
+  <!-- ═══ INSTAGRAM WALL (hashtag) ═══ -->
+  <section class="site-section bg-white g-fondo-album" id="hashtag" data-seccion="instagram">
+    <div class="container">
+      <div class="col-md-6 col-lg-8 text-center mb-5 ml-auto mr-auto" data-aos="fade-in">
+        <div class="text-center shake-move mt-2"><div class="text-center"><i class="text-black icon-instagram h1" aria-hidden="true"></i></div></div>
+        <h2 class="mb-3 text-center euforia text-bronce" data-t="hashtag.titulo">Etiquetá tus Fotos</h2>
+        <h4 class="text-gold mb-4" data-si="hashtag.texto"><span class="text-white bg-musgo p-1" data-campo="hashtag.texto">#SofiyAle2027</span></h4>
+        <p class="text-center" data-t-html="hashtag.texto">¡Preparate para nuestra boda!<br>Etiquetanos en Instagram con nuestro hashtag en tus fotos y videos.</p>
+      </div>
+      <div class="mr-auto ml-auto col-lg-7 mb-5 text-center" data-si="fotos.instagram"><img src="demo/boda/instagram.jpg" alt="" class="img-fluid rounded" data-attr="src:c:fotos.instagram;style:c:fotos.instagramEstilo"></div>
+      <div class="col-12 text-center" data-si="hashtag.link">
+        <a href="#" target="_blank" rel="noopener" class="button button-musgo mb-2 text-uppercase rounded-pill font-weight-bolder" data-attr="href:c:hashtag.link" data-t="hashtag.boton">VER FOTOS</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══ ÁLBUM DE FOTOS (Albunear) ═══ -->
   <section class="site-section bg-white g-fondo-album" id="instagram" data-seccion="album">
     <div class="container">
@@ -419,7 +472,6 @@
           <h2 class="mb-3 text-center euforia text-white" data-t="canciones.titulo">Música</h2>
           <p class="text-center text-white" data-t-html="canciones.texto">¿Qué canciones son infaltables?<br>Ayudanos con la selección de canciones</p>
           <div class="text-center">
-            <a class="button button-bronce mb-2 text-uppercase rounded-pill" href="#" target="_blank" rel="noopener" data-si="canciones.spotify" data-attr="href:c:canciones.spotify" data-t="canciones.spotify">Ir a Spotify</a>
             <button class="button button-bronce mb-2 text-uppercase rounded-pill" data-fancybox data-src="#canciones" data-animation-duration="700" data-t="canciones.boton">Sugerir canción</button>
             <div data-componente="canciones"></div>
           </div>
@@ -427,6 +479,9 @@
       </div>
     </div>
   </div>
+
+  <!-- ═══ PLAYLIST DE SPOTIFY: componente común (igual en todos los modelos) ═══ -->
+  <div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="euforia"></div></div>
 
   <!-- ═══ REGALOS ═══ -->
   <section class="site-section g-fondo-regalos" id="regalos" data-seccion="regalos">
@@ -476,11 +531,11 @@
   </section>
 
   <!-- ═══ CIERRE ═══ -->
-  <section class="site-section bg-flor-2">
+  <section class="site-section bg-flor-2" id="cierre">
     <div class="container">
       <div class="row">
         <div class="col-md-8 ml-auto mr-auto text-center">
-          <h4 class="text-bronce mb-5"><strong data-campo-html="pie.texto">Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para festejar juntos este día tan especial.</strong></h4>
+          <h4 class="text-bronce mb-5" data-si="pie.mostrar"><strong data-campo-html="pie.texto">Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para festejar juntos este día tan especial.</strong></h4>
           <h2 class="text-center mt-auto ml-auto euforia text-musgo" data-campo-html="nombres.cierre">Sofi <span class="text-bronce">&amp;</span> Ale</h2>
           <div class="col-12 text-center border-top mt-5 mb-5" data-seccion="redes" data-si="redes.hay">
             <h4 class="mb-3 mt-5" data-t="redes.titulo">Redes oficiales de la boda</h4>
@@ -529,9 +584,9 @@
 </div> <!-- .site-wrap -->
 
 <script src="../../comun/js/jquery-3.5.1.min.js"></script>
+<script src="../../comun/js/owl.carousel.min.js"></script>
 <script src="../../comun/js/popper.min.js" defer></script>
 <script src="../../comun/js/bootstrap.min.js" defer></script>
-<script src="../../comun/js/owl.carousel.min.js"></script>
 <script src="../../comun/js/jquery.countdown.min.js"></script>
 <script src="../../comun/js/jquery.fancybox.min.js"></script>
 <script src="../../comun/js/jquery.easing.1.3.js" defer></script>
@@ -541,19 +596,5 @@
 <script src="../../comun/js/rsvp-fecha-fin-evento.js" defer></script>
 <!-- Motor del lado del navegador: cuenta regresiva, agendar (Google, Apple, Outlook), mapas, álbum -->
 <script src="../../comun/js/invitacion.js" defer></script>
-<script>
-  // Con pocas fotos (1 o 2) no se repiten ni quedan huecos
-  (function () {
-    var g = $('.presupuesto'), n = g.children().length, varias = Math.min(3, n);
-    // 1 o 2 fotos en la computadora: del mismo tamaño que con 3, centradas
-    if (n < 3 && window.innerWidth >= 600) g.css({ maxWidth: (n * 34) + '%', marginLeft: 'auto', marginRight: 'auto' });
-    g.owlCarousel({
-      center: n > 1, margin: 10, autoplay: n > 1, loop: n > 3, nav: n > 1, dots: false,
-      navText: ['<span class="icon-keyboard_arrow_left">', '<span class="icon-keyboard_arrow_right">'],
-      responsiveClass: true,
-      responsive: { 0: { items: 1 }, 600: { items: varias }, 1000: { items: varias } }
-    });
-  })();
-</script>
 </body>
 </html>

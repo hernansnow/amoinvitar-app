@@ -124,6 +124,11 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   if (!CON_CEREMONIA.has(e.tipo) && 'testigos' in secciones) secciones.testigos = false;
   const historiaActiva = !!secciones.historia;
   if ('historia' in secciones) secciones.historia = true;
+  // Playlist: solo si hay un link de Spotify válido
+  const playlistId = (/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(playlist|album)\/([A-Za-z0-9]{10,40})/.exec(e.playlist?.link || '') || []).slice(1);
+  if ('playlist' in secciones && !playlistId.length) secciones.playlist = false;
+  // Instagram Wall y álbum compartido: uno u otro (si quedaron los dos, el álbum)
+  if (secciones.instagram && secciones.album) secciones.instagram = false;
   const fotosOn = (g) => e.fotosOn?.[g] !== false;
 
   // Textos que el cliente puede reescribir: lo suyo, o el del idioma
@@ -202,7 +207,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     .filter((l) => l && (l.dato || l.link)).map((l) => ({ etiqueta: l.etiqueta || '', dato: l.dato || '', link: l.link || '' }));
   const lista = listas.length ? { texto: esc(propio(regalos.lista?.texto, 'regalos.listaTexto')) } : null;
 
-  const redes = e.redes || {};
+  // Cada red con su interruptor (sin la marca, se muestra si tiene link, como antes)
+  const redes = Object.fromEntries(Object.entries(e.redes || {}).filter(([k, v]) => k !== 'titulo' && v && e.redesOn?.[k] !== false));
   const bus = e.bus || {};
 
   return {
@@ -226,8 +232,18 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       activa: !!incluye.cuenta && !!principal,
       fecha: principal ? `${principal.a}/${principal.m}/${principal.d} ${principal.hh ?? '00'}:${principal.mm ?? '00'}:00` : '',
     },
+    // La sección "Música de fondo" se puede apagar (sin la marca, prendida como antes)
+    grupos: {
+      dress: !!(secciones.dresscode || secciones.estilos || secciones.hospedaje || secciones.bus),
+      dressCol: !!(secciones.dresscode || secciones.estilos),
+    },
+    playlist: playlistId.length ? {
+      tipo: playlistId[0], id: playlistId[1], link: e.playlist.link,
+      embed: `https://open.spotify.com/embed/${playlistId[0]}/${playlistId[1]}?utm_source=generator&theme=0`,
+      pistas: (e.playlist.pistas || []).slice(0, 50), cantidad: e.playlist.cantidad || 0, minutos: e.playlist.minutos || 0,
+    } : null,
     musica: {
-      archivo: incluye.musica ? (e.musica?.archivo || '') : '',
+      archivo: incluye.musica && secciones.musica !== false ? (e.musica?.archivo || '') : '',
       inicio: e.musica?.inicio ?? '',
     },
 
@@ -238,6 +254,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       // Confirmación y álbum: la foto va tal cual se subió, sin recortar
       rsvp: fotosOn('rsvp') ? fotos.rsvp || '' : '', rsvpEstilo: '',
       album: fotosOn('album') ? fotos.album || '' : '', albumEstilo: '',
+      // Instagram Wall (en Premium antes usaba la foto del álbum)
+      instagram: fotosOn('instagram') ? fotos.instagram || (e.paquete === 'premium' ? fotos.album || '' : '') : '', instagramEstilo: '',
       cantidadGaleria: galeria.length,
     },
 
@@ -285,7 +303,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       hayBotones: cuentas.length > 0 || !!lista,
     },
     redes: { ...redes, hay: !!(redes.instagram || redes.facebook || redes.tiktok) },
-    pie: { texto: esc(propio(e.pie?.texto, 'pie.texto')) },
+    pie: { texto: esc(propio(e.pie?.texto, 'pie.texto')), mostrar: e.pie?.mostrarTexto !== false },
 
     // La seguridad ya la resolvió el servidor: acá solo va a quién mostrar
     // Con link personal o PIN por invitado la lista va siempre
