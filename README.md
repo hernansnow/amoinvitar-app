@@ -132,7 +132,14 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
 - La galería que no es carrusel la arma el componente común `data-componente="galeria"`
   (comun/css/galeria.css): el modelo solo marca su carrusel con `data-si="galeria.carrusel"`.
 
-## Reglas para convertir los demás modelos (ronda 5)
+## Reglas para convertir los demás modelos (ronda 5 y 6)
+
+- **Nombres de portada**: el h1 con `data-campo-html="nombres.portada"` lleva `data-ajustar="0.86"` (fracción del ancho del
+  contenedor que pueden ocupar). Si los nombres son largos, `invitacion.js` achica la letra lo justo. Dentro de un círculo o
+  marco: `data-ajustar="0.7" data-ajustar-en=".clase-del-circulo"` (cuenta el lado más corto). No agregar padding ni
+  `max-width` a los nombres: quedan con los márgenes del diseño original.
+- **Música e idioma**: los pone el componente común (`acceso`) como un control flotante arriba a la izquierda
+  (`comun/js/flotante.js`). El `<audio id="audio">` del modelo se mantiene; el botón viejo `.music-play` se oculta solo.
 
 - **Galería**: siempre `<div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>`. El componente común
   arma carrusel, mosaico, grilla o polaroids, con zoom al tocar. Sacar el owl de la galería (owl.carousel.min.js queda cargado:

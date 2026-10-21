@@ -49,28 +49,33 @@ export function acceso({ t, v }) {
   return `
 <script>window.INVITACION_CONFIG = ${json(cfg)};</script>
 <script src="${raiz}/js/lista-de-invitados-universal_v2.0.js"></script>
-<script src="${raiz}/js/rsvp-universal_v2.2.js"></script>${selectorIdioma(v)}`;
+<script src="${raiz}/js/rsvp-universal_v2.2.js"></script>${flotante(v, t)}`;
 }
 
-// ── Idiomas: el invitado la ve en el suyo (si la invitación lo tiene) y puede cambiarlo ──
+// ── Control flotante: música (play/pausa) e idioma con bandera ─────────
+// Uno solo, chico, arriba a la izquierda. La música aparece si la invitación
+// tiene canción (lo resuelve flotante.js); el idioma, si hay más de uno.
 const NOMBRE_IDIOMA = { es: 'Español', en: 'English', pt: 'Português', fr: 'Français', it: 'Italiano', ca: 'Català', de: 'Deutsch', nl: 'Nederlands' };
-function selectorIdioma(v) {
-  const lista = v.idiomas?.lista || [];
-  if (lista.length < 2) return '';
-  const actual = (v.idiomas.actual || lista[0]).slice(0, 2);
-  const botones = lista.map((x) => {
-    const c = x.slice(0, 2);
-    return `<a href="?lang=${c}" data-lang="${c}" hreflang="${c}" lang="${c}" title="${esc(NOMBRE_IDIOMA[c] || c)}"${c === actual ? ' aria-current="true"' : ''}>${c.toUpperCase()}</a>`;
-  }).join('');
+function flotante(v, t) {
+  const raiz = v.rutas.comun;
+  const lista = (v.idiomas?.lista || []).map((x) => x.slice(0, 2));
+  const actual = (v.idiomas?.actual || lista[0] || 'es').slice(0, 2);
+  const banderas = v.idiomas?.banderas || {};
+  const img = (c) => (banderas[c] ? `<img src="${raiz}/banderas/${esc(banderas[c])}.svg" alt="" width="20" height="20">` : `<span class="ai-f-cod">${c.toUpperCase()}</span>`);
+  const idiomas = lista.length < 2 ? '' : `
+  <div class="ai-f-idioma">
+    <button type="button" class="ai-f-btn ai-f-actual" aria-haspopup="true" aria-expanded="false" title="${esc(NOMBRE_IDIOMA[actual] || actual)}">${img(actual)}<span class="ai-f-txt">${actual.toUpperCase()}</span></button>
+    <div class="ai-f-menu" role="menu" hidden>${lista.map((c) => `<a role="menuitem" href="?lang=${c}" data-lang="${c}" hreflang="${c}" lang="${c}"${c === actual ? ' aria-current="true"' : ''}>${img(c)}<span>${esc(NOMBRE_IDIOMA[c] || c)}</span></a>`).join('')}</div>
+  </div>`;
   return `
-<nav class="ai-idiomas" aria-label="Idioma / Language">${botones}</nav>
-<style>.ai-idiomas{position:fixed;top:12px;right:12px;z-index:1040;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.85);box-shadow:0 2px 10px rgba(0,0,0,.15);font:600 12px/1 system-ui,sans-serif;backdrop-filter:blur(4px)}
-.ai-idiomas a{color:#333;text-decoration:none;padding:6px 9px;border-radius:999px;letter-spacing:.04em}.ai-idiomas a[aria-current]{background:#333;color:#fff}</style>
-<script>(function(){var d=${json(lista.map((x) => x.slice(0, 2)))},a=${json(actual)},u=new URL(location.href);
-document.querySelectorAll('.ai-idiomas a').forEach(function(x){x.addEventListener('click',function(e){e.preventDefault();try{localStorage.setItem('ai-idioma',x.dataset.lang)}catch(_){}u.searchParams.set('lang',x.dataset.lang);location.href=u.href;});});
-if(u.searchParams.has('lang'))return;var g=null;try{g=localStorage.getItem('ai-idioma')}catch(_){}
-var pref=[g].concat(navigator.languages||[navigator.language]).filter(Boolean).map(function(l){return String(l).slice(0,2).toLowerCase()});
-for(var i=0;i<pref.length;i++){if(d.indexOf(pref[i])>-1){if(pref[i]!==a){u.searchParams.set('lang',pref[i]);location.replace(u.href);}return;}}})();</script>`;
+<link rel="stylesheet" href="${raiz}/css/flotante.css">
+<div class="ai-flotante" id="ai-flotante" data-idiomas="${esc(lista.join(','))}" data-actual="${esc(actual)}" hidden>
+  <button type="button" class="ai-f-btn ai-f-musica" aria-pressed="false" aria-label="${esc(t('musica.boton'))}" hidden>
+    <svg class="ai-f-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+    <span class="ai-f-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>${idiomas}
+</div>
+<script src="${raiz}/js/flotante.js" defer></script>`;
 }
 
 // ── Pie con la marca de la empresa (marca blanca) ─────────────────────

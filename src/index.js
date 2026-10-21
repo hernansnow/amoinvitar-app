@@ -19,7 +19,7 @@ import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
-import { esquemaPanel, limpiarDatos, faltantes, planNecesario } from './panel/esquemas.js';
+import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe } from './panel/esquemas.js';
 import { MODELOS, nombreModelo } from './modelos.js';
 import { MODELOS_GRATIS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
@@ -111,7 +111,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres));
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
-  vista.idiomas = { lista: idiomas, actual: v };
+  vista.idiomas = { lista: idiomas, actual: v, banderas: Object.fromEntries(idiomas.map((x) => [x.slice(0, 2), banderaDe(x.slice(0, 2), evento)])) };
   if (sinSobre) vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false }; // la vista previa del panel abre directo
   return html(renderizar(plantilla, vista, t, { origen: url.origin }), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
@@ -363,7 +363,9 @@ async function apiPanel(env, request, url, partes) {
   }
   if (!accion && request.method === 'PUT') {
     const { datos } = await request.json();
-    const limpio = limpiarDatos(esquema, datos || {}, ev.datos);
+    // Los campos de cada idioma (bandera, traducciones) dependen de los idiomas que llegan ahora
+    const conIdiomas = datos?.idiomas ? await esquemaDe(env, url, ev, { ...ev.datos, idiomas: datos.idiomas, variante: datos.variante ?? ev.datos.variante }) : esquema;
+    const limpio = limpiarDatos(conIdiomas, datos || {}, ev.datos);
     if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
     await leerMapas(limpio);
     await leerSpotify(limpio);

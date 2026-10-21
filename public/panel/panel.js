@@ -5,6 +5,25 @@ import { armarMiniatura, achicarFoto } from './miniatura.js';
 import { leerPlanilla } from './planilla.js';
 
 const $ = (s, r = document) => r.querySelector(s);
+
+// ── Textos del panel ──────────────────────────────────────────────────
+// El panel está escrito en español neutro (tú). Para las otras variantes
+// (España, rioplatense, centroamericano) alcanza con sumar frases a
+// VARIANTES_PANEL: todos los textos pasan por T() al armarse.
+// Se elige con ?es=es-ES (o queda guardado en el navegador). Por ahora
+// solo se usa el neutro.
+const VARIANTES_PANEL = {
+  'es-ES': { celular: 'móvil', Celular: 'Móvil', computadora: 'ordenador', Computadora: 'Ordenador' },
+  'es-AR': {},
+  'es-CR': {},
+};
+const variantePanel = (() => {
+  const v = new URLSearchParams(location.search).get('es');
+  try { if (v) localStorage.setItem('ai-panel-es', v); return v || localStorage.getItem('ai-panel-es') || 'es'; } catch { return v || 'es'; }
+})();
+const reemplazos = Object.entries(VARIANTES_PANEL[variantePanel] || {}).map(([a, b]) => [new RegExp(`(^|[^\\p{L}])${a}(?=$|[^\\p{L}])`, 'gu'), `$1${b}`]);
+const T = (t) => (reemplazos.length && typeof t === 'string' ? reemplazos.reduce((x, [r, b]) => x.replace(r, b), t) : t);
+
 const el = (tag, attrs = {}, ...hijos) => {
   const e = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -14,7 +33,7 @@ const el = (tag, attrs = {}, ...hijos) => {
     else if (k === 'html') e.innerHTML = v;
     else e.setAttribute(k, v === true ? '' : v);
   }
-  for (const h of hijos.flat()) if (h != null && h !== false) e.append(h.nodeType ? h : document.createTextNode(h));
+  for (const h of hijos.flat()) if (h != null && h !== false) e.append(h.nodeType ? h : document.createTextNode(T(String(h))));
   return e;
 };
 const leer = (o, ruta) => ruta.split('.').reduce((x, k) => (x == null ? undefined : x[k]), o);
@@ -546,7 +565,7 @@ function campoMp3(c, valor, alCambiar) {
       el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { alCambiar(''); dibujar(''); } }, 'Quitar canción'));
     else {
       const input = el('input', { type: 'file', accept: 'audio/mpeg,.mp3', disabled: c.bloqueado });
-      const estadoArchivo = el('span', { class: 'sin-archivo' }, 'Ningún archivo elegido');
+      const estadoArchivo = el('span', { class: 'sin-archivo' }, '');
       input.addEventListener('change', async () => {
         const a = input.files[0]; if (!a) return;
         if (!/mpeg|mp3/.test(a.type) && !/\.mp3$/i.test(a.name)) { aviso('Solo archivos MP3', true); return; }
@@ -554,7 +573,7 @@ function campoMp3(c, valor, alCambiar) {
         estadoArchivo.textContent = `Subiendo ${a.name}…`;
         try { const url = await subirArchivo(new File([a], a.name, { type: 'audio/mpeg' })); alCambiar(url); dibujar(url); } catch (e) { aviso(e.message, true); estadoArchivo.textContent = 'No se pudo subir'; }
       });
-      caja.append(el('label', { class: `btn btn-cargar${c.bloqueado ? ' deshabilitado' : ''}` }, input, '♫ Cargar música'), estadoArchivo);
+      caja.append(el('label', { class: `btn btn-cargar${c.bloqueado ? ' deshabilitado' : ''}` }, input, `♫ ${c.boton || 'Cargar música'}`), estadoArchivo);
     }
   };
   dibujar(valor);
@@ -684,7 +703,7 @@ function campoIdioma(c, valor, alCambiar, idHtml, dis) {
   const base = actual.startsWith('es') ? 'es' : actual;
   const s = el('select', { id: idHtml, disabled: dis }, c.idiomas.map((o) => el('option', { value: o.v, selected: o.v === base }, o.etiqueta)));
   s.addEventListener('change', () => alCambiar(s.value === 'es' ? (actual.startsWith('es') ? actual : 'es') : s.value, { rearmar: true }));
-  const radios = base === 'es' ? el('div', { class: 'opciones variantes', role: 'radiogroup' }, c.variantes.map((o) => {
+  const radios = base === 'es' ? el('div', { class: 'opciones variantes compactas', role: 'radiogroup' }, c.variantes.map((o) => {
     const i = el('input', { type: 'radio', name: `var-${idHtml}`, value: o.v, checked: o.v === actual, disabled: dis });
     i.addEventListener('change', () => alCambiar(o.v));
     return el('label', { class: 'opcion' }, i, el('span', {}, o.etiqueta));
@@ -935,7 +954,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
           const i = el('input', { type: 'radio', name: nombre, value: o.v, checked: o.v === actual, disabled: dis || falta });
           i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
           return el('label', { class: `opcion${falta ? ' apagada' : ''}` }, i, el('span', {}, o.etiqueta, o.ayuda ? el('small', {}, o.ayuda) : null,
-            falta ? el('small', { class: 'motivo' }, o.motivo, ' ', o.irA ? el('button', { type: 'button', class: 'btn-link', onclick: (e) => { e.preventDefault(); irA(o.irA); } }, 'Ir a RSVP →') : null) : null));
+            falta ? el('small', { class: 'motivo' }, o.motivo, ' ', o.irA ? el('button', { type: 'button', class: 'btn-link', onclick: (e) => { e.preventDefault(); irA(o.irA); } }, 'Ir a la sección →') : null) : null));
         }));
       }
       const s = el('select', { id: idHtml, disabled: dis }, el('option', { value: '' }, 'Elegir…'), c.valores.map((o) => el('option', { value: o.v, selected: o.v === actual }, o.etiqueta)));
@@ -943,6 +962,15 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
       return s;
     }
     case 'zona': return campoZona(c, valor, alCambiar, idHtml, dis);
+    case 'bandera': return campoBandera(c, valor, alCambiar);
+    case 'botonTextos': {
+      const abierto = uiIdiomas.abiertos.has(c.idioma);
+      return el('button', { type: 'button', class: 'btn btn-textos', 'aria-expanded': abierto ? 'true' : 'false',
+        onclick: () => { abierto ? uiIdiomas.abiertos.delete(c.idioma) : uiIdiomas.abiertos.add(c.idioma); dibujarPaso(); } },
+      `${abierto ? '▾' : '▸'} ${c.etiqueta}`);
+    }
+    case 'agregarIdioma':
+      return el('button', { type: 'button', class: 'btn btn-borde', onclick: () => { uiIdiomas.extra = proximoIdioma(); dibujarPaso(); } }, `+ ${c.etiqueta}`);
     case 'idioma': return campoIdioma(c, valor, alCambiar, idHtml, dis);
     case 'paleta': return campoPaleta(c, valor, alCambiar, dis);
     case 'colores': return campoColores(c, valor, alCambiar, dis);
@@ -965,9 +993,41 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
   }
 }
 
+// ── Idioma adicional: lo que se ve en el paso (solo en el panel, no se guarda) ──
+// Primero el selector; con un idioma elegido, "Editar textos en …" despliega sus campos
+// y "Agregar otro idioma" suma el siguiente selector (hasta 3 idiomas adicionales).
+const uiIdiomas = { abiertos: new Set(), extra: 2 };
+const idiomaElegido = (n) => { const l = leer(datos, `idiomas.l${n}`); return l && l !== String(datos.variante || 'es').slice(0, 2) ? l : null; };
+const slotsVisibles = () => Math.max(2, uiIdiomas.extra, ...[2, 3, 4].filter(idiomaElegido));
+function proximoIdioma() { return Math.min(4, slotsVisibles() + 1); }
+function visibleUi(c) {
+  if (c.uiIdioma) return c.uiIdioma <= slotsVisibles();
+  if (c.uiTextos) return uiIdiomas.abiertos.has(c.uiTextos);
+  if (c.tipo === 'agregarIdioma') { const n = slotsVisibles(); return n < 4 && !!idiomaElegido(n); }
+  return true;
+}
+
+// Bandera de cada idioma en la invitación: el país que elige el cliente
+function campoBandera(c, valor, alCambiar) {
+  const actual = valor || c.defecto;
+  // Muchos países (español): un desplegable con la bandera al lado
+  if (c.valores.length > 6) {
+    const img = el('img', { class: 'bandera-actual', src: `/comun/banderas/${actual}.svg`, alt: '', width: 32, height: 32 });
+    const s = el('select', {}, c.valores.map((o) => el('option', { value: o.v, selected: o.v === actual }, o.etiqueta)));
+    s.addEventListener('change', () => { img.src = `/comun/banderas/${s.value}.svg`; alCambiar(s.value); });
+    return el('div', { class: 'bandera-select' }, img, s);
+  }
+  return el('div', { class: 'banderas', role: 'radiogroup' }, c.valores.map((o) => {
+    const i = el('input', { type: 'radio', name: `b-${c.id}`, value: o.v, checked: o.v === actual });
+    i.addEventListener('change', () => alCambiar(o.v));
+    return el('label', { class: 'bandera', title: o.etiqueta }, i, el('img', { src: `/comun/banderas/${o.v}.svg`, alt: '', width: 26, height: 26, loading: 'lazy' }), el('span', {}, o.etiqueta));
+  }));
+}
+
 let contadorIds = 0;
 function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   if (c.oculto) return null;
+  if (!visibleUi(c)) return null;
   const idHtml = `c-${prefijo}${c.id.replace(/\W/g, '-')}-${++contadorIds}`;
   // Funciones de un plan más alto: se pueden usar y suben el plan (el aviso lo indica)
   const insignia = c.paquete && c.paquete !== 'basic' && pasoActual?.nivel !== c.paquete ? insigniaNivel(c.paquete) : null;
@@ -979,12 +1039,12 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   const aviso = c.cerrado ? el('p', { class: 'motivo' }, c.cerrado) : null;
   const extra = { ...posicion, desactivado, fijo };
   if (!posicion.pos && (c.tipo === 'foto' && c.encuadre)) { extra.pos = () => leer(datos, `${c.id}Pos`); extra.alPos = (p) => cambio(`${c.id}Pos`, p); }
-  const sinEtiqueta = (c.tipo === 'switch' && !c.opciones) || c.tipo === 'nota' || c.titulo || c.sinEtiqueta;
+  const sinEtiqueta = (c.tipo === 'switch' && !c.opciones) || ['nota', 'botonTextos', 'agregarIdioma'].includes(c.tipo) || c.titulo || c.sinEtiqueta;
   const etiqueta = sinEtiqueta ? null
     : ['texto', 'url', 'area', 'numero', 'fecha', 'fechaHora', 'hora', 'color', 'zona', 'idioma'].includes(c.tipo) || (c.tipo === 'opciones' && !c.multiple && !c.tarjetas && (c.iconos || c.valores.length > 4))
       ? el('label', { for: idHtml, class: c.requerido ? 'requerido' : '' }, c.etiqueta, insignia)
       : el('div', { class: `etiqueta${c.requerido ? ' requerido' : ''}` }, c.etiqueta, insignia);
-  const clases = ['campo', c.ancho === 'mitad' ? 'mitad' : '', c.tipo === 'nota' && c.estilo ? `nota-${c.estilo}` : '', c.cerrado || desactivado ? 'bloqueado' : ''].filter(Boolean).join(' ');
+  const clases = ['campo', c.ancho === 'mitad' ? (c.id.startsWith('nombres.') ? 'mitad nombre-par' : 'mitad') : '', c.tipo === 'nota' && c.estilo ? `nota-${c.estilo}` : '', c.cerrado || desactivado ? 'bloqueado' : ''].filter(Boolean).join(' ');
   const nodo = el('div', { class: clases, 'data-si': c.si ? JSON.stringify(c.si) : null },
     etiqueta, control(c, valor, alCambiar, idHtml, extra), sinEtiqueta && insignia, motivo, aviso, c.ayuda ? el('p', { class: 'ayuda' }, c.ayuda) : null);
   if (c.si) nodo.hidden = !visible(c);
@@ -1086,11 +1146,11 @@ function dibujarPasos() {
   const pasos = S.esquema.pasos;
   nav.replaceChildren(
     el('div', { class: 'pasos-cabeza' }, el('strong', {}, 'Pasos'), el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Cerrar', onclick: cerrarPasos }, '✕')),
-    ...pasos.map((p, i) => el('div', { class: `paso-fila${pasoActivo(p) ? '' : ' apagado'}` },
+    ...pasos.flatMap((p, i) => [p.separado ? el('hr', { class: 'pasos-division' }) : null, el('div', { class: `paso-fila${pasoActivo(p) ? '' : ' apagado'}` },
       el('button', { type: 'button', class: 'paso', 'aria-current': p.id === pasoActual?.id ? 'step' : null, onclick: () => { cerrarPasos(); irA(p.id); } },
         el('span', { class: 'num', title: `Paso ${i + 1}`, html: icono(p.id, 15) || String(i + 1) }), el('span', { class: 'nombre' }, p.titulo, insigniaNivel(p.nivel)),
         conFaltas.has(p.id) ? el('span', { class: 'falta', 'aria-label': 'Faltan datos' }) : null),
-      interruptorPaso(p))));
+      interruptorPaso(p))]).filter(Boolean));
   const i = pasos.indexOf(pasoActual);
   const avance = `${((i + 1) / pasos.length) * 100}%`;
   $('#donde').replaceChildren(el('small', {}, `Paso ${i + 1} de ${pasos.length}`), el('strong', {}, pasoActual?.titulo || ''));
@@ -1142,8 +1202,11 @@ function dibujarPaso() {
     el('button', { type: 'button', class: 'btn btn-chico', disabled: p.complemento && esGratis(), onclick: () => prenderPaso(p, true), html: `${icono('prender', 15)}<span>Prender</span>` })) : null;
   const motivo = p.fijoSi && cumple(p.fijoSi) ? el('p', { class: 'motivo' }, p.motivo) : null;
   const cuerpo = el('div', { class: `tarjeta${activo ? '' : ' atenuada'}` }, p.campos.map((c) => campo(c, leer(datos, c.id), (v, op) => cambio(c.id, v, op))));
+  // Apagada: no se puede editar ni subir nada hasta prenderla
+  if (!activo) { cuerpo.inert = true; cuerpo.setAttribute('aria-disabled', 'true'); }
   f.replaceChildren(...[
-    el('div', { class: 'paso-titulo' }, el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, insigniaNivel(p.nivel)), el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'lado' }, 'Mostrar') : null, apagar, plegar)),
+    el('div', { class: 'paso-titulo' }, el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'mostrar' }, apagar, el('span', { class: 'lado' }, T('Mostrar en la invitación'))) : null, plegar),
+      el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, insigniaNivel(p.nivel))),
     ayudaSeccion, motivo, banderaGuardar(), apagada,
     el('div', { id: 'faltan-aca' }),
     cuerpo,
@@ -1228,11 +1291,11 @@ const ICONO_WA = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="t
 // Manual de uso corto (el completo está en /ayuda/panel/)
 const MANUAL = [
   ['Cómo funciona', 'A la izquierda (o en "Ver todos", en el celular) están los pasos. Cada uno tiene su interruptor: prendido, la sección se ve en la invitación. Lo que se carga se guarda solo y la vista previa se actualiza al instante.'],
-  ['Plan y precio', 'El plan sale de las secciones prendidas: Basic, Premium o Deluxe (cada paso tiene su aviso). Diseño e Idioma adicional son complementos que se suman aparte. No se paga nada hasta publicar.'],
+  ['Plan y precio', 'El plan sale de las secciones prendidas: Basic, Premium o Deluxe (cada paso tiene su aviso). Cambios de diseño e Idioma adicional son complementos que se suman aparte (van al final del menú). Una sección apagada no se puede editar hasta prenderla. No se paga nada hasta publicar.'],
   ['Fotos y encuadre', 'Después de subir una foto se elige qué parte se ve. En la portada, el punto mueve los recortes del celular y de la computadora a la vez; cada marco se puede mover solo. En el celular, mantener apretado un instante antes de arrastrar.'],
   ['Lugar y fecha', 'Con el link de Google Maps se arma solo el mapa y el botón "¿Cómo llegar?". En Google Maps: buscar el lugar, tocar Compartir y Copiar link.'],
   ['Confirmación e invitados', 'La confirmación se cierra sola en la fecha límite o al llegar al aforo. Con la lista de invitados, cada uno recibe su link personal con su nombre, pases y mesa.'],
-  ['Idiomas', 'El idioma principal se elige en "Idioma y seguridad". Con un idioma adicional, cada invitado ve la invitación en el suyo y puede cambiarlo; los textos se pueden ajustar en "Idioma adicional".'],
+  ['Idiomas', 'El idioma principal se elige en "Idioma y seguridad". Con un idioma adicional, cada invitado ve la invitación en el suyo y puede cambiarlo desde el botón flotante (con la bandera elegida para cada idioma). Los textos se ajustan con "Editar textos en…" y se pueden sumar hasta tres idiomas.'],
   ['Publicar', 'Al tocar Publicar se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link y se puede seguir editando.'],
 ];
 function mostrarManual() {

@@ -34,6 +34,29 @@ export const VARIANTES_ES = [
   { v: 'es', etiqueta: 'Español neutro (tú)' }, { v: 'es-es', etiqueta: 'Español de España (tú / vosotros)' },
   { v: 'es-ar', etiqueta: 'Español rioplatense (vos)' }, { v: 'es-cr', etiqueta: 'Español centroamericano (vos)' },
 ];
+// Bandera que muestra cada idioma en la invitación (el cliente elige el país)
+const PAIS = { ar: 'Argentina', es: 'España', mx: 'México', co: 'Colombia', cl: 'Chile', uy: 'Uruguay', py: 'Paraguay', pe: 'Perú', ve: 'Venezuela', ec: 'Ecuador',
+  bo: 'Bolivia', cr: 'Costa Rica', ni: 'Nicaragua', gt: 'Guatemala', hn: 'Honduras', sv: 'El Salvador', pa: 'Panamá', do: 'Rep. Dominicana', cu: 'Cuba', pr: 'Puerto Rico',
+  us: 'Estados Unidos', gb: 'Reino Unido', ca: 'Canadá', au: 'Australia', ie: 'Irlanda', nz: 'Nueva Zelanda', br: 'Brasil', pt: 'Portugal', fr: 'Francia', be: 'Bélgica',
+  ch: 'Suiza', it: 'Italia', de: 'Alemania', at: 'Austria', nl: 'Países Bajos', 'es-ct': 'Cataluña', ad: 'Andorra' };
+const PAISES_IDIOMA = {
+  es: ['es', 'ar', 'mx', 'co', 'cl', 'uy', 'py', 'pe', 've', 'ec', 'bo', 'cr', 'ni', 'gt', 'hn', 'sv', 'pa', 'do', 'cu', 'pr', 'us'],
+  en: ['gb', 'us', 'ca', 'au', 'ie', 'nz'], pt: ['br', 'pt'], fr: ['fr', 'be', 'ch', 'ca'], it: ['it', 'ch'], ca: ['es-ct', 'ad'], de: ['de', 'at', 'ch'], nl: ['nl', 'be'],
+};
+export const BANDERAS = Object.fromEntries(Object.entries(PAISES_IDIOMA).map(([l, ps]) => [l, ps.map((v) => ({ v, etiqueta: PAIS[v] }))]));
+// Bandera por defecto: la del país de la variante o del evento
+export function banderaDe(l, datos = {}) {
+  const elegida = datos.idiomas?.banderas?.[l];
+  if (elegida && PAISES_IDIOMA[l]?.includes(elegida)) return elegida;
+  if (l === 'es') {
+    const v = String(datos.variante || 'es');
+    if (v === 'es-es') return 'es';
+    if (v === 'es-ar') return 'ar';
+    if (v === 'es-cr') return 'cr';
+  }
+  return PAISES_IDIOMA[l]?.[0] || null;
+}
+
 const IDIOMAS = [...VARIANTES_ES, ...IDIOMAS_BASE.filter((x) => x.v !== 'es')];
 
 // Nombres de los íconos del itinerario (el archivo es timeline-icon-<id>.png)
@@ -94,6 +117,7 @@ function pasosInvitacion({ tipo, modelo }) {
   const misa = tipo === '15' || tipo === 'comunion';
   const conCeremonia = CON_CEREMONIA.has(tipo);
   const padrinos = tipo === 'boda' ? 'Testigos' : 'Padrinos';
+  const tituloPadrinos = tipo === 'boda' ? 'Testigos/padrinos' : 'Padrinos';
   const hayCeremonia = { campo: 'ceremonia.modo', es: 'separada' };
   const unificada = { campo: 'ceremonia.modo', es: 'mismo-lugar' };
   const nCer = misa ? 'misa' : 'ceremonia';
@@ -124,7 +148,7 @@ function pasosInvitacion({ tipo, modelo }) {
       ],
     },
     { id: 'musica', seccion: 'musica', titulo: 'Música de fondo', campos: [
-      { id: 'musica.archivo', tipo: 'mp3', etiqueta: 'Canción (MP3)', maxMB: 12 },
+      { id: 'musica.archivo', tipo: 'mp3', etiqueta: 'Canción (MP3)', sinEtiqueta: true, boton: 'Cargar canción (MP3)', maxMB: 12 },
       { id: 'musica.inicio', tipo: 'contador', etiqueta: 'Empezar la canción en el segundo…', min: 0, max: 600, paso: 5, si: { campo: 'musica.archivo' } },
     ] },
     { id: 'historia', seccion: 'historia', titulo: plural ? 'Nuestra historia' : 'Mi historia',
@@ -133,7 +157,7 @@ function pasosInvitacion({ tipo, modelo }) {
         titulo('historia.titulo'),
         { id: 'historia.texto', tipo: 'area', etiqueta: 'Texto', max: 400, base: 'historia.texto' },
       ] },
-    { id: 'galeria', seccion: 'galeria', titulo: 'Galería de fotos', ayudaSeccion: 'Sin fotos: apagar la sección.', campos: [
+    { id: 'galeria', seccion: 'galeria', titulo: 'Galería de fotos', ayudaSeccion: 'Si no quieres fotos, apagar esta sección.', campos: [
       // En los modelos con la galería dentro de la confirmación va siempre el carrusel
       ...(g.enRsvp ? [] : [{ id: 'galeria.tipo', tipo: 'opciones', etiqueta: 'Cómo se muestran', tarjetas: 'galeria', defecto: 'carrusel', valores: TIPOS_GALERIA }]),
       // Solo en los diseños que muestran las fotos en blanco y negro (Romantic, B&N)
@@ -234,7 +258,7 @@ function pasosInvitacion({ tipo, modelo }) {
       ] },
     ] },
     // Testigos (boda) o padrinos (15, bautismo, comunión); cumpleaños, infantiles y egresos no tienen
-    ...(!CON_PADRINOS.has(tipo) ? [] : [{ id: 'testigos', seccion: 'testigos', titulo: padrinos, campos: [
+    ...(!CON_PADRINOS.has(tipo) ? [] : [{ id: 'testigos', seccion: 'testigos', titulo: tituloPadrinos, campos: [
       titulo('testigos.titulo'),
       conFotos('testigos', 'Incluir fotos'),
       { id: 'testigos', tipo: 'lista', etiqueta: padrinos, max: 8, agregar: 'Agregar', campos: [
@@ -264,10 +288,10 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'textos.canciones.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'canciones.texto' },
     ] },
     { id: 'playlist', seccion: 'playlist', titulo: 'Playlist Spotify', campos: [
+      titulo('playlist.titulo'),
+      { id: 'textos.playlist.texto', tipo: 'texto', etiqueta: 'Texto del párrafo', max: 80, base: 'playlist.texto' },
       { id: 'playlist.link', tipo: 'url', etiqueta: 'Link de la playlist de Spotify', placeholder: 'https://open.spotify.com/playlist/…',
         ayuda: 'En Spotify: abrir la playlist, tocar "…" → "Compartir" → "Copiar enlace". Se ve en la invitación con un disco que gira al reproducirla.' },
-      titulo('playlist.titulo'),
-      { id: 'textos.playlist.texto', tipo: 'texto', etiqueta: 'Frase', max: 80, base: 'playlist.texto' },
     ] },
     { id: 'regalos', seccion: 'regalos', titulo: 'Regalos', campos: [
       titulo('regalos.titulo'),
@@ -300,7 +324,7 @@ function pasosInvitacion({ tipo, modelo }) {
 // ── Complemento: colores y tipografía (los cambios los hace el equipo) ──
 const PALETA_DEFECTO = ['#a78977', '#86a388', '#9ab09c', '#ffffff'];
 const pasoDiseno = (modelo) => ({
-  id: 'diseno', seccion: 'diseno', complemento: true, titulo: 'Diseño',
+  id: 'diseno', seccion: 'diseno', complemento: true, titulo: 'Cambios de diseño',
   campos: [
     { id: 'nota.diseno', tipo: 'nota', texto: 'Los cambios los hace el equipo de diseño: el pedido se envía al publicar y desde ese momento ya no se puede modificar.' },
     { id: 'diseno.paleta.modo', tipo: 'opciones', etiqueta: 'Colores', defecto: 'original', valores: [
@@ -321,25 +345,33 @@ const pasoDiseno = (modelo) => ({
 const NOMBRE_IDIOMA = Object.fromEntries(IDIOMAS_BASE.map((x) => [x.v, x.etiqueta]));
 function pasoIdiomaAdicional(base, datos) {
   const principal = String(datos.variante || 'es').slice(0, 2);
-  const elegidos = [2, 3, 4].map((n) => datos.idiomas?.[`l${n}`]).filter((x) => x && x !== principal);
   // Los textos que el cliente puede personalizar en el idioma principal, para cada idioma elegido
   const traducibles = base.filter((p) => !p.complemento).flatMap((p) => p.campos
     .filter((c) => ['texto', 'area'].includes(c.tipo) && (c.base || c.titulo) && !c.id.startsWith('nombres.'))
     .map((c) => ({ c, seccion: p.titulo })));
+  const bandera = (l, etiqueta) => ({ id: `idiomas.banderas.${l}`, tipo: 'bandera', etiqueta, valores: BANDERAS[l] || [], defecto: banderaDe(l, datos) });
+  // Primero solo el selector; al elegir un idioma aparecen su bandera, "Editar textos en …" y "Agregar otro idioma"
   return {
     id: 'idiomaAdicional', seccion: 'idiomas', complemento: true, titulo: 'Idioma adicional',
     campos: [
-      { id: 'nota.idiomas', tipo: 'nota', texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo. Los textos se traducen solos; abajo se pueden ajustar.' },
-      ...[2, 3, 4].map((n) => ({
-        id: `idiomas.l${n}`, tipo: 'opciones', etiqueta: n === 2 ? 'Idioma adicional' : `Idioma adicional ${n - 1}`, valores: IDIOMAS_BASE, rearmar: true, distintoDe: 'variante',
-        ...(n > 2 ? { si: { campo: `idiomas.l${n - 1}` } } : {}),
-      })),
-      ...elegidos.flatMap((l) => [
-        { id: `separador.idioma.${l}`, tipo: 'nota', estilo: 'subtitulo', texto: `Textos en ${NOMBRE_IDIOMA[l] || l}` },
-        ...traducibles.map(({ c, seccion }) => ({
-          id: `traducciones.${l}.${c.id}`, tipo: c.tipo, etiqueta: `${seccion} · ${c.titulo ? 'Título' : c.etiqueta}`, max: c.max, traduccion: { idioma: l, de: c.id, base: c.base }, si: c.si,
-        })),
-      ]),
+      { id: 'nota.idiomas', tipo: 'nota', estilo: 'ayuda', texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' },
+      ...[2, 3, 4].flatMap((n) => {
+        const l = datos.idiomas?.[`l${n}`];
+        const ok = l && l !== principal;
+        return [
+          ...(n > 2 ? [{ id: `separador.idioma.${n}`, tipo: 'nota', estilo: 'linea', uiIdioma: n }] : []),
+          { id: `idiomas.l${n}`, tipo: 'opciones', etiqueta: n === 2 ? 'Idioma adicional' : `Idioma adicional ${n - 1}`, valores: IDIOMAS_BASE, rearmar: true, distintoDe: 'variante', uiIdioma: n, quitable: n > 2 },
+          ...(ok ? [
+            ...(n === 2 ? [bandera(principal, `Bandera del ${(NOMBRE_IDIOMA[principal] || principal).toLowerCase()} (idioma principal)`)] : []),
+            bandera(l, `Bandera del ${(NOMBRE_IDIOMA[l] || l).toLowerCase()}`),
+            { id: `ui.textos.${l}`, tipo: 'botonTextos', idioma: l, etiqueta: `Editar textos en ${NOMBRE_IDIOMA[l] || l}` },
+            ...traducibles.map(({ c, seccion }) => ({
+              id: `traducciones.${l}.${c.id}`, tipo: c.tipo, etiqueta: `${seccion} · ${c.titulo ? 'Título' : c.etiqueta}`, max: c.max, traduccion: { idioma: l, de: c.id, base: c.base }, si: c.si, uiTextos: l,
+            })),
+          ] : []),
+        ];
+      }),
+      { id: 'ui.agregarIdioma', tipo: 'agregarIdioma', etiqueta: 'Agregar otro idioma' },
     ],
   };
 }
@@ -541,10 +573,11 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   const pasos = [
     ...(producto === 'a-medida' ? [pasoBrief({ aMedida })] : []),
     ...base,
-    pasoDiseno(m),
-    pasoIdiomaAdicional(base, datos),
     pasoSeguridad,
     pasoPublicar(tipo),
+    // Complementos: aparte, después de una línea en el menú
+    { ...pasoDiseno(m), separado: true },
+    pasoIdiomaAdicional(base, datos),
   ];
   return { producto, tipo, paquete, pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado }) };
 }
@@ -589,6 +622,7 @@ function limpiarValor(c, v) {
     case 'zona': return ZONAS_OK.has(v) ? v : undefined;
     case 'idioma': return IDIOMAS_OK.has(v) ? v : undefined;
     case 'fuente': return c.valores.includes(v) ? v : undefined;
+    case 'bandera': return c.valores.some((o) => o.v === v) ? v : undefined;
     // Paleta: los 4 colores del diseño (vacío = ese color se quitó)
     case 'paleta': return [].concat(v).slice(0, 4).map((x) => (HEX.test(x || '') ? x.toLowerCase() : ''));
     case 'colores': return [].concat(v).filter((x) => HEX.test(x || '')).slice(0, c.max || 4).map((x) => x.toLowerCase());

@@ -561,3 +561,62 @@ textarea { min-height: 96px; line-height: 1.4; }
 .paso-fila .paso[aria-current="step"] .num { color: #fff; }
 /* Pantalla completa y modo de vista: centrados en la barra de la computadora */
 @media (min-width: 1024px) { .btn-redondo.solo-escritorio { display: grid !important; } }
+
+/* ── Ronda 6 ─────────────────────────────────────────────────────────── */
+.marca .logo-corto { display: none; }
+@media (max-width: 1023px) {
+  /* Pantalla fija: no depende de 100dvh (hay navegadores que no lo entienden y la barra de abajo quedaba afuera) */
+  body { position: fixed; inset: 0; height: auto; min-height: 0; }
+  .barra { flex-wrap: wrap; row-gap: 4px; }
+  .marca .logo-largo { display: none; }
+  .marca .logo-corto { display: block; width: 34px; height: 34px; border-radius: 9px; }
+  .acciones { flex-wrap: nowrap; }
+  .acciones .btn-ayuda { padding: 0; }
+  .btn-ayuda svg { width: 26px !important; height: 26px !important; flex: none; }
+  .btn-ayuda { color: #1f8f4c; }
+  .titulo { flex-wrap: nowrap; align-items: baseline; min-width: 0; }
+  .titulo strong { flex: 0 1 auto; min-width: 0; }
+  #estado-guardado { flex: none; white-space: nowrap; }
+  .titulo .btn-link { flex: none; white-space: nowrap; }
+  .formulario { padding-bottom: 40px; }
+}
+@media (max-width: 380px) {
+  .acciones { gap: 4px; }
+  .acciones .btn-redondo, .btn-ayuda { width: 36px; height: 36px; }
+  .acciones .btn { padding: 7px 11px; }
+  #estado-guardado { display: none; }
+}
+
+/* Título del paso: el interruptor "Mostrar" va en una línea arriba */
+.paso-titulo { flex-direction: column; align-items: stretch; gap: 8px; }
+.paso-titulo .paso-acciones { justify-content: space-between; min-height: 0; }
+.paso-titulo .paso-acciones #btn-plegar { margin-left: auto; }
+.paso-titulo .mostrar { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.paso-titulo .mostrar .interruptor { cursor: pointer; }
+@media (max-width: 1023px) { .paso-titulo .paso-acciones:not(:has(.mostrar)) { display: none; } }
+.tarjeta.atenuada { opacity: .5; filter: grayscale(.4); user-select: none; }
+
+/* Menú: los complementos van aparte, después de una línea */
+.pasos-division { border: 0; border-top: 1px solid var(--borde); margin: 8px 10px; }
+/* Idioma principal: variantes del español chicas y sin borde */
+.opciones.variantes.compactas { gap: 2px; padding-left: 4px; margin-top: 6px; }
+.opciones.variantes.compactas .opcion { border: 0; background: none; padding: 4px 6px; min-height: 0; align-items: center; font-size: .95rem; }
+.opciones.variantes.compactas .opcion:has(input:checked) { background: none; font-weight: 600; }
+.opciones.variantes.compactas .opcion input { margin: 0; }
+/* Idioma adicional */
+.btn-textos { width: 100%; justify-content: flex-start; border-radius: 10px; padding: 12px 16px; }
+.btn-textos[aria-expanded="true"] { background: color-mix(in srgb, var(--acento) 85%, #000); }
+.btn-borde { background: #fff; color: var(--acento); border: 1.5px solid var(--acento); border-radius: 10px; padding: 11px 16px; }
+.btn-borde:hover { background: color-mix(in srgb, var(--acento) 8%, #fff); }
+.banderas { display: flex; flex-wrap: wrap; gap: 6px; }
+.bandera { position: relative; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--borde); border-radius: 999px; padding: 4px 12px 4px 4px; cursor: pointer; background: #fff; font-size: .88rem; }
+.bandera input { position: absolute; opacity: 0; pointer-events: none; }
+.bandera img { width: 26px; height: 26px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
+.bandera:has(input:checked) { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 12%, #fff); font-weight: 600; }
+.bandera:has(input:focus-visible) { outline: 2px solid var(--acento); }
+/* Portada: los dos nombres en una sola fila también en el celular */
+@media (max-width: 520px) { .formulario > .tarjeta > .campo.mitad.nombre-par { flex-basis: calc(50% - 8px); } }
+.campo.nombre-par .con-contador input { padding-right: 46px; padding-left: 12px; }
+.campo.nombre-par .con-contador .contador { right: 8px; }
+.bandera-select { display: flex; align-items: center; gap: 10px; }
+.bandera-select img { width: 32px; height: 32px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.1); flex: none; }

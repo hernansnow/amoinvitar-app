@@ -60,8 +60,5 @@
 .g-historia { font-size: 1.2rem; line-height: 1.6; }
 @media (max-width: 767px) { .g-historia { font-size: 1.1rem; } }
 
-/* Portada: los nombres nunca pegados al borde (con nombres largos la fila llegaba al canto) */
-#home-section h1.euforia, .section-hero h1.euforia { padding-left: 18px; padding-right: 18px; overflow-wrap: break-word; }
-/* Basic: los nombres dentro del círculo, con aire a los costados aunque sean largos */
-.caja-aro2 > .text-center { max-width: 78%; }
-.caja-aro2 h1.euforia { padding-left: 0; padding-right: 0; line-height: 1.05; }
+/* Portada: los nombres van como en el diseño original; si son muy largos,
+   invitacion.js achica la letra (data-ajustar) para que no lleguen al borde */
