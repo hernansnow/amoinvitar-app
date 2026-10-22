@@ -49,7 +49,7 @@ export default {
     'regalos.titulo': 'Geschenke', 'regalos.botonCuenta': 'BANKVERBINDUNG', 'regalos.botonLista': 'WUNSCHLISTE',
     'regalos.modalCuenta': 'Bankverbindung', 'regalos.modalLista': 'Wunschliste', 'regalos.irLista': 'Zur Wunschliste',
     'perdiste.titulo': 'Etwas verpasst?', 'perdiste.rsvp': 'Teilnahme bestätigen', 'perdiste.agendar': 'In den Kalender',
-    'perdiste.dress': 'Dresscode', 'perdiste.canciones': 'Song vorschlagen', 'perdiste.inicio': 'Start',
+    'perdiste.dress': 'Dresscode', 'perdiste.canciones': 'Song vorschlagen', 'perdiste.inicio': 'Start', 'perdiste.regalos': 'Geschenke', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Fotoalbum', 'perdiste.itinerario': 'Ablauf', 'perdiste.hospedaje': 'Unterkunft', 'perdiste.bus': 'Shuttle',
     'sobre.tocar': 'Tippen, um die Einladung zu öffnen', 'sobre.aria': 'Geschlossene Einladung', 'sobre.ariaLacre': 'Einladung öffnen',
     'acceso.de': 'Zugang zur Einladung von', 'acceso.pin': 'Gib die PIN ein, die du mit der Einladung bekommen hast:',
     'acceso.confirmar': 'PIN bestätigen', 'acceso.bloqueado': 'Dieser Link ist ungültig. Bitte wende dich an die Gastgeber.',

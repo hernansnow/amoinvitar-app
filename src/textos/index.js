@@ -84,7 +84,7 @@ const BASE = {
     'regalos.titulo': 'Regalos', 'regalos.botonCuenta': 'CUENTA BANCARIA', 'regalos.botonLista': 'LISTA DE REGALOS',
     'regalos.modalCuenta': 'Datos Bancarios', 'regalos.modalLista': 'Lista de regalos', 'regalos.irLista': 'Ir a la lista',
     'perdiste.titulo': '¿Te perdiste algo?', 'perdiste.rsvp': 'Confirmar asistencia', 'perdiste.agendar': 'Agendar evento',
-    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Sugerir canción', 'perdiste.inicio': 'Inicio',
+    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Sugerir canción', 'perdiste.inicio': 'Inicio', 'perdiste.regalos': 'Regalos', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Álbum de fotos', 'perdiste.itinerario': 'Itinerario', 'perdiste.hospedaje': 'Hospedaje', 'perdiste.bus': 'Traslado',
 
     'sobre.tocar': 'Tocar para abrir la invitación', 'sobre.aria': 'Invitación cerrada', 'sobre.ariaLacre': 'Abrir la invitación',
     'acceso.de': 'Acceso a la invitación de', 'acceso.pin': 'Ingresar el PIN enviado junto a la invitación:',
@@ -168,7 +168,7 @@ const BASE = {
     'regalos.titulo': 'Gifts', 'regalos.botonCuenta': 'BANK DETAILS', 'regalos.botonLista': 'GIFT REGISTRY',
     'regalos.modalCuenta': 'Bank details', 'regalos.modalLista': 'Gift registry', 'regalos.irLista': 'Go to the registry',
     'perdiste.titulo': 'Did you miss anything?', 'perdiste.rsvp': 'RSVP', 'perdiste.agendar': 'Save the date',
-    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggest a song', 'perdiste.inicio': 'Home',
+    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggest a song', 'perdiste.inicio': 'Home', 'perdiste.regalos': 'Gifts', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Photo album', 'perdiste.itinerario': 'Schedule', 'perdiste.hospedaje': 'Accommodation', 'perdiste.bus': 'Transportation',
     'sobre.tocar': 'Tap to open the invitation', 'sobre.aria': 'Closed invitation', 'sobre.ariaLacre': 'Open the invitation',
     'acceso.de': 'Invitation access for', 'acceso.pin': 'Enter the PIN sent with your invitation:',
     'acceso.confirmar': 'Confirm PIN', 'acceso.bloqueado': 'This link is not valid. Please contact the event organizers.',

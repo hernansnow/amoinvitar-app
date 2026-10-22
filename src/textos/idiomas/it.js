@@ -49,7 +49,7 @@ export default {
     'regalos.titulo': 'Regali', 'regalos.botonCuenta': 'DATI BANCARI', 'regalos.botonLista': 'LISTA REGALI',
     'regalos.modalCuenta': 'Dati bancari', 'regalos.modalLista': 'Lista regali', 'regalos.irLista': 'Vai alla lista',
     'perdiste.titulo': 'Ti sei perso qualcosa?', 'perdiste.rsvp': 'Conferma la presenza', 'perdiste.agendar': 'Aggiungi al calendario',
-    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggerisci una canzone', 'perdiste.inicio': 'Inizio',
+    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggerisci una canzone', 'perdiste.inicio': 'Inizio', 'perdiste.regalos': 'Regali', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Album fotografico', 'perdiste.itinerario': 'Programma', 'perdiste.hospedaje': 'Alloggio', 'perdiste.bus': 'Navetta',
     'sobre.tocar': "Tocca per aprire l'invito", 'sobre.aria': 'Invito chiuso', 'sobre.ariaLacre': "Apri l'invito",
     'acceso.de': "Accesso all'invito di", 'acceso.pin': "Inserisci il PIN ricevuto con l'invito:",
     'acceso.confirmar': 'Conferma PIN', 'acceso.bloqueado': "Questo link non è valido. Contatta gli organizzatori dell'evento.",

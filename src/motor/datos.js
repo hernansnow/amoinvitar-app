@@ -6,6 +6,7 @@
 // el diccionario de textos ya resuelto para su tipo y variante.
 
 import { embedMapa } from '../lib/mapas.js';
+import { ICONOS_COMUNES } from '../panel/esquemas.js';
 
 const LOCALES = { es: 'es-MX', 'es-ar': 'es-AR', 'es-cr': 'es-CR', 'es-es': 'es-ES', en: 'en-GB', pt: 'pt-BR', fr: 'fr-FR', it: 'it-IT', ca: 'ca-ES', de: 'de-DE', nl: 'nl-NL' };
 // Duración típica de la fiesta para el calendario de los invitados (ya no se pide la hora de fin)
@@ -196,7 +197,9 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
 
   const itinerario = (e.itinerario || []).map((i) => ({
     hora: i.hora || '', texto: i.texto || '',
-    iconoUrl: `${rutas.modelo}/img/timeline-icon-${modelo.iconosItinerario.includes(i.icono) ? i.icono : 'fiesta'}.png`,
+    // El del modelo; si no, uno de los comunes; sin elegir, un corazón
+    iconoUrl: (modelo.iconosItinerario || []).includes(i.icono) ? `${rutas.modelo}/img/timeline-icon-${i.icono}.png`
+      : `${rutas.comun}/img/itinerario/timeline-icon-${ICONOS_COMUNES.includes(i.icono) ? i.icono : 'corazon'}.png`,
   }));
 
   const regalos = e.regalos || {};
@@ -281,7 +284,10 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       evitar: (e.dresscode?.evitar || []).filter((c) => /^#[0-9a-f]{6}$/i.test(c)).slice(0, 4).map((c) => ({ color: c, estilo: `background-color:${c}` })),
       fotos: (e.dresscode?.fotos || []).map((f) => ({ url: urlDe(f), estilo: encuadre(PROP.dress, f?.pos) })),
     },
-    hospedaje: { texto: esc(e.hospedaje?.texto || ''), items: (e.hospedaje?.items || []).filter((x) => x.nombre) },
+    // El botón de referencias / recorrido va solo si el cliente cargó algo
+    hospedaje: { texto: esc(e.hospedaje?.texto || ''), items: (e.hospedaje?.items || []).filter((x) => x.nombre),
+      conReferencias: (e.hospedaje?.items || []).some((x) => x.nombre) || !!String(e.hospedaje?.texto || '').trim() },
+    busConRecorrido: (bus.paradas || []).some((p) => String(p.detalle || '').trim()) || !!String(bus.texto || '').trim(),
     bus: {
       textoLibre: esc(bus.texto || ''),
       paradas: (bus.paradas || []).map((p, i, todas) => ({

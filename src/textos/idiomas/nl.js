@@ -49,7 +49,7 @@ export default {
     'regalos.titulo': 'Cadeaus', 'regalos.botonCuenta': 'BANKGEGEVENS', 'regalos.botonLista': 'CADEAULIJST',
     'regalos.modalCuenta': 'Bankgegevens', 'regalos.modalLista': 'Cadeaulijst', 'regalos.irLista': 'Naar de cadeaulijst',
     'perdiste.titulo': 'Iets gemist?', 'perdiste.rsvp': 'Aanwezigheid bevestigen', 'perdiste.agendar': 'Zet in je agenda',
-    'perdiste.dress': 'Dresscode', 'perdiste.canciones': 'Nummer voorstellen', 'perdiste.inicio': 'Begin',
+    'perdiste.dress': 'Dresscode', 'perdiste.canciones': 'Nummer voorstellen', 'perdiste.inicio': 'Begin', 'perdiste.regalos': 'Cadeaus', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Fotoalbum', 'perdiste.itinerario': 'Programma', 'perdiste.hospedaje': 'Overnachting', 'perdiste.bus': 'Vervoer',
     'sobre.tocar': 'Tik om de uitnodiging te openen', 'sobre.aria': 'Gesloten uitnodiging', 'sobre.ariaLacre': 'Uitnodiging openen',
     'acceso.de': 'Toegang tot de uitnodiging van', 'acceso.pin': 'Vul de pincode in die je met de uitnodiging hebt gekregen:',
     'acceso.confirmar': 'Pincode bevestigen', 'acceso.bloqueado': 'Deze link is niet geldig. Neem contact op met de organisatoren.',

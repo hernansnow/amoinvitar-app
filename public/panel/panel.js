@@ -119,7 +119,7 @@ async function guardar() {
 const marcos = () => [...document.querySelectorAll('#escala iframe')];
 // Dónde está cada sección en la invitación (id del elemento en los modelos)
 const ANCLAS = { portada: 'home-section', musica: 'home-section', historia: 'portfolio', galeria: 'galeria', lugares: 'inicio', rsvp: 'rsvp', invitados: 'rsvp', dresscode: 'dresscode', estilos: 'dresscode',
-  hospedaje: 'hospedaje-bus', bus: 'hospedaje-bus', itinerario: 'itinerario', testigos: 'testigos', instagram: 'hashtag', album: 'instagram', canciones: 'musica', playlist: 'playlist', regalos: 'regalos', redes: 'cierre', pie: 'cierre' };
+  hospedaje: 'hospedaje-bus', bus: 'traslado', itinerario: 'itinerario', testigos: 'testigos', instagram: 'hashtag', album: 'instagram', canciones: 'musica', playlist: 'playlist', regalos: 'regalos', redes: 'cierre', pie: 'cierre' };
 function irEnPrevia(f = marcos().find((x) => !x.classList.contains('atras')), suave = true) {
   try {
     const w = f.contentWindow, destino = f.contentDocument?.getElementById(ANCLAS[pasoActual?.id]);
@@ -546,7 +546,7 @@ function campoContador(c, valor, alCambiar, idHtml) {
 // Íconos del itinerario: desplegable con el ícono y su nombre
 function selectorIconos(c, actual, alCambiar, idHtml) {
   let elegido = actual || '';
-  const src = (v) => c.iconos.replace('{v}', v);
+  const src = (v) => c.valores.find((o) => o.v === v)?.src || c.iconos.replace('{v}', v);
   const nombre = (v) => c.valores.find((o) => o.v === v)?.etiqueta || '';
   const lista = el('div', { class: 'lista-iconos', role: 'listbox', hidden: true });
   const muestra = el('span', { class: 'icono-tile' });

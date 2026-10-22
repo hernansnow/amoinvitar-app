@@ -64,7 +64,12 @@ const ICONOS = {
   ceremonia: 'Ceremonia', iglesia: 'Iglesia', recepcion: 'Recepción', brindis: 'Brindis', tragos: 'Tragos', cena: 'Cena',
   vals: 'Vals', baile: 'Baile', fiesta: 'Fiesta', disco: 'Disco', torta: 'Torta', ramo: 'Ramo', zapatos: 'Zapatos',
   camara: 'Fotos', mic: 'Micrófono', novios: 'Novios', 15: '15 años', baby: 'Bebé', infantil: 'Infantil', 'last-call': 'Última ronda',
+  // Comunes a todos los modelos (public/comun/img/itinerario)
+  corazon: 'Corazón', civil: 'Civil / firma', vela: 'Vela', caliz: 'Cáliz', globos: 'Globos', regalo: 'Regalos', mamadera: 'Mamadera',
+  corona: 'Corona', cupcake: 'Mesa dulce', luna: 'Despedida', estrella: 'Show', fuegos: 'Fuegos artificiales', bus: 'Traslado', musica: 'Música',
 };
+// Íconos del itinerario que van en todas las invitaciones (además de los del modelo). El corazón es el de siempre.
+export const ICONOS_COMUNES = ['corazon', 'civil', 'vela', 'caliz', 'globos', 'regalo', 'mamadera', 'corona', 'cupcake', 'luna', 'estrella', 'fuegos', 'bus', 'musica'];
 const nombreIcono = (v) => {
   const [, base, n] = /^(.*?)(?:-?([a-z]|\d))?$/.exec(v) || [];
   const nombre = ICONOS[v] || ICONOS[base] || v;
@@ -123,6 +128,8 @@ function pasosInvitacion({ tipo, modelo }) {
   const nCer = misa ? 'misa' : 'ceremonia';
   const g = modelo.galeria || {};
   const maxPortada = incluye.fotosPortada || 1;
+  // Los modelos con slideshow lo traen también en Basic (fotosPortada > 1 en basic)
+  const maxPortadaBasic = modelo.paquetes.basic?.incluye?.fotosPortada || 1;
 
   return [
     {
@@ -140,7 +147,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'portada.video', tipo: 'video', etiqueta: 'Video de portada', maxSeg: 30, maxMB: 40, si: [siFotos('portada'), { campo: 'portada.tipo', es: 'video' }],
           ayuda: 'MP4 de hasta 30 segundos. En pantallas horizontales un video vertical se ve al centro, con una copia desenfocada de fondo.' }] : []),
         // Más de una foto de portada es de Premium
-        { id: 'fotos.portada', tipo: 'fotos', etiqueta: maxPortada > 1 ? 'Fotos de portada' : 'Foto de portada', sinEtiqueta: true, max: maxPortada, portada: true, nivelCantidad: maxPortada > 1 ? [2, 'premium'] : null,
+        { id: 'fotos.portada', tipo: 'fotos', etiqueta: maxPortada > 1 ? 'Fotos de portada' : 'Foto de portada', sinEtiqueta: true, max: maxPortada, portada: true, nivelCantidad: maxPortada > maxPortadaBasic ? [maxPortadaBasic + 1, 'premium'] : null,
           si: modelo.videoPortada ? [siFotos('portada'), { campo: 'portada.tipo', no: 'video' }] : siFotos('portada') },
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
         { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
@@ -218,7 +225,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'rsvp.preguntas.comida', tipo: 'switch', etiqueta: 'Preguntar restricciones alimentarias', ayuda: 'Si va con acompañantes, puede aclarar si alguno tiene otra restricción.' },
         { id: 'rsvp.preguntas.alcohol', tipo: 'switch', etiqueta: 'Preguntar si toma alcohol' },
         { id: 'rsvp.preguntas.ninos', tipo: 'switch', etiqueta: 'Preguntar si va con niños y cuántos serán' },
-        { id: 'rsvp.preguntas.traslado', tipo: 'switch', etiqueta: 'Preguntar si necesita traslado', paquete: 'deluxe' },
+        { id: 'rsvp.preguntas.traslado', tipo: 'switch', etiqueta: 'Preguntar si necesita traslado' },
         { id: 'rsvp.extras', tipo: 'lista', etiqueta: 'Preguntas propias', unaColumna: true, max: 5, agregar: 'Agregar pregunta', paquete: 'premium', campos: [
           { id: 'pregunta', tipo: 'texto', etiqueta: 'Pregunta', max: 80, placeholder: '¿Cuál es tu trago favorito?' },
           { id: 'opciones', tipo: 'texto', etiqueta: 'Opciones (separadas con coma)', max: 160, placeholder: 'Vacío = respuesta libre · Ej.: Fernet, Gin tonic' },
@@ -257,7 +264,9 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'itinerario', tipo: 'lista', etiqueta: 'Momentos', max: 12, agregar: 'Agregar momento', campos: [
         { id: 'hora', tipo: 'texto', etiqueta: 'Hora', max: 10, placeholder: '21:00' },
         { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 25 },
-        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, valores: (modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })) },
+        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido va un corazón.',
+          valores: [...(modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })),
+            ...ICONOS_COMUNES.filter((v) => !(modelo.iconosItinerario || []).includes(v)).map((v) => ({ v, etiqueta: nombreIcono(v), src: `/comun/img/itinerario/timeline-icon-${v}.png` }))] },
       ] },
     ] },
     // Testigos (boda) o padrinos (15, bautismo, comunión); cumpleaños, infantiles y egresos no tienen

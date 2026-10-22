@@ -143,6 +143,19 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
   {evento} {mensaje}. `fuentes.css` carga las fuentes del modelo.
   El "&" de los nombres (con `amp`) es parte del diseño: se mueve junto con los nombres pero no se puede escribir ni
   borrar; al editar, cada nombre se escribe por separado. Mantenerlo así en todos los modelos.
+- **Accesos rápidos del pie** ("¿Te perdiste algo?", solo Premium y Deluxe; **Basic no trae accesos rápidos**):
+  confirmar, agendar, dress code, hospedaje (`#hospedaje-bus`), traslado (`#traslado`), itinerario, Instagram Wall
+  (`#hashtag`), álbum QR (`#instagram`), sugerir canción, regalos e inicio. Cada `<li>` con su `data-seccion`, así
+  aparece solo si la sección está prendida. Textos `perdiste.*` (ya están en todos los idiomas).
+- **Slideshow de portada**: el común (`comun/js/slides.js` + `comun/css/slides.css`), no el carrusel de Bootstrap:
+  `<div class="ai-slides" data-intervalo="5000"><div class="ai-slide …" data-repetir="fotos.portada" …></div></div>`.
+  **Los modelos con slideshow lo llevan también en Basic** (`fotosPortada: 4` en basic). Al convertir cada modelo:
+  cambiar la portada de Basic de una foto a slideshow.
+- **Hospedaje y traslado**: el botón de "Referencias" va con `data-si="hospedaje.conReferencias"` y el de "Recorrido"
+  con `data-si="busConRecorrido"` (sin datos cargados, no aparece). La columna del bus lleva `id="traslado"`.
+- **Itinerario**: además de los íconos del modelo, todos tienen los comunes de `comun/img/itinerario/` (corazón,
+  civil, vela, cáliz, globos, regalos, mamadera, corona, mesa dulce, despedida, show, fuegos, traslado, música).
+  Sin ícono elegido va el corazón. Íconos nuevos: glifo blanco sólido de 350 × 350 px.
 - **Fotos de muestra en la vista previa del panel**: las de la demo del modelo, muy desenfocadas. Se generan con
   `python3 scripts/fotos-borrosas.py <modelo>` (quedan en `demo/<evento>/borrosas/`, ~8 KB cada una, y la lista en
   `modelo.json → demoBorrosas`). Sin ellas, la vista previa usa las siluetas genéricas.

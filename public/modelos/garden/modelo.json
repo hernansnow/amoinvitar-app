@@ -19,7 +19,7 @@
   "paquetes": {
     "basic": {
       "secciones": ["galeria", "rsvp", "dresscode"],
-      "incluye": { "sobre": false, "musica": false, "cuenta": false, "fotosPortada": 1, "fotosGaleria": 20 }
+      "incluye": { "sobre": false, "musica": false, "cuenta": false, "fotosPortada": 4, "fotosGaleria": 20 }
     },
     "premium": {
       "secciones": ["musica", "historia", "galeria", "rsvp", "dresscode", "instagram", "canciones", "regalos"],

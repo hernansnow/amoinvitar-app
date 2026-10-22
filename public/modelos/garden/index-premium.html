@@ -47,6 +47,7 @@
   <link rel="preload" href="../../comun/fonts/bodoni-moda/bodoni-moda-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../../comun/css/sobre_v1.2.css">
   <script src="../../comun/js/sobre_v1.1.js" defer></script>
+  <link rel="stylesheet" href="../../comun/css/slides.css">
 </head>
 <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
 
@@ -81,14 +82,12 @@
       </svg>
     </a>
     <div class="video-container">
-      <div id="carousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="3000">
-        <div class="carousel-inner" role="listbox">
+      <div class="ai-slides" data-intervalo="5000">
           <!-- Fotos de portada: se repite un ítem por cada foto que sube el cliente -->
-          <div class="carousel-item d-block active portada-foto" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner1.jpg); background-position: 75% 25%"></div>
-          <div class="carousel-item d-block portada-foto" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner2.jpg); background-position: 45% 40%"></div>
-          <div class="carousel-item d-block portada-foto" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner3.jpg); background-position: 50% 25%"></div>
-          <div class="carousel-item d-block portada-foto" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner4.jpg); background-position: 50% 25%"></div>
-        </div>
+          <div class="ai-slide portada-foto" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner1.jpg); background-position: 75% 25%"></div>
+          <div class="ai-slide portada-foto" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner2.jpg); background-position: 45% 40%"></div>
+          <div class="ai-slide portada-foto" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner3.jpg); background-position: 50% 25%"></div>
+          <div class="ai-slide portada-foto" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner4.jpg); background-position: 50% 25%"></div>
       </div>
     </div>
     <div class="waveWrapper waveAnimation">
@@ -124,7 +123,9 @@
       <div class="row align-items-end justify-content-center"></div>
     </div>
     <div class="video-container">
-      <div class="inner-page-cover section-hero portada-pc" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-repeat: no-repeat; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner1.jpg); background-position: 75% 25%"></div>
+      <div class="ai-slides" data-intervalo="5000">
+        <div class="ai-slide inner-page-cover section-hero portada-pc" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-repeat: no-repeat; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner1.jpg); background-position: 75% 25%"></div>
+      </div>
     </div>
     <div class="waveWrapper waveAnimation">
       <div class="waveWrapperInner bgMiddle"><div class="wave waveMiddle g-ola-media"></div></div>
@@ -357,7 +358,7 @@
           <div class="text-center mb-0"><img class="img-fluid mb-0" src="img/icon-hotel-bronce-o.png" width="55" alt=""></div>
           <h2 class="mb-3 text-center euforia text-white" data-t="hospedaje.titulo">Hospedaje</h2>
           <p class="text-center text-white" data-t="hospedaje.texto">Referencias de hoteles cercanos.</p>
-          <div class="col-12 text-center">
+          <div class="col-12 text-center" data-si="hospedaje.conReferencias">
             <button class="button button-bronce mb-3 text-uppercase rounded-pill" data-fancybox data-src="#hospedaje" data-animation-duration="700" data-t="hospedaje.boton">Referencias</button>
           </div>
           <div style="display: none;" id="hospedaje" class="animated-modal p-4">
@@ -374,11 +375,11 @@
           </div>
         </div>
 
-        <div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-in" data-seccion="bus">
+        <div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-in" data-seccion="bus" id="traslado">
           <div class="text-center mb-0"><img class="img-fluid mb-0" src="img/icon-bus-bronce-o.png" width="55" alt=""></div>
           <h2 class="mb-3 text-center euforia text-white" data-t="bus.titulo">Servicio de Bus</h2>
           <p class="text-center text-white" data-t="bus.texto">Reservá tu lugar en el formulario de confirmación.</p>
-          <div class="col-12 text-center">
+          <div class="col-12 text-center" data-si="busConRecorrido">
             <button class="button button-bronce mb-3 text-uppercase rounded-pill" data-fancybox data-src="#bus" data-animation-duration="700" data-t="bus.boton">Recorrido</button>
           </div>
           <div style="display: none;" id="bus" class="animated-modal p-4">
@@ -568,7 +569,13 @@
             <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
             <li><a href="#inicio" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
             <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-white" data-t="perdiste.hospedaje">Hospedaje</a></li>
+            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-white" data-t="perdiste.bus">Traslado</a></li>
+            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-white" data-t="perdiste.itinerario">Itinerario</a></li>
+            <li data-seccion="instagram"><a href="#hashtag" class="smoothscroll btn-link text-white" data-t="perdiste.instagram">Instagram Wall</a></li>
+            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-white" data-t="perdiste.album">Álbum de fotos</a></li>
             <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
             <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
           </ul>
         </div>
@@ -607,5 +614,6 @@
 <script src="../../comun/js/rsvp-fecha-fin-evento.js" defer></script>
 <!-- Motor del lado del navegador: cuenta regresiva, agendar (Google, Apple, Outlook), mapas, álbum -->
 <script src="../../comun/js/invitacion.js" defer></script>
+<script src="../../comun/js/slides.js" defer></script>
 </body>
 </html>

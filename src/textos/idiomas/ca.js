@@ -49,7 +49,7 @@ export default {
     'regalos.titulo': 'Regals', 'regalos.botonCuenta': 'DADES BANCÀRIES', 'regalos.botonLista': 'LLISTA DE REGALS',
     'regalos.modalCuenta': 'Dades bancàries', 'regalos.modalLista': 'Llista de regals', 'regalos.irLista': 'Anar a la llista',
     'perdiste.titulo': "T'has perdut alguna cosa?", 'perdiste.rsvp': 'Confirmar assistència', 'perdiste.agendar': 'Afegir al calendari',
-    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggerir una cançó', 'perdiste.inicio': 'Inici',
+    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggerir una cançó', 'perdiste.inicio': 'Inici', 'perdiste.regalos': 'Regals', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Àlbum de fotos', 'perdiste.itinerario': 'Programa', 'perdiste.hospedaje': 'Allotjament', 'perdiste.bus': 'Trasllat',
     'sobre.tocar': "Toca per obrir la invitació", 'sobre.aria': 'Invitació tancada', 'sobre.ariaLacre': 'Obrir la invitació',
     'acceso.de': 'Accés a la invitació de', 'acceso.pin': 'Introdueix el PIN que has rebut amb la invitació:',
     'acceso.confirmar': 'Confirmar PIN', 'acceso.bloqueado': "Aquest enllaç no és vàlid. Contacta amb els organitzadors de l'esdeveniment.",
