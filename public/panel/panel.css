@@ -60,7 +60,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ── Avisos de plan: Gratis · Basic · Premium · Deluxe · Complemento ── */
 .insignia-nivel { display: inline-block; vertical-align: middle; margin-left: 6px; font-size: .58rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; line-height: 1.5; white-space: nowrap; }
-.nivel-gratis { color: #2e7d32; } .nivel-basic { color: #2f7fa3; } .nivel-premium { color: #b08a4f; } .nivel-deluxe { color: #7652a8; } .nivel-complemento { color: #6b706c; }
+.nivel-gratis { color: #2f7fa3; } .nivel-basic { color: #a8693f; } .nivel-premium { color: #7f8790; } .nivel-deluxe { color: #b38b2d; } .nivel-complemento { color: #6b706c; }
 .paso-titulo .insignia-nivel { font-size: .65rem; margin-left: 10px; }
 .paso[aria-current="step"] .insignia-nivel { color: #fff; }
 
@@ -705,3 +705,11 @@ textarea { min-height: 96px; line-height: 1.4; }
   .btn-ayuda { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
   .btn-modelo { min-width: 150px; }
 }
+
+/* Barra de abajo (celular): Atrás con la flecha a la izquierda, Siguiente con la flecha a la derecha */
+@media (max-width: 1023px) {
+  .barra-inferior #btn-anterior { justify-items: start; text-align: left; }
+  .barra-inferior #btn-siguiente { justify-items: end; text-align: right; }
+}
+.tj-parte { outline: none; }
+.tj-texto.escribiendo .tj-parte { border-bottom: 2px dashed rgba(0,0,0,.35); }

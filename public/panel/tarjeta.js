@@ -111,24 +111,33 @@ export function editorTarjeta({ def, diseno, base, valor, vars, alCambiar, subir
   };
 
   // Escribir: el texto se edita tal cual (el "&" del círculo vuelve a dibujarse al terminar)
+  // Escribir: con el "&" en un círculo, se editan los dos nombres por separado; el "&" no se toca
   function editarTexto(id) {
     escribiendo = id; elegido = id; dibujar(); pintarBarra();
-    const span = capa.querySelector(`[data-id="${id}"] .tj-valor`); if (!span) return;
-    try { span.contentEditable = 'plaintext-only'; } catch { /* viejo */ }
-    if (span.contentEditable !== 'plaintext-only') span.contentEditable = 'true';
-    span.focus();
-    const r = document.createRange(); r.selectNodeContents(span); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
-    span.oninput = () => { (v.textos[id] ??= {}).texto = span.innerText.replace(/\n{3,}/g, '\n\n').slice(0, 300); emitir(); };
-    span.onblur = () => { escribiendo = null; dibujar(); };
+    const nodo = capa.querySelector(`[data-id="${id}"]`); if (!nodo) return;
+    const partes = [...nodo.querySelectorAll('.tj-parte')];
+    const editables = partes.length ? partes : [nodo.querySelector('.tj-valor')];
+    for (const span of editables) {
+      try { span.contentEditable = 'plaintext-only'; } catch { /* viejo */ }
+      if (span.contentEditable !== 'plaintext-only') span.contentEditable = 'true';
+      span.oninput = () => {
+        const texto = partes.length ? partes.map((x) => x.innerText.replace(/\s*&\s*/g, ' ').trim()).join(' & ') : span.innerText;
+        (v.textos[id] ??= {}).texto = texto.replace(/\n{3,}/g, '\n\n').slice(0, 300); emitir();
+      };
+      span.onblur = () => setTimeout(() => { if (!nodo.contains(document.activeElement)) { escribiendo = null; dibujar(); } }, 0);
+    }
+    editables[0].focus();
+    const r = document.createRange(); r.selectNodeContents(editables[0]); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
   }
 
   function nodoTexto(t) {
     const val = visible(t, t.valor || ' ');
-    const partes = escribiendo === t.id ? null : partirAmp(t, val);
+    // El "&" del círculo es parte del diseño: se mueve con los nombres pero no se escribe
+    const partes = partirAmp(t, escribiendo === t.id ? String(t.valor) : val);
     const d = t.amp ? t.tamFinal * (t.amp.tam || 0.62) : 0;
-    const valor = el('span', { class: 'tj-valor' }, ...(partes ? [partes[0],
-      el('span', { class: 'tj-amp', style: `width:${d}px;height:${d}px;background:${t.amp.fondo};color:${t.amp.color || '#fff'};font-family:${familia(def, t, 'titulos')};font-size:${d * 0.78}px;margin:0 ${t.tamFinal * 0.12}px` }, '&'),
-      partes[1]] : [val]));
+    const valor = el('span', { class: 'tj-valor' }, ...(partes ? [el('span', { class: 'tj-parte' }, partes[0]),
+      el('span', { class: 'tj-amp', contenteditable: 'false', 'aria-hidden': 'true', style: `width:${d}px;height:${d}px;background:${t.amp.fondo};color:${t.amp.color || '#fff'};font-family:${familia(def, t, 'titulos')};font-size:${d * 0.78}px;margin:0 ${t.tamFinal * 0.12}px` }, '&'),
+      el('span', { class: 'tj-parte' }, partes[1])] : [val]));
     const raya = () => el('span', { class: 'tj-raya', style: `width:${t.lineas.largo * t.escala}px;height:${t.lineas.grosor || 2}px` });
     return el('div', { class: 'tj-texto', 'data-id': t.id, tabindex: '0', role: 'button', 'aria-label': `Texto: ${t.valor || t.id}`,
       style: [`left:${t.x}px`, `top:${t.y}px`, `transform:translate(calc(-50% + ${t.dx}px), calc(-50% + ${t.dy}px))`, `font-family:${familia(def, t)}`,
