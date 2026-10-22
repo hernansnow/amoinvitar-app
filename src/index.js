@@ -521,35 +521,52 @@ async function vistaPrevia(env, url, request, id) {
   if (!ev) return html('Sin permiso', 403);
   if (!ev.modelo) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  const evento = conFotosDeMuestra({ ...paraMotor(ev), paquete: await planVista(env, url, ev) });
+  const mj = await modeloJSON(env, ev.modelo, url.origin);
+  const evento = conFotosDeMuestra({ ...paraMotor(ev), paquete: await planVista(env, url, ev) }, mj);
   return pagina(env, url, evento, { marca: empresa?.marca?.blanca ? empresa.marca : null, sinSobre: true });
 }
 
-// Vista previa del panel: donde el cliente todavía no subió fotos van las siluetas de las
-// plantillas, así ve dónde va cada una. Si ya subió alguna en un grupo (galería, portada…)
-// se muestran solo las suyas. Con "Incluir fotos" apagado no va ninguna. La invitación
-// publicada nunca las usa.
+// Vista previa del panel: donde el cliente todavía no subió fotos van las fotos de la demo
+// del modelo, muy desenfocadas (scripts/fotos-borrosas.py), así ve dónde va cada una sin
+// confundirlas con las suyas. Si el modelo no las tiene, las siluetas genéricas. Si ya subió
+// alguna en un grupo (galería, portada…) se muestran solo las suyas. Con "Incluir fotos"
+// apagado no va ninguna. La invitación publicada nunca las usa.
 const BASE = '/comun/img/base';
-function conFotosDeMuestra(ev) {
+function conFotosDeMuestra(ev, modelo) {
   const on = (g) => ev.fotosOn?.[g] !== false;
   const vacio = (x) => !x || (Array.isArray(x) && !x.length);
+  const borrosas = modelo?.demoBorrosas?.[ev.tipo] || modelo?.demoBorrosas?.boda;
+  const tipoB = modelo?.demoBorrosas?.[ev.tipo] ? ev.tipo : 'boda';
+  const dir = `/modelos/${ev.modelo}/demo/${tipoB}/borrosas`;
   const serie = (nombre, n) => Array.from({ length: n }, (_, i) => `${BASE}/${nombre}${i + 1}.jpg`);
+  const muestra = borrosas ? {
+    portada: (borrosas.portada.length ? borrosas.portada : ['foto1.jpg']).map((x) => `${dir}/${x}`),
+    galeria: borrosas.galeria.map((x) => `${dir}/${x}`),
+    rsvp: borrosas.rsvp ? `${dir}/${borrosas.rsvp}` : '/comun/img/borrosas/demo-lugar.jpg',
+    instagram: borrosas.instagram ? `${dir}/${borrosas.instagram}` : `${dir}/${borrosas.galeria[0]}`,
+    iglesia: '/comun/img/borrosas/demo-iglesia.jpg', lugar: '/comun/img/borrosas/demo-lugar.jpg',
+    testigos: ['/comun/img/borrosas/demo-testigo1.jpg', '/comun/img/borrosas/demo-testigo2.jpg'],
+    dress: [1, 2, 3, 4, 5, 6].map((n) => `/comun/img/borrosas/demo-dress${n}.jpg`),
+  } : {
+    portada: serie('hero-banner', 4), galeria: serie('foto', 6), rsvp: `${BASE}/rsvp.jpg`, instagram: `${BASE}/instagram.jpg`,
+    iglesia: `${BASE}/iglesia.jpg`, lugar: `${BASE}/lugar.jpg`, testigos: serie('testigo', 4), dress: serie('dress-code', 6),
+  };
   const f = { ...(ev.fotos || {}) };
-  if (on('portada') && vacio(f.portada)) f.portada = serie('hero-banner', 4).map((url) => ({ url, pos: '50% 30%' }));
-  if (vacio(f.galeria)) f.galeria = serie('foto', 6).map((url) => ({ url }));
-  if (ev.fotosOn?.rsvp === true && !f.rsvp) f.rsvp = `${BASE}/rsvp.jpg`;
-  if (on('instagram') && !f.instagram) f.instagram = `${BASE}/instagram.jpg`;
-  if (on('album') && !f.album) f.album = `${BASE}/instagram.jpg`;
+  if (on('portada') && vacio(f.portada)) f.portada = muestra.portada.map((url) => ({ url, pos: '50% 30%' }));
+  if (vacio(f.galeria)) f.galeria = muestra.galeria.map((url) => ({ url }));
+  if (ev.fotosOn?.rsvp === true && !f.rsvp) f.rsvp = muestra.rsvp;
+  if (on('instagram') && !f.instagram) f.instagram = muestra.instagram;
+  if (on('album') && !f.album) f.album = muestra.instagram;
   const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || (on('lugares') ? foto : '') });
-  const testigos = serie('testigo', 4);
+  const testigos = muestra.testigos;
   const dc = ev.dresscode || {};
   return {
     ...ev,
     fotos: f,
-    ceremonia: lugar(ev.ceremonia, `${BASE}/iglesia.jpg`),
-    celebracion: lugar(ev.celebracion, `${BASE}/lugar.jpg`),
-    testigos: (ev.testigos || []).map((x, i) => ({ ...x, foto: x.foto || (on('testigos') ? testigos[i % 4] : '') })),
-    dresscode: { ...dc, fotos: on('dresscode') && vacio(dc.fotos) ? serie('dress-code', 6).map((url) => ({ url })) : dc.fotos },
+    ceremonia: lugar(ev.ceremonia, muestra.iglesia),
+    celebracion: lugar(ev.celebracion, muestra.lugar),
+    testigos: (ev.testigos || []).map((x, i) => ({ ...x, foto: x.foto || (on('testigos') ? testigos[i % testigos.length] : '') })),
+    dresscode: { ...dc, fotos: on('dresscode') && vacio(dc.fotos) ? muestra.dress.map((url) => ({ url })) : dc.fotos },
   };
 }
 

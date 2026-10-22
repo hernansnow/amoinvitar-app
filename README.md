@@ -143,6 +143,9 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
   {evento} {mensaje}. `fuentes.css` carga las fuentes del modelo.
   El "&" de los nombres (con `amp`) es parte del diseño: se mueve junto con los nombres pero no se puede escribir ni
   borrar; al editar, cada nombre se escribe por separado. Mantenerlo así en todos los modelos.
+- **Fotos de muestra en la vista previa del panel**: las de la demo del modelo, muy desenfocadas. Se generan con
+  `python3 scripts/fotos-borrosas.py <modelo>` (quedan en `demo/<evento>/borrosas/`, ~8 KB cada una, y la lista en
+  `modelo.json → demoBorrosas`). Sin ellas, la vista previa usa las siluetas genéricas.
 - **Lugares** (pendiente): en los eventos que no tienen ceremonia por defecto, un botón para agregar otro lugar con su
   fecha y horario.
 - **Fondos de 100vh** (pendiente en los modelos): en el celular, el alto de la ventana cambia cuando aparece o se esconde la

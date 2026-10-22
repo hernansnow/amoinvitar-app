@@ -14,6 +14,8 @@
     "comunion": { "album": "foto3.jpg" }
   },
 
+  "demoBorrosas": {"15": {"portada": ["hero-banner1.jpg", "hero-banner2.jpg", "hero-banner3.jpg", "hero-banner4.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg", "foto7.jpg", "foto8.jpg", "foto9.jpg", "foto10.jpg", "foto11.jpg", "foto12.jpg"], "rsvp": "rsvp.jpg", "instagram": "instagram.jpg", "testigos": []}, "bautismo": {"portada": ["hero-banner.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg", "foto7.jpg", "foto8.jpg", "foto9.jpg", "foto10.jpg", "foto11.jpg", "foto12.jpg"], "rsvp": "rsvp.jpg", "instagram": "instagram.jpg", "testigos": []}, "boda": {"portada": ["hero-banner1.jpg", "hero-banner2.jpg", "hero-banner3.jpg", "hero-banner4.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg", "foto7.jpg", "foto8.jpg", "foto9.jpg", "foto10.jpg", "foto11.jpg", "foto12.jpg"], "rsvp": "rsvp.jpg", "instagram": "instagram.jpg", "testigos": ["testigo1.jpg", "testigo2.jpg"]}, "comunion": {"portada": ["hero-banner.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg"], "rsvp": "rsvp.jpg", "testigos": []}, "cumple": {"portada": ["foto1.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg"], "instagram": "instagram.jpg", "testigos": []}},
+
   "paquetes": {
     "basic": {
       "secciones": ["galeria", "rsvp", "dresscode"],

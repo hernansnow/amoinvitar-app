@@ -269,7 +269,7 @@ const TRAZOS = {
   redes: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.3 10.8l7.4-3.6M8.3 13.2l7.4 3.6"/>',
   pie: '<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
   descargar: '<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
-  std: '<rect x="6" y="2.5" width="12" height="19" rx="1.5"/><circle cx="10" cy="8" r="1.6"/><path d="M6 17l4-4 3 3 2-2 3 3"/>',
+  std: '<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9.5h18M8 3v4M16 3v4"/><path d="M12 17.5s-3-1.8-3-4a1.6 1.6 0 0 1 3-.9 1.6 1.6 0 0 1 3 .9c0 2.2-3 4-3 4Z"/>',
   agradecimiento: '<path d="M7 11v9H4v-9z"/><path d="M7 11l4-7c1.3 0 2.2 1.1 2 2.4L12.5 10H18a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 16.8 20H7"/>',
   diseno: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2 0-1.4-1.3-1.6-1.3-3s1.3-2 3-2h1.6c2 0 3.7-1.4 3.7-3.5C21 6 17 3 12 3Z"/><circle cx="7.5" cy="10.5" r="1.2"/><circle cx="10.5" cy="6.8" r="1.2"/><circle cx="15" cy="7" r="1.2"/>',
   idiomaAdicional: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.7 3 2.7 15 0 18M12 3c-2.7 3-2.7 15 0 18"/>',
