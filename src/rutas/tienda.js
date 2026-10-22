@@ -423,7 +423,9 @@ export async function estadoPlan(env, request, ev, esquema) {
   const yaPagados = [...(ev.datos.extras || [])];
   const extrasAPagar = elegidos.filter((x) => { const i = yaPagados.indexOf(x); if (i >= 0) { yaPagados.splice(i, 1); return false; } return true; });
   const eurPlan = Math.max(0, precioPaquete(plan) - (pagado ? precioPaquete(pagado) : 0));
-  const eur = eurPlan + extrasAPagar.reduce((t, x) => t + (EXTRAS[x]?.precio || 0), 0);
+  // Extras incluidos según el plan (la Save The Date en Premium y Deluxe)
+  const precioExtra = (x) => (EXTRAS[x]?.gratisDesde && NIVELES.indexOf(plan) >= NIVELES.indexOf(EXTRAS[x].gratisDesde) ? 0 : EXTRAS[x]?.precio || 0);
+  const eur = eurPlan + extrasAPagar.reduce((t, x) => t + precioExtra(x), 0);
   const moneda = monedaPedida(request);
   const rates = await getRates(env);
   const pais = paisReal(request);
@@ -431,7 +433,7 @@ export async function estadoPlan(env, request, ev, esquema) {
   const secciones = esquema.pasos.filter((p) => p.seccion && !p.complemento && !p.obligatoria && seccionActivaDe(p, ev.datos)).map((p) => ({ id: p.id, titulo: p.titulo, nivel: p.nivel }));
   return {
     plan, nombre: NOMBRES_PAQUETE[plan], precio: texto(plan, precioPaquete(plan)), pagado, gratisPosible,
-    complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: texto(x, EXTRAS[x]?.precio || 0), pagado: !extrasAPagar.includes(x) })),
+    complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: precioExtra(x) ? texto(x, precioExtra(x)) : `Incluida en ${NOMBRES_PAQUETE[plan]}`, pagado: !extrasAPagar.includes(x) })),
     aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,
     // Primera vez: aunque sea gratis pasa por la "compra" (queda el mail de la cuenta y la factura si corresponde)

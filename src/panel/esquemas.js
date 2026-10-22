@@ -145,6 +145,9 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
         { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
         { id: 'zonaHoraria', tipo: 'zona', etiqueta: 'País / zona horaria del evento', valores: ZONAS, requerido: true, ancho: 'mitad', ayuda: 'Para la cuenta regresiva y los calendarios.' },
+        // Apagada: Premium y Deluxe muestran la portada de Basic (sin cuenta regresiva)
+        { id: 'portada.cuenta', tipo: 'switch', etiqueta: 'Mostrar la cuenta regresiva', defecto: true, rearmar: true,
+          ayuda: 'En los planes Premium y Deluxe. Apagada, la portada queda como la del plan Basic.' },
       ],
     },
     { id: 'musica', seccion: 'musica', titulo: 'Música de fondo', campos: [
@@ -169,7 +172,7 @@ function pasosInvitacion({ tipo, modelo }) {
         ayuda: 'Arrastrar cada foto para encuadrar la miniatura; al tocarla en la invitación se ve entera. Con una sola foto también queda bien.' },
     ] },
     {
-      id: 'lugares', titulo: 'Lugar y fecha', obligatoria: true,
+      id: 'lugares', titulo: 'Lugares y fecha', obligatoria: true,
       campos: [
         ...(conCeremonia ? [
           { id: 'ceremonia.modo', tipo: 'opciones', etiqueta: misa ? '¿Hay misa?' : '¿Hay ceremonia?', defecto: 'mismo-lugar', valores: [
@@ -194,6 +197,14 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'celebracion.foto', tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: siFotos('lugares') },
       ],
     },
+    { id: 'invitados', titulo: 'Lista de invitados', interruptor: 'acceso.lista', nivelPaso: 'premium',
+      fijoSi: { o: [{ campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] },
+      motivo: 'Queda activada porque en Idioma y seguridad se eligió link personal o PIN por invitado.',
+      ayudaSeccion: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. El link general sigue sirviendo para todos.',
+      campos: [
+        { id: 'invitados', tipo: 'invitados', etiqueta: 'Invitados', sinEtiqueta: true, si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
+        { id: 'nota.invitadosApagada', tipo: 'nota', texto: 'Activar la sección para cargar la lista (a mano o con un Excel).', si: [{ campo: 'acceso.lista', no: true }, { campo: 'acceso.modo', no: 'codigo' }, { o: [{ campo: 'acceso.modo', no: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] }] },
+      ] },
     {
       id: 'rsvp', seccion: 'rsvp', titulo: 'Confirmación', obligatoria: true,
       campos: [
@@ -208,7 +219,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'rsvp.preguntas.alcohol', tipo: 'switch', etiqueta: 'Preguntar si toma alcohol' },
         { id: 'rsvp.preguntas.ninos', tipo: 'switch', etiqueta: 'Preguntar si va con niños y cuántos serán' },
         { id: 'rsvp.preguntas.traslado', tipo: 'switch', etiqueta: 'Preguntar si necesita traslado', paquete: 'deluxe' },
-        { id: 'rsvp.extras', tipo: 'lista', etiqueta: 'Preguntas propias', max: 5, agregar: 'Agregar pregunta', paquete: 'premium', campos: [
+        { id: 'rsvp.extras', tipo: 'lista', etiqueta: 'Preguntas propias', unaColumna: true, max: 5, agregar: 'Agregar pregunta', paquete: 'premium', campos: [
           { id: 'pregunta', tipo: 'texto', etiqueta: 'Pregunta', max: 80, placeholder: '¿Cuál es tu trago favorito?' },
           { id: 'opciones', tipo: 'texto', etiqueta: 'Opciones (separadas con coma)', max: 160, placeholder: 'Vacío = respuesta libre · Ej.: Fernet, Gin tonic' },
         ] },
@@ -219,14 +230,6 @@ function pasosInvitacion({ tipo, modelo }) {
         ]),
       ],
     },
-    { id: 'invitados', titulo: 'Lista de invitados', interruptor: 'acceso.lista',
-      fijoSi: { o: [{ campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] },
-      motivo: 'Queda activada porque en Idioma y seguridad se eligió link personal o PIN por invitado.',
-      ayudaSeccion: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. El link general sigue sirviendo para todos.',
-      campos: [
-        { id: 'invitados', tipo: 'invitados', etiqueta: 'Invitados', sinEtiqueta: true, si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
-        { id: 'nota.invitadosApagada', tipo: 'nota', texto: 'Activar la sección para cargar la lista (a mano, pegando filas o con un Excel).', si: [{ campo: 'acceso.lista', no: true }, { campo: 'acceso.modo', no: 'codigo' }, { o: [{ campo: 'acceso.modo', no: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] }] },
-      ] },
     { id: 'dresscode', seccion: 'dresscode', titulo: 'Dress code', campos: [
       titulo('dress.titulo'),
       { id: 'dresscode.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'dresscode.texto' },
@@ -242,7 +245,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'nombre', tipo: 'texto', etiqueta: 'Hotel', max: 60 }, { id: 'direccion', tipo: 'texto', etiqueta: 'Dirección', max: 100 }, { id: 'link', tipo: 'url', etiqueta: 'Link de reservas' },
       ] },
     ] },
-    { id: 'bus', seccion: 'bus', titulo: 'Servicio de traslado', campos: [
+    { id: 'bus', seccion: 'bus', titulo: 'Traslado/Bus', campos: [
       titulo('bus.titulo'),
       { id: 'textos.bus.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'bus.texto' },
       { id: 'bus.paradas', tipo: 'lista', etiqueta: 'Recorrido', max: 5, agregar: 'Agregar parada', campos: [
@@ -275,7 +278,7 @@ function pasosInvitacion({ tipo, modelo }) {
       conFotos('instagram'),
       { id: 'fotos.instagram', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('instagram') },
     ] },
-    { id: 'album', seccion: 'album', titulo: 'Álbum de fotos compartido', excluye: 'instagram', campos: [
+    { id: 'album', seccion: 'album', titulo: 'Álbum de fotos QR', excluye: 'instagram', campos: [
       titulo('album.titulo'),
       { id: 'textos.album.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'album.texto' },
       { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', ayuda: 'El álbum de Albunear se crea solo. También se puede pegar otro link.' },
@@ -341,6 +344,26 @@ const pasoDiseno = (modelo) => ({
   ],
 });
 
+// ── Complementos: tarjetas Save The Date y de agradecimiento ──────────
+// La tarjeta es la del modelo (mismo estilo que la invitación). Se edita directo sobre la
+// tarjeta (textos, tamaños y posición) y al generarla queda fija: se descarga o se comparte.
+const pasoTarjeta = (clase, modelo) => (clase === 'std' ? {
+  id: 'std', seccion: 'std', complemento: true, titulo: 'Tarjeta Save The Date',
+  campos: [
+    { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: 'Una tarjeta para mandar antes de la invitación, con el mismo diseño. Incluida en los planes Premium y Deluxe.' },
+    { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
+      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Solo con textos.' }, { v: 'foto', etiqueta: 'Tarjeta con foto' },
+    ] },
+    { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true },
+  ],
+} : {
+  id: 'agradecimiento', seccion: 'agradecimiento', complemento: true, titulo: 'Tarjeta de agradecimiento',
+  campos: [
+    { id: 'nota.agradecimiento', tipo: 'nota', estilo: 'ayuda', texto: 'Para agradecer a los invitados después del evento: un mensaje, los nombres y una foto.' },
+    { id: 'agradecimiento.tarjeta', tipo: 'tarjeta', clase: 'agradecimiento', etiqueta: 'Tarjeta', sinEtiqueta: true },
+  ],
+});
+
 // ── Complemento: idiomas adicionales, con todos los textos para personalizar en cada uno ──
 const NOMBRE_IDIOMA = Object.fromEntries(IDIOMAS_BASE.map((x) => [x.v, x.etiqueta]));
 function pasoIdiomaAdicional(base, datos) {
@@ -396,7 +419,7 @@ const pasoSeguridad = {
 };
 
 const pasoPublicar = (tipo) => ({
-  id: 'publicar', titulo: 'Link y vista al compartir', obligatoria: true,
+  id: 'publicar', titulo: 'Link y miniatura', obligatoria: true,
   campos: [
     { id: 'slug', tipo: 'slug', etiqueta: 'Link de la invitación', prefijo: `amoinvitar.com/${tipo}/`, requerido: true, max: 40 },
     // La foto para compartir se sube y se encuadra directo en la vista previa (como se ve en WhatsApp o Facebook)
@@ -522,7 +545,7 @@ export function planNecesario(esquema, datos, { gratisPosible = false } = {}) {
   const subir = (p) => { n = Math.max(n, NIVELES.indexOf(p)); };
   for (const paso of esquema.pasos) {
     if (!seccionActiva(paso, datos)) continue;
-    if (paso.seccion && !paso.complemento && paso.nivel) subir(paso.nivel);
+    if ((paso.seccion || paso.nivelPaso) && !paso.complemento && paso.nivel) subir(paso.nivel);
     for (const c of paso.campos) {
       if (c.si && !cumple(c.si, datos)) continue;
       const v = leer(datos, c.id);
@@ -541,6 +564,8 @@ export function complementos(esquema, datos) {
     if (datos.diseno?.paleta?.modo === 'cambiar') x.push('paleta');
     if (datos.diseno?.tipografia?.modo === 'cambiar') x.push('tipografia');
   }
+  if (paso('std') && seccionActiva(paso('std'), datos)) x.push(datos.std?.tipo === 'foto' ? 'std-foto' : 'std-tarjeta');
+  if (paso('agradecimiento') && seccionActiva(paso('agradecimiento'), datos)) x.push('agradecimiento');
   if (paso('idiomaAdicional') && seccionActiva(paso('idiomaAdicional'), datos)) {
     const principal = String(datos.variante || 'es').slice(0, 2);
     const ls = new Set([2, 3, 4].map((n) => datos.idiomas?.[`l${n}`]).filter((l) => l && l !== principal));
@@ -553,7 +578,7 @@ export function complementos(esquema, datos) {
 function anotar(pasos, { modelo, gratis = false, disenoEnviado = false }) {
   return pasos.map((paso) => ({
     ...paso,
-    nivel: paso.complemento ? 'complemento' : paso.seccion ? paqueteMinimo(modelo, paso.seccion) : 'basic',
+    nivel: paso.complemento ? 'complemento' : paso.nivelPaso || (paso.seccion ? paqueteMinimo(modelo, paso.seccion) : 'basic'),
     campos: paso.campos.map((c) => {
       if (paso.complemento && gratis) return { ...c, cerrado: 'Los complementos no están disponibles en el plan gratis.' };
       if (paso.id === 'diseno' && disenoEnviado && c.tipo !== 'nota') return { ...c, cerrado: 'El pedido de diseño ya se envió al equipo.' };
@@ -575,9 +600,11 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     ...base,
     pasoSeguridad,
     pasoPublicar(tipo),
-    // Complementos: aparte, después de una línea en el menú
-    { ...pasoDiseno(m), separado: true },
+    // Complementos: aparte, después de una línea y el título "Complementos" en el menú
+    ...(producto === 'invitacion' && m?.tarjetas?.std ? [{ ...pasoTarjeta('std', m), separado: true }] : []),
+    { ...pasoDiseno(m), separado: !(producto === 'invitacion' && m?.tarjetas?.std) },
     pasoIdiomaAdicional(base, datos),
+    ...(producto === 'invitacion' && m?.tarjetas?.agradecimiento ? [pasoTarjeta('agradecimiento', m)] : []),
   ];
   return { producto, tipo, paquete, pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado }) };
 }
@@ -623,6 +650,19 @@ function limpiarValor(c, v) {
     case 'idioma': return IDIOMAS_OK.has(v) ? v : undefined;
     case 'fuente': return c.valores.includes(v) ? v : undefined;
     case 'bandera': return c.valores.some((o) => o.v === v) ? v : undefined;
+    // Tarjeta editada sobre el diseño: textos con su corrimiento y tamaño, la foto y su encuadre.
+    // La imagen generada (y el bloqueo) los pone solo el servidor al generarla.
+    case 'tarjeta': {
+      if (typeof v !== 'object') return undefined;
+      const num = (x, a, b) => (Number.isFinite(Number(x)) ? Math.min(b, Math.max(a, Number(x))) : undefined);
+      const textos = {};
+      for (const [k, t] of Object.entries(v.textos || {}).slice(0, 12)) {
+        if (!/^\w{1,20}$/.test(k) || typeof t !== 'object' || !t) continue;
+        textos[k] = { ...(typeof t.texto === 'string' ? { texto: t.texto.slice(0, 300) } : {}), dx: num(t.dx, -1200, 1200) || 0, dy: num(t.dy, -1500, 1500) || 0, escala: num(t.escala, 0.3, 3) || 1 };
+      }
+      return { textos, extra: !!v.extra, ...(URL_OK.test(v.foto || '') ? { foto: String(v.foto).slice(0, 500) } : {}),
+        ...(POS_OK.test(v.fotoPos || '') ? { fotoPos: v.fotoPos } : {}), ...(num(v.fotoZoom, 1, 4) ? { fotoZoom: num(v.fotoZoom, 1, 4) } : {}) };
+    }
     // Paleta: los 4 colores del diseño (vacío = ese color se quitó)
     case 'paleta': return [].concat(v).slice(0, 4).map((x) => (HEX.test(x || '') ? x.toLowerCase() : ''));
     case 'colores': return [].concat(v).filter((x) => HEX.test(x || '')).slice(0, c.max || 4).map((x) => x.toLowerCase());

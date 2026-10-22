@@ -229,7 +229,9 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     },
     fecha: { puntos: fechaPuntos(principal), iso: principal ? `${principal.a}-${principal.m}-${principal.d}` : '' },
     cuenta: {
-      activa: !!incluye.cuenta && !!principal,
+      activa: !!incluye.cuenta && !!principal && e.portada?.cuenta !== false,
+      // Apagada: Premium y Deluxe usan la portada de Basic (sin cuenta regresiva)
+      portada: !!incluye.cuenta && e.portada?.cuenta !== false,
       fecha: principal ? `${principal.a}/${principal.m}/${principal.d} ${principal.hh ?? '00'}:${principal.mm ?? '00'}:00` : '',
     },
     // La sección "Música de fondo" se puede apagar (sin la marca, prendida como antes)

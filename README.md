@@ -132,7 +132,21 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
 - La galería que no es carrusel la arma el componente común `data-componente="galeria"`
   (comun/css/galeria.css): el modelo solo marca su carrusel con `data-si="galeria.carrusel"`.
 
-## Reglas para convertir los demás modelos (ronda 5 y 6)
+## Reglas para convertir los demás modelos (ronda 5, 6 y 7)
+
+- **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,
+  justo después, la portada del Basic del mismo modelo con `data-no="cuenta.portada"` (se copia tal cual de `index-basic.html`).
+- **Tarjetas** (Save The Date y agradecimiento): en `modelo.json → tarjetas`. Se parte del diseño en JPG: se le borran los
+  textos (queda `img/std-fondo.jpg`) y, para las versiones con foto, una capa con las hojas y el aro con el centro
+  transparente (`img/std-aro.webp`, con `"sobreFoto": true`). Los textos se definen con posición, tamaño, color y
+  espaciado (ver el comentario de `public/panel/tarjeta.js`). Variables: {nombres} {a} {b} {fecha} {fechaCorta} {lugar}
+  {evento} {mensaje}. `fuentes.css` carga las fuentes del modelo.
+- **Lugares** (pendiente): en los eventos que no tienen ceremonia por defecto, un botón para agregar otro lugar con su
+  fecha y horario.
+- **Fondos de 100vh** (pendiente en los modelos): en el celular, el alto de la ventana cambia cuando aparece o se esconde la
+  barra del navegador, y los fondos con `height: 100vh` se estiran o se achican. Usar `100svh` (con `100vh` antes, para
+  navegadores viejos) o un alto fijo en px calculado al cargar. En la vista previa del panel ya no pasa: la invitación
+  se arma siempre con el alto de la pantalla.
 
 - **Nombres de portada**: el h1 con `data-campo-html="nombres.portada"` lleva `data-ajustar="0.86"` (fracción del ancho del
   contenedor que pueden ocupar). Si los nombres son largos, `invitacion.js` achica la letra lo justo. Dentro de un círculo o

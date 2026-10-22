@@ -1,7 +1,7 @@
 /* Panel del cliente · Amo Invitar 2.0
    Los colores salen de variables: con marca blanca las pisa la empresa. */
 :root {
-  --acento: #7a9c7e;
+  --acento: #4e9c87; /* verde Amo Invitar (text-primary de la web) */
   --acento-texto: #fff;
   --fondo: #f6f5f3;
   --tarjeta: #fff;
@@ -60,7 +60,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ── Avisos de plan: Gratis · Basic · Premium · Deluxe · Complemento ── */
 .insignia-nivel { display: inline-block; vertical-align: middle; margin-left: 6px; font-size: .58rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; line-height: 1.5; white-space: nowrap; }
-.nivel-gratis { color: #2e7d32; } .nivel-basic { color: #1593b8; } .nivel-premium { color: #b08a4f; } .nivel-deluxe { color: #b3261e; } .nivel-complemento { color: #7b5ea7; }
+.nivel-gratis { color: #2e7d32; } .nivel-basic { color: #2f7fa3; } .nivel-premium { color: #b08a4f; } .nivel-deluxe { color: #7652a8; } .nivel-complemento { color: #6b706c; }
 .paso-titulo .insignia-nivel { font-size: .65rem; margin-left: 10px; }
 .paso[aria-current="step"] .insignia-nivel { color: #fff; }
 
@@ -112,12 +112,12 @@ body.sin-scroll { overflow: hidden; }
   .caja-plan.solo-escritorio { display: grid !important; }
   .modo-vista.solo-escritorio { display: inline-flex !important; }
   body { height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
-  .layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 270px minmax(380px, 480px) 1fr; transition: grid-template-columns .25s; }
+  .layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 320px minmax(380px, 480px) 1fr; transition: grid-template-columns .25s; }
   .pasos { display: flex; overflow: auto; border-right: 1px solid var(--borde); padding: 12px 8px; }
   .pasos-cabeza { display: none; }
   .editor { overflow: auto; border-right: 1px solid var(--borde); background: var(--fondo); }
   .previa { min-height: 0; }
-  body.editor-plegado .layout { grid-template-columns: 270px 0 1fr; }
+  body.editor-plegado .layout { grid-template-columns: 320px 0 1fr; }
   body.editor-plegado .editor { overflow: hidden; }
   body.pantalla-completa .layout { grid-template-columns: 0 0 1fr; }
   body.pantalla-completa .pasos, body.pantalla-completa .editor { overflow: hidden; border: 0; padding: 0; }
@@ -620,3 +620,88 @@ textarea { min-height: 96px; line-height: 1.4; }
 .campo.nombre-par .con-contador .contador { right: 8px; }
 .bandera-select { display: flex; align-items: center; gap: 10px; }
 .bandera-select img { width: 32px; height: 32px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.1); flex: none; }
+
+/* ── Ronda 7 ─────────────────────────────────────────────────────────── */
+/* Caja del plan: se adapta al precio (monedas con muchos ceros) */
+.caja-plan { min-width: 0; flex: none; white-space: nowrap; padding: 4px 16px; }
+.plan-resumen span { white-space: nowrap; }
+/* Íconos centrados en los botones redondos */
+.btn-redondo > span { display: grid; place-items: center; line-height: 0; }
+.btn-redondo svg { display: block; }
+/* Preguntas propias: pregunta y respuesta una abajo de la otra también en la computadora */
+.item-lista.una-columna .sub { display: grid; grid-template-columns: 1fr !important; gap: 10px; }
+/* Menú de pasos: nombre y aviso en una línea mientras entren */
+.paso-fila .nombre { display: flex; flex-wrap: wrap; align-items: center; column-gap: 6px; row-gap: 2px; }
+.paso-fila .nombre .insignia-nivel { margin-left: 0; }
+/* Fotos chicas (testigos, estilos): la indicación para moverlas no se corta */
+.marco { container-type: inline-size; }
+.marco .pista { white-space: normal; text-align: center; max-width: 90%; line-height: 1.2; font-size: .72rem; }
+@container (max-width: 150px) {
+  .marco .pista { font-size: 0; padding: 4px 7px; }
+  .marco .pista::before { content: "✥"; font-size: .9rem; }
+}
+.zoom { flex-wrap: wrap; justify-content: center; }
+@media (max-width: 1023px) {
+  /* Arriba solo "Paso 1 de 24" y el avance: el título va en la sección */
+  .donde strong { display: none; }
+  .donde small { font-size: .85rem; }
+  .paso-titulo h1 { font-size: 1.25rem; }
+  .ico-titulo { width: 32px; height: 32px; margin-right: 8px; }
+  /* Barra de abajo: flecha arriba de la palabra, botones más chicos */
+  .barra-inferior { padding-top: 6px; padding-bottom: calc(6px + env(safe-area-inset-bottom)); }
+  .barra-inferior .nav-btn { display: grid; justify-items: center; line-height: 1.05; gap: 1px; font-size: .85rem; }
+  .barra-inferior .nav-btn .flecha { font-size: 1.05rem; line-height: 1; }
+  .barra-inferior .btn.nav-btn { padding: 5px 16px; border-radius: 12px; font-weight: 600; }
+  .plan-mini { min-width: 0; }
+  .plan-mini span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+}
+
+/* Link de la invitación: el prefijo y el campo en una sola caja, alineados */
+.slug { align-items: center; border-radius: 10px; min-height: 48px; }
+.slug span { padding: 0 0 0 14px; display: flex; align-items: center; align-self: stretch; font-size: 16px; }
+.slug input[type="text"] { border: 0 !important; border-radius: 0; min-height: 46px; padding: 0 12px 0 1px; background: transparent; }
+.slug:focus-within { outline: 2px solid var(--acento); outline-offset: 1px; }
+.slug input:focus { outline: none; }
+@media (max-width: 520px) { .slug span { font-size: 14px; padding-left: 10px; } .slug input[type="text"] { font-size: 15px; } }
+/* Menú: título de los complementos */
+.pasos-subtitulo { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--suave); padding: 0 12px 6px; }
+
+/* ── Tarjetas (Save The Date y agradecimiento) ── */
+.tj-campo { display: grid; gap: 12px; }
+.tj-editor { display: grid; gap: 10px; justify-items: center; }
+.tj-lienzo { position: relative; width: min(100%, 420px); overflow: hidden; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.15); background: #fff; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.tj-capa { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.tj-adorno { position: absolute; pointer-events: none; }
+.tj-foto { position: absolute; border-radius: 50%; overflow: hidden; background: #e9e5df; cursor: grab; touch-action: none; display: grid; place-items: center; }
+.tj-foto img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.tj-sin-foto { font: 500 60px/1 Jost, sans-serif; color: #9a958e; letter-spacing: 4px; }
+.tj-texto { position: absolute; text-align: center; cursor: move; touch-action: none; white-space: pre-wrap; outline: none; border-radius: 6px; padding-top: 4px; padding-bottom: 4px; display: flex; align-items: center; justify-content: center; }
+.tj-valor { letter-spacing: var(--esp); padding-left: var(--esp); outline: none; }
+.tj-raya { flex: none; background: currentColor; }
+.tj-amp { display: inline-grid; place-items: center; vertical-align: middle; border-radius: 50%; letter-spacing: 0; line-height: 1; padding-top: .06em; }
+.tj-texto:hover { box-shadow: 0 0 0 3px rgba(78,156,135,.35); }
+.tj-texto.elegido { box-shadow: 0 0 0 4px var(--acento); background: rgba(255,255,255,.35); }
+.tj-texto.escribiendo { cursor: text; box-shadow: 0 0 0 4px #1f2421; background: rgba(255,255,255,.75); }
+.tj-barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; min-height: 40px; width: min(100%, 420px); }
+.tj-pista { font-size: .85rem; color: var(--suave); text-align: center; }
+.tj-btn { border: 1px solid var(--borde); background: #fff; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-weight: 600; font-size: .85rem; color: var(--texto); }
+.tj-btn.grande { font-size: 1rem; }
+.tj-btn:hover { border-color: var(--acento); color: var(--acento); }
+.tj-nombre { font-size: .8rem; color: var(--suave); }
+.tj-controles { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 16px; width: min(100%, 420px); }
+.tj-zoom { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--suave); }
+.tj-campo > .btn-grande { justify-self: center; width: min(100%, 420px); }
+.tj-lista { display: grid; gap: 12px; justify-items: center; }
+.tj-lista img { width: min(100%, 420px); border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.15); }
+.tj-acciones { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+/* Barra de la computadora en pantallas medianas: el nombre no se aplasta */
+@media (min-width: 1024px) {
+  .barra .titulo { flex: 1 1 150px; min-width: 130px; }
+  .linea-pasos { flex: 0 1 260px; min-width: 0; }
+}
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .linea-pasos.solo-escritorio { display: none !important; }
+  .btn-ayuda .texto { display: none; }
+  .btn-ayuda { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
+  .btn-modelo { min-width: 150px; }
+}

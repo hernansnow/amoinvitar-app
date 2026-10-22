@@ -356,7 +356,7 @@ async function apiPanel(env, request, url, partes) {
       modelos: modelosPara(ev.tipo),
       usuario: usuario ? { email: usuario.email } : null,
       invitados: await almacen.invitados(ev.id),
-      modelo: ev.modelo ? { id: ev.modelo, miniatura: (await modeloJSON(env, ev.modelo, url.origin))?.miniatura || null } : null,
+      modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null }; })() : null,
       marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
@@ -367,6 +367,9 @@ async function apiPanel(env, request, url, partes) {
     const conIdiomas = datos?.idiomas ? await esquemaDe(env, url, ev, { ...ev.datos, idiomas: datos.idiomas, variante: datos.variante ?? ev.datos.variante }) : esquema;
     const limpio = limpiarDatos(conIdiomas, datos || {}, ev.datos);
     if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
+    // Tarjetas ya generadas: quedan fijas
+    if (ev.datos.std?.tarjeta?.generada) limpio.std = ev.datos.std;
+    if (ev.datos.agradecimiento?.tarjeta?.generada) limpio.agradecimiento = ev.datos.agradecimiento;
     await leerMapas(limpio);
     await leerSpotify(limpio);
     if (limpio.slug && limpio.slug !== ev.slug) {
@@ -396,11 +399,29 @@ async function apiPanel(env, request, url, partes) {
     ev.datos.planElegido = gratis ? 'gratis' : null;
     if (gratis) {
       for (const p of esquema.pasos) if (p.seccion && (p.complemento || p.nivel !== 'basic')) (ev.datos.secciones ??= {})[p.seccion] = false;
+      for (const p of esquema.pasos) if (p.interruptor && p.nivel !== 'basic') escribirRuta(ev.datos, p.interruptor, false);
       for (const p of esquema.pasos) for (const c of p.campos) if (c.paquete && c.paquete !== 'basic') escribirRuta(ev.datos, c.id, c.tipo === 'switch' ? false : undefined);
       if (Array.isArray(ev.datos.fotos?.portada)) ev.datos.fotos.portada = ev.datos.fotos.portada.slice(0, 1);
     }
     await almacen.guardarEvento(ev);
     return json({ ok: true });
+  }
+  // Generar una tarjeta (Save The Date o agradecimiento): el panel arma el JPG y lo sube;
+  // acá queda guardada y fija. Hace falta tenerla pagada (la Save The Date viene con Premium y Deluxe).
+  if (accion === 'tarjeta' && request.method === 'POST') {
+    const { clase, url: imagen } = await request.json();
+    if (!['std', 'agradecimiento'].includes(clase)) return json({ error: 'Tarjeta desconocida' }, 400);
+    if (!/^\/media\/[\w./-]+\.jpe?g$/i.test(String(imagen || '')) || !String(imagen).includes(ev.id)) return json({ error: 'Imagen no válida' }, 400);
+    const actual = ev.datos[clase]?.tarjeta || {};
+    if (actual.generada) return json({ error: 'La tarjeta ya se generó', url: actual.generada }, 409);
+    const extras = ev.datos.extras || [];
+    const pagada = clase === 'std'
+      ? ['premium', 'deluxe'].includes(ev.paquete) || extras.some((x) => x.startsWith('std-'))
+      : extras.includes('agradecimiento');
+    if (!pagada) return json({ error: 'pagar' }, 402);
+    ev.datos[clase] = { ...(ev.datos[clase] || {}), tarjeta: { ...actual, generada: imagen, generadaEn: new Date().toISOString() } };
+    await almacen.guardarEvento(ev);
+    return json({ ok: true, url: imagen });
   }
   // Guardar el borrador en la cuenta (después de entrar con Google o con el mail)
   if (accion === 'vincular' && request.method === 'POST') {

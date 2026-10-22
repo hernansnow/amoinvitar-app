@@ -3,6 +3,7 @@
 
 import { armarMiniatura, achicarFoto } from './miniatura.js';
 import { leerPlanilla } from './planilla.js';
+import { editorTarjeta, dibujarTarjeta } from './tarjeta.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 
@@ -149,17 +150,25 @@ function refrescarPrevia() {
   previaTimer = setTimeout(() => { if (S.evento.modelo && $('#previa')) cargarPrevia(); }, 300);
 }
 
-// Celular o computadora: la computadora se ve a 1280 px de ancho, achicada para que entre
-// En el celular (vista dividida) la invitación ocupa todo el ancho; en la computadora el
-// teléfono mantiene su proporción (lo resuelve el CSS) y la vista de computadora es de 1280 px achicada.
+// La invitación se arma siempre al tamaño de un dispositivo real y se achica entera para
+// entrar en el marco (si no, en un marco angosto se veía más apretada que en un teléfono).
+// · Computadora: 1280 px de ancho.  · Celular: 390 × 845.
+// · Vista dividida del celular: el ancho real de la pantalla y un alto fijo, así al mover la
+//   división la invitación no cambia de alto (los fondos de 100vh no se estiran ni se achican).
 function escalarPrevia() {
   const p = $('#pantalla'); if (!p) return;
   const e = $('#escala');
-  if (!p.classList.contains('pc')) { e.style.cssText = ''; return; }
-  const caja = p.getBoundingClientRect();
-  const k = caja.width / 1280;
-  e.style.cssText = `width:1280px;height:${caja.height / k}px;transform:scale(${k});transform-origin:0 0`;
+  const ancho = p.clientWidth, alto = p.clientHeight;
+  if (!ancho) return;
+  const pc = p.classList.contains('pc');
+  const dividida = matchMedia('(max-width: 1023px)').matches && !document.body.classList.contains('ver-previa');
+  let w, h, k;
+  if (pc) { w = 1280; k = ancho / w; h = alto / k; }
+  else if (dividida) { w = ancho; k = 1; h = Math.max(innerHeight, 560); }
+  else { w = 390; k = ancho / w; h = alto / k; }
+  e.style.cssText = `width:${w}px;height:${Math.round(h)}px;transform:scale(${k});transform-origin:0 0`;
 }
+if (window.ResizeObserver && $('#pantalla')) new ResizeObserver(() => escalarPrevia()).observe($('#pantalla'));
 document.querySelectorAll('.modo-vista button').forEach((b) => b.addEventListener('click', () => {
   document.querySelectorAll('.modo-vista button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.modo === b.dataset.modo)));
   $('#pantalla').className = `pantalla ${b.dataset.modo}`;
@@ -239,9 +248,9 @@ const leerPos = (p) => (p || '50% 50%').split(' ').map((x) => parseFloat(x) || 0
 
 // ── Íconos (trazo fino, del mismo estilo que el de la música) ────────────
 const TRAZOS = {
-  portada: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+  portada: '<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/>',
   musica: '<path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
-  historia: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
+  historia: '<path d="M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5Z"/><path d="M12 6.5v13"/>',
   galeria: '<rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h12"/><path d="M21 13l-4-4-6 6"/>',
   lugares: '<path d="M12 21s-6-5.3-6-11a6 6 0 1 1 12 0c0 5.7-6 11-6 11Z"/><circle cx="12" cy="10" r="2.2"/>',
   rsvp: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
@@ -251,14 +260,17 @@ const TRAZOS = {
   hospedaje: '<path d="M3 18V7"/><path d="M3 14h18v4"/><path d="M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="1.8"/>',
   bus: '<rect x="5" y="3" width="14" height="15" rx="2"/><path d="M5 11h14"/><circle cx="8.5" cy="14.5" r="1"/><circle cx="15.5" cy="14.5" r="1"/><path d="M7 18v2M17 18v2"/>',
   itinerario: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-  testigos: '<circle cx="9" cy="14" r="5"/><circle cx="15" cy="14" r="5"/><path d="M10 5l2-2 2 2-2 2z"/>',
+  testigos: '<path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/><path d="M14.5 5.5l3 3"/><path d="M4 21h16"/>',
   instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".8"/>',
   album: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
-  canciones: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/>',
+  canciones: '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
   playlist: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r=".6"/>',
   regalos: '<rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12"/><path d="M12 9S9 3 6.5 5.5 12 9 12 9Zm0 0s3-6 5.5-3.5S12 9 12 9Z"/>',
   redes: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.3 10.8l7.4-3.6M8.3 13.2l7.4 3.6"/>',
   pie: '<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
+  descargar: '<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
+  std: '<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9.5h18M8 3v4M16 3v4"/><path d="M12 17.5s-3-1.8-3-4a1.6 1.6 0 0 1 3-.9 1.6 1.6 0 0 1 3 .9c0 2.2-3 4-3 4Z"/>',
+  agradecimiento: '<path d="M3 7h18v12H3z"/><path d="M3 7l9 6.5L21 7"/><path d="M12 4.5s-1.4-1.3-2.4-.6c-.8.6-.4 1.6.6 2.3L12 7.4l1.8-1.2c1-.7 1.4-1.7.6-2.3-1-.7-2.4.6-2.4.6Z"/>',
   diseno: '<path d="M4 20c2 0 4-1 4-3.5S6 13 4.5 14 2 20 4 20Z"/><path d="M8.5 15.5 20 4l-1.5-1.5L7 14"/>',
   idiomaAdicional: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.7 3 2.7 15 0 18M12 3c-2.7 3-2.7 15 0 18"/>',
   seguridad: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
@@ -773,12 +785,10 @@ let mostrarSlugOcupado = () => {};
 function campoInvitados() {
   const caja = el('div');
   let lista = S.invitados.map((i) => ({ ...i }));
-  const linkDe = (i) => `${location.origin}/${S.evento.tipo}/${datos.slug || S.evento.slug || '…'}?inv=${i.codigo}`;
   let t = null;
   const guardarLista = () => { clearTimeout(t); t = setTimeout(async () => {
     try { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: lista }) }); lista = r.invitados; S.invitados = r.invitados; dibujar(); estado('Guardado ✓'); } catch { aviso('No se pudo guardar la lista', true); }
   }, 800); };
-  const pegar = el('textarea', { placeholder: 'Nombre, pases extra, mesa (una fila por invitado)', rows: 3 });
   const sumar = (filas) => {
     const nuevas = filas.filter((x) => x.nombre);
     lista.push(...nuevas);
@@ -798,8 +808,7 @@ function campoInvitados() {
       el('td', {}, el('input', { type: 'number', class: 'num', min: 0, max: 50, value: i.pases ?? 0, 'aria-label': 'Pases extra', oninput: (e) => { i.pases = e.target.value; guardarLista(); } })),
       el('td', {}, el('input', { type: 'text', class: 'num', value: i.mesa ?? '', 'aria-label': 'Mesa', oninput: (e) => { i.mesa = e.target.value; guardarLista(); } })),
       pinVisible ? el('td', { class: 'pin' }, i.pin || '…') : null,
-      el('td', { class: 'acciones-fila' }, i.codigo ? el('button', { type: 'button', class: 'btn-icono', title: 'Copiar link personal', onclick: () => { navigator.clipboard.writeText(linkDe(i) + (pinVisible ? `  (PIN ${i.pin})` : '')); aviso('Link copiado'); } }, '🔗') : null,
-        i.codigo ? el('a', { class: 'btn-icono', title: 'Enviar por WhatsApp', target: '_blank', rel: 'noopener', href: `https://wa.me/?text=${encodeURIComponent(`${linkDe(i)}${pinVisible ? `\nPIN: ${i.pin}` : ''}`)}` }, '💬') : null,
+      el('td', { class: 'acciones-fila' },
         el('button', { type: 'button', class: 'btn-icono', title: 'Quitar', onclick: () => { lista.splice(n, 1); dibujar(); guardarLista(); } }, '✕'))));
     caja.replaceChildren(
       el('div', { class: 'envolver-tabla' }, el('table', { class: 'tabla-invitados' },
@@ -810,13 +819,6 @@ function campoInvitados() {
         el('label', { class: 'btn btn-chico' }, archivo, '⬆ Subir Excel o CSV'),
         el('a', { class: 'btn btn-sec btn-chico', href: '/panel/plantilla-invitados.xlsx', download: 'invitados.xlsx' }, 'Descargar planilla modelo')),
       el('p', { class: 'ayuda' }, 'Columnas: nombre, pases extra y mesa. Si la planilla tiene títulos ("Nombre", "Pases", "Mesa"…) se reconocen solos, en cualquier orden.'),
-      el('details', { class: 'pegar' }, el('summary', {}, 'Otra opción: pegar filas copiadas'),
-        pegar,
-        el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => {
-          sumar(pegar.value.split('\n').map((l) => l.split(/\t|;|,/).map((x) => x.trim())).filter((x) => x[0])
-            .map(([nombre, pases, mesa]) => ({ nombre, pases: parseInt(pases, 10) || 0, mesa })));
-          pegar.value = '';
-        } }, 'Sumar filas pegadas'))),
       el('p', { class: 'ayuda' }, `${lista.length} invitados · ${lista.reduce((s, i) => s + 1 + (parseInt(i.pases, 10) || 0), 0)} personas`));
   };
   dibujar();
@@ -828,7 +830,7 @@ function campoLista(c, valor, alCambiar) {
   const caja = el('div');
   const emitir = () => alCambiar(lista.map((x) => ({ ...x })));
   const dibujar = () => {
-    caja.replaceChildren(...lista.map((item, i) => el('div', { class: 'item-lista' },
+    caja.replaceChildren(...lista.map((item, i) => el('div', { class: `item-lista${c.unaColumna ? ' una-columna' : ''}` },
       el('div', { class: 'cabeza' }, `${i + 1}`, el('span', {},
         i > 0 ? el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Subir', onclick: () => { [lista[i - 1], lista[i]] = [lista[i], lista[i - 1]]; dibujar(); emitir(); } }, '↑') : null,
         el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Quitar', onclick: () => { lista.splice(i, 1); dibujar(); emitir(); } }, '✕'))),
@@ -963,6 +965,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     }
     case 'zona': return campoZona(c, valor, alCambiar, idHtml, dis);
     case 'bandera': return campoBandera(c, valor, alCambiar);
+    case 'tarjeta': return campoTarjeta(c, valor, alCambiar);
     case 'botonTextos': {
       const abierto = uiIdiomas.abiertos.has(c.idioma);
       return el('button', { type: 'button', class: 'btn btn-textos', 'aria-expanded': abierto ? 'true' : 'false',
@@ -1022,6 +1025,67 @@ function campoBandera(c, valor, alCambiar) {
     i.addEventListener('change', () => alCambiar(o.v));
     return el('label', { class: 'bandera', title: o.etiqueta }, i, el('img', { src: `/comun/banderas/${o.v}.svg`, alt: '', width: 26, height: 26, loading: 'lazy' }), el('span', {}, o.etiqueta));
   }));
+}
+
+// ── Tarjetas (Save The Date y agradecimiento) ─────────────────────────
+// Se editan sobre la tarjeta (ver tarjeta.js). "Generar" arma el JPG, lo sube y queda fijo:
+// desde ahí se descarga o se comparte, pero ya no se modifica.
+const MENSAJE_GRACIAS = 'Gracias por acompañarnos en un día tan especial. Fue un placer compartirlo con ustedes.';
+function varsTarjeta() {
+  const lugar = datos.celebracion?.nombre || datos.ceremonia?.nombre || '';
+  const iso = datos.celebracion?.fecha || (datos.celebracion?.inicio || '').slice(0, 10) || datos.ceremonia?.fecha || '';
+  const [a, m, d] = iso ? iso.split('-') : [];
+  const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+  const EVENTO = { boda: 'Nuestra boda', 15: 'Mis 15', bautismo: 'Mi bautismo', comunion: 'Mi comunión', cumple: 'Mi cumpleaños' };
+  return { nombres: [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & '), a: datos.nombres?.a || '', b: datos.nombres?.b || '',
+    fecha: iso ? `${d} · ${m} · ${a}` : '', fechaCorta: iso ? `${d} ${MESES[Number(m) - 1]} ${a}` : '', lugar, evento: EVENTO[S.evento.tipo] || '', mensaje: MENSAJE_GRACIAS };
+}
+function campoTarjeta(c, valor, alCambiar) {
+  const def = S.modelo?.tarjetas;
+  const diseno = c.clase === 'std' ? def?.std?.[leer(datos, 'std.tipo') || 'tarjeta'] : def?.agradecimiento;
+  if (!diseno) return el('p', { class: 'nota' }, 'Este modelo todavía no tiene su tarjeta. Escribenos por WhatsApp y la preparamos.');
+  const base = `/modelos/${S.evento.modelo}`;
+  const nombreArchivo = c.clase === 'std' ? 'save-the-date.jpg' : 'gracias.jpg';
+  // Ya generada: la imagen, descargar y compartir
+  if (valor?.generada) {
+    const compartir = async () => {
+      try {
+        const blob = await (await fetch(valor.generada)).blob();
+        const archivo = new File([blob], nombreArchivo, { type: 'image/jpeg' });
+        if (navigator.canShare?.({ files: [archivo] })) { await navigator.share({ files: [archivo] }); return; }
+      } catch (e) { if (e.name === 'AbortError') return; }
+      window.open(`https://wa.me/?text=${encodeURIComponent(location.origin + valor.generada)}`, '_blank', 'noopener');
+    };
+    return el('div', { class: 'tj-lista' },
+      el('img', { src: valor.generada, alt: c.clase === 'std' ? 'Tarjeta Save The Date' : 'Tarjeta de agradecimiento' }),
+      el('div', { class: 'tj-acciones' },
+        el('a', { class: 'btn', href: valor.generada, download: nombreArchivo, html: `${icono('descargar', 16) || ''}<span>Descargar</span>` }),
+        el('button', { type: 'button', class: 'btn btn-wa', onclick: compartir, html: `${ICONO_WA}<span>Compartir por WhatsApp</span>` })),
+      el('p', { class: 'ayuda' }, 'La tarjeta ya está generada: se puede descargar y compartir todas las veces que haga falta, pero ya no se modifica.'));
+  }
+  let actual = valor || {};
+  const editor = editorTarjeta({ def, diseno, base, valor: actual, vars: varsTarjeta(), alCambiar: (v) => { actual = v; alCambiar(v); },
+    subirFoto: async (archivo) => subirArchivo(await achicarFoto(archivo, 1600)) });
+  const generar = el('button', { type: 'button', class: 'btn btn-grande', onclick: async () => {
+    if (diseno.foto && !actual.foto) { aviso('Falta subir la foto de la tarjeta.', true); return; }
+    if (!confirm('Al generar la tarjeta ya no se puede modificar (ni los textos ni la foto). Después se descarga y se comparte todas las veces que quieras. ¿Generarla?')) return;
+    generar.disabled = true; generar.lastChild.textContent = 'Generando…';
+    try {
+      clearTimeout(guardarTimer); await guardar();
+      const blob = await dibujarTarjeta({ def, diseno, base, valor: actual, vars: varsTarjeta() });
+      const url = await subirArchivo(new File([blob], nombreArchivo, { type: 'image/jpeg' }));
+      await api('/tarjeta', { method: 'POST', body: JSON.stringify({ clase: c.clase, url }) });
+      escribir(datos, c.id, { ...actual, generada: url });
+      dibujarPaso(); aviso('¡Tarjeta lista!');
+    } catch (e) {
+      if (e.datos?.error === 'pagar') {
+        aviso(c.clase === 'std' ? 'Para generarla, la tarjeta se suma al pago de la invitación (incluida en Premium y Deluxe).' : 'Para generarla, la tarjeta se suma al pago de la invitación.');
+        if (S.plan) mostrarResumen(true);
+      } else aviso(e.message, true);
+    } finally { generar.disabled = false; generar.lastChild.textContent = 'Generar tarjeta'; }
+  }, html: `${icono('std', 18)}<span>Generar tarjeta</span>` });
+  return el('div', { class: 'tj-campo' }, editor, generar,
+    el('p', { class: 'ayuda' }, 'Los textos salen de la invitación, pero acá se pueden cambiar sin tocar la invitación. Una vez generada, la tarjeta queda fija.'));
 }
 
 let contadorIds = 0;
@@ -1110,7 +1174,7 @@ function panelRespuestas() {
 const NOMBRE_NIVEL = { gratis: 'Gratis', basic: 'Basic', premium: 'Premium', deluxe: 'Deluxe', complemento: 'Complemento' };
 const esGratis = () => S.plan?.plan === 'gratis';
 const nivelDe = (n) => (n === 'basic' && esGratis() ? 'gratis' : n);
-const insigniaNivel = (n) => (n ? el('span', { class: `insignia-nivel nivel-${nivelDe(n)}` }, NOMBRE_NIVEL[nivelDe(n)]) : null);
+const insigniaNivel = (n) => (n && n !== 'complemento' ? el('span', { class: `insignia-nivel nivel-${nivelDe(n)}` }, NOMBRE_NIVEL[nivelDe(n)]) : null);
 
 // Si un paso está prendido en la invitación (las obligatorias siempre)
 function pasoActivo(p) {
@@ -1146,8 +1210,8 @@ function dibujarPasos() {
   const pasos = S.esquema.pasos;
   nav.replaceChildren(
     el('div', { class: 'pasos-cabeza' }, el('strong', {}, 'Pasos'), el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Cerrar', onclick: cerrarPasos }, '✕')),
-    ...pasos.flatMap((p, i) => [p.separado ? el('hr', { class: 'pasos-division' }) : null, el('div', { class: `paso-fila${pasoActivo(p) ? '' : ' apagado'}` },
-      el('button', { type: 'button', class: 'paso', 'aria-current': p.id === pasoActual?.id ? 'step' : null, onclick: () => { cerrarPasos(); irA(p.id); } },
+    ...pasos.flatMap((p, i) => [p.separado ? el('hr', { class: 'pasos-division' }) : null, p.separado ? el('div', { class: 'pasos-subtitulo' }, 'Complementos') : null, el('div', { class: `paso-fila${pasoActivo(p) ? '' : ' apagado'}` },
+      el('button', { type: 'button', class: 'paso', 'aria-current': p.id === pasoActual?.id ? 'step' : null, onclick: () => { cerrarPasos(); if (document.body.classList.contains('editor-plegado')) plegarEditor(false); irA(p.id); } },
         el('span', { class: 'num', title: `Paso ${i + 1}`, html: icono(p.id, 15) || String(i + 1) }), el('span', { class: 'nombre' }, p.titulo, insigniaNivel(p.nivel)),
         conFaltas.has(p.id) ? el('span', { class: 'falta', 'aria-label': 'Faltan datos' }) : null),
       interruptorPaso(p))]).filter(Boolean));
@@ -1157,7 +1221,7 @@ function dibujarPasos() {
   $('#progreso-movil').style.setProperty('--avance', avance);
   $('#linea-pasos').replaceChildren(el('small', {}, `Paso ${i + 1} de ${pasos.length}`), el('span', { class: 'progreso', style: `--avance:${avance}` }));
   $('#btn-anterior').disabled = i <= 0;
-  $('#btn-siguiente').textContent = i >= pasos.length - 1 ? 'Publicar' : 'Siguiente →';
+  $('#btn-siguiente').lastElementChild.textContent = i >= pasos.length - 1 ? 'Publicar' : 'Siguiente';
 }
 function abrirPasos() { $('#pasos').classList.add('abierta'); document.body.classList.add('sin-scroll'); $('#pasos [aria-current="step"]')?.focus(); }
 function cerrarPasos() { $('#pasos').classList.remove('abierta'); document.body.classList.remove('sin-scroll'); }
@@ -1291,7 +1355,7 @@ const ICONO_WA = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="t
 // Manual de uso corto (el completo está en /ayuda/panel/)
 const MANUAL = [
   ['Cómo funciona', 'A la izquierda (o en "Ver todos", en el celular) están los pasos. Cada uno tiene su interruptor: prendido, la sección se ve en la invitación. Lo que se carga se guarda solo y la vista previa se actualiza al instante.'],
-  ['Plan y precio', 'El plan sale de las secciones prendidas: Basic, Premium o Deluxe (cada paso tiene su aviso). Cambios de diseño e Idioma adicional son complementos que se suman aparte (van al final del menú). Una sección apagada no se puede editar hasta prenderla. No se paga nada hasta publicar.'],
+  ['Plan y precio', 'El plan sale de las secciones prendidas: Basic, Premium o Deluxe (cada paso tiene su aviso). Las tarjetas (Save The Date y agradecimiento), Cambios de diseño e Idioma adicional son complementos: van al final del menú, en "Complementos". La Save The Date viene incluida en Premium y Deluxe. Una sección apagada no se puede editar hasta prenderla. No se paga nada hasta publicar.'],
   ['Fotos y encuadre', 'Después de subir una foto se elige qué parte se ve. En la portada, el punto mueve los recortes del celular y de la computadora a la vez; cada marco se puede mover solo. En el celular, mantener apretado un instante antes de arrastrar.'],
   ['Lugar y fecha', 'Con el link de Google Maps se arma solo el mapa y el botón "¿Cómo llegar?". En Google Maps: buscar el lugar, tocar Compartir y Copiar link.'],
   ['Confirmación e invitados', 'La confirmación se cierra sola en la fecha límite o al llegar al aforo. Con la lista de invitados, cada uno recibe su link personal con su nombre, pases y mesa.'],

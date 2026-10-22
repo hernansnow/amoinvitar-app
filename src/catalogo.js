@@ -45,12 +45,16 @@ export const EXTRAS = {
   paleta: { precio: 25, nombre: 'Cambio de paleta de colores' },
   tipografia: { precio: 10, nombre: 'Cambio de tipografía' },
   'regalos-simbolicos': { precio: 25, nombre: 'Lista de regalos simbólica' },
+  // Tarjetas (complementos de la invitación): la Save The Date va incluida en Premium y Deluxe
+  'std-tarjeta': { precio: 12, nombre: 'Tarjeta Save The Date', gratisDesde: 'premium' },
+  'std-foto': { precio: 15, nombre: 'Tarjeta Save The Date con foto', gratisDesde: 'premium' },
+  agradecimiento: { precio: 15, nombre: 'Tarjeta de agradecimiento' },
 };
 
 // Qué paquete hace falta para cada sección (para el "Pasate a Premium/Deluxe")
 export const SECCION_MINIMA = {
-  historia: 'premium', galeria: 'basic', rsvp: 'basic', dresscode: 'basic', estilos: 'basic',
-  instagram: 'premium', playlist: 'premium', album: 'deluxe', canciones: 'premium', regalos: 'premium', sobre: 'premium', musica: 'premium', cuenta: 'premium',
+  historia: 'premium', galeria: 'basic', rsvp: 'basic', dresscode: 'basic', estilos: 'deluxe',
+  instagram: 'premium', playlist: 'deluxe', album: 'deluxe', canciones: 'premium', regalos: 'premium', sobre: 'premium', musica: 'premium', cuenta: 'premium',
   hospedaje: 'deluxe', bus: 'deluxe', itinerario: 'deluxe', testigos: 'deluxe', redes: 'deluxe', 'dress-sugerencias': 'deluxe',
 };
 
