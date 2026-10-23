@@ -136,6 +136,16 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
 
 - **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,
   justo después, la portada del Basic del mismo modelo con `data-no="cuenta.portada"` (se copia tal cual de `index-basic.html`).
+- **Tarjetas con foto** (Save The Date): no dependen del modelo; están en `public/comun/tarjetas/foto/catalogo.json`
+  (fondos con el hueco transparente, muestra para elegir y versión para dos nombres o uno). Faltan los diseños 5, 7 y 8:
+  vinieron con los textos puestos, hacen falta los fondos limpios. Al diseño 3 en 15 años le falta el adorno de la tiara.
+- **Tarjeta Save The Date de cada modelo**: los fondos limpios y las versiones terminadas de todos los modelos están en
+  el material que mandó Hernán (std tarjeta). Al convertir cada modelo: fondo en `img/std-fondo.jpg`, el adorno de cada
+  evento como capa con `tipos`, y los textos medidos contra la versión terminada. "Próximamente la invitación formal"
+  va con `"opcional": "proximamente"` (el cliente lo prende o apaga). Rouge (boda y 15) usa Mongolia Sky en bordó:
+  reemplazar también en la invitación la imagen con esa fuente por texto (para poder traducirlo o cambiarlo).
+- **Después de publicar**: los nombres y la fecha quedan fijos (se cambian pidiéndolo por WhatsApp) y el resto se puede
+  editar hasta 7 días después del evento. El superusuario (administrador) edita todo, también las tarjetas generadas.
 - **Tarjetas** (Save The Date y agradecimiento): en `modelo.json → tarjetas`. Se parte del diseño en JPG: se le borran los
   textos (queda `img/std-fondo.jpg`) y, para las versiones con foto, una capa con las hojas y el aro con el centro
   transparente (`img/std-aro.webp`, con `"sobreFoto": true`). Los textos se definen con posición, tamaño, color y
@@ -155,7 +165,7 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
   con `data-si="busConRecorrido"` (sin datos cargados, no aparece). La columna del bus lleva `id="traslado"`.
 - **Itinerario**: además de los íconos del modelo, todos tienen los comunes de `comun/img/itinerario/` (corazón,
   civil, vela, cáliz, globos, regalos, mamadera, corona, mesa dulce, despedida, show, fuegos, traslado, música).
-  Sin ícono elegido va el corazón. Íconos nuevos: glifo blanco sólido de 350 × 350 px.
+  Sin ícono elegido, el círculo queda vacío (el `<img>` lleva `data-si="iconoUrl"`). Íconos nuevos: glifo blanco sólido de 350 × 350 px.
 - **Fotos de muestra en la vista previa del panel**: las de la demo del modelo, muy desenfocadas. Se generan con
   `python3 scripts/fotos-borrosas.py <modelo>` (quedan en `demo/<evento>/borrosas/`, ~8 KB cada una, y la lista en
   `modelo.json → demoBorrosas`). Sin ellas, la vista previa usa las siluetas genéricas.

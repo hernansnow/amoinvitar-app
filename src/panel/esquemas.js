@@ -264,7 +264,7 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'itinerario', tipo: 'lista', etiqueta: 'Momentos', max: 12, agregar: 'Agregar momento', campos: [
         { id: 'hora', tipo: 'texto', etiqueta: 'Hora', max: 10, placeholder: '21:00' },
         { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 25 },
-        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido va un corazón.',
+        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido, el círculo queda vacío.',
           valores: [...(modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })),
             ...ICONOS_COMUNES.filter((v) => !(modelo.iconosItinerario || []).includes(v)).map((v) => ({ v, etiqueta: nombreIcono(v), src: `/comun/img/itinerario/timeline-icon-${v}.png` }))] },
       ] },
@@ -356,13 +356,19 @@ const pasoDiseno = (modelo) => ({
 // ── Complementos: tarjetas Save The Date y de agradecimiento ──────────
 // La tarjeta es la del modelo (mismo estilo que la invitación). Se edita directo sobre la
 // tarjeta (textos, tamaños y posición) y al generarla queda fija: se descarga o se comparte.
+export const DISENOS_FOTO = [
+  { v: 'f1', etiqueta: 'Corazón geométrico' }, { v: 'f2', etiqueta: 'Pinceladas' }, { v: 'f3', etiqueta: 'Ramitas' },
+  { v: 'f4', etiqueta: 'Editorial' }, { v: 'f6', etiqueta: 'Encaje' },
+];
 const pasoTarjeta = (clase, modelo) => (clase === 'std' ? {
   id: 'std', seccion: 'std', complemento: true, titulo: 'Tarjeta Save The Date',
   campos: [
     { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: 'Una tarjeta para mandar antes de la invitación, con el mismo diseño. Incluida en los planes Premium y Deluxe.' },
     { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
-      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Solo con textos.' }, { v: 'foto', etiqueta: 'Tarjeta con foto' },
+      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.' },
     ] },
+    // Diseños con foto: no dependen del modelo (public/comun/tarjetas/foto/catalogo.json)
+    { id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseño', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true, si: { campo: 'std.tipo', es: 'foto' } },
     { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true },
   ],
 } : {
@@ -584,21 +590,37 @@ export function complementos(esquema, datos) {
 }
 
 // Cada paso con su nivel (para los avisos Basic / Premium / Deluxe / Complemento del menú)
-function anotar(pasos, { modelo, gratis = false, disenoEnviado = false }) {
+function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false }) {
   return pasos.map((paso) => ({
     ...paso,
     nivel: paso.complemento ? 'complemento' : paso.nivelPaso || (paso.seccion ? paqueteMinimo(modelo, paso.seccion) : 'basic'),
     campos: paso.campos.map((c) => {
       if (paso.complemento && gratis) return { ...c, cerrado: 'Los complementos no están disponibles en el plan gratis.' };
+      if (admin) return c;
       if (paso.id === 'diseno' && disenoEnviado && c.tipo !== 'nota') return { ...c, cerrado: 'El pedido de diseño ya se envió al equipo.' };
+      if (cerrada && c.tipo !== 'nota') return { ...c, cerrado: 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
+      if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'La invitación ya está publicada: los nombres y la fecha se cambian pidiéndolo por WhatsApp.', pedirCambio: true };
       return c;
     }),
   }));
 }
 
+// ── Después de publicar ───────────────────────────────────────────────
+// Para que una invitación no se "recicle" para otro evento, los nombres y la fecha quedan
+// fijos al publicarla (se cambian pidiéndolo por WhatsApp). Todo lo demás se puede corregir
+// hasta unos días después del evento. El superusuario edita siempre, sin restricciones.
+export const FIJOS_PUBLICADA = ['nombres.a', 'nombres.b', 'ceremonia.fecha', 'celebracion.fecha'];
+export const DIAS_EDICION_TRAS_EVENTO = 7;
+export function edicionCerrada(datos, ahora = new Date()) {
+  const f = datos.celebracion?.fecha || String(datos.celebracion?.inicio || '').slice(0, 10) || datos.ceremonia?.fecha;
+  if (!f) return false;
+  const limite = new Date(`${f}T23:59:59Z`); limite.setUTCDate(limite.getUTCDate() + DIAS_EDICION_TRAS_EVENTO);
+  return ahora > limite;
+}
+
 // ── Entrada principal ─────────────────────────────────────────────────
 // producto: 'invitacion' | 'a-medida' | 'std-web' | 'std-tarjeta' | …
-export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {} }) {
+export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false }) {
   if (PRODUCTOS_STD[producto]) {
     return { producto, pasos: PRODUCTOS_STD[producto]() };
   }
@@ -615,7 +637,8 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     pasoIdiomaAdicional(base, datos),
     ...(producto === 'invitacion' && m?.tarjetas?.agradecimiento ? [pasoTarjeta('agradecimiento', m)] : []),
   ];
-  return { producto, tipo, paquete, pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado }) };
+  const cerrada = publicada && edicionCerrada(datos);
+  return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin }) };
 }
 
 // Condición "si" de un campo: { campo, es | no } · [todas] · { o: [alguna] }
@@ -658,7 +681,7 @@ function limpiarValor(c, v) {
     case 'zona': return ZONAS_OK.has(v) ? v : undefined;
     case 'idioma': return IDIOMAS_OK.has(v) ? v : undefined;
     case 'fuente': return c.valores.includes(v) ? v : undefined;
-    case 'bandera': return c.valores.some((o) => o.v === v) ? v : undefined;
+    case 'bandera': case 'disenoFoto': return c.valores.some((o) => o.v === v) ? v : undefined;
     // Tarjeta editada sobre el diseño: textos con su corrimiento y tamaño, la foto y su encuadre.
     // La imagen generada (y el bloqueo) los pone solo el servidor al generarla.
     case 'tarjeta': {
@@ -669,7 +692,8 @@ function limpiarValor(c, v) {
         if (!/^\w{1,20}$/.test(k) || typeof t !== 'object' || !t) continue;
         textos[k] = { ...(typeof t.texto === 'string' ? { texto: t.texto.slice(0, 300) } : {}), dx: num(t.dx, -1200, 1200) || 0, dy: num(t.dy, -1500, 1500) || 0, escala: num(t.escala, 0.3, 3) || 1 };
       }
-      return { textos, extra: !!v.extra, ...(URL_OK.test(v.foto || '') ? { foto: String(v.foto).slice(0, 500) } : {}),
+      const opcionales = Object.fromEntries(Object.entries(v.opcionales || {}).filter(([k]) => /^\w{1,20}$/.test(k)).slice(0, 6).map(([k, x]) => [k, !!x]));
+      return { textos, extra: !!v.extra, opcionales, ...(URL_OK.test(v.foto || '') ? { foto: String(v.foto).slice(0, 500) } : {}),
         ...(POS_OK.test(v.fotoPos || '') ? { fotoPos: v.fotoPos } : {}), ...(num(v.fotoZoom, 1, 4) ? { fotoZoom: num(v.fotoZoom, 1, 4) } : {}) };
     }
     // Paleta: los 4 colores del diseño (vacío = ese color se quitó)

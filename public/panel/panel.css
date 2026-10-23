@@ -60,7 +60,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ── Avisos de plan: Gratis · Basic · Premium · Deluxe · Complemento ── */
 .insignia-nivel { display: inline-block; vertical-align: middle; margin-left: 6px; font-size: .58rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; line-height: 1.5; white-space: nowrap; }
-.nivel-gratis { color: #2f7fa3; } .nivel-basic { color: #a8693f; } .nivel-premium { color: #7f8790; } .nivel-deluxe { color: #b38b2d; } .nivel-complemento { color: #6b706c; }
+.nivel-gratis { color: #2f7fa3; } .nivel-basic { color: #a8693f; } .nivel-premium { color: #7f8790; } .nivel-deluxe { color: #e2c574; background: #1c1c1c; border-color: #1c1c1c; } .nivel-complemento { color: #6b706c; }
 .paso-titulo .insignia-nivel { font-size: .65rem; margin-left: 10px; }
 .paso[aria-current="step"] .insignia-nivel { color: #fff; }
 
@@ -713,3 +713,17 @@ textarea { min-height: 96px; line-height: 1.4; }
 }
 .tj-parte { outline: none; }
 .tj-texto.escribiendo .tj-parte { border-bottom: 2px dashed rgba(0,0,0,.35); }
+
+/* Deluxe: negro con letras doradas (también en el paso elegido del menú) */
+.paso[aria-current="step"] .insignia-nivel.nivel-deluxe { color: #e2c574; }
+/* Tarjetas con foto: elegir el diseño por su miniatura */
+.disenos-foto { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+.diseno-foto { position: relative; display: grid; gap: 4px; justify-items: center; cursor: pointer; font-size: .8rem; color: var(--suave); text-align: center; }
+.diseno-foto input { position: absolute; opacity: 0; pointer-events: none; }
+.diseno-foto img { width: 100%; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 8px; border: 2px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.diseno-foto:has(input:checked) img { border-color: var(--acento); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acento) 30%, transparent); }
+.diseno-foto:has(input:checked) span { color: var(--texto); font-weight: 600; }
+.diseno-foto:has(input:focus-visible) img { outline: 2px solid var(--acento); }
+.tj-foto:not(.circulo) { border-radius: 0; }
+.tj-texto.izq { text-align: left; justify-content: flex-start; }
+.tj-amp-texto { white-space: pre; }

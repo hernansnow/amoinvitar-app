@@ -19,7 +19,7 @@ import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
-import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe } from './panel/esquemas.js';
+import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA } from './panel/esquemas.js';
 import { MODELOS, nombreModelo } from './modelos.js';
 import { MODELOS_GRATIS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
@@ -249,10 +249,11 @@ async function eventoConClave(env, request, url, id) {
   return u && (u.esAdmin || await almacenDe(env).tieneAcceso(ev.id, u.id)) ? ev : null;
 }
 
-async function esquemaDe(env, url, ev, datos = ev.datos) {
+async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {}) {
   const modelo = ev.producto === 'invitacion' ? await modeloJSON(env, ev.modelo, url.origin) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
-    gratis: ev.paquete === 'gratis' || datos.planElegido === 'gratis', disenoEnviado: !!datos.diseno?.enviado });
+    gratis: ev.paquete === 'gratis' || datos.planElegido === 'gratis', disenoEnviado: !!datos.diseno?.enviado,
+    publicada: ev.estado === 'publicado', admin });
 }
 
 // Plan con el que se ve la invitación: el que ya pagó o, en el borrador, el que piden las secciones elegidas
@@ -341,12 +342,14 @@ async function apiPanel(env, request, url, partes) {
   const ev = await eventoConClave(env, request, url, id);
   if (!ev) return json({ error: 'Sin permiso' }, 403);
   const almacen = almacenDe(env);
-  const esquema = await esquemaDe(env, url, ev);
+  // Superusuario (administrador de Amo Invitar): edita todo, sin las restricciones de publicada
+  const usuario = await usuarioActual(request, env);
+  const admin = !!usuario?.esAdmin;
+  const esquema = await esquemaDe(env, url, ev, ev.datos, { admin });
 
   if (!accion && request.method === 'GET') {
     const v = variante(ev.datos.variante);
     const dic = diccionario(ev.tipo, v);
-    const usuario = await usuarioActual(request, env);
     return json({
       evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
       esquema, datos: ev.datos, textos: dic, faltan: faltantes(esquema, ev.datos),
@@ -354,7 +357,7 @@ async function apiPanel(env, request, url, partes) {
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,
       modelos: modelosPara(ev.tipo),
-      usuario: usuario ? { email: usuario.email } : null,
+      usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null }; })() : null,
       marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
@@ -363,13 +366,19 @@ async function apiPanel(env, request, url, partes) {
   }
   if (!accion && request.method === 'PUT') {
     const { datos } = await request.json();
+    if (esquema.cerrada) return json({ error: 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escribinos por WhatsApp.' }, 403);
+    // Publicada: los nombres y la fecha quedan como estaban (evita reciclar la invitación para otro evento)
+    if (ev.estado === 'publicado' && !admin && datos) for (const ruta of FIJOS_PUBLICADA) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
     // Los campos de cada idioma (bandera, traducciones) dependen de los idiomas que llegan ahora
-    const conIdiomas = datos?.idiomas ? await esquemaDe(env, url, ev, { ...ev.datos, idiomas: datos.idiomas, variante: datos.variante ?? ev.datos.variante }) : esquema;
+    const conIdiomas = datos?.idiomas ? await esquemaDe(env, url, ev, { ...ev.datos, idiomas: datos.idiomas, variante: datos.variante ?? ev.datos.variante }, { admin }) : esquema;
     const limpio = limpiarDatos(conIdiomas, datos || {}, ev.datos);
     if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
     // Tarjetas ya generadas: quedan fijas
-    if (ev.datos.std?.tarjeta?.generada) limpio.std = ev.datos.std;
-    if (ev.datos.agradecimiento?.tarjeta?.generada) limpio.agradecimiento = ev.datos.agradecimiento;
+    for (const clase of ['std', 'agradecimiento']) {
+      const prev = ev.datos[clase]?.tarjeta;
+      if (prev?.generada && !admin) limpio[clase] = ev.datos[clase];
+      else if (prev?.generada && limpio[clase]?.tarjeta) Object.assign(limpio[clase].tarjeta, { generada: prev.generada, generadaEn: prev.generadaEn });
+    }
     await leerMapas(limpio);
     await leerSpotify(limpio);
     if (limpio.slug && limpio.slug !== ev.slug) {
@@ -379,7 +388,7 @@ async function apiPanel(env, request, url, partes) {
     ev.datos = limpio;
     await almacen.guardarEvento(ev);
     // El esquema cambia con los idiomas elegidos (campos para traducir)
-    const nuevo = await esquemaDe(env, url, ev);
+    const nuevo = await esquemaDe(env, url, ev, ev.datos, { admin });
     return json({ ok: true, datos: limpio, faltan: faltantes(nuevo, limpio), esquema: nuevo,
       textosIdiomas: Object.fromEntries(idiomasDe(limpio).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, nuevo) : null });
@@ -409,16 +418,22 @@ async function apiPanel(env, request, url, partes) {
   // Generar una tarjeta (Save The Date o agradecimiento): el panel arma el JPG y lo sube;
   // acá queda guardada y fija. Hace falta tenerla pagada (la Save The Date viene con Premium y Deluxe).
   if (accion === 'tarjeta' && request.method === 'POST') {
-    const { clase, url: imagen } = await request.json();
+    const { clase, url: imagen, reabrir } = await request.json();
     if (!['std', 'agradecimiento'].includes(clase)) return json({ error: 'Tarjeta desconocida' }, 400);
+    // El superusuario puede volver a abrir una tarjeta ya generada
+    if (reabrir && admin) {
+      if (ev.datos[clase]?.tarjeta) { delete ev.datos[clase].tarjeta.generada; delete ev.datos[clase].tarjeta.generadaEn; }
+      await almacen.guardarEvento(ev);
+      return json({ ok: true });
+    }
     if (!/^\/media\/[\w./-]+\.jpe?g$/i.test(String(imagen || '')) || !String(imagen).includes(ev.id)) return json({ error: 'Imagen no válida' }, 400);
     const actual = ev.datos[clase]?.tarjeta || {};
-    if (actual.generada) return json({ error: 'La tarjeta ya se generó', url: actual.generada }, 409);
+    if (actual.generada && !admin) return json({ error: 'La tarjeta ya se generó', url: actual.generada }, 409);
     const extras = ev.datos.extras || [];
     const pagada = clase === 'std'
       ? ['premium', 'deluxe'].includes(ev.paquete) || extras.some((x) => x.startsWith('std-'))
       : extras.includes('agradecimiento');
-    if (!pagada) return json({ error: 'pagar' }, 402);
+    if (!pagada && !admin) return json({ error: 'pagar' }, 402);
     ev.datos[clase] = { ...(ev.datos[clase] || {}), tarjeta: { ...actual, generada: imagen, generadaEn: new Date().toISOString() } };
     await almacen.guardarEvento(ev);
     return json({ ok: true, url: imagen });

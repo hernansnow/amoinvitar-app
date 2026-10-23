@@ -78,6 +78,7 @@ function cambio(ruta, valor, { rearmar = false } = {}) {
   }
   escribir(datos, ruta, valor);
   if (ruta === 'meta.descripcion' && $('#compartir-desc')) $('#compartir-desc').textContent = valor || String(S.textos?.['meta.descripcion'] || '');
+  if (ruta === 'std.tipo' || ruta === 'std.diseno') escribir(datos, 'std.tarjeta.textos', {});
   if (ruta.startsWith('nombres.')) $('#titulo-evento').textContent = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ') || 'Mi invitación';
   if (rearmar) { dibujarPaso(); dibujarPasos(); }
   else actualizarCondiciones();
@@ -966,6 +967,15 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     case 'zona': return campoZona(c, valor, alCambiar, idHtml, dis);
     case 'bandera': return campoBandera(c, valor, alCambiar);
     case 'tarjeta': return campoTarjeta(c, valor, alCambiar);
+    case 'disenoFoto': {
+      const plural = !!datos.nombres?.b;
+      const actual = valor || c.defecto;
+      return el('div', { class: 'disenos-foto', role: 'radiogroup' }, c.valores.map((o) => {
+        const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: o.v, checked: o.v === actual, disabled: dis });
+        i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
+        return el('label', { class: 'diseno-foto' }, i, el('img', { src: `/comun/tarjetas/foto/${o.v}/muestra-${plural ? 'boda' : '15'}.jpg`, alt: '', loading: 'lazy' }), el('span', {}, o.etiqueta));
+      }));
+    }
     case 'botonTextos': {
       const abierto = uiIdiomas.abiertos.has(c.idioma);
       return el('button', { type: 'button', class: 'btn btn-textos', 'aria-expanded': abierto ? 'true' : 'false',
@@ -1031,20 +1041,63 @@ function campoBandera(c, valor, alCambiar) {
 // Se editan sobre la tarjeta (ver tarjeta.js). "Generar" arma el JPG, lo sube y queda fijo:
 // desde ahí se descarga o se comparte, pero ya no se modifica.
 const MENSAJE_GRACIAS = 'Gracias por acompañarnos en un día tan especial. Fue un placer compartirlo con ustedes.';
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const may = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+// Frases según el evento (dos nombres: boda; uno: 15, bautismo, comunión, cumple…)
+const FRASES = {
+  boda: { evento: 'Nuestra boda', exclama: '¡Nos casamos!', invitamos: 'Te invitamos a celebrar\nnuestro casamiento' },
+  15: { evento: 'Mis 15 años', exclama: '¡Mis quince años!', invitamos: 'Te invito a celebrar mis 15 años' },
+  bautismo: { evento: 'Mi bautismo', exclama: '¡Mi bautismo!', invitamos: 'Te invito a celebrar mi bautismo' },
+  comunion: { evento: 'Mi primera comunión', exclama: '¡Mi primera comunión!', invitamos: 'Te invito a celebrar mi primera comunión' },
+  cumple: { evento: 'Mi cumpleaños', exclama: '¡Mi cumpleaños!', invitamos: 'Te invito a celebrar mi cumpleaños' },
+};
 function varsTarjeta() {
   const lugar = datos.celebracion?.nombre || datos.ceremonia?.nombre || '';
   const iso = datos.celebracion?.fecha || (datos.celebracion?.inicio || '').slice(0, 10) || datos.ceremonia?.fecha || '';
+  const hora = datos.celebracion?.hora || '';
   const [a, m, d] = iso ? iso.split('-') : [];
-  const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-  const EVENTO = { boda: 'Nuestra boda', 15: 'Mis 15', bautismo: 'Mi bautismo', comunion: 'Mi comunión', cumple: 'Mi cumpleaños' };
-  return { nombres: [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & '), a: datos.nombres?.a || '', b: datos.nombres?.b || '',
-    fecha: iso ? `${d} · ${m} · ${a}` : '', fechaCorta: iso ? `${d} ${MESES[Number(m) - 1]} ${a}` : '', lugar, evento: EVENTO[S.evento.tipo] || '', mensaje: MENSAJE_GRACIAS };
+  const fecha = iso ? new Date(`${iso}T12:00:00`) : null;
+  const mes = fecha ? MESES[Number(m) - 1] : '';
+  const plural = !!datos.nombres?.b;
+  const f = FRASES[S.evento.tipo] || FRASES[plural ? 'boda' : 'cumple'];
+  const cierre = datos.rsvp?.cierre ? datos.rsvp.cierre.split('-').reverse().join('/') : '';
+  return {
+    nombres: [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & '), a: datos.nombres?.a || '', b: datos.nombres?.b || '',
+    fecha: iso ? `${d} · ${m} · ${a}` : '', fechaCorta: iso ? `${d} ${mes.slice(0, 3).toUpperCase()} ${a}` : '',
+    fechaLarga: iso ? `${Number(d)} ${may(mes)} ${a}` : '', fechaPuntos: iso ? `${Number(d)}·${may(mes)}·${a}` : '',
+    dia: iso ? String(Number(d)) : '', mes: may(mes), mesCorto: may(mes.slice(0, 3)), mesNum: m || '', anio: a || '', anioCorto: a ? a.slice(2) : '',
+    diaSemana: fecha ? may(DIAS[fecha.getDay()]) : '', hora: hora ? `${hora}hs` : '',
+    lugar, horaLugar: [hora ? `${hora}hs` : '', lugar.toUpperCase()].filter(Boolean).join(' - '),
+    rsvpAntes: cierre ? `Responder RSVP antes del ${cierre}` : '',
+    evento: f.evento, eventoExclama: f.exclama, invitamos: plural ? f.invitamos.replace('Te invito', 'Te invitamos') : f.invitamos,
+    teEsperamos: plural ? 'Te esperamos' : 'Te espero', mensaje: MENSAJE_GRACIAS,
+  };
+}
+// Catálogo de tarjetas con foto (se carga una vez)
+let catalogoFoto = null;
+const cargarCatalogoFoto = () => (catalogoFoto ??= fetch('/comun/tarjetas/foto/catalogo.json').then((r) => r.json()).catch(() => ({ disenos: [] })));
+// El diseño que corresponde a la tarjeta: el del modelo o uno del catálogo con foto
+async function disenoTarjeta(c) {
+  const t = S.modelo?.tarjetas;
+  if (c.clase === 'std' && leer(datos, 'std.tipo') === 'foto') {
+    const cat = await cargarCatalogoFoto();
+    const d = cat.disenos.find((x) => x.id === (leer(datos, 'std.diseno') || 'f1')) || cat.disenos[0];
+    if (!d) return null;
+    return { def: { ancho: d.ancho, alto: d.alto, fondo: d.fondo, fuentes: cat.fuentes }, diseno: d[datos.nombres?.b ? 'plural' : 'singular'], base: '/comun/tarjetas/foto' };
+  }
+  const diseno = c.clase === 'std' ? t?.std?.tarjeta : t?.agradecimiento;
+  if (!diseno) return null;
+  return { def: { ...t, ancho: diseno.ancho || t.ancho, alto: diseno.alto || t.alto, fondo: diseno.fondo || t.fondo }, diseno, base: `/modelos/${S.evento.modelo}` };
 }
 function campoTarjeta(c, valor, alCambiar) {
-  const def = S.modelo?.tarjetas;
-  const diseno = c.clase === 'std' ? def?.std?.[leer(datos, 'std.tipo') || 'tarjeta'] : def?.agradecimiento;
-  if (!diseno) return el('p', { class: 'nota' }, 'Este modelo todavía no tiene su tarjeta. Escribenos por WhatsApp y la preparamos.');
-  const base = `/modelos/${S.evento.modelo}`;
+  const caja = el('div', { class: 'tj-campo' }, el('p', { class: 'ayuda' }, 'Cargando la tarjeta…'));
+  disenoTarjeta(c).then((x) => caja.replaceWith(x ? armarTarjeta(c, valor, alCambiar, x)
+    : el('p', { class: 'nota' }, 'Este modelo todavía no tiene su tarjeta. Escríbenos por WhatsApp y la preparamos.')));
+  return caja;
+}
+function armarTarjeta(c, valor, alCambiar, { def, diseno, base }) {
+  const tipo = S.evento.tipo;
   const nombreArchivo = c.clase === 'std' ? 'save-the-date.jpg' : 'gracias.jpg';
   // Ya generada: la imagen, descargar y compartir
   if (valor?.generada) {
@@ -1061,10 +1114,16 @@ function campoTarjeta(c, valor, alCambiar) {
       el('div', { class: 'tj-acciones' },
         el('a', { class: 'btn', href: valor.generada, download: nombreArchivo, html: `${icono('descargar', 16) || ''}<span>Descargar</span>` }),
         el('button', { type: 'button', class: 'btn btn-wa', onclick: compartir, html: `${ICONO_WA}<span>Compartir por WhatsApp</span>` })),
-      el('p', { class: 'ayuda' }, 'La tarjeta ya está generada: se puede descargar y compartir todas las veces que haga falta, pero ya no se modifica.'));
+      el('p', { class: 'ayuda' }, 'La tarjeta ya está generada: se puede descargar y compartir todas las veces que haga falta, pero ya no se modifica.'),
+      // Superusuario: puede volver a abrirla para editarla
+      S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: async () => {
+        if (!confirm('¿Volver a abrir la tarjeta para editarla? (solo administración)')) return;
+        await api('/tarjeta', { method: 'POST', body: JSON.stringify({ clase: c.clase, reabrir: true }) });
+        const t = leer(datos, c.id) || {}; delete t.generada; escribir(datos, c.id, t); dibujarPaso();
+      } }, 'Volver a editar (administración)') : null);
   }
   let actual = valor || {};
-  const editor = editorTarjeta({ def, diseno, base, valor: actual, vars: varsTarjeta(), alCambiar: (v) => { actual = v; alCambiar(v); },
+  const editor = editorTarjeta({ def, diseno, base, tipo, valor: actual, vars: varsTarjeta(), alCambiar: (v) => { actual = v; alCambiar(v); },
     subirFoto: async (archivo) => subirArchivo(await achicarFoto(archivo, 1600)) });
   const generar = el('button', { type: 'button', class: 'btn btn-grande', onclick: async () => {
     if (diseno.foto && !actual.foto) { aviso('Falta subir la foto de la tarjeta.', true); return; }
@@ -1072,7 +1131,7 @@ function campoTarjeta(c, valor, alCambiar) {
     generar.disabled = true; generar.lastChild.textContent = 'Generando…';
     try {
       clearTimeout(guardarTimer); await guardar();
-      const blob = await dibujarTarjeta({ def, diseno, base, valor: actual, vars: varsTarjeta() });
+      const blob = await dibujarTarjeta({ def, diseno, base, tipo, valor: actual, vars: varsTarjeta() });
       const url = await subirArchivo(new File([blob], nombreArchivo, { type: 'image/jpeg' }));
       await api('/tarjeta', { method: 'POST', body: JSON.stringify({ clase: c.clase, url }) });
       escribir(datos, c.id, { ...actual, generada: url });
@@ -1100,7 +1159,8 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   const fijo = c.fijoSi && cumple(c.fijoSi);
   const motivo = desactivado || fijo ? el('p', { class: 'motivo' }, c.motivo, ' ',
     desactivado && c.irA ? el('button', { type: 'button', class: 'btn-link', onclick: () => irA(c.irA) }, 'Ir →') : null) : null;
-  const aviso = c.cerrado ? el('p', { class: 'motivo' }, c.cerrado) : null;
+  const aviso = c.cerrado ? el('p', { class: 'motivo' }, c.cerrado, ' ',
+    c.pedirCambio && whatsapp() ? el('a', { class: 'btn-link', target: '_blank', rel: 'noopener', href: `${whatsapp()}${encodeURIComponent(` Quiero pedir un cambio en: ${c.etiqueta || c.id}.`)}` }, 'Pedir el cambio por WhatsApp') : null) : null;
   const extra = { ...posicion, desactivado, fijo };
   if (!posicion.pos && (c.tipo === 'foto' && c.encuadre)) { extra.pos = () => leer(datos, `${c.id}Pos`); extra.alPos = (p) => cambio(`${c.id}Pos`, p); }
   const sinEtiqueta = (c.tipo === 'switch' && !c.opciones) || ['nota', 'botonTextos', 'agregarIdioma'].includes(c.tipo) || c.titulo || c.sinEtiqueta;

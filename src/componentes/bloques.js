@@ -207,7 +207,6 @@ export function playlist({ t, v, el }) {
   const pl = v.playlist;
   if (!pl) return '';
   const claseTitulo = el.getAttribute('data-clase-titulo') || 'euforia';
-  const logo = v.marca.blanca ? '' : `<svg class="ai-v-logo" viewBox="0 0 64 64" aria-hidden="true"><text x="50%" y="56%" text-anchor="middle" dominant-baseline="middle" font-family="Jost, system-ui, sans-serif" font-weight="500" font-size="34" fill="#fff">a!</text></svg>`;
   const lista = pl.pistas.length ? `
     <p class="ai-pl-resumen">${esc(t('playlist.resumen').replace('{n}', pl.cantidad || pl.pistas.length).replace('{min}', pl.minutos || ''))}</p>
     <ol class="ai-pl-lista">${pl.pistas.map((x, i) => `
@@ -220,7 +219,7 @@ export function playlist({ t, v, el }) {
     <h2 class="ai-pl-titulo ${esc(claseTitulo)}">${esc(t('playlist.titulo'))}</h2>
     <p class="ai-pl-texto">${esc(t('playlist.texto'))}</p>
     <div class="ai-vinilo${v.marca.blanca ? ' sin-logo' : ''}">
-      <div class="ai-v-disco"><div class="ai-v-etiqueta">${logo}</div></div>
+      <div class="ai-v-disco"><div class="ai-v-etiqueta"></div></div>
       <button type="button" class="ai-v-play" aria-label="${esc(t('playlist.play'))}" data-pausa="${esc(t('playlist.pausa'))}" data-play="${esc(t('playlist.play'))}"><span class="ai-v-icono"></span></button>
     </div>${lista}
     <div class="ai-pl-reproductor" data-uri="spotify:${esc(pl.tipo)}:${esc(pl.id)}" data-embed="${esc(pl.embed)}"><div class="ai-pl-lugar"></div></div>

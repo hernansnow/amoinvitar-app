@@ -32,40 +32,202 @@
   },
 
   "tarjetas": {
-    "ancho": 1445, "alto": 2000, "fondo": "#ffffff",
-    "fuentes": { "titulos": "Great Vibes", "texto": "Jost", "css": "/comun/fonts/google/great-vibes+jost.css" },
+    "ancho": 1445,
+    "alto": 2000,
+    "fondo": "#ffffff",
+    "fuentes": {
+      "titulos": "Great Vibes",
+      "texto": "Jost",
+      "css": "/comun/fonts/google/great-vibes+jost.css"
+    },
     "std": {
       "tarjeta": {
-        "capas": [{ "img": "img/std-fondo.jpg", "x": 0, "y": 0, "w": 1445, "h": 2000 }],
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          },
+          {
+            "img": "img/std-icono-boda.webp",
+            "x": 927,
+            "y": 945,
+            "w": 299,
+            "h": 181,
+            "tipos": [
+              "boda",
+              "bautismo",
+              "comunion",
+              "cumple"
+            ]
+          },
+          {
+            "img": "img/std-icono-15.webp",
+            "x": 908,
+            "y": 911,
+            "w": 344,
+            "h": 175,
+            "tipos": [
+              "15"
+            ]
+          }
+        ],
         "textos": [
-          { "id": "titulo", "texto": "Save the date", "mayus": true, "x": 722, "y": 790, "tam": 53, "fuente": "texto", "color": "#a48a79", "espaciado": 6, "lineas": { "largo": 137, "separacion": 18, "grosor": 3 } },
-          { "id": "nombres", "texto": "{nombres}", "x": 722, "y": 988, "tam": 172, "fuente": "titulos", "color": "#799d99", "ancho": 1020, "ajustar": true, "amp": { "fondo": "#a68977", "color": "#ffffff", "tam": 0.68 } },
-          { "id": "evento", "texto": "{evento}", "mayus": true, "x": 722, "y": 1200, "tam": 53, "fuente": "texto", "color": "#a48a79", "espaciado": 8, "lineas": { "largo": 117, "separacion": 22, "grosor": 3 } },
-          { "id": "fecha", "texto": "{fechaCorta}", "x": 722, "y": 1355, "tam": 56, "fuente": "texto", "color": "#7f9c97", "espaciado": 16 },
-          { "id": "extra", "texto": "{lugar}", "x": 722, "y": 1460, "tam": 34, "fuente": "texto", "color": "#a48a79", "ancho": 900, "extra": true },
-          { "id": "pie", "texto": "Próximamente la invitación formal", "mayus": true, "x": 722, "y": 1893, "tam": 25, "fuente": "texto", "color": "#a48a79", "espaciado": 11, "ancho": 1380 }
-        ]
-      },
-      "foto": {
-        "foto": { "x": 722, "y": 1000, "r": 612 },
-        "capas": [{ "img": "img/std-fondo.jpg", "x": 0, "y": 0, "w": 1445, "h": 2000 }, { "img": "img/std-aro.webp", "x": 0, "y": 0, "w": 1445, "h": 2000, "sobreFoto": true }],
-        "textos": [
-          { "id": "titulo", "texto": "Save the date", "mayus": true, "x": 722, "y": 70, "tam": 44, "fuente": "texto", "color": "#a48a79", "espaciado": 6, "lineas": { "largo": 120, "separacion": 18, "grosor": 3 } },
-          { "id": "nombres", "texto": "{nombres}", "x": 722, "y": 165, "tam": 112, "fuente": "titulos", "color": "#799d99", "ancho": 1150, "ajustar": true, "amp": { "fondo": "#a68977", "color": "#ffffff", "tam": 0.68 } },
-          { "id": "fecha", "texto": "{fechaCorta}", "x": 722, "y": 1872, "tam": 50, "fuente": "texto", "color": "#7f9c97", "espaciado": 14 },
-          { "id": "pie", "texto": "Próximamente la invitación formal", "mayus": true, "x": 722, "y": 1950, "tam": 24, "fuente": "texto", "color": "#a48a79", "espaciado": 10, "ancho": 1380 },
-          { "id": "extra", "texto": "{lugar}", "x": 722, "y": 1800, "tam": 30, "fuente": "texto", "color": "#a48a79", "ancho": 1100, "extra": true }
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "mayus": true,
+            "x": 1080,
+            "y": 1195,
+            "tam": 77,
+            "fuente": "texto",
+            "color": "#a48a79",
+            "espaciado": 9,
+            "lineas": {
+              "largo": 205,
+              "separacion": 27,
+              "grosor": 4
+            }
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1080,
+            "y": 1480,
+            "tam": 257,
+            "tamSolo": 380,
+            "fuente": "titulos",
+            "color": "#799d99",
+            "ancho": 1450,
+            "ajustar": true,
+            "amp": {
+              "fondo": "#a68977",
+              "color": "#ffffff",
+              "tam": 0.68
+            }
+          },
+          {
+            "id": "evento",
+            "texto": "{evento}",
+            "mayus": true,
+            "x": 1080,
+            "y": 1783,
+            "tam": 77,
+            "fuente": "texto",
+            "color": "#a48a79",
+            "espaciado": 12,
+            "lineas": {
+              "largo": 175,
+              "separacion": 33,
+              "grosor": 4
+            }
+          },
+          {
+            "id": "fecha",
+            "texto": "{fechaCorta}",
+            "x": 1080,
+            "y": 2004,
+            "tam": 84,
+            "fuente": "texto",
+            "color": "#7f9c97",
+            "espaciado": 24
+          },
+          {
+            "id": "extra",
+            "texto": "{lugar}",
+            "x": 1080,
+            "y": 2150,
+            "tam": 50,
+            "fuente": "texto",
+            "color": "#a48a79",
+            "ancho": 1300,
+            "extra": true
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "mayus": true,
+            "x": 1080,
+            "y": 2832,
+            "tam": 37,
+            "fuente": "texto",
+            "color": "#a48a79",
+            "espaciado": 16,
+            "opcional": "proximamente"
+          }
         ]
       }
     },
     "agradecimiento": {
-      "foto": { "x": 722, "y": 1000, "r": 612 },
-      "capas": [{ "img": "img/std-fondo.jpg", "x": 0, "y": 0, "w": 1445, "h": 2000 }, { "img": "img/std-aro.webp", "x": 0, "y": 0, "w": 1445, "h": 2000, "sobreFoto": true }],
+      "foto": {
+        "x": 722,
+        "y": 1000,
+        "r": 612
+      },
+      "capas": [
+        {
+          "img": "img/gracias-fondo.jpg",
+          "x": 0,
+          "y": 0,
+          "w": 1445,
+          "h": 2000
+        },
+        {
+          "img": "img/gracias-aro.webp",
+          "x": 0,
+          "y": 0,
+          "w": 1445,
+          "h": 2000,
+          "sobreFoto": true
+        }
+      ],
       "textos": [
-        { "id": "titulo", "texto": "¡Gracias!", "x": 722, "y": 135, "tam": 150, "fuente": "titulos", "color": "#799d99" },
-        { "id": "mensaje", "texto": "{mensaje}", "x": 722, "y": 1872, "tam": 31, "fuente": "texto", "color": "#a48a79", "ancho": 1000 },
-        { "id": "nombres", "texto": "{nombres}", "x": 722, "y": 1955, "tam": 62, "fuente": "titulos", "color": "#799d99", "ancho": 1150, "ajustar": true },
-        { "id": "extra", "texto": "", "x": 722, "y": 1790, "tam": 28, "fuente": "texto", "color": "#a48a79", "ancho": 1150, "extra": true }
+        {
+          "id": "titulo",
+          "texto": "¡Gracias!",
+          "x": 722,
+          "y": 135,
+          "tam": 150,
+          "fuente": "titulos",
+          "color": "#799d99"
+        },
+        {
+          "id": "mensaje",
+          "texto": "{mensaje}",
+          "x": 722,
+          "y": 1872,
+          "tam": 31,
+          "fuente": "texto",
+          "color": "#a48a79",
+          "ancho": 1000
+        },
+        {
+          "id": "nombres",
+          "texto": "{nombres}",
+          "x": 722,
+          "y": 1955,
+          "tam": 62,
+          "fuente": "titulos",
+          "color": "#799d99",
+          "ancho": 1150,
+          "ajustar": true
+        },
+        {
+          "id": "extra",
+          "texto": "",
+          "x": 722,
+          "y": 1790,
+          "tam": 28,
+          "fuente": "texto",
+          "color": "#a48a79",
+          "ancho": 1150,
+          "extra": true
+        }
       ]
     }
   },

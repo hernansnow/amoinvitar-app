@@ -197,9 +197,9 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
 
   const itinerario = (e.itinerario || []).map((i) => ({
     hora: i.hora || '', texto: i.texto || '',
-    // El del modelo; si no, uno de los comunes; sin elegir, un corazón
+    // El del modelo o uno de los comunes; sin elegir, el círculo vacío
     iconoUrl: (modelo.iconosItinerario || []).includes(i.icono) ? `${rutas.modelo}/img/timeline-icon-${i.icono}.png`
-      : `${rutas.comun}/img/itinerario/timeline-icon-${ICONOS_COMUNES.includes(i.icono) ? i.icono : 'corazon'}.png`,
+      : ICONOS_COMUNES.includes(i.icono) ? `${rutas.comun}/img/itinerario/timeline-icon-${i.icono}.png` : '',
   }));
 
   const regalos = e.regalos || {};

@@ -40,3 +40,5 @@
 @font-face { font-family: 'Shrikhand'; src: url('shrikhand.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
 @font-face { font-family: 'Square Peg'; src: url('square-peg.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
 @font-face { font-family: 'Yellowtail'; src: url('yellowtail.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('playfair-display-700.woff2') format('woff2'); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('playfair-display-900.woff2') format('woff2'); font-style: normal; font-weight: 900; font-display: swap; }
