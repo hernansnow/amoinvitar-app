@@ -21,6 +21,7 @@ export default {
     'rsvp.form.ninos': 'Neem je kinderen mee?', 'rsvp.form.ninosCantidad': 'Aantal kinderen',
     'rsvp.form.comidaAcomp': 'Heeft je introducé andere dieetwensen? (optioneel)',
     'rsvp.form.msgLleno': 'Het maximale aantal gasten is bereikt: er kunnen geen aanmeldingen meer bij.',
+    'rsvp.form.mensaje': 'Een bericht voor {nombres} (optioneel)', 'rsvp.form.mensajePlaceholder': 'Schrijf hier je bericht…', 'rsvp.form.atras': 'Terug', 'rsvp.form.siguiente': 'Volgende', 'rsvp.form.acompNombres': 'Namen van je gasten (je kunt er ook maar een paar invullen)',
     'rsvp.form.traslado': 'Heb je vervoer nodig?', 'rsvp.form.noTraslado': 'Nee, ik kom zelf',
     'rsvp.form.subTraslado': 'Bevestig om je plek in de bus te reserveren',
     'rsvp.form.seleccionar': 'Kies', 'rsvp.form.otra': 'Anders', 'rsvp.form.detalle': 'Toelichting...',

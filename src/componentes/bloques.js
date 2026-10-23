@@ -49,7 +49,9 @@ export function acceso({ t, v }) {
   return `
 <script>window.INVITACION_CONFIG = ${json(cfg)};</script>
 <script src="${raiz}/js/lista-de-invitados-universal_v2.0.js"></script>
-<script src="${raiz}/js/rsvp-universal_v2.2.js"></script>${flotante(v, t)}`;
+<link rel="stylesheet" href="${raiz}/css/modal.css">
+<script src="${raiz}/js/modal.js"></script>
+<script src="${raiz}/js/rsvp-pasos.js"></script>${flotante(v, t)}`;
 }
 
 // ── Control flotante: música (play/pausa) e idioma con bandera ─────────
@@ -138,6 +140,15 @@ export function rsvpForm({ t, v, el }) {
     'data-preguntas-alcohol': !!preguntas.alcohol,
     'data-preguntas-ninos': !!preguntas.ninos,
     'data-preguntas-traslado': !!preguntas.traslado,
+    // Pasos y mensaje para los anfitriones
+    'data-preguntas-mensaje': preguntas.mensaje !== false,
+    'data-label-mensaje': t('rsvp.form.mensaje'),
+    'data-placeholder-mensaje': t('rsvp.form.mensajePlaceholder'),
+    'data-label-acompanantes-nombres': t('rsvp.form.acompNombres'),
+    'data-text-atras': t('rsvp.form.atras'),
+    'data-text-siguiente': t('rsvp.form.siguiente'),
+    'data-text-si': t('general.si'),
+    'data-text-no': t('general.no'),
   };
   // Preguntas propias del cliente: el formulario las lee como extra, extra2… extra5
   (r.extras || []).forEach((x, i) => {
@@ -159,15 +170,7 @@ export function rsvpForm({ t, v, el }) {
     <div id="rsvp-config"
       ${attrHTML}
     ></div>
-    <form id="rsvp-form">
-      <input type="hidden" name="event_id" id="event-id">
-      <input type="hidden" name="inv" id="inv-field">
-      <div id="rsvp-fijos"></div>
-      <div id="rsvp-dinamicos"></div>
-      <div id="rsvp-error" class="alert alert-danger mt-2" style="display:none;"></div>
-      <div id="rsvp-footer"><button type="submit" class="btn btn-dark text-uppercase btn-block mt-4"></button></div>
-    </form>
-    <div id="rsvp-ok" style="display:none;"></div>
+    <form id="rsvp-form" novalidate></form>
   </div>
 </div>`;
 }

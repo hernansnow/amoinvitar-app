@@ -21,6 +21,7 @@ export default {
     'rsvp.form.ninos': 'Vai levar crianças?', 'rsvp.form.ninosCantidad': 'Quantidade de crianças',
     'rsvp.form.comidaAcomp': 'Algum acompanhante tem outra restrição? (opcional)',
     'rsvp.form.msgLleno': 'O limite de convidados foi atingido: não recebemos mais confirmações.',
+    'rsvp.form.mensaje': 'Uma mensagem para {nombres} (opcional)', 'rsvp.form.mensajePlaceholder': 'Escreva aqui a sua mensagem…', 'rsvp.form.atras': 'Voltar', 'rsvp.form.siguiente': 'Seguinte', 'rsvp.form.acompNombres': 'Nomes dos seus acompanhantes (pode preencher só alguns)',
     'rsvp.form.traslado': 'Precisa de transporte?', 'rsvp.form.noTraslado': 'Não, vou por conta própria',
     'rsvp.form.subTraslado': 'Confirme para reservar seu lugar no ônibus',
     'rsvp.form.seleccionar': 'Selecionar', 'rsvp.form.otra': 'Outra', 'rsvp.form.detalle': 'Detalhe...',

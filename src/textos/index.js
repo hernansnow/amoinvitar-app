@@ -67,6 +67,7 @@ const BASE = {
     'dress.titulo': 'Dress Code', 'dress.boton': 'Sugerencias', 'dress.modal': 'Sugerencias de estilos', 'dress.evitar': 'Colores a evitar',
     'rsvp.form.comidaAcomp': '¿Algún acompañante tiene otra restricción? (opcional)',
     'rsvp.form.msgLleno': 'Ya se completó el cupo de invitados: no se reciben más confirmaciones.',
+    'rsvp.form.mensaje': 'Un mensaje para {nombres} (opcional)', 'rsvp.form.mensajePlaceholder': 'Escribe aquí tu mensaje…', 'rsvp.form.atras': 'Atrás', 'rsvp.form.siguiente': 'Siguiente', 'rsvp.form.acompNombres': 'Nombres de tus acompañantes (puedes completar solo algunos)',
     'dresscode.texto': 'Formal y elegante. Por favor no usar blanco.',
     'hospedaje.titulo': 'Hospedaje', 'hospedaje.texto': 'Referencias de hoteles cercanos.',
     'hospedaje.boton': 'Referencias', 'hospedaje.modal': 'Referencias de hoteles cercanos', 'hospedaje.reservas': 'Reservas',
@@ -97,6 +98,7 @@ const BASE = {
 
   // Voseo rioplatense (Argentina, Uruguay, Paraguay)
   'es-ar': {
+    'rsvp.form.mensajePlaceholder': 'Escribí acá tu mensaje…', 'rsvp.form.acompNombres': 'Nombres de tus acompañantes (podés completar solo algunos)',
     'rsvp.form.acompanantesSelect': '¿Vas a ir con acompañantes?', 'rsvp.form.alcohol': '¿Vas a beber alcohol?',
     'rsvp.form.ninos': '¿Vas a ir con niños?', 'rsvp.form.traslado': '¿Necesitás traslado?',
     'rsvp.form.noTraslado': 'No, voy por mi cuenta', 'rsvp.form.subTraslado': 'Confirmá para reservar tu asiento en el bus',
@@ -150,6 +152,7 @@ const BASE = {
     'rsvp.form.msgVacios': 'Please fill in your details.', 'rsvp.form.comidaOpciones': 'No|Gluten-free|Vegan|Vegetarian',
     'dress.titulo': 'Dress Code', 'dress.boton': 'Inspiration', 'dress.modal': 'Style inspiration', 'dress.evitar': 'Colors to avoid',
     'rsvp.form.comidaAcomp': 'Does any of your guests have a different restriction? (optional)',
+    'rsvp.form.mensaje': 'A message for {nombres} (optional)', 'rsvp.form.mensajePlaceholder': 'Write your message here…', 'rsvp.form.atras': 'Back', 'rsvp.form.siguiente': 'Next', 'rsvp.form.acompNombres': 'Names of your guests (you can fill in just some)',
     'rsvp.form.msgLleno': 'The guest limit has been reached: no more RSVPs can be accepted.',
     'dresscode.texto': 'Formal attire. Please avoid wearing white.',
     'hospedaje.titulo': 'Accommodation', 'hospedaje.texto': 'Nearby hotels.', 'hospedaje.boton': 'See hotels',

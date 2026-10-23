@@ -226,6 +226,9 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'rsvp.preguntas.alcohol', tipo: 'switch', etiqueta: 'Preguntar si toma alcohol' },
         { id: 'rsvp.preguntas.ninos', tipo: 'switch', etiqueta: 'Preguntar si va con niños y cuántos serán' },
         { id: 'rsvp.preguntas.traslado', tipo: 'switch', etiqueta: 'Preguntar si necesita traslado' },
+        // Un mensaje para los anfitriones: se ve en la administración (Mensajes)
+        { id: 'rsvp.preguntas.mensaje', tipo: 'switch', defecto: true, etiqueta: `Pedir un mensaje para ${({ boda: 'los novios', 15: 'la quinceañera', bautismo: 'la familia', comunion: 'la familia', cumple: 'quien cumple años' })[tipo] || 'los anfitriones'}`,
+          ayuda: 'Al final de la confirmación, cada invitado puede dejar un mensaje (es opcional).' },
         { id: 'rsvp.extras', tipo: 'lista', etiqueta: 'Preguntas propias', unaColumna: true, max: 5, agregar: 'Agregar pregunta', paquete: 'premium', campos: [
           { id: 'pregunta', tipo: 'texto', etiqueta: 'Pregunta', max: 80, placeholder: '¿Cuál es tu trago favorito?' },
           { id: 'opciones', tipo: 'texto', etiqueta: 'Opciones (separadas con coma)', max: 160, placeholder: 'Vacío = respuesta libre · Ej.: Fernet, Gin tonic' },

@@ -21,6 +21,7 @@ export default {
     'rsvp.form.ninos': 'Vindràs amb nens?', 'rsvp.form.ninosCantidad': 'Nombre de nens',
     'rsvp.form.comidaAcomp': 'Algun acompanyant té una altra restricció? (opcional)',
     'rsvp.form.msgLleno': 'S\'ha completat el nombre màxim de convidats: no s\'accepten més confirmacions.',
+    'rsvp.form.mensaje': 'Un missatge per a {nombres} (opcional)', 'rsvp.form.mensajePlaceholder': 'Escriu aquí el teu missatge…', 'rsvp.form.atras': 'Enrere', 'rsvp.form.siguiente': 'Següent', 'rsvp.form.acompNombres': 'Noms dels teus acompanyants (pots omplir-ne només alguns)',
     'rsvp.form.traslado': 'Necessites transport?', 'rsvp.form.noTraslado': 'No, hi aniré pel meu compte',
     'rsvp.form.subTraslado': "Confirma per reservar la teva plaça a l'autobús",
     'rsvp.form.seleccionar': 'Seleccionar', 'rsvp.form.otra': 'Una altra', 'rsvp.form.detalle': 'Detall...',

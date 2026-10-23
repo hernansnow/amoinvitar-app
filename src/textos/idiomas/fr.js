@@ -21,6 +21,7 @@ export default {
     'rsvp.form.ninos': 'Viendrez-vous avec des enfants ?', 'rsvp.form.ninosCantidad': "Nombre d'enfants",
     'rsvp.form.comidaAcomp': 'Un accompagnant a-t-il une autre restriction ? (facultatif)',
     'rsvp.form.msgLleno': 'Le nombre maximum d\'invités est atteint : les confirmations sont closes.',
+    'rsvp.form.mensaje': 'Un message pour {nombres} (facultatif)', 'rsvp.form.mensajePlaceholder': 'Écrivez votre message ici…', 'rsvp.form.atras': 'Retour', 'rsvp.form.siguiente': 'Suivant', 'rsvp.form.acompNombres': 'Noms de vos accompagnants (vous pouvez n\'en remplir que quelques-uns)',
     'rsvp.form.traslado': "Avez-vous besoin d'une navette ?", 'rsvp.form.noTraslado': 'Non, je viendrai par mes propres moyens',
     'rsvp.form.subTraslado': 'Confirmez pour réserver votre place dans la navette',
     'rsvp.form.seleccionar': 'Choisir', 'rsvp.form.otra': 'Autre', 'rsvp.form.detalle': 'Précisez...',

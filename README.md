@@ -153,6 +153,11 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
   {evento} {mensaje}. `fuentes.css` carga las fuentes del modelo.
   El "&" de los nombres (con `amp`) es parte del diseño: se mueve junto con los nombres pero no se puede escribir ni
   borrar; al editar, cada nombre se escribe por separado. Mantenerlo así en todos los modelos.
+- **Modales**: el común (`comun/js/modal.js` + `comun/css/modal.css`) toma los botones de siempre (`data-fancybox
+  data-src="#id"` y `data-toggle="modal" data-target="#id"`) y abre el contenido en un `<dialog>` propio, claro y con un
+  desenfoque leve. No hace falta cambiar el HTML de los modelos; el botón "Cerrar" viejo se oculta (está la ✕).
+- **Confirmación por pasos**: `comun/js/rsvp-pasos.js` (reemplaza a rsvp-universal_v2.2.js). El HTML del modal lo arma
+  el componente `rsvp-form`. Incluye el paso "Un mensaje para {nombres}" (se ve en la administración → Mensajes).
 - **Accesos rápidos del pie** ("¿Te perdiste algo?", solo Premium y Deluxe; **Basic no trae accesos rápidos**):
   confirmar, agendar, dress code, hospedaje (`#hospedaje-bus`), traslado (`#traslado`), itinerario, Instagram Wall
   (`#hashtag`), álbum QR (`#instagram`), sugerir canción, regalos e inicio. Cada `<li>` con su `data-seccion`, así

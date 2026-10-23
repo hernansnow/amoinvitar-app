@@ -21,6 +21,7 @@ export default {
     'rsvp.form.ninos': 'Verrai con bambini?', 'rsvp.form.ninosCantidad': 'Numero di bambini',
     'rsvp.form.comidaAcomp': "Qualche accompagnatore ha un'altra esigenza? (facoltativo)",
     'rsvp.form.msgLleno': 'È stato raggiunto il numero massimo di invitati: non si accettano altre conferme.',
+    'rsvp.form.mensaje': 'Un messaggio per {nombres} (facoltativo)', 'rsvp.form.mensajePlaceholder': 'Scrivi qui il tuo messaggio…', 'rsvp.form.atras': 'Indietro', 'rsvp.form.siguiente': 'Avanti', 'rsvp.form.acompNombres': 'Nomi dei tuoi accompagnatori (puoi compilarne solo alcuni)',
     'rsvp.form.traslado': 'Ti serve il trasporto?', 'rsvp.form.noTraslado': 'No, arrivo per conto mio',
     'rsvp.form.subTraslado': 'Conferma per prenotare il tuo posto sul bus',
     'rsvp.form.seleccionar': 'Seleziona', 'rsvp.form.otra': 'Altro', 'rsvp.form.detalle': 'Dettagli...',

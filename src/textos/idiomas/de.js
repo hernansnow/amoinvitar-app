@@ -21,6 +21,7 @@ export default {
     'rsvp.form.ninos': 'Kommst du mit Kindern?', 'rsvp.form.ninosCantidad': 'Anzahl der Kinder',
     'rsvp.form.comidaAcomp': 'Hat deine Begleitung andere Ernährungswünsche? (optional)',
     'rsvp.form.msgLleno': 'Die maximale Gästezahl ist erreicht: Es können keine Zusagen mehr angenommen werden.',
+    'rsvp.form.mensaje': 'Eine Nachricht für {nombres} (optional)', 'rsvp.form.mensajePlaceholder': 'Schreib hier deine Nachricht…', 'rsvp.form.atras': 'Zurück', 'rsvp.form.siguiente': 'Weiter', 'rsvp.form.acompNombres': 'Namen deiner Begleitung (du kannst auch nur einige eintragen)',
     'rsvp.form.traslado': 'Brauchst du einen Shuttle?', 'rsvp.form.noTraslado': 'Nein, ich komme selbst',
     'rsvp.form.subTraslado': 'Bestätige, um deinen Platz im Bus zu reservieren',
     'rsvp.form.seleccionar': 'Auswählen', 'rsvp.form.otra': 'Andere', 'rsvp.form.detalle': 'Details...',
