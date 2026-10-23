@@ -4,6 +4,7 @@
 import { armarMiniatura, achicarFoto } from './miniatura.js';
 import { leerPlanilla } from './planilla.js';
 import { editorTarjeta, dibujarTarjeta } from './tarjeta.js';
+import { montarAdmin } from './admin.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 
@@ -1614,6 +1615,23 @@ function recordarBorrador() {
   if (!S.evento.modelo) { $('#btn-ojo').hidden = true; $('#previa').remove(); document.body.classList.add('sin-previa'); }
   if (!['invitacion', 'std-web', 'compromiso-web', 'std-web-medida'].includes(S.evento.producto)) $('#btn-publicar').textContent = 'Enviar al diseño';
   estado(S.evento.estado === 'publicado' ? 'Publicada' : 'Guardado ✓');
-  irA(location.hash.slice(1));
+  // Publicada: el panel abre en la administración (siempre se puede volver a editar)
+  const hash = location.hash.slice(1);
+  if (hash === 'admin' || (!hash && S.evento.estado === 'publicado')) { irA(''); ponerModo('admin'); }
+  else irA(hash);
   refrescarPrevia();
 })();
+
+// ── Editar o administrar ─────────────────────────────────────────────
+function ponerModo(m) {
+  const admin = m === 'admin';
+  document.body.classList.toggle('modo-admin', admin);
+  $('#admin').hidden = !admin;
+  document.querySelectorAll('#modos button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === m)));
+  if (admin) {
+    history.replaceState(null, '', '#admin');
+    montarAdmin($('#admin'), { S, datos, api, el, aviso, abrirModal,
+      guardarInvitados: async () => { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: S.invitados }) }); S.invitados = r.invitados; } });
+  } else if (pasoActual) { history.replaceState(null, '', `#${pasoActual.id}`); requestAnimationFrame(escalarPrevia); }
+}
+document.querySelectorAll('#modos button').forEach((b) => b.addEventListener('click', () => ponerModo(b.dataset.modo)));

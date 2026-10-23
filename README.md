@@ -132,6 +132,14 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
 - La galería que no es carrusel la arma el componente común `data-componente="galeria"`
   (comun/css/galeria.css): el modelo solo marca su carrusel con `data-si="galeria.carrusel"`.
 
+## Administración (panel)
+
+`public/panel/admin.js`: resumen con cuenta regresiva, envío (WhatsApp, link, QR; links personales con la lista),
+respuestas (colores, filtros, búsqueda, recordatorios, Excel/PDF), mensajes, canciones (acceso a Spotify), mesas con
+croquis y Albunear. Los textos de WhatsApp y los asientos por mesa se guardan en `datos.admin` (POST /api/panel/:id/admin).
+Pendiente: mandar las canciones directo a una playlist de Spotify (requiere conectar la cuenta de Spotify del cliente),
+mover invitados entre mesas arrastrando, QR de acceso por mesa.
+
 ## Reglas para convertir los demás modelos (ronda 5, 6 y 7)
 
 - **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,

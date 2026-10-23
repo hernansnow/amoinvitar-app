@@ -374,6 +374,7 @@ async function apiPanel(env, request, url, partes) {
     const limpio = limpiarDatos(conIdiomas, datos || {}, ev.datos);
     if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
     // Tarjetas ya generadas: quedan fijas
+    if (ev.datos.admin) limpio.admin = ev.datos.admin; // lo de la administración se guarda aparte
     for (const clase of ['std', 'agradecimiento']) {
       const prev = ev.datos[clase]?.tarjeta;
       if (prev?.generada && !admin) limpio[clase] = ev.datos[clase];
@@ -474,6 +475,15 @@ async function apiPanel(env, request, url, partes) {
     return json({ ok: true, invitados: lista });
   }
   if (accion === 'respuestas') return json({ respuestas: await almacen.respuestas(ev.id) });
+  // Administración: textos de los mensajes de WhatsApp y asientos por mesa
+  if (accion === 'admin' && request.method === 'POST') {
+    const b = await request.json().catch(() => ({}));
+    const texto = (x) => (typeof x === 'string' ? x.slice(0, 1500) : undefined);
+    ev.datos.admin = { textoWa: texto(b.textoWa), textoWaLista: texto(b.textoWaLista), textoRecordatorio: texto(b.textoRecordatorio),
+      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined };
+    await almacen.guardarEvento(ev);
+    return json({ ok: true });
+  }
   if (accion === 'publicar' && request.method === 'POST') {
     const faltan = faltantes(esquema, ev.datos);
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);

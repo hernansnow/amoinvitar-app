@@ -31,6 +31,13 @@
     </div>
   </header>
 
+  <!-- Editar la invitación o administrarla (respuestas, envío, mesas…) -->
+  <nav class="modos" id="modos" aria-label="Modo">
+    <button type="button" data-modo="editar" aria-pressed="true">Editar invitación</button>
+    <button type="button" data-modo="admin" aria-pressed="false">Administración</button>
+  </nav>
+  <section class="admin" id="admin" aria-label="Administración" hidden></section>
+
   <div class="layout" id="layout">
     <nav class="pasos" id="pasos" aria-label="Pasos"></nav>
     <section class="editor" id="editor" aria-label="Configurar">
@@ -73,6 +80,7 @@
 
   <dialog class="modal" id="modal" aria-labelledby="modal-titulo"><div class="modal-cuerpo" id="modal-cuerpo"></div></dialog>
   <div class="aviso" id="aviso" role="status" hidden></div>
+  <script src="/panel/qrcode.js" defer></script>
   <script type="module" src="/panel/panel.js"></script>
 </body>
 </html>
