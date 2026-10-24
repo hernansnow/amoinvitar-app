@@ -737,7 +737,15 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .admin > * { max-width: 1100px; margin-left: auto; margin-right: auto; }
 .ad-cabeza { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .ad-cabeza h1 { margin: 0; font-size: 1.5rem; }
-.ad-menu { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
+.ad-menu-caja { position: relative; margin-bottom: 12px; }
+.ad-menu { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; scroll-padding: 0 48px; }
+.ad-menu::-webkit-scrollbar { display: none; }
+/* Flecha ">" al borde derecho: avisa que el menú sigue (se esconde al llegar al final) */
+.ad-menu-mas { position: absolute; right: 0; top: 0; height: calc(100% - 8px); width: 44px; border: 0; padding: 0 0 0 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--acento);
+  background: linear-gradient(90deg, rgba(255,255,255,0), var(--fondo, #f7f6f3) 45%); }
+.ad-menu-mas svg { background: #fff; border: 1px solid var(--borde); border-radius: 50%; width: 30px; height: 30px; padding: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+.ad-menu-mas[hidden] { display: none; }
+@media (min-width: 900px) { .ad-menu-mas { display: none; } }
 .ad-tab { border: 1px solid var(--borde); background: #fff; border-radius: 999px; padding: 8px 16px; font-weight: 600; white-space: nowrap; cursor: pointer; color: var(--texto); }
 .ad-tab.activo { background: var(--acento); border-color: var(--acento); color: #fff; }
 .ad-contenido { display: grid; gap: 14px; }
@@ -799,9 +807,22 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-mesa h3 { margin: 0 0 8px; font-size: 1rem; }
 .ad-mesa h3 small { color: var(--suave); font-weight: 500; }
 .ad-mesa ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-.ad-mesa li { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: .9rem; }
+.ad-mesa li { display: flex; align-items: center; gap: 8px; font-size: .9rem; }
+.ad-mesa li > span:nth-child(2) { flex: 1; min-width: 0; }
+.ad-arrastrar { cursor: grab; touch-action: none; user-select: none; color: var(--suave); font-size: 1.1rem; padding: 4px 6px; margin: -4px 0 -4px -6px; border-radius: 6px; }
+.ad-arrastrar:active { cursor: grabbing; }
+.ad-mesa li.arrastrando { opacity: .35; }
+.ad-mesa.sobre { border-color: var(--acento); background: rgba(78, 156, 135, .08); box-shadow: inset 0 0 0 1px var(--acento); }
+.ad-mesa-nueva { border-style: dashed; display: grid; place-content: center; text-align: center; min-height: 90px; color: var(--suave); }
+.ad-mesa-nueva h3 { color: var(--acento); }
+.ad-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; }
+.ad-check input { width: 18px; height: 18px; accent-color: var(--acento); }
+.ad-descargas { align-items: center; }
+.ad-prueba { display: inline-block; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; background: #fff4d6; color: #8a6100; border-radius: 6px; padding: 1px 6px; margin-top: 4px; }
+.ad-prueba .btn-link { font-size: .72rem; padding: 0; min-height: 0; text-transform: none; }
+.ad-pasos { margin: 8px 0 12px; padding-left: 20px; display: grid; gap: 4px; }
 .ad-mesa-num { width: 64px !important; min-height: 34px !important; padding: 4px 8px !important; text-align: center; }
 .ad-asientos { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
 .ad-croquis { overflow: auto; background: #fff; border-radius: 12px; }
-.ad-croquis svg { width: 100%; height: auto; min-width: 520px; }
+.ad-croquis svg { display: block; width: 100%; max-width: 640px; height: auto; margin: 0 auto; }
 @media (max-width: 1023px) { .modos { padding: 6px 12px; } .modos button { flex: 1; } }

@@ -315,7 +315,9 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
 
     // La seguridad ya la resolvió el servidor: acá solo va a quién mostrar
     // Con link personal o PIN por invitado la lista va siempre
-    acceso: { lista: !!(e.acceso?.lista || e.acceso?.modo === 'codigo' || (e.acceso?.modo === 'pin' && e.acceso?.pinPorInvitado)), inv: invitado?.codigo || '' },
+    acceso: { lista: !!(e.acceso?.lista || e.acceso?.modo === 'codigo' || (e.acceso?.modo === 'pin' && e.acceso?.pinPorInvitado)), inv: invitado?.codigo || '',
+      // Su fila (nombre, pases, mesa) va directo en la página: no hace falta pedir la lista
+      invitado: invitado ? { nombre: invitado.nombre || '', pases: Number(invitado.pases) || 0, mesa: invitado.mesa ?? '' } : null },
     marca: marca ? { blanca: true, ...marca } : { blanca: false },
     meta: {
       titulo: t('meta.titulo').replace('{evento}', t('evento.nombre')).replace('{nombres}', nombresTexto),

@@ -39,8 +39,11 @@ export function almacenD1(env) {
       await db.prepare('INSERT INTO respuestas (evento_id, tipo, datos, creado) VALUES (?, ?, ?, ?)').bind(id, tipo, JSON.stringify(datos), new Date().toISOString()).run();
     },
     async respuestas(id) {
-      const { results } = await db.prepare('SELECT tipo, datos, creado FROM respuestas WHERE evento_id = ? ORDER BY creado DESC').bind(id).all();
+      const { results } = await db.prepare('SELECT id, tipo, datos, creado FROM respuestas WHERE evento_id = ? ORDER BY creado DESC').bind(id).all();
       return results.map((r) => ({ ...r, datos: JSON.parse(r.datos) }));
+    },
+    async borrarRespuesta(id, rid) {
+      await db.prepare('DELETE FROM respuestas WHERE evento_id = ? AND id = ?').bind(id, Number(rid)).run();
     },
     async empresa(id) {
       const r = id && await db.prepare('SELECT * FROM empresas WHERE id = ?').bind(id).first();

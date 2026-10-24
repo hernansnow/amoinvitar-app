@@ -100,7 +100,8 @@
     <section id="confirmacion">
       <h2>7. Confirmación e invitados</h2>
       <p>La confirmación se cierra sola en la fecha límite o al llegar al aforo máximo (cuenta invitados, acompañantes y niños). Se puede preguntar por restricciones alimentarias, alcohol, niños (cuántos) y traslado, y sumar preguntas propias.</p>
-      <p>Con la <strong>Lista de invitados</strong>, cada invitado recibe su link personal y ve su nombre, sus pases y su mesa. La lista se carga a mano, pegando filas o con un Excel (hay una planilla modelo para descargar).</p>
+      <p>Con la <strong>Lista de invitados</strong>, cada invitado recibe su link personal y ve su nombre, sus pases y su mesa. Al confirmar no tiene que escribir su nombre: ya aparece, y los acompañantes salen de sus pases. La lista se carga a mano, pegando filas o con un Excel (hay una planilla modelo para descargar).</p>
+      <p>Con la lista activada la invitación es de <strong>lista cerrada</strong>: solo entran los invitados de la lista, cada uno con su link personal (y su PIN, si se eligió PIN). Quien no está en la lista ve la pantalla de acceso.</p>
     </section>
 
     <section id="tarjetas">
@@ -123,10 +124,18 @@
     <section id="seguridad">
       <h2>10. Seguridad</h2>
       <p>Tres opciones: cualquiera con el link, solo con link personal (necesita la lista de invitados) o con PIN (uno para todos o uno por invitado).</p>
+      <ul>
+        <li><strong>Sin lista de invitados</strong>: abierta (cualquiera con el link) o con un PIN para todos.</li>
+        <li><strong>Con lista de invitados</strong>: siempre de lista cerrada. Se entra con el link personal; si además hay PIN, se pide la primera vez (uno para todos o uno por invitado).</li>
+        <li>Al entrar bien, el navegador lo recuerda 90 días: no se vuelve a pedir. Si se cambia el PIN, el modo o la lista, se vuelve a pedir.</li>
+        <li>Los dueños de la invitación la ven siempre con <strong>Ver la invitación</strong> desde Administración, sin PIN ni link personal. Lo que confirmen desde ahí queda marcado como <em>Prueba</em> y se puede borrar.</li>
+        <li>En la vista previa del panel se puede recorrer la confirmación entera: no se guarda.</li>
+      </ul>
     </section>
 
     <section id="publicar">
       <h2>11. Publicar y pagar</h2>
+      <p>Una vez publicada, el botón dice <strong>Actualizar</strong>: los cambios se guardan solos y Actualizar revisa que esté todo completo (y cobra la diferencia si se sumó algo de un plan más alto).</p>
       <p>Al tocar <strong>Publicar</strong> se ve el resumen: secciones elegidas, plan, complementos y total. Se elige el medio de pago (tarjeta, Mercado Pago, PayPal o transferencia, según el país) y, si hay, un cupón. Después del pago la invitación queda online en su link, llega el mail con el acceso y la factura, y se puede seguir editando.</p>
       <p>Si más adelante se prende una sección de un plan más alto, al publicar se paga solo la diferencia.</p>
     </section>
@@ -138,14 +147,15 @@
 
     <section id="administracion">
       <h2>13. Administración</h2>
-      <p>Arriba del panel están <strong>Editar invitación</strong> y <strong>Administración</strong>. Una vez publicada, el panel abre en la administración:</p>
+      <p>Arriba del panel están <strong>Editar invitación</strong> y <strong>Administración</strong>. Una vez publicada, el panel abre en la administración. En el celular, el menú se desliza hacia los costados (la flecha › muestra el resto). El ojo muestra la invitación:</p>
       <ul>
         <li><strong>Resumen</strong>: la cuenta regresiva, cuántos días quedan para cerrar la lista, cuántos faltan confirmar y los lugares libres (si hay aforo).</li>
-        <li><strong>Enviar</strong>: el link, WhatsApp con un mensaje que se puede cambiar, copiar y el código QR. Con lista de invitados, el link personal de cada uno (con su nombre y su PIN, si hay).</li>
-        <li><strong>Respuestas</strong>: quién va (verde), quién no (rojo) y quién falta (amarillo), con la fecha; filtros, búsqueda, orden, recordatorios por WhatsApp y descarga en Excel o PDF (todas o solo los confirmados).</li>
+        <li><strong>Enviar</strong>: el link, WhatsApp con un mensaje que se puede cambiar, copiar y el código QR. Con lista de invitados no hay link general (es lista cerrada): está el link personal de cada uno, con WhatsApp, copiar, QR y "Ver" (cómo la ve ese invitado), y el botón <strong>Editar lista de invitados</strong>.</li>
+        <li><strong>Respuestas</strong>: quién va (verde), quién no (rojo) y quién falta (amarillo), con la fecha; filtros, búsqueda, orden y recordatorios por WhatsApp. Se descarga en <strong>Excel</strong> o <strong>PDF</strong>; con la casilla <strong>Solo confirmados</strong>, solo los que van.</li>
         <li><strong>Mensajes</strong>: lo que escribieron los invitados al confirmar, para leer y descargar.</li>
-        <li><strong>Canciones</strong>: las sugerencias, con un acceso a Spotify para sumarlas a una playlist.</li>
-        <li><strong>Mesas</strong>: la distribución según la lista de invitados (el número de mesa se cambia ahí mismo) y un croquis para imprimir.</li>
+        <li><strong>Canciones</strong>: las sugerencias, con un acceso a Spotify para cada una. Para pasarlas todas a una playlist: "Copiar y abrir TuneMyMusic", elegir "Pegar texto" como origen y Spotify como destino.</li>
+        <li><strong>Mesas</strong>: la distribución según la lista de invitados. Para cambiar a alguien de mesa se lo arrastra (⠿) a otra mesa (o a "+ Mesa nueva"), o se escribe el número. Croquis para ver en el celular e imprimir.</li>
+        <li><strong>Buscá tu mesa</strong> (en Mesas): una página donde cada invitado escribe su nombre y ve su mesa. Se activa con la casilla y se imprime el QR para la entrada del salón.</li>
         <li><strong>Álbum de fotos</strong>: el acceso a Albunear.</li>
       </ul>
       <p>Después de publicar, los nombres y la fecha quedan fijos (se cambian pidiéndolo por WhatsApp); todo lo demás se puede corregir hasta 7 días después del evento.</p>

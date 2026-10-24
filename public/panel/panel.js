@@ -1282,7 +1282,7 @@ function dibujarPasos() {
   $('#progreso-movil').style.setProperty('--avance', avance);
   $('#linea-pasos').replaceChildren(el('small', {}, `Paso ${i + 1} de ${pasos.length}`), el('span', { class: 'progreso', style: `--avance:${avance}` }));
   $('#btn-anterior').disabled = i <= 0;
-  $('#btn-siguiente').lastElementChild.textContent = i >= pasos.length - 1 ? 'Publicar' : 'Siguiente';
+  $('#btn-siguiente').lastElementChild.textContent = i >= pasos.length - 1 ? textoPublicar() : 'Siguiente';
 }
 function abrirPasos() { $('#pasos').classList.add('abierta'); document.body.classList.add('sin-scroll'); $('#pasos [aria-current="step"]')?.focus(); }
 function cerrarPasos() { $('#pasos').classList.remove('abierta'); document.body.classList.remove('sin-scroll'); }
@@ -1338,7 +1338,7 @@ function dibujarPaso() {
     el('div', { class: 'navegar solo-escritorio' },
       anterior ? el('button', { type: 'button', class: 'btn btn-sec', onclick: () => irA(anterior.id) }, el('small', {}, '← Anterior'), el('span', {}, anterior.titulo)) : el('span'),
       siguiente ? el('button', { type: 'button', class: 'btn siguiente', onclick: () => irA(siguiente.id) }, el('small', {}, 'Siguiente →'), el('span', {}, siguiente.titulo))
-        : el('button', { type: 'button', class: 'btn siguiente', onclick: publicar }, el('small', {}, 'Listo'), el('span', {}, 'Publicar'))),
+        : el('button', { type: 'button', class: 'btn siguiente', onclick: publicar }, el('small', {}, 'Listo'), el('span', {}, textoPublicar()))),
   ].filter(Boolean));
   pintarFaltan();
 }
@@ -1421,7 +1421,9 @@ const MANUAL = [
   ['Lugar y fecha', 'Con el link de Google Maps se arma solo el mapa y el botón "¿Cómo llegar?". En Google Maps: buscar el lugar, tocar Compartir y Copiar link.'],
   ['Confirmación e invitados', 'La confirmación se cierra sola en la fecha límite o al llegar al aforo. Con la lista de invitados, cada uno recibe su link personal con su nombre, pases y mesa.'],
   ['Idiomas', 'El idioma principal se elige en "Idioma y seguridad". Con un idioma adicional, cada invitado ve la invitación en el suyo y puede cambiarlo desde el botón flotante (con la bandera elegida para cada idioma). Los textos se ajustan con "Editar textos en…" y se pueden sumar hasta tres idiomas.'],
-  ['Publicar', 'Al tocar Publicar se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link y se puede seguir editando.'],
+  ['Seguridad y lista cerrada', 'Con la lista de invitados la invitación es de lista cerrada: solo se entra con el link personal (y el PIN, si hay). Los dueños la ven siempre con "Ver la invitación" desde Administración; lo que confirmen ahí queda como prueba y se puede borrar.'],
+  ['Publicar', 'Al tocar Publicar se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link y se puede seguir editando. Ya publicada, el botón dice Actualizar.'],
+  ['Administración', 'Resumen con la cuenta regresiva; Enviar (WhatsApp, link, QR o los links personales); Respuestas con filtros, recordatorios y descarga en Excel o PDF (casilla "Solo confirmados"); Mensajes; Canciones (pasarlas a una playlist de Spotify); Mesas (arrastrar invitados entre mesas, croquis y el QR "Buscá tu mesa" para la entrada); Álbum de fotos.'],
 ];
 function mostrarManual() {
   const wa = whatsapp();
@@ -1492,12 +1494,23 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
 }
 
 // ── Publicar ──────────────────────────────────────────────────────────
+// Ya publicada, el botón dice "Actualizar" (los cambios se guardan solos; Actualizar
+// confirma que está todo completo y, si se sumó algo pago, lo cobra)
+const esInvitacionWeb = () => ['invitacion', 'std-web', 'compromiso-web', 'std-web-medida'].includes(S.evento.producto);
+function textoPublicar() { return !esInvitacionWeb() ? 'Enviar al diseño' : S.evento.estado === 'publicado' ? 'Actualizar' : 'Publicar'; }
+function pintarPublicar() {
+  ['#btn-publicar', '#btn-publicar-2'].forEach((x) => { const b = $(x); if (b) b.textContent = textoPublicar(); });
+  if (pasoActual) dibujarPasos();
+}
 async function publicar() {
   clearTimeout(guardarTimer); await guardar();
   try {
+    const yaEstaba = S.evento.estado === 'publicado';
     const r = await api('/publicar', { method: 'POST' });
     S.evento.estado = r.estado;
-    if (r.link) { aviso('¡Publicada! Link copiado.'); navigator.clipboard?.writeText(r.link).catch(() => {}); window.open(r.link, '_blank', 'noopener'); }
+    pintarPublicar();
+    if (r.link && yaEstaba) { aviso('¡Invitación actualizada!'); estado('Publicada'); }
+    else if (r.link) { aviso('¡Publicada! Link copiado.'); navigator.clipboard?.writeText(r.link).catch(() => {}); window.open(`${location.origin}/acceso/${S.evento.id}/dueno${clave ? `?k=${encodeURIComponent(clave)}` : ''}`, '_blank', 'noopener'); }
     else aviso('¡Listo! El equipo de diseño ya tiene todo para empezar.');
   } catch (e) {
     if (e.datos?.error === 'pagar') { S.plan = e.datos.plan; pintarPlan(); mostrarResumen(true, e.datos.plan); return; }
@@ -1514,7 +1527,8 @@ function verPrevia(on) {
   if (on && marcos().every((x) => x.src === 'about:blank')) cargarPrevia();
   requestAnimationFrame(escalarPrevia);
 }
-$('#btn-ojo').addEventListener('click', () => verPrevia(true));
+// En Administración el ojo muestra la invitación (no una vista previa de la administración)
+$('#btn-ojo').addEventListener('click', () => { if (document.body.classList.contains('modo-admin')) ponerModo('editar'); verPrevia(true); });
 $('#btn-editar').addEventListener('click', () => verPrevia(false));
 function plegarEditor(on) {
   document.body.classList.toggle('editor-plegado', on);
@@ -1613,7 +1627,7 @@ function recordarBorrador() {
   const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ');
   $('#titulo-evento').textContent = nombres || 'Mi invitación';
   if (!S.evento.modelo) { $('#btn-ojo').hidden = true; $('#previa').remove(); document.body.classList.add('sin-previa'); }
-  if (!['invitacion', 'std-web', 'compromiso-web', 'std-web-medida'].includes(S.evento.producto)) $('#btn-publicar').textContent = 'Enviar al diseño';
+  pintarPublicar();
   estado(S.evento.estado === 'publicado' ? 'Publicada' : 'Guardado ✓');
   // Publicada: el panel abre en la administración (siempre se puede volver a editar)
   const hash = location.hash.slice(1);
@@ -1631,6 +1645,7 @@ function ponerModo(m) {
   if (admin) {
     history.replaceState(null, '', '#admin');
     montarAdmin($('#admin'), { S, datos, api, el, aviso, abrirModal,
+      clave, editarLista: () => { ponerModo('editar'); irA('invitados'); },
       guardarInvitados: async () => { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: S.invitados }) }); S.invitados = r.invitados; } });
   } else if (pasoActual) { history.replaceState(null, '', `#${pasoActual.id}`); requestAnimationFrame(escalarPrevia); }
 }

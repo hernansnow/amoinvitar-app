@@ -80,13 +80,23 @@ document.addEventListener('DOMContentLoaded', function () {
   var SI_NO = function (no) { return [{ v: 'Si', etiqueta: t('textSi', 'Sí') }, { v: 'No', etiqueta: no || t('textNo', 'No') }]; };
   function error(msg) { var e = caja.querySelector('.rp-error'); if (e) { e.textContent = msg; e.hidden = !msg; } }
 
+  // Con link personal: sus pases y su mesa, debajo del nombre
+  function datosInvitado() {
+    if (!invitado || !invitado.nombre) return null;
+    var c = window.INVITACION_CONFIG || {}, partes = [];
+    var pases = parseInt(invitado.pases, 10) || 0;
+    if (pases > 0) partes.push(pases + ' ' + (pases === 1 ? (c.txtPaseExtra || 'pase extra') : (c.txtPasesExtras || 'pases extras')));
+    if (invitado.mesa) partes.push((c.txtMesaPrefix || 'Mesa') + ' ' + invitado.mesa);
+    return partes.length ? h('p', { class: 'rp-datos' }, partes.map(function (x) { return h('span', {}, x); })) : null;
+  }
+
   // ── Cada paso ──
   function contenido(id) {
     var avanzar = function () { siguiente(); };
     if (id === 'asiste') {
       var nombre = invitado && invitado.nombre ? null : h('input', { type: 'text', class: 'rp-input', name: 'nombre', maxlength: 120, autocomplete: 'name',
         placeholder: t('labelNombre'), value: r.nombre, oninput: function (e) { r.nombre = e.target.value; } });
-      return [invitado && invitado.nombre ? h('p', { class: 'rp-hola' }, invitado.nombre) : null, nombre,
+      return [invitado && invitado.nombre ? h('p', { class: 'rp-hola' }, invitado.nombre) : null, datosInvitado(), nombre,
         h('p', { class: 'rp-pregunta' }, t('labelAsiste')),
         opciones([{ v: 'Si', etiqueta: t('textSiAsiste') }, { v: 'No', etiqueta: t('textNoAsiste') }], r.asiste, function (v) {
           if (!String(r.nombre).trim()) { error(t('msgCamposVacios')); nombre && nombre.focus(); return; }
@@ -148,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ultimo ? h('button', { type: 'submit', class: 'rp-enviar' }, t('textBtnSubmit', 'Enviar'))
         : (id === 'asiste' ? null : h('button', { type: 'button', class: 'rp-siguiente', onclick: siguiente }, t('textSiguiente', 'Siguiente') + ' →')),
     ]);
-    form.replaceChildren(puntos, caja, nav);
+    form.replaceChildren(caja, nav, puntos);
   }
   function siguiente() {
     var lista = pasos();
@@ -181,13 +191,20 @@ document.addEventListener('DOMContentLoaded', function () {
     for (var k in datos) fd.set(k, datos[k]);
     fd.set('labels', JSON.stringify(labels));
     btn.disabled = true; var original = btn.textContent; btn.textContent = t('textEnviando', 'Enviando…');
-    fetch(url, { method: 'POST', body: fd }).then(function (x) { return x.json(); }).then(function (res) {
-      if (res.result !== 'ok') throw Object.assign(new Error('rsvp'), { lleno: !!res.lleno });
+    var listo = function (prueba) {
       form.replaceChildren(h('div', { class: 'rp-listo' }, [h('p', { class: 'rp-listo-icono', 'aria-hidden': 'true' }, r.asiste === 'Si' ? '🎉' : '💌'),
-        h('p', {}, r.asiste === 'Si' ? t('msgOk') : t('msgNoAsiste'))]));
+        h('p', {}, r.asiste === 'Si' ? t('msgOk') : t('msgNoAsiste')), prueba ? h('p', { class: 'rp-ayuda' }, t('msgPrueba', 'Vista previa: esta respuesta no se guarda.')) : null]));
+    };
+    // Vista previa del panel: se puede recorrer entero, pero no se manda
+    if (window.INVITACION_CONFIG && window.INVITACION_CONFIG.prueba) { listo(true); return; }
+    fetch(url, { method: 'POST', body: fd }).then(function (x) {
+      return x.json().catch(function () { return { result: 'error' }; });
+    }).then(function (res) {
+      if (res.result !== 'ok') throw Object.assign(new Error('rsvp'), { lleno: !!res.lleno, acceso: !!res.acceso, respondio: true });
+      listo(!!res.prueba);
     }).catch(function (err) {
       btn.disabled = false; btn.textContent = original;
-      error(err.lleno ? t('msgLleno') : t('msgError'));
+      error(err.lleno ? t('msgLleno') : err.acceso ? t('msgAcceso', t('msgError')) : err.respondio ? t('msgRespuestaInvalida', t('msgError')) : t('msgError'));
     });
   });
 

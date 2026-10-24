@@ -37,6 +37,8 @@ export function acceso({ t, v }) {
     csv: v.acceso.lista && v.acceso.inv
       ? `${v.rutas.api}/invitados.csv?e=${encodeURIComponent(v.id)}&inv=${encodeURIComponent(v.acceso.inv)}` : '',
     rsvp_url: `${v.rutas.api}/rsvp`,
+    invitado: v.acceso.invitado || null,
+    prueba: !!v.prueba, // vista previa del panel: el RSVP se puede probar pero no se guarda
     soloInvitados: false, requierePin: false, requierePinBasico: false,
     gateTitulo: v.nombres.texto,
     txtFaltaCSV: t('lista.faltaCSV'),
@@ -118,6 +120,8 @@ export function rsvpForm({ t, v, el }) {
     'data-msg-ok': t('rsvp.form.msgOk'),
     'data-msg-error': t('rsvp.form.msgError'),
     'data-msg-lleno': t('rsvp.form.msgLleno'),
+    'data-msg-acceso': t('rsvp.form.msgAcceso'),
+    'data-msg-prueba': t('rsvp.form.msgPrueba'),
     'data-msg-respuesta-invalida': t('rsvp.form.msgInvalida'),
     'data-msg-campos-vacios': t('rsvp.form.msgVacios'),
     'data-comida-opciones': t('rsvp.form.comidaOpciones'),

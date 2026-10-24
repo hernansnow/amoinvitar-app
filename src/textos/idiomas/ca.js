@@ -30,7 +30,7 @@ export default {
     'rsvp.form.siAsiste': 'Sí, hi seré 😀', 'rsvp.form.noAsiste': 'No hi podré anar 😭',
     'rsvp.form.msgNoAsiste': '😢 Quina llàstima que no puguis venir. Gràcies per avisar!',
     'rsvp.form.msgOk': 'Gràcies! 🎉 La teva confirmació s\'ha registrat',
-    'rsvp.form.msgError': 'Error de connexió. Torna-ho a provar.', 'rsvp.form.msgInvalida': 'Resposta no vàlida del servidor.',
+    'rsvp.form.msgError': 'Error de connexió. Torna-ho a provar.', 'rsvp.form.msgAcceso': 'No hem pogut validar el teu accés. Torna a obrir el teu enllaç personal.', 'rsvp.form.msgPrueba': 'Vista prèvia: aquesta resposta no es desa.', 'rsvp.form.msgInvalida': 'Resposta no vàlida del servidor.',
     'rsvp.form.msgVacios': 'Si us plau, omple les dades.', 'rsvp.form.comidaOpciones': 'No|Celíac|Vegà|Vegetarià',
     'dress.titulo': 'Dress Code', 'dress.boton': 'Suggeriments', 'dress.modal': "Suggeriments d'estil", 'dress.evitar': 'Colors a evitar',
     'dresscode.texto': 'Formal i elegant. Si us plau, no vestiu de blanc.',

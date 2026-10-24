@@ -17,6 +17,13 @@ const SECCIONES = [
 const link = () => `${location.origin}/${ctx.S.evento.tipo}/${ctx.datos.slug || ctx.S.evento.slug || ''}`;
 const linkDe = (i) => `${link()}?inv=${encodeURIComponent(i.codigo)}`;
 const publicada = () => ctx.S.evento.estado === 'publicado';
+// "Ver la invitación" del dueño: entra aunque sea de lista cerrada o con PIN
+const claveUrl = () => ctx.clave || new URLSearchParams(location.search).get('k') || '';
+const linkDueno = (i = null) => {
+  const q = new URLSearchParams(); if (claveUrl()) q.set('k', claveUrl()); if (i?.codigo) q.set('inv', i.codigo);
+  return `${location.origin}/acceso/${ctx.S.evento.id}/dueno${q.toString() ? `?${q}` : ''}`;
+};
+const editarLista = () => ctx.editarLista?.();
 const conLista = () => !!(ctx.datos.acceso?.lista || ctx.datos.acceso?.modo === 'codigo' || (ctx.datos.acceso?.modo === 'pin' && ctx.datos.acceso?.pinPorInvitado));
 const pinTodos = () => (ctx.datos.acceso?.modo === 'pin' && !ctx.datos.acceso?.pinPorInvitado ? ctx.datos.acceso?.pin : '');
 const pinDe = (i) => (ctx.datos.acceso?.modo === 'pin' ? (ctx.datos.acceso?.pinPorInvitado ? i.pin : ctx.datos.acceso?.pin) : '');
@@ -160,17 +167,21 @@ function editorTexto(clave, base, titulo, ayuda) {
 }
 function vistaEnviar() {
   if (!publicada()) return [tarjeta('Enviar la invitación', ctx.el('p', { class: 'ayuda' }, 'Cuando la invitación esté publicada, desde acá se envía por WhatsApp, se copia el link o se descarga el código QR.'))];
+  if (conLista()) return vistaEnviarLista();
   const general = tarjeta('Enviar la invitación',
     ctx.el('p', { class: 'ad-link' }, link()), pinTodos() ? ctx.el('p', { class: 'ayuda' }, `PIN para todos: ${pinTodos()}`) : null,
     ctx.el('div', { class: 'ad-botones' },
-      enlace('Ver la invitación', link(), 'btn btn-sec'),
+      enlace('Ver la invitación', linkDueno(), 'btn btn-sec'),
       navigator.share ? boton('Enviar…', () => navigator.share({ title: nombres(), text: armarTexto(admin().textoWa || TEXTO_WA()).replace(link(), '').trim(), url: link() }).catch(() => {})) : null,
       enlace('Enviar por WhatsApp', wa(armarTexto(admin().textoWa || TEXTO_WA())), 'btn btn-wa'),
       boton('Copiar link', () => copiar(link(), 'Link copiado'), 'btn btn-sec'),
       boton('Código QR', () => mostrarQR(link(), 'Código QR de la invitación'), 'btn btn-sec')),
     editorTexto('textoWa', TEXTO_WA, 'Mensaje de WhatsApp', 'Se puede cambiar a gusto. {link} es el link de la invitación, {nombres} los de ustedes y {cierre} la fecha límite para confirmar.'));
-  if (!conLista()) return [general];
-  // Con lista: un link personal por invitado
+  return [general];
+}
+// Con lista de invitados la invitación es de LISTA CERRADA: no hay link general para mandar,
+// cada invitado entra solo con el suyo (y su PIN, si hay)
+function vistaEnviarLista() {
   const st = estadisticas();
   const respondio = new Set(st.filas.map((x) => x.datos.inv));
   const buscar = ctx.el('input', { type: 'search', placeholder: 'Buscar invitado…', class: 'ad-buscar' });
@@ -183,11 +194,17 @@ function vistaEnviar() {
       ctx.el('td', {}, ctx.el('div', { class: 'ad-acciones' },
         i.codigo ? enlace('WhatsApp', wa(armarTexto(admin().textoWaLista || TEXTO_WA_LISTA(), i)), 'btn btn-chico btn-wa') : null,
         i.codigo ? boton('Copiar', () => copiar(`${linkDe(i)}${pinDe(i) ? `  (PIN ${pinDe(i)})` : ''}`, 'Link copiado'), 'btn btn-chico btn-sec') : null,
-        i.codigo ? boton('QR', () => mostrarQR(linkDe(i), `QR de ${i.nombre}`), 'btn btn-chico btn-sec') : null)))));
+        i.codigo ? boton('QR', () => mostrarQR(linkDe(i), `QR de ${i.nombre}`), 'btn btn-chico btn-sec') : null,
+        i.codigo ? enlace('Ver', linkDueno(i), 'btn btn-chico btn-sec') : null)))));
   };
   buscar.addEventListener('input', pintar); pintar();
-  return [general, tarjeta(`Links personales (${st.lista.length})`,
+  const cabeza = tarjeta('Enviar la invitación',
+    ctx.el('p', { class: 'ad-aviso' }, '🔒 Lista cerrada: solo entran los invitados de la lista, cada uno con su link personal', ctx.datos.acceso?.modo === 'pin' ? ' y su PIN.' : '.'),
+    ctx.el('p', { class: 'ayuda' }, 'Por eso no hay un link general para compartir. Ustedes sí pueden verla siempre desde "Ver la invitación".'),
+    ctx.el('div', { class: 'ad-botones' }, enlace('Ver la invitación', linkDueno(), 'btn btn-sec'), boton('Editar lista de invitados', editarLista, 'btn btn-sec')));
+  return [cabeza, tarjeta(`Links personales (${st.lista.length})`,
     ctx.el('p', { class: 'ayuda' }, 'Cada invitado tiene su propio link (con su nombre, pases y mesa). El mensaje sale personalizado con su nombre.'),
+    st.lista.length ? null : ctx.el('p', { class: 'ad-aviso' }, 'Todavía no hay invitados en la lista.'),
     buscar, ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla' }, cuerpo)),
     editorTexto('textoWaLista', TEXTO_WA_LISTA, 'Mensaje para cada invitado', '{invitado} es el nombre del invitado, {link} su link personal, {pin} su PIN (si hay), {cierre} la fecha límite y {nombres} los de ustedes.'))];
 }
@@ -197,10 +214,10 @@ function vistaRespuestas() {
   const preguntas = new Map();   // campo → etiqueta, según lo que respondieron
   for (const x of st.filas) {
     let lab = {}; try { lab = JSON.parse(x.datos.labels || '{}'); } catch { /* viejas */ }
-    for (const k of Object.keys(x.datos)) if (!['inv', 'nombre', 'asiste', 'acompanantes', 'labels', 'mensaje'].includes(k)) preguntas.set(k, lab[k] || k);
+    for (const k of Object.keys(x.datos)) if (!['inv', 'nombre', 'asiste', 'acompanantes', 'labels', 'mensaje', 'prueba'].includes(k)) preguntas.set(k, lab[k] || k);
   }
   const filas = [
-    ...st.filas.map((x) => ({ nombre: x.datos.nombre || '—', estado: x.datos.asiste === 'Si' ? 'si' : 'no', acomp: acompDe(x.datos), ninos: ninosDe(x.datos), fecha: x.creado, datos: x.datos })),
+    ...st.filas.map((x) => ({ id: x.id, nombre: x.datos.nombre || '—', estado: x.datos.asiste === 'Si' ? 'si' : 'no', acomp: acompDe(x.datos), ninos: ninosDe(x.datos), fecha: x.creado, datos: x.datos })),
     ...st.sinResponder.map((i) => ({ nombre: i.nombre, estado: 'pend', acomp: [], ninos: 0, fecha: '', datos: {}, invitado: i })),
   ];
   let filtro = 'todos', orden = 'fecha';
@@ -217,7 +234,8 @@ function vistaRespuestas() {
     tabla.replaceChildren(ctx.el('table', { class: 'ad-tabla ad-respuestas' },
       ctx.el('thead', {}, ctx.el('tr', {}, ctx.el('th', {}, 'Invitado'), ctx.el('th', {}, 'Estado'), ctx.el('th', {}, 'Personas'), cols.map(([, l]) => ctx.el('th', {}, l)), ctx.el('th', {}, 'Respondió'))),
       ctx.el('tbody', {}, visibles().map((f) => ctx.el('tr', { class: `fila-${f.estado}` },
-        ctx.el('td', {}, ctx.el('strong', {}, f.nombre), f.acomp.length ? ctx.el('small', {}, `Con: ${f.acomp.join(', ')}`) : null),
+        ctx.el('td', {}, ctx.el('strong', {}, f.nombre), f.acomp.length ? ctx.el('small', {}, `Con: ${f.acomp.join(', ')}`) : null,
+          f.datos.prueba ? ctx.el('span', { class: 'ad-prueba' }, 'Prueba ', ctx.el('button', { type: 'button', class: 'btn-link', onclick: () => borrar(f.id) }, 'Borrar')) : null),
         ctx.el('td', {}, ctx.el('span', { class: `ad-estado ${f.estado}` }, ESTADO[f.estado])),
         ctx.el('td', {}, f.estado === 'si' ? String(1 + f.acomp.length) + (f.ninos ? ` + ${f.ninos} niños` : '') : '—'),
         cols.map(([k]) => ctx.el('td', {}, f.datos[k] || '')),
@@ -243,13 +261,18 @@ function vistaRespuestas() {
       <table><tr><th>Invitado</th><th>Estado</th><th>Personas</th>${cols.map(([, l]) => `<th>${esc(l)}</th>`).join('')}<th>Fecha</th></tr>${lista.map((f) => `<tr><td><b>${esc(f.nombre)}</b>${f.acomp.length ? `<br><small>Con: ${esc(f.acomp.join(', '))}</small>` : ''}</td><td class="${f.estado}">${ESTADO[f.estado]}</td><td>${f.estado === 'si' ? 1 + f.acomp.length : '—'}${f.ninos ? ` + ${f.ninos} niños` : ''}</td>${cols.map(([k]) => `<td>${esc(f.datos[k] || '')}</td>`).join('')}<td>${f.fecha ? fechaHora(f.fecha) : ''}</td></tr>`).join('')}</table>`);
   };
   const pendientes = st.sinResponder.filter((i) => i.codigo);
+  const soloVan = ctx.el('input', { type: 'checkbox' });
+  const borrar = async (id) => {
+    if (!confirm('¿Borrar esta respuesta de prueba?')) return;
+    try { await ctx.api(`/respuestas?r=${id}`, { method: 'DELETE' }); respuestas = respuestas.filter((x) => x.id !== id); ctx.redibujar(); } catch (e) { ctx.aviso(e.message, true); }
+  };
   return [
     ctx.el('div', { class: 'ad-numeros' }, numero(st.personas, 'personas (invitados y acompañantes)', 'si'), si(st.ninos) ? numero(st.ninos, 'niños', 'si') : null,
       numero(st.noVan.length, 'no van', 'no'), conLista() ? numero(st.sinResponder.length, 'sin confirmar', 'pend') : null),
     tarjeta('Confirmaciones', ctx.el('div', { class: 'ad-barra' }, chips, ctx.el('div', { class: 'ad-barra-der' }, buscar, ordenar)), tabla,
-      ctx.el('div', { class: 'ad-botones' },
-        boton('Excel (todas)', () => exportar(false, 'csv'), 'btn btn-sec btn-chico'), boton('Excel (solo confirmados)', () => exportar(true, 'csv'), 'btn btn-sec btn-chico'),
-        boton('PDF (todas)', () => exportar(false, 'pdf'), 'btn btn-sec btn-chico'), boton('PDF (solo confirmados)', () => exportar(true, 'pdf'), 'btn btn-sec btn-chico'))),
+      ctx.el('div', { class: 'ad-botones ad-descargas' },
+        boton('Excel', () => exportar(soloVan.checked, 'csv'), 'btn btn-sec btn-chico'), boton('PDF', () => exportar(soloVan.checked, 'pdf'), 'btn btn-sec btn-chico'),
+        ctx.el('label', { class: 'ad-check' }, soloVan, ' Solo confirmados'))),
     conLista() ? tarjeta(`Recordatorios (${pendientes.length} sin confirmar)`,
       ctx.el('p', { class: 'ayuda' }, 'Un mensaje de WhatsApp para cada invitado que todavía no confirmó (se abre WhatsApp con el texto listo para enviar).'),
       pendientes.length ? ctx.el('div', { class: 'ad-recordar' }, pendientes.map((i) => enlace(`Recordar a ${i.nombre}`, wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i)), 'btn btn-chico btn-wa'))) : ctx.el('p', { class: 'ayuda' }, '¡Ya respondieron todos!'),
@@ -279,6 +302,14 @@ function vistaCanciones() {
   if (!lista.length) return [tarjeta('Canciones', ctx.el('p', { class: 'ayuda' }, 'Todavía no hay canciones sugeridas.'))];
   return [tarjeta(`Canciones sugeridas (${lista.length})`,
     ctx.el('p', { class: 'ayuda' }, 'Con "Spotify" se abre la búsqueda de cada canción para sumarla a una playlist con un toque.'),
+    ctx.el('details', { class: 'ad-plantilla' }, ctx.el('summary', {}, 'Pasar todas a una playlist de Spotify'),
+      ctx.el('ol', { class: 'ad-pasos' },
+        ctx.el('li', {}, 'Tocar "Copiar y abrir TuneMyMusic" (se copian todas las canciones).'),
+        ctx.el('li', {}, 'Allá elegir "Pegar texto" como origen y pegar la lista.'),
+        ctx.el('li', {}, 'Elegir Spotify como destino, entrar con la cuenta propia y listo: queda una playlist nueva.')),
+      ctx.el('div', { class: 'ad-botones' }, boton('Copiar y abrir TuneMyMusic', async () => {
+        await copiar(lista.map((c) => c.cancion).join('\n'), 'Lista copiada'); window.open('https://www.tunemymusic.com/es/transfer', '_blank', 'noopener');
+      }, 'btn btn-chico'))),
     ctx.el('ul', { class: 'ad-canciones' }, lista.map((c) => ctx.el('li', {}, ctx.el('span', {}, `🎵 ${c.cancion}`),
       ctx.el('span', { class: 'ad-acciones' }, ctx.el('small', {}, fechaHora(c.fecha)), enlace('Spotify', `https://open.spotify.com/search/${encodeURIComponent(c.cancion)}`, 'btn btn-chico btn-sec'))))),
     ctx.el('div', { class: 'ad-botones' },
@@ -302,20 +333,30 @@ function vistaMesas() {
   const mesas = new Map();
   for (const i of st.lista) { const k = String(i.mesa || '').trim() || 'Sin mesa'; if (!mesas.has(k)) mesas.set(k, []); mesas.get(k).push(i); }
   const claves = [...mesas.keys()].sort((a, b) => (a === 'Sin mesa') - (b === 'Sin mesa') || a.localeCompare(b, 'es', { numeric: true }));
-  const cambiarMesa = async (i, mesa) => { i.mesa = mesa; await ctx.guardarInvitados(); ctx.redibujar(); };
+  const cambiarMesa = async (i, mesa) => {
+    if (String(i.mesa || '') === String(mesa || '')) return;
+    i.mesa = mesa;
+    try { await ctx.guardarInvitados(); } catch (e) { ctx.aviso(e.message, true); }
+    ctx.redibujar();
+  };
   const listado = ctx.el('div', { class: 'ad-mesas' }, claves.map((k) => {
     const gente = mesas.get(k).flatMap(personasDe);
-    return ctx.el('div', { class: `ad-mesa${gente.length > asientos && k !== 'Sin mesa' ? ' llena' : ''}` },
+    return ctx.el('div', { class: `ad-mesa${gente.length > asientos && k !== 'Sin mesa' ? ' llena' : ''}`, 'data-mesa': k === 'Sin mesa' ? '' : k },
       ctx.el('h3', {}, k === 'Sin mesa' ? k : `Mesa ${k}`, ctx.el('small', {}, ` ${gente.length}${k !== 'Sin mesa' ? `/${asientos}` : ''}`)),
       ctx.el('ul', {}, mesas.get(k).map((i) => {
         const sel = ctx.el('input', { type: 'text', value: i.mesa || '', class: 'ad-mesa-num', 'aria-label': `Mesa de ${i.nombre}`, placeholder: '—' });
         sel.addEventListener('change', () => cambiarMesa(i, sel.value.trim()));
-        return ctx.el('li', {}, ctx.el('span', {}, i.nombre, personasDe(i).length > 1 ? ctx.el('small', {}, ` +${personasDe(i).length - 1}`) : null), sel);
+        const li = ctx.el('li', {}, ctx.el('span', { class: 'ad-arrastrar', title: 'Arrastrar a otra mesa', 'aria-hidden': 'true' }, '⠿'),
+          ctx.el('span', {}, i.nombre, personasDe(i).length > 1 ? ctx.el('small', {}, ` +${personasDe(i).length - 1}`) : null), sel);
+        arrastrable(li, li.firstChild, (mesa) => cambiarMesa(i, mesa === '+' ? siguienteMesa() : mesa));
+        return li;
       })));
-  }));
-  const croquis = () => {
+  }), ctx.el('div', { class: 'ad-mesa ad-mesa-nueva', 'data-mesa': '+' }, ctx.el('h3', {}, '+ Mesa nueva'), ctx.el('p', { class: 'ayuda' }, 'Soltar acá para abrir otra mesa')));
+  const siguienteMesa = () => String(Math.max(0, ...claves.map(Number).filter(Number.isFinite)) + 1);
+  // En el celular, 2 mesas por fila (entra en el ancho); al imprimir, 3
+  const croquis = (porFila = innerWidth < 700 ? 2 : 4) => {
     const ms = claves.filter((k) => k !== 'Sin mesa');
-    const cols = Math.min(4, Math.max(1, ms.length)), R = 70, celda = 260;
+    const cols = Math.min(porFila, Math.max(1, ms.length)), R = 70, celda = 260;
     const filas = Math.ceil(ms.length / cols);
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cols * celda} ${filas * celda}" font-family="Jost, system-ui, sans-serif">`;
     ms.forEach((k, n) => {
@@ -326,7 +367,7 @@ function vistaMesas() {
       for (let a = 0; a < lugares; a++) {
         const ang = (a / lugares) * Math.PI * 2 - Math.PI / 2, x = cx + Math.cos(ang) * (R + 16), y = cy + Math.sin(ang) * (R + 16);
         const tx = cx + Math.cos(ang) * (R + 34), ty = cy + Math.sin(ang) * (R + 34);
-        const nombre = gente[a] ? String(gente[a]).split(' ')[0] : '';
+        const g = String(gente[a] || ''), extra = / (\+\d+)$/.exec(g), nombre = g ? g.split(' ')[0] + (extra ? ` ${extra[1]}` : '') : '';
         svg += `<circle cx="${x}" cy="${y}" r="9" fill="${gente[a] ? '#4e9c87' : '#fff'}" stroke="#4e9c87"/>`;
         if (nombre) svg += `<text x="${tx}" y="${ty + 4}" text-anchor="${Math.cos(ang) > 0.3 ? 'start' : Math.cos(ang) < -0.3 ? 'end' : 'middle'}" font-size="11" fill="#1f2421">${esc(nombre)}</text>`;
       }
@@ -336,11 +377,19 @@ function vistaMesas() {
   const vista = ctx.el('div', { class: 'ad-croquis', html: croquis() });
   const cant = ctx.el('input', { type: 'number', min: 2, max: 30, value: asientos, class: 'ad-mesa-num', 'aria-label': 'Asientos por mesa' });
   cant.addEventListener('change', async () => { await guardarAdmin({ asientos: Number(cant.value) || 10 }); ctx.redibujar(); });
+  const linkMesa = `${location.origin}/mesa/${ctx.S.evento.id}`;
+  const busca = ctx.el('input', { type: 'checkbox', checked: !!admin().buscaMesa });
+  busca.addEventListener('change', async () => { await guardarAdmin({ buscaMesa: busca.checked }); ctx.redibujar(); });
   return [
-    tarjeta('Mesas', ctx.el('p', { class: 'ayuda' }, 'El número de mesa se cambia acá mismo (se guarda en la lista de invitados). Cuentan el invitado, sus acompañantes confirmados o sus pases.'),
-      ctx.el('label', { class: 'ad-asientos' }, 'Asientos por mesa ', cant), listado),
+    tarjeta('Mesas', ctx.el('p', { class: 'ayuda' }, 'Para cambiar a alguien de mesa: arrastrarlo (⠿) a otra mesa, o escribir el número. Se guarda en la lista de invitados. Cuentan el invitado, sus acompañantes confirmados o sus pases.'),
+      ctx.el('div', { class: 'ad-botones' }, ctx.el('label', { class: 'ad-asientos' }, 'Asientos por mesa ', cant), boton('Editar lista de invitados', editarLista, 'btn btn-sec btn-chico')), listado),
+    tarjeta('Buscá tu mesa (QR para la entrada)',
+      ctx.el('p', { class: 'ayuda' }, 'Una página donde cada invitado escribe su nombre y ve su número de mesa. Se imprime el QR y se pone en la entrada del salón.'),
+      ctx.el('label', { class: 'ad-check' }, busca, ' Activar la página "Buscá tu mesa"'),
+      admin().buscaMesa ? ctx.el('div', { class: 'ad-botones' }, enlace('Ver la página', linkMesa, 'btn btn-sec btn-chico'), boton('QR para imprimir', () => mostrarQR(linkMesa, 'Buscá tu mesa'), 'btn btn-chico'), boton('Copiar link', () => copiar(linkMesa, 'Link copiado'), 'btn btn-sec btn-chico'))
+        : ctx.el('p', { class: 'ayuda' }, 'Apagada: nadie puede buscar en la lista.')),
     tarjeta('Croquis', vista, ctx.el('div', { class: 'ad-botones' },
-      boton('Imprimir o guardar en PDF', () => imprimir('Distribución de mesas', `${croquis()}<h2 style="font-size:16px;margin-top:24px">Por mesa</h2>${claves.map((k) => `<p><b>${k === 'Sin mesa' ? k : `Mesa ${esc(k)}`}:</b> ${esc(mesas.get(k).flatMap(personasDe).join(', '))}</p>`).join('')}`), 'btn btn-sec btn-chico'),
+      boton('Imprimir o guardar en PDF', () => imprimir('Distribución de mesas', `${croquis(3)}<h2 style="font-size:16px;margin-top:24px">Por mesa</h2>${claves.map((k) => `<p><b>${k === 'Sin mesa' ? k : `Mesa ${esc(k)}`}:</b> ${esc(mesas.get(k).flatMap(personasDe).join(', '))}</p>`).join('')}`), 'btn btn-sec btn-chico'),
       boton('Excel por mesa', () => descargarCSV('mesas.csv', ['Mesa', 'Invitado', 'Personas'], claves.flatMap((k) => mesas.get(k).map((i) => [k, i.nombre, personasDe(i).join(', ')]))), 'btn btn-sec btn-chico'))),
   ];
 }
@@ -362,13 +411,55 @@ const VISTAS = { resumen: vistaResumen, enviar: vistaEnviar, respuestas: vistaRe
 // ── Montaje ──
 export async function montarAdmin(caja, c) {
   ctx = { ...c, redibujar: () => dibujar(caja) };
-  caja.replaceChildren(ctx.el('p', { class: 'ayuda' }, 'Cargando…'));
+  caja.replaceChildren(ctx.el('p', { class: 'ayuda' }, 'Cargando…')); // (el menú se vuelve a armar)
   try { respuestas = publicada() ? (await ctx.api('/respuestas')).respuestas : []; } catch { respuestas = []; }
   dibujar(caja);
 }
+// Arrastrar con el dedo o el mouse (pointer events: funciona igual en el celular)
+function arrastrable(item, asa, alSoltar) {
+  asa.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const r = item.getBoundingClientRect();
+    const fantasma = item.cloneNode(true);
+    Object.assign(fantasma.style, { position: 'fixed', left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, zIndex: 9999, pointerEvents: 'none', opacity: '.9', boxShadow: '0 8px 24px rgba(0,0,0,.18)', background: '#fff', borderRadius: '8px', listStyle: 'none' });
+    document.body.append(fantasma); item.classList.add('arrastrando');
+    const dx = e.clientX - r.left, dy = e.clientY - r.top;
+    let destino = null;
+    const mover = (ev) => {
+      fantasma.style.left = `${ev.clientX - dx}px`; fantasma.style.top = `${ev.clientY - dy}px`;
+      const bajo = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('.ad-mesa');
+      if (bajo !== destino) { destino?.classList.remove('sobre'); destino = bajo; destino?.classList.add('sobre'); }
+      // Cerca del borde de la pantalla, la página se desplaza sola
+      if (ev.clientY < 60) scrollBy(0, -12); else if (ev.clientY > innerHeight - 60) scrollBy(0, 12);
+    };
+    const soltar = () => {
+      removeEventListener('pointermove', mover); removeEventListener('pointerup', soltar); removeEventListener('pointercancel', soltar);
+      fantasma.remove(); item.classList.remove('arrastrando'); destino?.classList.remove('sobre');
+      if (destino && !destino.contains(item)) alSoltar(destino.dataset.mesa);
+    };
+    addEventListener('pointermove', mover); addEventListener('pointerup', soltar); addEventListener('pointercancel', soltar);
+  });
+}
+
 function dibujar(caja) {
-  const menu = ctx.el('nav', { class: 'ad-menu', 'aria-label': 'Administración' }, SECCIONES.map(([id, t]) => ctx.el('button', { type: 'button', class: `ad-tab${id === seccion ? ' activo' : ''}`, 'aria-current': id === seccion ? 'page' : null,
-    onclick: () => { seccion = id; dibujar(caja); } }, t)));
-  const contenido = ctx.el('div', { class: 'ad-contenido' }, ...(VISTAS[seccion]() || []).filter(Boolean));
-  caja.replaceChildren(ctx.el('div', { class: 'ad-cabeza' }, ctx.el('h1', {}, 'Administración'), publicada() ? enlace('Ver la invitación', link(), 'btn btn-sec btn-chico') : ctx.el('span', { class: 'chip' }, 'Sin publicar')), menu, contenido);
+  // El menú se arma una sola vez: al tocar una pestaña solo cambia el contenido,
+  // así el menú deslizable del celular no vuelve al principio
+  let menu = caja.querySelector('.ad-menu');
+  if (!menu) {
+    menu = ctx.el('nav', { class: 'ad-menu', 'aria-label': 'Administración' }, SECCIONES.map(([id, t]) => ctx.el('button', { type: 'button', class: 'ad-tab', 'data-id': id,
+      onclick: () => { seccion = id; dibujar(caja); } }, t)));
+    const mas = ctx.el('button', { type: 'button', class: 'ad-menu-mas', 'aria-label': 'Ver más opciones', html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      onclick: () => menu.scrollBy({ left: menu.clientWidth * 0.6, behavior: 'smooth' }) });
+    const flecha = () => mas.hidden = menu.scrollLeft + menu.clientWidth >= menu.scrollWidth - 4;
+    menu.addEventListener('scroll', flecha, { passive: true }); addEventListener('resize', flecha);
+    caja.replaceChildren(ctx.el('div', { class: 'ad-cabeza' }, ctx.el('h1', {}, 'Administración'), publicada() ? enlace('Ver la invitación', linkDueno(), 'btn btn-sec btn-chico') : ctx.el('span', { class: 'chip' }, 'Sin publicar')),
+      ctx.el('div', { class: 'ad-menu-caja' }, menu, mas), ctx.el('div', { class: 'ad-contenido' }));
+    requestAnimationFrame(flecha);
+  }
+  menu.querySelectorAll('.ad-tab').forEach((b) => {
+    const activo = b.dataset.id === seccion;
+    b.classList.toggle('activo', activo);
+    if (activo) { b.setAttribute('aria-current', 'page'); b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); } else b.removeAttribute('aria-current');
+  });
+  caja.querySelector('.ad-contenido').replaceChildren(...(VISTAS[seccion]() || []).filter(Boolean));
 }

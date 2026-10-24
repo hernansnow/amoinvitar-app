@@ -95,30 +95,43 @@
   var inicio = audio && parseFloat(audio.getAttribute('data-inicio'));
   if (inicio > 0) audio.addEventListener('loadedmetadata', function () { if (audio.currentTime < inicio) audio.currentTime = inicio; }, { once: true });
 
-  // Nombres de portada (data-ajustar): si la palabra más larga no entra en el ancho
-  // disponible (una fracción de la caja), se achica la letra lo justo. Así los
-  // nombres largos nunca llegan al borde ni se cortan. data-ajustar-en: la caja de
-  // referencia (p. ej. el círculo de la Basic); si no, el contenedor de la sección.
-  function palabraMasAncha(h) {
-    var m = 0, w = document.createTreeWalker(h, NodeFilter.SHOW_TEXT), n, r = document.createRange();
-    while ((n = w.nextNode())) {
-      var re = /\S+/g, x;
-      while ((x = re.exec(n.data))) { r.setStart(n, x.index); r.setEnd(n, x.index + x[0].length); m = Math.max(m, r.getBoundingClientRect().width); }
+  // Nombres de portada (data-ajustar): ningún nombre se sale de su lugar.
+  //   · El título se limita al ancho disponible (una fracción de la caja), así los
+  //     nombres largos bajan a otra línea dentro del aro y no por fuera.
+  //   · Si igual algo no entra (una palabra larga, el círculo del "&" al final de la
+  //     línea) o quedan más de 2 líneas, se achica la letra de a poco…
+  //   · …hasta un mínimo que se sigue leyendo bien en un celular (26px o el 45%).
+  // data-ajustar-en: la caja de referencia (el aro de la Basic); si no, la sección.
+  // Vale para todos los modelos: alcanza con poner data-ajustar en el título.
+  function medidas(h) {
+    var r = document.createRange(); r.selectNodeContents(h);
+    var rs = r.getClientRects(), izq = Infinity, der = -Infinity, tops = [];
+    for (var i = 0; i < rs.length; i++) {
+      if (!rs[i].width) continue;
+      izq = Math.min(izq, rs[i].left); der = Math.max(der, rs[i].right);
+      var c = rs[i].top + rs[i].height / 2;
+      if (!tops.some(function (t) { return Math.abs(t - c) < rs[i].height * 0.45; })) tops.push(c);
     }
-    return m;
+    return { ancho: der > izq ? der - izq : 0, lineas: tops.length };
   }
   function ajustarNombres() {
     document.querySelectorAll('[data-ajustar]').forEach(function (h) {
-      h.style.fontSize = '';
+      h.style.fontSize = ''; h.style.maxWidth = '';
+      if (!h.offsetParent) return; // oculto (otra portada): se ajusta cuando se vea
       var propia = h.getAttribute('data-ajustar-en') && h.closest(h.getAttribute('data-ajustar-en'));
       var caja = propia || h.closest('.container, section') || h.parentElement;
       // Una caja propia (un círculo, un marco) cuenta por su lado más corto
       var base = propia ? Math.min(caja.clientWidth, caja.clientHeight || caja.clientWidth) : caja.clientWidth;
-      var disponible = base * (parseFloat(h.getAttribute('data-ajustar')) || 0.9);
-      var ancho = palabraMasAncha(h);
-      if (!ancho || ancho <= disponible) return;
-      var fs = parseFloat(getComputedStyle(h).fontSize);
-      h.style.fontSize = Math.max(fs * 0.5, Math.floor(fs * disponible / ancho)) + 'px';
+      var disponible = Math.floor(base * (parseFloat(h.getAttribute('data-ajustar')) || 0.9));
+      h.style.maxWidth = disponible + 'px'; h.style.marginLeft = h.style.marginRight = 'auto';
+      var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(26, fs0 * 0.45));
+      for (var i = 0; i < 40; i++) {
+        var m = medidas(h);
+        if (m.ancho <= disponible + 1 && m.lineas <= 2) break;
+        fs = Math.max(minimo, fs * 0.95);
+        h.style.fontSize = fs.toFixed(1) + 'px';
+        if (fs === minimo) break;
+      }
     });
   }
   ajustarNombres();

@@ -30,7 +30,7 @@ export default {
     'rsvp.form.siAsiste': 'Ja, ik ben erbij 😀', 'rsvp.form.noAsiste': 'Ik kan helaas niet 😭',
     'rsvp.form.msgNoAsiste': '😢 Jammer dat je er niet bij kunt zijn. Bedankt voor het laten weten!',
     'rsvp.form.msgOk': 'Bedankt! 🎉 Je aanmelding is ontvangen',
-    'rsvp.form.msgError': 'Verbindingsfout. Probeer het opnieuw.', 'rsvp.form.msgInvalida': 'Ongeldig antwoord van de server.',
+    'rsvp.form.msgError': 'Verbindingsfout. Probeer het opnieuw.', 'rsvp.form.msgAcceso': 'We konden je toegang niet controleren. Open je persoonlijke link opnieuw.', 'rsvp.form.msgPrueba': 'Voorbeeld: dit antwoord wordt niet opgeslagen.', 'rsvp.form.msgInvalida': 'Ongeldig antwoord van de server.',
     'rsvp.form.msgVacios': 'Vul je gegevens in, alsjeblieft.', 'rsvp.form.comidaOpciones': 'Nee|Glutenvrij|Veganistisch|Vegetarisch',
     'dress.titulo': 'Dresscode', 'dress.boton': 'Inspiratie', 'dress.modal': 'Stijlinspiratie', 'dress.evitar': 'Kleuren om te vermijden',
     'dresscode.texto': 'Formeel en elegant. Graag geen wit dragen.',

@@ -144,6 +144,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // El servidor ya resolvió quién es (link personal + PIN): su fila viene en la página
+  if (config.invitado && config.invitado.nombre) {
+    const iv = config.invitado;
+    const cantidad = parseInt(iv.pases, 10) || 0;
+    const mesa = String(iv.mesa == null ? "" : iv.mesa).trim();
+    esperarBloques((bi) => {
+      const nombreEl = document.getElementById("nombre");
+      const pasesEl  = document.getElementById("pases");
+      const mesaEl   = document.getElementById("mesa");
+      if (nombreEl) nombreEl.innerText = iv.nombre;
+      if (pasesEl) {
+        if (cantidad > 0) {
+          pasesEl.innerHTML = "";
+          pasesEl.style.fontWeight = "normal";
+          if (txtPasesPrefix) pasesEl.appendChild(document.createTextNode(txtPasesPrefix + " "));
+          const b = document.createElement("span");
+          b.className = "font-weight-bolder";
+          b.innerHTML = '<i class="icon-ticket" aria-hidden="true" style="opacity:.65"></i> ';
+          b.appendChild(document.createTextNode(cantidad + " " + (cantidad === 1 ? txtPaseExtra : txtPasesExtras)));
+          pasesEl.appendChild(b);
+        } else pasesEl.remove();
+      }
+      if (mesaEl) {
+        if (mesa) {
+          mesaEl.innerHTML = '<i class="icon-event_seat" aria-hidden="true" style="opacity:.65"></i> ';
+          mesaEl.appendChild(document.createTextNode(txtMesaPrefix + " " + mesa));
+        } else mesaEl.remove();
+      }
+      if (bi) bi.style.display = "block";
+    });
+    window.INVITADO_DATA = { nombre: iv.nombre, pases: cantidad, mesa: mesa };
+    window.dispatchEvent(new Event("invitado-ready"));
+    return;
+  }
+
   // SIN ?inv — bloqueGeneral visible, bloqueInvitado oculto
   if (!rawId) {
     const requierePinBasico = config.requierePinBasico === true || config.requierePinBasico === "true";

@@ -30,7 +30,7 @@ export default {
     'rsvp.form.siAsiste': 'Sì, ci sarò 😀', 'rsvp.form.noAsiste': 'Non potrò esserci 😭',
     'rsvp.form.msgNoAsiste': '😢 Peccato che tu non possa venire. Grazie per averci avvisato!',
     'rsvp.form.msgOk': 'Grazie! 🎉 La tua conferma è stata registrata',
-    'rsvp.form.msgError': 'Errore di connessione. Riprova.', 'rsvp.form.msgInvalida': 'Risposta del server non valida.',
+    'rsvp.form.msgError': 'Errore di connessione. Riprova.', 'rsvp.form.msgAcceso': 'Non siamo riusciti a verificare il tuo accesso. Riapri il tuo link personale.', 'rsvp.form.msgPrueba': 'Anteprima: questa risposta non viene salvata.', 'rsvp.form.msgInvalida': 'Risposta del server non valida.',
     'rsvp.form.msgVacios': 'Compila i dati, per favore.', 'rsvp.form.comidaOpciones': 'No|Celiaco|Vegano|Vegetariano',
     'dress.titulo': 'Dress Code', 'dress.boton': 'Suggerimenti', 'dress.modal': 'Suggerimenti di stile', 'dress.evitar': 'Colori da evitare',
     'dresscode.texto': 'Abito formale ed elegante. Per favore, non vestire di bianco.',

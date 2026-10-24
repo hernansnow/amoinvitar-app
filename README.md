@@ -68,6 +68,15 @@ El cliente elige en el panel:
 | Solo con link personal | cada invitado recibe `…/boda/sofi-y-ale?inv=juan-rodriguez-fpzv`; sin eso, pantalla de bloqueo |
 | Con PIN | uno para todos o uno por invitado; se pide antes de mostrar nada |
 
+**Con la lista de invitados prendida la invitación es de LISTA CERRADA** (aunque el modo sea
+"cualquiera con el link"): solo se entra con `?inv=<código>` de la lista, y además el PIN si hay.
+Sin lista: abierta o un PIN para todos. El dueño entra siempre por `/acceso/<id>/dueno?k=<clave>`
+(o con la sesión): cookie `@dueno`, sus RSVP quedan con `prueba: 1` y se pueden borrar en Administración.
+La vista previa del panel (`/vista/<id>`) lleva `INVITACION_CONFIG.prueba`: el RSVP se recorre entero pero no se manda;
+con lista muestra al primer invitado (o uno de ejemplo). La fila del invitado (nombre, pases, mesa) va en
+`INVITACION_CONFIG.invitado` (ya no hace falta pedir el CSV). Pantalla de acceso: `src/componentes/puerta.js`
+(diseño de `demo/lovestory/lista-de-invitados-sep26.html` de la v2.0).
+
 La decisión es del servidor: quien no tiene permiso no recibe el HTML de la
 invitación (ni fotos, ni lugares), solo la pantalla de acceso con los nombres.
 Al entrar bien queda una cookie firmada por 90 días. La lista de invitados ya
@@ -137,8 +146,15 @@ paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan ade
 `public/panel/admin.js`: resumen con cuenta regresiva, envío (WhatsApp, link, QR; links personales con la lista),
 respuestas (colores, filtros, búsqueda, recordatorios, Excel/PDF), mensajes, canciones (acceso a Spotify), mesas con
 croquis y Albunear. Los textos de WhatsApp y los asientos por mesa se guardan en `datos.admin` (POST /api/panel/:id/admin).
-Pendiente: mandar las canciones directo a una playlist de Spotify (requiere conectar la cuenta de Spotify del cliente),
-mover invitados entre mesas arrastrando, QR de acceso por mesa.
+- El menú no se redibuja al cambiar de pestaña (no pierde el deslizamiento en el celular) y tiene la flecha › al borde.
+- Mesas: arrastrar invitados entre mesas (pointer events, funciona con el dedo) o a "+ Mesa nueva". Croquis 2 mesas por fila
+  en el celular, 3 al imprimir.
+- **Buscá tu mesa**: `/mesa/<id>` (página) y `GET /api/mesa?e=&q=` (≥3 letras, máx. 6 resultados, también acompañantes
+  confirmados). Solo si `datos.admin.buscaMesa`; QR para la entrada desde Mesas.
+- Con lista cerrada, Enviar no muestra el envío general: solo los links personales, "Ver" como cada invitado y "Editar lista".
+- Respuestas: Excel y PDF con la casilla "Solo confirmados".
+- Spotify: la API ya no sirve para esto (desde 2026 el modo desarrollo admite 5 usuarios en una lista blanca y la cuota
+  ampliada pide empresa con 250.000 usuarios activos). Se usa "Copiar y abrir TuneMyMusic" (pegar texto → Spotify).
 
 ## Reglas para convertir los demás modelos (ronda 5, 6 y 7)
 
@@ -189,10 +205,13 @@ mover invitados entre mesas arrastrando, QR de acceso por mesa.
   navegadores viejos) o un alto fijo en px calculado al cargar. En la vista previa del panel ya no pasa: la invitación
   se arma siempre con el alto de la pantalla.
 
-- **Nombres de portada**: el h1 con `data-campo-html="nombres.portada"` lleva `data-ajustar="0.86"` (fracción del ancho del
-  contenedor que pueden ocupar). Si los nombres son largos, `invitacion.js` achica la letra lo justo. Dentro de un círculo o
-  marco: `data-ajustar="0.7" data-ajustar-en=".clase-del-circulo"` (cuenta el lado más corto). No agregar padding ni
-  `max-width` a los nombres: quedan con los márgenes del diseño original.
+- **Nombres de portada (TODOS los modelos y todas las portadas, con o sin cuenta regresiva)**: el h1 con
+  `data-campo-html="nombres.portada"` lleva `data-ajustar="0.82"` (fracción del ancho del contenedor). Dentro de un círculo
+  o marco: `data-ajustar="0.56" data-ajustar-en=".clase-del-circulo"` (cuenta el lado más corto; medir el aro dibujado,
+  no la caja, y bajar la fracción si el aro es más chico que su caja). `invitacion.js` limita el ancho del título a esa
+  fracción (los nombres largos bajan de línea dentro del aro), y si algo igual no entra o quedan más de 2 líneas achica la
+  letra de a poco hasta un mínimo legible en el celular (26px o el 45%). Probar siempre con "Maximiliano & Guadalupe" y
+  "Roberto & Marcela" en un iPhone SE. No agregar padding ni `max-width` a mano.
 - **Música e idioma**: los pone el componente común (`acceso`) como un control flotante arriba a la izquierda
   (`comun/js/flotante.js`). El `<audio id="audio">` del modelo se mantiene; el botón viejo `.music-play` se oculta solo.
 
