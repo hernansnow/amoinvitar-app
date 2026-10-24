@@ -87,8 +87,25 @@ function estadisticas() {
 
 // ── Piezas ──
 const tarjeta = (titulo, ...hijos) => ctx.el('section', { class: 'ad-tarjeta' }, titulo ? ctx.el('h2', {}, titulo) : null, ...hijos);
-const boton = (texto, onclick, clase = 'btn') => ctx.el('button', { type: 'button', class: clase, onclick }, texto);
-const enlace = (texto, href, clase = 'btn') => ctx.el('a', { class: clase, href, target: '_blank', rel: 'noopener' }, texto);
+// Íconos finos para los botones, elegidos por el texto (pocos, para no cargar)
+const SVG = (d) => `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICONOS = [
+  [/^Ver\b|^Ver la/, SVG('<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>')],
+  [/WhatsApp|^Recordar|^Enviar a|^Enviar…|^Solo a los/, SVG('<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5Z"/>')],
+  [/^Copiar/, SVG('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>')],
+  [/QR/, SVG('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7h-4M14 21h.01"/>')],
+  [/^Excel|^PDF|^Descargar/, SVG('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>')],
+  [/^Imprimir/, SVG('<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M8 14h8v7H8z"/>')],
+  [/^Editar/, SVG('<path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4"/>')],
+  [/^Dar acceso/, SVG('<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M19 8v6M16 11h6"/>')],
+  [/^Abrir/, SVG('<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>')],
+];
+const conIcono = (texto) => {
+  const i = typeof texto === 'string' && ICONOS.find(([re]) => re.test(texto));
+  return i ? [ctx.el('span', { class: 'ad-ico', html: i[1] }), texto] : [texto];
+};
+const boton = (texto, onclick, clase = 'btn') => ctx.el('button', { type: 'button', class: clase, onclick }, ...conIcono(texto));
+const enlace = (texto, href, clase = 'btn') => ctx.el('a', { class: clase, href, target: '_blank', rel: 'noopener' }, ...conIcono(texto));
 const copiar = async (texto, msg = 'Copiado') => { try { await navigator.clipboard.writeText(texto); ctx.aviso(msg); } catch { prompt('Copiar:', texto); } };
 function qrSvg(texto, tam = 220) {
   const q = window.qrcode(0, 'M'); q.addData(texto); q.make();
@@ -191,16 +208,32 @@ function vistaResumen() {
   if (aforo > 0) { const libres = Math.max(0, aforo - st.personas); avisos.push(libres === 1 ? 'Queda 1 lugar.' : `Quedan ${libres} lugares (aforo de ${aforo}).`); }
   return [
     tarjeta(inicio ? `Faltan para ${plural() ? 'la boda' : 'el evento'}` : 'Cuenta regresiva', cuenta, ...avisos.map((a) => ctx.el('p', { class: 'ad-aviso' }, a))),
+    numerosConteo(st),
     ctx.el('div', { class: 'ad-numeros' },
-      numero(st.personas, 'personas confirmadas', 'si', 'Incluye acompañantes'),
-      st.ninos ? numero(st.ninos, 'niños', 'si') : null,
-      numero(st.noVan.length, 'no pueden ir', 'no'),
-      conLista() ? numero(st.sinResponder.length, 'sin responder', 'pend') : null,
-      numero((respuestas || []).filter((r) => r.tipo === 'cancion').length, 'canciones sugeridas'),
-      numero(ultimas().filter((x) => x.datos.mensaje).length, 'mensajes')),
+      numero((respuestas || []).filter((r) => r.tipo === 'cancion').length, '🎵 Canciones sugeridas'),
+      numero(ultimas().filter((x) => x.datos.mensaje).length, '💬 Mensajes')),
     !publicada() ? tarjeta(null, ctx.el('p', { class: 'ayuda' }, 'La invitación todavía no está publicada. Cuando se publique, acá se ven las confirmaciones, los mensajes y las canciones que manden los invitados.')) : null,
   ];
 }
+// Conteo en personas (pases): invitados = todos los pases de la lista; asisten = los que confirmaron;
+// sin respuesta = los pases de quienes no respondieron; no asisten = el resto. Sin lista: lo que respondieron.
+function conteo(st) {
+  if (conLista()) {
+    const pases = (i) => Math.max(1, separar(i.integrantes).length) + (Number(i.pases) || 0);
+    const invitados = st.lista.reduce((n, i) => n + pases(i), 0);
+    const sinRespuesta = st.sinResponder.reduce((n, i) => n + pases(i), 0);
+    return { invitados, asisten: st.personas, noAsisten: Math.max(0, invitados - st.personas - sinRespuesta), sinRespuesta, ninos: st.ninos };
+  }
+  return { invitados: st.personas + st.noVan.length, asisten: st.personas, noAsisten: st.noVan.length, sinRespuesta: null, ninos: st.ninos };
+}
+const numerosConteo = (st) => {
+  const c = conteo(st);
+  return ctx.el('div', { class: 'ad-numeros ad-conteo' },
+    numero(c.invitados, 'Invitados', 'total', conLista() ? 'Pases de la lista' : 'Respondieron'),
+    numero(c.asisten, '✓ Asisten', 'si', c.ninos ? `+ ${c.ninos} ${c.ninos === 1 ? 'niño' : 'niños'}` : ''),
+    numero(c.noAsisten, '✗ No asisten', 'no'),
+    c.sinRespuesta !== null ? numero(c.sinRespuesta, '⏳ Sin respuesta', 'pend') : null);
+};
 const numero = (n, texto, clase = '', sub = '') => ctx.el('div', { class: `ad-numero ${clase}` }, ctx.el('strong', {}, String(n)), ctx.el('span', {}, texto), sub ? ctx.el('small', {}, sub) : null);
 
 function editorTexto(clave, base, titulo, ayuda) {
@@ -296,8 +329,29 @@ function vistaRespuestas() {
   ];
   let filtro = 'todos', orden = 'fecha';
   const buscar = ctx.el('input', { type: 'search', placeholder: 'Buscar por nombre…', class: 'ad-buscar' });
-  const tabla = ctx.el('div', { class: 'envolver-tabla' });
-  const ESTADO = { si: 'Va', no: 'No va', pend: 'Sin confirmar' };
+  const tabla = ctx.el('div', { class: 'envolver-tabla ad-solo-escritorio' });
+  const tarjetas = ctx.el('div', { class: 'ad-resp-tarjetas ad-solo-movil' });
+  const ESTADO = { si: 'Asiste', no: 'No asiste', pend: 'Sin respuesta' };
+  const mesaDe = new Map((st.lista || []).map((i) => [i.codigo, i.mesa]));
+  // En el celular, cada respuesta es una tarjeta (como en el panel anterior): nombre y estado arriba,
+  // y debajo los datos en dos columnas
+  const tarjetaResp = (f, cols) => {
+    const dato = (l, v) => (v === '' || v == null ? null : ctx.el('div', { class: 'ad-dato' }, ctx.el('small', {}, l), ctx.el('span', {}, String(v))));
+    const mesa = f.invitado?.mesa || mesaDe.get(f.datos.inv);
+    return ctx.el('article', { class: `ad-resp ad-resp-${f.estado}` },
+      ctx.el('header', {}, ctx.el('strong', {}, f.nombre), ctx.el('span', { class: `ad-estado ${f.estado}` }, ESTADO[f.estado])),
+      ctx.el('div', { class: 'ad-datos' }, ...[
+        f.estado === 'si' ? dato('Pases', f.personas) : null,
+        f.acomp.length ? dato(f.familia ? 'Asisten' : 'Acompañantes', f.acomp.join(', ')) : (f.estado !== 'pend' && f.datos.acompanantes ? dato('Acompañantes', f.datos.acompanantes) : null),
+        f.ninos && !cols.some(([k]) => k === 'ninos') ? dato('Niños', f.ninos) : null,
+        ...cols.map(([k, l]) => dato(l, f.datos[k])),
+        mesa ? dato('Mesa', mesa) : null,
+        f.fecha ? dato('Respondió', fechaHora(f.fecha)) : null,
+      ].filter(Boolean)),
+      f.datos.mensaje ? ctx.el('p', { class: 'ad-resp-msg' }, `💬 “${f.datos.mensaje}”`) : null,
+      f.datos.prueba ? ctx.el('span', { class: 'ad-prueba' }, 'Prueba ', ctx.el('button', { type: 'button', class: 'btn-link', onclick: () => borrar(f.id) }, 'Borrar')) : null,
+      !f.fecha && f.invitado?.codigo ? enlace('Recordar', wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), f.invitado), f.invitado.telefono), 'btn btn-chico btn-wa') : null);
+  };
   const visibles = () => {
     const q = buscar.value.trim().toLowerCase();
     return filas.filter((f) => (filtro === 'todos' || f.estado === filtro) && (!q || f.nombre.toLowerCase().includes(q) || f.acomp.join(' ').toLowerCase().includes(q)))
@@ -306,17 +360,20 @@ function vistaRespuestas() {
   const pintar = () => {
     const cols = [...preguntas.entries()];
     tabla.replaceChildren(ctx.el('table', { class: 'ad-tabla ad-respuestas' },
-      ctx.el('thead', {}, ctx.el('tr', {}, ctx.el('th', {}, 'Invitado'), ctx.el('th', {}, 'Estado'), ctx.el('th', {}, 'Personas'), cols.map(([, l]) => ctx.el('th', {}, l)), ctx.el('th', {}, 'Respondió'))),
+      ctx.el('thead', {}, ctx.el('tr', {}, ctx.el('th', {}, 'Invitado'), ctx.el('th', {}, 'Estado'), ctx.el('th', {}, 'Pases'), ctx.el('th', {}, 'Mesa'), cols.map(([, l]) => ctx.el('th', {}, l)), ctx.el('th', {}, 'Respondió'))),
       ctx.el('tbody', {}, visibles().map((f) => ctx.el('tr', { class: `fila-${f.estado}` },
         ctx.el('td', {}, ctx.el('strong', {}, f.nombre), f.acomp.length ? ctx.el('small', {}, `${f.familia ? 'Van' : 'Con'}: ${f.acomp.join(', ')}`) : null,
           f.datos.prueba ? ctx.el('span', { class: 'ad-prueba' }, 'Prueba ', ctx.el('button', { type: 'button', class: 'btn-link', onclick: () => borrar(f.id) }, 'Borrar')) : null),
         ctx.el('td', {}, ctx.el('span', { class: `ad-estado ${f.estado}` }, ESTADO[f.estado])),
         ctx.el('td', {}, f.estado === 'si' ? String(f.personas) + (f.ninos ? ` + ${f.ninos} niños` : '') : '—'),
+        ctx.el('td', {}, f.invitado?.mesa || mesaDe.get(f.datos.inv) || ''),
         cols.map(([k]) => ctx.el('td', {}, f.datos[k] || '')),
         ctx.el('td', {}, f.fecha ? fechaHora(f.fecha) : (f.invitado?.codigo ? enlace('Recordar', wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), f.invitado), f.invitado.telefono), 'btn btn-chico btn-wa') : '')))))));
+    const vis = visibles();
+    tarjetas.replaceChildren(...(vis.length ? vis.map((f) => tarjetaResp(f, cols)) : [ctx.el('p', { class: 'ayuda' }, 'No hay respuestas con ese filtro.')]));
   };
-  const chips = ctx.el('div', { class: 'ad-filtros' }, [['todos', `Todos (${filas.length})`], ['si', `Van (${st.van.length})`], ['no', `No van (${st.noVan.length})`],
-    ...(conLista() ? [['pend', `Sin confirmar (${st.sinResponder.length})`]] : [])].map(([v, t]) => {
+  const chips = ctx.el('div', { class: 'ad-filtros' }, [['todos', `Todos (${filas.length})`], ['si', `✓ Asisten (${st.van.length})`], ['no', `✗ No asisten (${st.noVan.length})`],
+    ...(conLista() ? [['pend', `⏳ Sin respuesta (${st.sinResponder.length})`]] : [])].map(([v, t]) => {
     const b = ctx.el('button', { type: 'button', class: `ad-chip${v === filtro ? ' activo' : ''}`, onclick: () => { filtro = v; chips.querySelectorAll('.ad-chip').forEach((x) => x.classList.toggle('activo', x === b)); pintar(); } }, t);
     return b;
   }));
@@ -327,12 +384,12 @@ function vistaRespuestas() {
     const cols = [...preguntas.entries()];
     const lista = filas.filter((f) => !soloVan || f.estado === 'si');
     if (formato === 'csv') {
-      descargarCSV(soloVan ? 'confirmados.csv' : 'respuestas.csv', ['Invitado', 'Estado', 'Acompañantes', 'Personas', 'Niños', ...cols.map(([, l]) => l), 'Fecha'],
-        lista.map((f) => [f.nombre, ESTADO[f.estado], f.acomp.join(', '), f.estado === 'si' ? f.personas : 0, f.ninos || '', ...cols.map(([k]) => f.datos[k] || ''), f.fecha ? fechaHora(f.fecha) : '']));
+      descargarCSV(soloVan ? 'confirmados.csv' : 'respuestas.csv', ['Invitado', 'Estado', 'Acompañantes', 'Pases', 'Mesa', 'Niños', ...cols.map(([, l]) => l), 'Fecha'],
+        lista.map((f) => [f.nombre, ESTADO[f.estado], f.acomp.join(', '), f.estado === 'si' ? f.personas : 0, f.invitado?.mesa || mesaDe.get(f.datos.inv) || '', f.ninos || '', ...cols.map(([k]) => f.datos[k] || ''), f.fecha ? fechaHora(f.fecha) : '']));
       return;
     }
     imprimir(soloVan ? 'Invitados confirmados' : 'Respuestas', `<p>${st.personas} personas confirmadas${st.ninos ? ` · ${st.ninos} niños` : ''} · ${st.noVan.length} no van${conLista() ? ` · ${st.sinResponder.length} sin confirmar` : ''}</p>
-      <table><tr><th>Invitado</th><th>Estado</th><th>Personas</th>${cols.map(([, l]) => `<th>${esc(l)}</th>`).join('')}<th>Fecha</th></tr>${lista.map((f) => `<tr><td><b>${esc(f.nombre)}</b>${f.acomp.length ? `<br><small>${f.familia ? 'Van' : 'Con'}: ${esc(f.acomp.join(', '))}</small>` : ''}</td><td class="${f.estado}">${ESTADO[f.estado]}</td><td>${f.estado === 'si' ? f.personas : '—'}${f.ninos ? ` + ${f.ninos} niños` : ''}</td>${cols.map(([k]) => `<td>${esc(f.datos[k] || '')}</td>`).join('')}<td>${f.fecha ? fechaHora(f.fecha) : ''}</td></tr>`).join('')}</table>`);
+      <table><tr><th>Invitado</th><th>Estado</th><th>Pases</th>${cols.map(([, l]) => `<th>${esc(l)}</th>`).join('')}<th>Fecha</th></tr>${lista.map((f) => `<tr><td><b>${esc(f.nombre)}</b>${f.acomp.length ? `<br><small>${f.familia ? 'Van' : 'Con'}: ${esc(f.acomp.join(', '))}</small>` : ''}</td><td class="${f.estado}">${ESTADO[f.estado]}</td><td>${f.estado === 'si' ? f.personas : '—'}${f.ninos ? ` + ${f.ninos} niños` : ''}</td>${cols.map(([k]) => `<td>${esc(f.datos[k] || '')}</td>`).join('')}<td>${f.fecha ? fechaHora(f.fecha) : ''}</td></tr>`).join('')}</table>`);
   };
   const pendientes = st.sinResponder.filter((i) => i.codigo).sort((a, b) => !!a.abierto - !!b.abierto);
   const soloVan = ctx.el('input', { type: 'checkbox' });
@@ -341,9 +398,8 @@ function vistaRespuestas() {
     try { await ctx.api(`/respuestas?r=${id}`, { method: 'DELETE' }); respuestas = respuestas.filter((x) => x.id !== id); ctx.redibujar(); } catch (e) { ctx.aviso(e.message, true); }
   };
   return [
-    ctx.el('div', { class: 'ad-numeros' }, numero(st.personas, 'personas (invitados y acompañantes)', 'si'), si(st.ninos) ? numero(st.ninos, 'niños', 'si') : null,
-      numero(st.noVan.length, 'no van', 'no'), conLista() ? numero(st.sinResponder.length, 'sin confirmar', 'pend') : null),
-    tarjeta('Confirmaciones', ctx.el('div', { class: 'ad-barra' }, chips, ctx.el('div', { class: 'ad-barra-der' }, buscar, ordenar)), tabla,
+    numerosConteo(st),
+    tarjeta('Confirmaciones', ctx.el('div', { class: 'ad-barra' }, chips, ctx.el('div', { class: 'ad-barra-der' }, buscar, ordenar)), tabla, tarjetas,
       ctx.el('div', { class: 'ad-botones ad-descargas' },
         boton('Excel', () => exportar(soloVan.checked, 'csv'), 'btn btn-sec btn-chico'), boton('PDF', () => exportar(soloVan.checked, 'pdf'), 'btn btn-sec btn-chico'),
         ctx.el('label', { class: 'ad-check' }, soloVan, ' Solo confirmados'))),

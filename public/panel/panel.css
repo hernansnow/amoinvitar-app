@@ -844,3 +844,25 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-acceso strong { display: block; }
 .ad-acceso small { overflow-wrap: anywhere; } .ad-acceso-nuevo select { flex: 1 1 200px; min-width: 0; max-width: 100%; }
 .ad-barra-der { min-width: 0; flex-wrap: wrap; } .ad-barra-der .ad-buscar { flex: 1 1 160px; min-width: 0; } .ad-orden { max-width: 100%; } .ad-recordar { display: flex; flex-wrap: wrap; gap: 8px; } .ad-recordar .btn { white-space: normal; max-width: 100%; }
+/* Íconos de los botones */
+.ad-ico { display: inline-flex; vertical-align: -3px; margin-right: 6px; }
+.btn-chico .ad-ico svg { width: 14px; height: 14px; }
+/* Conteo: invitados en negro */
+.ad-numero.total strong { color: var(--texto, #1f2421); }
+/* Respuestas: tabla en la computadora, tarjetas en el celular (como el panel anterior) */
+.ad-solo-movil { display: none; }
+@media (max-width: 700px) { .ad-solo-movil { display: grid; } .ad-solo-escritorio { display: none; } }
+.ad-resp-tarjetas { gap: 8px; }
+.ad-resp { border-radius: 12px; padding: 10px 12px; border: 1px solid transparent; display: grid; gap: 6px; }
+.ad-resp-si { background: #e7f4ea; border-color: #cfe7d5; }
+.ad-resp-no { background: #fbe9e7; border-color: #f3d2ce; }
+.ad-resp-pend { background: #fff6da; border-color: #f1e2ad; }
+.ad-resp header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ad-resp header strong { font-size: .95rem; overflow-wrap: anywhere; }
+.ad-resp .ad-estado { font-size: .72rem; padding: 2px 8px; white-space: nowrap; }
+.ad-datos { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.ad-dato { min-width: 0; }
+.ad-dato small { display: block; font-size: .62rem; text-transform: uppercase; letter-spacing: .05em; color: var(--suave); font-weight: 600; }
+.ad-dato span { font-size: .85rem; overflow-wrap: anywhere; }
+.ad-resp-msg { margin: 0; font-size: .82rem; font-style: italic; color: #444; }
+.ad-resp .btn { justify-self: start; }
