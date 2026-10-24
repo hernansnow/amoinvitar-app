@@ -39,7 +39,7 @@ ${boton ? `<tr><td style="padding:12px 0 22px"><a href="${escapeHtml(url)}" styl
 ${pie ? `<tr><td style="font-size:13px;color:#6b706c;padding-bottom:12px">${pie}</td></tr>` : ''}
 <tr><td style="font-size:13px;color:#6b706c;border-top:1px solid #f1efe9;padding-top:16px">El equipo de Amo Invitar!<br>${escapeHtml(env.SUPPORT_EMAIL || 'hola@amoinvitar.com')}</td></tr>
 </table></td></tr></table></body></html>`;
-  const quitar = (x) => x.replace(/<[^>]+>/g, '');
+  const quitar = (x) => x.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
   const text = [titulo, '', ...lineas.map(quitar), '', boton ? `${boton}: ${url}` : '', pie ? quitar(pie) : '', '', 'El equipo de Amo Invitar!'].join('\n');
   return { html, text };
 }
@@ -93,5 +93,19 @@ export const mailFactura = (env, { url, numero, producto }) => ({
     titulo: 'Tu factura',
     lineas: [`Factura ${b(numero)} de ${b(producto)}.`, 'Se puede ver y descargar en PDF desde el botón. El link queda disponible siempre.'],
     boton: 'Ver la factura', url,
+  }),
+});
+
+// Aviso a los dueños antes del cierre de la confirmación (lo manda la tarea diaria)
+export const mailAvisoCierre = (env, { nombres, dias, sinResponder, noAbrieron, url }) => ({
+  subject: `${dias === 1 ? 'Mañana' : `En ${dias} días`} cierra la confirmación · ${sinResponder} sin responder`,
+  ...plantilla(env, {
+    titulo: `Faltan ${dias} ${dias === 1 ? 'día' : 'días'} para el cierre de la lista`,
+    lineas: [
+      `En la invitación de ${b(nombres)} todavía hay ${b(String(sinResponder))} ${sinResponder === 1 ? 'invitado que no respondió' : 'invitados que no respondieron'}${noAbrieron ? ` (${noAbrieron} ni siquiera ${noAbrieron === 1 ? 'abrió su link' : 'abrieron su link'})` : ''}.`,
+      'Desde Administración → Respuestas se les manda un recordatorio por WhatsApp a todos juntos, con el botón "Recordar a todos".',
+    ],
+    boton: 'Mandar los recordatorios', url,
+    pie: 'Estos avisos se pueden apagar en Administración → Enviar.',
   }),
 });

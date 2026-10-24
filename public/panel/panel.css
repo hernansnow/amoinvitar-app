@@ -830,3 +830,12 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-croquis { overflow: auto; background: #fff; border-radius: 12px; }
 .ad-croquis svg { display: block; width: 100%; max-width: 640px; height: auto; margin: 0 auto; }
 @media (max-width: 1023px) { .modos { padding: 6px 12px; } .modos button { flex: 1; } }
+/* Enviar en tanda */
+.ad-tanda { display: grid; gap: 10px; text-align: center; padding: 4px 0 6px; }
+.ad-tanda-barra { height: 6px; border-radius: 999px; background: var(--borde); position: relative; overflow: hidden; }
+.ad-tanda-barra::after { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--avance); background: var(--acento); transition: width .3s; }
+.ad-tanda-n { margin: 0; color: var(--suave); font-size: .85rem; }
+.ad-tanda-nombre { margin: 0; font-size: 1.35rem; font-weight: 700; }
+.ad-tanda .btn-grande { justify-self: center; padding: 14px 26px; font-size: 1.05rem; }
+.ad-tanda-fin { font-size: 2.6rem; margin: 0; }
+.ad-estado.enviado { background: #eef0f2; color: #4a5560; }

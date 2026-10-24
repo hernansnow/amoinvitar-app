@@ -173,6 +173,15 @@ Migración `0002_invitados_extra.sql` (columnas nuevas en `invitados`): `integra
   Recepción: `/puerta/<id>?t=<token>` (token = HMAC del id + clave del panel; se renueva si cambia la clave),
   `GET/POST /api/puerta`. Lector: BarcodeDetector o `comun/js/jsqr.min.js` (jsQR 1.4.0, Apache-2.0) en el iPhone.
 
+## Envío en tanda y avisos (ronda 12)
+
+- Migración `0003_invitados_envios.sql`: `enviado` y `recordado` en `invitados`.
+- "Enviar a todos" / "Recordar a todos" (`enviarEnTanda` en admin.js): un `wa.me` por invitado, uno tras otro, desde el
+  WhatsApp del cliente (no hay envío automático: WhatsApp no lo permite desde una web, y la API oficial manda desde
+  nuestro número, cobra por mensaje y pide consentimiento previo). Cada uno se marca con `POST /api/panel/:id/enviado`.
+- Aviso por mail a los dueños 7, 3 y 1 día antes de `rsvp.cierre` si hay invitados de la lista sin responder
+  (`src/avisos.js`, en la tarea diaria de las 4:00 UTC). Se apaga con `datos.admin.avisosMail = false`.
+
 ## Reglas para convertir los demás modelos (ronda 5, 6 y 7)
 
 - **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,

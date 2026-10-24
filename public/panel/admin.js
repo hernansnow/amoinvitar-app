@@ -129,6 +129,44 @@ function imprimir(titulo, html) {
 }
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
+// ── Enviar en tanda ──
+// WhatsApp no deja mandar solo desde una página web: se abre un chat por invitado, con el
+// mensaje listo; al tocar Enviar en WhatsApp y volver, ya está el siguiente. Cada uno queda
+// marcado como enviado (o recordado), así se puede cortar y seguir después.
+function enviarEnTanda(lista, { tipo = 'invitacion', texto, titulo }) {
+  if (!lista.length) { ctx.aviso(tipo === 'recordatorio' ? 'No hay invitados para recordar' : 'Ya se les envió a todos'); return; }
+  let n = 0, hechos = 0;
+  const caja = ctx.el('div', { class: 'ad-tanda' });
+  const marcar = (i) => {
+    const campo = tipo === 'recordatorio' ? 'recordado' : 'enviado';
+    i[campo] = new Date().toISOString();
+    const real = (ctx.S.invitados || []).find((x) => x.codigo === i.codigo); if (real) real[campo] = i[campo];
+    ctx.api('/enviado', { method: 'POST', body: JSON.stringify({ codigo: i.codigo, tipo }) }).catch(() => {});
+  };
+  const pintar = () => {
+    if (n >= lista.length) {
+      caja.replaceChildren(ctx.el('p', { class: 'ad-tanda-fin' }, '🎉'), ctx.el('p', { class: 'ad-centro' }, `¡Listo! ${hechos === 1 ? 'Se abrió 1 mensaje' : `Se abrieron ${hechos} mensajes`}.`),
+        ctx.el('div', { class: 'ad-botones ad-centro' }, boton('Cerrar', () => { document.getElementById('modal')?.close(); ctx.redibujar(); })));
+      return;
+    }
+    const i = lista[n];
+    const ir = ctx.el('a', { class: 'btn btn-wa btn-grande', href: wa(texto(i), i.telefono), target: '_blank', rel: 'noopener',
+      onclick: () => { marcar(i); hechos++; setTimeout(() => { n++; pintar(); }, 350); } }, `Enviar a ${i.nombre}`);
+    caja.replaceChildren(
+      ctx.el('div', { class: 'ad-tanda-barra', style: `--avance:${(n / lista.length) * 100}%` }),
+      ctx.el('p', { class: 'ad-tanda-n' }, `${n + 1} de ${lista.length}`),
+      ctx.el('p', { class: 'ad-tanda-nombre' }, i.nombre),
+      ctx.el('p', { class: 'ayuda ad-centro' }, i.telefono ? `📱 ${i.telefono}` : 'Sin teléfono: en WhatsApp se elige el contacto.'),
+      ir,
+      ctx.el('p', { class: 'ayuda ad-centro' }, 'Tocar Enviar en WhatsApp y volver acá: ya aparece el siguiente.'),
+      ctx.el('div', { class: 'ad-botones ad-centro' },
+        boton('Saltar', () => { n++; pintar(); }, 'btn btn-sec btn-chico'),
+        boton('Terminar', () => { document.getElementById('modal')?.close(); ctx.redibujar(); }, 'btn btn-sec btn-chico')));
+  };
+  pintar();
+  ctx.abrirModal(titulo, caja);
+}
+
 // ── Secciones ──
 function vistaResumen() {
   const st = estadisticas();
@@ -191,12 +229,14 @@ function vistaEnviar() {
 // cada invitado entra solo con el suyo (y su PIN, si hay)
 function vistaEnviarLista() {
   const st = estadisticas();
+  const textoDe = (i) => armarTexto(admin().textoWaLista || TEXTO_WA_LISTA(), i);
   const respondio = new Set(st.filas.map((x) => x.datos.inv));
   const buscar = ctx.el('input', { type: 'search', placeholder: 'Buscar invitado…', class: 'ad-buscar' });
   const cuerpo = ctx.el('tbody');
   // Quién abrió su link y quién no (para recordarle solo a quien ni lo abrió)
   const ESTADOS = {
     todos: ['Todos', () => true],
+    sinEnviar: ['Sin enviar', (i) => !i.enviado && !i.abierto && !respondio.has(i.codigo)],
     noAbrio: ['No lo abrieron', (i) => !i.abierto && !respondio.has(i.codigo)],
     abrio: ['Abrieron sin responder', (i) => i.abierto && !respondio.has(i.codigo)],
     respondio: ['Respondieron', (i) => respondio.has(i.codigo)],
@@ -207,6 +247,7 @@ function vistaEnviarLista() {
     return b;
   }));
   const apertura = (i) => (respondio.has(i.codigo) ? ctx.el('span', { class: 'ad-estado si' }, 'Respondió')
+    : !i.abierto && i.enviado ? ctx.el('span', { class: 'ad-estado enviado', title: fechaHora(i.enviado) }, 'Enviado')
     : i.abierto ? ctx.el('span', { class: 'ad-estado abrio', title: `Última vez: ${fechaHora(i.ultima || i.abierto)}` }, `Lo abrió${i.visitas > 1 ? ` (${i.visitas})` : ''}`)
       : ctx.el('span', { class: 'ad-estado pend' }, 'No lo abrió'));
   const pintar = () => {
@@ -216,7 +257,7 @@ function vistaEnviarLista() {
         i.mesa ? `Mesa ${i.mesa}` : '', pinDe(i) ? `PIN ${pinDe(i)}` : '', i.telefono ? `📱 ${i.telefono}` : ''].filter(Boolean).join(' · '))),
       ctx.el('td', {}, apertura(i), i.abierto && !respondio.has(i.codigo) ? ctx.el('small', {}, fechaHora(i.ultima || i.abierto)) : null),
       ctx.el('td', {}, ctx.el('div', { class: 'ad-acciones' },
-        i.codigo ? enlace('WhatsApp', wa(armarTexto(admin().textoWaLista || TEXTO_WA_LISTA(), i), i.telefono), 'btn btn-chico btn-wa') : null,
+        i.codigo ? ctx.el('a', { class: 'btn btn-chico btn-wa', href: wa(textoDe(i), i.telefono), target: '_blank', rel: 'noopener', onclick: () => ctx.api('/enviado', { method: 'POST', body: JSON.stringify({ codigo: i.codigo }) }).catch(() => {}) }, 'WhatsApp') : null,
         i.codigo ? boton('Copiar', () => copiar(`${linkDe(i)}${pinDe(i) ? `  (PIN ${pinDe(i)})` : ''}`, 'Link copiado'), 'btn btn-chico btn-sec') : null,
         i.codigo ? boton('QR', () => mostrarQR(linkDe(i), `QR de ${i.nombre}`), 'btn btn-chico btn-sec') : null,
         i.codigo ? enlace('Ver', linkDueno(i), 'btn btn-chico btn-sec') : null)))));
@@ -226,7 +267,15 @@ function vistaEnviarLista() {
     ctx.el('p', { class: 'ad-aviso' }, '🔒 Lista cerrada: solo entran los invitados de la lista, cada uno con su link personal', ctx.datos.acceso?.modo === 'pin' ? ' y su PIN.' : '.'),
     ctx.el('p', { class: 'ayuda' }, 'Por eso no hay un link general para compartir. Ustedes sí pueden verla siempre desde "Ver la invitación".'),
     ctx.el('div', { class: 'ad-botones' }, enlace('Ver la invitación', linkDueno(), 'btn btn-sec'), boton('Editar lista de invitados', editarLista, 'btn btn-sec')));
-  return [cabeza, tarjeta(`Links personales (${st.lista.length})`,
+  const sinEnviar = st.lista.filter((i) => i.codigo && !i.enviado && !i.abierto && !respondio.has(i.codigo));
+  const tanda = tarjeta('Enviar a todos',
+    ctx.el('p', { class: 'ayuda' }, 'Se abre WhatsApp con el mensaje de cada invitado, uno tras otro: tocar Enviar y volver. Con el teléfono cargado sale directo a su número. Quedan marcados como enviados, así se puede cortar y seguir después.'),
+    ctx.el('div', { class: 'ad-botones' },
+      boton(sinEnviar.length ? `Enviar a todos (${sinEnviar.length} sin enviar)` : 'Ya se envió a todos', () => enviarEnTanda(sinEnviar, { texto: textoDe, titulo: 'Enviar la invitación' }), 'btn btn-wa'),
+      sinEnviar.length < st.lista.length ? boton('Volver a enviar a todos', () => { if (confirm('¿Abrir el mensaje para todos los de la lista, también a los que ya se les envió?')) enviarEnTanda(st.lista.filter((i) => i.codigo), { texto: textoDe, titulo: 'Enviar la invitación' }); }, 'btn btn-sec btn-chico') : null),
+    ctx.el('label', { class: 'ad-check' }, (() => { const c = ctx.el('input', { type: 'checkbox', checked: admin().avisosMail !== false }); c.addEventListener('change', () => guardarAdmin({ avisosMail: c.checked })); return c; })(),
+      ' Avisarme por mail 7, 3 y 1 día antes del cierre si hay invitados sin responder'));
+  return [cabeza, tanda, tarjeta(`Links personales (${st.lista.length})`,
     ctx.el('p', { class: 'ayuda' }, 'Cada invitado tiene su propio link (con su nombre, pases y mesa). El mensaje sale personalizado con su nombre.'),
     st.lista.length ? null : ctx.el('p', { class: 'ad-aviso' }, 'Todavía no hay invitados en la lista.'),
     chips, buscar, ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla' }, cuerpo)),
@@ -299,8 +348,12 @@ function vistaRespuestas() {
         boton('Excel', () => exportar(soloVan.checked, 'csv'), 'btn btn-sec btn-chico'), boton('PDF', () => exportar(soloVan.checked, 'pdf'), 'btn btn-sec btn-chico'),
         ctx.el('label', { class: 'ad-check' }, soloVan, ' Solo confirmados'))),
     conLista() ? tarjeta(`Recordatorios (${pendientes.length} sin confirmar)`,
-      ctx.el('p', { class: 'ayuda' }, 'Un mensaje de WhatsApp para cada invitado que todavía no confirmó (se abre WhatsApp con el texto listo para enviar).'),
-      pendientes.length ? ctx.el('div', { class: 'ad-recordar' }, pendientes.map((i) => enlace(`Recordar a ${i.nombre}${i.abierto ? '' : ' · no lo abrió'}`, wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i), i.telefono), 'btn btn-chico btn-wa'))) : ctx.el('p', { class: 'ayuda' }, '¡Ya respondieron todos!'),
+      ctx.el('p', { class: 'ayuda' }, 'Un mensaje de WhatsApp para cada invitado que todavía no confirmó (se abre WhatsApp con el texto listo para enviar). Primero van los que ni abrieron su link.'),
+      pendientes.length ? ctx.el('div', { class: 'ad-botones' },
+        boton(`Recordar a todos (${pendientes.length})`, () => enviarEnTanda(pendientes, { tipo: 'recordatorio', texto: (i) => armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i), titulo: 'Recordatorios' }), 'btn btn-wa'),
+        pendientes.some((i) => i.abierto) && pendientes.some((i) => !i.abierto) ? boton(`Solo a los que no lo abrieron (${pendientes.filter((i) => !i.abierto).length})`,
+          () => enviarEnTanda(pendientes.filter((i) => !i.abierto), { tipo: 'recordatorio', texto: (i) => armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i), titulo: 'Recordatorios' }), 'btn btn-sec btn-chico') : null) : null,
+      pendientes.length ? ctx.el('div', { class: 'ad-recordar' }, pendientes.map((i) => enlace(`Recordar a ${i.nombre}${i.abierto ? '' : ' · no lo abrió'}${i.recordado ? ' ✓' : ''}`, wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i), i.telefono), 'btn btn-chico btn-wa'))) : ctx.el('p', { class: 'ayuda' }, '¡Ya respondieron todos!'),
       editorTexto('textoRecordatorio', TEXTO_RECORDATORIO, 'Texto del recordatorio', '{invitado}, {link}, {pin}, {cierre} y {nombres} se completan solos.')) : null,
   ];
 }

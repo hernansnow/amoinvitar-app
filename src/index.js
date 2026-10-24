@@ -591,11 +591,17 @@ async function apiPanel(env, request, url, partes) {
         integrantes: String(i.integrantes || '').split(/[,\n;]+/).map((x) => x.trim().slice(0, 60)).filter(Boolean).slice(0, 15).join(', ') || null,
         telefono: String(i.telefono || '').replace(/[^\d+]/g, '').slice(0, 20) || null,
         // Lo que no se edita a mano se conserva: aperturas del link y llegada
-        abierto: viejo?.abierto ?? null, ultima: viejo?.ultima ?? null, visitas: viejo?.visitas || 0, llego: viejo?.llego ?? null, llegaron: viejo?.llegaron ?? null,
+        abierto: viejo?.abierto ?? null, ultima: viejo?.ultima ?? null, visitas: viejo?.visitas || 0, llego: viejo?.llego ?? null, llegaron: viejo?.llegaron ?? null, enviado: viejo?.enviado ?? null, recordado: viejo?.recordado ?? null,
       };
     });
     await almacen.guardarInvitados(ev.id, lista);
     return json({ ok: true, invitados: lista });
+  }
+  if (accion === 'enviado' && request.method === 'POST') {
+    const b = await request.json().catch(() => ({}));
+    const codigos = [].concat(b.codigos || b.codigo || []).map(String).slice(0, 2000);
+    for (const c of codigos) await almacen.marcarEnvio(ev.id, c, b.tipo);
+    return json({ ok: true, fecha: new Date().toISOString() });
   }
   if (accion === 'puerta') return json({ link: `${url.origin}/puerta/${ev.id}?t=${await tokenPuerta(ev, secretoDe(env))}`, invitados: await listaPuerta(env, ev) });
   if (accion === 'respuestas' && request.method === 'DELETE') {
@@ -612,7 +618,7 @@ async function apiPanel(env, request, url, partes) {
     const b = await request.json().catch(() => ({}));
     const texto = (x) => (typeof x === 'string' ? x.slice(0, 1500) : undefined);
     ev.datos.admin = { textoWa: texto(b.textoWa), textoWaLista: texto(b.textoWaLista), textoRecordatorio: texto(b.textoRecordatorio),
-      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined, buscaMesa: b.buscaMesa === true, checkin: b.checkin === true };
+      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined, buscaMesa: b.buscaMesa === true, checkin: b.checkin === true, avisosMail: b.avisosMail !== false };
     await almacen.guardarEvento(ev);
     return json({ ok: true });
   }
