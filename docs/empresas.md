@@ -111,3 +111,18 @@ erDiagram
 4. Editor de marca (subir logo, elegir colores, vista previa del pie y del panel).
 5. Dominios propios con Cloudflare for SaaS.
 6. Demos con la marca de la empresa para que las muestre a sus clientes.
+
+## Nota (pedido de Hernán, ronda 14): un panel para muchos eventos
+
+Pensado para wedding planners, organizadores y fotógrafos que compren el paquete con **marca blanca**:
+desde **su propio panel** administran **varios eventos a la vez**, sin entrar evento por evento.
+
+- Hoy ya existe la base: cada evento tiene **Accesos** (titular, pareja y hasta 3 administradores) y
+  "Mi cuenta" lista los eventos a los que tiene acceso cada mail. Falta el tablero de empresa.
+- El tablero (`/empresa`) muestra todos sus eventos juntos: próximos, confirmaciones de cada uno,
+  quién falta responder, mensajes nuevos y llegadas el día del evento; filtros por fecha y estado.
+- Acciones en lote: abrir la administración de cualquier evento, "Enviar a todos" / "Recordar a todos",
+  descargar Excel/PDF de varios eventos, duplicar un evento como base del siguiente.
+- La empresa queda como dueña de sus eventos (no hace falta sumarla a mano en Accesos de cada uno), y
+  sus clientes (los novios) siguen entrando a su evento con su mail, viendo el logo y los colores de la empresa.
+- Equipos: varios usuarios de la misma empresa (`miembros`), con permisos por evento si hace falta.

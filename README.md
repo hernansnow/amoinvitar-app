@@ -105,7 +105,7 @@ intentos de PIN tienen un límite por minuto.
 ## Pendiente
 
 Reorganizar la tienda, administración de cupones y pedidos,
-tablero de empresas, modelos de Save The Date web, vencimientos de los planes
+tablero de empresas (un wedding planner / fotógrafo con marca blanca administra varios eventos a la vez desde su panel: ver la nota en `docs/empresas.md`), modelos de Save The Date web, vencimientos de los planes
 pagos, descargas, envíos y recordatorios.
 
 ## Un archivo por paquete (regla para todos los modelos)
