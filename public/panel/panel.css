@@ -839,3 +839,6 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-tanda .btn-grande { justify-self: center; padding: 14px 26px; font-size: 1.05rem; }
 .ad-tanda-fin { font-size: 2.6rem; margin: 0; }
 .ad-estado.enviado { background: #eef0f2; color: #4a5560; }
+.ad-acceso-nuevo .ad-barra { justify-content: flex-start; } .ad-acceso-nuevo input { flex: 1 1 220px; min-width: 0; }
+.ad-acceso strong { overflow-wrap: anywhere; } .ad-acceso .ad-estado { margin-top: 4px; display: inline-block; } .ad-acceso + td { text-align: right; width: 1%; }
+.ad-acceso strong { display: block; }

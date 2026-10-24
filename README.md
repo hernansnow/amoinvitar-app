@@ -182,6 +182,17 @@ Migración `0002_invitados_extra.sql` (columnas nuevas en `invitados`): `integra
 - Aviso por mail a los dueños 7, 3 y 1 día antes de `rsvp.cierre` si hay invitados de la lista sin responder
   (`src/avisos.js`, en la tarea diaria de las 4:00 UTC). Se apaga con `datos.admin.avisosMail = false`.
 
+## Accesos y páginas sueltas (ronda 13)
+
+- **Idioma y seguridad** va justo antes de **Lista de invitados** (el PIN y el link personal dependen de la lista).
+- **Accesos** (Administración → Accesos): titular (`cliente`, quien compró) + `pareja` (1, solo bodas) + hasta 3 `admin`
+  (wedding planner, organizador…). `GET/POST/DELETE /api/panel/:id/accesos`; los cambian el titular, la pareja o quien
+  tiene la clave del panel. Al sumar a alguien le llega un mail (`mailNuevoAcceso`) para entrar con su mail o Google.
+- **Pantalla de acceso (PIN / bloqueo) y "Buscá tu mesa" con la tipografía de la invitación**: cargan las fuentes del
+  modelo y su `tema.css` (`estilosModelo()` en index.js) y usan `--fuente-titulos` (los nombres, en `--color-principal`)
+  y `--fuente-texto`. **Regla para todos los modelos**: tener `tema.css` con esas variables y `tarjetas.fuentes.css`
+  en modelo.json, o fijar `"acceso": { "css": [...] }` en modelo.json.
+
 ## Reglas para convertir los demás modelos (ronda 5, 6 y 7)
 
 - **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,

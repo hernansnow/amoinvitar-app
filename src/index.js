@@ -26,8 +26,8 @@ import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_
 import { MODELOS, nombreModelo } from './modelos.js';
 import { MODELOS_GRATIS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
-import { sendEmail } from './lib/email.js';
-import { usuarioActual } from './lib/auth.js';
+import { sendEmail, mailNuevoAcceso } from './lib/email.js';
+import { usuarioActual, crearUsuario } from './lib/auth.js';
 import * as cuenta from './rutas/cuenta.js';
 import * as tienda from './rutas/tienda.js';
 import * as admin from './rutas/admin.js';
@@ -148,7 +148,7 @@ async function publicada(env, url, request, tipo, slug) {
   if (!acc.ok) {
     const v = variante(ev.datos.variante);
     const t = traductor(ev.tipo, v, ev.datos.textos);
-    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca }),
+    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca, estilos: await estilosModelo(env, ev, url) }),
       acc.pantalla === 'pin' ? 401 : 403, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
   }
   const evento = paraMotor(ev);
@@ -258,6 +258,16 @@ async function invitadosCSV(env, request, url) {
   return new Response(`${cabecera}\n${[i.codigo, i.nombre, i.pases, i.mesa].map(celda).join(',')}\n`, { headers: { 'content-type': 'text/csv; charset=utf-8', 'cache-control': 'no-store' } });
 }
 
+// Tipografía y colores del modelo para las páginas sueltas (acceso, Buscá tu mesa): sus fuentes y su
+// tema.css (las variables --fuente-titulos, --fuente-texto, --color-principal). Un modelo puede fijarlas
+// en modelo.json → "acceso": { "css": [...] }.
+async function estilosModelo(env, ev, url) {
+  let m = null; try { m = await modeloJSON(env, ev.modelo, url.origin); } catch { /* sin modelo */ }
+  if (!m) return [];
+  if (Array.isArray(m.acceso?.css)) return m.acceso.css;
+  return [m.tarjetas?.fuentes?.css, `/modelos/${ev.modelo}/tema.css`].filter(Boolean);
+}
+
 // ── Buscá tu mesa (QR de la entrada) ──────────────────────────────────
 // Solo si el dueño la activó en Administración → Mesas. Se busca por nombre (3 letras
 // como mínimo, hasta 6 resultados): nunca se manda la lista entera.
@@ -266,12 +276,12 @@ async function eventoConMesas(env, id) {
   const ev = id && await almacenDe(env).evento(id);
   return ev && ev.estado === 'publicado' && ev.datos.admin?.buscaMesa ? ev : null;
 }
-async function paginaMesa(env, id) {
+async function paginaMesa(env, url, id) {
   const ev = await almacenDe(env).evento(id);
   if (!ev) return html('No encontrado', 404);
   const v = variante(ev.datos.variante);
   const t = traductor(ev.tipo, v, ev.datos.textos);
-  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)) }), 200,
+  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), estilos: await estilosModelo(env, ev, url) }), 200,
     { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
 }
 async function buscarMesa(env, request, url) {
@@ -597,6 +607,37 @@ async function apiPanel(env, request, url, partes) {
     await almacen.guardarInvitados(ev.id, lista);
     return json({ ok: true, invitados: lista });
   }
+  // Accesos: el titular (quien compró), la pareja (en bodas) y hasta 3 administradores
+  // (wedding planner, organizador…). Entran con su mail; editan y administran todo.
+  if (accion === 'accesos') {
+    const lista = await almacen.accesos(ev.id);
+    const clave = request.headers.get('x-clave') || url.searchParams.get('k') || '';
+    const mio = usuario && lista.find((a) => a.id === usuario.id);
+    const gestiona = igual(clave, ev.clave) || admin || ['cliente', 'pareja'].includes(mio?.rol);
+    const LIMITE = { pareja: ev.tipo === 'boda' ? 1 : 0, admin: 3 };
+    if (request.method === 'GET') return json({ accesos: lista.map(({ id: uid, email, nombre, rol }) => ({ id: uid, email, nombre, rol })), gestiona, limite: LIMITE, yo: usuario?.id || null });
+    if (!gestiona) return json({ error: 'Solo el titular o la pareja pueden cambiar los accesos.' }, 403);
+    if (request.method === 'DELETE') {
+      const uid = url.searchParams.get('u') || '';
+      if (lista.find((a) => a.id === uid)?.rol === 'cliente') return json({ error: 'El titular no se puede quitar.' }, 400);
+      await almacen.quitarAcceso(ev.id, uid);
+      return json({ ok: true });
+    }
+    if (request.method === 'POST') {
+      const b = await request.json().catch(() => ({}));
+      const email = String(b.email || '').trim().toLowerCase().slice(0, 200);
+      const rol = b.rol === 'pareja' ? 'pareja' : 'admin';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'El mail no parece válido.' }, 400);
+      if (lista.some((a) => a.email === email)) return json({ error: 'Ese mail ya tiene acceso.' }, 400);
+      if (lista.filter((a) => a.rol === rol).length >= LIMITE[rol]) return json({ error: rol === 'pareja' ? 'Ya hay una pareja con acceso.' : 'Ya hay 3 administradores. Quitar uno para sumar otro.' }, 400);
+      const u = await crearUsuario(env, email);
+      await almacen.darAcceso(ev.id, u.id, rol);
+      const base = String(env.SITE_URL || url.origin).replace(/\/$/, '');
+      await sendEmail(env, { to: email, ...mailNuevoAcceso(env, { nombres: nombresDe(ev.datos.nombres) || 'la invitación', rol, quien: mio?.nombre || mio?.email || '',
+        url: `${base}/entrar?siguiente=${encodeURIComponent(`/panel/${ev.id}`)}` }) }).catch((e) => console.error('[acceso]', e));
+      return json({ ok: true });
+    }
+  }
   if (accion === 'enviado' && request.method === 'POST') {
     const b = await request.json().catch(() => ({}));
     const codigos = [].concat(b.codigos || b.codigo || []).map(String).slice(0, 2000);
@@ -818,7 +859,7 @@ export default {
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);
       if (p0 === 'demo' && partes.length === 2) return await demo(env, url, request, p1);
       if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return env.ASSETS.fetch(new URL('/panel/', url.origin));
-      if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, p1);
+      if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, url, p1);
       if (p0 === 'puerta' && partes.length === 2) return await paginaPuerta(env, url, p1);
       if (p0 === 'vista' && partes.length === 2) return await vistaPrevia(env, url, request, p1);
       if (p0 === 'acceso' && partes.length === 2 && request.method === 'POST') return await entrarConPin(env, request, p1);

@@ -10,7 +10,7 @@ let reloj = null;
 
 const SECCIONES = [
   ['resumen', 'Resumen'], ['enviar', 'Enviar'], ['respuestas', 'Respuestas'], ['mensajes', 'Mensajes'],
-  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Llegadas'], ['album', 'Álbum de fotos'],
+  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Llegadas'], ['album', 'Álbum de fotos'], ['accesos', 'Accesos'],
 ];
 
 // ── Datos de la invitación ──
@@ -521,7 +521,44 @@ function vistaLlegadas() {
   ];
 }
 
-const VISTAS = { llegadas: vistaLlegadas, resumen: vistaResumen, enviar: vistaEnviar, respuestas: vistaRespuestas, mensajes: vistaMensajes, canciones: vistaCanciones, mesas: vistaMesas, album: vistaAlbum };
+// Accesos: quién más puede editar y administrar (la pareja en bodas y hasta 3 administradores)
+const ROLES = { cliente: 'Titular', pareja: 'Pareja', admin: 'Administrador/a' };
+function vistaAccesos() {
+  const caja = ctx.el('div', {}, ctx.el('p', { class: 'ayuda' }, 'Cargando…'));
+  const cargar = async () => {
+    let d; try { d = await ctx.api('/accesos'); } catch (e) { caja.replaceChildren(ctx.el('p', { class: 'ayuda' }, e.message)); return; }
+    const cuantos = (r) => d.accesos.filter((a) => a.rol === r).length;
+    const filas = d.accesos.map((a) => ctx.el('tr', {},
+      ctx.el('td', { class: 'ad-acceso' }, ctx.el('strong', {}, a.nombre || a.email), a.nombre ? ctx.el('small', {}, a.email) : null,
+        ctx.el('span', { class: `ad-estado ${a.rol === 'cliente' ? 'si' : 'abrio'}` }, ROLES[a.rol] || a.rol), a.id === d.yo ? ctx.el('small', {}, 'Tu cuenta') : null),
+      ctx.el('td', {}, d.gestiona && a.rol !== 'cliente' ? boton('Quitar', async () => {
+        if (!confirm(`¿Quitarle el acceso a ${a.email}?`)) return;
+        try { await ctx.api(`/accesos?u=${encodeURIComponent(a.id)}`, { method: 'DELETE' }); ctx.aviso('Acceso quitado'); cargar(); } catch (e) { ctx.aviso(e.message, true); }
+      }, 'btn btn-chico btn-sec') : null)));
+    const opciones = [['pareja', 'Pareja'], ['admin', 'Administrador/a (wedding planner, organizador…)']].filter(([r]) => cuantos(r) < (d.limite[r] || 0));
+    const email = ctx.el('input', { type: 'email', placeholder: 'mail@ejemplo.com', autocomplete: 'off', class: 'ad-buscar' });
+    const rol = ctx.el('select', { class: 'ad-orden', 'aria-label': 'Rol' }, opciones.map(([v, t]) => ctx.el('option', { value: v }, t)));
+    const sumar = async () => {
+      try {
+        await ctx.api('/accesos', { method: 'POST', body: JSON.stringify({ email: email.value, rol: rol.value }) });
+        ctx.aviso(`Listo: le llegó un mail a ${email.value} para entrar`); cargar();
+      } catch (e) { ctx.aviso(e.message, true); }
+    };
+    caja.replaceChildren(...[
+      ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla' }, ctx.el('tbody', {}, filas))),
+      !d.accesos.length ? ctx.el('p', { class: 'ayuda' }, 'Por ahora se entra solo con el link del panel.') : null,
+      d.gestiona && opciones.length ? ctx.el('div', { class: 'ad-acceso-nuevo' }, ctx.el('h3', { class: 'ad-subtitulo' }, 'Dar acceso'),
+        ctx.el('div', { class: 'ad-barra' }, email, rol, boton('Dar acceso', sumar, 'btn'))) : null,
+      d.gestiona && !opciones.length ? ctx.el('p', { class: 'ayuda' }, 'Ya están todos los lugares ocupados (pareja y 3 administradores). Para sumar a alguien, quitar a otro.') : null,
+      !d.gestiona ? ctx.el('p', { class: 'ayuda' }, 'Los accesos los cambian el titular o la pareja.') : null].filter(Boolean));
+  };
+  cargar();
+  return [tarjeta('Accesos',
+    ctx.el('p', { class: 'ayuda' }, `Quiénes pueden editar y administrar la invitación, cada uno con su mail (entran con un link por correo o con Google, sin contraseña).${ctx.S.evento.tipo === 'boda' ? ' Se puede sumar a la pareja' : ''} y hasta 3 administradores: wedding planner, organizador, un familiar…`),
+    caja)];
+}
+
+const VISTAS = { accesos: vistaAccesos, llegadas: vistaLlegadas, resumen: vistaResumen, enviar: vistaEnviar, respuestas: vistaRespuestas, mensajes: vistaMensajes, canciones: vistaCanciones, mesas: vistaMesas, album: vistaAlbum };
 
 // ── Montaje ──
 export async function montarAdmin(caja, c) {

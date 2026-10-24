@@ -109,3 +109,16 @@ export const mailAvisoCierre = (env, { nombres, dias, sinResponder, noAbrieron, 
     pie: 'Estos avisos se pueden apagar en Administración → Enviar.',
   }),
 });
+
+// Le dieron acceso a una invitación (la pareja o un administrador: wedding planner, organizador…)
+export const mailNuevoAcceso = (env, { nombres, rol, url, quien }) => ({
+  subject: `Acceso a la invitación de ${nombres}`,
+  ...plantilla(env, {
+    titulo: `Acceso a la invitación de ${nombres}`,
+    lineas: [
+      `${quien ? `${b(quien)} dio` : 'Se dio'} acceso a este mail para ${rol === 'pareja' ? 'editar y administrar la invitación como parte de la pareja' : 'ayudar a editar y administrar la invitación'}: textos, fotos, lista de invitados, confirmaciones y más.`,
+      'Se entra con este mismo mail (link por correo o con Google), sin contraseña.',
+    ],
+    boton: 'Entrar a la invitación', url,
+  }),
+});

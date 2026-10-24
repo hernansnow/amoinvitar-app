@@ -75,6 +75,13 @@ export function almacenD1(env) {
     async darAcceso(eventoId, usuarioId, rol = 'cliente') {
       await db.prepare('INSERT INTO accesos_evento (evento_id, usuario_id, rol) VALUES (?, ?, ?) ON CONFLICT DO NOTHING').bind(eventoId, usuarioId, rol).run();
     },
+    async accesos(eventoId) {
+      const { results } = await db.prepare('SELECT u.id, u.email, u.nombre, a.rol FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = ? ORDER BY a.rowid').bind(eventoId).all();
+      return results;
+    },
+    async quitarAcceso(eventoId, usuarioId) {
+      await db.prepare("DELETE FROM accesos_evento WHERE evento_id = ? AND usuario_id = ? AND rol <> 'cliente'").bind(eventoId, usuarioId).run();
+    },
     async tieneAcceso(eventoId, usuarioId) {
       return !!(usuarioId && await db.prepare('SELECT 1 FROM accesos_evento WHERE evento_id = ? AND usuario_id = ?').bind(eventoId, usuarioId).first());
     },

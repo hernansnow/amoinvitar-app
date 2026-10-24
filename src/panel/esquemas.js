@@ -629,10 +629,12 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   }
   const m = producto === 'a-medida' ? MODELO_A_MEDIDA : modelo;
   const base = pasosInvitacion({ tipo, modelo: m });
+  // Idioma y seguridad va justo antes de la lista de invitados: el PIN y el link personal dependen de ella
+  const iLista = base.findIndex((p) => p.id === 'invitados');
+  const conSeguridad = iLista >= 0 ? [...base.slice(0, iLista), pasoSeguridad, ...base.slice(iLista)] : [...base, pasoSeguridad];
   const pasos = [
     ...(producto === 'a-medida' ? [pasoBrief({ aMedida })] : []),
-    ...base,
-    pasoSeguridad,
+    ...conSeguridad,
     pasoPublicar(tipo),
     // Complementos: aparte, después de una línea y el título "Complementos" en el menú
     ...(producto === 'invitacion' && m?.tarjetas?.std ? [{ ...pasoTarjeta('std', m), separado: true }] : []),
