@@ -24,16 +24,33 @@ export function almacenD1(env) {
         .bind(e.id, e.producto, e.tipo, e.slug ?? null, e.modelo ?? null, e.paquete, e.aMedida ?? null, e.estado, e.clave, e.empresaId ?? null, JSON.stringify(e.datos), e.vence ?? null, ahora).run();
     },
     async invitados(id) {
-      const { results } = await db.prepare('SELECT codigo, nombre, pases, mesa, pin FROM invitados WHERE evento_id = ? ORDER BY orden').bind(id).all();
+      const { results } = await db.prepare('SELECT codigo, nombre, pases, mesa, pin, integrantes, telefono, abierto, ultima, visitas, llego, llegaron FROM invitados WHERE evento_id = ? ORDER BY orden').bind(id).all();
       return results;
     },
-    async invitado(id, codigo) { return db.prepare('SELECT codigo, nombre, pases, mesa, pin FROM invitados WHERE evento_id = ? AND codigo = ?').bind(id, codigo).first(); },
+    async invitado(id, codigo) { return db.prepare('SELECT codigo, nombre, pases, mesa, pin, integrantes, telefono, abierto, ultima, visitas, llego, llegaron FROM invitados WHERE evento_id = ? AND codigo = ?').bind(id, codigo).first(); },
     async guardarInvitados(id, lista) {
       await db.batch([
         db.prepare('DELETE FROM invitados WHERE evento_id = ?').bind(id),
-        ...lista.map((i, n) => db.prepare('INSERT INTO invitados (evento_id, codigo, nombre, pases, mesa, pin, orden) VALUES (?, ?, ?, ?, ?, ?, ?)')
-          .bind(id, i.codigo, i.nombre, i.pases, i.mesa ?? null, i.pin ?? null, n)),
+        ...lista.map((i, n) => db.prepare(`INSERT INTO invitados (evento_id, codigo, nombre, pases, mesa, pin, orden, integrantes, telefono, abierto, ultima, visitas, llego, llegaron)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+          .bind(id, i.codigo, i.nombre, i.pases, i.mesa ?? null, i.pin ?? null, n, i.integrantes || null, i.telefono || null,
+            i.abierto ?? null, i.ultima ?? null, Number(i.visitas) || 0, i.llego ?? null, i.llegaron ?? null)),
       ]);
+    },
+    // El invitado abrió su link (no cuenta al dueño mirando)
+    async visita(id, codigo) {
+      const ahora = new Date().toISOString();
+      await db.prepare('UPDATE invitados SET visitas = visitas + 1, ultima = ?3, abierto = COALESCE(abierto, ?3) WHERE evento_id = ?1 AND codigo = ?2').bind(id, codigo, ahora).run();
+    },
+    // Check-in en la puerta: llegaron N personas (0 = deshacer)
+    async llegada(id, codigo, personas) {
+      await db.prepare('UPDATE invitados SET llego = ?3, llegaron = ?4 WHERE evento_id = ?1 AND codigo = ?2')
+        .bind(id, codigo, personas > 0 ? new Date().toISOString() : null, personas > 0 ? personas : null).run();
+    },
+    // Su última respuesta (para mostrársela y que la pueda cambiar)
+    async respuestaDe(id, codigo) {
+      const r = await db.prepare("SELECT id, datos, creado FROM respuestas WHERE evento_id = ? AND tipo = 'rsvp' AND json_extract(datos, '$.inv') = ? ORDER BY creado DESC LIMIT 1").bind(id, codigo).first();
+      return r ? { ...JSON.parse(r.datos), creado: r.creado } : null;
     },
     async guardarRespuesta(id, tipo, datos) {
       await db.prepare('INSERT INTO respuestas (evento_id, tipo, datos, creado) VALUES (?, ?, ?, ?)').bind(id, tipo, JSON.stringify(datos), new Date().toISOString()).run();

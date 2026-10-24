@@ -797,7 +797,16 @@ function campoInvitados() {
     dibujar(); guardarLista();
     aviso(nuevas.length ? `${nuevas.length} invitados sumados` : 'No se encontraron nombres en el archivo', !nuevas.length);
   };
-  const archivo = el('input', { type: 'file', accept: '.xlsx,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv' });
+  const archivo = el('input', { type: 'file', accept: '.xlsx,.csv,.txt,.vcf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/vcard,text/x-vcard' });
+  // Contactos del celular: en Android (Chrome) se eligen directo de la agenda; en el iPhone, con el archivo .vcf
+  const hayAgenda = 'contacts' in navigator && 'select' in (navigator.contacts || {});
+  const desdeAgenda = async () => {
+    try {
+      const cs = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+      sumar(cs.map((c) => ({ nombre: String((c.name || [])[0] || '').slice(0, 80), telefono: String((c.tel || [])[0] || '').replace(/[^\d+]/g, ''), pases: 0, mesa: '' })));
+    } catch { /* canceló */ }
+  };
+  let verMas = lista.some((i) => i.integrantes || i.telefono);
   archivo.addEventListener('change', async () => {
     const a = archivo.files[0]; if (!a) return;
     try { sumar(await leerPlanilla(a)); } catch (e) { aviso(e.message || 'No se pudo leer el archivo', true); }
@@ -809,19 +818,26 @@ function campoInvitados() {
       el('td', {}, el('input', { type: 'text', value: i.nombre, 'aria-label': 'Nombre', oninput: (e) => { i.nombre = e.target.value; guardarLista(); } })),
       el('td', {}, el('input', { type: 'number', class: 'num', min: 0, max: 50, value: i.pases ?? 0, 'aria-label': 'Pases extra', oninput: (e) => { i.pases = e.target.value; guardarLista(); } })),
       el('td', {}, el('input', { type: 'text', class: 'num', value: i.mesa ?? '', 'aria-label': 'Mesa', oninput: (e) => { i.mesa = e.target.value; guardarLista(); } })),
+      verMas ? el('td', {}, el('input', { type: 'text', class: 'ancho', value: i.integrantes ?? '', placeholder: 'Solo si es familia: Juan, Ana…', 'aria-label': 'Integrantes', oninput: (e) => { i.integrantes = e.target.value; guardarLista(); } })) : null,
+      verMas ? el('td', {}, el('input', { type: 'tel', class: 'tel', value: i.telefono ?? '', placeholder: '+34…', 'aria-label': 'Teléfono', oninput: (e) => { i.telefono = e.target.value; guardarLista(); } })) : null,
       pinVisible ? el('td', { class: 'pin' }, i.pin || '…') : null,
       el('td', { class: 'acciones-fila' },
         el('button', { type: 'button', class: 'btn-icono', title: 'Quitar', onclick: () => { lista.splice(n, 1); dibujar(); guardarLista(); } }, '✕'))));
     caja.replaceChildren(
       el('div', { class: 'envolver-tabla' }, el('table', { class: 'tabla-invitados' },
-        el('thead', {}, el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Pases extra'), el('th', {}, 'Mesa'), pinVisible ? el('th', {}, 'PIN') : null, el('th', {}, ''))),
+        el('thead', {}, el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Pases extra'), el('th', {}, 'Mesa'), verMas ? el('th', {}, 'Integrantes (familia)') : null, verMas ? el('th', {}, 'WhatsApp') : null, pinVisible ? el('th', {}, 'PIN') : null, el('th', {}, ''))),
         el('tbody', {}, filas))),
       el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { lista.push({ nombre: '', pases: 0 }); dibujar(); caja.querySelector('tbody tr:last-child input')?.focus(); } }, '＋ Agregar invitado')),
+      el('label', { class: 'casilla' }, el('input', { type: 'checkbox', checked: verMas, onchange: (e) => { verMas = e.target.checked; dibujar(); } }),
+        el('span', {}, 'Familias y teléfonos', el('small', {}, ' · un link para toda la familia (cada uno confirma por separado) y el WhatsApp directo a su número'))),
       el('div', { class: 'subir-excel' },
-        el('label', { class: 'btn btn-chico' }, archivo, '⬆ Subir Excel o CSV'),
+        el('label', { class: 'btn btn-chico' }, archivo, '⬆ Subir Excel, CSV o contactos (.vcf)'),
+        hayAgenda ? el('button', { type: 'button', class: 'btn btn-chico', onclick: desdeAgenda }, '👥 Elegir de mis contactos') : null,
         el('a', { class: 'btn btn-sec btn-chico', href: '/panel/plantilla-invitados.xlsx', download: 'invitados.xlsx' }, 'Descargar planilla modelo')),
-      el('p', { class: 'ayuda' }, 'Columnas: nombre, pases extra y mesa. Si la planilla tiene títulos ("Nombre", "Pases", "Mesa"…) se reconocen solos, en cualquier orden.'),
-      el('p', { class: 'ayuda' }, `${lista.length} invitados · ${lista.reduce((s, i) => s + 1 + (parseInt(i.pases, 10) || 0), 0)} personas`));
+      el('p', { class: 'ayuda' }, 'Columnas: nombre, pases extra y mesa (y, si se quiere, integrantes y teléfono). Si la planilla tiene títulos ("Nombre", "Pases", "Mesa", "Integrantes", "Teléfono"…) se reconocen solos, en cualquier orden.'),
+      el('p', { class: 'ayuda' }, hayAgenda ? 'Con "Elegir de mis contactos" se suman nombre y teléfono desde la agenda del celular.' : 'Contactos del iPhone: en la app Contactos, mantener apretada una lista (o un contacto) → Exportar → guardar el archivo .vcf y subirlo acá.'),
+      el('p', { class: 'ayuda' }, 'Teléfono con código de país (+34, +54…) para que el WhatsApp salga directo a su número.'),
+      el('p', { class: 'ayuda' }, `${lista.length} invitados · ${lista.reduce((s, i) => s + Math.max(1, String(i.integrantes || '').split(',').filter((x) => x.trim()).length) + (parseInt(i.pases, 10) || 0), 0)} personas`));
   };
   dibujar();
   return caja;
@@ -1423,7 +1439,9 @@ const MANUAL = [
   ['Idiomas', 'El idioma principal se elige en "Idioma y seguridad". Con un idioma adicional, cada invitado ve la invitación en el suyo y puede cambiarlo desde el botón flotante (con la bandera elegida para cada idioma). Los textos se ajustan con "Editar textos en…" y se pueden sumar hasta tres idiomas.'],
   ['Seguridad y lista cerrada', 'Con la lista de invitados la invitación es de lista cerrada: solo se entra con el link personal (y el PIN, si hay). Los dueños la ven siempre con "Ver la invitación" desde Administración; lo que confirmen ahí queda como prueba y se puede borrar.'],
   ['Publicar', 'Al tocar Publicar se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link y se puede seguir editando. Ya publicada, el botón dice Actualizar.'],
-  ['Administración', 'Resumen con la cuenta regresiva; Enviar (WhatsApp, link, QR o los links personales); Respuestas con filtros, recordatorios y descarga en Excel o PDF (casilla "Solo confirmados"); Mensajes; Canciones (pasarlas a una playlist de Spotify); Mesas (arrastrar invitados entre mesas, croquis y el QR "Buscá tu mesa" para la entrada); Álbum de fotos.'],
+  ['Lista de invitados', 'Para familias: un solo link y cada integrante confirma por separado. Con el teléfono, el WhatsApp sale directo a su número; los contactos se suman desde la agenda (Android) o con el archivo .vcf (iPhone). Si el invitado vuelve a abrir su link, ve lo que respondió y puede cambiarlo.'],
+  ['Llegadas', 'El día del evento: cada invitado muestra su pase de entrada (QR) y quien recibe lo escanea con el link de la recepción, o lo busca por nombre. En Administración → Llegadas se ve en vivo quién llegó.'],
+  ['Administración', 'Resumen con la cuenta regresiva; Enviar (WhatsApp, link, QR o los links personales); Respuestas con filtros, recordatorios y descarga en Excel o PDF (casilla "Solo confirmados"); Mensajes; Canciones (pasarlas a una playlist de Spotify); Mesas (arrastrar invitados entre mesas, croquis y el QR "Buscá tu mesa" para la entrada); Llegadas; Álbum de fotos. En Enviar se ve quién abrió su link y quién no.'],
 ];
 function mostrarManual() {
   const wa = whatsapp();

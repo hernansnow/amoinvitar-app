@@ -156,6 +156,23 @@ croquis y Albunear. Los textos de WhatsApp y los asientos por mesa se guardan en
 - Spotify: la API ya no sirve para esto (desde 2026 el modo desarrollo admite 5 usuarios en una lista blanca y la cuota
   ampliada pide empresa con 250.000 usuarios activos). Se usa "Copiar y abrir TuneMyMusic" (pegar texto → Spotify).
 
+## Lista de invitados (ronda 11)
+
+Migración `0002_invitados_extra.sql` (columnas nuevas en `invitados`): `integrantes`, `telefono`, `abierto`, `ultima`,
+`visitas`, `llego`, `llegaron`. **Aplicarla en la base remota antes de publicar el código**:
+`npx wrangler d1 migrations apply amoinvitar --remote`.
+- **Familias**: `integrantes` ("Juan, Ana"). El RSVP pregunta "¿Quiénes van?" con Va / No va por integrante y manda
+  `asisten`, `no_asisten` y `personas` (el aforo y la administración cuentan `personas` cuando está).
+- **Aperturas**: cada vez que el invitado entra con su link (no el dueño) suma `visitas`, `abierto` (primera) y `ultima`.
+  Enviar muestra "Lo abrió (n)" / "No lo abrió" con filtros; los recordatorios ponen primero a los que no lo abrieron.
+- **Cambiar la respuesta**: `INVITACION_CONFIG.invitado.respuesta` trae su última respuesta (solo la suya); el modal
+  muestra el resumen y "Cambiar mi respuesta" (precargada). Vale la última.
+- **Contactos**: Contact Picker API (Android/Chrome) o archivo .vcf (`leerVcf` en `planilla.js`). WhatsApp directo con
+  `wa.me/<número>` si hay teléfono.
+- **Llegadas (check-in)**: `datos.admin.checkin` muestra "Mi pase de entrada" (QR del link personal) a quien confirmó.
+  Recepción: `/puerta/<id>?t=<token>` (token = HMAC del id + clave del panel; se renueva si cambia la clave),
+  `GET/POST /api/puerta`. Lector: BarcodeDetector o `comun/js/jsqr.min.js` (jsQR 1.4.0, Apache-2.0) en el iPhone.
+
 ## Reglas para convertir los demás modelos (ronda 5, 6 y 7)
 
 - **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,

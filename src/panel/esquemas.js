@@ -207,7 +207,7 @@ function pasosInvitacion({ tipo, modelo }) {
     { id: 'invitados', titulo: 'Lista de invitados', interruptor: 'acceso.lista', nivelPaso: 'premium',
       fijoSi: { o: [{ campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] },
       motivo: 'Queda activada porque en Idioma y seguridad se eligió link personal o PIN por invitado.',
-      ayudaSeccion: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. El link general sigue sirviendo para todos.',
+      ayudaSeccion: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. Con la lista activada es una lista cerrada: solo entra quien tiene su link personal. Para familias, un solo link y cada integrante confirma por separado.',
       campos: [
         { id: 'invitados', tipo: 'invitados', etiqueta: 'Invitados', sinEtiqueta: true, si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
         { id: 'nota.invitadosApagada', tipo: 'nota', texto: 'Activar la sección para cargar la lista (a mano o con un Excel).', si: [{ campo: 'acceso.lista', no: true }, { campo: 'acceso.modo', no: 'codigo' }, { o: [{ campo: 'acceso.modo', no: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] }] },

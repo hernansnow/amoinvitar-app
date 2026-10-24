@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (bi) bi.style.display = "block";
     });
-    window.INVITADO_DATA = { nombre: iv.nombre, pases: cantidad, mesa: mesa };
+    window.INVITADO_DATA = Object.assign({}, iv, { pases: cantidad, mesa: mesa });
     window.dispatchEvent(new Event("invitado-ready"));
     return;
   }

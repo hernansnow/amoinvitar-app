@@ -300,6 +300,8 @@ details.pegar textarea { margin-top: 8px; }
 .tabla-invitados td { padding: 4px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
 .tabla-invitados input { padding: 6px 8px; }
 .tabla-invitados .num { width: 64px; }
+.tabla-invitados .ancho { min-width: 190px; }
+.tabla-invitados .tel { width: 140px; }
 .tabla-invitados td:first-child input { min-width: 150px; }
 .acciones-fila { white-space: nowrap; }
 .tabla-invitados .pin { font-family: ui-monospace, monospace; letter-spacing: .1em; }
@@ -784,6 +786,8 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-respuestas tr.fila-pend td:first-child { box-shadow: inset 4px 0 0 #e0a100; }
 .ad-estado { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .78rem; font-weight: 600; white-space: nowrap; }
 .ad-estado.si { background: #e7f4e8; color: #2e7d32; } .ad-estado.no { background: #fbe9e7; color: #b3261e; } .ad-estado.pend { background: #fff4d6; color: #8a6100; }
+.ad-estado.abrio { background: #e6f0fb; color: #1f5fa8; }
+.ad-subtitulo { font-size: 1rem; margin: 16px 0 6px; }
 .ad-acciones { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-end; }
 .ad-recordar { display: flex; flex-wrap: wrap; gap: 6px; }
 .ad-qr { display: grid; place-items: center; }

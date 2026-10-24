@@ -10,7 +10,7 @@ let reloj = null;
 
 const SECCIONES = [
   ['resumen', 'Resumen'], ['enviar', 'Enviar'], ['respuestas', 'Respuestas'], ['mensajes', 'Mensajes'],
-  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['album', 'Álbum de fotos'],
+  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Llegadas'], ['album', 'Álbum de fotos'],
 ];
 
 // ── Datos de la invitación ──
@@ -47,8 +47,12 @@ const TEXTO_WA_LISTA = () => `¡Hola {invitado}! ${plural() ? '¡Nos casamos y q
 const TEXTO_RECORDATORIO = () => `¡Hola {invitado}! 😊 Te recordamos que todavía no confirmaste tu asistencia${cierre() ? ' (la fecha límite es el {cierre})' : ''}. Puedes hacerlo acá:\n{link}{pin}\n¡Gracias!\n{nombres}`;
 const armarTexto = (plantilla, i = null) => plantilla
   .replace(/\{link\}/g, i ? linkDe(i) : link()).replace(/\{nombres\}/g, nombres()).replace(/\{cierre\}/g, fechaTexto(cierre()))
-  .replace(/\{invitado\}/g, i ? String(i.nombre || '').split(' ')[0] : '').replace(/\{pin\}/g, i && pinDe(i) ? `\nPIN: ${pinDe(i)}` : (!i && pinTodos() ? `\nPIN: ${pinTodos()}` : ''));
-const wa = (texto) => `https://wa.me/?text=${encodeURIComponent(texto)}`;
+  .replace(/\{invitado\}/g, i ? (i.integrantes ? String(i.nombre || '') : String(i.nombre || '').split(' ')[0]) : '').replace(/\{pin\}/g, i && pinDe(i) ? `\nPIN: ${pinDe(i)}` : (!i && pinTodos() ? `\nPIN: ${pinTodos()}` : ''));
+// Con teléfono (con código de país) el WhatsApp sale directo a su número; sin teléfono, se elige el contacto
+const wa = (texto, tel = '') => {
+  const n = String(tel || '').replace(/^00/, '').replace(/\D/g, '');
+  return `https://wa.me/${n.length >= 8 ? n : ''}?text=${encodeURIComponent(texto)}`;
+};
 
 async function guardarAdmin(cambios) {
   ctx.datos.admin = { ...admin(), ...cambios };
@@ -65,11 +69,15 @@ function ultimas() {
   return [...vistas.values()];
 }
 const acompDe = (d) => (d.acompanantes && !/^no$/i.test(d.acompanantes) ? String(d.acompanantes).split(',').map((x) => x.trim()).filter(Boolean) : []);
+const separar = (x) => String(x || '').split(',').map((n) => n.trim()).filter(Boolean);
+// Quiénes van según su respuesta (familias: los integrantes que marcaron "Va", más los pases extra)
+const genteDe = (d) => (d.asiste !== 'Si' ? [] : d.asisten ? [...separar(d.asisten), ...acompDe(d)] : [d.nombre || '—', ...acompDe(d)]);
+const cuantos = (d) => (d.asiste !== 'Si' ? 0 : /^\d+$/.test(String(d.personas || '')) ? Number(d.personas) : genteDe(d).length);
 const ninosDe = (d) => (/^\d+$/.test(String(d.ninos || '').trim()) ? Number(d.ninos) : 0);
 function estadisticas() {
   const filas = ultimas();
   const van = filas.filter((x) => x.datos.asiste === 'Si'), noVan = filas.filter((x) => x.datos.asiste === 'No');
-  const personas = van.reduce((s, x) => s + 1 + acompDe(x.datos).length, 0);
+  const personas = van.reduce((s, x) => s + cuantos(x.datos), 0);
   const ninos = van.reduce((s, x) => s + ninosDe(x.datos), 0);
   const respondieron = new Set(filas.map((x) => x.datos.inv));
   const lista = ctx.S.invitados || [];
@@ -186,13 +194,29 @@ function vistaEnviarLista() {
   const respondio = new Set(st.filas.map((x) => x.datos.inv));
   const buscar = ctx.el('input', { type: 'search', placeholder: 'Buscar invitado…', class: 'ad-buscar' });
   const cuerpo = ctx.el('tbody');
+  // Quién abrió su link y quién no (para recordarle solo a quien ni lo abrió)
+  const ESTADOS = {
+    todos: ['Todos', () => true],
+    noAbrio: ['No lo abrieron', (i) => !i.abierto && !respondio.has(i.codigo)],
+    abrio: ['Abrieron sin responder', (i) => i.abierto && !respondio.has(i.codigo)],
+    respondio: ['Respondieron', (i) => respondio.has(i.codigo)],
+  };
+  let filtro = 'todos';
+  const chips = ctx.el('div', { class: 'ad-filtros' }, Object.entries(ESTADOS).map(([k, [t, f]]) => {
+    const b = ctx.el('button', { type: 'button', class: `ad-chip${k === filtro ? ' activo' : ''}`, onclick: () => { filtro = k; chips.querySelectorAll('.ad-chip').forEach((x) => x.classList.toggle('activo', x === b)); pintar(); } }, `${t} (${st.lista.filter(f).length})`);
+    return b;
+  }));
+  const apertura = (i) => (respondio.has(i.codigo) ? ctx.el('span', { class: 'ad-estado si' }, 'Respondió')
+    : i.abierto ? ctx.el('span', { class: 'ad-estado abrio', title: `Última vez: ${fechaHora(i.ultima || i.abierto)}` }, `Lo abrió${i.visitas > 1 ? ` (${i.visitas})` : ''}`)
+      : ctx.el('span', { class: 'ad-estado pend' }, 'No lo abrió'));
   const pintar = () => {
     const q = buscar.value.trim().toLowerCase();
-    cuerpo.replaceChildren(...st.lista.filter((i) => !q || String(i.nombre).toLowerCase().includes(q)).map((i) => ctx.el('tr', {},
-      ctx.el('td', {}, ctx.el('strong', {}, i.nombre || '—'), ctx.el('small', {}, `${i.pases ? `+${i.pases} ${Number(i.pases) === 1 ? 'pase' : 'pases'}` : 'Sin pases extra'}${i.mesa ? ` · Mesa ${i.mesa}` : ''}${pinDe(i) ? ` · PIN ${pinDe(i)}` : ''}`)),
-      ctx.el('td', {}, respondio.has(i.codigo) ? ctx.el('span', { class: 'ad-estado si' }, 'Respondió') : ctx.el('span', { class: 'ad-estado pend' }, 'Sin responder')),
+    cuerpo.replaceChildren(...st.lista.filter((i) => ESTADOS[filtro][1](i) && (!q || `${i.nombre} ${i.integrantes || ''}`.toLowerCase().includes(q))).map((i) => ctx.el('tr', {},
+      ctx.el('td', {}, ctx.el('strong', {}, i.nombre || '—'), ctx.el('small', {}, [i.integrantes ? `Familia: ${i.integrantes}` : '', i.pases ? `+${i.pases} ${Number(i.pases) === 1 ? 'pase' : 'pases'}` : (i.integrantes ? '' : 'Sin pases extra'),
+        i.mesa ? `Mesa ${i.mesa}` : '', pinDe(i) ? `PIN ${pinDe(i)}` : '', i.telefono ? `📱 ${i.telefono}` : ''].filter(Boolean).join(' · '))),
+      ctx.el('td', {}, apertura(i), i.abierto && !respondio.has(i.codigo) ? ctx.el('small', {}, fechaHora(i.ultima || i.abierto)) : null),
       ctx.el('td', {}, ctx.el('div', { class: 'ad-acciones' },
-        i.codigo ? enlace('WhatsApp', wa(armarTexto(admin().textoWaLista || TEXTO_WA_LISTA(), i)), 'btn btn-chico btn-wa') : null,
+        i.codigo ? enlace('WhatsApp', wa(armarTexto(admin().textoWaLista || TEXTO_WA_LISTA(), i), i.telefono), 'btn btn-chico btn-wa') : null,
         i.codigo ? boton('Copiar', () => copiar(`${linkDe(i)}${pinDe(i) ? `  (PIN ${pinDe(i)})` : ''}`, 'Link copiado'), 'btn btn-chico btn-sec') : null,
         i.codigo ? boton('QR', () => mostrarQR(linkDe(i), `QR de ${i.nombre}`), 'btn btn-chico btn-sec') : null,
         i.codigo ? enlace('Ver', linkDueno(i), 'btn btn-chico btn-sec') : null)))));
@@ -205,7 +229,8 @@ function vistaEnviarLista() {
   return [cabeza, tarjeta(`Links personales (${st.lista.length})`,
     ctx.el('p', { class: 'ayuda' }, 'Cada invitado tiene su propio link (con su nombre, pases y mesa). El mensaje sale personalizado con su nombre.'),
     st.lista.length ? null : ctx.el('p', { class: 'ad-aviso' }, 'Todavía no hay invitados en la lista.'),
-    buscar, ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla' }, cuerpo)),
+    chips, buscar, ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla' }, cuerpo)),
+    ctx.el('p', { class: 'ayuda' }, '"Lo abrió" cuenta las veces que el invitado entró con su link (cuando ustedes la miran no cuenta). Con el teléfono cargado, el WhatsApp sale directo a su número.'),
     editorTexto('textoWaLista', TEXTO_WA_LISTA, 'Mensaje para cada invitado', '{invitado} es el nombre del invitado, {link} su link personal, {pin} su PIN (si hay), {cierre} la fecha límite y {nombres} los de ustedes.'))];
 }
 
@@ -214,10 +239,10 @@ function vistaRespuestas() {
   const preguntas = new Map();   // campo → etiqueta, según lo que respondieron
   for (const x of st.filas) {
     let lab = {}; try { lab = JSON.parse(x.datos.labels || '{}'); } catch { /* viejas */ }
-    for (const k of Object.keys(x.datos)) if (!['inv', 'nombre', 'asiste', 'acompanantes', 'labels', 'mensaje', 'prueba'].includes(k)) preguntas.set(k, lab[k] || k);
+    for (const k of Object.keys(x.datos)) if (!['inv', 'nombre', 'asiste', 'acompanantes', 'labels', 'mensaje', 'prueba', 'asisten', 'no_asisten', 'personas'].includes(k)) preguntas.set(k, lab[k] || k);
   }
   const filas = [
-    ...st.filas.map((x) => ({ id: x.id, nombre: x.datos.nombre || '—', estado: x.datos.asiste === 'Si' ? 'si' : 'no', acomp: acompDe(x.datos), ninos: ninosDe(x.datos), fecha: x.creado, datos: x.datos })),
+    ...st.filas.map((x) => ({ id: x.id, nombre: x.datos.nombre || '—', estado: x.datos.asiste === 'Si' ? 'si' : 'no', acomp: x.datos.asisten ? genteDe(x.datos) : acompDe(x.datos), personas: cuantos(x.datos), familia: !!x.datos.asisten, ninos: ninosDe(x.datos), fecha: x.creado, datos: x.datos })),
     ...st.sinResponder.map((i) => ({ nombre: i.nombre, estado: 'pend', acomp: [], ninos: 0, fecha: '', datos: {}, invitado: i })),
   ];
   let filtro = 'todos', orden = 'fecha';
@@ -234,12 +259,12 @@ function vistaRespuestas() {
     tabla.replaceChildren(ctx.el('table', { class: 'ad-tabla ad-respuestas' },
       ctx.el('thead', {}, ctx.el('tr', {}, ctx.el('th', {}, 'Invitado'), ctx.el('th', {}, 'Estado'), ctx.el('th', {}, 'Personas'), cols.map(([, l]) => ctx.el('th', {}, l)), ctx.el('th', {}, 'Respondió'))),
       ctx.el('tbody', {}, visibles().map((f) => ctx.el('tr', { class: `fila-${f.estado}` },
-        ctx.el('td', {}, ctx.el('strong', {}, f.nombre), f.acomp.length ? ctx.el('small', {}, `Con: ${f.acomp.join(', ')}`) : null,
+        ctx.el('td', {}, ctx.el('strong', {}, f.nombre), f.acomp.length ? ctx.el('small', {}, `${f.familia ? 'Van' : 'Con'}: ${f.acomp.join(', ')}`) : null,
           f.datos.prueba ? ctx.el('span', { class: 'ad-prueba' }, 'Prueba ', ctx.el('button', { type: 'button', class: 'btn-link', onclick: () => borrar(f.id) }, 'Borrar')) : null),
         ctx.el('td', {}, ctx.el('span', { class: `ad-estado ${f.estado}` }, ESTADO[f.estado])),
-        ctx.el('td', {}, f.estado === 'si' ? String(1 + f.acomp.length) + (f.ninos ? ` + ${f.ninos} niños` : '') : '—'),
+        ctx.el('td', {}, f.estado === 'si' ? String(f.personas) + (f.ninos ? ` + ${f.ninos} niños` : '') : '—'),
         cols.map(([k]) => ctx.el('td', {}, f.datos[k] || '')),
-        ctx.el('td', {}, f.fecha ? fechaHora(f.fecha) : (f.invitado?.codigo ? enlace('Recordar', wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), f.invitado)), 'btn btn-chico btn-wa') : '')))))));
+        ctx.el('td', {}, f.fecha ? fechaHora(f.fecha) : (f.invitado?.codigo ? enlace('Recordar', wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), f.invitado), f.invitado.telefono), 'btn btn-chico btn-wa') : '')))))));
   };
   const chips = ctx.el('div', { class: 'ad-filtros' }, [['todos', `Todos (${filas.length})`], ['si', `Van (${st.van.length})`], ['no', `No van (${st.noVan.length})`],
     ...(conLista() ? [['pend', `Sin confirmar (${st.sinResponder.length})`]] : [])].map(([v, t]) => {
@@ -254,13 +279,13 @@ function vistaRespuestas() {
     const lista = filas.filter((f) => !soloVan || f.estado === 'si');
     if (formato === 'csv') {
       descargarCSV(soloVan ? 'confirmados.csv' : 'respuestas.csv', ['Invitado', 'Estado', 'Acompañantes', 'Personas', 'Niños', ...cols.map(([, l]) => l), 'Fecha'],
-        lista.map((f) => [f.nombre, ESTADO[f.estado], f.acomp.join(', '), f.estado === 'si' ? 1 + f.acomp.length : 0, f.ninos || '', ...cols.map(([k]) => f.datos[k] || ''), f.fecha ? fechaHora(f.fecha) : '']));
+        lista.map((f) => [f.nombre, ESTADO[f.estado], f.acomp.join(', '), f.estado === 'si' ? f.personas : 0, f.ninos || '', ...cols.map(([k]) => f.datos[k] || ''), f.fecha ? fechaHora(f.fecha) : '']));
       return;
     }
     imprimir(soloVan ? 'Invitados confirmados' : 'Respuestas', `<p>${st.personas} personas confirmadas${st.ninos ? ` · ${st.ninos} niños` : ''} · ${st.noVan.length} no van${conLista() ? ` · ${st.sinResponder.length} sin confirmar` : ''}</p>
-      <table><tr><th>Invitado</th><th>Estado</th><th>Personas</th>${cols.map(([, l]) => `<th>${esc(l)}</th>`).join('')}<th>Fecha</th></tr>${lista.map((f) => `<tr><td><b>${esc(f.nombre)}</b>${f.acomp.length ? `<br><small>Con: ${esc(f.acomp.join(', '))}</small>` : ''}</td><td class="${f.estado}">${ESTADO[f.estado]}</td><td>${f.estado === 'si' ? 1 + f.acomp.length : '—'}${f.ninos ? ` + ${f.ninos} niños` : ''}</td>${cols.map(([k]) => `<td>${esc(f.datos[k] || '')}</td>`).join('')}<td>${f.fecha ? fechaHora(f.fecha) : ''}</td></tr>`).join('')}</table>`);
+      <table><tr><th>Invitado</th><th>Estado</th><th>Personas</th>${cols.map(([, l]) => `<th>${esc(l)}</th>`).join('')}<th>Fecha</th></tr>${lista.map((f) => `<tr><td><b>${esc(f.nombre)}</b>${f.acomp.length ? `<br><small>${f.familia ? 'Van' : 'Con'}: ${esc(f.acomp.join(', '))}</small>` : ''}</td><td class="${f.estado}">${ESTADO[f.estado]}</td><td>${f.estado === 'si' ? f.personas : '—'}${f.ninos ? ` + ${f.ninos} niños` : ''}</td>${cols.map(([k]) => `<td>${esc(f.datos[k] || '')}</td>`).join('')}<td>${f.fecha ? fechaHora(f.fecha) : ''}</td></tr>`).join('')}</table>`);
   };
-  const pendientes = st.sinResponder.filter((i) => i.codigo);
+  const pendientes = st.sinResponder.filter((i) => i.codigo).sort((a, b) => !!a.abierto - !!b.abierto);
   const soloVan = ctx.el('input', { type: 'checkbox' });
   const borrar = async (id) => {
     if (!confirm('¿Borrar esta respuesta de prueba?')) return;
@@ -275,7 +300,7 @@ function vistaRespuestas() {
         ctx.el('label', { class: 'ad-check' }, soloVan, ' Solo confirmados'))),
     conLista() ? tarjeta(`Recordatorios (${pendientes.length} sin confirmar)`,
       ctx.el('p', { class: 'ayuda' }, 'Un mensaje de WhatsApp para cada invitado que todavía no confirmó (se abre WhatsApp con el texto listo para enviar).'),
-      pendientes.length ? ctx.el('div', { class: 'ad-recordar' }, pendientes.map((i) => enlace(`Recordar a ${i.nombre}`, wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i)), 'btn btn-chico btn-wa'))) : ctx.el('p', { class: 'ayuda' }, '¡Ya respondieron todos!'),
+      pendientes.length ? ctx.el('div', { class: 'ad-recordar' }, pendientes.map((i) => enlace(`Recordar a ${i.nombre}${i.abierto ? '' : ' · no lo abrió'}`, wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i), i.telefono), 'btn btn-chico btn-wa'))) : ctx.el('p', { class: 'ayuda' }, '¡Ya respondieron todos!'),
       editorTexto('textoRecordatorio', TEXTO_RECORDATORIO, 'Texto del recordatorio', '{invitado}, {link}, {pin}, {cierre} y {nombres} se completan solos.')) : null,
   ];
 }
@@ -325,9 +350,9 @@ function vistaMesas() {
   const personasDe = (i) => {
     const d = respuestaDe.get(i.codigo);
     if (d?.asiste === 'No') return [];
-    const acomp = d ? acompDe(d) : [];
-    const extra = Math.max(0, (Number(i.pases) || 0) - acomp.length);
-    return [i.nombre, ...acomp, ...Array.from({ length: d ? 0 : extra }, (_, k) => `${i.nombre} +${k + 1}`)];
+    if (d?.asiste === 'Si') return genteDe(d);
+    const base = separar(i.integrantes).length ? separar(i.integrantes) : [i.nombre];
+    return [...base, ...Array.from({ length: Number(i.pases) || 0 }, (_, k) => `${base[0]} +${k + 1}`)];
   };
   const asientos = Number(admin().asientos) || 10;
   const mesas = new Map();
@@ -406,7 +431,44 @@ function vistaAlbum() {
     ctx.el('div', { class: 'ad-botones' }, enlace('Conocer Albunear', 'https://albunear.com', 'btn')))];
 }
 
-const VISTAS = { resumen: vistaResumen, enviar: vistaEnviar, respuestas: vistaRespuestas, mensajes: vistaMensajes, canciones: vistaCanciones, mesas: vistaMesas, album: vistaAlbum };
+// Llegadas: el pase de entrada de cada invitado (QR de su link) y la recepción en la puerta.
+// La persona que recibe usa el link de la puerta (sin acceso al panel); acá se ve en vivo.
+let relojLlegadas = null;
+function vistaLlegadas() {
+  if (!conLista()) return [tarjeta('Llegadas', ctx.el('p', { class: 'ayuda' }, 'Con la lista de invitados, el día del evento se registra quién llega: escaneando el QR de cada invitado o buscándolo por nombre.'),
+    ctx.el('div', { class: 'ad-botones' }, boton('Editar lista de invitados', editarLista, 'btn btn-sec btn-chico')))];
+  const activo = ctx.el('input', { type: 'checkbox', checked: !!admin().checkin });
+  activo.addEventListener('change', async () => { await guardarAdmin({ checkin: activo.checked }); ctx.redibujar(); });
+  const cifras = ctx.el('div', { class: 'ad-numeros' });
+  const lista = ctx.el('div', { class: 'envolver-tabla' });
+  const acciones = ctx.el('div', { class: 'ad-botones' });
+  const cargar = async () => {
+    let d; try { d = await ctx.api('/puerta'); } catch (e) { lista.replaceChildren(ctx.el('p', { class: 'ayuda' }, e.message)); return; }
+    const llegaron = d.invitados.reduce((s, i) => s + (i.llegaron || 0), 0), esperan = d.invitados.reduce((s, i) => s + i.esperan, 0);
+    cifras.replaceChildren(numero(llegaron, 'llegaron', 'si'), numero(esperan, 'se esperan'), numero(Math.max(0, esperan - llegaron), 'faltan', 'pend'));
+    acciones.replaceChildren(enlace('Abrir la recepción', d.link, 'btn'), boton('Copiar link', () => copiar(d.link, 'Link copiado'), 'btn btn-sec'),
+      enlace('Enviar por WhatsApp', wa(`Link para recibir a los invitados de ${nombres()} (lista y lector de QR):\n${d.link}`), 'btn btn-wa'),
+      boton('QR del link', () => mostrarQR(d.link, 'Recepción de invitados'), 'btn btn-sec'));
+    const orden = [...d.invitados].sort((a, b) => String(b.llego).localeCompare(String(a.llego)) || a.nombre.localeCompare(b.nombre, 'es'));
+    lista.replaceChildren(ctx.el('table', { class: 'ad-tabla' }, ctx.el('tbody', {}, orden.map((i) => ctx.el('tr', { class: i.llegaron ? 'fila-si' : '' },
+      ctx.el('td', {}, ctx.el('strong', {}, i.nombre), ctx.el('small', {}, [i.mesa ? `Mesa ${i.mesa}` : 'Sin mesa', i.respondio === 'No' ? 'avisó que no va' : `${i.esperan} ${i.esperan === 1 ? 'persona' : 'personas'}`].join(' · '))),
+      ctx.el('td', {}, i.llegaron ? ctx.el('span', { class: 'ad-estado si' }, `Llegó${i.llegaron > 1 ? ` (${i.llegaron})` : ''}`) : ctx.el('span', { class: 'ad-estado pend' }, 'Todavía no')),
+      ctx.el('td', {}, i.llego ? fechaHora(i.llego) : ''))))));
+  };
+  cargar();
+  clearInterval(relojLlegadas);
+  relojLlegadas = setInterval(() => { if (!document.body.contains(lista)) { clearInterval(relojLlegadas); return; } if (!document.hidden) cargar(); }, 15000);
+  return [
+    tarjeta('Pase de entrada',
+      ctx.el('p', { class: 'ayuda' }, 'Activado, cada invitado que confirmó ve el botón "Mi pase de entrada" en su invitación: un QR para mostrar en la puerta. También sirve el QR de su link personal.'),
+      ctx.el('label', { class: 'ad-check' }, activo, ' Mostrar el pase de entrada a los invitados')),
+    tarjeta('Recepción en la puerta',
+      ctx.el('p', { class: 'ayuda' }, 'Quien recibe a los invitados abre este link en su celular: escanea el QR (o busca por nombre) y marca la llegada. Pueden usarlo varias personas a la vez. Solo deja ver la lista y marcar llegadas.'),
+      acciones, cifras, ctx.el('h3', { class: 'ad-subtitulo' }, 'En vivo'), lista),
+  ];
+}
+
+const VISTAS = { llegadas: vistaLlegadas, resumen: vistaResumen, enviar: vistaEnviar, respuestas: vistaRespuestas, mensajes: vistaMensajes, canciones: vistaCanciones, mesas: vistaMesas, album: vistaAlbum };
 
 // ── Montaje ──
 export async function montarAdmin(caja, c) {

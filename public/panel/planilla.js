@@ -8,10 +8,13 @@ const TITULOS = {
   nombre: /^(nombre|nombres|invitado|invitados|familia|name|guest)/,
   pases: /(pase|acompa|extra|plus|adicional|cupo|lugares)/,
   mesa: /^(mesa|table|n.? de mesa)/,
+  integrantes: /(integrante|miembro|quienes|quiénes|members)/,
+  telefono: /(tel|cel|whats|movil|móvil|phone)/,
 };
 
 export async function leerPlanilla(archivo) {
   const esXlsx = /\.xlsx$/i.test(archivo.name) || archivo.type.includes('spreadsheetml');
+  if (/\.vcf$/i.test(archivo.name) || /vcard/i.test(archivo.type)) return leerVcf(await archivo.text());
   if (/\.xls$/i.test(archivo.name)) throw new Error('Guardar el Excel como .xlsx (o .csv) y volver a subirlo');
   const filas = esXlsx ? await filasXlsx(await archivo.arrayBuffer()) : filasCsv(await archivo.text());
   return aInvitados(filas);
@@ -28,7 +31,31 @@ function aInvitados(filas) {
     nombre: (f[idx.nombre] || '').slice(0, 80),
     pases: Math.max(0, parseInt(f[idx.pases], 10) || 0),
     mesa: idx.mesa >= 0 ? (f[idx.mesa] || '').slice(0, 20) : '',
+    integrantes: idx.integrantes >= 0 ? (f[idx.integrantes] || '').slice(0, 400) : '',
+    telefono: idx.telefono >= 0 ? (f[idx.telefono] || '').slice(0, 30) : '',
   })).filter((i) => i.nombre);
+}
+
+// Contactos exportados del celular (.vcf, vCard): nombre y primer teléfono de cada uno
+export function leerVcf(texto) {
+  const lineas = texto.replace(/\r?\n[ \t]/g, '').split(/\r?\n/); // las líneas largas siguen con un espacio
+  const salida = []; let c = null;
+  const valor = (l) => {
+    const [cab, ...resto] = l.split(':'); let v = resto.join(':');
+    if (/ENCODING=QUOTED-PRINTABLE/i.test(cab)) {
+      const bytes = []; v.replace(/=([0-9A-F]{2})|(.)/gi, (_, hex, ch) => { if (hex) bytes.push(parseInt(hex, 16)); else bytes.push(...new TextEncoder().encode(ch)); return ''; });
+      v = new TextDecoder().decode(new Uint8Array(bytes));
+    }
+    return v.replace(/\\([,;\\])/g, '$1').trim();
+  };
+  for (const l of lineas) {
+    if (/^BEGIN:VCARD/i.test(l)) c = { nombre: '', telefono: '', n: '' };
+    else if (/^END:VCARD/i.test(l) && c) { const nombre = c.nombre || c.n; if (nombre) salida.push({ nombre: nombre.slice(0, 80), pases: 0, mesa: '', telefono: c.telefono }); c = null; }
+    else if (c && /^FN[:;]/i.test(l)) c.nombre = valor(l);
+    else if (c && /^N[:;]/i.test(l)) { const [ap, nom] = valor(l).split(';'); c.n = [nom, ap].filter(Boolean).join(' ').trim(); }
+    else if (c && /^(item\d+\.)?TEL[:;]/i.test(l) && !c.telefono) c.telefono = valor(l).replace(/[^\d+]/g, '');
+  }
+  return salida;
 }
 
 function filasCsv(texto) {

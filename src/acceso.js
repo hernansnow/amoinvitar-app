@@ -101,3 +101,9 @@ export function nuevoCodigo(nombre) {
   return `${base}-${[...r].map((x) => LETRAS[x % LETRAS.length]).join('')}`;
 }
 export const nuevoPin = () => String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, '0');
+
+// Link de la puerta (check-in): el dueño lo comparte con quien recibe a los invitados.
+// Deja marcar llegadas y ver la lista, nada más. Si cambia la clave del panel, deja de valer.
+export async function tokenPuerta(ev, secreto) {
+  return (await firma(secreto, `${ev.id}|puerta|${ev.clave || ''}`)).slice(0, 24);
+}

@@ -18,9 +18,10 @@ import { armarVista } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
-import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista, cookieAcceso, DUENO } from './acceso.js';
+import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista, cookieAcceso, DUENO, tokenPuerta } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
 import { mesaHTML } from './componentes/mesa.js';
+import { checkinHTML } from './componentes/checkin.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA } from './panel/esquemas.js';
 import { MODELOS, nombreModelo } from './modelos.js';
 import { MODELOS_GRATIS } from './catalogo.js';
@@ -152,7 +153,13 @@ async function publicada(env, url, request, tipo, slug) {
   }
   const evento = paraMotor(ev);
   if (await aforoLleno(almacen, ev)) evento.rsvp = { ...(evento.rsvp || {}), lleno: true };
-  const r = await pagina(env, url, evento, { invitado: acc.invitado, marca });
+  let invitado = acc.invitado;
+  if (invitado) {
+    // Cuándo abrió su link (el dueño mirando no cuenta) y lo que ya respondió, para poder cambiarlo
+    if (!acc.dueno) await almacen.visita(ev.id, invitado.codigo).catch(() => {});
+    invitado = { ...invitado, respuesta: await almacen.respuestaDe(ev.id, invitado.codigo).catch(() => null), pase: !!ev.datos.admin?.checkin };
+  }
+  const r = await pagina(env, url, evento, { invitado, marca });
   if (acc.cookie) r.headers.append('set-cookie', acc.cookie);
   return r;
 }
@@ -197,6 +204,7 @@ function personasConfirmadas(respuestas = []) {
   let total = 0;
   for (const { datos: d } of ultimas.values()) {
     if (d.asiste !== 'Si') continue;
+    if (/^\d+$/.test(String(d.personas || ''))) { total += Number(d.personas) + (/^\d+$/.test(String(d.ninos || '').trim()) ? Number(d.ninos) : 0); continue; }
     const acomp = d.acompanantes && d.acompanantes !== 'No' ? String(d.acompanantes).split(',').filter((n) => n.trim()).length : 0;
     const ninos = /^\d+$/.test(String(d.ninos || '').trim()) ? Number(d.ninos) : 0;
     total += 1 + acomp + ninos;
@@ -291,6 +299,55 @@ async function buscarMesa(env, request, url) {
     if (resultados.length >= 6) break;
   }
   return json({ resultados: resultados.slice(0, 6) }, 200, { 'cache-control': 'no-store' });
+}
+
+// ── Puerta: check-in de los invitados el día del evento ───────────────
+// /puerta/<id>?t=<token>: lista con buscador y lector de QR (el QR es el link personal
+// del invitado, el mismo que muestra su "pase de entrada"). El token sale del panel.
+const sinNum = (x) => (/^\d+$/.test(String(x ?? '').trim()) ? Number(x) : 0);
+function personasEsperadas(i, d) {
+  if (d?.asiste === 'No') return 0;
+  if (d?.asiste === 'Si') {
+    if (/^\d+$/.test(String(d.personas || ''))) return Number(d.personas) + sinNum(d.ninos);
+    const acomp = d.acompanantes && !/^no$/i.test(d.acompanantes) ? String(d.acompanantes).split(',').filter((x) => x.trim()).length : 0;
+    return 1 + acomp + sinNum(d.ninos);
+  }
+  const familia = String(i.integrantes || '').split(',').filter((x) => x.trim()).length;
+  return Math.max(1, familia) + (Number(i.pases) || 0);
+}
+async function eventoPuerta(env, id, t) {
+  const ev = id && await almacenDe(env).evento(id);
+  if (!ev || !t) return null;
+  return igual(t, await tokenPuerta(ev, secretoDe(env))) ? ev : null;
+}
+async function listaPuerta(env, ev) {
+  const almacen = almacenDe(env);
+  const ultima = new Map();
+  for (const r of await almacen.respuestas(ev.id)) if (r.tipo === 'rsvp' && r.datos.inv && !ultima.has(r.datos.inv)) ultima.set(r.datos.inv, r.datos);
+  return (await almacen.invitados(ev.id)).map((i) => {
+    const d = ultima.get(i.codigo);
+    return { codigo: i.codigo, nombre: i.nombre, mesa: i.mesa || '', integrantes: i.integrantes || '', respondio: d?.asiste || '',
+      esperan: personasEsperadas(i, d), llegaron: i.llegaron || 0, llego: i.llego || '' };
+  });
+}
+async function paginaPuerta(env, url, id) {
+  const ev = await eventoPuerta(env, id, url.searchParams.get('t'));
+  if (!ev) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Link no válido. Pedir uno nuevo a los anfitriones.</p>', 403);
+  return html(checkinHTML({ id: ev.id, t: url.searchParams.get('t'), nombres: nombresDe(ev.datos.nombres) }), 200, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
+}
+async function apiPuerta(env, request, url) {
+  if (request.method === 'POST') {
+    const b = await request.json().catch(() => ({}));
+    const ev = await eventoPuerta(env, b.e, b.t);
+    if (!ev) return json({ error: 'Link no válido' }, 403);
+    const i = await almacenDe(env).invitado(ev.id, String(b.codigo || ''));
+    if (!i) return json({ error: 'No está en la lista' }, 404);
+    await almacenDe(env).llegada(ev.id, i.codigo, Math.max(0, Math.min(60, parseInt(b.personas, 10) || 0)));
+    return json({ ok: true });
+  }
+  const ev = await eventoPuerta(env, url.searchParams.get('e'), url.searchParams.get('t'));
+  if (!ev) return json({ error: 'Link no válido' }, 403);
+  return json({ invitados: await listaPuerta(env, ev) });
 }
 
 // ── Panel ─────────────────────────────────────────────────────────────
@@ -530,11 +587,17 @@ async function apiPanel(env, request, url, partes) {
         pases: Math.max(0, Math.min(50, parseInt(i.pases, 10) || 0)),
         mesa: String(i.mesa ?? '').trim().slice(0, 20) || null,
         pin: viejo?.pin || nuevoPin(),
+        // Familia o grupo con un solo link: cada integrante confirma por separado
+        integrantes: String(i.integrantes || '').split(/[,\n;]+/).map((x) => x.trim().slice(0, 60)).filter(Boolean).slice(0, 15).join(', ') || null,
+        telefono: String(i.telefono || '').replace(/[^\d+]/g, '').slice(0, 20) || null,
+        // Lo que no se edita a mano se conserva: aperturas del link y llegada
+        abierto: viejo?.abierto ?? null, ultima: viejo?.ultima ?? null, visitas: viejo?.visitas || 0, llego: viejo?.llego ?? null, llegaron: viejo?.llegaron ?? null,
       };
     });
     await almacen.guardarInvitados(ev.id, lista);
     return json({ ok: true, invitados: lista });
   }
+  if (accion === 'puerta') return json({ link: `${url.origin}/puerta/${ev.id}?t=${await tokenPuerta(ev, secretoDe(env))}`, invitados: await listaPuerta(env, ev) });
   if (accion === 'respuestas' && request.method === 'DELETE') {
     // Solo se borran las respuestas de prueba (las que mandó el dueño desde "Ver la invitación")
     const rid = Number(url.searchParams.get('r'));
@@ -549,7 +612,7 @@ async function apiPanel(env, request, url, partes) {
     const b = await request.json().catch(() => ({}));
     const texto = (x) => (typeof x === 'string' ? x.slice(0, 1500) : undefined);
     ev.datos.admin = { textoWa: texto(b.textoWa), textoWaLista: texto(b.textoWaLista), textoRecordatorio: texto(b.textoRecordatorio),
-      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined, buscaMesa: b.buscaMesa === true };
+      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined, buscaMesa: b.buscaMesa === true, checkin: b.checkin === true };
     await almacen.guardarEvento(ev);
     return json({ ok: true });
   }
@@ -678,7 +741,7 @@ async function media(env, partes) {
 // ── Modo "Próximamente": con PREVIEW_KEY cargada, el público ve una página de espera ──
 // Se entra una vez por navegador con ?preview=CLAVE (queda 90 días). Salir: ?preview=salir.
 // Las invitaciones publicadas, las demos y los avisos de las pasarelas siguen funcionando.
-const SIEMPRE_ABIERTO = /^\/(api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/mesa|mesa\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
+const SIEMPRE_ABIERTO = /^\/(api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/mesa|mesa\/|api\/puerta|puerta\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
 function proximamente(request, env, url) {
   const clave = String(env.PREVIEW_KEY || '').trim();
   if (!clave) return null;
@@ -738,6 +801,7 @@ export default {
         if (p1 === 'rsvp' && request.method === 'POST') return await rsvp(env, request);
         if (p1 === 'invitados.csv') return await invitadosCSV(env, request, url);
         if (p1 === 'mesa') return await buscarMesa(env, request, url);
+        if (p1 === 'puerta') return await apiPuerta(env, request, url);
         if (p1 === 'panel' && partes[2]) return await apiPanel(env, request, url, partes);
         if (p1 === 'eventos' && request.method === 'POST') return await crearEvento(env, request, url);
         return json({ error: 'no encontrado' }, 404);
@@ -749,6 +813,7 @@ export default {
       if (p0 === 'demo' && partes.length === 2) return await demo(env, url, request, p1);
       if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return env.ASSETS.fetch(new URL('/panel/', url.origin));
       if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, p1);
+      if (p0 === 'puerta' && partes.length === 2) return await paginaPuerta(env, url, p1);
       if (p0 === 'vista' && partes.length === 2) return await vistaPrevia(env, url, request, p1);
       if (p0 === 'acceso' && partes.length === 2 && request.method === 'POST') return await entrarConPin(env, request, p1);
       if (p0 === 'acceso' && partes.length === 3 && partes[2] === 'dueno') return await entrarDueno(env, request, url, p1);

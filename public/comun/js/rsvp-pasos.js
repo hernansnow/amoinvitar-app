@@ -21,11 +21,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Estado de las respuestas
   var r, paso, caja;
+  function vacio() {
+    return { nombre: invitado && invitado.nombre ? invitado.nombre : '', asiste: '', conAcomp: '', acomp: [], comida: '', comidaOtra: '', comidaAcomp: '',
+      alcohol: '', ninos: '', ninosCant: '', traslado: '', extras: {}, mensaje: '', van: {} };
+  }
+  // Si ya respondió (link personal), primero ve lo que respondió y puede cambiarlo
   function reiniciar() {
-    r = { nombre: invitado && invitado.nombre ? invitado.nombre : '', asiste: '', conAcomp: '', acomp: [], comida: '', comidaOtra: '', comidaAcomp: '',
-      alcohol: '', ninos: '', ninosCant: '', traslado: '', extras: {}, mensaje: '' };
-    paso = 0;
-    dibujar();
+    r = vacio(); paso = 0;
+    if (invitado && invitado.respuesta) resumen(); else dibujar();
+  }
+  // Familia o grupo con un solo link: cada integrante dice si va
+  function integrantes() { return invitado && invitado.integrantes && invitado.integrantes.length > 1 ? invitado.integrantes : null; }
+  function cargarPrevia(x) {
+    r = vacio();
+    r.asiste = x.asiste || '';
+    if (x.acompanantes && !/^no$/i.test(x.acompanantes)) { r.conAcomp = 'Si'; r.acomp = x.acompanantes.split(',').map(function (n) { return n.trim(); }); }
+    else if (x.acompanantes) r.conAcomp = 'No';
+    var ops = t('comidaOpciones', 'No').split('|');
+    if (x.comida) { if (ops.indexOf(x.comida) >= 0) r.comida = x.comida; else { r.comida = '__otra'; r.comidaOtra = x.comida; } }
+    r.comidaAcomp = x.comida_acomp || ''; r.alcohol = x.alcohol || ''; r.traslado = x.traslado || ''; r.mensaje = x.mensaje || '';
+    if (/^\d+$/.test(x.ninos || '')) { r.ninos = 'Si'; r.ninosCant = x.ninos; } else r.ninos = x.ninos || '';
+    extras().forEach(function (e) { if (x[e.campo]) r.extras[e.campo] = x[e.campo]; });
+    var fam = integrantes();
+    if (fam) { var van = String(x.asisten || '').split(',').map(function (n) { return n.trim(); }); fam.forEach(function (n) { r.van[n] = van.indexOf(n) >= 0 ? 'Si' : 'No'; }); }
+  }
+  function personasDe(x) {
+    if (x.asiste !== 'Si') return 0;
+    if (/^\d+$/.test(x.personas || '')) return Number(x.personas);
+    return 1 + (x.acompanantes && !/^no$/i.test(x.acompanantes) ? x.acompanantes.split(',').filter(function (n) { return n.trim(); }).length : 0);
+  }
+  function resumen() {
+    var x = invitado.respuesta, n = personasDe(x);
+    var fecha = x.creado ? new Date(x.creado).toLocaleDateString(document.documentElement.lang || 'es', { day: 'numeric', month: 'long' }) : '';
+    var lineas = [x.asiste === 'Si' ? t('textSiAsiste') : t('textNoAsiste')];
+    if (x.asiste === 'Si' && n) lineas.push(n + ' ' + t('textPersonas', 'personas') + (x.asisten ? ': ' + x.asisten : x.acompanantes && !/^no$/i.test(x.acompanantes) ? ': ' + [invitado.nombre].concat(x.acompanantes.split(',')).join(', ') : ''));
+    form.replaceChildren(h('div', { class: 'rp-listo rp-resumen' }, [
+      h('p', { class: 'rp-hola' }, invitado.nombre), datosInvitado(),
+      h('p', { class: 'rp-pregunta' }, t('textYaRespondiste', 'Ya respondiste') + (fecha ? ' · ' + fecha : '')),
+      h('div', { class: 'rp-respuesta' }, lineas.map(function (l) { return h('p', {}, l); })),
+      x.asiste === 'Si' && invitado.pase ? h('button', { type: 'button', class: 'rp-opcion', onclick: mostrarPase }, '🎟️ ' + t('textPase', 'Mi pase de entrada')) : null,
+      h('button', { type: 'button', class: 'rp-siguiente rp-cambiar', onclick: function () { cargarPrevia(x); paso = 0; dibujar(); } }, t('textCambiar', 'Cambiar mi respuesta')),
+    ]));
+  }
+  // Pase de entrada: el QR de su link personal, para que lo escaneen en la puerta
+  function mostrarPase() {
+    var link = location.origin + location.pathname + '?inv=' + encodeURIComponent(invitado.codigo);
+    var caja = h('div', { class: 'rp-qr' }, '…');
+    form.replaceChildren(h('div', { class: 'rp-listo rp-pase' }, [h('p', { class: 'rp-pregunta' }, t('textPase', 'Mi pase de entrada')), h('p', { class: 'rp-hola' }, invitado.nombre), datosInvitado(), caja,
+      h('p', { class: 'rp-ayuda' }, t('textPaseAyuda')), h('button', { type: 'button', class: 'rp-atras', onclick: reiniciar }, '← ' + t('textVolver', 'Volver'))]));
+    var pintar = function () {
+      var q = window.qrcode(0, 'M'); q.addData(link); q.make();
+      var n = q.getModuleCount(), d = '';
+      for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) if (q.isDark(y, x)) d += 'M' + (x + 2) + ',' + (y + 2) + 'h1v1h-1z';
+      caja.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + (n + 4) + ' ' + (n + 4) + '" width="220" height="220" shape-rendering="crispEdges" role="img" aria-label="QR"><rect width="100%" height="100%" fill="#fff"/><path d="' + d + '" fill="#111"/></svg>';
+    };
+    if (window.qrcode) pintar();
+    else { var s = document.createElement('script'); s.src = '/comun/js/qrcode.js'; s.onload = pintar; document.head.appendChild(s); }
   }
 
   // ¿Cuántos acompañantes puede sumar?
@@ -93,6 +144,18 @@ document.addEventListener('DOMContentLoaded', function () {
   // ── Cada paso ──
   function contenido(id) {
     var avanzar = function () { siguiente(); };
+    if (id === 'asiste' && integrantes()) {
+      return [h('p', { class: 'rp-hola' }, invitado.nombre), datosInvitado(), h('p', { class: 'rp-pregunta' }, t('labelQuienes', '¿Quiénes van a asistir?')),
+        h('div', { class: 'rp-familia' }, integrantes().map(function (n) {
+          return h('div', { class: 'rp-integrante' }, [h('span', {}, n),
+            opciones([{ v: 'Si', etiqueta: t('textVa', 'Va') }, { v: 'No', etiqueta: t('textNoVa', 'No va') }], r.van[n], function (v) {
+              r.van[n] = v;
+              var todos = integrantes().every(function (x) { return r.van[x]; });
+              r.asiste = todos ? (integrantes().some(function (x) { return r.van[x] === 'Si'; }) ? 'Si' : 'No') : '';
+              dibujar();
+            })]);
+        }))];
+    }
     if (id === 'asiste') {
       var nombre = invitado && invitado.nombre ? null : h('input', { type: 'text', class: 'rp-input', name: 'nombre', maxlength: 120, autocomplete: 'name',
         placeholder: t('labelNombre'), value: r.nombre, oninput: function (e) { r.nombre = e.target.value; } });
@@ -156,13 +219,13 @@ document.addEventListener('DOMContentLoaded', function () {
     var nav = h('div', { class: 'rp-nav' }, [
       paso > 0 ? h('button', { type: 'button', class: 'rp-atras', onclick: function () { paso--; dibujar(); } }, '← ' + t('textAtras', 'Atrás')) : h('span'),
       ultimo ? h('button', { type: 'submit', class: 'rp-enviar' }, t('textBtnSubmit', 'Enviar'))
-        : (id === 'asiste' ? null : h('button', { type: 'button', class: 'rp-siguiente', onclick: siguiente }, t('textSiguiente', 'Siguiente') + ' →')),
+        : (id === 'asiste' && !integrantes() ? null : h('button', { type: 'button', class: 'rp-siguiente', onclick: siguiente }, t('textSiguiente', 'Siguiente') + ' →')),
     ]);
     form.replaceChildren(caja, nav, puntos);
   }
   function siguiente() {
     var lista = pasos();
-    if (lista[paso] === 'asiste' && !r.asiste) { error(t('msgCamposVacios')); return; }
+    if (lista[paso] === 'asiste' && !r.asiste) { error(integrantes() ? t('labelQuienes') : t('msgCamposVacios')); return; }
     if (paso < lista.length - 1) { paso++; dibujar(); } else dibujar();
     var foco = form.querySelector('.rp-input, .rp-opcion'); if (foco && foco.focus) foco.focus({ preventScroll: true });
   }
@@ -173,6 +236,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var btn = form.querySelector('.rp-enviar'); if (!btn || btn.disabled) return;
     var datos = { nombre: r.nombre.trim(), asiste: r.asiste }, labels = { nombre: t('labelNombre', 'Nombre'), asiste: t('labelAsiste', 'Asistirá') };
     var poner = function (campo, valor, label) { if (valor != null && String(valor).trim() !== '') { datos[campo] = String(valor).trim(); labels[campo] = label; } };
+    var fam = integrantes();
+    if (fam && r.asiste === 'Si') {
+      var van = fam.filter(function (n) { return r.van[n] === 'Si'; });
+      poner('asisten', van.join(', '), t('labelQuienes', 'Asisten'));
+      var noVan = fam.filter(function (n) { return r.van[n] !== 'Si'; });
+      if (noVan.length) poner('no_asisten', noVan.join(', '), t('textNoVa', 'No va'));
+      var extrasN = r.conAcomp === 'Si' ? r.acomp.slice(0, maxAcomp()).filter(function (x) { return x && x.trim(); }).length : 0;
+      poner('personas', String(van.length + extrasN), t('textPersonas', 'Personas'));
+    }
     if (r.asiste === 'Si') {
       var nombres = r.acomp.slice(0, maxAcomp()).map(function (x) { return (x || '').trim(); }).filter(Boolean);
       if (r.conAcomp === 'No' || (maxAcomp() > 0 && !nombres.length && r.conAcomp)) poner('acompanantes', t('textNoAcompanantes', 'No'), t('labelAcompanante', 'Acompañantes'));
@@ -192,8 +264,10 @@ document.addEventListener('DOMContentLoaded', function () {
     fd.set('labels', JSON.stringify(labels));
     btn.disabled = true; var original = btn.textContent; btn.textContent = t('textEnviando', 'Enviando…');
     var listo = function (prueba) {
+      if (invitado && invitado.codigo && !prueba) invitado.respuesta = Object.assign({ creado: new Date().toISOString() }, datos);
       form.replaceChildren(h('div', { class: 'rp-listo' }, [h('p', { class: 'rp-listo-icono', 'aria-hidden': 'true' }, r.asiste === 'Si' ? '🎉' : '💌'),
-        h('p', {}, r.asiste === 'Si' ? t('msgOk') : t('msgNoAsiste')), prueba ? h('p', { class: 'rp-ayuda' }, t('msgPrueba', 'Vista previa: esta respuesta no se guarda.')) : null]));
+        h('p', {}, r.asiste === 'Si' ? t('msgOk') : t('msgNoAsiste')), prueba ? h('p', { class: 'rp-ayuda' }, t('msgPrueba', 'Vista previa: esta respuesta no se guarda.')) : null,
+        r.asiste === 'Si' && invitado && invitado.pase && !prueba ? h('button', { type: 'button', class: 'rp-opcion', onclick: mostrarPase }, '🎟️ ' + t('textPase', 'Mi pase de entrada')) : null]));
     };
     // Vista previa del panel: se puede recorrer entero, pero no se manda
     if (window.INVITACION_CONFIG && window.INVITACION_CONFIG.prueba) { listo(true); return; }
@@ -209,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Cada vez que se abre, desde el principio (si todavía no envió)
-  window.addEventListener('ai-modal-abierto', function (e) { if (e.detail && e.detail.id === '#confirmar-rsvp' && !form.querySelector('.rp-listo')) reiniciar(); });
+  window.addEventListener('ai-modal-abierto', function (e) { if (e.detail && e.detail.id === '#confirmar-rsvp' && (!form.querySelector('.rp-listo') || (invitado && invitado.respuesta))) reiniciar(); });
   reiniciar();
 });
 

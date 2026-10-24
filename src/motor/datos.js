@@ -109,6 +109,15 @@ const urlDe = (f) => (typeof f === 'string' ? f : f?.url || '');
 // Solo boda, 15, bautismo y comunión tienen ceremonia o misa
 const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion']);
 
+// Lo que ya respondió el invitado (para mostrárselo y poder cambiarlo): solo sus propias respuestas
+const CAMPOS_RESPUESTA = ['asiste', 'acompanantes', 'asisten', 'personas', 'comida', 'comida_acomp', 'alcohol', 'ninos', 'traslado', 'mensaje', 'extra', 'extra2', 'extra3', 'extra4', 'extra5'];
+function respuestaPrevia(r) {
+  if (!r) return null;
+  const o = { creado: r.creado };
+  for (const k of CAMPOS_RESPUESTA) if (r[k] != null && r[k] !== '') o[k] = String(r[k]);
+  return o;
+}
+
 export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false, invitado = null, marca = null }) {
   const plural = !!e.nombres?.b;
   const paquete = modelo.paquetes[e.paquete] || modelo.paquetes.basic;
@@ -317,7 +326,12 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     // Con link personal o PIN por invitado la lista va siempre
     acceso: { lista: !!(e.acceso?.lista || e.acceso?.modo === 'codigo' || (e.acceso?.modo === 'pin' && e.acceso?.pinPorInvitado)), inv: invitado?.codigo || '',
       // Su fila (nombre, pases, mesa) va directo en la página: no hace falta pedir la lista
-      invitado: invitado ? { nombre: invitado.nombre || '', pases: Number(invitado.pases) || 0, mesa: invitado.mesa ?? '' } : null },
+      invitado: invitado ? {
+        codigo: invitado.codigo || '', nombre: invitado.nombre || '', pases: Number(invitado.pases) || 0, mesa: invitado.mesa ?? '',
+        integrantes: String(invitado.integrantes || '').split(',').map((x) => x.trim()).filter(Boolean),
+        respuesta: respuestaPrevia(invitado.respuesta),
+        pase: !!invitado.pase && !!invitado.codigo,
+      } : null },
     marca: marca ? { blanca: true, ...marca } : { blanca: false },
     meta: {
       titulo: t('meta.titulo').replace('{evento}', t('evento.nombre')).replace('{nombres}', nombresTexto),
