@@ -205,7 +205,7 @@ function pasosInvitacion({ tipo, modelo }) {
       ],
     },
     // El interruptor no se muestra: la lista se prende eligiendo "Lista de invitados" o "Lista + PIN"
-    { id: 'invitados', titulo: 'Invitados y acceso', interruptor: 'acceso.lista', sinInterruptor: true, nivelPaso: 'premium',
+    { id: 'invitados', titulo: 'Invitados y acceso', interruptor: 'acceso.lista', sinInterruptor: true, nivelPaso: 'premium', niveles: ['basic', 'premium'],
       ayudaSeccion: 'Elegir quién puede entrar. Con una lista, cada invitado recibe su link personal (con su nombre, pases y mesa) y abajo se carga la lista.',
       campos: [
         ...CAMPOS_ACCESO,

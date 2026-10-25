@@ -1318,6 +1318,8 @@ function panelRespuestas() {
 const NOMBRE_NIVEL = { gratis: 'Gratis', basic: 'Basic', premium: 'Premium', deluxe: 'Deluxe', complemento: 'Complemento' };
 const esGratis = () => S.plan?.plan === 'gratis';
 const nivelDe = (n) => (n === 'basic' && esGratis() ? 'gratis' : n);
+// Invitados y acceso tiene opciones de Basic y de Premium: lleva las dos insignias
+const insigniasPaso = (p) => (p.niveles ? el('span', { class: 'insignias' }, p.niveles.map(insigniaNivel)) : insigniaNivel(p.nivel));
 const insigniaNivel = (n) => (n && n !== 'complemento' ? el('span', { class: `insignia-nivel nivel-${nivelDe(n)}` }, NOMBRE_NIVEL[nivelDe(n)]) : null);
 
 // Si un paso está prendido en la invitación (las obligatorias siempre)
@@ -1357,7 +1359,7 @@ function dibujarPasos() {
     el('div', { class: 'pasos-cabeza' }, el('strong', {}, 'Pasos'), el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Cerrar', onclick: cerrarPasos }, '✕')),
     ...pasos.flatMap((p, i) => [p.separado ? el('hr', { class: 'pasos-division' }) : null, p.separado ? el('div', { class: 'pasos-subtitulo' }, 'Complementos') : null, el('div', { class: `paso-fila${p.sinInterruptor || pasoActivo(p) ? '' : ' apagado'}` },
       el('button', { type: 'button', class: 'paso', 'aria-current': p.id === pasoActual?.id ? 'step' : null, onclick: () => { cerrarPasos(); if (document.body.classList.contains('editor-plegado')) plegarEditor(false); irA(p.id); } },
-        el('span', { class: 'num', title: `Paso ${i + 1}`, html: icono(p.id, 15) || String(i + 1) }), el('span', { class: 'nombre' }, p.titulo, (p.sinInterruptor ? null : insigniaNivel(p.nivel))),
+        el('span', { class: 'num', title: `Paso ${i + 1}`, html: icono(p.id, 15) || String(i + 1) }), el('span', { class: 'nombre' }, p.titulo, insigniasPaso(p)),
         conFaltas.has(p.id) ? el('span', { class: 'falta', 'aria-label': 'Faltan datos' }) : null),
       interruptorPaso(p))]).filter(Boolean));
   const i = pasos.indexOf(pasoActual);
@@ -1418,7 +1420,7 @@ function dibujarPaso() {
   if (!activo) { cuerpo.inert = true; cuerpo.setAttribute('aria-disabled', 'true'); }
   f.replaceChildren(...[
     el('div', { class: 'paso-titulo' }, el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'mostrar' }, apagar, el('span', { class: 'lado' }, T('Mostrar en la invitación'))) : null, plegar),
-      el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, (p.sinInterruptor ? null : insigniaNivel(p.nivel)))),
+      el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, insigniasPaso(p))),
     ayudaSeccion, motivo, banderaGuardar(), arriba, apagada,
     el('div', { id: 'faltan-aca' }),
     cuerpo,

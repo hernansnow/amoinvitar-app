@@ -879,3 +879,4 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .oa-texto strong { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .oa-texto small { display: block; color: var(--suave); margin-top: 3px; font-size: .85rem; line-height: 1.35; }
 .ejemplo-acceso { margin: 4px 0 0; padding: 10px 12px; border-radius: 10px; background: #f6f5f3; font-size: .85rem; color: var(--suave); overflow-wrap: anywhere; }
+.insignias { display: inline-flex; gap: 4px; flex-wrap: wrap; vertical-align: middle; }
