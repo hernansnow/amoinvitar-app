@@ -5,9 +5,8 @@
 //   abierta  cualquiera con el link
 //   codigo   solo con link personal (?inv=codigo de la lista)
 //   pin      pide un PIN (uno para todos, o uno por invitado con ?inv=)
-//   Lista cerrada (solo con su link personal) = "Solo con link personal" o "PIN distinto
-//   para cada invitado". Con "Cualquiera con el link" o "PIN para todos" la lista de
-//   invitados solo personaliza: con su link ve su nombre, pases y mesa.
+//   Con la lista de invitados activada la invitación es de LISTA CERRADA: solo se
+//   entra con el link personal (y el PIN, si hay), aunque el modo sea "abierta".
 //
 // Al entrar bien se guarda una cookie firmada para no volver a pedirlo.
 
@@ -20,7 +19,7 @@ async function firma(secreto, texto) {
 }
 
 // Lo que cambia la "llave": si el cliente cambia el PIN, el modo o la lista, las cookies viejas dejan de valer
-const version = (ev) => { const a = ev.datos.acceso || {}; return `${a.modo || 'abierta'}:${a.pinPorInvitado ? 1 : 0}:${a.pin || ''}:${listaCerrada(ev.datos) ? 'c' : usaLista(ev.datos) ? 1 : 0}`; };
+const version = (ev) => { const a = ev.datos.acceso || {}; return `${a.modo || 'abierta'}:${a.pinPorInvitado ? 1 : 0}:${a.pin || ''}:${usaLista(ev.datos) ? 1 : 0}`; };
 const nombreCookie = (ev) => `ai_${ev.id}`;
 // El dueño (desde "Ver la invitación" del panel) entra siempre, aunque la lista sea cerrada
 export const DUENO = '@dueno';
@@ -40,13 +39,12 @@ async function leerCookie(ev, request, secreto) {
   return sig && sig === await firma(secreto, `${ev.id}|${codigo}|${version(ev)}`) ? codigo : null;
 }
 
-// ¿Tiene lista de invitados? (para mostrar nombre, pases y mesa con el link personal)
-export const usaLista = (d) => { const a = d?.acceso || {}; return !!(a.lista || listaCerrada(d)); };
-// ¿Es de LISTA CERRADA? Solo con "Solo con link personal" o "PIN distinto para cada invitado":
-// ahí nadie entra sin su link personal. Con "Cualquiera con el link" o "PIN para todos" la lista solo personaliza.
-export const listaCerrada = (d) => { const a = d?.acceso || {}; return a.modo === 'codigo' || (a.modo === 'pin' && !!a.pinPorInvitado); };
+// Con lista de invitados (o link personal, o PIN por invitado) la invitación es de lista cerrada
+export const usaLista = (d) => { const a = d?.acceso || {}; return !!(a.lista || a.modo === 'codigo' || (a.modo === 'pin' && a.pinPorInvitado)); };
 
 // Devuelve { ok, invitado, cookie } o { ok:false, pantalla:'pin'|'bloqueado' }
+//   Sin lista:  abierta → pasa cualquiera · pin → un PIN para todos
+//   Con lista:  CERRADA → solo con su link personal (?inv=), y además el PIN si hay
 export async function revisarAcceso({ ev, request, url, almacen, secreto }) {
   const a = ev.datos.acceso || {};
   const modo = modoAcceso(ev);
@@ -56,11 +54,8 @@ export async function revisarAcceso({ ev, request, url, almacen, secreto }) {
 
   if (enCookie === DUENO) return { ok: true, invitado: await buscar(inv), dueno: true };
 
-  if (!listaCerrada(ev.datos)) {
-    // Abierta o PIN para todos. Con lista, el link personal muestra su nombre, pases y mesa
-    const invitado = usaLista(ev.datos) ? (await buscar(inv)) || (enCookie && (!inv || inv === enCookie) ? await buscar(enCookie) : null) : null;
-    if (modo === 'abierta') return { ok: true, invitado, cookie: invitado && invitado.codigo !== enCookie ? await cookieAcceso(ev, invitado.codigo, secreto) : undefined };
-    if (enCookie) return { ok: true, invitado, cookie: invitado && invitado.codigo !== enCookie ? await cookieAcceso(ev, invitado.codigo, secreto) : undefined };
+  if (!usaLista(ev.datos)) {
+    if (modo === 'abierta' || enCookie) return { ok: true, invitado: null };
     return { ok: false, pantalla: 'pin' };
   }
 
@@ -71,8 +66,9 @@ export async function revisarAcceso({ ev, request, url, almacen, secreto }) {
   }
   const invitado = await buscar(inv);
   if (!invitado) return { ok: false, pantalla: 'bloqueado' };
-  const pin = modo === 'pin' ? invitado.pin : '';
-  if (!pin) return { ok: true, invitado, cookie: await cookieAcceso(ev, invitado.codigo, secreto) };
+  const pin = modo === 'pin' ? (a.pinPorInvitado ? invitado.pin : a.pin) : '';
+  // Sin PIN (o ya puso el PIN para todos en este navegador): entra con su link
+  if (!pin || enCookie === '*') return { ok: true, invitado, cookie: await cookieAcceso(ev, invitado.codigo, secreto) };
   return { ok: false, pantalla: 'pin' };
 }
 
@@ -80,19 +76,21 @@ export async function revisarAcceso({ ev, request, url, almacen, secreto }) {
 export async function validarPin({ ev, pin, inv, almacen, secreto }) {
   const a = ev.datos.acceso || {};
   if (modoAcceso(ev) !== 'pin' || !/^\d{4}$/.test(pin || '')) return null;
-  const invitado = inv && usaLista(ev.datos) ? await almacen.invitado(ev.id, inv) : null;
-  if (a.pinPorInvitado) return invitado?.pin && invitado.pin === pin ? cookieAcceso(ev, invitado.codigo, secreto) : null;
-  // PIN para todos: con link personal, la cookie queda a su nombre
-  return a.pin && a.pin === pin ? cookieAcceso(ev, invitado?.codigo || '*', secreto) : null;
+  if (usaLista(ev.datos)) {
+    const invitado = inv && await almacen.invitado(ev.id, inv);
+    if (!invitado) return null;
+    const esperado = a.pinPorInvitado ? invitado.pin : a.pin;
+    return esperado && esperado === pin ? cookieAcceso(ev, invitado.codigo, secreto) : null;
+  }
+  return a.pin && a.pin === pin ? cookieAcceso(ev, '*', secreto) : null;
 }
 
 // Para el RSVP y la lista: ¿este pedido viene de alguien que pasó la puerta?
 export async function puedeVer({ ev, request, secreto }) {
   const c = await leerCookie(ev, request, secreto);
   if (c === DUENO) return { ok: true, codigo: null, dueno: true };
-  const codigo = c && c !== '*' ? c : null;
-  if (!listaCerrada(ev.datos)) return modoAcceso(ev) === 'abierta' || c ? { ok: true, codigo } : { ok: false };
-  return codigo ? { ok: true, codigo } : { ok: false };
+  if (!usaLista(ev.datos)) return modoAcceso(ev) === 'abierta' || c ? { ok: true, codigo: null } : { ok: false };
+  return c && c !== '*' ? { ok: true, codigo: c } : { ok: false };
 }
 
 // Códigos y PINs para la lista de invitados

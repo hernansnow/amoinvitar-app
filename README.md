@@ -68,10 +68,8 @@ El cliente elige en el panel:
 | Solo con link personal | cada invitado recibe `…/boda/sofi-y-ale?inv=juan-rodriguez-fpzv`; sin eso, pantalla de bloqueo |
 | Con PIN | uno para todos o uno por invitado; se pide antes de mostrar nada |
 
-**Lista cerrada** (`listaCerrada()` en src/acceso.js) = "Solo con link personal" o "PIN distinto para cada
-invitado": solo se entra con `?inv=<código>` de la lista (y su PIN). Con "Cualquiera con el link" o "PIN para
-todos", la lista de invitados (si está prendida) solo personaliza: con su link ve su nombre, pases y mesa.
-(ronda 16: antes la lista prendida siempre cerraba la invitación.)
+**Con la lista de invitados prendida la invitación es de LISTA CERRADA** (aunque el modo sea
+"cualquiera con el link"): solo se entra con `?inv=<código>` de la lista, y además el PIN si hay.
 Sin lista: abierta o un PIN para todos. El dueño entra siempre por `/acceso/<id>/dueno?k=<clave>`
 (o con la sesión): cookie `@dueno`, sus RSVP quedan con `prueba: 1` y se pueden borrar en Administración.
 La vista previa del panel (`/vista/<id>`) lleva `INVITACION_CONFIG.prueba`: el RSVP se recorre entero pero no se manda;

@@ -25,8 +25,6 @@ const linkDueno = (i = null) => {
 };
 const editarLista = () => ctx.editarLista?.();
 const conLista = () => !!(ctx.datos.acceso?.lista || ctx.datos.acceso?.modo === 'codigo' || (ctx.datos.acceso?.modo === 'pin' && ctx.datos.acceso?.pinPorInvitado));
-// Lista cerrada: solo se entra con el link personal (no hay link general para mandar)
-const cerrada = () => ctx.datos.acceso?.modo === 'codigo' || (ctx.datos.acceso?.modo === 'pin' && !!ctx.datos.acceso?.pinPorInvitado);
 const pinTodos = () => (ctx.datos.acceso?.modo === 'pin' && !ctx.datos.acceso?.pinPorInvitado ? ctx.datos.acceso?.pin : '');
 const pinDe = (i) => (ctx.datos.acceso?.modo === 'pin' ? (ctx.datos.acceso?.pinPorInvitado ? i.pin : ctx.datos.acceso?.pin) : '');
 const nombres = () => [ctx.datos.nombres?.a, ctx.datos.nombres?.b].filter(Boolean).join(' & ');
@@ -248,7 +246,7 @@ function editorTexto(clave, base, titulo, ayuda) {
 }
 function vistaEnviar() {
   if (!publicada()) return [tarjeta('Enviar la invitación', ctx.el('p', { class: 'ayuda' }, 'Cuando la invitación esté publicada, desde acá se envía por WhatsApp, se copia el link o se descarga el código QR.'))];
-  if (conLista() && cerrada()) return vistaEnviarLista();
+  if (conLista()) return vistaEnviarLista();
   const general = tarjeta('Enviar la invitación',
     ctx.el('p', { class: 'ad-link' }, link()), pinTodos() ? ctx.el('p', { class: 'ayuda' }, `PIN para todos: ${pinTodos()}`) : null,
     ctx.el('div', { class: 'ad-botones' },
@@ -258,8 +256,6 @@ function vistaEnviar() {
       boton('Copiar link', () => copiar(link(), 'Link copiado'), 'btn btn-sec'),
       boton('Código QR', () => mostrarQR(link(), 'Código QR de la invitación'), 'btn btn-sec')),
     editorTexto('textoWa', TEXTO_WA, 'Mensaje de WhatsApp', 'Se puede cambiar a gusto. {link} es el link de la invitación, {nombres} los de ustedes y {cierre} la fecha límite para confirmar.'));
-  // Con lista abierta: el link general y además los links personales (con su nombre, pases y mesa)
-  if (conLista()) return [general, ...vistaEnviarLista().slice(1)];
   return [general];
 }
 // Con lista de invitados la invitación es de LISTA CERRADA: no hay link general para mandar,
