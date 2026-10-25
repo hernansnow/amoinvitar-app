@@ -206,8 +206,8 @@ function pasosInvitacion({ tipo, modelo }) {
     },
     { id: 'invitados', titulo: 'Lista de invitados', interruptor: 'acceso.lista', nivelPaso: 'premium',
       fijoSi: { o: [{ campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] },
-      motivo: 'Queda activada porque se eligió link personal o PIN por invitado.',
-      ayudaSeccion: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. Con la lista activada es una lista cerrada: solo entra quien tiene su link personal. Para familias, un solo link y cada integrante confirma por separado.',
+      motivo: 'Queda prendida porque se eligió "Solo con link personal" o un PIN por invitado (lista cerrada).',
+      ayudaSeccion: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. Arriba se elige si además se puede entrar con el link general o si es una lista cerrada (solo con link personal). Para familias, un solo link y cada integrante confirma por separado.',
       campos: [
         ...CAMPOS_ACCESO,
         { id: 'invitados', tipo: 'invitados', etiqueta: 'Invitados', sinEtiqueta: true, si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
@@ -615,16 +615,13 @@ export function edicionCerrada(datos, ahora = new Date()) {
 
 // ── Quién puede ver la invitación (al principio de Lista de invitados) ──
 // "siempre": se puede cambiar aunque la lista esté apagada (el PIN para todos no necesita lista)
-const conLista = { campo: 'acceso.lista' };
 const CAMPOS_ACCESO = [
-  { id: 'acceso.modo', tipo: 'opciones', etiqueta: 'Quién puede ver la invitación', defecto: 'abierta', siempre: true, valores: [
-    { v: 'abierta', etiqueta: 'Cualquiera con el link', ayuda: 'Sin seguridad. Lo más simple para compartir.' },
-    { v: 'codigo', etiqueta: 'Solo con link personal', ayuda: 'Cada invitado recibe su propio link. Sin él, la invitación se ve bloqueada.',
-      requiere: conLista, motivo: 'Requiere la lista de invitados: prenderla con el interruptor de arriba ("Mostrar en la invitación").' },
-    { v: 'pin', etiqueta: 'Con PIN', ayuda: 'Se pide un PIN de 4 números antes de mostrar la invitación.' },
+  { id: 'acceso.modo', tipo: 'opciones', etiqueta: 'Quién puede ver la invitación', defecto: 'abierta', siempre: true, rearmar: true, valores: [
+    { v: 'abierta', etiqueta: 'Cualquiera con el link', ayuda: 'Sin seguridad. Con la lista de invitados prendida, cada uno además tiene su link personal con su nombre, pases y mesa.' },
+    { v: 'codigo', etiqueta: 'Solo con link personal (lista cerrada)', ayuda: 'Solo entran los invitados de la lista, cada uno con su propio link. Prende la lista de invitados.' },
+    { v: 'pin', etiqueta: 'Con PIN', ayuda: 'Se pide un PIN de 4 números antes de mostrar la invitación. No necesita lista de invitados.' },
   ] },
-  { id: 'acceso.pinPorInvitado', tipo: 'switch', etiqueta: 'Un PIN distinto para cada invitado', ayuda: 'Apagado: un solo PIN para todos.', rearmar: true, siempre: true, si: { campo: 'acceso.modo', es: 'pin' },
-    requiere: conLista, motivo: 'Requiere la lista de invitados: prenderla con el interruptor de arriba.' },
+  { id: 'acceso.pinPorInvitado', tipo: 'switch', etiqueta: 'Un PIN distinto para cada invitado (lista cerrada)', ayuda: 'Cada invitado entra con su link personal y su PIN; prende la lista de invitados. Apagado: un solo PIN para todos.', rearmar: true, siempre: true, si: { campo: 'acceso.modo', es: 'pin' } },
   { id: 'acceso.pin', tipo: 'texto', etiqueta: 'PIN para todos', max: 4, patron: '^[0-9]{4}$', placeholder: '1234', siempre: true, si: [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] },
 ];
 
