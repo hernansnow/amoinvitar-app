@@ -184,7 +184,8 @@ Migración `0002_invitados_extra.sql` (columnas nuevas en `invitados`): `integra
 
 ## Accesos y páginas sueltas (ronda 13)
 
-- **Idioma y seguridad** va justo antes de **Lista de invitados** (el PIN y el link personal dependen de la lista).
+- (ronda 15) **Quién puede ver la invitación** está al principio de **Lista de invitados** (campos `siempre: true`, editables con la lista apagada) y el paso **Idioma** quedó solo, antes del link, con un botón a Idioma adicional (nota `estilo: 'boton'`).
+- (ronda 15) Lista: casillas separadas **Familias** y **Teléfonos**. Ejemplo de número según la zona del evento (`public/panel/prefijos.json`, generado con `scripts/prefijos.py`); sin código de país se completa solo (en Argentina saca el 15 y suma el 9). La zona del evento ya se elige sola con la del visitante (`request.cf.timezone`) y se puede cambiar.
 - **Accesos** (Administración → Accesos): titular (`cliente`, quien compró) + `pareja` (1, solo bodas) + hasta 3 `admin`
   (wedding planner, organizador…). `GET/POST/DELETE /api/panel/:id/accesos`; los cambian el titular, la pareja o quien
   tiene la clave del panel. Al sumar a alguien le llega un mail (`mailNuevoAcceso`) para entrar con su mail o Google.

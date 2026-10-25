@@ -276,6 +276,7 @@ const TRAZOS = {
   diseno: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2 0-1.4-1.3-1.6-1.3-3s1.3-2 3-2h1.6c2 0 3.7-1.4 3.7-3.5C21 6 17 3 12 3Z"/><circle cx="7.5" cy="10.5" r="1.2"/><circle cx="10.5" cy="6.8" r="1.2"/><circle cx="15" cy="7" r="1.2"/>',
   idiomaAdicional: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.7 3 2.7 15 0 18M12 3c-2.7 3-2.7 15 0 18"/>',
   seguridad: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  idioma: '<path d="M4 5h9M8.5 3v2M6 5c.6 3.5 3 6.5 6 8M11 5c-.8 4-3.6 7-7 9"/><path d="M13 21l4-10 4 10M14.5 17.5h5"/>',
   publicar: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
   camara: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
   centrar: '<circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
@@ -784,6 +785,31 @@ function campoSlug(c, valor, alCambiar) {
 }
 let mostrarSlugOcupado = () => {};
 
+// Prefijo telefónico y número de ejemplo según el país / zona horaria del evento (scripts/prefijos.py)
+let PREFIJOS = null;
+const cargarPrefijos = () => (PREFIJOS ? Promise.resolve(PREFIJOS) : fetch('/panel/prefijos.json').then((r) => r.json()).then((x) => (PREFIJOS = x)).catch(() => (PREFIJOS = {})));
+const prefijoEvento = () => PREFIJOS?.[datos.zonaHoraria] || null;
+const ZONA_NOMBRE = () => {
+  const c = S.esquema?.pasos?.flatMap((p) => p.campos || []).find((x) => x.id === 'zonaHoraria');
+  return c?.valores?.find((z) => z.v === datos.zonaHoraria)?.pais || 'el país del evento';
+};
+// Un número sin código de país se completa con el del evento (sin el 0 del principio; en Argentina, sin el 15 y con el 9 de los celulares)
+function telInternacional(t) {
+  let n = String(t || '').trim();
+  if (!n) return '';
+  if (n.startsWith('+')) return '+' + n.slice(1).replace(/\D/g, '');
+  if (n.startsWith('00')) return '+' + n.slice(2).replace(/\D/g, '');
+  const p = prefijoEvento();
+  n = n.replace(/\D/g, '').replace(/^0+/, '');
+  if (!p || !n) return n;
+  if (p.cod === '+54') {
+    // Celular argentino escrito como característica + 15 + número (ej. 11 15 5555-1234): se saca el 15
+    if (n.length === 12) for (const c of [2, 3, 4]) if (n.substr(c, 2) === '15') { n = n.slice(0, c) + n.slice(c + 2); break; }
+    if (!n.startsWith('9')) n = `9${n}`;
+  }
+  return p.cod + n;
+}
+
 function campoInvitados() {
   const caja = el('div');
   let lista = S.invitados.map((i) => ({ ...i }));
@@ -803,13 +829,16 @@ function campoInvitados() {
   const desdeAgenda = async () => {
     try {
       const cs = await navigator.contacts.select(['name', 'tel'], { multiple: true });
-      sumar(cs.map((c) => ({ nombre: String((c.name || [])[0] || '').slice(0, 80), telefono: String((c.tel || [])[0] || '').replace(/[^\d+]/g, ''), pases: 0, mesa: '' })));
+      sumar(cs.map((c) => ({ nombre: String((c.name || [])[0] || '').slice(0, 80), telefono: telInternacional((c.tel || [])[0]), pases: 0, mesa: '' })));
     } catch { /* canceló */ }
   };
-  let verMas = lista.some((i) => i.integrantes || i.telefono);
+  // Dos opciones independientes: familias (un link para varios) y teléfonos (WhatsApp directo)
+  let verFamilias = lista.some((i) => i.integrantes);
+  let verTel = lista.some((i) => i.telefono);
+  if (!PREFIJOS) cargarPrefijos().then(() => dibujar());
   archivo.addEventListener('change', async () => {
     const a = archivo.files[0]; if (!a) return;
-    try { sumar(await leerPlanilla(a)); } catch (e) { aviso(e.message || 'No se pudo leer el archivo', true); }
+    try { sumar((await leerPlanilla(a)).map((i) => ({ ...i, telefono: telInternacional(i.telefono) }))); } catch (e) { aviso(e.message || 'No se pudo leer el archivo', true); }
     archivo.value = '';
   });
   const dibujar = () => {
@@ -818,25 +847,30 @@ function campoInvitados() {
       el('td', {}, el('input', { type: 'text', value: i.nombre, 'aria-label': 'Nombre', oninput: (e) => { i.nombre = e.target.value; guardarLista(); } })),
       el('td', {}, el('input', { type: 'number', class: 'num', min: 0, max: 50, value: i.pases ?? 0, 'aria-label': 'Pases extra', oninput: (e) => { i.pases = e.target.value; guardarLista(); } })),
       el('td', {}, el('input', { type: 'text', class: 'num', value: i.mesa ?? '', 'aria-label': 'Mesa', oninput: (e) => { i.mesa = e.target.value; guardarLista(); } })),
-      verMas ? el('td', {}, el('input', { type: 'text', class: 'ancho', value: i.integrantes ?? '', placeholder: 'Solo si es familia: Juan, Ana…', 'aria-label': 'Integrantes', oninput: (e) => { i.integrantes = e.target.value; guardarLista(); } })) : null,
-      verMas ? el('td', {}, el('input', { type: 'tel', class: 'tel', value: i.telefono ?? '', placeholder: '+34…', 'aria-label': 'Teléfono', oninput: (e) => { i.telefono = e.target.value; guardarLista(); } })) : null,
+      verFamilias ? el('td', {}, el('input', { type: 'text', class: 'ancho', value: i.integrantes ?? '', placeholder: 'Solo si es familia: Juan, Ana…', 'aria-label': 'Integrantes', oninput: (e) => { i.integrantes = e.target.value; guardarLista(); } })) : null,
+      verTel ? el('td', {}, el('input', { type: 'tel', class: 'tel', value: i.telefono ?? '', placeholder: prefijoEvento()?.ej || '+34 612345678', 'aria-label': 'Teléfono', inputmode: 'tel',
+        oninput: (e) => { i.telefono = e.target.value; guardarLista(); },
+        onblur: (e) => { const v = telInternacional(e.target.value); if (v !== e.target.value) { e.target.value = v; i.telefono = v; guardarLista(); } } })) : null,
       pinVisible ? el('td', { class: 'pin' }, i.pin || '…') : null,
       el('td', { class: 'acciones-fila' },
         el('button', { type: 'button', class: 'btn-icono', title: 'Quitar', onclick: () => { lista.splice(n, 1); dibujar(); guardarLista(); } }, '✕'))));
     caja.replaceChildren(
       el('div', { class: 'envolver-tabla' }, el('table', { class: 'tabla-invitados' },
-        el('thead', {}, el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Pases extra'), el('th', {}, 'Mesa'), verMas ? el('th', {}, 'Integrantes (familia)') : null, verMas ? el('th', {}, 'WhatsApp') : null, pinVisible ? el('th', {}, 'PIN') : null, el('th', {}, ''))),
+        el('thead', {}, el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Pases extra'), el('th', {}, 'Mesa'), verFamilias ? el('th', {}, 'Integrantes (familia)') : null, verTel ? el('th', {}, 'WhatsApp') : null, pinVisible ? el('th', {}, 'PIN') : null, el('th', {}, ''))),
         el('tbody', {}, filas))),
       el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { lista.push({ nombre: '', pases: 0 }); dibujar(); caja.querySelector('tbody tr:last-child input')?.focus(); } }, '＋ Agregar invitado')),
-      el('label', { class: 'casilla' }, el('input', { type: 'checkbox', checked: verMas, onchange: (e) => { verMas = e.target.checked; dibujar(); } }),
-        el('span', {}, 'Familias y teléfonos', el('small', {}, ' · un link para toda la familia (cada uno confirma por separado) y el WhatsApp directo a su número'))),
+      el('div', { class: 'casillas-lista' },
+        el('label', { class: 'casilla' }, el('input', { type: 'checkbox', checked: verFamilias, onchange: (e) => { verFamilias = e.target.checked; dibujar(); } }),
+          el('span', {}, 'Familias', el('small', {}, ' · un link para toda la familia; cada integrante confirma por separado'))),
+        el('label', { class: 'casilla' }, el('input', { type: 'checkbox', checked: verTel, onchange: (e) => { verTel = e.target.checked; dibujar(); } }),
+          el('span', {}, 'Teléfonos', el('small', {}, ' · el WhatsApp sale directo a su número')))),
       el('div', { class: 'subir-excel' },
         el('label', { class: 'btn btn-chico' }, archivo, '⬆ Subir Excel, CSV o contactos (.vcf)'),
         hayAgenda ? el('button', { type: 'button', class: 'btn btn-chico', onclick: desdeAgenda }, '👥 Elegir de mis contactos') : null,
         el('a', { class: 'btn btn-sec btn-chico', href: '/panel/plantilla-invitados.xlsx', download: 'invitados.xlsx' }, 'Descargar planilla modelo')),
       el('p', { class: 'ayuda' }, 'Columnas: nombre, pases extra y mesa (y, si se quiere, integrantes y teléfono). Si la planilla tiene títulos ("Nombre", "Pases", "Mesa", "Integrantes", "Teléfono"…) se reconocen solos, en cualquier orden.'),
       el('p', { class: 'ayuda' }, hayAgenda ? 'Con "Elegir de mis contactos" se suman nombre y teléfono desde la agenda del celular.' : 'Contactos del iPhone: en la app Contactos, mantener apretada una lista (o un contacto) → Exportar → guardar el archivo .vcf y subirlo acá.'),
-      el('p', { class: 'ayuda' }, 'Teléfono con código de país (+34, +54…) para que el WhatsApp salga directo a su número.'),
+      verTel ? el('p', { class: 'ayuda' }, `Teléfono con código de país${prefijoEvento() ? ` (${prefijoEvento().cod} es el de ${ZONA_NOMBRE()})` : ''}. Si se escribe sin código, se completa solo con el del país del evento.`) : null,
       el('p', { class: 'ayuda' }, `${lista.length} invitados · ${lista.reduce((s, i) => s + Math.max(1, String(i.integrantes || '').split(',').filter((x) => x.trim()).length) + (parseInt(i.pases, 10) || 0), 0)} personas`));
   };
   dibujar();
@@ -1018,6 +1052,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
       if (c.estilo === 'linea') return el('hr', { class: 'separador' });
       if (c.estilo === 'etiqueta') return el('div', { class: 'etiqueta' }, c.texto);
       if (c.estilo === 'ayuda') return el('p', { class: 'ayuda' }, c.texto);
+      if (c.estilo === 'boton') return el('div', { class: 'nota nota-boton' }, el('p', {}, c.texto), el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => irA(c.irA) }, c.boton));
       return el('p', { class: c.estilo === 'subtitulo' ? 'subtitulo-nota' : 'nota' }, c.texto);
     default: return el('span', {}, '');
   }
@@ -1342,13 +1377,16 @@ function dibujarPaso() {
   const apagada = !activo ? el('div', { class: 'tarjeta nota apagada-aviso' }, p.complemento ? `${p.titulo} es un complemento: al prenderlo se suma al total.` : 'Esta sección está apagada: no se ve en la invitación.', ' ',
     el('button', { type: 'button', class: 'btn btn-chico', disabled: p.complemento && esGratis(), onclick: () => prenderPaso(p, true), html: `${icono('prender', 15)}<span>Prender</span>` })) : null;
   const motivo = p.fijoSi && cumple(p.fijoSi) ? el('p', { class: 'motivo' }, p.motivo) : null;
-  const cuerpo = el('div', { class: `tarjeta${activo ? '' : ' atenuada'}` }, p.campos.map((c) => campo(c, leer(datos, c.id), (v, op) => cambio(c.id, v, op))));
+  // Campos "siempre": se editan aunque la sección esté apagada (p. ej. quién puede ver la invitación)
+  const siempre = p.campos.filter((c) => c.siempre);
+  const arriba = siempre.length ? el('div', { class: 'tarjeta' }, siempre.map((c) => campo(c, leer(datos, c.id), (v, op) => cambio(c.id, v, op)))) : null;
+  const cuerpo = el('div', { class: `tarjeta${activo ? '' : ' atenuada'}` }, p.campos.filter((c) => !c.siempre).map((c) => campo(c, leer(datos, c.id), (v, op) => cambio(c.id, v, op))));
   // Apagada: no se puede editar ni subir nada hasta prenderla
   if (!activo) { cuerpo.inert = true; cuerpo.setAttribute('aria-disabled', 'true'); }
   f.replaceChildren(...[
     el('div', { class: 'paso-titulo' }, el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'mostrar' }, apagar, el('span', { class: 'lado' }, T('Mostrar en la invitación'))) : null, plegar),
       el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, insigniaNivel(p.nivel))),
-    ayudaSeccion, motivo, banderaGuardar(), apagada,
+    ayudaSeccion, motivo, banderaGuardar(), arriba, apagada,
     el('div', { id: 'faltan-aca' }),
     cuerpo,
     el('div', { class: 'navegar solo-escritorio' },
@@ -1436,10 +1474,10 @@ const MANUAL = [
   ['Fotos y encuadre', 'Después de subir una foto se elige qué parte se ve. En la portada, el punto mueve los recortes del celular y de la computadora a la vez; cada marco se puede mover solo. En el celular, mantener apretado un instante antes de arrastrar.'],
   ['Lugar y fecha', 'Con el link de Google Maps se arma solo el mapa y el botón "¿Cómo llegar?". En Google Maps: buscar el lugar, tocar Compartir y Copiar link.'],
   ['Confirmación e invitados', 'La confirmación se cierra sola en la fecha límite o al llegar al aforo. Con la lista de invitados, cada uno recibe su link personal con su nombre, pases y mesa.'],
-  ['Idiomas', 'El idioma principal se elige en "Idioma y seguridad". Con un idioma adicional, cada invitado ve la invitación en el suyo y puede cambiarlo desde el botón flotante (con la bandera elegida para cada idioma). Los textos se ajustan con "Editar textos en…" y se pueden sumar hasta tres idiomas.'],
+  ['Idiomas', 'El idioma principal se elige en "Idioma". Con un idioma adicional, cada invitado ve la invitación en el suyo y puede cambiarlo desde el botón flotante (con la bandera elegida para cada idioma). Los textos se ajustan con "Editar textos en…" y se pueden sumar hasta tres idiomas.'],
   ['Seguridad y lista cerrada', 'Con la lista de invitados la invitación es de lista cerrada: solo se entra con el link personal (y el PIN, si hay). Los dueños la ven siempre con "Ver la invitación" desde Administración; lo que confirmen ahí queda como prueba y se puede borrar.'],
   ['Publicar', 'Al tocar Publicar se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link y se puede seguir editando. Ya publicada, el botón dice Actualizar.'],
-  ['Lista de invitados', 'Para familias: un solo link y cada integrante confirma por separado. Con el teléfono, el WhatsApp sale directo a su número; los contactos se suman desde la agenda (Android) o con el archivo .vcf (iPhone). Si el invitado vuelve a abrir su link, ve lo que respondió y puede cambiarlo. "Enviar a todos" (en Enviar) y "Recordar a todos" (en Respuestas) abren WhatsApp con el mensaje de cada uno, uno tras otro.'],
+  ['Lista de invitados', 'Al principio se elige quién puede ver la invitación (link, link personal o PIN). Para familias: un solo link y cada integrante confirma por separado. Con el teléfono, el WhatsApp sale directo a su número; los contactos se suman desde la agenda (Android) o con el archivo .vcf (iPhone). Si el invitado vuelve a abrir su link, ve lo que respondió y puede cambiarlo. "Enviar a todos" (en Enviar) y "Recordar a todos" (en Respuestas) abren WhatsApp con el mensaje de cada uno, uno tras otro.'],
   ['Llegadas', 'El día del evento: cada invitado muestra su pase de entrada (QR) y quien recibe lo escanea con el link de la recepción, o lo busca por nombre. En Administración → Llegadas se ve en vivo quién llegó.'],
   ['Administración', 'Resumen con la cuenta regresiva; Enviar (WhatsApp, link, QR o los links personales); Respuestas con filtros, recordatorios y descarga en Excel o PDF (casilla "Solo confirmados"); Mensajes; Canciones (pasarlas a una playlist de Spotify); Mesas (arrastrar invitados entre mesas, croquis y el QR "Buscá tu mesa" para la entrada); Llegadas; Álbum de fotos; Accesos (la pareja y hasta 3 administradores, cada uno con su mail). En Enviar se ve quién abrió su link y quién no.'],
 ];

@@ -206,9 +206,10 @@ function pasosInvitacion({ tipo, modelo }) {
     },
     { id: 'invitados', titulo: 'Lista de invitados', interruptor: 'acceso.lista', nivelPaso: 'premium',
       fijoSi: { o: [{ campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] },
-      motivo: 'Queda activada porque en Idioma y seguridad se eligió link personal o PIN por invitado.',
+      motivo: 'Queda activada porque se eligió link personal o PIN por invitado.',
       ayudaSeccion: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. Con la lista activada es una lista cerrada: solo entra quien tiene su link personal. Para familias, un solo link y cada integrante confirma por separado.',
       campos: [
+        ...CAMPOS_ACCESO,
         { id: 'invitados', tipo: 'invitados', etiqueta: 'Invitados', sinEtiqueta: true, si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
         { id: 'nota.invitadosApagada', tipo: 'nota', texto: 'Activar la sección para cargar la lista (a mano o con un Excel).', si: [{ campo: 'acceso.lista', no: true }, { campo: 'acceso.modo', no: 'codigo' }, { o: [{ campo: 'acceso.modo', no: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] }] },
       ] },
@@ -417,22 +418,13 @@ function pasoIdiomaAdicional(base, datos) {
   };
 }
 
-// ── Idioma principal y seguridad (obligatoria) ───────────────────────
-const conLista = { campo: 'acceso.lista' };
-const pasoSeguridad = {
-  id: 'seguridad', titulo: 'Idioma y seguridad', obligatoria: true,
+// ── Idioma principal (obligatorio) ────────────────────────────────────
+// La seguridad ("Quién puede ver la invitación") vive al principio de Lista de invitados
+const pasoIdioma = {
+  id: 'idioma', titulo: 'Idioma', obligatoria: true,
   campos: [
     { id: 'variante', tipo: 'idioma', etiqueta: 'Idioma principal de la invitación', idiomas: IDIOMAS_BASE, variantes: VARIANTES_ES, defecto: 'es', rearmar: true },
-    { id: 'separador.seguridad', tipo: 'nota', estilo: 'linea' },
-    { id: 'acceso.modo', tipo: 'opciones', etiqueta: 'Quién puede ver la invitación', defecto: 'abierta', valores: [
-      { v: 'abierta', etiqueta: 'Cualquiera con el link', ayuda: 'Sin seguridad. Lo más simple para compartir.' },
-      { v: 'codigo', etiqueta: 'Solo con link personal', ayuda: 'Cada invitado recibe su propio link. Sin él, la invitación se ve bloqueada.',
-        requiere: conLista, motivo: 'Requiere la lista de invitados: activar la sección "Lista de invitados".', irA: 'invitados' },
-      { v: 'pin', etiqueta: 'Con PIN', ayuda: 'Se pide un PIN de 4 números antes de mostrar la invitación.' },
-    ] },
-    { id: 'acceso.pinPorInvitado', tipo: 'switch', etiqueta: 'Un PIN distinto para cada invitado', ayuda: 'Apagado: un solo PIN para todos.', rearmar: true, si: { campo: 'acceso.modo', es: 'pin' },
-      requiere: conLista, motivo: 'Requiere la lista de invitados: activar la sección "Lista de invitados".', irA: 'invitados' },
-    { id: 'acceso.pin', tipo: 'texto', etiqueta: 'PIN para todos', max: 4, patron: '^[0-9]{4}$', placeholder: '1234', si: [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] },
+    { id: 'nota.idiomaAdicional', tipo: 'nota', estilo: 'boton', texto: '¿Invitados que hablan otro idioma? Con un idioma adicional, cada uno ve la invitación en el suyo.', boton: 'Sumar un idioma adicional →', irA: 'idiomaAdicional' },
   ],
 };
 
@@ -621,6 +613,21 @@ export function edicionCerrada(datos, ahora = new Date()) {
   return ahora > limite;
 }
 
+// ── Quién puede ver la invitación (al principio de Lista de invitados) ──
+// "siempre": se puede cambiar aunque la lista esté apagada (el PIN para todos no necesita lista)
+const conLista = { campo: 'acceso.lista' };
+const CAMPOS_ACCESO = [
+  { id: 'acceso.modo', tipo: 'opciones', etiqueta: 'Quién puede ver la invitación', defecto: 'abierta', siempre: true, valores: [
+    { v: 'abierta', etiqueta: 'Cualquiera con el link', ayuda: 'Sin seguridad. Lo más simple para compartir.' },
+    { v: 'codigo', etiqueta: 'Solo con link personal', ayuda: 'Cada invitado recibe su propio link. Sin él, la invitación se ve bloqueada.',
+      requiere: conLista, motivo: 'Requiere la lista de invitados: prenderla con el interruptor de arriba ("Mostrar en la invitación").' },
+    { v: 'pin', etiqueta: 'Con PIN', ayuda: 'Se pide un PIN de 4 números antes de mostrar la invitación.' },
+  ] },
+  { id: 'acceso.pinPorInvitado', tipo: 'switch', etiqueta: 'Un PIN distinto para cada invitado', ayuda: 'Apagado: un solo PIN para todos.', rearmar: true, siempre: true, si: { campo: 'acceso.modo', es: 'pin' },
+    requiere: conLista, motivo: 'Requiere la lista de invitados: prenderla con el interruptor de arriba.' },
+  { id: 'acceso.pin', tipo: 'texto', etiqueta: 'PIN para todos', max: 4, patron: '^[0-9]{4}$', placeholder: '1234', siempre: true, si: [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] },
+];
+
 // ── Entrada principal ─────────────────────────────────────────────────
 // producto: 'invitacion' | 'a-medida' | 'std-web' | 'std-tarjeta' | …
 export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false }) {
@@ -629,12 +636,13 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   }
   const m = producto === 'a-medida' ? MODELO_A_MEDIDA : modelo;
   const base = pasosInvitacion({ tipo, modelo: m });
-  // Idioma y seguridad va justo antes de la lista de invitados: el PIN y el link personal dependen de ella
-  const iLista = base.findIndex((p) => p.id === 'invitados');
-  const conSeguridad = iLista >= 0 ? [...base.slice(0, iLista), pasoSeguridad, ...base.slice(iLista)] : [...base, pasoSeguridad];
+  // Sin lista de invitados en el modelo (a medida, etc.), la seguridad va sola antes del idioma
+  const conAcceso = base.some((p) => p.id === 'invitados') ? [] : [{ id: 'seguridad', titulo: 'Seguridad', obligatoria: true, campos: CAMPOS_ACCESO.map((c) => ({ ...c, siempre: false })) }];
   const pasos = [
     ...(producto === 'a-medida' ? [pasoBrief({ aMedida })] : []),
-    ...conSeguridad,
+    ...base,
+    ...conAcceso,
+    pasoIdioma,
     pasoPublicar(tipo),
     // Complementos: aparte, después de una línea y el título "Complementos" en el menú
     ...(producto === 'invitacion' && m?.tarjetas?.std ? [{ ...pasoTarjeta('std', m), separado: true }] : []),

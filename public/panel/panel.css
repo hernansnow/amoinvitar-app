@@ -867,3 +867,5 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-resp-msg { margin: 0; font-size: .82rem; font-style: italic; color: #444; }
 .ad-resp .btn { justify-self: start; }
 .ad-cabeza { flex-wrap: wrap; gap: 8px; } .ad-cabeza h1 { min-width: 0; } @media (max-width: 380px) { .ad-cabeza .ad-ico { display: none; } }
+.casillas-lista { display: grid; gap: 8px; margin: 6px 0 10px; }
+.nota-boton { display: grid; gap: 8px; justify-items: start; } .nota-boton p { margin: 0; }
