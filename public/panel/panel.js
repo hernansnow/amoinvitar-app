@@ -1338,7 +1338,8 @@ function prenderPaso(p, on) {
   cambio(`secciones.${p.seccion}`, on, { rearmar: true });
 }
 function interruptorPaso(p) {
-  if (p.sinInterruptor || (!p.seccion && !p.interruptor && !p.obligatoria)) return el('span');
+  // Las secciones obligatorias (y las que no se apagan) no llevan interruptor: siempre están
+  if (p.sinInterruptor || p.obligatoria || (!p.seccion && !p.interruptor)) return el('span');
   const fijo = p.obligatoria || (p.fijoSi && cumple(p.fijoSi));
   const sinComplementos = p.complemento && esGratis();
   const chk = el('input', { type: 'checkbox', role: 'switch', 'aria-label': `${pasoActivo(p) ? 'Apagar' : 'Prender'} ${p.titulo}`, disabled: fijo || sinComplementos,
@@ -1354,7 +1355,7 @@ function dibujarPasos() {
   const pasos = S.esquema.pasos;
   nav.replaceChildren(
     el('div', { class: 'pasos-cabeza' }, el('strong', {}, 'Pasos'), el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Cerrar', onclick: cerrarPasos }, '✕')),
-    ...pasos.flatMap((p, i) => [p.separado ? el('hr', { class: 'pasos-division' }) : null, p.separado ? el('div', { class: 'pasos-subtitulo' }, 'Complementos') : null, el('div', { class: `paso-fila${pasoActivo(p) ? '' : ' apagado'}` },
+    ...pasos.flatMap((p, i) => [p.separado ? el('hr', { class: 'pasos-division' }) : null, p.separado ? el('div', { class: 'pasos-subtitulo' }, 'Complementos') : null, el('div', { class: `paso-fila${p.sinInterruptor || pasoActivo(p) ? '' : ' apagado'}` },
       el('button', { type: 'button', class: 'paso', 'aria-current': p.id === pasoActual?.id ? 'step' : null, onclick: () => { cerrarPasos(); if (document.body.classList.contains('editor-plegado')) plegarEditor(false); irA(p.id); } },
         el('span', { class: 'num', title: `Paso ${i + 1}`, html: icono(p.id, 15) || String(i + 1) }), el('span', { class: 'nombre' }, p.titulo, (p.sinInterruptor ? null : insigniaNivel(p.nivel))),
         conFaltas.has(p.id) ? el('span', { class: 'falta', 'aria-label': 'Faltan datos' }) : null),
