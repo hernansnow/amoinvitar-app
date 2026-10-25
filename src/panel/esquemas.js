@@ -204,14 +204,13 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'celebracion.foto', tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: siFotos('lugares') },
       ],
     },
-    { id: 'invitados', titulo: 'Lista de invitados', interruptor: 'acceso.lista', nivelPaso: 'premium',
-      fijoSi: { o: [{ campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] },
-      motivo: 'Queda activada porque se eligió link personal o PIN por invitado.',
-      ayudaSeccion: 'Cada invitado recibe su link personal y ve su nombre, pases y mesa. Con la lista activada es una lista cerrada: solo entra quien tiene su link personal. Para familias, un solo link y cada integrante confirma por separado.',
+    // El interruptor no se muestra: la lista se prende eligiendo "Lista de invitados" o "Lista + PIN"
+    { id: 'invitados', titulo: 'Invitados y acceso', interruptor: 'acceso.lista', sinInterruptor: true, nivelPaso: 'premium',
+      ayudaSeccion: 'Elegir quién puede entrar. Con una lista, cada invitado recibe su link personal (con su nombre, pases y mesa) y abajo se carga la lista.',
       campos: [
         ...CAMPOS_ACCESO,
-        { id: 'invitados', tipo: 'invitados', etiqueta: 'Invitados', sinEtiqueta: true, si: { o: [{ campo: 'acceso.lista' }, { campo: 'acceso.modo', es: 'codigo' }, [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', es: true }]] } },
-        { id: 'nota.invitadosApagada', tipo: 'nota', texto: 'Activar la sección para cargar la lista (a mano o con un Excel).', si: [{ campo: 'acceso.lista', no: true }, { campo: 'acceso.modo', no: 'codigo' }, { o: [{ campo: 'acceso.modo', no: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] }] },
+        { id: 'separador.lista', tipo: 'nota', estilo: 'linea', si: esLista },
+        { id: 'invitados', tipo: 'invitados', etiqueta: 'Invitados', sinEtiqueta: true, si: esLista },
       ] },
     {
       id: 'rsvp', seccion: 'rsvp', titulo: 'Confirmación', obligatoria: true,
@@ -222,7 +221,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'rsvp.aforo', tipo: 'numero', etiqueta: 'Aforo máximo', min: 1, max: 5000, ancho: 'mitad', placeholder: 'Sin límite', ayuda: 'Al llegar al límite se cierra (cuenta invitados, acompañantes y niños).' },
         { id: 'rsvp.acompanantes', tipo: 'contador', etiqueta: 'Cantidad de acompañantes que puede sumar cada invitado', min: 0, max: 10, defecto: 0,
           ayuda: 'Con la lista de invitados, los acompañantes salen de los pases de cada uno.',
-          si: [{ campo: 'acceso.lista', no: true }, { campo: 'acceso.modo', no: 'codigo' }, { o: [{ campo: 'acceso.modo', no: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] }] },
+          si: { campo: 'acceso.lista', no: true } },
         { id: 'rsvp.preguntas.comida', tipo: 'switch', etiqueta: 'Preguntar restricciones alimentarias', ayuda: 'Si va con acompañantes, puede aclarar si alguno tiene otra restricción.' },
         { id: 'rsvp.preguntas.alcohol', tipo: 'switch', etiqueta: 'Preguntar si toma alcohol' },
         { id: 'rsvp.preguntas.ninos', tipo: 'switch', etiqueta: 'Preguntar si va con niños y cuántos serán' },
@@ -613,19 +612,42 @@ export function edicionCerrada(datos, ahora = new Date()) {
   return ahora > limite;
 }
 
-// ── Quién puede ver la invitación (al principio de Lista de invitados) ──
-// "siempre": se puede cambiar aunque la lista esté apagada (el PIN para todos no necesita lista)
-const conLista = { campo: 'acceso.lista' };
+// ── ¿Quién puede entrar a la invitación? (una sola pregunta, 4 opciones) ──
+// Es lo único que decide el cliente; los campos de antes (acceso.modo, acceso.lista,
+// acceso.pinPorInvitado) se derivan solos (aplicarTipoAcceso) y son los que usa src/acceso.js.
+//   abierta   cualquiera con el link                       Basic
+//   pin       un PIN para todos                            Basic
+//   lista     link personal; solo entran los de la lista   Premium
+//   listaPin  link personal + PIN propio de cada uno       Premium
+export const TIPOS_ACCESO = ['abierta', 'pin', 'lista', 'listaPin'];
+export function tipoAcceso(a = {}) {
+  if (TIPOS_ACCESO.includes(a.tipo)) return a.tipo;
+  // Invitaciones de antes: se pasan a la opción equivalente
+  const conLista = a.lista || a.modo === 'codigo' || (a.modo === 'pin' && a.pinPorInvitado);
+  if (conLista) return a.modo === 'pin' ? 'listaPin' : 'lista';
+  return a.modo === 'pin' ? 'pin' : 'abierta';
+}
+export function aplicarTipoAcceso(datos) {
+  const a = (datos.acceso ??= {});
+  const t = tipoAcceso(a);
+  Object.assign(a, {
+    tipo: t,
+    modo: { abierta: 'abierta', pin: 'pin', lista: 'codigo', listaPin: 'pin' }[t],
+    lista: t === 'lista' || t === 'listaPin',
+    pinPorInvitado: t === 'listaPin',
+  });
+  return datos;
+}
+const esLista = { o: [{ campo: 'acceso.tipo', es: 'lista' }, { campo: 'acceso.tipo', es: 'listaPin' }] };
 const CAMPOS_ACCESO = [
-  { id: 'acceso.modo', tipo: 'opciones', etiqueta: 'Quién puede ver la invitación', defecto: 'abierta', siempre: true, valores: [
-    { v: 'abierta', etiqueta: 'Cualquiera con el link', ayuda: 'Sin seguridad. Lo más simple para compartir.' },
-    { v: 'codigo', etiqueta: 'Solo con link personal', ayuda: 'Cada invitado recibe su propio link. Sin él, la invitación se ve bloqueada.',
-      requiere: conLista, motivo: 'Requiere la lista de invitados: prenderla con el interruptor de arriba ("Mostrar en la invitación").' },
-    { v: 'pin', etiqueta: 'Con PIN', ayuda: 'Se pide un PIN de 4 números antes de mostrar la invitación.' },
+  { id: 'acceso.tipo', tipo: 'opciones', etiqueta: '¿Quién puede entrar a la invitación?', defecto: 'abierta', rearmar: true, tarjetasAcceso: true, valores: [
+    { v: 'abierta', icono: '🔓', etiqueta: 'Abierta', ayuda: 'Entra cualquiera que tenga el link.', nivel: 'basic' },
+    { v: 'pin', icono: '🔑', etiqueta: 'Con PIN', ayuda: 'Con el link, pone un PIN de 4 números (el mismo para todos).', nivel: 'basic' },
+    { v: 'lista', icono: '👥', etiqueta: 'Lista de invitados', ayuda: 'Cada uno recibe su link personal, con su nombre, pases y mesa. Solo entran los de la lista.', nivel: 'premium' },
+    { v: 'listaPin', icono: '👥🔑', etiqueta: 'Lista + PIN', ayuda: 'Igual que la anterior, y además cada uno pone su propio PIN.', nivel: 'premium' },
   ] },
-  { id: 'acceso.pinPorInvitado', tipo: 'switch', etiqueta: 'Un PIN distinto para cada invitado', ayuda: 'Apagado: un solo PIN para todos.', rearmar: true, siempre: true, si: { campo: 'acceso.modo', es: 'pin' },
-    requiere: conLista, motivo: 'Requiere la lista de invitados: prenderla con el interruptor de arriba.' },
-  { id: 'acceso.pin', tipo: 'texto', etiqueta: 'PIN para todos', max: 4, patron: '^[0-9]{4}$', placeholder: '1234', siempre: true, si: [{ campo: 'acceso.modo', es: 'pin' }, { campo: 'acceso.pinPorInvitado', no: true }] },
+  { id: 'acceso.pin', tipo: 'texto', etiqueta: 'PIN para todos', max: 4, patron: '^[0-9]{4}$', placeholder: '1234', ancho: 'mitad', si: { campo: 'acceso.tipo', es: 'pin' } },
+  { id: 'acceso.ejemplo', tipo: 'ejemploAcceso' },
 ];
 
 // ── Entrada principal ─────────────────────────────────────────────────
@@ -637,7 +659,8 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   const m = producto === 'a-medida' ? MODELO_A_MEDIDA : modelo;
   const base = pasosInvitacion({ tipo, modelo: m });
   // Sin lista de invitados en el modelo (a medida, etc.), la seguridad va sola antes del idioma
-  const conAcceso = base.some((p) => p.id === 'invitados') ? [] : [{ id: 'seguridad', titulo: 'Seguridad', obligatoria: true, campos: CAMPOS_ACCESO.map((c) => ({ ...c, siempre: false })) }];
+  const conAcceso = base.some((p) => p.id === 'invitados') ? [] : [{ id: 'seguridad', titulo: 'Acceso', obligatoria: true,
+    campos: CAMPOS_ACCESO.map((c) => (c.id === 'acceso.tipo' ? { ...c, valores: c.valores.filter((o) => !o.v.startsWith('lista')) } : c)) }];
   const pasos = [
     ...(producto === 'a-medida' ? [pasoBrief({ aMedida })] : []),
     ...base,
@@ -744,7 +767,7 @@ export function limpiarDatos(esquema, datos, previos = {}) {
       if (on !== undefined) escribir(salida, paso.interruptor, !!on);
     }
     for (const c of paso.campos) {
-      if (c.cerrado || ['invitados', 'nota', 'vistaCompartir'].includes(c.tipo)) continue;
+      if (c.cerrado || ['invitados', 'nota', 'vistaCompartir', 'ejemploAcceso'].includes(c.tipo)) continue;
       const v = leer(datos, c.id);
       if (['foto', 'fotoCompartir'].includes(c.tipo) && c.encuadre) {
         const pos = leer(datos, `${c.id}Pos`);
@@ -762,6 +785,11 @@ export function limpiarDatos(esquema, datos, previos = {}) {
     else if (l && 'fecha' in l) delete l.inicio;
     if (l) delete l.fin; // la duración sale del tipo de evento
   }
+  // Un panel viejo (abierto antes del cambio) manda modo/lista/pinPorInvitado: se traduce a la opción
+  if (datos.acceso && !TIPOS_ACCESO.includes(datos.acceso.tipo) && ('modo' in datos.acceso || 'lista' in datos.acceso)) {
+    salida.acceso = { ...(salida.acceso || {}), tipo: tipoAcceso({ ...datos.acceso, tipo: undefined }) };
+  }
+  aplicarTipoAcceso(salida);
   return salida;
 }
 

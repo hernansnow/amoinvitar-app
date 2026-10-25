@@ -22,7 +22,7 @@ import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin,
 import { puertaHTML } from './componentes/puerta.js';
 import { mesaHTML } from './componentes/mesa.js';
 import { checkinHTML } from './componentes/checkin.js';
-import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA } from './panel/esquemas.js';
+import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
 import { MODELOS, nombreModelo } from './modelos.js';
 import { MODELOS_GRATIS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
@@ -480,7 +480,7 @@ async function apiPanel(env, request, url, partes) {
     const dic = diccionario(ev.tipo, v);
     return json({
       evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
-      esquema, datos: ev.datos, textos: dic, faltan: faltantes(esquema, ev.datos),
+      esquema, datos: aplicarTipoAcceso(structuredClone(ev.datos)), textos: dic, faltan: faltantes(esquema, ev.datos),
       // Textos de cada idioma adicional (para traducir en el panel)
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,

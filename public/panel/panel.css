@@ -869,3 +869,13 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-cabeza { flex-wrap: wrap; gap: 8px; } .ad-cabeza h1 { min-width: 0; } @media (max-width: 380px) { .ad-cabeza .ad-ico { display: none; } }
 .casillas-lista { display: grid; gap: 8px; margin: 6px 0 10px; }
 .nota-boton { display: grid; gap: 8px; justify-items: start; } .nota-boton p { margin: 0; }
+/* ¿Quién puede entrar? */
+.opciones-acceso { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.opcion-acceso { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 14px; border: 1.5px solid var(--borde); border-radius: 14px; background: #fff; cursor: pointer; transition: border-color .15s, background .15s; }
+.opcion-acceso input { position: absolute; opacity: 0; pointer-events: none; }
+.opcion-acceso.elegida { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 8%, #fff); box-shadow: inset 0 0 0 1px var(--acento); }
+.opcion-acceso:focus-within { outline: 2px solid color-mix(in srgb, var(--acento) 40%, transparent); outline-offset: 2px; }
+.oa-icono { font-size: 1.5rem; line-height: 1; }
+.oa-texto strong { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.oa-texto small { display: block; color: var(--suave); margin-top: 3px; font-size: .85rem; line-height: 1.35; }
+.ejemplo-acceso { margin: 4px 0 0; padding: 10px 12px; border-radius: 10px; background: #f6f5f3; font-size: .85rem; color: var(--suave); overflow-wrap: anywhere; }

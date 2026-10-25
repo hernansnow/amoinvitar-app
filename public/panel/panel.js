@@ -78,6 +78,11 @@ function cambio(ruta, valor, { rearmar = false } = {}) {
     if (actual === '' || actual === antes) { escribir(datos, e.id, valor); e.input.value = valor; }
   }
   escribir(datos, ruta, valor);
+  if (ruta === 'acceso.tipo') {
+    const a = (datos.acceso ??= {});
+    Object.assign(a, { modo: { abierta: 'abierta', pin: 'pin', lista: 'codigo', listaPin: 'pin' }[valor] || 'abierta',
+      lista: valor === 'lista' || valor === 'listaPin', pinPorInvitado: valor === 'listaPin' });
+  }
   if (ruta === 'meta.descripcion' && $('#compartir-desc')) $('#compartir-desc').textContent = valor || String(S.textos?.['meta.descripcion'] || '');
   if (ruta === 'std.tipo' || ruta === 'std.diseno') escribir(datos, 'std.tarjeta.textos', {});
   if (ruta.startsWith('nombres.')) $('#titulo-evento').textContent = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ') || 'Mi invitación';
@@ -785,6 +790,21 @@ function campoSlug(c, valor, alCambiar) {
 }
 let mostrarSlugOcupado = () => {};
 
+// Lo que recibe un invitado según la opción elegida (con el primero de la lista, o un ejemplo)
+function ejemploAcceso() {
+  const t = datos.acceso?.tipo || 'abierta';
+  const base = `amoinvitar.com/${S.evento.tipo}/${datos.slug || S.evento.slug || 'tu-link'}`;
+  const i = (S.invitados || [])[0] || { nombre: 'Juan', codigo: 'juan-xk2p', pin: '4821' };
+  const quien = String(i.nombre || 'Juan').split(' ')[0];
+  const txt = {
+    abierta: `Todos reciben: ${base}`,
+    pin: `Todos reciben: ${base} · PIN ${datos.acceso?.pin || '1234'}`,
+    lista: `${quien} recibe: ${base}?inv=${i.codigo || 'juan-xk2p'}`,
+    listaPin: `${quien} recibe: ${base}?inv=${i.codigo || 'juan-xk2p'} · PIN ${i.pin || '4821'}`,
+  }[t];
+  return el('p', { class: 'ejemplo-acceso' }, el('span', { 'aria-hidden': 'true' }, '💬 '), txt);
+}
+
 // Prefijo telefónico y número de ejemplo según el país / zona horaria del evento (scripts/prefijos.py)
 let PREFIJOS = null;
 const cargarPrefijos = () => (PREFIJOS ? Promise.resolve(PREFIJOS) : fetch('/panel/prefijos.json').then((r) => r.json()).then((x) => (PREFIJOS = x)).catch(() => (PREFIJOS = {})));
@@ -1000,6 +1020,17 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
         const principal = String(leer(datos, c.distintoDe) || 'es').slice(0, 2);
         c = { ...c, valores: c.valores.filter((o) => o.v !== principal) };
       }
+      if (c.tarjetasAcceso) {
+        // ¿Quién puede entrar? Cuatro tarjetas con ícono, plan y lo que vive el invitado
+        const nombre = `r-${idHtml}`;
+        return el('div', { class: 'opciones-acceso', role: 'radiogroup' }, c.valores.map((o) => {
+          const i = el('input', { type: 'radio', name: nombre, value: o.v, checked: o.v === actual, disabled: dis });
+          i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
+          return el('label', { class: `opcion-acceso${o.v === actual ? ' elegida' : ''}` }, i,
+            el('span', { class: 'oa-icono', 'aria-hidden': 'true' }, o.icono),
+            el('span', { class: 'oa-texto' }, el('strong', {}, o.etiqueta, ' ', insigniaNivel(o.nivel)), el('small', {}, o.ayuda)));
+        }));
+      }
       if (c.valores.length <= 4) {
         const nombre = `r-${idHtml}`;
         return el('div', { class: 'opciones', role: 'radiogroup' }, c.valores.map((o) => {
@@ -1048,6 +1079,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     case 'lista': return campoLista(c, valor, alCambiar);
     case 'slug': return campoSlug(c, valor, alCambiar);
     case 'invitados': return campoInvitados();
+    case 'ejemploAcceso': return ejemploAcceso();
     case 'nota':
       if (c.estilo === 'linea') return el('hr', { class: 'separador' });
       if (c.estilo === 'etiqueta') return el('div', { class: 'etiqueta' }, c.texto);
@@ -1306,7 +1338,7 @@ function prenderPaso(p, on) {
   cambio(`secciones.${p.seccion}`, on, { rearmar: true });
 }
 function interruptorPaso(p) {
-  if (!p.seccion && !p.interruptor && !p.obligatoria) return el('span');
+  if (p.sinInterruptor || (!p.seccion && !p.interruptor && !p.obligatoria)) return el('span');
   const fijo = p.obligatoria || (p.fijoSi && cumple(p.fijoSi));
   const sinComplementos = p.complemento && esGratis();
   const chk = el('input', { type: 'checkbox', role: 'switch', 'aria-label': `${pasoActivo(p) ? 'Apagar' : 'Prender'} ${p.titulo}`, disabled: fijo || sinComplementos,
@@ -1324,7 +1356,7 @@ function dibujarPasos() {
     el('div', { class: 'pasos-cabeza' }, el('strong', {}, 'Pasos'), el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Cerrar', onclick: cerrarPasos }, '✕')),
     ...pasos.flatMap((p, i) => [p.separado ? el('hr', { class: 'pasos-division' }) : null, p.separado ? el('div', { class: 'pasos-subtitulo' }, 'Complementos') : null, el('div', { class: `paso-fila${pasoActivo(p) ? '' : ' apagado'}` },
       el('button', { type: 'button', class: 'paso', 'aria-current': p.id === pasoActual?.id ? 'step' : null, onclick: () => { cerrarPasos(); if (document.body.classList.contains('editor-plegado')) plegarEditor(false); irA(p.id); } },
-        el('span', { class: 'num', title: `Paso ${i + 1}`, html: icono(p.id, 15) || String(i + 1) }), el('span', { class: 'nombre' }, p.titulo, insigniaNivel(p.nivel)),
+        el('span', { class: 'num', title: `Paso ${i + 1}`, html: icono(p.id, 15) || String(i + 1) }), el('span', { class: 'nombre' }, p.titulo, (p.sinInterruptor ? null : insigniaNivel(p.nivel))),
         conFaltas.has(p.id) ? el('span', { class: 'falta', 'aria-label': 'Faltan datos' }) : null),
       interruptorPaso(p))]).filter(Boolean));
   const i = pasos.indexOf(pasoActual);
@@ -1369,8 +1401,8 @@ function dibujarPaso() {
   const f = $('#formulario');
   const i = S.esquema.pasos.indexOf(p);
   const anterior = S.esquema.pasos[i - 1], siguiente = S.esquema.pasos[i + 1];
-  const activo = pasoActivo(p);
-  const apagar = !p.obligatoria && (p.seccion || p.interruptor) ? interruptorPaso(p) : null;
+  const activo = p.sinInterruptor || pasoActivo(p);
+  const apagar = !p.obligatoria && !p.sinInterruptor && (p.seccion || p.interruptor) ? interruptorPaso(p) : null;
   const plegar = el('button', { type: 'button', class: 'btn-redondo chico solo-escritorio', id: 'btn-plegar', 'aria-label': 'Achicar el panel', title: 'Achicar el panel (vista previa más grande)', onclick: () => plegarEditor(true) },
     el('span', { html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' }));
   const ayudaSeccion = p.ayudaSeccion ? el('p', { class: 'ayuda ayuda-seccion' }, p.ayudaSeccion) : null;
@@ -1385,7 +1417,7 @@ function dibujarPaso() {
   if (!activo) { cuerpo.inert = true; cuerpo.setAttribute('aria-disabled', 'true'); }
   f.replaceChildren(...[
     el('div', { class: 'paso-titulo' }, el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'mostrar' }, apagar, el('span', { class: 'lado' }, T('Mostrar en la invitación'))) : null, plegar),
-      el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, insigniaNivel(p.nivel))),
+      el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, (p.sinInterruptor ? null : insigniaNivel(p.nivel)))),
     ayudaSeccion, motivo, banderaGuardar(), arriba, apagada,
     el('div', { id: 'faltan-aca' }),
     cuerpo,
@@ -1475,9 +1507,9 @@ const MANUAL = [
   ['Lugar y fecha', 'Con el link de Google Maps se arma solo el mapa y el botón "¿Cómo llegar?". En Google Maps: buscar el lugar, tocar Compartir y Copiar link.'],
   ['Confirmación e invitados', 'La confirmación se cierra sola en la fecha límite o al llegar al aforo. Con la lista de invitados, cada uno recibe su link personal con su nombre, pases y mesa.'],
   ['Idiomas', 'El idioma principal se elige en "Idioma". Con un idioma adicional, cada invitado ve la invitación en el suyo y puede cambiarlo desde el botón flotante (con la bandera elegida para cada idioma). Los textos se ajustan con "Editar textos en…" y se pueden sumar hasta tres idiomas.'],
-  ['Seguridad y lista cerrada', 'Con la lista de invitados la invitación es de lista cerrada: solo se entra con el link personal (y el PIN, si hay). Los dueños la ven siempre con "Ver la invitación" desde Administración; lo que confirmen ahí queda como prueba y se puede borrar.'],
+  ['Invitados y acceso', 'Una sola pregunta: ¿quién puede entrar? Abierta (cualquiera con el link), Con PIN (uno para todos), Lista de invitados (cada uno con su link personal; solo entran los de la lista) o Lista + PIN (además, cada uno con su PIN). Los dueños la ven siempre con "Ver la invitación" desde Administración; lo que confirmen ahí queda como prueba y se puede borrar.'],
   ['Publicar', 'Al tocar Publicar se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link y se puede seguir editando. Ya publicada, el botón dice Actualizar.'],
-  ['Lista de invitados', 'Al principio se elige quién puede ver la invitación (link, link personal o PIN). Para familias: un solo link y cada integrante confirma por separado. Con el teléfono, el WhatsApp sale directo a su número; los contactos se suman desde la agenda (Android) o con el archivo .vcf (iPhone). Si el invitado vuelve a abrir su link, ve lo que respondió y puede cambiarlo. "Enviar a todos" (en Enviar) y "Recordar a todos" (en Respuestas) abren WhatsApp con el mensaje de cada uno, uno tras otro.'],
+  ['Lista de invitados', 'En "Invitados y acceso" se elige quién puede entrar: Abierta, Con PIN, Lista de invitados o Lista + PIN. Con lista, cada invitado recibe su link personal. Para familias: un solo link y cada integrante confirma por separado. Con el teléfono, el WhatsApp sale directo a su número; los contactos se suman desde la agenda (Android) o con el archivo .vcf (iPhone). Si el invitado vuelve a abrir su link, ve lo que respondió y puede cambiarlo. "Enviar a todos" (en Enviar) y "Recordar a todos" (en Respuestas) abren WhatsApp con el mensaje de cada uno, uno tras otro.'],
   ['Llegadas', 'El día del evento: cada invitado muestra su pase de entrada (QR) y quien recibe lo escanea con el link de la recepción, o lo busca por nombre. En Administración → Llegadas se ve en vivo quién llegó.'],
   ['Administración', 'Resumen con la cuenta regresiva; Enviar (WhatsApp, link, QR o los links personales); Respuestas con filtros, recordatorios y descarga en Excel o PDF (casilla "Solo confirmados"); Mensajes; Canciones (pasarlas a una playlist de Spotify); Mesas (arrastrar invitados entre mesas, croquis y el QR "Buscá tu mesa" para la entrada); Llegadas; Álbum de fotos; Accesos (la pareja y hasta 3 administradores, cada uno con su mail). En Enviar se ve quién abrió su link y quién no.'],
 ];

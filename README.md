@@ -194,6 +194,16 @@ Migración `0002_invitados_extra.sql` (columnas nuevas en `invitados`): `integra
   y `--fuente-texto`. **Regla para todos los modelos**: tener `tema.css` con esas variables y `tarjetas.fuentes.css`
   en modelo.json, o fijar `"acceso": { "css": [...] }` en modelo.json.
 
+## Invitados y acceso (ronda 16)
+
+Una sola pregunta en el panel: `acceso.tipo` = `abierta` | `pin` | `lista` | `listaPin` (tarjetas con ícono y plan).
+`aplicarTipoAcceso()` (src/panel/esquemas.js) deriva al guardar los campos de siempre que usa src/acceso.js:
+abierta → modo abierta · pin → modo pin (PIN para todos) · lista → modo codigo + lista · listaPin → modo pin + PIN por
+invitado + lista. Con lista la invitación es cerrada (solo con link personal). Las invitaciones de antes se traducen solas
+(`tipoAcceso()`), también si llega el formato viejo de un panel abierto antes del cambio. El paso "Invitados y acceso"
+no tiene interruptor (`sinInterruptor`): la lista se prende eligiendo una opción de lista. Ejemplo de lo que recibe el
+invitado: campo `ejemploAcceso`.
+
 ## Reglas para convertir los demás modelos (ronda 5, 6 y 7)
 
 - **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,
