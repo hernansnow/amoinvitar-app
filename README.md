@@ -208,6 +208,12 @@ invitado: campo `ejemploAcceso`.
 
 - **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,
   justo después, la portada del Basic del mismo modelo con `data-no="cuenta.portada"` (se copia tal cual de `index-basic.html`).
+- **Tarjetas de agradecimiento con foto**: `public/comun/tarjetas/gracias/catalogo.json` (8 diseños; 1, 4, 5, 6 y 7 usan
+  fondos de las Save The Date con foto). Variables propias: {citaMomentos} {citaFelices} {graciasAcomp} {teQueremos} {quince}.
+  El motor de tarjetas (`public/panel/tarjeta.js`) acepta además alinear "der", opacidad, sombra, foto.filtro y capas con "excepto".
+- **Álbum de Albunear**: el Worker tiene un enlace interno (`services` → `ALBUNEAR`, entrypoint `Socios` del Worker de Albunear)
+  que da un código de regalo Classic por cada invitación Deluxe (GET /api/panel/:id/albunear). Si el enlace no está, el panel
+  muestra los links generales.
 - **Tarjetas con foto** (Save The Date): no dependen del modelo; están en `public/comun/tarjetas/foto/catalogo.json`
   (fondos con el hueco transparente, muestra para elegir y versión para dos nombres o uno). Faltan los diseños 5, 7 y 8:
   vinieron con los textos puestos, hacen falta los fondos limpios. Al diseño 3 en 15 años le falta el adorno de la tiara.

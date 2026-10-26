@@ -383,9 +383,20 @@ const pasoTarjeta = (clase, modelo) => (clase === 'std' ? {
   id: 'agradecimiento', seccion: 'agradecimiento', complemento: true, titulo: 'Tarjeta de agradecimiento',
   campos: [
     { id: 'nota.agradecimiento', tipo: 'nota', estilo: 'ayuda', texto: 'Para agradecer a los invitados después del evento: un mensaje, los nombres y una foto.' },
+    // Con tarjeta propia en el modelo se elige entre esa y las con foto; si no, van las con foto
+    ...(modelo?.tarjetas?.agradecimiento ? [{ id: 'agradecimiento.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'foto', rearmar: true, valores: [
+      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'agradecimiento' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'agradecimiento' },
+    ] }] : []),
+    { id: 'agradecimiento.diseno', tipo: 'disenoFoto', carpeta: 'gracias', etiqueta: 'Diseño', defecto: DISENOS_GRACIAS[0].v, valores: DISENOS_GRACIAS, rearmar: true,
+      ...(modelo?.tarjetas?.agradecimiento ? { si: { campo: 'agradecimiento.tipo', no: 'tarjeta' } } : {}) },
     { id: 'agradecimiento.tarjeta', tipo: 'tarjeta', clase: 'agradecimiento', etiqueta: 'Tarjeta', sinEtiqueta: true },
   ],
 });
+// Tarjetas de agradecimiento con foto (public/comun/tarjetas/gracias/catalogo.json)
+export const DISENOS_GRACIAS = [
+  { v: 'g1', etiqueta: 'Ramitas' }, { v: 'g2', etiqueta: 'Rosas' }, { v: 'g3', etiqueta: 'Columna' }, { v: 'g4', etiqueta: 'Corazón geométrico' },
+  { v: 'g5', etiqueta: 'Pinceladas' }, { v: 'g6', etiqueta: 'Encaje' }, { v: 'g7', etiqueta: 'Marco' }, { v: 'g8', etiqueta: 'Acuarela' },
+];
 
 // ── Complemento: idiomas adicionales, con todos los textos para personalizar en cada uno ──
 const NOMBRE_IDIOMA = Object.fromEntries(IDIOMAS_BASE.map((x) => [x.v, x.etiqueta]));
@@ -676,7 +687,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     ...(producto === 'invitacion' && m?.tarjetas?.std ? [{ ...pasoTarjeta('std', m), separado: true }] : []),
     { ...pasoDiseno(m), separado: !(producto === 'invitacion' && m?.tarjetas?.std) },
     pasoIdiomaAdicional(base, datos),
-    ...(producto === 'invitacion' && m?.tarjetas?.agradecimiento ? [pasoTarjeta('agradecimiento', m)] : []),
+    ...(producto === 'invitacion' ? [pasoTarjeta('agradecimiento', m)] : []),
   ];
   const cerrada = publicada && edicionCerrada(datos);
   return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin }) };

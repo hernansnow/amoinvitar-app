@@ -85,6 +85,7 @@ function cambio(ruta, valor, { rearmar = false } = {}) {
   }
   if (ruta === 'meta.descripcion' && $('#compartir-desc')) $('#compartir-desc').textContent = valor || String(S.textos?.['meta.descripcion'] || '');
   if (ruta === 'std.tipo' || ruta === 'std.diseno') escribir(datos, 'std.tarjeta.textos', {});
+  if (ruta === 'agradecimiento.tipo' || ruta === 'agradecimiento.diseno') escribir(datos, 'agradecimiento.tarjeta.textos', {});
   if (ruta.startsWith('nombres.')) $('#titulo-evento').textContent = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ') || 'Mi invitación';
   if (rearmar) { dibujarPaso(); dibujarPasos(); }
   else actualizarCondiciones();
@@ -1065,7 +1066,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
       return el('div', { class: 'disenos-foto', role: 'radiogroup' }, c.valores.map((o) => {
         const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: o.v, checked: o.v === actual, disabled: dis });
         i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
-        return el('label', { class: 'diseno-foto' }, i, el('img', { src: `/comun/tarjetas/foto/${o.v}/muestra-${plural ? 'boda' : '15'}.jpg`, alt: '', loading: 'lazy' }), el('span', {}, o.etiqueta));
+        return el('label', { class: 'diseno-foto' }, i, el('img', { src: `/comun/tarjetas/${c.carpeta || 'foto'}/${o.v}/muestra-${plural ? 'boda' : '15'}.jpg`, alt: '', loading: 'lazy' }), el('span', {}, o.etiqueta));
       }));
     }
     case 'botonTextos': {
@@ -1172,20 +1173,27 @@ function varsTarjeta() {
     invitamosLinea: (plural ? f.invitamos.replace('Te invito', 'Te invitamos') : f.invitamos).replace(/\s*\n\s*/g, ' '),
     acompanar: plural ? 'Esperamos que nos puedas acompañar' : 'Espero que me puedas acompañar',
     exclamaCorta: S.evento.tipo === 'boda' || (plural && !FRASES[S.evento.tipo]) ? 'Nos casamos!' : S.evento.tipo === '15' ? 'Mis quince!' : f.exclama.replace(/^¡/, ''),
-    agendaFecha: 'Agenda la fecha',
+    // Agradecimiento
+    citaMomentos: '“Hay momentos en la vida que son especiales por sí solos. Compartirlos con las personas que queremos, los convierte en inolvidables”',
+    citaFelices: '“Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y los amigos más queridos.”',
+    graciasAcomp: plural ? '¡Gracias por acompañarnos y haber hecho que sea inolvidable para nosotros!' : '¡Gracias por acompañarme y haber hecho que sea inolvidable!',
+    teQueremos: plural ? '¡Te queremos!' : '¡Te quiero!', quince: S.evento.tipo === '15' ? '15' : '',
   };
 }
 // Catálogo de tarjetas con foto (se carga una vez)
-let catalogoFoto = null;
-const cargarCatalogoFoto = () => (catalogoFoto ??= fetch('/comun/tarjetas/foto/catalogo.json').then((r) => r.json()).catch(() => ({ disenos: [] })));
+const catalogos = {};
+const cargarCatalogo = (carpeta) => (catalogos[carpeta] ??= fetch(`/comun/tarjetas/${carpeta}/catalogo.json`).then((r) => r.json()).catch(() => ({ disenos: [] })));
 // El diseño que corresponde a la tarjeta: el del modelo o uno del catálogo con foto
 async function disenoTarjeta(c) {
   const t = S.modelo?.tarjetas;
-  if (c.clase === 'std' && leer(datos, 'std.tipo') === 'foto') {
-    const cat = await cargarCatalogoFoto();
-    const d = cat.disenos.find((x) => x.id === (leer(datos, 'std.diseno') || 'f1')) || cat.disenos[0];
+  // Con foto: la Save The Date si se eligió "Tarjeta con foto"; la de agradecimiento salvo que se elija la del modelo
+  const conFoto = c.clase === 'std' ? leer(datos, 'std.tipo') === 'foto' : leer(datos, 'agradecimiento.tipo') !== 'tarjeta' || !t?.agradecimiento;
+  if (conFoto) {
+    const carpeta = c.clase === 'std' ? 'foto' : 'gracias';
+    const cat = await cargarCatalogo(carpeta);
+    const d = cat.disenos.find((x) => x.id === leer(datos, `${c.clase}.diseno`)) || cat.disenos[0];
     if (!d) return null;
-    return { def: { ancho: d.ancho, alto: d.alto, fondo: d.fondo, fuentes: cat.fuentes }, diseno: d[datos.nombres?.b ? 'plural' : 'singular'], base: '/comun/tarjetas/foto' };
+    return { def: { ancho: d.ancho, alto: d.alto, fondo: d.fondo, fuentes: cat.fuentes }, diseno: d[datos.nombres?.b ? 'plural' : 'singular'], base: `/comun/tarjetas/${carpeta}` };
   }
   const diseno = c.clase === 'std' ? t?.std?.tarjeta : t?.agradecimiento;
   if (!diseno) return null;
