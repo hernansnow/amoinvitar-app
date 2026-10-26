@@ -146,6 +146,39 @@ function imprimir(titulo, html) {
     <script>setTimeout(()=>print(),300)<\/script></body></html>`);
   w.document.close();
 }
+// Libro de mensajes: una página diseñada (portada con los nombres y cada mensaje en una tarjeta),
+// lista para imprimir o guardar en PDF y regalar o guardar de recuerdo
+function libroMensajes(msgs) {
+  const w = window.open('', '_blank');
+  if (!w) { ctx.aviso('El navegador bloqueó la ventana: permitir ventanas emergentes', true); return; }
+  const o = location.origin;
+  const f = inicioEvento();
+  const fecha = f ? f.toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  const tarjetas = msgs.map((m) => `<article><p class="txt">${esc(m.texto)}</p><p class="de">${esc(m.nombre)}</p>${m.canciones.length ? `<p class="can">♫ ${esc(m.canciones.join(' · '))}</p>` : ''}</article>`).join('');
+  w.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Libro de mensajes · ${esc(nombres())}</title>
+    <link rel="stylesheet" href="${o}/comun/fonts/google/great-vibes+jost.css"><style>
+    @page { size: A4; margin: 14mm; }
+    * { box-sizing: border-box; } body { margin: 0; font: 15px/1.55 Jost, system-ui, sans-serif; color: #3a3f3c; background: #fbf9f5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .portada { min-height: 92vh; display: grid; place-content: center; text-align: center; gap: 10px; page-break-after: always; break-after: page; }
+    .portada small { letter-spacing: .35em; text-transform: uppercase; color: #8a8f8b; font-size: 12px; }
+    .portada h1 { font: 400 76px/1.1 'Great Vibes', cursive; color: #4e9c87; margin: 0; }
+    .portada p { margin: 0; color: #6b706c; } .portada .linea { width: 120px; height: 1px; background: #c9b98f; margin: 14px auto; }
+    .grilla { columns: 2; column-gap: 18px; padding: 10px 6px; }
+    article { break-inside: avoid; background: #fff; border-radius: 14px; padding: 22px 22px 18px; margin: 0 0 18px; box-shadow: 0 2px 10px rgba(0,0,0,.06); border-top: 3px solid #c9b98f; position: relative; }
+    article::before { content: '“'; position: absolute; top: -6px; left: 14px; font: 64px/1 Georgia, serif; color: #e3d9bf; }
+    .txt { font-style: italic; margin: 8px 0 12px; font-size: 16px; } .de { font: 400 28px/1 'Great Vibes', cursive; color: #4e9c87; margin: 0; text-align: right; }
+    .can { margin: 8px 0 0; font-size: 12px; color: #8a8f8b; text-align: right; }
+    .pie { text-align: center; color: #9aa09c; font-size: 11px; margin: 10px 0 0; }
+    @media screen { body { padding: 20px; } .aviso { position: sticky; top: 0; background: #4e9c87; color: #fff; padding: 10px 14px; border-radius: 10px; text-align: center; margin-bottom: 14px; } }
+    @media print { .aviso { display: none; } }
+    @media (max-width: 640px) { .grilla { columns: 1; } .portada h1 { font-size: 54px; } }
+    </style></head><body>
+    <div class="aviso">Para guardarlo: Imprimir → "Guardar como PDF"</div>
+    <section class="portada"><small>Libro de mensajes</small><h1>${esc(nombres())}</h1><div class="linea"></div><p>${esc(fecha)}</p><p>${msgs.length} ${msgs.length === 1 ? 'mensaje' : 'mensajes'} con cariño</p></section>
+    <section class="grilla">${tarjetas}</section>
+    <script>document.fonts.ready.then(() => setTimeout(() => print(), 400))<\/script></body></html>`);
+  w.document.close();
+}
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
 // ── Enviar en tanda ──
@@ -405,7 +438,7 @@ function vistaRespuestas() {
   return [
     numerosConteo(st),
     ctx.el('div', { class: 'ad-exportar' },
-      boton('Exportar Excel / CSV', () => exportar(soloVan.checked, 'csv'), 'btn btn-sec'), boton('Descargar PDF', () => exportar(soloVan.checked, 'pdf'), 'btn btn-sec'),
+      boton('Exportar Excel', () => exportar(soloVan.checked, 'csv'), 'btn btn-sec'), boton('Descargar PDF', () => exportar(soloVan.checked, 'pdf'), 'btn btn-sec'),
       ctx.el('label', { class: 'ad-check' }, soloVan, ' Solo confirmados')),
     tarjeta('Confirmaciones', ctx.el('div', { class: 'ad-barra' }, chips, ctx.el('div', { class: 'ad-barra-der' }, buscar, ordenar)), tabla, tarjetas),
     conLista() ? tarjeta(`Recordatorios (${pendientes.length} sin confirmar)`,
@@ -445,7 +478,7 @@ function vistaMensajes() {
     ctx.el('span', { class: `ad-msg-estado ${m.asiste ? 'si' : 'no'}` }, m.asiste ? 'Asiste' : 'No puede'));
   const lista = ctx.el('ul', { class: 'ad-msgs' }, msgs.map(item));
   const rueda = ctx.el('div', { class: 'ad-rueda', tabindex: '0', 'aria-label': 'Últimos mensajes' }, lista);
-  if (msgs.length > 4 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (msgs.length > 4) {
     lista.append(...msgs.map(item).map((li) => { li.setAttribute('aria-hidden', 'true'); return li; })); // copia para que el giro no tenga corte
     let quieto = 0, pos = 0;
     const parar = () => { quieto = Date.now() + 4000; };
@@ -461,9 +494,9 @@ function vistaMensajes() {
     requestAnimationFrame(girar);
   }
   return [tarjeta(`Mensajes (${msgs.length})`, destacado,
-    ctx.el('div', { class: 'ad-botones ad-mitades' },
-      boton('Descargar (Excel)', () => descargarCSV('mensajes.csv', ['Invitado', 'Asiste', 'Personas', 'Mensaje', 'Canción', 'Fecha'], msgs.map((m) => [m.nombre, m.asiste ? 'Sí' : 'No', m.asiste ? m.personas : 0, m.texto, m.canciones.join(' / '), fechaHora(m.fecha)])), 'btn btn-sec'),
-      boton('Descargar (PDF)', () => imprimir('Mensajes de los invitados', msgs.map((m) => `<div class="msg"><b>${esc(m.nombre)}</b>${esc(m.texto)}${m.canciones.length ? `<br><small>♫ ${esc(m.canciones.join(' / '))}</small>` : ''}</div>`).join('')), 'btn btn-sec')),
+    ctx.el('div', { class: 'ad-botones' },
+      boton('Libro de mensajes', () => libroMensajes(msgs), 'btn btn-chico'),
+      boton('Descargar (Excel)', () => descargarCSV('mensajes.csv', ['Invitado', 'Asiste', 'Personas', 'Mensaje', 'Canción', 'Fecha'], msgs.map((m) => [m.nombre, m.asiste ? 'Sí' : 'No', m.asiste ? m.personas : 0, m.texto, m.canciones.join(' / '), fechaHora(m.fecha)])), 'btn btn-sec btn-chico')),
     ctx.el('h3', { class: 'ad-subtitulo' }, 'Últimos mensajes'), rueda)];
 }
 
@@ -570,41 +603,48 @@ const albumActivo = () => ctx.datos.secciones?.album === true;
 const albumPropio = () => ctx.datos.album?.origen === 'propio';
 function vistaAlbum() {
   const caja = ctx.el('section', { class: 'ad-tarjeta ad-albunear' }, ctx.el('p', { class: 'ayuda' }, 'Cargando…'));
-  const permitido = ['premium', 'deluxe'].includes(ctx.S.plan?.plan) || !!ctx.S.usuario?.admin;
-  const interruptor = ctx.el('input', { type: 'checkbox', role: 'switch', checked: albumActivo(), disabled: !permitido });
-  interruptor.addEventListener('change', async () => {
-    try {
-      await ctx.api('/album', { method: 'POST', body: JSON.stringify({ activo: interruptor.checked }) });
-      ctx.datos.secciones = { ...(ctx.datos.secciones || {}), album: interruptor.checked };
-      if (interruptor.checked) { ctx.datos.secciones.instagram = false; ctx.datos.album = { ...(ctx.datos.album || {}), origen: 'albunear' }; }
-      ctx.aviso(interruptor.checked ? 'Álbum activado en la invitación' : 'Álbum desactivado');
-      ctx.redibujar();
-    } catch (e) { interruptor.checked = !interruptor.checked; ctx.aviso(e.message, true); }
-  });
-  const cabeza = ctx.el('div', { class: 'ad-alb-cabeza' }, ctx.el('img', { src: '/comun/img/albunear.svg', alt: 'Albunear', class: 'ad-alb-logo', width: 160, height: 50 }),
-    ctx.el('label', { class: 'ad-alb-switch' }, albumActivo() ? null : ctx.el('span', {}, 'Activar'), interruptor, ctx.el('span', { class: 'ad-alb-pista', 'aria-hidden': 'true' })));
+  const logo = ctx.el('img', { src: '/comun/img/albunear.svg', alt: 'Albunear', class: 'ad-alb-logo', width: 160, height: 50 });
   (async () => {
     let r = { incluido: false, crear: 'https://albunear.com/empezar', album: null };
     try { r = await ctx.api('/albunear'); } catch { /* sin conexión: quedan los links generales */ }
+    const deluxe = r.incluido || ctx.S.plan?.plan === 'deluxe';
+    const pie = ctx.el('p', { class: 'ad-alb-pie' }, 'No es obligatorio usar el álbum de Albunear: se puede sumar el link de otro proveedor en la sección "Álbum de fotos QR" de la invitación.');
+    if (!albumActivo() && deluxe) {
+      // Deluxe sin activar: se activa la sección con Albunear y se abre la creación del álbum (con el regalo)
+      const activar = async () => {
+        const w = window.open('', '_blank');
+        try {
+          await ctx.api('/album', { method: 'POST', body: JSON.stringify({ activo: true }) });
+          ctx.datos.secciones = { ...(ctx.datos.secciones || {}), album: true, instagram: false };
+          ctx.datos.album = { ...(ctx.datos.album || {}), origen: 'albunear' };
+          if (w) w.location = r.crear; else location.href = r.crear;
+          ctx.aviso('Álbum activado en la invitación'); ctx.redibujar();
+        } catch (e) { w?.close(); ctx.aviso(e.message, true); }
+      };
+      caja.replaceChildren(logo, ctx.el('h2', {}, 'Álbum de fotos compartido'),
+        ctx.el('p', { class: 'ad-alb-texto' }, 'Tu invitación Deluxe incluye el álbum QR Classic, totalmente gratis. ¡Activarlo para comenzar!'),
+        ctx.el('p', { class: 'ad-alb-nota' }, 'Con Albunear los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y ustedes las tienen todas en un solo lugar.'),
+        ctx.el('div', { class: 'ad-botones' }, boton('Activar y crear el álbum Classic', activar, 'btn btn-albunear')), pie);
+      return;
+    }
     if (!albumActivo()) {
-      caja.replaceChildren(cabeza, ctx.el('h2', {}, 'Álbum de fotos compartido'),
+      caja.replaceChildren(logo, ctx.el('h2', {}, 'Álbum de fotos compartido'),
         ctx.el('p', { class: 'ad-alb-texto' }, 'Con Albunear los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y ustedes las tienen todas en un solo lugar.'),
         ctx.el('p', { class: 'ad-alb-nota' }, ctx.el('span', { class: 'ad-alb-verde' }, 'Si la invitación es Deluxe, está incluido el paquete Classic de Albunear sin cargo.'), ctx.el('br'),
           'También se puede agregar a invitaciones Basic y Premium contratándolo en Albunear.', ctx.el('br'), ctx.el('strong', {}, '¡Hay planes gratis!')),
-        ctx.el('div', { class: 'ad-botones' }, enlace('Conocer Albunear', 'https://albunear.com', 'btn btn-albunear')),
-        ctx.el('p', { class: 'ad-alb-pie' }, 'No es obligatorio usar el álbum de Albunear: se puede sumar el link de otro proveedor en la sección "Álbum de fotos QR" de la invitación.'));
+        ctx.el('div', { class: 'ad-botones' }, enlace('Conocer Albunear', 'https://albunear.com', 'btn btn-albunear')), pie);
       return;
     }
     const creado = r.album;
-    caja.replaceChildren(...[cabeza, ctx.el('h2', {}, 'Álbum de fotos (Albunear)'),
+    caja.replaceChildren(...[logo, ctx.el('h2', {}, 'Álbum de fotos (Albunear)'),
       ctx.el('p', { class: 'ayuda' }, creado ? 'Las fotos y videos que suben los invitados se ven y se descargan desde el panel de Albunear.'
-        : r.incluido ? 'La invitación Deluxe incluye el álbum Classic de Albunear sin cargo. Al crearlo con este botón, el regalo ya va aplicado y el álbum aparece solo en la invitación. Para pasar después a Platinum se paga solo la diferencia.'
+        : deluxe ? 'La invitación Deluxe incluye el álbum Classic de Albunear sin cargo. Al crearlo con este botón, el regalo ya va aplicado y el álbum aparece solo en la invitación. Para pasar después a Platinum se paga solo la diferencia.'
           : 'Crear el álbum en Albunear (hay planes gratis) y después pegar su link en la sección "Álbum de fotos QR" de la invitación.'),
       ctx.el('div', { class: 'ad-botones' },
-        creado ? enlace('Abrir el panel de Albunear', creado.panel, 'btn btn-albunear') : enlace(r.incluido ? 'Crear el álbum (Classic incluido)' : 'Abrir Albunear', r.crear, 'btn btn-albunear'),
+        creado ? enlace('Abrir el panel de Albunear', creado.panel, 'btn btn-albunear') : enlace(deluxe ? 'Crear el álbum Classic' : 'Abrir Albunear', r.crear, 'btn btn-albunear'),
         creado ? enlace('Ver el álbum', creado.link, 'btn btn-sec') : null),
-      r.incluido && !r.conectado ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para activar el Classic incluido, escribir a hola@amoinvitar.com con el código de esta invitación.') : null,
-      creado && creado.plan !== 'platinum' && r.incluido ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para pasar a Platinum (fotos originales, 2 años, diseños exclusivos), desde el panel de Albunear se paga solo la diferencia.') : null,
+      deluxe && !r.conectado ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para activar el Classic incluido, escribir a hola@amoinvitar.com con el código de esta invitación.') : null,
+      creado && creado.plan !== 'platinum' && deluxe ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para pasar a Platinum (fotos originales, 2 años, diseños exclusivos), desde el panel de Albunear se paga solo la diferencia.') : null,
       ctx.el('p', { class: 'ad-alb-pie' }, 'Activo reemplaza Instagram Wall.')].filter(Boolean));
   })();
   return [caja];
@@ -724,8 +764,8 @@ function dibujar(caja) {
   // así el menú deslizable del celular no vuelve al principio
   let menu = caja.querySelector('.ad-menu');
   if (!menu) {
-    // Álbum: solo con la sección prendida y el álbum de Albunear (con un link propio no hay nada que administrar)
-    const verAlbum = albumActivo() && !albumPropio();
+    // Álbum: siempre, salvo que la sección use un link propio (ahí no hay nada que administrar)
+    const verAlbum = !(albumActivo() && albumPropio());
     if (!verAlbum && seccion === 'album') seccion = 'resumen';
     menu = ctx.el('nav', { class: 'ad-menu', 'aria-label': 'Administración' }, SECCIONES.filter(([id]) => id !== 'album' || verAlbum).map(([id, t]) => ctx.el('button', { type: 'button', class: 'ad-tab', 'data-id': id,
       onclick: () => { seccion = id; dibujar(caja); } }, t)));

@@ -65,13 +65,21 @@ function tamAjustado(def, t, valor, tam) {
 }
 
 // Texto final de cada elemento (lo que escribió el cliente o el del diseño)
+// Los nombres que van en textos separados (nombreA y nombreB, o los de un mismo "grupo") se achican
+// juntos, en la misma proporción: si uno no entra, el otro baja igual (ninguno parece más importante)
+const grupoDe = (t) => t.grupo || (/^nombre[AB]$/.test(t.id) ? 'nombres' : null);
 export function textosDe(diseno, v, vars, def) {
-  return diseno.textos.filter((t) => (!t.extra || v.extra) && (!t.opcional || v.opcionales?.[t.opcional] !== false)).map((t) => {
+  const lista = diseno.textos.filter((t) => (!t.extra || v.extra) && (!t.opcional || v.opcionales?.[t.opcional] !== false)).map((t) => {
     const p = v.textos?.[t.id] || {};
     const valor = p.texto ?? rellenar(t.texto, vars), escala = p.escala || 1;
     const base = (t.tamSolo && !String(valor).includes(' & ') ? t.tamSolo : t.tam) * escala;
-    return { ...t, valor, dx: p.dx || 0, dy: p.dy || 0, escala, tamFinal: tamAjustado(def, t, valor, base) };
+    const tamFinal = tamAjustado(def, t, valor, base);
+    return { ...t, valor, dx: p.dx || 0, dy: p.dy || 0, escala, tamFinal, ajuste: base ? tamFinal / base : 1 };
   });
+  const minimo = {};
+  for (const t of lista) { const g = grupoDe(t); if (g) minimo[g] = Math.min(minimo[g] ?? 1, t.ajuste); }
+  for (const t of lista) { const g = grupoDe(t); if (g) t.tamFinal = (t.tamFinal / t.ajuste) * minimo[g]; }
+  return lista;
 }
 const capasDe = (diseno, tipo) => (diseno.capas || []).filter((c) => (!c.tipos || c.tipos.includes(tipo)) && !(c.excepto || []).includes(tipo));
 

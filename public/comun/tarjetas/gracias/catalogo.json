@@ -245,7 +245,7 @@
       "tam": 230,
       "fuente": "dantina",
       "color": "#3a3a3a",
-      "ancho": 1500,
+      "ancho": 1150,
       "ajustar": true,
       "amp": {
        "tipo": "texto",
@@ -331,7 +331,7 @@
       "tam": 230,
       "fuente": "dantina",
       "color": "#3a3a3a",
-      "ancho": 1500,
+      "ancho": 1150,
       "ajustar": true,
       "amp": {
        "tipo": "texto",
@@ -1270,12 +1270,12 @@
      {
       "id": "nombres",
       "texto": "{nombres}",
-      "x": 863,
+      "x": 1000,
       "y": 2010,
       "tam": 200,
       "fuente": "pristina",
       "color": "#7a2848",
-      "ancho": 950,
+      "ancho": 620,
       "ajustar": true
      },
      {
@@ -1334,12 +1334,12 @@
      {
       "id": "nombres",
       "texto": "{nombres}",
-      "x": 863,
+      "x": 1000,
       "y": 2010,
       "tam": 200,
       "fuente": "pristina",
       "color": "#7a2848",
-      "ancho": 950,
+      "ancho": 620,
       "ajustar": true
      },
      {

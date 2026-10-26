@@ -104,7 +104,7 @@ async function guardar() {
     if (r.plan) {
       const antes = S.plan?.plan; S.plan = r.plan; pintarPlan();
       // La portada de Basic es más baja: con otro plan, el encuadre se redibuja con la medida nueva
-      if (antes && antes !== r.plan.plan && pasoActual?.id === 'portada') dibujarPaso();
+      if (antes && antes !== r.plan.plan && pasoActual?.id === 'portada' && !document.activeElement?.closest?.('#formulario input, #formulario textarea')) dibujarPaso();
     }
     if (r.textosIdiomas) S.textosIdiomas = r.textosIdiomas;
     // Si cambió el esquema (por ejemplo, un idioma adicional suma sus campos) se redibuja el paso
@@ -844,7 +844,17 @@ function campoInvitados() {
   let lista = S.invitados.map((i) => ({ ...i }));
   let t = null;
   const guardarLista = () => { clearTimeout(t); t = setTimeout(async () => {
-    try { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: lista }) }); lista = r.invitados; S.invitados = r.invitados; dibujar(); estado('Guardado ✓'); } catch { aviso('No se pudo guardar la lista', true); }
+    try {
+      const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: lista }) });
+      S.invitados = r.invitados;
+      // Sin volver a dibujar la tabla (si no, se pierde la celda en la que se está escribiendo):
+      // cada fila con nombre recibe su código y su PIN; las filas vacías quedan como están
+      const conNombre = lista.filter((i) => String(i.nombre || '').trim());
+      conNombre.forEach((i, k) => { const g = r.invitados[k]; if (g) Object.assign(i, { codigo: g.codigo, pin: g.pin }); });
+      caja.querySelectorAll('td.pin').forEach((td) => { const i = lista[Number(td.dataset.n)]; if (i) td.textContent = i.pin || '…'; });
+      const total = caja.querySelector('.total-lista'); if (total) total.textContent = resumenLista();
+      estado('Guardado ✓');
+    } catch { aviso('No se pudo guardar la lista', true); }
   }, 800); };
   const sumar = (filas) => {
     const nuevas = filas.filter((x) => x.nombre);
@@ -880,7 +890,7 @@ function campoInvitados() {
       verTel ? el('td', {}, el('input', { type: 'tel', class: 'tel', value: i.telefono ?? '', placeholder: prefijoEvento()?.ej || '+34 612345678', 'aria-label': 'Teléfono', inputmode: 'tel',
         oninput: (e) => { i.telefono = e.target.value; guardarLista(); },
         onblur: (e) => { const v = telInternacional(e.target.value); if (v !== e.target.value) { e.target.value = v; i.telefono = v; guardarLista(); } } })) : null,
-      pinVisible ? el('td', { class: 'pin' }, i.pin || '…') : null,
+      pinVisible ? el('td', { class: 'pin', 'data-n': n }, i.pin || '…') : null,
       el('td', { class: 'acciones-fila' },
         el('button', { type: 'button', class: 'btn-icono', title: 'Quitar', onclick: () => { lista.splice(n, 1); dibujar(); guardarLista(); } }, '✕'))));
     caja.replaceChildren(
@@ -900,8 +910,9 @@ function campoInvitados() {
       el('p', { class: 'ayuda' }, 'Columnas: nombre, pases extra y mesa (y, si se quiere, integrantes y teléfono). Si la planilla tiene títulos ("Nombre", "Pases", "Mesa", "Integrantes", "Teléfono"…) se reconocen solos, en cualquier orden.'),
       el('p', { class: 'ayuda' }, hayAgenda ? 'Con "Elegir de mis contactos" se suman nombre y teléfono desde la agenda del celular.' : 'Contactos del iPhone: en la app Contactos, mantener apretada una lista (o un contacto) → Exportar → guardar el archivo .vcf y subirlo acá.'),
       verTel ? el('p', { class: 'ayuda' }, `Teléfono con código de país${prefijoEvento() ? ` (${prefijoEvento().cod} es el de ${ZONA_NOMBRE()})` : ''}. Si se escribe sin código, se completa solo con el del país del evento.`) : null,
-      el('p', { class: 'ayuda' }, `${lista.length} invitados · ${lista.reduce((s, i) => s + Math.max(1, String(i.integrantes || '').split(',').filter((x) => x.trim()).length) + (parseInt(i.pases, 10) || 0), 0)} personas`));
+      el('p', { class: 'ayuda total-lista' }, resumenLista()));
   };
+  const resumenLista = () => `${lista.length} invitados · ${lista.reduce((s, i) => s + Math.max(1, String(i.integrantes || '').split(',').filter((x) => x.trim()).length) + (parseInt(i.pases, 10) || 0), 0)} personas`;
   dibujar();
   return caja;
 }
@@ -1601,10 +1612,19 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
       location.href = r.url;
     } catch (e) { error.textContent = e.message; boton.disabled = false; boton.textContent = plan.aPagar.eur ? 'Pagar y publicar' : 'Publicar'; }
   });
+  // Solo administradores: publicar sin cobrar (para probar; no genera factura)
+  const sinPagar = S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: async (e) => {
+    e.target.disabled = true;
+    try {
+      const r = await fetch('/api/tienda/comprar', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ borrador: { evento: id, clave }, medio: 'admin', sinPagar: true }) }).then(async (x) => ({ ok: x.ok, ...(await x.json()) }));
+      if (!r.ok || !r.url) throw new Error(r.error || 'No se pudo publicar');
+      location.href = r.url;
+    } catch (err) { error.textContent = err.message; e.target.disabled = false; }
+  } }, 'Publicar sin pagar (administración, prueba)') : null;
   abrirModal('Publicar la invitación', ...partes,
     mail ? el('label', { class: 'campo-modal' }, 'Mail para recibir el acceso y la factura', mail) : null,
     plan.aPagar.eur ? el('div', { class: 'campo-modal' }, 'Medio de pago', medios) : null,
-    plan.aPagar.eur ? cupon : null, error, boton,
+    plan.aPagar.eur ? cupon : null, error, boton, sinPagar,
     el('p', { class: 'ayuda' }, 'Después del pago la invitación queda publicada en su link y se puede seguir editando.'));
   if (plan.aPagar.eur) cotizar();
 }

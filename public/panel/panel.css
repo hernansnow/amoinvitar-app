@@ -989,3 +989,20 @@ body.modo-admin #btn-ojo { display: none !important; }
 }
 .tj-texto.der { text-align: right; justify-content: flex-end; }
 .precio-opcion { color: var(--acento); font-weight: 700; margin-left: 4px; }
+
+/* ── Ronda 18 ── */
+/* Computadora: modelo y plan a la izquierda, junto al nombre (como el diseño); acciones a la derecha */
+@media (min-width: 1024px) {
+  .barra .titulo { flex: 0 1 auto; min-width: 120px; max-width: 260px; }
+  .barra .acciones { margin-left: auto; }
+  /* En la administración no hay vista previa: sin celular/computadora ni pantalla completa */
+  body.modo-admin .barra .modo-vista, body.modo-admin #btn-completa { display: none !important; }
+}
+@media (max-width: 1023px) {
+  /* Nombres de la barra con aire a los costados */
+  .barra .titulo { padding: 0 10px; }
+  /* Sombra en la barra de abajo */
+  .barra-inferior { box-shadow: 0 -4px 14px rgba(0, 0, 0, .12); }
+  /* Con el panel agrandado del todo, no pisa "Editar invitación / Administración" */
+  .editor { margin-top: calc(min(var(--alto-previa, 40dvh), 16px) * -1); }
+}
