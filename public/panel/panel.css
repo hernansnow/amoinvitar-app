@@ -921,3 +921,69 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .barra-inferior .btn.nav-btn { border-radius: 999px !important; padding: 6px 20px !important; }
 body.modo-admin #btn-ojo { display: none !important; }
 @media (max-width: 1023px) { .barra .btn-ayuda { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .45); color: var(--acento-texto); } }
+
+/* ── Ronda 17: administración ── */
+.ad-cuenta div { background: #e8f2ee; }
+.ad-numero span { display: inline-flex; align-items: center; gap: 6px; }
+.ad-numero .ad-ico { display: inline-flex; }
+.ad-conteo { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ad-extras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ad-numero.canciones { background: #fffdf0; border-color: #f3edc9; }
+.ad-numero.mensajes { background: #fbf6ff; border-color: #eee2f8; }
+@media (max-width: 640px) { .ad-conteo, .ad-extras { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Enviar sin lista: en el celular, un botón por línea (Copiar link y QR lado a lado) */
+.ad-enviar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ad-enviar > .btn { padding: 12px 16px; font-size: 1rem; }
+.ad-enviar > .btn-wa, .ad-enviar > .btn:not(.btn-sec) { grid-column: 1 / -1; }
+@media (min-width: 900px) { .ad-enviar { display: flex; flex-wrap: wrap; } .ad-enviar > .btn { padding: 9px 18px; } }
+.ad-pin { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--suave); }
+.ad-pin strong { color: var(--texto); letter-spacing: .12em; font-variant-numeric: tabular-nums; }
+.ad-copiar { width: 32px; height: 32px; border: 1px solid var(--borde); border-radius: 8px; background: #fff; display: inline-grid; place-items: center; color: var(--acento); cursor: pointer; }
+.btn-gris { color: var(--texto); border-color: var(--borde); }
+.ad-separador { border: 0; border-top: 2px solid var(--borde); margin: 6px 0; width: 100%; }
+.ad-ayuda-junta { margin-bottom: -10px; }
+.ad-tarjeta .ayuda { margin: 0; }
+.ad-links td:nth-child(2) { white-space: nowrap; }
+.ad-exportar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.ad-exportar .btn { min-width: 200px; }
+@media (max-width: 640px) { .ad-exportar { display: grid; grid-template-columns: 1fr 1fr; } .ad-exportar .btn { min-width: 0; padding: 10px 8px; } .ad-exportar .ad-check { grid-column: 1 / -1; font-size: .9rem; } }
+.modal-acceso { display: grid; gap: 14px; }
+/* Mensajes: lista compacta que gira sola */
+.ad-mitades { display: grid; grid-template-columns: 1fr 1fr; }
+@media (min-width: 900px) { .ad-mitades { display: flex; } }
+.ad-rueda { max-height: 300px; overflow-y: auto; background: var(--fondo); border-radius: 14px; padding: 0 10px; overscroll-behavior: contain; }
+.ad-msgs { list-style: none; margin: 0; padding: 0; }
+.ad-msg { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--borde); }
+.ad-avatar { width: 38px; height: 38px; border-radius: 50%; background: #e8f2ee; color: var(--acento); display: grid; place-items: center; font-size: .78rem; font-weight: 700; }
+.ad-msg p { margin: 0; }
+.ad-msg-quien { font-size: .92rem; color: var(--suave); }
+.ad-msg-quien strong { color: var(--texto); }
+.ad-msg-texto { font-style: italic; color: #4a4f4c; font-size: .92rem; }
+.ad-msg-cancion { font-size: .82rem; color: var(--suave); display: flex; align-items: center; gap: 4px; }
+.ad-msg-cancion svg { width: 14px; height: 14px; }
+.ad-msg-estado { font-size: .78rem; font-weight: 700; white-space: nowrap; }
+.ad-msg-estado.si { color: #2e9e4f; } .ad-msg-estado.no { color: #8f1d1d; }
+/* Álbum (colores de Albunear) */
+.ad-albunear { position: relative; }
+.ad-alb-cabeza { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.ad-alb-logo { width: min(200px, 55vw); height: auto; }
+.ad-alb-switch { display: inline-flex; align-items: center; gap: 8px; font-size: .85rem; cursor: pointer; position: relative; }
+.ad-alb-switch input { position: absolute; opacity: 0; width: 52px; height: 28px; right: 0; margin: 0; cursor: pointer; }
+.ad-alb-pista { width: 52px; height: 28px; border-radius: 999px; background: #e3e1dc; position: relative; transition: background .2s; }
+.ad-alb-pista::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+.ad-alb-switch input:checked + .ad-alb-pista { background: var(--acento); }
+.ad-alb-switch input:checked + .ad-alb-pista::after { transform: translateX(24px); }
+.ad-alb-switch input:focus-visible + .ad-alb-pista { outline: 2px solid var(--acento); outline-offset: 2px; }
+.ad-alb-switch input:disabled + .ad-alb-pista { opacity: .5; }
+.ad-alb-texto { margin: 0; font-size: 1.05rem; line-height: 1.55; }
+.ad-alb-nota { margin: 0; font-size: .92rem; color: #4a4f4c; }
+.ad-alb-verde { color: var(--acento); }
+.ad-alb-pie { margin: 0; font-size: .75rem; color: var(--suave); }
+.btn-albunear { background: #807660; border-color: #807660; color: #fff; padding: 12px 24px; font-size: 1.02rem; }
+.btn-albunear:hover { background: #6d6451; }
+.ad-mitades .btn { min-width: 0; white-space: normal; padding: 9px 10px; font-size: .92rem; }
+.ad-conteo.ad-conteo-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) {
+  .ad-exportar .btn { white-space: normal; font-size: .86rem; gap: 4px; }
+  .ad-conteo-3 .ad-numero { padding: 12px 10px; } .ad-conteo-3 .ad-numero strong { font-size: 1.7rem; }
+}

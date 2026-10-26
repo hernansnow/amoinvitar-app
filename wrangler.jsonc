@@ -43,6 +43,11 @@
   ],
 
   // Freno contra quien prueba PINs al azar: 8 intentos por minuto por invitación e IP
+  // Enlace interno con Albunear (mismo Cloudflare): pide el código del álbum Classic incluido en Deluxe
+  "services": [
+    { "binding": "ALBUNEAR", "service": "albunear", "entrypoint": "Socios" }
+  ],
+
   "ratelimits": [
     { "name": "LIMITE_PIN", "namespace_id": "1001", "simple": { "limit": 8, "period": 60 } }
   ],

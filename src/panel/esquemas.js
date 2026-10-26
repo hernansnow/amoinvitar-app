@@ -293,7 +293,11 @@ function pasosInvitacion({ tipo, modelo }) {
     { id: 'album', seccion: 'album', titulo: 'Álbum de fotos QR', excluye: 'instagram', campos: [
       titulo('album.titulo'),
       { id: 'textos.album.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'album.texto' },
-      { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', ayuda: 'El álbum de Albunear se crea solo. También se puede pegar otro link.' },
+      { id: 'album.origen', tipo: 'opciones', etiqueta: 'Álbum', defecto: 'albunear', valores: [
+        { v: 'albunear', etiqueta: 'Usar álbum Classic de Albunear incluido en Deluxe', ayuda: 'En Basic y Premium se contrata en Albunear (hay planes gratis).' },
+        { v: 'propio', etiqueta: 'Usar link de álbum propio' }] },
+      { id: 'nota.albumAlbunear', tipo: 'nota', estilo: 'ayuda', texto: 'Luego podrás configurar el álbum en la pestaña Administración.', si: { campo: 'album.origen', no: 'propio' } },
+      { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', si: { campo: 'album.origen', es: 'propio' } },
       conFotos('album'),
       { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album') },
     ] },

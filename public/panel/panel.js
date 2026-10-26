@@ -1735,6 +1735,23 @@ function recordarBorrador() {
   refrescarPrevia();
 })();
 
+// Desde la administración, la lista de invitados y el tipo de acceso se editan en una ventana
+// (sin salir de "Administración"); al cerrarla se guarda y se vuelve a armar la administración
+function alCerrarModal(fn) { $('#modal').addEventListener('close', fn, { once: true }); }
+function modalLista() {
+  abrirModal('Lista de invitados', campoInvitados());
+  alCerrarModal(() => ponerModo('admin'));
+}
+function modalAjusteAcceso() {
+  const paso = S.esquema.pasos.find((p) => p.campos?.some((c) => c.id === 'acceso.tipo'));
+  const campos = (paso?.campos || []).filter((c) => c.id.startsWith('acceso.') && c.tipo !== 'ejemploAcceso');
+  const caja = el('div', { class: 'modal-acceso' });
+  const pintar = () => caja.replaceChildren(...campos.map((c) => campo(c, leer(datos, c.id), (v) => { cambio(c.id, v); if (c.id === 'acceso.tipo') pintar(); }, 'aj-')).filter(Boolean));
+  pintar();
+  abrirModal('Cambiar ajuste', caja, el('div', { class: 'ad-botones' }, el('button', { type: 'button', class: 'btn', onclick: cerrarModal }, 'Listo')));
+  alCerrarModal(async () => { clearTimeout(guardarTimer); try { await guardar(); } catch { /* el aviso ya salió */ } ponerModo('admin'); });
+}
+
 // ── Editar o administrar ─────────────────────────────────────────────
 function ponerModo(m) {
   const admin = m === 'admin';
@@ -1744,7 +1761,7 @@ function ponerModo(m) {
   if (admin) {
     history.replaceState(null, '', '#admin');
     montarAdmin($('#admin'), { S, datos, api, el, aviso, abrirModal,
-      clave, editarLista: () => { ponerModo('editar'); irA('invitados'); },
+      clave, editarLista: modalLista, cambiarAjuste: modalAjusteAcceso, redibujarAdmin: () => ponerModo('admin'),
       guardarInvitados: async () => { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: S.invitados }) }); S.invitados = r.invitados; } });
   } else if (pasoActual) { history.replaceState(null, '', `#${pasoActual.id}`); requestAnimationFrame(escalarPrevia); }
 }

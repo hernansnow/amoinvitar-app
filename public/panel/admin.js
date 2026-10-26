@@ -41,11 +41,12 @@ const admin = () => ctx.datos.admin || {};
 
 // Textos base de WhatsApp (se pueden cambiar y quedan guardados)
 const TEXTO_WA = () => (plural()
-  ? `¡Nos casamos y queremos celebrar contigo! 💍\nTe invitamos a nuestra boda. Ingresa a nuestra invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te esperamos!\n{nombres}`
-  : `¡Quiero celebrar contigo! 🎉\nIngresa a mi invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te espero!\n{nombres}`);
+  ? `¡Nos casamos y queremos celebrar contigo! 💍\nTe invitamos a nuestra boda. Ingresa a nuestra invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te esperamos!\n{nombres}`
+  : `¡Quiero celebrar contigo! 🎉\nIngresa a mi invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te espero!\n{nombres}`);
 const TEXTO_WA_LISTA = () => `¡Hola {invitado}! ${plural() ? '¡Nos casamos y queremos celebrar contigo! 💍\nTe invitamos cordialmente a nuestra boda.' : '¡Quiero celebrar contigo! 🎉'}\nEn tu invitación personal están todos los detalles y puedes confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Saludos!\n{nombres}`;
 const TEXTO_RECORDATORIO = () => `¡Hola {invitado}! 😊 Te recordamos que todavía no confirmaste tu asistencia${cierre() ? ' (la fecha límite es el {cierre})' : ''}. Puedes hacerlo acá:\n{link}{pin}\n¡Gracias!\n{nombres}`;
-const armarTexto = (plantilla, i = null) => plantilla
+// Si hay PIN y el texto (cambiado a mano) no tiene {pin}, el PIN va igual, después del link
+const armarTexto = (plantilla, i = null) => (/\{pin\}/.test(plantilla) ? plantilla : plantilla.replace('{link}', '{link}{pin}'))
   .replace(/\{link\}/g, i ? linkDe(i) : link()).replace(/\{nombres\}/g, nombres()).replace(/\{cierre\}/g, fechaTexto(cierre()))
   .replace(/\{invitado\}/g, i ? (i.integrantes ? String(i.nombre || '') : String(i.nombre || '').split(' ')[0]) : '').replace(/\{pin\}/g, i && pinDe(i) ? `\nPIN: ${pinDe(i)}` : (!i && pinTodos() ? `\nPIN: ${pinTodos()}` : ''));
 // Con teléfono (con código de país) el WhatsApp sale directo a su número; sin teléfono, se elige el contacto
@@ -94,11 +95,12 @@ const ICONOS = [
   [/WhatsApp|^Recordar|^Enviar a|^Enviar…|^Solo a los/, SVG('<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5Z"/>')],
   [/^Copiar/, SVG('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>')],
   [/QR/, SVG('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7h-4M14 21h.01"/>')],
-  [/^Excel|^PDF|^Descargar/, SVG('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>')],
+  [/^Excel|^PDF|^Descargar|^Exportar/, SVG('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>')],
   [/^Imprimir/, SVG('<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M8 14h8v7H8z"/>')],
+  [/^Cambiar ajuste/, SVG('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>')],
   [/^Editar/, SVG('<path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4"/>')],
   [/^Dar acceso/, SVG('<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M19 8v6M16 11h6"/>')],
-  [/^Abrir/, SVG('<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>')],
+  [/^Abrir|^Crear el álbum/, SVG('<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>')],
 ];
 const conIcono = (texto) => {
   const i = typeof texto === 'string' && ICONOS.find(([re]) => re.test(texto));
@@ -175,7 +177,7 @@ function enviarEnTanda(lista, { tipo = 'invitacion', texto, titulo }) {
       ctx.el('p', { class: 'ad-tanda-nombre' }, i.nombre),
       ctx.el('p', { class: 'ayuda ad-centro' }, i.telefono ? `📱 ${i.telefono}` : 'Sin teléfono: en WhatsApp se elige el contacto.'),
       ir,
-      ctx.el('p', { class: 'ayuda ad-centro' }, 'Tocar Enviar en WhatsApp y volver acá: ya aparece el siguiente.'),
+      ctx.el('p', { class: 'ayuda ad-centro' }, 'Tocar "Enviar" en WhatsApp y volver acá para continuar con el siguiente. Se puede terminar y seguir después (se guardan los enviados).'),
       ctx.el('div', { class: 'ad-botones ad-centro' },
         boton('Saltar', () => { n++; pintar(); }, 'btn btn-sec btn-chico'),
         boton('Terminar', () => { document.getElementById('modal')?.close(); ctx.redibujar(); }, 'btn btn-sec btn-chico')));
@@ -209,9 +211,9 @@ function vistaResumen() {
   return [
     tarjeta(inicio ? `Faltan para ${plural() ? 'la boda' : 'el evento'}` : 'Cuenta regresiva', cuenta, ...avisos.map((a) => ctx.el('p', { class: 'ad-aviso' }, a))),
     numerosConteo(st),
-    ctx.el('div', { class: 'ad-numeros' },
-      numero((respuestas || []).filter((r) => r.tipo === 'cancion').length, '🎵 Canciones sugeridas'),
-      numero(ultimas().filter((x) => x.datos.mensaje).length, '💬 Mensajes')),
+    ctx.el('div', { class: 'ad-numeros ad-extras' },
+      numero((respuestas || []).filter((r) => r.tipo === 'cancion').length, 'Canciones sugeridas', 'canciones', '', ICONO_NOTA),
+      numero(ultimas().filter((x) => x.datos.mensaje).length, 'Mensajes', 'mensajes', '', ICONO_MSG)),
     !publicada() ? tarjeta(null, ctx.el('p', { class: 'ayuda' }, 'La invitación todavía no está publicada. Cuando se publique, acá se ven las confirmaciones, los mensajes y las canciones que manden los invitados.')) : null,
   ];
 }
@@ -228,13 +230,16 @@ function conteo(st) {
 }
 const numerosConteo = (st) => {
   const c = conteo(st);
-  return ctx.el('div', { class: 'ad-numeros ad-conteo' },
-    numero(c.invitados, 'Invitados', 'total', conLista() ? 'Pases de la lista' : 'Respondieron'),
+  return ctx.el('div', { class: `ad-numeros ad-conteo${c.sinRespuesta === null ? ' ad-conteo-3' : ''}` },
+    numero(c.invitados, conLista() ? 'Invitados + pases' : 'Invitados', 'total', conLista() ? '' : 'Respondieron'),
     numero(c.asisten, '✓ Asisten', 'si', c.ninos ? `+ ${c.ninos} ${c.ninos === 1 ? 'niño' : 'niños'}` : ''),
     numero(c.noAsisten, '✗ No asisten', 'no'),
     c.sinRespuesta !== null ? numero(c.sinRespuesta, '⏳ Sin respuesta', 'pend') : null);
 };
-const numero = (n, texto, clase = '', sub = '') => ctx.el('div', { class: `ad-numero ${clase}` }, ctx.el('strong', {}, String(n)), ctx.el('span', {}, texto), sub ? ctx.el('small', {}, sub) : null);
+const numero = (n, texto, clase = '', sub = '', icono = '') => ctx.el('div', { class: `ad-numero ${clase}` }, ctx.el('strong', {}, String(n)),
+  ctx.el('span', {}, icono ? ctx.el('span', { class: 'ad-ico', html: icono }) : null, texto), sub ? ctx.el('small', {}, sub) : null);
+const ICONO_NOTA = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#7c5cc4" d="M20 3v12.5a3 3 0 1 1-2-2.8V7.3l-9 2v8.2a3 3 0 1 1-2-2.8V5.6L20 3Z"/></svg>';
+const ICONO_MSG = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#c4a8e8" d="M12 3C6.5 3 2 6.6 2 11c0 2.4 1.3 4.5 3.4 6L4.6 21l4.2-2.3c1 .2 2.1.3 3.2.3 5.5 0 10-3.6 10-8s-4.5-8-10-8Z"/></svg>';
 
 function editorTexto(clave, base, titulo, ayuda) {
   const area = ctx.el('textarea', { rows: 6, class: 'ad-texto' });
@@ -247,15 +252,18 @@ function editorTexto(clave, base, titulo, ayuda) {
 function vistaEnviar() {
   if (!publicada()) return [tarjeta('Enviar la invitación', ctx.el('p', { class: 'ayuda' }, 'Cuando la invitación esté publicada, desde acá se envía por WhatsApp, se copia el link o se descarga el código QR.'))];
   if (conLista()) return vistaEnviarLista();
+  // Celular: un botón por línea, de ancho a ancho (Copiar link y QR, lado a lado)
+  const texto = () => armarTexto(admin().textoWa || TEXTO_WA());
   const general = tarjeta('Enviar la invitación',
-    ctx.el('p', { class: 'ad-link' }, link()), pinTodos() ? ctx.el('p', { class: 'ayuda' }, `PIN para todos: ${pinTodos()}`) : null,
-    ctx.el('div', { class: 'ad-botones' },
-      enlace('Ver la invitación', linkDueno(), 'btn btn-sec'),
-      navigator.share ? boton('Enviar…', () => navigator.share({ title: nombres(), text: armarTexto(admin().textoWa || TEXTO_WA()).replace(link(), '').trim(), url: link() }).catch(() => {})) : null,
-      enlace('Enviar por WhatsApp', wa(armarTexto(admin().textoWa || TEXTO_WA())), 'btn btn-wa'),
+    ctx.el('p', { class: 'ad-link' }, link()),
+    pinTodos() ? ctx.el('p', { class: 'ad-pin' }, 'PIN para todos: ', ctx.el('strong', {}, pinTodos()),
+      ctx.el('button', { type: 'button', class: 'btn-icono ad-copiar', title: 'Copiar el PIN', 'aria-label': 'Copiar el PIN', html: ICONOS.find(([re]) => re.test('Copiar'))[1], onclick: () => copiar(pinTodos(), 'PIN copiado') })) : null,
+    ctx.el('div', { class: 'ad-enviar' },
+      enlace('Enviar por WhatsApp', wa(texto()), 'btn btn-wa'),
+      navigator.share ? boton('Enviar…', () => navigator.share({ title: nombres(), text: texto().replace(link(), '').trim(), url: link() }).catch(() => {})) : null,
       boton('Copiar link', () => copiar(link(), 'Link copiado'), 'btn btn-sec'),
       boton('Código QR', () => mostrarQR(link(), 'Código QR de la invitación'), 'btn btn-sec')),
-    editorTexto('textoWa', TEXTO_WA, 'Mensaje de WhatsApp', 'Se puede cambiar a gusto. {link} es el link de la invitación, {nombres} los de ustedes y {cierre} la fecha límite para confirmar.'));
+    editorTexto('textoWa', TEXTO_WA, 'Editar mensaje de WhatsApp', `Se puede cambiar a gusto. {link} es el link de la invitación, {nombres} los de ustedes y {cierre} la fecha límite para confirmar.${pinTodos() ? ' {pin} es el PIN (si no está, va después del link).' : ''}`));
   return [general];
 }
 // Con lista de invitados la invitación es de LISTA CERRADA: no hay link general para mandar,
@@ -290,30 +298,27 @@ function vistaEnviarLista() {
         i.mesa ? `Mesa ${i.mesa}` : '', pinDe(i) ? `PIN ${pinDe(i)}` : '', i.telefono ? `📱 ${i.telefono}` : ''].filter(Boolean).join(' · '))),
       ctx.el('td', {}, apertura(i), i.abierto && !respondio.has(i.codigo) ? ctx.el('small', {}, fechaHora(i.ultima || i.abierto)) : null),
       ctx.el('td', {}, ctx.el('div', { class: 'ad-acciones' },
-        i.codigo ? ctx.el('a', { class: 'btn btn-chico btn-wa', href: wa(textoDe(i), i.telefono), target: '_blank', rel: 'noopener', onclick: () => ctx.api('/enviado', { method: 'POST', body: JSON.stringify({ codigo: i.codigo }) }).catch(() => {}) }, 'WhatsApp') : null,
+        i.codigo ? ctx.el('a', { class: 'btn btn-chico btn-wa', href: wa(textoDe(i), i.telefono), target: '_blank', rel: 'noopener', onclick: () => ctx.api('/enviado', { method: 'POST', body: JSON.stringify({ codigo: i.codigo }) }).catch(() => {}) }, ...conIcono('WhatsApp')) : null,
         i.codigo ? boton('Copiar', () => copiar(`${linkDe(i)}${pinDe(i) ? `  (PIN ${pinDe(i)})` : ''}`, 'Link copiado'), 'btn btn-chico btn-sec') : null,
         i.codigo ? boton('QR', () => mostrarQR(linkDe(i), `QR de ${i.nombre}`), 'btn btn-chico btn-sec') : null,
         i.codigo ? enlace('Ver', linkDueno(i), 'btn btn-chico btn-sec') : null)))));
   };
   buscar.addEventListener('input', pintar); pintar();
-  const cabeza = tarjeta('Enviar la invitación',
-    ctx.el('p', { class: 'ad-aviso' }, '🔒 Lista cerrada: solo entran los invitados de la lista, cada uno con su link personal', ctx.datos.acceso?.modo === 'pin' ? ' y su PIN.' : '.'),
-    ctx.el('p', { class: 'ayuda' }, 'Por eso no hay un link general para compartir. Ustedes sí pueden verla siempre desde "Ver la invitación".'),
-    ctx.el('div', { class: 'ad-botones' }, enlace('Ver la invitación', linkDueno(), 'btn btn-sec'), boton('Editar lista de invitados', editarLista, 'btn btn-sec')));
   const sinEnviar = st.lista.filter((i) => i.codigo && !i.enviado && !i.abierto && !respondio.has(i.codigo));
-  const tanda = tarjeta('Enviar a todos',
-    ctx.el('p', { class: 'ayuda' }, 'Se abre WhatsApp con el mensaje de cada invitado, uno tras otro: tocar Enviar y volver. Con el teléfono cargado sale directo a su número. Quedan marcados como enviados, así se puede cortar y seguir después.'),
-    ctx.el('div', { class: 'ad-botones' },
-      boton(sinEnviar.length ? `Enviar a todos (${sinEnviar.length} sin enviar)` : 'Ya se envió a todos', () => enviarEnTanda(sinEnviar, { texto: textoDe, titulo: 'Enviar la invitación' }), 'btn btn-wa'),
-      sinEnviar.length < st.lista.length ? boton('Volver a enviar a todos', () => { if (confirm('¿Abrir el mensaje para todos los de la lista, también a los que ya se les envió?')) enviarEnTanda(st.lista.filter((i) => i.codigo), { texto: textoDe, titulo: 'Enviar la invitación' }); }, 'btn btn-sec btn-chico') : null),
-    ctx.el('label', { class: 'ad-check' }, (() => { const c = ctx.el('input', { type: 'checkbox', checked: admin().avisosMail !== false }); c.addEventListener('change', () => guardarAdmin({ avisosMail: c.checked })); return c; })(),
-      ' Avisarme por mail 7, 3 y 1 día antes del cierre si hay invitados sin responder'));
-  return [cabeza, tanda, tarjeta(`Links personales (${st.lista.length})`,
-    ctx.el('p', { class: 'ayuda' }, 'Cada invitado tiene su propio link (con su nombre, pases y mesa). El mensaje sale personalizado con su nombre.'),
-    st.lista.length ? null : ctx.el('p', { class: 'ad-aviso' }, 'Todavía no hay invitados en la lista.'),
-    chips, buscar, ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla' }, cuerpo)),
-    ctx.el('p', { class: 'ayuda' }, '"Lo abrió" cuenta las veces que el invitado entró con su link (cuando ustedes la miran no cuenta). Con el teléfono cargado, el WhatsApp sale directo a su número.'),
-    editorTexto('textoWaLista', TEXTO_WA_LISTA, 'Mensaje para cada invitado', '{invitado} es el nombre del invitado, {link} su link personal, {pin} su PIN (si hay), {cierre} la fecha límite y {nombres} los de ustedes.'))];
+  const tanda = (lista) => enviarEnTanda(lista, { texto: textoDe, titulo: 'Enviar la invitación' });
+  return [tarjeta('Lista de invitados',
+    ctx.el('p', { class: 'ad-aviso' }, `🔒 Lista cerrada: solo entran los invitados de la lista, cada uno con su link personal${ctx.datos.acceso?.modo === 'pin' ? ' y su PIN' : ''}. Ustedes sí pueden verla siempre desde "Ver la invitación".`),
+    ctx.el('div', { class: 'ad-botones' }, boton('Editar lista de invitados', editarLista, 'btn btn-sec'), boton('Cambiar ajuste', () => ctx.cambiarAjuste?.(), 'btn btn-sec btn-gris')),
+    ctx.el('hr', { class: 'ad-separador' }),
+    ctx.el('h2', {}, `Enviar - Links personales (${st.lista.length})`),
+    ctx.el('p', { class: 'ayuda ad-ayuda-junta' }, 'Cada invitado tiene su propio link (con su nombre, pases y mesa). El mensaje sale personalizado con su nombre.'),
+    ctx.el('p', { class: 'ayuda' }, '"Lo abrió" cuenta las veces que el invitado entró con su link. Con el teléfono cargado, el WhatsApp sale directo a su número.'),
+    st.lista.length ? ctx.el('div', { class: 'ad-botones' }, sinEnviar.length
+      ? boton(`Enviar a todos (${sinEnviar.length} sin enviar)`, () => tanda(sinEnviar), 'btn btn-wa')
+      : boton('Volver a enviar a todos', () => { if (confirm('¿Abrir el mensaje para todos los de la lista, también a los que ya se les envió?')) tanda(st.lista.filter((i) => i.codigo)); }, 'btn btn-wa'))
+      : ctx.el('p', { class: 'ad-aviso' }, 'Todavía no hay invitados en la lista.'),
+    editorTexto('textoWaLista', TEXTO_WA_LISTA, 'Editar mensaje de WhatsApp', '{invitado} es el nombre del invitado, {link} su link personal, {pin} su PIN (si hay), {cierre} la fecha límite y {nombres} los de ustedes.'),
+    chips, buscar, ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla ad-links' }, cuerpo)))];
 }
 
 function vistaRespuestas() {
@@ -399,10 +404,10 @@ function vistaRespuestas() {
   };
   return [
     numerosConteo(st),
-    tarjeta('Confirmaciones', ctx.el('div', { class: 'ad-barra' }, chips, ctx.el('div', { class: 'ad-barra-der' }, buscar, ordenar)), tabla, tarjetas,
-      ctx.el('div', { class: 'ad-botones ad-descargas' },
-        boton('Excel', () => exportar(soloVan.checked, 'csv'), 'btn btn-sec btn-chico'), boton('PDF', () => exportar(soloVan.checked, 'pdf'), 'btn btn-sec btn-chico'),
-        ctx.el('label', { class: 'ad-check' }, soloVan, ' Solo confirmados'))),
+    ctx.el('div', { class: 'ad-exportar' },
+      boton('Exportar Excel / CSV', () => exportar(soloVan.checked, 'csv'), 'btn btn-sec'), boton('Descargar PDF', () => exportar(soloVan.checked, 'pdf'), 'btn btn-sec'),
+      ctx.el('label', { class: 'ad-check' }, soloVan, ' Solo confirmados')),
+    tarjeta('Confirmaciones', ctx.el('div', { class: 'ad-barra' }, chips, ctx.el('div', { class: 'ad-barra-der' }, buscar, ordenar)), tabla, tarjetas),
     conLista() ? tarjeta(`Recordatorios (${pendientes.length} sin confirmar)`,
       ctx.el('p', { class: 'ayuda' }, 'Un mensaje de WhatsApp para cada invitado que todavía no confirmó (se abre WhatsApp con el texto listo para enviar). Primero van los que ni abrieron su link.'),
       pendientes.length ? ctx.el('div', { class: 'ad-botones' },
@@ -410,13 +415,18 @@ function vistaRespuestas() {
         pendientes.some((i) => i.abierto) && pendientes.some((i) => !i.abierto) ? boton(`Solo a los que no lo abrieron (${pendientes.filter((i) => !i.abierto).length})`,
           () => enviarEnTanda(pendientes.filter((i) => !i.abierto), { tipo: 'recordatorio', texto: (i) => armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i), titulo: 'Recordatorios' }), 'btn btn-sec btn-chico') : null) : null,
       pendientes.length ? ctx.el('div', { class: 'ad-recordar' }, pendientes.map((i) => enlace(`Recordar a ${i.nombre}${i.abierto ? '' : ' · no lo abrió'}${i.recordado ? ' ✓' : ''}`, wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), i), i.telefono), 'btn btn-chico btn-wa'))) : ctx.el('p', { class: 'ayuda' }, '¡Ya respondieron todos!'),
-      editorTexto('textoRecordatorio', TEXTO_RECORDATORIO, 'Texto del recordatorio', '{invitado}, {link}, {pin}, {cierre} y {nombres} se completan solos.')) : null,
+      editorTexto('textoRecordatorio', TEXTO_RECORDATORIO, 'Texto del recordatorio', '{invitado}, {link}, {pin}, {cierre} y {nombres} se completan solos.'),
+      cierre() ? ctx.el('label', { class: 'ad-check' }, (() => { const c = ctx.el('input', { type: 'checkbox', checked: admin().avisosMail !== false }); c.addEventListener('change', () => guardarAdmin({ avisosMail: c.checked })); return c; })(),
+        ' Avisarme por mail 7, 3 y 1 día antes del cierre si hay invitados sin responder') : null) : null,
   ];
 }
 const si = (x) => !!x;
 
 function vistaMensajes() {
-  const msgs = ultimas().filter((x) => x.datos.mensaje).map((x) => ({ nombre: x.datos.nombre, texto: x.datos.mensaje, fecha: x.creado }));
+  const canciones = (respuestas || []).filter((r) => r.tipo === 'cancion');
+  const norm = (x) => String(x || '').trim().toLowerCase();
+  const cancionDe = (d) => canciones.filter((c) => (d.inv && c.datos.inv === d.inv) || (c.datos.nombre && norm(c.datos.nombre) === norm(d.nombre))).map((c) => c.datos.cancion).filter(Boolean);
+  const msgs = ultimas().filter((x) => x.datos.mensaje).map((x) => ({ nombre: x.datos.nombre || '—', texto: x.datos.mensaje, fecha: x.creado, asiste: x.datos.asiste === 'Si', personas: cuantos(x.datos), canciones: cancionDe(x.datos) }));
   if (!msgs.length) return [tarjeta('Mensajes', ctx.el('p', { class: 'ayuda' }, publicada() ? 'Todavía no hay mensajes. Al confirmar, cada invitado puede dejarles unas palabras.' : 'Cuando la invitación esté publicada, acá aparecen los mensajes que dejen los invitados al confirmar.'))];
   // El destacado va rotando, como una conversación
   const destacado = ctx.el('div', { class: 'ad-destacado', 'aria-live': 'polite' });
@@ -424,18 +434,47 @@ function vistaMensajes() {
   const mostrar = () => { const m = msgs[i % msgs.length]; destacado.replaceChildren(ctx.el('p', {}, `“${m.texto}”`), ctx.el('strong', {}, m.nombre)); destacado.classList.remove('entra'); void destacado.offsetWidth; destacado.classList.add('entra'); i++; };
   mostrar();
   const t = setInterval(() => { if (!document.body.contains(destacado)) { clearInterval(t); return; } mostrar(); }, 5000);
+  // Últimos mensajes: lista compacta; con muchos, gira sola como una rueda (y se puede mover a mano)
+  const iniciales = (n) => String(n).split(/\s+/).filter((x) => /\p{L}/u.test(x)).slice(0, 2).map((x) => x.match(/\p{L}/u)[0].toUpperCase()).join('') || '·';
+  const item = (m) => ctx.el('li', { class: 'ad-msg' },
+    ctx.el('span', { class: 'ad-avatar', 'aria-hidden': 'true' }, iniciales(m.nombre)),
+    ctx.el('div', { class: 'ad-msg-cuerpo' },
+      ctx.el('p', { class: 'ad-msg-quien' }, ctx.el('strong', {}, m.nombre), m.asiste && m.personas > 1 ? ` · ${m.personas} personas` : ''),
+      ctx.el('p', { class: 'ad-msg-texto' }, `«${m.texto}»`),
+      ...m.canciones.slice(0, 2).map((c) => ctx.el('p', { class: 'ad-msg-cancion' }, ctx.el('span', { class: 'ad-ico', html: ICONO_NOTA }), c))),
+    ctx.el('span', { class: `ad-msg-estado ${m.asiste ? 'si' : 'no'}` }, m.asiste ? 'Asiste' : 'No puede'));
+  const lista = ctx.el('ul', { class: 'ad-msgs' }, msgs.map(item));
+  const rueda = ctx.el('div', { class: 'ad-rueda', tabindex: '0', 'aria-label': 'Últimos mensajes' }, lista);
+  if (msgs.length > 4 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    lista.append(...msgs.map(item).map((li) => { li.setAttribute('aria-hidden', 'true'); return li; })); // copia para que el giro no tenga corte
+    let quieto = 0, pos = 0;
+    const parar = () => { quieto = Date.now() + 4000; };
+    ['pointerdown', 'wheel', 'touchstart', 'focusin', 'mouseenter'].forEach((ev) => rueda.addEventListener(ev, parar, { passive: true }));
+    rueda.addEventListener('scroll', () => { if (Date.now() < quieto) pos = rueda.scrollTop; }, { passive: true });
+    const girar = () => {
+      if (!document.body.contains(rueda)) return;
+      const mitad = lista.scrollHeight / 2;
+      if (Date.now() > quieto && !document.hidden) { pos += 0.35; if (pos >= mitad) pos -= mitad; rueda.scrollTop = pos; }
+      else if (rueda.scrollTop >= mitad) { rueda.scrollTop -= mitad; pos = rueda.scrollTop; }
+      requestAnimationFrame(girar);
+    };
+    requestAnimationFrame(girar);
+  }
   return [tarjeta(`Mensajes (${msgs.length})`, destacado,
-    ctx.el('div', { class: 'ad-chat' }, msgs.map((m) => ctx.el('div', { class: 'ad-burbuja' }, ctx.el('strong', {}, m.nombre), ctx.el('p', {}, m.texto), ctx.el('small', {}, fechaHora(m.fecha))))),
-    ctx.el('div', { class: 'ad-botones' },
-      boton('Descargar (Excel)', () => descargarCSV('mensajes.csv', ['Invitado', 'Mensaje', 'Fecha'], msgs.map((m) => [m.nombre, m.texto, fechaHora(m.fecha)])), 'btn btn-sec btn-chico'),
-      boton('Descargar (PDF)', () => imprimir('Mensajes de los invitados', msgs.map((m) => `<div class="msg"><b>${esc(m.nombre)}</b>${esc(m.texto)}</div>`).join('')), 'btn btn-sec btn-chico')))];
+    ctx.el('div', { class: 'ad-botones ad-mitades' },
+      boton('Descargar (Excel)', () => descargarCSV('mensajes.csv', ['Invitado', 'Asiste', 'Personas', 'Mensaje', 'Canción', 'Fecha'], msgs.map((m) => [m.nombre, m.asiste ? 'Sí' : 'No', m.asiste ? m.personas : 0, m.texto, m.canciones.join(' / '), fechaHora(m.fecha)])), 'btn btn-sec'),
+      boton('Descargar (PDF)', () => imprimir('Mensajes de los invitados', msgs.map((m) => `<div class="msg"><b>${esc(m.nombre)}</b>${esc(m.texto)}${m.canciones.length ? `<br><small>♫ ${esc(m.canciones.join(' / '))}</small>` : ''}</div>`).join('')), 'btn btn-sec')),
+    ctx.el('h3', { class: 'ad-subtitulo' }, 'Últimos mensajes'), rueda)];
 }
 
 function vistaCanciones() {
-  const lista = (respuestas || []).filter((r) => r.tipo === 'cancion').map((x) => ({ cancion: x.datos.cancion || '', fecha: x.creado }));
+  const lista = (respuestas || []).filter((r) => r.tipo === 'cancion').map((x) => ({ cancion: x.datos.cancion || '', nombre: x.datos.nombre || '', fecha: x.creado }));
   if (!lista.length) return [tarjeta('Canciones', ctx.el('p', { class: 'ayuda' }, 'Todavía no hay canciones sugeridas.'))];
   return [tarjeta(`Canciones sugeridas (${lista.length})`,
     ctx.el('p', { class: 'ayuda' }, 'Con "Spotify" se abre la búsqueda de cada canción para sumarla a una playlist con un toque.'),
+    ctx.el('div', { class: 'ad-botones' },
+      boton('Descargar (Excel)', () => descargarCSV('canciones.csv', ['Canción', 'Invitado', 'Fecha'], lista.map((c) => [c.cancion, c.nombre, fechaHora(c.fecha)])), 'btn btn-sec btn-chico'),
+      boton('Copiar la lista', () => copiar(lista.map((c) => c.cancion).join('\n'), 'Lista copiada'), 'btn btn-sec btn-chico')),
     ctx.el('details', { class: 'ad-plantilla' }, ctx.el('summary', {}, 'Pasar todas a una playlist de Spotify'),
       ctx.el('ol', { class: 'ad-pasos' },
         ctx.el('li', {}, 'Tocar "Copiar y abrir TuneMyMusic" (se copian todas las canciones).'),
@@ -444,11 +483,8 @@ function vistaCanciones() {
       ctx.el('div', { class: 'ad-botones' }, boton('Copiar y abrir TuneMyMusic', async () => {
         await copiar(lista.map((c) => c.cancion).join('\n'), 'Lista copiada'); window.open('https://www.tunemymusic.com/es/transfer', '_blank', 'noopener');
       }, 'btn btn-chico'))),
-    ctx.el('ul', { class: 'ad-canciones' }, lista.map((c) => ctx.el('li', {}, ctx.el('span', {}, `🎵 ${c.cancion}`),
-      ctx.el('span', { class: 'ad-acciones' }, ctx.el('small', {}, fechaHora(c.fecha)), enlace('Spotify', `https://open.spotify.com/search/${encodeURIComponent(c.cancion)}`, 'btn btn-chico btn-sec'))))),
-    ctx.el('div', { class: 'ad-botones' },
-      boton('Descargar (Excel)', () => descargarCSV('canciones.csv', ['Canción', 'Fecha'], lista.map((c) => [c.cancion, fechaHora(c.fecha)])), 'btn btn-sec btn-chico'),
-      boton('Copiar la lista', () => copiar(lista.map((c) => c.cancion).join('\n'), 'Lista copiada'), 'btn btn-sec btn-chico')))];
+    ctx.el('ul', { class: 'ad-canciones' }, lista.map((c) => ctx.el('li', {}, ctx.el('span', {}, `🎵 ${c.cancion}`, c.nombre ? ctx.el('small', {}, ` · ${c.nombre}`) : null),
+      ctx.el('span', { class: 'ad-acciones' }, ctx.el('small', {}, fechaHora(c.fecha)), enlace('Spotify', `https://open.spotify.com/search/${encodeURIComponent(c.cancion)}`, 'btn btn-chico btn-sec'))))))];
 }
 
 // Mesas: los invitados de la lista con su número de mesa; croquis con un asiento por persona
@@ -528,16 +564,50 @@ function vistaMesas() {
   ];
 }
 
+// Álbum de fotos con Albunear. Con Deluxe viene el Classic sin cargo (el código de regalo lo pide el
+// servidor a Albunear); pasar a Platinum cuesta solo la diferencia. Con un link propio, la pestaña no aparece.
+const albumActivo = () => ctx.datos.secciones?.album === true;
+const albumPropio = () => ctx.datos.album?.origen === 'propio';
 function vistaAlbum() {
-  const activo = ctx.datos.secciones?.album === true;
-  const linkAlbum = ctx.datos.album?.link || '';
-  if (activo || linkAlbum) {
-    return [tarjeta('Álbum de fotos (Albunear)', ctx.el('p', { class: 'ayuda' }, 'Las fotos y videos que suben los invitados se ven y se descargan desde el panel de Albunear.'),
-      ctx.el('div', { class: 'ad-botones' }, enlace('Abrir el panel de Albunear', 'https://albunear.com/panel', 'btn'), linkAlbum ? enlace('Ver el álbum', linkAlbum, 'btn btn-sec') : null))];
-  }
-  return [tarjeta('Álbum de fotos compartido', ctx.el('p', {}, 'Con Albunear los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y ustedes las tienen todas en un solo lugar.'),
-    ctx.el('p', { class: 'ayuda' }, 'Hay planes gratis. Si la invitación es Deluxe, se puede sumar como sección "Álbum de fotos QR".'),
-    ctx.el('div', { class: 'ad-botones' }, enlace('Conocer Albunear', 'https://albunear.com', 'btn')))];
+  const caja = ctx.el('section', { class: 'ad-tarjeta ad-albunear' }, ctx.el('p', { class: 'ayuda' }, 'Cargando…'));
+  const permitido = ['premium', 'deluxe'].includes(ctx.S.plan?.plan) || !!ctx.S.usuario?.admin;
+  const interruptor = ctx.el('input', { type: 'checkbox', role: 'switch', checked: albumActivo(), disabled: !permitido });
+  interruptor.addEventListener('change', async () => {
+    try {
+      await ctx.api('/album', { method: 'POST', body: JSON.stringify({ activo: interruptor.checked }) });
+      ctx.datos.secciones = { ...(ctx.datos.secciones || {}), album: interruptor.checked };
+      if (interruptor.checked) { ctx.datos.secciones.instagram = false; ctx.datos.album = { ...(ctx.datos.album || {}), origen: 'albunear' }; }
+      ctx.aviso(interruptor.checked ? 'Álbum activado en la invitación' : 'Álbum desactivado');
+      ctx.redibujar();
+    } catch (e) { interruptor.checked = !interruptor.checked; ctx.aviso(e.message, true); }
+  });
+  const cabeza = ctx.el('div', { class: 'ad-alb-cabeza' }, ctx.el('img', { src: '/comun/img/albunear.svg', alt: 'Albunear', class: 'ad-alb-logo', width: 160, height: 50 }),
+    ctx.el('label', { class: 'ad-alb-switch' }, albumActivo() ? null : ctx.el('span', {}, 'Activar'), interruptor, ctx.el('span', { class: 'ad-alb-pista', 'aria-hidden': 'true' })));
+  (async () => {
+    let r = { incluido: false, crear: 'https://albunear.com/empezar', album: null };
+    try { r = await ctx.api('/albunear'); } catch { /* sin conexión: quedan los links generales */ }
+    if (!albumActivo()) {
+      caja.replaceChildren(cabeza, ctx.el('h2', {}, 'Álbum de fotos compartido'),
+        ctx.el('p', { class: 'ad-alb-texto' }, 'Con Albunear los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y ustedes las tienen todas en un solo lugar.'),
+        ctx.el('p', { class: 'ad-alb-nota' }, ctx.el('span', { class: 'ad-alb-verde' }, 'Si la invitación es Deluxe, está incluido el paquete Classic de Albunear sin cargo.'), ctx.el('br'),
+          'También se puede agregar a invitaciones Basic y Premium contratándolo en Albunear.', ctx.el('br'), ctx.el('strong', {}, '¡Hay planes gratis!')),
+        ctx.el('div', { class: 'ad-botones' }, enlace('Conocer Albunear', 'https://albunear.com', 'btn btn-albunear')),
+        ctx.el('p', { class: 'ad-alb-pie' }, 'No es obligatorio usar el álbum de Albunear: se puede sumar el link de otro proveedor en la sección "Álbum de fotos QR" de la invitación.'));
+      return;
+    }
+    const creado = r.album;
+    caja.replaceChildren(...[cabeza, ctx.el('h2', {}, 'Álbum de fotos (Albunear)'),
+      ctx.el('p', { class: 'ayuda' }, creado ? 'Las fotos y videos que suben los invitados se ven y se descargan desde el panel de Albunear.'
+        : r.incluido ? 'La invitación Deluxe incluye el álbum Classic de Albunear sin cargo. Al crearlo con este botón, el regalo ya va aplicado y el álbum aparece solo en la invitación. Para pasar después a Platinum se paga solo la diferencia.'
+          : 'Crear el álbum en Albunear (hay planes gratis) y después pegar su link en la sección "Álbum de fotos QR" de la invitación.'),
+      ctx.el('div', { class: 'ad-botones' },
+        creado ? enlace('Abrir el panel de Albunear', creado.panel, 'btn btn-albunear') : enlace(r.incluido ? 'Crear el álbum (Classic incluido)' : 'Abrir Albunear', r.crear, 'btn btn-albunear'),
+        creado ? enlace('Ver el álbum', creado.link, 'btn btn-sec') : null),
+      r.incluido && !r.conectado ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para activar el Classic incluido, escribir a hola@amoinvitar.com con el código de esta invitación.') : null,
+      creado && creado.plan !== 'platinum' && r.incluido ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para pasar a Platinum (fotos originales, 2 años, diseños exclusivos), desde el panel de Albunear se paga solo la diferencia.') : null,
+      ctx.el('p', { class: 'ad-alb-pie' }, 'Activo reemplaza Instagram Wall.')].filter(Boolean));
+  })();
+  return [caja];
 }
 
 // Llegadas: el pase de entrada de cada invitado (QR de su link) y la recepción en la puerta.
@@ -654,7 +724,10 @@ function dibujar(caja) {
   // así el menú deslizable del celular no vuelve al principio
   let menu = caja.querySelector('.ad-menu');
   if (!menu) {
-    menu = ctx.el('nav', { class: 'ad-menu', 'aria-label': 'Administración' }, SECCIONES.map(([id, t]) => ctx.el('button', { type: 'button', class: 'ad-tab', 'data-id': id,
+    // Álbum: solo con la sección prendida y el álbum de Albunear (con un link propio no hay nada que administrar)
+    const verAlbum = albumActivo() && !albumPropio();
+    if (!verAlbum && seccion === 'album') seccion = 'resumen';
+    menu = ctx.el('nav', { class: 'ad-menu', 'aria-label': 'Administración' }, SECCIONES.filter(([id]) => id !== 'album' || verAlbum).map(([id, t]) => ctx.el('button', { type: 'button', class: 'ad-tab', 'data-id': id,
       onclick: () => { seccion = id; dibujar(caja); } }, t)));
     const mas = ctx.el('button', { type: 'button', class: 'ad-menu-mas', 'aria-label': 'Ver más opciones', html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
       onclick: () => menu.scrollBy({ left: menu.clientWidth * 0.6, behavior: 'smooth' }) });

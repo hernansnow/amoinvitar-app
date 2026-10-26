@@ -275,6 +275,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return x.json().catch(function () { return { result: 'error' }; });
     }).then(function (res) {
       if (res.result !== 'ok') throw Object.assign(new Error('rsvp'), { lleno: !!res.lleno, acceso: !!res.acceso, respondio: true });
+      // Para atar después la canción que sugiera a su nombre (sin link personal)
+      try { localStorage.setItem('ai-nombre-' + fd.get('event_id'), datos.nombre || ''); } catch (e) { /* sin almacenamiento */ }
       listo(!!res.prueba);
     }).catch(function (err) {
       btn.disabled = false; btn.textContent = original;
@@ -296,6 +298,8 @@ function enviarCancion() {
   btn.disabled = true; btn.textContent = cfg.msgEnviando;
   var fd = new FormData();
   fd.set('action', 'cancion'); fd.set('event_id', window.INVITACION_CONFIG && window.INVITACION_CONFIG.event_id); fd.set('cancion', cancion);
+  try { var quien = localStorage.getItem('ai-nombre-' + fd.get('event_id')); if (quien) fd.set('nombre', quien); } catch (e) { /* sin almacenamiento */ }
+  if (window.INVITADO_DATA && window.INVITADO_DATA.nombre && !fd.get('nombre')) fd.set('nombre', window.INVITADO_DATA.nombre);
   fetch(window.INVITACION_CONFIG && window.INVITACION_CONFIG.rsvp_url, { method: 'POST', body: fd })
     .then(function (r) { return r.json(); })
     .then(function (data) { btn.disabled = false; btn.textContent = cfg.textoBtn; if (data.result === 'ok') { input.value = ''; mostrarMsgCancion(cfg.msgOk, 'ok'); } else mostrarMsgCancion(cfg.msgError, 'error'); })

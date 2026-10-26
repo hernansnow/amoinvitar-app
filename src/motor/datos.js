@@ -306,7 +306,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     },
     itinerario: { items: itinerario },
     testigos: { items: (e.testigos || []).filter((x) => x.nombre || x.foto).map((x) => ({ ...x, foto: fotosOn('testigos') ? x.foto || '' : '', estilo: encuadreZoom(PROP.testigo, x.fotoPos, x.fotoZoom) })) },
-    album: { url: e.album?.url || '' },
+    // Álbum de Albunear (el Classic incluido en Deluxe) o un link propio
+    album: { url: (e.album?.origen === 'albunear' ? e.album?.albunear : e.album?.url) || '' },
     // Premium: hashtag de Instagram (por defecto los nombres y el año, como #SofiyAle2027)
     hashtag: (() => {
       const limpio = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9]/g, '');

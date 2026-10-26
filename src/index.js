@@ -63,6 +63,11 @@ const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');
 
 // Títulos y textos que el cliente reescribió en el panel ({ historia: { titulo } } → 'historia.titulo').
 // Los que la plantilla pone como HTML (con saltos de línea) se escapan acá.
+// Invitaciones viejas con un link de álbum cargado: quedan como "link propio"
+function origenAlbum(d) {
+  if (d.album?.url && !d.album.origen && !/albunear\.com/i.test(d.album.url)) d.album.origen = 'propio';
+  return d;
+}
 const TEXTOS_HTML = new Set(['album.texto', 'canciones.texto']);
 function textosPropios(o, pre = '', salida = {}) {
   for (const [k, v] of Object.entries(o || {})) {
@@ -480,7 +485,7 @@ async function apiPanel(env, request, url, partes) {
     const dic = diccionario(ev.tipo, v);
     return json({
       evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
-      esquema, datos: aplicarTipoAcceso(structuredClone(ev.datos)), textos: dic, faltan: faltantes(esquema, ev.datos),
+      esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
       // Textos de cada idioma adicional (para traducir en el panel)
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,
@@ -655,6 +660,27 @@ async function apiPanel(env, request, url, partes) {
   }
   if (accion === 'respuestas') return json({ respuestas: await almacen.respuestas(ev.id) });
   // Administración: textos de los mensajes de WhatsApp y asientos por mesa
+  // Álbum de fotos: con Deluxe viene el Classic de Albunear sin cargo (un código de regalo por invitación,
+  // pedido al Worker de Albunear por el enlace interno). Cuando el álbum ya está creado, su link pasa a la invitación.
+  if (accion === 'albunear' && request.method === 'GET') {
+    const incluido = ev.paquete === 'deluxe';
+    let r = null;
+    if (incluido && env.ALBUNEAR?.albumDeluxe) { try { r = await env.ALBUNEAR.albumDeluxe(ev.id); } catch (e) { console.error('albunear', e); } }
+    if (r?.album?.link && ev.datos.album?.albunear !== r.album.link) {
+      ev.datos.album = { ...(ev.datos.album || {}), albunear: r.album.link };
+      await almacen.guardarEvento(ev);
+    }
+    return json({ incluido, crear: r?.crear || 'https://albunear.com/empezar', album: r?.album || null, conectado: !!r });
+  }
+  // El interruptor "Activar" de la pestaña Álbum: prende la sección con el álbum de Albunear (reemplaza Instagram Wall)
+  if (accion === 'album' && request.method === 'POST') {
+    const b = await request.json().catch(() => ({}));
+    if (b.activo === true && !['premium', 'deluxe'].includes(ev.paquete) && !admin) return json({ error: 'El álbum va con los planes Premium y Deluxe' }, 402);
+    ev.datos.secciones = { ...(ev.datos.secciones || {}), album: b.activo === true };
+    if (b.activo === true) { ev.datos.secciones.instagram = false; ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear' }; }
+    await almacen.guardarEvento(ev);
+    return json({ ok: true });
+  }
   if (accion === 'admin' && request.method === 'POST') {
     const b = await request.json().catch(() => ({}));
     const texto = (x) => (typeof x === 'string' ? x.slice(0, 1500) : undefined);
