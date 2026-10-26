@@ -436,6 +436,8 @@ export async function estadoPlan(env, request, ev, esquema) {
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: precioExtra(x) ? texto(x, precioExtra(x)) : `Incluida en ${NOMBRES_PAQUETE[plan]}`, pagado: !extrasAPagar.includes(x) })),
     aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,
+    // Precio de cada tarjeta con este plan (para mostrarlo en los selectores del panel)
+    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'agradecimiento'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
     // Primera vez: aunque sea gratis pasa por la "compra" (queda el mail de la cuenta y la factura si corresponde)
     activar: !pagado,
   };

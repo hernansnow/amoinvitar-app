@@ -564,8 +564,9 @@ async function apiPanel(env, request, url, partes) {
     const actual = ev.datos[clase]?.tarjeta || {};
     if (actual.generada && !admin) return json({ error: 'La tarjeta ya se generó', url: actual.generada }, 409);
     const extras = ev.datos.extras || [];
+    // La Save The Date del modelo viene con Premium y Deluxe; la con foto se paga aparte en cualquier plan
     const pagada = clase === 'std'
-      ? ['premium', 'deluxe'].includes(ev.paquete) || extras.some((x) => x.startsWith('std-'))
+      ? (ev.datos.std?.tipo === 'foto' ? extras.includes('std-foto') : ['premium', 'deluxe'].includes(ev.paquete) || extras.some((x) => x.startsWith('std-')))
       : extras.includes('agradecimiento');
     if (!pagada && !admin) return json({ error: 'pagar' }, 402);
     ev.datos[clase] = { ...(ev.datos[clase] || {}), tarjeta: { ...actual, generada: imagen, generadaEn: new Date().toISOString() } };

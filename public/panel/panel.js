@@ -1046,7 +1046,9 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
           const falta = o.requiere && !cumple(o.requiere) && o.v !== actual;
           const i = el('input', { type: 'radio', name: nombre, value: o.v, checked: o.v === actual, disabled: dis || falta });
           i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
-          return el('label', { class: `opcion${falta ? ' apagada' : ''}` }, i, el('span', {}, o.etiqueta, o.ayuda ? el('small', {}, o.ayuda) : null,
+          // Opciones con precio (tarjetas): lo que cuesta con el plan actual
+          const precio = o.extra && S.plan?.preciosExtras?.[o.extra];
+          return el('label', { class: `opcion${falta ? ' apagada' : ''}` }, i, el('span', {}, o.etiqueta, precio ? el('b', { class: 'precio-opcion' }, ` ${precio}`) : null, o.ayuda ? el('small', {}, o.ayuda) : null,
             falta ? el('small', { class: 'motivo' }, o.motivo, ' ', o.irA ? el('button', { type: 'button', class: 'btn-link', onclick: (e) => { e.preventDefault(); irA(o.irA); } }, 'Ir a la sección →') : null) : null));
         }));
       }
@@ -1164,6 +1166,13 @@ function varsTarjeta() {
     rsvpAntes: cierre ? `Responder RSVP antes del ${cierre}` : '',
     evento: f.evento, eventoExclama: f.exclama, invitamos: plural ? f.invitamos.replace('Te invito', 'Te invitamos') : f.invitamos,
     teEsperamos: plural ? 'Te esperamos' : 'Te espero', mensaje: MENSAJE_GRACIAS,
+    // Iniciales (monograma), fechas en otros formatos y frases cortas de los diseños con foto
+    ia: (datos.nombres?.a || '').trim().charAt(0).toUpperCase(), ib: (datos.nombres?.b || '').trim().charAt(0).toUpperCase(),
+    fechaGuion: iso ? `${Number(d)} de ${mes} - ${a}` : '', fechaBullets: iso ? `${Number(d)} • ${may(mes)} • ${a}` : '',
+    invitamosLinea: (plural ? f.invitamos.replace('Te invito', 'Te invitamos') : f.invitamos).replace(/\s*\n\s*/g, ' '),
+    acompanar: plural ? 'Esperamos que nos puedas acompañar' : 'Espero que me puedas acompañar',
+    exclamaCorta: S.evento.tipo === 'boda' || (plural && !FRASES[S.evento.tipo]) ? 'Nos casamos!' : S.evento.tipo === '15' ? 'Mis quince!' : f.exclama.replace(/^¡/, ''),
+    agendaFecha: 'Agenda la fecha',
   };
 }
 // Catálogo de tarjetas con foto (se carga una vez)

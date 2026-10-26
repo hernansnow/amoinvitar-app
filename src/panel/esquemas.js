@@ -365,14 +365,15 @@ const pasoDiseno = (modelo) => ({
 // tarjeta (textos, tamaños y posición) y al generarla queda fija: se descarga o se comparte.
 export const DISENOS_FOTO = [
   { v: 'f1', etiqueta: 'Corazón geométrico' }, { v: 'f2', etiqueta: 'Pinceladas' }, { v: 'f3', etiqueta: 'Ramitas' },
-  { v: 'f4', etiqueta: 'Editorial' }, { v: 'f6', etiqueta: 'Encaje' },
+  { v: 'f4', etiqueta: 'Editorial' }, { v: 'f5', etiqueta: 'Minimal' }, { v: 'f6', etiqueta: 'Encaje' },
+  { v: 'f7', etiqueta: 'Blanco y negro' }, { v: 'f8', etiqueta: 'Agenda la fecha' },
 ];
 const pasoTarjeta = (clase, modelo) => (clase === 'std' ? {
   id: 'std', seccion: 'std', complemento: true, titulo: 'Tarjeta Save The Date',
   campos: [
-    { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: 'Una tarjeta para mandar antes de la invitación, con el mismo diseño. Incluida en los planes Premium y Deluxe.' },
+    { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: 'Una tarjeta para mandar antes de la invitación. La del mismo diseño viene incluida en Premium y Deluxe; la tarjeta con foto se suma en cualquier plan.' },
     { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
-      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.' },
+      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'std-foto' },
     ] },
     // Diseños con foto: no dependen del modelo (public/comun/tarjetas/foto/catalogo.json)
     { id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseño', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true, si: { campo: 'std.tipo', es: 'foto' } },

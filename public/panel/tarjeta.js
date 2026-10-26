@@ -4,7 +4,7 @@
 // dibuja la tarjeta en un canvas y se guarda como JPG.
 //
 // Un diseño: { ancho, alto, fondo, fuentes: { clave: "Familia", css }, capas, foto, textos }
-// · capas: imágenes ({ img, x, y, w, h, tipos, sobreFoto }). Con sobreFoto van encima de la foto
+// · capas: imágenes ({ img, x, y, w, h, tipos, excepto, sobreFoto }). Con sobreFoto van encima de la foto
 //   (el fondo con el hueco transparente). tipos: solo para esos eventos (p. ej. ["15"]).
 // · foto: círculo { x, y, r } o rectángulo { x, y, w, h } donde va la foto del cliente.
 // · textos: { id, texto, x, y (centro; con alinear "izq", x es el borde izquierdo), tam, fuente (clave de
@@ -12,7 +12,9 @@
 //   ancho (corta en líneas), ajustar (una sola línea: si no entra en el ancho, se achica), tamSolo
 //   (tamaño cuando va un solo nombre), mayus, altoLinea, lineas: { largo, separacion, grosor }
 //   (rayitas a los costados), amp: { fondo, color, tam } ("&" en un círculo) o { tipo: "texto", color }
-//   ("&" de otro color), extra (texto adicional), opcional: "clave" (se prende y apaga, p. ej. "proximamente") }
+//   ("&" de otro color), extra (texto adicional), opcional: "clave" (se prende y apaga, p. ej. "proximamente"),
+//   alinear "der" (x es el borde derecho), opacidad (0 a 1), sombra (true: sombra suave para texto sobre foto) }
+// · foto.filtro: filtro CSS para la foto (p. ej. "grayscale(1) sepia(.2)"), igual en el editor y en el JPG
 // · Variables: ver varsTarjeta() en panel.js ({nombres} {a} {b} {fecha} {fechaCorta} {lugar} …)
 // El "&" no se escribe ni se borra: se mueve con los nombres (cada nombre se edita por separado).
 
@@ -29,11 +31,13 @@ const el = (tag, attrs = {}, ...hijos) => {
   return e;
 };
 const ALTO_LINEA = 1.18;
-const GENERICA = { titulos: 'cursive', brush: 'cursive', serif: 'serif' };
+const GENERICA = { titulos: 'cursive', brush: 'cursive', serif: 'serif', rouge: 'cursive', juliette: 'cursive', parisienne: 'cursive', satisfy: 'cursive', pristina: 'cursive', dantina: 'cursive', abril: 'serif', triforce: 'serif' };
 const familia = (def, t, fuente = t.fuente) => `"${def.fuentes?.[fuente] || 'Jost'}", ${GENERICA[fuente] || 'sans-serif'}`;
 const rellenar = (s, vars) => String(s || '').replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
 const leerPos = (p) => String(p || '50% 50%').split(' ').map((x) => parseFloat(x) / 100);
 const visible = (t, valor) => (t.mayus ? String(valor).toLocaleUpperCase('es') : String(valor));
+// Posición horizontal según la alineación: centro (x es el medio), izquierda o derecha (x es el borde)
+const desplazX = (t, dx) => (t.alinear === 'izq' ? `${dx}px` : t.alinear === 'der' ? `calc(-100% + ${dx}px)` : `calc(-50% + ${dx}px)`);
 const OPCIONALES = { proximamente: 'Próximamente la invitación formal' };
 const conAmp = (t) => t.amp && t.amp.tipo !== 'texto';
 // "Lau & Pablo" → ["Lau", "Pablo"] cuando el diseño dibuja el "&" aparte
@@ -69,7 +73,7 @@ export function textosDe(diseno, v, vars, def) {
     return { ...t, valor, dx: p.dx || 0, dy: p.dy || 0, escala, tamFinal: tamAjustado(def, t, valor, base) };
   });
 }
-const capasDe = (diseno, tipo) => (diseno.capas || []).filter((c) => !c.tipos || c.tipos.includes(tipo));
+const capasDe = (diseno, tipo) => (diseno.capas || []).filter((c) => (!c.tipos || c.tipos.includes(tipo)) && !(c.excepto || []).includes(tipo));
 
 // Las fuentes del diseño (si la página todavía no las tiene)
 function cargarFuentes(def) {
@@ -151,9 +155,10 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
     const degradado = t.degradado ? `background-image:linear-gradient(180deg, ${t.degradado.join(', ')});-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent` : '';
     const valor = el('span', { class: 'tj-valor', style: degradado }, ...(partes ? [el('span', { class: 'tj-parte' }, partes[0]), amp, el('span', { class: 'tj-parte' }, partes[1])] : [val]));
     const raya = () => el('span', { class: 'tj-raya', style: `width:${t.lineas.largo * t.escala}px;height:${t.lineas.grosor || 2}px` });
-    const izq = t.alinear === 'izq';
-    return el('div', { class: `tj-texto${izq ? ' izq' : ''}`, 'data-id': t.id, tabindex: '0', role: 'button', 'aria-label': `Texto: ${t.valor || t.id}`,
-      style: [`left:${t.x}px`, `top:${t.y}px`, `transform:translate(${izq ? `${t.dx}px` : `calc(-50% + ${t.dx}px)`}, calc(-50% + ${t.dy}px))`, `font-family:${familia(def, t)}`,
+    const izq = t.alinear === 'izq', der = t.alinear === 'der';
+    return el('div', { class: `tj-texto${izq ? ' izq' : der ? ' der' : ''}`, 'data-id': t.id, tabindex: '0', role: 'button', 'aria-label': `Texto: ${t.valor || t.id}`,
+      style: [`left:${t.x}px`, `top:${t.y}px`, `transform:translate(${desplazX(t, t.dx)}, calc(-50% + ${t.dy}px))`, `font-family:${familia(def, t)}`,
+        t.opacidad != null ? `opacity:${t.opacidad}` : '', t.sombra ? 'text-shadow:0 2px 14px rgba(0,0,0,.45)' : '',
         `font-size:${t.tamFinal}px`, `font-weight:${t.peso || 400}`, `color:${t.color || '#333'}`, `--esp:${t.espaciado || 0}px`,
         t.lineas ? `gap:${t.lineas.separacion * t.escala}px` : '', t.ancho && !t.ajustar ? `width:${t.ancho}px` : 'white-space:pre', `line-height:${t.altoLinea || ALTO_LINEA}`].join(';') },
     t.lineas ? raya() : null, valor, t.lineas ? raya() : null);
@@ -169,7 +174,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
       const caja = circulo ? { x: f.x - f.r, y: f.y - f.r, w: 2 * f.r, h: 2 * f.r } : f;
       const hueco = el('div', { class: `tj-foto${circulo ? ' circulo' : ''}`, style: `left:${caja.x}px;top:${caja.y}px;width:${caja.w}px;height:${caja.h}px` });
       if (v.foto) {
-        const img = el('img', { src: v.foto, alt: '', draggable: 'false', style: `object-position:${v.fotoPos || '50% 50%'};transform:scale(${v.fotoZoom || 1})` });
+        const img = el('img', { src: v.foto, alt: '', draggable: 'false', style: `object-position:${v.fotoPos || '50% 50%'};transform:scale(${v.fotoZoom || 1})${f.filtro ? `;filter:${f.filtro}` : ''}` });
         hueco.append(img);
         let ini;
         arrastrar(hueco, {
@@ -190,7 +195,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
       let ini;
       arrastrar(nodo, {
         alEmpezar: () => { const p = v.textos[t.id] || {}; ini = [p.dx || 0, p.dy || 0]; },
-        alMover: (dx, dy) => { const p = (v.textos[t.id] ??= {}); p.dx = Math.round(ini[0] + dx); p.dy = Math.round(ini[1] + dy); nodo.style.transform = `translate(${t.alinear === 'izq' ? `${p.dx}px` : `calc(-50% + ${p.dx}px)`}, calc(-50% + ${p.dy}px))`; },
+        alMover: (dx, dy) => { const p = (v.textos[t.id] ??= {}); p.dx = Math.round(ini[0] + dx); p.dy = Math.round(ini[1] + dy); nodo.style.transform = `translate(${desplazX(t, p.dx)}, calc(-50% + ${p.dy}px))`; },
         alSoltar: (movio) => { if (movio) emitir(); else if (elegido === t.id) { editarTexto(t.id); return; } elegido = t.id; pintarBarra(); marcar(); },
       });
       nodo.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.target.isContentEditable) { e.preventDefault(); editarTexto(t.id); } });
@@ -271,7 +276,7 @@ function escribir(g, s, x, y, esp) {
 function escribirLinea(g, def, t, s, x0, y, tam, relleno) {
   const esp = t.espaciado || 0;
   const total = anchoLinea(def, t, s, tam);
-  let x = (t.alinear === 'izq' ? x0 : x0 - total / 2) + esp / 2;
+  let x = (t.alinear === 'izq' ? x0 : t.alinear === 'der' ? x0 - total : x0 - total / 2) + esp / 2;
   const fuente = `${t.peso || 400} ${tam}px ${familia(def, t)}`;
   g.font = fuente; g.fillStyle = relleno;
   const partes = partirAmp(t, s);
@@ -317,6 +322,7 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
     if (circulo) g.arc(f.x, f.y, f.r, 0, Math.PI * 2); else g.rect(caja.x, caja.y, caja.w, caja.h);
     g.clip();
     g.translate(cx, cy); g.scale(z, z); g.translate(-cx, -cy);
+    if (f.filtro) g.filter = f.filtro;
     g.drawImage(img, caja.x + (caja.w - dw) * px, caja.y + (caja.h - dh) * py, dw, dh);
     g.restore();
   }
@@ -337,6 +343,9 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
       t.degradado.forEach((c, i) => gr.addColorStop(i / Math.max(1, t.degradado.length - 1), c));
       relleno = gr;
     }
+    g.save();
+    if (t.opacidad != null) g.globalAlpha = t.opacidad;
+    if (t.sombra) { g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 14; g.shadowOffsetY = 2; }
     lineas.forEach((l, i) => {
       const ancho = escribirLinea(g, def, t, l, x0, y0 + i * alto, tam, relleno);
       if (t.lineas && i === 0) {
@@ -346,6 +355,7 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
         g.fillRect(x0 + ancho / 2 + sep, y0 - gr / 2, largo, gr);
       }
     });
+    g.restore();
   }
   return new Promise((ok) => cv.toBlob(ok, 'image/jpeg', 0.9));
 }

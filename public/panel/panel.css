@@ -987,3 +987,5 @@ body.modo-admin #btn-ojo { display: none !important; }
   .ad-exportar .btn { white-space: normal; font-size: .86rem; gap: 4px; }
   .ad-conteo-3 .ad-numero { padding: 12px 10px; } .ad-conteo-3 .ad-numero strong { font-size: 1.7rem; }
 }
+.tj-texto.der { text-align: right; justify-content: flex-end; }
+.precio-opcion { color: var(--acento); font-weight: 700; margin-left: 4px; }

@@ -45,9 +45,10 @@ export const EXTRAS = {
   paleta: { precio: 25, nombre: 'Cambio de paleta de colores' },
   tipografia: { precio: 10, nombre: 'Cambio de tipografía' },
   'regalos-simbolicos': { precio: 25, nombre: 'Lista de regalos simbólica' },
-  // Tarjetas (complementos de la invitación): la Save The Date va incluida en Premium y Deluxe
-  'std-tarjeta': { precio: 12, nombre: 'Tarjeta Save The Date', gratisDesde: 'premium' },
-  'std-foto': { precio: 15, nombre: 'Tarjeta Save The Date con foto', gratisDesde: 'premium' },
+  // Tarjetas (complementos de la invitación): la Save The Date del modelo va incluida en Premium y Deluxe;
+  // las tarjetas con foto (Save The Date y agradecimiento) se pagan aparte en cualquier plan
+  'std-tarjeta': { precio: 10, nombre: 'Tarjeta Save The Date', gratisDesde: 'premium' },
+  'std-foto': { precio: 15, nombre: 'Tarjeta Save The Date con foto' },
   agradecimiento: { precio: 15, nombre: 'Tarjeta de agradecimiento' },
 };
 
