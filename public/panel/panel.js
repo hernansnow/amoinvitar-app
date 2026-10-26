@@ -100,7 +100,11 @@ async function guardar() {
     await quizasMiniatura();
     const r = await api('', { method: 'PUT', body: JSON.stringify({ datos }) });
     S.faltan = r.faltan;
-    if (r.plan) { S.plan = r.plan; pintarPlan(); }
+    if (r.plan) {
+      const antes = S.plan?.plan; S.plan = r.plan; pintarPlan();
+      // La portada de Basic es más baja: con otro plan, el encuadre se redibuja con la medida nueva
+      if (antes && antes !== r.plan.plan && pasoActual?.id === 'portada') dibujarPaso();
+    }
     if (r.textosIdiomas) S.textosIdiomas = r.textosIdiomas;
     // Si cambió el esquema (por ejemplo, un idioma adicional suma sus campos) se redibuja el paso
     const cambioEsquema = r.esquema && JSON.stringify(r.esquema.pasos.map((x) => [x.id, x.campos.length])) !== JSON.stringify(S.esquema.pasos.map((x) => [x.id, x.campos.length]));
@@ -385,7 +389,11 @@ function marcoEncuadre({ url, pos, proporcion, etiqueta, redonda = false, zoom =
 
 // Encuadre de la portada: la foto entera con los dos recortes encima (celular y computadora).
 // Arrastrando el punto (o la foto) se mueven los dos a la vez; arrastrando un marco, solo ese.
-const ASPECTO = { cel: 9 / 16, pc: 16 / 9 };
+// Las proporciones son las de la portada real (medidas en la invitación): en Premium y Deluxe ocupa
+// toda la pantalla (celular 9:19,5 como la vista previa; computadora 16:10); la portada de Basic
+// (también Premium/Deluxe sin cuenta regresiva) es más baja: 80% del alto en el celular y 2:1 en la computadora.
+const portadaBasic = () => ['gratis', 'basic'].includes(S.plan?.plan) || datos.portada?.cuenta === false;
+const aspectoPortada = () => (portadaBasic() ? { cel: 9 / (19.5 * 0.8), pc: 2 } : { cel: 9 / 19.5, pc: 16 / 10 });
 function encuadrePortada({ url, pos, posPc, alCambiar }) {
   const p = { cel: leerPos(pos), pc: leerPos(posPc || pos) };
   const img = el('img', { src: url, alt: '', draggable: 'false' });
@@ -394,7 +402,7 @@ function encuadrePortada({ url, pos, posPc, alCambiar }) {
   const punto = el('div', { class: 'foco', 'aria-hidden': 'true' });
   const lienzo = el('div', { class: 'lienzo', role: 'application', 'aria-label': 'Encuadre de la portada: arrastrar el punto para mover los dos recortes, o cada recorte por separado' }, img, marcoPc, marcoCel, punto);
   let W = 0, H = 0;
-  const caja = (k) => { const a = ASPECTO[k]; return W / H > a ? { w: H * a, h: H } : { w: W, h: W / a }; };
+  const caja = (k) => { const a = aspectoPortada()[k]; return W / H > a ? { w: H * a, h: H } : { w: W, h: W / a }; };
   const marcoDe = { cel: marcoCel, pc: marcoPc };
   const pintar = () => {
     W = img.clientWidth; H = img.clientHeight;

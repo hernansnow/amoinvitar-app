@@ -879,3 +879,45 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .oa-texto small { display: block; color: var(--suave); margin-top: 3px; font-size: .85rem; line-height: 1.35; }
 .ejemplo-acceso { margin: 4px 0 0; padding: 10px 12px; border-radius: 10px; background: #f6f5f3; font-size: .85rem; color: var(--suave); overflow-wrap: anywhere; }
 .insignias { display: inline-flex; gap: 4px; flex-wrap: wrap; vertical-align: middle; }
+
+/* ══ Ronda 17: barra superior verde, barra inferior #d6e4dd ══════════════ */
+.barra { background: var(--acento); border-bottom: 0; color: var(--acento-texto); }
+.barra .btn-volver { color: var(--acento-texto); }
+.barra .btn-volver:hover { background: rgba(255, 255, 255, .15); }
+.barra .titulo strong { color: var(--acento-texto); }
+.barra .titulo #estado-guardado { color: color-mix(in srgb, var(--acento-texto) 72%, transparent); }
+.barra #btn-modelo-movil { color: var(--acento-texto); }
+.barra .btn-redondo { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .45); color: var(--acento-texto); }
+.barra .btn-redondo:hover { background: rgba(255, 255, 255, .26); }
+.barra .btn-redondo[aria-pressed="true"] { background: #1f2421; border-color: #1f2421; }
+.barra .modo-vista { background: rgba(255, 255, 255, .16); }
+.barra .modo-vista button { color: var(--acento-texto); }
+.barra .modo-vista button[aria-pressed="true"] { background: #1f2421; color: #fff; }
+.barra #btn-publicar { background: #fff; color: var(--acento); border-color: #fff; font-weight: 700; }
+.barra .btn-ayuda { background: transparent; color: var(--acento-texto); border-color: rgba(255, 255, 255, .75); }
+.barra .btn-modelo { background: #1f2421; color: #fff; }
+.barra .caja-plan { background: #d6e4dd; }
+.barra .plan-resumen span, .barra .plan-resumen small { color: #3d4a44; }
+.barra .marca.propia img { filter: none; }
+/* Separador después del logo, con más aire */
+@media (min-width: 1024px) {
+  .barra { gap: 14px; }
+  .barra .marca { padding-right: 18px; margin-right: 4px; border-right: 1px solid rgba(255, 255, 255, .35); }
+  .modos { align-items: center; }
+  .modos .linea-pasos { margin-left: 24px; flex: 0 1 260px; }
+}
+/* Celular: flecha de volver pegada al borde, isotipo blanco */
+@media (max-width: 1023px) {
+  .barra { padding-left: 4px; }
+  .barra .btn-volver { width: 28px; margin-right: -4px; }
+  .marca .logo-corto { width: 36px; height: auto; border-radius: 0; }
+}
+/* Barra inferior y plan: #d6e4dd; Siguiente redondeado, flechas pegadas a las palabras */
+.barra-inferior { background: #d6e4dd !important; }
+.barra-inferior .btn-link { color: #3d4a44 !important; }
+.plan-mini, .plan-mini small { color: #3d4a44 !important; }
+.barra-inferior .nav-btn { gap: 0 !important; line-height: 1 !important; }
+.barra-inferior .nav-btn .flecha { line-height: .8 !important; margin-bottom: -1px; }
+.barra-inferior .btn.nav-btn { border-radius: 999px !important; padding: 6px 20px !important; }
+body.modo-admin #btn-ojo { display: none !important; }
+@media (max-width: 1023px) { .barra .btn-ayuda { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .45); color: var(--acento-texto); } }
