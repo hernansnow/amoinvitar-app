@@ -1463,7 +1463,7 @@ function dibujarPaso() {
     el('div', { class: 'navegar solo-escritorio' },
       anterior ? el('button', { type: 'button', class: 'btn btn-sec', onclick: () => irA(anterior.id) }, el('small', {}, '← Anterior'), el('span', {}, anterior.titulo)) : el('span'),
       siguiente ? el('button', { type: 'button', class: 'btn siguiente', onclick: () => irA(siguiente.id) }, el('small', {}, 'Siguiente →'), el('span', {}, siguiente.titulo))
-        : el('button', { type: 'button', class: 'btn siguiente', onclick: publicar }, el('small', {}, 'Listo'), el('span', {}, textoPublicar()))),
+        : el('button', { type: 'button', class: 'btn siguiente', onclick: publicar }, el('small', {}, 'Listo'), el('span', {}, textoPublicar()[0]))),
   ].filter(Boolean));
   pintarFaltan();
 }
@@ -1541,13 +1541,13 @@ const ICONO_WA = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="t
 // Manual de uso corto (el completo está en /ayuda/panel/)
 const MANUAL = [
   ['Cómo funciona', 'A la izquierda (o en "Ver todos", en el celular) están los pasos. Cada uno tiene su interruptor: prendido, la sección se ve en la invitación. Lo que se carga se guarda solo y la vista previa se actualiza al instante.'],
-  ['Plan y precio', 'El plan sale de las secciones prendidas: Basic, Premium o Deluxe (cada paso tiene su aviso). Las tarjetas (Save The Date y agradecimiento), Cambios de diseño e Idioma adicional son complementos: van al final del menú, en "Complementos". La Save The Date viene incluida en Premium y Deluxe. Una sección apagada no se puede editar hasta prenderla. No se paga nada hasta publicar.'],
+  ['Plan y precio', 'El plan sale de las secciones prendidas: Basic, Premium o Deluxe (cada paso tiene su aviso). Las tarjetas (Save The Date y agradecimiento), Cambios de diseño e Idioma adicional son complementos: van al final del menú, en "Complementos". La Save The Date viene incluida en Premium y Deluxe. Una sección apagada no se puede editar hasta prenderla. No se paga nada hasta obtener el link.'],
   ['Fotos y encuadre', 'Después de subir una foto se elige qué parte se ve. En la portada, el punto mueve los recortes del celular y de la computadora a la vez; cada marco se puede mover solo. En el celular, mantener apretado un instante antes de arrastrar.'],
   ['Lugar y fecha', 'Con el link de Google Maps se arma solo el mapa y el botón "¿Cómo llegar?". En Google Maps: buscar el lugar, tocar Compartir y Copiar link.'],
   ['Confirmación e invitados', 'La confirmación se cierra sola en la fecha límite o al llegar al aforo. Con la lista de invitados, cada uno recibe su link personal con su nombre, pases y mesa.'],
   ['Idiomas', 'El idioma principal se elige en "Idioma". Con un idioma adicional, cada invitado ve la invitación en el suyo y puede cambiarlo desde el botón flotante (con la bandera elegida para cada idioma). Los textos se ajustan con "Editar textos en…" y se pueden sumar hasta tres idiomas.'],
   ['Invitados y acceso', 'Una sola pregunta: ¿quién puede entrar? Abierta (cualquiera con el link), Con PIN (uno para todos), Lista de invitados (cada uno con su link personal; solo entran los de la lista) o Lista + PIN (además, cada uno con su PIN). Los dueños la ven siempre con "Ver la invitación" desde Administración; lo que confirmen ahí queda como prueba y se puede borrar.'],
-  ['Publicar', 'Al tocar Publicar se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link y se puede seguir editando. Ya publicada, el botón dice Actualizar.'],
+  ['Obtener mi link', 'Al tocar "Obtener mi link" se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link (no se envía nada a los invitados: el link se comparte cuando se quiera) y se puede seguir editando. Después, el botón dice "Guardar cambios".'],
   ['Lista de invitados', 'En "Invitados y acceso" se elige quién puede entrar: Abierta, Con PIN, Lista de invitados o Lista + PIN. Con lista, cada invitado recibe su link personal. Para familias: un solo link y cada integrante confirma por separado. Con el teléfono, el WhatsApp sale directo a su número; los contactos se suman desde la agenda (Android) o con el archivo .vcf (iPhone). Si el invitado vuelve a abrir su link, ve lo que respondió y puede cambiarlo. "Enviar a todos" (en Enviar) y "Recordar a todos" (en Respuestas) abren WhatsApp con el mensaje de cada uno, uno tras otro.'],
   ['Llegadas', 'El día del evento: cada invitado muestra su pase de entrada (QR) y quien recibe lo escanea con el link de la recepción, o lo busca por nombre. En Administración → Llegadas se ve en vivo quién llegó.'],
   ['Administración', 'Resumen con la cuenta regresiva; Enviar (WhatsApp, link, QR o los links personales); Respuestas con filtros, recordatorios y descarga en Excel o PDF (casilla "Solo confirmados"); Mensajes; Canciones (pasarlas a una playlist de Spotify); Mesas (arrastrar invitados entre mesas, croquis y el QR "Buscá tu mesa" para la entrada); Llegadas; Álbum de fotos; Accesos (la pareja y hasta 3 administradores, cada uno con su mail). En Enviar se ve quién abrió su link y quién no.'],
@@ -1583,13 +1583,13 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
     plan.pagado ? el('p', { class: 'ayuda' }, `Ya pagado: plan ${NOMBRE_NIVEL[plan.pagado]}. Se paga solo la diferencia.`) : null,
     el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? plan.aPagar.texto : 'Gratis')),
   ];
-  if (!paraPagar) { abrirModal('Tu invitación', ...partes, el('p', { class: 'ayuda' }, 'Se paga recién al publicar. Las secciones se prenden y apagan desde los pasos.')); return; }
+  if (!paraPagar) { abrirModal('Tu invitación', ...partes, el('p', { class: 'ayuda' }, 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
   // Pago: mail (si no entró con su cuenta), cupón y medio de pago
   const mail = S.usuario ? null : el('input', { type: 'email', required: true, placeholder: 'tu@mail.com', autocomplete: 'email' });
   const cupon = el('input', { type: 'text', placeholder: 'Cupón (opcional)', maxlength: 30 });
   const medios = el('div', { class: 'opciones medios' });
   const total = partes.at(-1);
-  const boton = el('button', { type: 'button', class: 'btn btn-grande', html: `${icono('enviar')}<span>${plan.aPagar.eur ? 'Pagar y publicar' : 'Publicar'}</span>` });
+  const boton = el('button', { type: 'button', class: 'btn btn-grande', html: `${icono('enviar')}<span>${plan.aPagar.eur ? 'Pagar y obtener mi link' : 'Obtener mi link'}</span>` });
   const error = el('p', { class: 'motivo' });
   const cotizar = async () => {
     try {
@@ -1610,7 +1610,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
         borrador: { evento: id, clave }, email: mail?.value || '', cupon: cupon.value, medio: medios.querySelector('input:checked')?.value }) }).then(async (x) => ({ ok: x.ok, ...(await x.json()) }));
       if (!r.ok || !r.url) throw new Error(r.error || 'No se pudo seguir con el pago');
       location.href = r.url;
-    } catch (e) { error.textContent = e.message; boton.disabled = false; boton.textContent = plan.aPagar.eur ? 'Pagar y publicar' : 'Publicar'; }
+    } catch (e) { error.textContent = e.message; boton.disabled = false; boton.textContent = plan.aPagar.eur ? 'Pagar y obtener mi link' : 'Obtener mi link'; }
   });
   // Solo administradores: publicar sin cobrar (para probar; no genera factura)
   const sinPagar = S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: async (e) => {
@@ -1620,12 +1620,12 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
       if (!r.ok || !r.url) throw new Error(r.error || 'No se pudo publicar');
       location.href = r.url;
     } catch (err) { error.textContent = err.message; e.target.disabled = false; }
-  } }, 'Publicar sin pagar (administración, prueba)') : null;
-  abrirModal('Publicar la invitación', ...partes,
+  } }, 'Obtener el link sin pagar (administración, prueba)') : null;
+  abrirModal('Obtener el link de la invitación', ...partes,
     mail ? el('label', { class: 'campo-modal' }, 'Mail para recibir el acceso y la factura', mail) : null,
     plan.aPagar.eur ? el('div', { class: 'campo-modal' }, 'Medio de pago', medios) : null,
     plan.aPagar.eur ? cupon : null, error, boton, sinPagar,
-    el('p', { class: 'ayuda' }, 'Después del pago la invitación queda publicada en su link y se puede seguir editando.'));
+    el('p', { class: 'ayuda' }, 'No se envía nada a los invitados: el link lo compartes tú cuando quieras. Y la invitación se puede seguir editando todas las veces que haga falta.'));
   if (plan.aPagar.eur) cotizar();
 }
 
@@ -1633,9 +1633,15 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
 // Ya publicada, el botón dice "Actualizar" (los cambios se guardan solos; Actualizar
 // confirma que está todo completo y, si se sumó algo pago, lo cobra)
 const esInvitacionWeb = () => ['invitacion', 'std-web', 'compromiso-web', 'std-web-medida'].includes(S.evento.producto);
-function textoPublicar() { return !esInvitacionWeb() ? 'Enviar al diseño' : S.evento.estado === 'publicado' ? 'Actualizar' : 'Publicar'; }
+// "Obtener mi link" (y no "Publicar"): deja claro que no se envía nada a los invitados; el link lo comparte el cliente.
+// En el celular va la versión corta. Ya con link, los cambios se confirman con "Guardar cambios".
+function textoPublicar() {
+  if (!esInvitacionWeb()) return ['Enviar al diseño', 'Enviar'];
+  return S.evento.estado === 'publicado' ? ['Guardar cambios', 'Guardar'] : ['Obtener mi link', 'Obtener link'];
+}
 function pintarPublicar() {
-  ['#btn-publicar', '#btn-publicar-2'].forEach((x) => { const b = $(x); if (b) b.textContent = textoPublicar(); });
+  const [largo, corto] = textoPublicar();
+  ['#btn-publicar', '#btn-publicar-2'].forEach((x) => { const b = $(x); if (b) { b.replaceChildren(el('span', { class: 'txt-largo' }, largo), el('span', { class: 'txt-corto' }, corto)); b.title = largo; } });
   if (pasoActual) dibujarPasos();
 }
 async function publicar() {
@@ -1645,12 +1651,12 @@ async function publicar() {
     const r = await api('/publicar', { method: 'POST' });
     S.evento.estado = r.estado;
     pintarPublicar();
-    if (r.link && yaEstaba) { aviso('¡Invitación actualizada!'); estado('Publicada'); }
-    else if (r.link) { aviso('¡Publicada! Link copiado.'); navigator.clipboard?.writeText(r.link).catch(() => {}); window.open(`${location.origin}/acceso/${S.evento.id}/dueno${clave ? `?k=${encodeURIComponent(clave)}` : ''}`, '_blank', 'noopener'); }
+    if (r.link && yaEstaba) { aviso('¡Cambios guardados en tu invitación!'); estado('Publicada'); }
+    else if (r.link) { aviso('¡Listo! Tu link está copiado: compártelo cuando quieras.'); navigator.clipboard?.writeText(r.link).catch(() => {}); window.open(`${location.origin}/acceso/${S.evento.id}/dueno${clave ? `?k=${encodeURIComponent(clave)}` : ''}`, '_blank', 'noopener'); }
     else aviso('¡Listo! El equipo de diseño ya tiene todo para empezar.');
   } catch (e) {
     if (e.datos?.error === 'pagar') { S.plan = e.datos.plan; pintarPlan(); mostrarResumen(true, e.datos.plan); return; }
-    if (e.datos?.faltan) { S.faltan = e.datos.faltan; dibujarPasos(); irA(e.datos.faltan[0].paso); aviso('Faltan algunos datos para publicar.', true); }
+    if (e.datos?.faltan) { S.faltan = e.datos.faltan; dibujarPasos(); irA(e.datos.faltan[0].paso); aviso('Faltan algunos datos para obtener el link.', true); }
     else aviso(e.message, true);
   }
 }

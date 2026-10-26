@@ -1006,3 +1006,7 @@ body.modo-admin #btn-ojo { display: none !important; }
   /* Con el panel agrandado del todo, no pisa "Editar invitación / Administración" */
   .editor { margin-top: calc(min(var(--alto-previa, 40dvh), 16px) * -1); }
 }
+/* "Obtener mi link" / "Guardar cambios": en el celular, la versión corta */
+.txt-corto { display: none; }
+@media (max-width: 1023px) { .barra .txt-largo { display: none; } .barra .txt-corto { display: inline; } }
+@media (max-width: 400px) { .barra #btn-publicar { padding: 7px 10px; font-size: .88rem; } .barra .acciones { gap: 4px; } .barra .acciones .btn-redondo, .barra .btn-ayuda { width: 34px; height: 34px; } }
