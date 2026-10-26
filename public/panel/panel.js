@@ -1404,7 +1404,7 @@ function dibujarPasos() {
   $('#progreso-movil').style.setProperty('--avance', avance);
   $('#linea-pasos').replaceChildren(el('small', {}, `Paso ${i + 1} de ${pasos.length}`), el('span', { class: 'progreso', style: `--avance:${avance}` }));
   $('#btn-anterior').disabled = i <= 0;
-  $('#btn-siguiente').lastElementChild.textContent = i >= pasos.length - 1 ? textoPublicar() : 'Siguiente';
+  $('#btn-siguiente').lastElementChild.textContent = i >= pasos.length - 1 ? textoPublicar()[1] : 'Siguiente';
 }
 function abrirPasos() { $('#pasos').classList.add('abierta'); document.body.classList.add('sin-scroll'); $('#pasos [aria-current="step"]')?.focus(); }
 function cerrarPasos() { $('#pasos').classList.remove('abierta'); document.body.classList.remove('sin-scroll'); }
