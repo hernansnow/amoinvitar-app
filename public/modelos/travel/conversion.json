@@ -2,7 +2,7 @@
   "15": {
     "carpeta": "travel15",
     "hojas": [
-      "css/inv-travel.css?ver=2"
+      "css/inv-travel.css"
     ],
     "faltan": [],
     "paquetes": {
@@ -29,7 +29,8 @@
           "ceremonia: sin \"DÍA Y HORARIO\"",
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
-          "celebracion: sin fecha y hora"
+          "celebracion: sin fecha y hora",
+          "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -70,7 +71,8 @@
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
           "celebracion: sin fecha y hora",
-          "itinerario: sin #timeline"
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -119,7 +121,7 @@
   "boda": {
     "carpeta": "travel",
     "hojas": [
-      "css/inv-travel.css?ver=2"
+      "css/inv-travel.css"
     ],
     "faltan": [],
     "paquetes": {
@@ -146,7 +148,8 @@
           "ceremonia: sin \"DÍA Y HORARIO\"",
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
-          "celebracion: sin fecha y hora"
+          "celebracion: sin fecha y hora",
+          "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
@@ -187,7 +190,8 @@
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
           "celebracion: sin fecha y hora",
-          "itinerario: sin #timeline"
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
@@ -236,7 +240,7 @@
   "cumple": {
     "carpeta": "cumple-travel",
     "hojas": [
-      "css/inv-travel.css?ver=2"
+      "css/inv-travel.css"
     ],
     "faltan": [],
     "paquetes": {
@@ -261,7 +265,8 @@
         ],
         "avisos": [
           "celebracion: sin \"DÍA Y HORARIO\"",
-          "celebracion: sin fecha y hora"
+          "celebracion: sin fecha y hora",
+          "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -298,7 +303,8 @@
         "avisos": [
           "celebracion: sin \"DÍA Y HORARIO\"",
           "celebracion: sin fecha y hora",
-          "itinerario: sin #timeline"
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresPortada": "Natalia",

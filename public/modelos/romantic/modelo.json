@@ -14,7 +14,7 @@
     "#ffffff"
   ],
   "galeria": {
-    "byn": false,
+    "byn": true,
     "enRsvp": false
   },
   "videoPortada": false,

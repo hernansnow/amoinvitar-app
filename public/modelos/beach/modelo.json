@@ -83,8 +83,8 @@
     }
   },
   "nombresHTML": {
-    "portada": "{a} <span class=\"jost-lead\">Aylén</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">Matías</span> {b}",
-    "cierre": "{a} <span class=\"jost-lead\">Aylén</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">Matías</span> {b}",
+    "portada": "<span class=\"jost-lead\">{a}</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">{b}</span>",
+    "cierre": "<span class=\"jost-lead\">{a}</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">{b}</span>",
     "solo": "{a}"
   },
   "miniatura": {

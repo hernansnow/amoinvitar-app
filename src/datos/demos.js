@@ -24,7 +24,7 @@ const ITINERARIO = {
   15: [['20:00', 'iglesia', 'Misa', 'Mass'], ['21:00', 'recepcion', 'Recepción', 'Reception'], ['22:00', '15', 'Entrada', 'Grand entrance'], ['23:00', 'vals', 'Vals', 'Waltz'], ['00:30', 'torta', 'Torta', 'Cake'], ['02:00', 'fiesta', 'Fiesta', 'Party']],
   bautismo: [['11:00', 'iglesia', 'Bautismo', 'Baptism'], ['13:00', 'recepcion', 'Recepción', 'Reception'], ['14:00', 'cena', 'Almuerzo', 'Lunch'], ['16:00', 'torta', 'Torta', 'Cake']],
   comunion: [['11:00', 'iglesia', 'Misa', 'Mass'], ['13:00', 'recepcion', 'Recepción', 'Reception'], ['14:00', 'cena', 'Almuerzo', 'Lunch'], ['16:00', 'torta', 'Torta', 'Cake']],
-  cumple: [['21:00', 'recepcion', 'Recepción', 'Welcome'], ['22:00', 'cena', 'Cena', 'Dinner'], ['00:00', 'torta', 'Torta', 'Cake'], ['01:00', 'fiesta', 'Fiesta', 'Party']],
+  cumple: [['20:00', 'tragos', 'Rompiendo el hielo', 'Breaking the ice'], ['21:00', 'cena', 'A cenar se ha dicho', 'Dinner time'], ['22:00', 'disco', '¡Que empiece el baile!', 'Let the dancing begin!'], ['23:00', 'torta3', 'Mordisco al pastel y deseos', 'Cake and wishes'], ['23:30', 'baile', 'Hasta que el cuerpo aguante', 'Dance till we drop'], ['02:00', 'last-call2', 'Despedida', 'Farewell']],
 };
 
 export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
@@ -74,7 +74,10 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
         { nombre: 'Juan Fernández', rol: en ? "GROOM'S BROTHER" : 'HERMANO DEL NOVIO', foto: comun('img/demo-testigo1.jpg') },
         { nombre: 'Marcela García', rol: en ? "BRIDE'S BEST FRIEND" : 'MEJOR AMIGA DE LA NOVIA', foto: comun('img/demo-testigo2.jpg') },
       ]
-      : [
+      : tipo === 'cumple' ? [
+        { nombre: 'Juan Fernández', rol: en ? 'BEST FRIEND' : 'MEJOR AMIGO', foto: comun('img/demo-testigo1.jpg') },
+        { nombre: 'Marcela García', rol: en ? 'BEST FRIEND' : 'MEJOR AMIGA', foto: comun('img/demo-testigo2.jpg') },
+      ] : [
         { nombre: 'Juan Fernández', rol: en ? 'GODFATHER' : 'PADRINO', foto: comun('img/demo-testigo1.jpg') },
         { nombre: 'Marcela García', rol: en ? 'GODMOTHER' : 'MADRINA', foto: comun('img/demo-testigo2.jpg') },
       ],
@@ -94,7 +97,6 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
     },
     redes: { instagram: 'https://www.instagram.com/amoinvitar/', facebook: 'https://www.facebook.com/amoinvitar' },
     acceso: {},
-    // En cumpleaños no hay padrinos: la demo no muestra esa sección
-    secciones: tipo === 'cumple' ? { testigos: false } : {},
+    secciones: {},
   };
 }

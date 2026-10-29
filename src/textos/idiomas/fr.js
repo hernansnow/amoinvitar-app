@@ -119,7 +119,7 @@ export default {
       'meta.descripcion': "J'ai hâte de célébrer avec vous !",
       'celebracion.sola': 'Anniversaire', 'bienvenida.texto': "J'aimerais vous inviter à ma fête !", 'evento.nombre': 'Anniversaire', 'evento.descripcion': 'Venez fêter mon anniversaire', 'portada.subtitulo': "C'EST MON ANNIVERSAIRE !",
       'historia.titulo': 'Mon Histoire', 'historia.texto': "Une année de plus pour célébrer la vie, et quoi de mieux que de le faire avec les personnes que j'aime le plus.",
-      'rsvp.texto': 'Votre présence rendra cette journée vraiment spéciale.', 'bus.destinoTexto': 'Ma fête !', 'testigos.titulo': 'Les Hôtes',
+      'rsvp.texto': 'Votre présence rendra cette journée vraiment spéciale.', 'bus.destinoTexto': 'Ma fête !', 'testigos.titulo': 'Complices',
       'album.texto': "Préparez-vous pour ma fête !<br>Appuyez sur le bouton et envoyez toutes les photos et vidéos que vous prendrez pendant la fête dans mon album partagé, instantanément, sans télécharger d'application.",
       'canciones.texto': 'Quelles chansons ne doivent pas manquer ?<br>Aidez-moi à choisir la musique',
       'regalos.texto': 'Le plus beau cadeau, c\'est votre présence, mais si vous souhaitez me faire un cadeau, voici les informations.',

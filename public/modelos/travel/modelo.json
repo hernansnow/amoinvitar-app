@@ -83,8 +83,8 @@
     }
   },
   "nombresHTML": {
-    "portada": "{a} <span class=\"text-azul\">&#160;+&#160;&#160;</span> {b}",
-    "cierre": "{a} <span class=\"text-gold\">&#160;+&#160;&#160;</span> {b}",
+    "portada": "{a}<span class=\"text-azul\">&#160;+&#160;&#160;</span>{b}",
+    "cierre": "{a}<span class=\"text-gold\">&#160;+&#160;&#160;</span>{b}",
     "solo": "{a}"
   },
   "miniatura": {

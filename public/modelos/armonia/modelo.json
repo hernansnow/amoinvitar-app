@@ -15,7 +15,7 @@
   ],
   "galeria": {
     "byn": false,
-    "enRsvp": false
+    "enRsvp": true
   },
   "videoPortada": false,
   "portadaSinFoto": "img/bg-armonia-1.jpg",
@@ -83,7 +83,7 @@
     }
   },
   "nombresHTML": {
-    "portada": "{a} <span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">Noe</span>\n                  <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\">\n                    <span class=\"text-gold\">&amp;</span>\n                    <span>Eze</span>\n                  </span> {b}",
+    "portada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">{a}</span> <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"> <span class=\"text-gold\">&amp;</span> <span>{b}</span> </span>",
     "cierre": "{a} <span class=\"text-gold\">&amp;</span> {b}",
     "solo": "{a}"
   },

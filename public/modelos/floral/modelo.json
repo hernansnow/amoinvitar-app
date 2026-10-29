@@ -273,7 +273,10 @@
             "hero-banner3.jpg",
             "hero-banner4.jpg",
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Lucas"
+          }
         }
       }
     }

@@ -39,10 +39,14 @@ function paquetes(ev) {
 function nombresHTML(html, plural) {
   if (!html) return null;
   if (!plural) return '{a}';
-  const m = html.match(/^\s*([^<]*?)\s*(<[\s\S]*>)\s*([^<>]*?)\s*$/);
-  if (m) return `{a} ${m[2].trim()} {b}`;
-  const y = html.match(/^\s*(\S+)\s+(&amp;|&|y|e)\s+(\S+)\s*$/);
-  return y ? `{a} ${y[2]} {b}` : '{a} &amp; {b}';
+  // Los nombres de la demo (la primera y la última palabra) se cambian por {a} y {b}; el resto del diseño queda
+  const texto = html.replace(/<[^>]*>/g, ' ').replace(/&amp;|&nbsp;/g, ' ').replace(/[&+♥]/g, ' ').trim();
+  const palabras = texto.split(/\s+/).filter((w) => w && !/^(y|e)$/i.test(w));
+  if (palabras.length < 2) return '{a} &amp; {b}';
+  const a = palabras[0], b = palabras.at(-1);
+  const ia = html.indexOf(a), ib = html.lastIndexOf(b);
+  if (ia < 0 || ib < 0 || ib <= ia) return '{a} &amp; {b}';
+  return (html.slice(0, ia) + '{a}' + html.slice(ia + a.length, ib) + '{b}' + html.slice(ib + b.length)).replace(/\s+/g, ' ').trim();
 }
 
 async function original(ev) {
@@ -97,10 +101,11 @@ const modelo = {
   eventos,
   gratis: previo.gratis ?? false,
   paleta: d0.paleta,
-  galeria: previo.galeria || { byn: false, enRsvp: false },
-  videoPortada: previo.videoPortada ?? false,
+  galeria: { byn: ['byn', 'romantic'].includes(id), enRsvp: !!conv[base].paquetes.deluxe.info.galeriaEnRsvp },
+  videoPortada: !!conv[base].paquetes.deluxe.info.videoPortada,
   portadaSinFoto: d0.fondoPortada ? `img/${basename(d0.fondoPortada)}` : previo.portadaSinFoto,
   paquetes: paquetes(base),
+  ...(conv[base].paquetes.deluxe.info.propLugar ? { proporciones: { lugar: conv[base].paquetes.deluxe.info.propLugar } } : {}),
   nombresHTML: {
     portada: nombresHTML(conv[base].paquetes.deluxe.info.nombresPortada, base === 'boda') || '{a} &amp; {b}',
     cierre: nombresHTML(conv[base].paquetes.deluxe.info.nombresCierre || conv[base].paquetes.deluxe.info.nombresPortada, base === 'boda') || '{a} &amp; {b}',
@@ -127,6 +132,12 @@ for (const ev of eventos) {
     nombresHTML: { portada: nombresHTML(conv[ev].paquetes.deluxe.info.nombresPortada, pl) || '{a}', cierre: nombresHTML(conv[ev].paquetes.deluxe.info.nombresCierre, pl) || '{a}', solo: '{a}' },
     ...(previo.porEvento?.[ev] ? Object.fromEntries(Object.entries(previo.porEvento[ev]).filter(([k]) => !['paquetes', 'sobre', 'nombresHTML'].includes(k))) : {}),
   };
+}
+// Cumpleaños con fotos de un hombre: la demo lleva nombre de hombre
+const HOMBRES = { byn: 'Martín', disco: 'Tomás', floral: 'Lucas', luxury: 'Joaquín', rockabilly: 'Nicolás', white: 'Mateo' };
+if (HOMBRES[id] && modelo.porEvento.cumple) {
+  const dm = (modelo.porEvento.cumple.demo ||= {});
+  dm.cumple = { ...(dm.cumple || {}), nombres: { a: HOMBRES[id] } };
 }
 // Fotos de la demo que hay por evento (las borrosas las arma scripts/fotos-borrosas.py)
 for (const ev of eventos) {

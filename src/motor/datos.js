@@ -53,7 +53,8 @@ function piezas(fh, variante) {
   try { mes = new Intl.DateTimeFormat(LOCALES[variante] || 'es-MX', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(+p.a, +p.m - 1, 1))); } catch { /* sin Intl */ }
   const mes3 = mes.slice(0, 3);
   return { d: String(+p.d), dd: p.d, m: String(+p.m), mm: p.m, a: p.a, mes, MES: mes.toLocaleUpperCase(), Mes: mes.charAt(0).toLocaleUpperCase() + mes.slice(1),
-    mes3, MES3: mes3.toLocaleUpperCase(), Mes3: mes3.charAt(0).toLocaleUpperCase() + mes3.slice(1), hora: hora(p, variante) };
+    mes3, MES3: mes3.toLocaleUpperCase(), Mes3: mes3.charAt(0).toLocaleUpperCase() + mes3.slice(1), hora: hora(p, variante),
+    aa: p.a.slice(2), hh: p.hh ?? '', mi: p.mm ?? '' };
 }
 
 // "12 de septiembre de 2027 a las 20:00" (la fecha larga que usan muchos diseños), en el idioma de la invitación
@@ -188,7 +189,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     unificada: modo === 'mismo-lugar',
     titulo: tituloCer,
     foto: fotoLugar(cer),
-    fotoEstilo: encuadre(PROP.lugar, cer.fotoPos),
+    fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cer.fotoPos),
     fechaHora: fechaHora(cerInicio, variante),
     fechaLarga: fechaLarga(cerInicio, variante),
     lugarTexto: lugarTexto(cer),
@@ -197,7 +198,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const celebracion = {
     titulo: tituloCel,
     foto: fotoLugar(cel),
-    fotoEstilo: encuadre(PROP.lugar, cel.fotoPos),
+    fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cel.fotoPos),
     fechaHora: fechaHora(celInicio, variante),
     fechaLarga: fechaLarga(celInicio, variante),
     lugarTexto: lugarTexto(cel),
@@ -273,6 +274,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       iniciales: [nA, nB].filter(Boolean).map((n) => n.trim().charAt(0).toUpperCase()),
     },
     fechas,
+    // Video de portada (modelos con video): el MP4 que subió el cliente
+    portada: { video: modelo.videoPortada && fotosOn('portada') && e.portada?.tipo === 'video' ? (e.portada?.video || '') : '', poster: portada[0]?.url || '' },
     fecha: { puntos: fechaPuntos(principal), iso: principal ? `${principal.a}-${principal.m}-${principal.d}` : '' },
     cuenta: {
       activa: !!incluye.cuenta && !!principal && e.portada?.cuenta !== false,

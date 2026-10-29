@@ -24,8 +24,7 @@
         ],
         "avisos": [
           "portada: sin título de nombres",
-          "portada: sin foto de la demo (el fondo queda fijo)",
-          "dress code: sin texto en la invitación"
+          "portada: sin foto de la demo (el fondo queda fijo)"
         ],
         "info": {
           "portadaFotos": 0,
@@ -123,8 +122,7 @@
         ],
         "avisos": [
           "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
-          "portada: sin foto de la demo (el fondo queda fijo)",
-          "dress code: sin texto en la invitación"
+          "portada: sin foto de la demo (el fondo queda fijo)"
         ],
         "info": {
           "nombresSeparados": true,
@@ -224,8 +222,7 @@
         ],
         "avisos": [
           "portada: sin título de nombres",
-          "portada: sin foto de la demo (el fondo queda fijo)",
-          "dress code: sin texto en la invitación"
+          "portada: sin foto de la demo (el fondo queda fijo)"
         ],
         "info": {
           "portadaFotos": 0,

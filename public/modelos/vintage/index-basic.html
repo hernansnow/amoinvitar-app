@@ -60,7 +60,7 @@
 			 <div data-repetir="fotos.portada" class="col-lg-10 col-11 ml-auto mr-auto mb-3">
                 <img data-i-attr="src:url;style:estiloImg" src="demo/boda/globo.jpg" alt="foto" class="img-fluid rounded-circle w-50 p-1" style="border: 2px solid #e6ae8b;-webkit-filter: sepia(80%); filter: sepia(80%);">
               </div>
-             <h3 data-t="portada.subtitulo" class="vintage">Nos casamos</h3>
+             <h3 data-caso="oracion" data-t="portada.subtitulo" class="vintage">Nos casamos</h3>
               <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="vintage text-black"><span class="fontawesome-star star"></span><span>Carla <i class="icon-heart text-vintage" aria-hidden="true"></i> Pablo</span><span class="fontawesome-star star"></span></h1>
 			 <h3 data-fecha-formato="{dd} • {mm} • {a}" data-fecha="principal" class="vintage mb-5">12 <span class="text-black">•</span> 09 <span class="text-black">•</span> 2027</h3>
                <div class="show-mobile">
@@ -100,7 +100,7 @@
          <div class="row item">
           <div data-si="ceremonia.separada" class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 p-lg-0 text-center" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/iglesia-retro.png" width="65" alt="Imagen" style="-webkit-filter: sepia(80%); filter: sepia(80%);">
-			 <h2 data-campo="ceremonia.titulo" class="mb-3 section-title text-center"><span class="text-retro display-4">Ceremonia</span></h2>
+			 <h2 class="mb-3 section-title text-center"><span data-campo="ceremonia.titulo" class="text-retro display-4">Ceremonia</span></h2>
 			<h2 class="mb-2"><span data-t="lugar.diaHorario" class="text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</span></h2>
 			  <p data-campo="ceremonia.fechaLarga" class="text-center">12 de septiembre de 2027 a las 20:00</p>
 			  <h2 class="mb-2"><span data-t="lugar.lugar" class="text-dark section-sub-title-h3 font-weight-bolder">LUGAR</span></h2>
@@ -120,7 +120,7 @@
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
               <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/fiesta-retro.png" width="65" alt="Imagen" style="-webkit-filter: sepia(80%); filter: sepia(80%);">
 			  <img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/iglesia-retro.png" width="65" alt="Imagen" style="-webkit-filter: sepia(80%); filter: sepia(80%);">
-			 <h2 data-campo="celebracion.titulo" class="mb-3 section-title text-center"><span class="text-retro display-4">Celebración</span></h2>	
+			 <h2 class="mb-3 section-title text-center"><span data-campo="celebracion.titulo" class="text-retro display-4">Celebración</span></h2>	
 			  	<h2 class="mb-2"><span data-t="lugar.diaHorario" class="text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</span></h2>
 			  <p data-campo="celebracion.fechaLarga" class="text-center">12 de septiembre de 2027 a las 21:00</p>
 			  <h2 class="mb-2"><span data-t="lugar.lugar" class="text-dark section-sub-title-h3 font-weight-bolder">LUGAR</span></h2>
@@ -157,7 +157,7 @@
      
 		    <div class="col-lg-6 ml-auto mr-auto mt-auto mb-auto text-center">
 			 <div class="text-center mt-3"><img loading="lazy" class="img-fluid mb-0 mt-0" src="img/calendario-retro.png" width="60" alt="Imagen" style="-webkit-filter: sepia(80%); filter: sepia(80%);"></div>
-		   <h2 data-t="rsvp.titulo" class="mb-3 section-title text-center"><span class="text-retro display-4">Confirmación</span></h2>	
+		   <h2 class="mb-3 section-title text-center"><span data-t="rsvp.titulo" class="text-retro display-4">Confirmación</span></h2>	
              	<p class="text-center" data-rsvp="texto" data-bloque-invitado-class="mb-4" data-bloque-invitado-inner="<div class='text-center pl-2 pr-2 pb-3 pt-3 ml-2 mr-2 mb-4 mt-0 g-tarjeta-invitado'><i class='icon-user-circle-o h3 font-weight-normal' aria-hidden='true' style='opacity:.7'></i><br><p class='text-uppercase font-weight-bold mb-0' id='nombre'></p><p class='border-bottom mb-2 mt-1 ml-5 mr-5'></p><p class='small text-uppercase mb-0 mt-0' id='pases'></p><p class='font-weight-bolder small text-uppercase mb-0 mt-0' id='mesa'></p></div>" data-bloque-general-class="mb-4" data-attr="data-texto-abierto-libre:c:rsvp.texto; data-fecha-texto:t:rsvp.hasta; data-texto-cerrado:t:rsvp.finalizado" data-texto-abierto-libre="Tu presencia hará que este día sea realmente especial e inolvidable." data-fecha-texto="Se reciben confirmaciones hasta el" data-texto-cerrado="El plazo de confirmación ha finalizado.">
               </p>
 			   
@@ -185,13 +185,16 @@
 	
 </section></div>
 			
-    <section class="site-section bg-gold-2" id="dresscode">
+    <section data-si="grupos.dress" class="site-section bg-gold-2" id="dresscode">
       <div class="container">
         <div class="row ml-auto mr-auto">
-           <div class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-in">
-                  <div class="text-center"><i class="text-retro display-4 icon-female" aria-hidden="true"></i><i class="text-retro display-4 icon-male" aria-hidden="true"></i></div>
-			   <h2 class="mb-3 section-title text-center"><span class="text-retro display-4">Dess Code</span></h2>
-                <p class="text-center text-black">Formal y elegante. Por favor no usar blanco.</p>
+           <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-in">
+                  <div data-seccion="dresscode" class="text-center"><i class="text-retro display-4 icon-female" aria-hidden="true"></i><i class="text-retro display-4 icon-male" aria-hidden="true"></i></div>
+			   <h2 data-seccion="dresscode" class="mb-3 section-title text-center"><span data-t="dress.titulo" class="text-retro display-4">Dess Code</span></h2>
+                <p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-black">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+            <p class="text-center text-black mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
+          </div>
 				   </div>
        </div>
      </div>
@@ -200,7 +203,7 @@
 <section id="cierre" class="site-section bg-amarillo">
           <div class="container">
           <div class="col-md-8 minimal-border ml-auto mr-auto p-3 text-center">
-			  <p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-black"><span class="display-5 icon-quote-left"></span> Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos. <span class="display-5 icon-quote-right"></span></p>
+			  <p data-si="pie.mostrar" class="text-black"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.</span> <span class="display-5 icon-quote-right"></span></p>
             <h2 data-campo-html="nombres.cierre" class="mb-3 section-title text-center"><span class="text-retro display-4">Carla <i class="icon-heart text-danger" aria-hidden="true"></i> Pablo</span></h2>
        </div>
       </div>

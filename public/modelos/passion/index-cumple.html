@@ -109,7 +109,7 @@
 
 <!-- /audio -->
 	
-	<div data-seccion="galeria" class="pb-0 pt-3" style="background-color:#eaeae2;" id="inicio">
+	<div class="pb-0 pt-3" style="background-color:#eaeae2;" id="inicio">
       <div class="container-countdown text-black text-center">
 	   <h6 class="text-black h6 mb-0" id="headline-countdown">Faltan</h6>
          <div class="text-center" id="countdown">
@@ -134,13 +134,13 @@
           <div class="col-12 text-center" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-0" src="img/lovestory-5.png" width="150px" alt="Imagen">
              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-black font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h4 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center texto-especial text-black">Mi Historia</h4>
-			  <p data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></p>
+			  <h4 data-si="historia.activa"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></h4>
           </div>
         </div>
 	   </div>
     </section>
 			  
-        <div data-componente="galeria"></div>
+        <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 	</div>		
 
     <section class="bg-diferido site-section p-3" style="background-image: linear-gradient(rgba(234, 234, 226, 0.8), rgba(234, 234, 226, 0.8)), url(img/bg-classic9b.jpg); background-color:#eaeae2; background-position:70% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
@@ -252,7 +252,7 @@
         <div class="row ml-auto mr-auto">
 			<div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto" data-aos="fade-in">
 				<div data-seccion="dresscode" class="text-center"><img loading="lazy" class="img-fluid mb-2 mt-0" src="img/icon-percha-b.png" width="75" alt="Imagen"></div>
-                  <h4 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center texto-especial text-black">Dress Code</h4><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+                  <h4 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center texto-especial text-black">Dress Code</h4><p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
             <p class="text-center text-black mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
             <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
           </div>
@@ -368,17 +368,21 @@
 	<section data-seccion="testigos" class="site-section" style="background: rgb(181,176,163); background: linear-gradient(180deg, rgba(181,176,163,0.6) 0%, rgba(234,234,226,1) 100%);" id="testigos">
       <div class="container">
         <div class="row mb-3">
-          <div data-repetir="testigos.items" class="col-12 text-center" data-aos="fade-up">
-			  <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-2" src="../../comun/img/demo-testigo1.jpg" width="65px" alt="Imagen">
-            <h4 data-i="nombre" data-t="testigos.titulo" class="mb-3 text-center texto-especial text-black">Cómplices</h4>
+          <div class="col-12 text-center" data-aos="fade-up">
+			  <i class="h1 icon-people" aria-hidden="true" style="color:#000000"></i>
+            <h4 data-t="testigos.titulo" class="mb-3 text-center texto-especial text-black">Cómplices</h4>
           </div>
         </div>
 	<div class="col-md-8 ml-auto mr-auto">
         <div class="row">
           <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="50">
-					<img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3 p-1" style="border: 4px solid #9c916b;">
+					<img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo1.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3 p-1" style="border: 4px solid #9c916b;">
               <h4 data-i="nombre" class="text-gold">Juan Fernandez</h4>
           </div>
+          <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="150">
+                 <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3 p-1" style="border: 4px solid #9c916b;">
+				<h4 data-i="nombre" class="text-gold">Marcela García</h4>
+            </div> 
 
           </div>
          </div>

@@ -31,6 +31,7 @@
           "portadaFotos": 0,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -68,6 +69,7 @@
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -131,6 +133,7 @@
           "portadaFotos": 0,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -168,6 +171,7 @@
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "nombresCierre": "Flor <i class=\"icon-heart\" aria-hidden=\"true\"></i> Gonza",
           "claseTitulos": "lovestory",
           "fuentes": [
@@ -233,6 +237,7 @@
           "portadaFotos": 0,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -268,6 +273,7 @@
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"

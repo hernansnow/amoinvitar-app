@@ -119,7 +119,7 @@ export default {
       'meta.descripcion': 'Ik kijk ernaar uit om samen te vieren!',
       'celebracion.sola': 'Verjaardag', 'bienvenida.texto': 'Ik nodig je graag uit voor mijn feest!', 'evento.nombre': 'Verjaardag', 'evento.descripcion': 'Vier mijn verjaardag met mij', 'portada.subtitulo': 'IK BEN JARIG!',
       'historia.titulo': 'Mijn Verhaal', 'historia.texto': 'Weer een jaar om het leven te vieren, en dat doe ik het liefst met de mensen van wie ik het meest houd.',
-      'rsvp.texto': 'Jouw aanwezigheid maakt deze dag echt bijzonder.', 'bus.destinoTexto': 'Mijn feest!', 'testigos.titulo': 'Gastheren',
+      'rsvp.texto': 'Jouw aanwezigheid maakt deze dag echt bijzonder.', 'bus.destinoTexto': 'Mijn feest!', 'testigos.titulo': 'Partners in crime',
       'album.texto': 'Maak je klaar voor mijn feest!<br>Tik op de knop en upload alle foto\'s en video\'s die je tijdens het feest maakt meteen naar mijn gedeelde album, zonder app.',
       'canciones.texto': 'Welke nummers mogen niet ontbreken?<br>Help me de muziek te kiezen',
       'regalos.texto': 'Het mooiste cadeau is dat je erbij bent, maar als je me iets wilt geven, vind je hier de gegevens.',

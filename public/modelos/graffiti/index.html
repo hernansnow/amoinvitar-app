@@ -156,15 +156,15 @@
 
 <!-- /audio -->
 
-	  <section data-seccion="galeria" class="site-section" style="background-image: linear-gradient(rgba(78, 156, 135, 1), rgba(255, 238, 202, 1)); background-color:#FFEECA; background-size:cover; position:relative;" id="inicio">
+	  <section class="site-section" style="background-image: linear-gradient(rgba(78, 156, 135, 1), rgba(255, 238, 202, 1)); background-color:#FFEECA; background-size:cover; position:relative;" id="inicio">
 				<div class="container">
 			<div class="col-md-8 text-center ml-auto mr-auto pt-5" data-aos="fade-up">
-              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-black font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h1 data-si="historia.activa" data-t="historia.titulo" class="mb-3 section-title text-center text-black"><span class="text-graffiti3 text-black">Nuestra Historia</span></h1>
-			  <p data-si="historia.activa" class="text-black g-historia"><span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span></p>
+              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-black font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h1 data-si="historia.activa" class="mb-3 section-title text-center text-black"><span data-t="historia.titulo" class="text-graffiti3 text-black">Nuestra Historia</span></h1>
+			  <p data-si="historia.activa" class="text-black"><span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span></p>
           
 				</div>
 				</div>
-           <div data-componente="galeria"></div>
+           <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 </section>
 	  
 <section class="bg-diferido site-section bg-amarillo p-3" style="background-image: linear-gradient(rgba(250, 250, 250, 0.5), rgba(250, 250, 250, 0.5)), url(img/bg-15-3.jpg); background-color:#fff ; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
@@ -234,7 +234,7 @@
      
 		   <div class="col-lg-6 p-3 mt-auto mb-auto text-center">
 			 <img loading="lazy" class="img-fluid mb-1" src="img/icon-rsvp-graffiti.png" width="90px" alt="Imagen">
-		   <h2 data-t="rsvp.titulo" class="section-title text-center"><span class="text-graffiti3 text-black">Confirmación</span></h2>
+		   <h2 class="section-title text-center"><span data-t="rsvp.titulo" class="text-graffiti3 text-black">Confirmación</span></h2>
              			<p class="text-center" data-rsvp="texto" data-bloque-invitado-class="mb-4" data-bloque-invitado-inner="<div class='text-center pl-2 pr-2 pb-3 pt-3 ml-2 mr-2 mb-4 mt-0 shadow' style='border: 2px dashed #dee2e6;border-radius: 36px 36px 36px 36px; -webkit-border-radius: 36px 36px 36px 36px; -moz-border-radius: 36px 36px 36px 36px;'><i class='icon-user-circle-o h3 font-weight-normal' aria-hidden='true' style='opacity:.7'></i><br><p id='nombre' class='text-uppercase font-weight-bold mb-0'></p><p class='border-bottom mb-2 mt-1 ml-5 mr-5'></p><p id='pases' class='small font-weight-bold text-uppercase mb-0 mt-0'></p><p class='font-weight-bolder small text-uppercase mb-0 mt-0' id='mesa'></p></div>" data-bloque-general-class="mb-4" data-attr="data-texto-abierto-libre:c:rsvp.texto; data-fecha-texto:t:rsvp.hasta; data-texto-cerrado:t:rsvp.finalizado" data-texto-abierto-libre="Tu presencia hará que este día sea realmente especial e inolvidable." data-fecha-texto="Se reciben confirmaciones hasta el" data-texto-cerrado="El plazo de confirmación ha finalizado.">
               </p>
                <p></p>
@@ -264,7 +264,7 @@
 		 <div class="col-md-6 col-lg-6 ml-auto mr-auto rounded p-4" style="background-color:rgba(255, 255, 255, 0.8);" data-aos="fade-up">
 		   <div class="text-center">
 			 <img loading="lazy" class="img-fluid mb-1" src="img/icon-rsvp-graffiti.png" width="90px" alt="Imagen">
-		   <h2 data-t="rsvp.titulo" class="section-title text-center"><span class="text-graffiti3 text-black">Confirmación</span></h2>
+		   <h2 class="section-title text-center"><span data-t="rsvp.titulo" class="text-graffiti3 text-black">Confirmación</span></h2>
              			<p class="text-center" data-rsvp="texto" data-bloque-invitado-class="mb-4" data-bloque-invitado-inner="<div class='text-center pl-2 pr-2 pb-3 pt-3 ml-2 mr-2 mb-4 mt-0 g-tarjeta-invitado'><i class='icon-user-circle-o h3 font-weight-normal' aria-hidden='true' style='opacity:.7'></i><br><p class='text-uppercase font-weight-bold mb-0' id='nombre'></p><p class='border-bottom mb-2 mt-1 ml-5 mr-5'></p><p class='small text-uppercase mb-0 mt-0' id='pases'></p><p class='font-weight-bolder small text-uppercase mb-0 mt-0' id='mesa'></p></div>" data-bloque-general-class="mb-4" data-attr="data-texto-abierto-libre:c:rsvp.texto; data-fecha-texto:t:rsvp.hasta; data-texto-cerrado:t:rsvp.finalizado" data-texto-abierto-libre="Tu presencia hará que este día sea realmente especial e inolvidable." data-fecha-texto="Se reciben confirmaciones hasta el" data-texto-cerrado="El plazo de confirmación ha finalizado.">
               </p>
 			   
@@ -389,7 +389,7 @@
         <div class="row mb-3">
           <div class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-1" src="img/icon-timeline-graffiti.png" width="90px" alt="Imagen">
-			  <h1 data-t="itinerario.titulo" class="mb-3 section-title text-center text-black"><span class="text-graffiti3 text-black">Itinerario</span></h1>
+			  <h1 class="mb-3 section-title text-center text-black"><span data-t="itinerario.titulo" class="text-graffiti3 text-black">Itinerario</span></h1>
           </div>
         </div>
 <div class="timeline-container linea-black" data-aos="fade-up" data-aos-delay="100">
@@ -427,7 +427,7 @@
         <div class="row mb-3">
           <div data-repetir="testigos.items" class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
 			  <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-1" src="../../comun/img/demo-testigo1.jpg" width="90px" alt="Imagen">
-			  <h1 data-t="testigos.titulo" class="mb-3 section-title text-center text-black"><span class="text-graffiti3 text-black">Los Testigos</span></h1>
+			  <h1 class="mb-3 section-title text-center text-black"><span data-t="testigos.titulo" class="text-graffiti3 text-black">Los Testigos</span></h1>
           </div>
         </div>
 	<div class="col-md-8 ml-auto mr-auto">
@@ -449,8 +449,8 @@
       <div class="container">
           <div id="hashtag" data-seccion="instagram" class="col-md-6 ml-auto mr-auto text-center rounded p-4 shadow" data-aos="fade-up" style="background-color:rgba(255, 255, 255, 0.8);">
 			  <img loading="lazy" class="img-fluid mb-1" src="img/icon-ig-graffiti.png" width="90px" alt="Imagen">
-			  <h2 data-t="hashtag.titulo" class="mb-3 section-title text-center"><span class="text-graffiti3 text-black">Etiqueta tus Fotos</span></h2>
-            <h4 data-si="hashtag.texto" data-campo="hashtag.texto" class="mb-4"><span class="text-white bg-verde p-1">#AriadnayMario2027</span></h4>
+			  <h2 class="mb-3 section-title text-center"><span data-t="hashtag.titulo" class="text-graffiti3 text-black">Etiqueta tus Fotos</span></h2>
+            <h4 data-si="hashtag.texto" class="mb-4"><span data-campo="hashtag.texto" class="text-white bg-verde p-1">#AriadnayMario2027</span></h4>
 			  <p data-t-html="hashtag.texto" class="text-center">¡Prepárate para nuestra boda! Etiquétanos en Instagram con nuestro hashtag en tus fotos y videos.</p>
 
 			  <div data-si="fotos.instagram" class="text-center mb-3">
@@ -463,7 +463,7 @@
 		      </div>
       </div><div id="instagram" data-seccion="album" class="col-md-6 ml-auto mr-auto text-center rounded p-4 shadow" data-aos="fade-up" style="background-color:rgba(255, 255, 255, 0.8);">
 			  <img loading="lazy" class="img-fluid mb-1" src="img/icon-ig-graffiti.png" width="90px" alt="Imagen">
-			  <h2 data-t="album.titulo" class="mb-3 section-title text-center"><span class="text-graffiti3 text-black">Comparte tus Fotos</span></h2>
+			  <h2 class="mb-3 section-title text-center"><span data-t="album.titulo" class="text-graffiti3 text-black">Comparte tus Fotos</span></h2>
 			  <p data-t-html="album.texto" class="text-center">¡Prepárate para nuestra boda! Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiesta a nuestro álbum colaborativo, al instante, sin descargar ninguna app.</p>
 			  <div data-si="fotos.album" class="text-center mb-3">
                   <img data-attr="src:c:fotos.album;style:c:fotos.albumEstilo" src="demo/boda/instagram.jpg" loading="lazy" alt="foto" class="img-fluid rounded">
@@ -484,7 +484,7 @@
         <div class="row">
                    <div id="musica" data-seccion="canciones" class="col-md-6 text-center ml-auto mr-auto" data-aos="fade-in">
                     <img loading="lazy" class="img-fluid mb-1" src="img/icon-music-graffiti.png" width="90px" alt="Imagen">
-			  <h2 data-t="canciones.titulo" class="mb-3 section-title text-center"><span class="text-graffiti3 text-black">Música</span></h2>
+			  <h2 class="mb-3 section-title text-center"><span data-t="canciones.titulo" class="text-graffiti3 text-black">Música</span></h2>
              	<p data-t-html="canciones.texto" class="text-center text-black">¿Qué canciones son infaltables?<br>
                                                    Ayúdanos con la selección de canciones</p>
 					<div class="text-center">
@@ -506,7 +506,7 @@
     <div class="container">
           <div class="col-md-6 col-lg-6 ml-auto mr-auto cubo rounded text-center" data-aos="fade-up">
 		   <img loading="lazy" class="img-fluid mb-1" src="img/icon-gift2-graffiti.png" width="110px" alt="Imagen">
-			   <h2 data-t="regalos.titulo" class="mb-3 section-title text-center text-black"><span class="text-graffiti3">Regalos</span></h2>	
+			   <h2 class="mb-3 section-title text-center text-black"><span data-t="regalos.titulo" class="text-graffiti3">Regalos</span></h2>	
 			<p data-campo-html="regalos.texto" class="text-center">Nuestro mejor regalo es que nos acompañes, pero si lo deseas, puedes colaborar con nuestra luna de miel.</p>
 				<div data-si="regalos.hayBotones" class="text-center show-desktop"><span class="vr mb-2"></span></div>
 			  		<div class="col-12 text-center">	
@@ -563,7 +563,7 @@
           </div>
 		               
       </div>
-    </section><section class="site-section pt-4 pb-4 ai-perdiste">
+    </section><section class="site-section bg-verde pt-4 pb-4 ai-perdiste">
       <div class="container"><div class="row"><div class="col-12 text-center">
         <h3 class="mb-3 text-center text-white" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
         <ul class="list-unstyled">

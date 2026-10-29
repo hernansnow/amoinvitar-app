@@ -172,14 +172,14 @@
 					<hr class="mb-3 mt-2" style="border-top: 3px solid #9c916b;">
 				</div>
 			  <div class="text-center pt-0 mb-0 pb-4 elegance">
-			 <p data-si="historia.activa" class="mb-0 text-black-50 g-historia"><span class="display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span> <span class="display-5 icon-quote-right"></span></p>
+			 <p data-si="historia.activa" class="mb-0 text-black-50"><span class="display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span> <span class="display-5 icon-quote-right"></span></p>
           </div>
           </div>
         </div>
 		</div>
     </section> 
 	
-		      <div data-componente="galeria"></div>
+		      <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 			  
    <section class="bg-diferido site-section bg-light" style="background-image: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9)), url(img/bg15.jpg); background-color:#606060; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
       <div class="container elegance">
@@ -330,7 +330,7 @@
 				</div>
 			  <p data-t-html="hashtag.texto" class="text-center text-black-50 mb-3">¡Prepárate para mi fiesta!<br>
 Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
-            <h4 data-si="hashtag.texto" data-campo="hashtag.texto" class="mb-5"><span class="text-white bg-gold p-1 elegance" data-aos="fade-in">#CumpleVicky2027</span></h4>
+            <h4 data-si="hashtag.texto" class="mb-5"><span data-campo="hashtag.texto" class="text-white bg-gold p-1 elegance" data-aos="fade-in">#CumpleVicky2027</span></h4>
 
 			  <div data-si="fotos.instagram" class="text-center mb-4">
                 <img data-attr="src:c:fotos.instagram;style:c:fotos.instagramEstilo" src="demo/cumple/instagram.jpg" loading="lazy" alt="foto" class="img-fluid rounded byn">
@@ -430,36 +430,25 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
 	  	  	<section id="cierre" class="site-section bg-light">
       <div class="container elegance" data-aos="fade-in">
           <div class="col-md-8 ml-auto mr-auto text-center">
-			 <p data-campo-html="pie.texto" data-si="pie.mostrar" class="elegance text-black-50 font-weight-normal"><span class="display-5 icon-quote-left"></span> Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos. <span class="display-5 icon-quote-right"></span></p>
+			 <p data-si="pie.mostrar" class="elegance text-black-50 font-weight-normal"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</span> <span class="display-5 icon-quote-right"></span></p>
 			      <h3 class="text-center mt-auto ml-auto text-byn elegance text-uppercase">Vicky</h3>
           </div>
       </div>
-    </section><section class="site-section pt-4 pb-4 ai-perdiste">
-      <div class="container"><div class="row"><div class="col-12 text-center">
-        <h3 class="mb-3 text-center elegance text-black" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
-        <ul class="list-unstyled">
-            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-black" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
-            <li><a href="#agenda" class="smoothscroll btn-link text-black" data-t="perdiste.agendar">Agendar evento</a></li>
-            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-black" data-t="perdiste.dress">Dress code</a></li>
-            <li data-seccion="instagram"><a href="#hashtag" class="smoothscroll btn-link text-black" data-t="perdiste.instagram">Instagram Wall</a></li>
-            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-black" data-t="perdiste.canciones">Sugerir canción</a></li>
-            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-black" data-t="perdiste.regalos">Regalos</a></li>
-            <li><a href="#home-section" class="smoothscroll btn-link text-black" data-t="perdiste.inicio">Inicio</a></li>
-        </ul>
-      </div></div></div>
     </section>
     
 <section class="bg-diferido site-section byn" style="background-image: linear-gradient(rgba(26, 26, 26, 0.75), rgba(26, 26, 26, 0.75)), url(img/bg1.jpg); background-color:#606060; background-position:50% 30%; background-repeat:no-repeat; background-size:cover; position:relative;">
           <div class="container elegance">
                <div class="text-center">
-				   <p class="mb-2 text-center text-white font-weight-bold text-uppercase">¿Te perdiste algo?</p>
+				   <p data-t="perdiste.titulo" class="mb-2 text-center text-white font-weight-bold text-uppercase">¿Te perdiste algo?</p>
 				   <ul class="list-unstyled">
-				  <li><a href="#rsvp" class="smoothscroll btn-link text-white">Confirmar asistencia</a></li>
-				  <li><a href="#agenda" class="smoothscroll btn-link text-white">Agendar evento</a></li>
-				  <li><a href="#dresscode" class="smoothscroll btn-link text-white">Dress code</a></li>
- 				  <li><a href="#musica" class="smoothscroll btn-link text-white">Sugerir canción</a></li>
-				  <li><a href="#home-section" class="smoothscroll btn-link text-white">Inicio</a></li>
-			 </ul>
+            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
+            <li><a href="#agenda" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
+            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="instagram"><a href="#hashtag" class="smoothscroll btn-link text-white" data-t="perdiste.instagram">Instagram Wall</a></li>
+            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
+            <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
+          </ul>
 		</div>
       </div>
 	

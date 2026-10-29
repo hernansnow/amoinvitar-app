@@ -3643,6 +3643,9 @@ span.text {
     width: 100%;
 }
 
+.bg-gold {
+  background: #9c916b !important; }
+
 .text-gold {
   color: #9c916b !important; }
 

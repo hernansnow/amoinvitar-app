@@ -82,6 +82,9 @@
       }
     }
   },
+  "proporciones": {
+    "lugar": "1/1"
+  },
   "nombresHTML": {
     "portada": "{a} <i class=\"icon-heart-o text-gris text-small-sm\" aria-hidden=\"true\"></i> {b}",
     "cierre": "{a} <i class=\"icon-heart\" aria-hidden=\"true\"></i> {b}",
@@ -275,7 +278,10 @@
             "hero-banner3.jpg",
             "hero-banner4.jpg",
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Mateo"
+          }
         }
       }
     }

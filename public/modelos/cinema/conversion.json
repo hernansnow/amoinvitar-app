@@ -27,14 +27,15 @@
         ],
         "avisos": [
           "portada: sin frase (NOS CASAMOS / MIS 15…)",
-          "portada: sin foto de la demo (el fondo queda fijo)",
           "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresPortada": "Camila",
-          "portadaFotos": 0,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "iglesia2",
             "tragos",
@@ -66,15 +67,16 @@
         ],
         "avisos": [
           "portada: sin frase (NOS CASAMOS / MIS 15…)",
-          "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline",
           "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresPortada": "Camila",
-          "portadaFotos": 0,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -91,13 +93,13 @@
         ],
         "avisos": [
           "portada: sin frase (NOS CASAMOS / MIS 15…)",
-          "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Camila",
-          "portadaFotos": 0,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "agenda",
           "claseTitulos": "amsterdam-four-font",
@@ -137,14 +139,15 @@
         ],
         "avisos": [
           "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
-          "portada: sin foto de la demo (el fondo queda fijo)",
           "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresSeparados": true,
-          "portadaFotos": 0,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -175,15 +178,16 @@
         ],
         "avisos": [
           "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
-          "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline",
           "perdiste: se agregó (no había)"
         ],
         "info": {
           "nombresSeparados": true,
-          "portadaFotos": 0,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -200,13 +204,13 @@
         ],
         "avisos": [
           "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
-          "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresSeparados": true,
-          "portadaFotos": 0,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "agenda",
           "nombresCierre": "Victoria <i class=\"icon-heart text-bronce\" aria-hidden=\"true\"></i> Marcos",
@@ -253,6 +257,7 @@
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -289,6 +294,7 @@
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",

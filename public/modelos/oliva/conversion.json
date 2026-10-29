@@ -23,9 +23,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "Sol <span class=\"text-eucalipto\">&amp;</span> Lean",
           "portadaFotos": 1,
@@ -60,8 +58,7 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Sol <span class=\"text-eucalipto\">&amp;</span> Lean",

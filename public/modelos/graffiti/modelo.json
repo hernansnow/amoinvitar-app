@@ -78,8 +78,8 @@
     }
   },
   "nombresHTML": {
-    "portada": "{a} <span>Ariadna &amp; Mario</span> {b}",
-    "cierre": "{a} <span>Ariadna &amp; Mario</span> {b}",
+    "portada": "<span>{a} &amp; {b}</span>",
+    "cierre": "<span>{a} &amp; {b}</span>",
     "solo": "{a}"
   },
   "miniatura": {

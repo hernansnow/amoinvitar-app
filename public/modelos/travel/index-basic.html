@@ -105,7 +105,7 @@
 	   </div> 
     </section>
 	
-		     <div data-componente="galeria"></div>
+		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 
    <section class="site-section bg-white" style="background-size:cover; position:relative;" id="agenda">
 	       <lottie-player src="img/travel_avion3-m.json" background="transparent" speed="1" class="img-fluid show-mobile" style="width:1000%; margin: 0 auto; position: absolute; bottom: -50px; left: 0; z-index:99" loop autoplay></lottie-player>
@@ -134,7 +134,7 @@
                      <img loading="lazy" class="mr-5 img-fluid mt-2 mb-0" src="img/travel-icono-2.png" width="75" alt="Imagen">
 				</div>
 				<div class="text-center">
-			     <h3 class="amsterdam-four-font text-gold pb-3">Ceremonia</h3>
+			     <h3 data-campo="ceremonia.titulo" class="amsterdam-four-font text-gold pb-3">Ceremonia</h3>
 	            </div>
 			</div>
 			<!-- locations -->
@@ -165,11 +165,11 @@
 				<div class="flight">
 					<div class="ml-4 flight-depart-date">
 						<span>FECHA</span>
-						<h2 class="text-uppercase">12 SEP 27</h2>
+						<h2 data-fecha-formato="{dd} {MES3} {aa}" data-fecha="ceremonia" class="text-uppercase">12 SEP 27</h2>
 					</div>
 					<div class="mr-4 flight-depart-time">
 						<span>Embarque</span>
-						<h2 class="text-uppercase">20:00</h2>
+						<h2 data-fecha-formato="{hh}:{mi}" data-fecha="ceremonia" class="text-uppercase">20:00</h2>
 					</div>
 				</div>
 				<!-- /flight -->
@@ -221,7 +221,7 @@
                      <img loading="lazy" class="mr-5 img-fluid mt-2 mb-0" src="img/travel-icono-3.png" width="75" alt="Imagen">
 				</div>
 				<div class="text-center">
-			     <h3 class="amsterdam-four-font text-gold pb-3">Celebración</h3>
+			     <h3 data-campo="celebracion.titulo" class="amsterdam-four-font text-gold pb-3">Celebración</h3>
 	            </div>
 			</div>
 			<!-- locations -->
@@ -252,11 +252,11 @@
 				<div class="flight">
 					<div class="ml-4 flight-depart-date">
 						<span>FECHA</span>
-						<h2 class="text-uppercase">12 SEP 27</h2>
+						<h2 data-fecha-formato="{dd} {MES3} {aa}" data-fecha="celebracion" class="text-uppercase">12 SEP 27</h2>
 					</div>
 					<div class="mr-4 flight-depart-time">
 						<span>Embarque</span>
-						<h2 class="text-uppercase">21:00</h2>
+						<h2 data-fecha-formato="{hh}:{mi}" data-fecha="celebracion" class="text-uppercase">21:00</h2>
 					</div>
 				</div>
 				<!-- /flight -->
@@ -399,5 +399,95 @@
 <script src="../../comun/js/invitacion.js" defer></script>
 <script src="../../comun/js/slides.js" defer></script>
 <script src="../../comun/js/diferido.js" defer></script>
+
+<script>	
+// ——————————————————————————————————————————————————
+// TextScramble
+// ——————————————————————————————————————————————————
+
+class TextScramble {
+  constructor(el) {
+    this.el = el
+    this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    this.update = this.update.bind(this)
+  }
+  setText(newText) {
+    const oldText = this.el.innerText
+    const length = Math.max(oldText.length, newText.length)
+    const promise = new Promise((resolve) => this.resolve = resolve)
+    this.queue = []
+    for (let i = 0; i < length; i++) {
+      const from = oldText[i] || ''
+      const to = newText[i] || ''
+      const start = Math.floor(Math.random() * 40)
+      const end = start + Math.floor(Math.random() * 40)
+      this.queue.push({ from, to, start, end })
+    }
+    cancelAnimationFrame(this.frameRequest)
+    this.frame = 0
+    this.update()
+    return promise
+  }
+  update() {
+    let output = ''
+    let complete = 0
+    for (let i = 0, n = this.queue.length; i < n; i++) {
+      let { from, to, start, end, char } = this.queue[i]
+      if (this.frame >= end) {
+        complete++
+        output += to
+      } else if (this.frame >= start) {
+        if (!char || Math.random() < 0.28) {
+          char = this.randomChar()
+          this.queue[i].char = char
+        }
+        output += `<span class="dud">${char}</span>`
+      } else {
+        output += from
+      }
+    }
+    this.el.innerHTML = output
+    if (complete === this.queue.length) {
+      this.resolve()
+    } else {
+      this.frameRequest = requestAnimationFrame(this.update)
+      this.frame++
+    }
+  }
+  randomChar() {
+    return this.chars[Math.floor(Math.random() * this.chars.length)]
+  }
+}
+
+// ——————————————————————————————————————————————————
+// Example
+// ——————————————————————————————————————————————————
+
+const phrases = [
+  'ARU',
+  'LOV',
+  'BOD',
+  'ROM',
+  'HYU',
+  'MAD',
+  'BUE',
+  'LON',
+  'BRA',
+  'PAR',
+]
+
+const el = document.querySelector('.text-random')
+const fx = new TextScramble(el)
+
+let counter = 0
+const next = () => {
+  fx.setText(phrases[counter]).then(() => {
+    setTimeout(next, 100)
+  })
+  counter = (counter + 1) % phrases.length
+}
+
+next()
+</script>
 </body>
 </html>

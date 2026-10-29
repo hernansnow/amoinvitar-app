@@ -31,6 +31,7 @@
           "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -67,6 +68,7 @@
           "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"

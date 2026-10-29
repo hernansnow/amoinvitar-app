@@ -74,8 +74,8 @@
 			  	<div class="mb-3" hidden>
                     <span class="text-white h1 disco-2 icon-star-o" aria-hidden="true"></span>
 					</div>
-                   <div data-repetir="fotos.portada" class="col-md-2 col-5 ml-auto mr-auto mb-2 disco-circulo">
-                    <img data-i-attr="src:url;style:estiloImg" src="demo/boda/globo.jpg" alt="foto" class="img-fluid globo-star">
+                   <div class="col-md-2 col-5 ml-auto mr-auto mb-2 disco-circulo">
+                    <img src="demo/boda/globo.jpg" alt="foto" class="img-fluid globo-star">
 				 </div>
 			  		<div class="text-center">
 					 <p class="mb-2 texto-disco-inclinado"><span data-fecha-formato=" {dd} {MES3} {a} " data-fecha="principal" class="text-white section-sub-title p-1 border border-white">&#160;12 SEP 2027&#160;</span></p>
@@ -85,7 +85,7 @@
 			          </div>	 		    
 			    <div class="container-countdown text-white text-center texto-disco-inclinado disco-3">
 				 <span class="text-center disco">
-					 <h2 data-t="portada.subtitulo" class="disco-2 text-white mb-1" id="headline-countdown">¡Nos Casamos!</h2>
+					 <h2 data-caso="titulo" data-t="portada.subtitulo" class="disco-2 text-white mb-1" id="headline-countdown">¡Nos Casamos!</h2>
 				 </span>
 				    <div data-si="cuenta.activa" class="text-center h5" id="countdown">	 
                      <ul class="pl-0 pr-0">
@@ -118,9 +118,9 @@
 
 	   <!-- VIDEO -->
 		<div class="video-container">
-		  <div class="vimeo-embed w-embed w-iframe">
+		  <div data-si="demo" class="vimeo-embed w-embed w-iframe">
                 <iframe data-sobre-src="https://player.vimeo.com/video/1108336836?background=1&autoplay=1&loop=1&byline=0&title=0?background=1" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen width="100%" height="100%" allow="autoplay; fullscreen" style="background-color:#00000;"></iframe>
-          </div>
+          </div><video class="ai-video-portada" data-si="portada.video" autoplay muted loop playsinline preload="auto" data-attr="src:c:portada.video;poster:c:portada.poster"></video><div data-no="demo"><div data-no="portada.video"><div class="ai-slides ai-slides-fondo" data-intervalo="5000"><div class="ai-slide" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.35)), url(demo/boda/hero-banner.jpg)"></div></div></div></div>
         </div>
 </section><section data-no="cuenta.portada" class="site-blocks-cover overlay" id="home-section">
       <div class="container">
@@ -130,8 +130,8 @@
 			  	<div class="mb-3" hidden>
                     <span class="text-white h1 disco-2 icon-star-o" aria-hidden="true"></span>
 					</div>
-                   <div data-repetir="fotos.portada" class="col-md-2 col-5 ml-auto mr-auto mb-2 disco-circulo">
-                    <img data-i-attr="src:url;style:estiloImg" src="demo/boda/globo.jpg" alt="foto" class="img-fluid globo-star">
+                   <div class="col-md-2 col-5 ml-auto mr-auto mb-2 disco-circulo">
+                    <img src="demo/boda/globo.jpg" alt="foto" class="img-fluid globo-star">
 				 </div>
 			  		<div class="text-center">
 					 <p class="mb-2 texto-disco-inclinado"><span data-fecha-formato=" {dd} {MES3} {a} " data-fecha="principal" class="text-white section-sub-title p-1 border border-white">&#160;12 SEP 2027&#160;</span></p>
@@ -141,7 +141,7 @@
 			          </div>	 		    
 			    <div class="text-white text-center texto-disco-inclinado disco-3">
 				 <span class="text-center disco">
-					 <h2 data-t="portada.subtitulo" class="disco-2 text-white mb-1" id="headline-countdown">¡Nos Casamos!</h2>
+					 <h2 data-caso="titulo" data-t="portada.subtitulo" class="disco-2 text-white mb-1" id="headline-countdown">¡Nos Casamos!</h2>
 				 </span>
 			  </div>	
 			    <div class="text-center mt-5 pt-5">
@@ -160,9 +160,9 @@
 
 	   <!-- VIDEO -->
 		<div class="video-container">
-		  <div class="vimeo-embed w-embed w-iframe">
+		  <div data-si="demo" class="vimeo-embed w-embed w-iframe">
                 <iframe src="https://player.vimeo.com/video/1108336836?background=1&autoplay=1&loop=1&byline=0&title=0?background=1" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen width="100%" height="100%" allow="autoplay; fullscreen" style="background-color:#00000;"></iframe>
-          </div>
+          </div><video class="ai-video-portada" data-si="portada.video" autoplay muted loop playsinline preload="auto" data-attr="src:c:portada.video;poster:c:portada.poster"></video><div data-no="demo"><div data-no="portada.video"><div class="ai-slides ai-slides-fondo" data-intervalo="5000"><div class="ai-slide" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.35)), url(demo/boda/hero-banner.jpg)"></div></div></div></div>
         </div>
 </section>
 	  
@@ -174,15 +174,15 @@
   </div>   
 
 <!-- /audio -->
-		  <div data-seccion="galeria" class="bg-gris2 text-center" id="inicio">
+		  <div class="bg-gris2 text-center" id="inicio">
 			<div class="col-md-4 container p-4 pt-5 pb-5 p-md-5 disco ml-auto mr-auto">
 				<img loading="lazy" class="img-fluid mt-45" src="img/disco-toca.png" width="180" alt="Imagen">
 				<div class="disco">
 			    <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-white font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center text-white texto-disco-inclinado disco-2 border-bottom">Nuestra Historia</h2>
 			  </div>
-			 <p data-si="historia.activa" class="text-white mb-5 texto-disco-inclinado g-historia"><span class="text-white disco-3 icon-quote-left"></span> <span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span> <span class="text-white disco-3 icon-quote-right"></span></p>
+			 <h4 data-si="historia.activa" class="text-white mb-5 texto-disco-inclinado"><span class="text-white disco-3 icon-quote-left"></span> <span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span> <span class="text-white disco-3 icon-quote-right"></span></h4>
 			</div>
-		      <div data-componente="galeria"></div>
+		      <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 			</div>
 	
    <section id="inicio" class="site-section bg-gris2">
@@ -280,7 +280,7 @@
 		       <div class="col-md-4 text-center mb-5 ml-auto mr-auto" data-aos="fade-in">
 				  <img loading="lazy" class="img-fluid mt-2 mb-1" src="img/icon-percha-w.png" width="80" alt="Imagen">
                   <div data-si="grupos.dressCol" class="disco col-11 ml-auto mr-auto">
-			       <h2 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center text-white texto-disco-inclinado disco-2 border-bottom">Dress Code</h2><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+			       <h2 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center text-white texto-disco-inclinado disco-2 border-bottom">Dress Code</h2><p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-white texto-disco-inclinado mb-4">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
             <p class="text-center text-white mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
             <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
           </div>
@@ -431,7 +431,7 @@
             
 			  <p data-t-html="hashtag.texto" class="text-center text-white texto-disco-inclinado mb-4">¡Prepárate para nuestra boda!<br>
 Etiquétanos en Instagram con nuestro hashtag en tus fotos y videos.</p>
-   <h4 data-si="hashtag.texto" data-campo="hashtag.texto" class="mb-5"><span class="disco-3 p-1">#RocioyJorge2027</span></h4>
+   <h4 data-si="hashtag.texto" class="mb-5"><span data-campo="hashtag.texto" class="disco-3 p-1">#RocioyJorge2027</span></h4>
           <div data-si="fotos.instagram" class="mr-auto ml-auto col-lg-10 mb-5">
 			  
 			  <div class="text-center">

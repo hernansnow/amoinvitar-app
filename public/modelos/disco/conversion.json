@@ -23,12 +23,11 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "dress code: sin texto en la invitación"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "LUCIANA",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "inicio",
           "iconosItinerario": [
@@ -60,12 +59,12 @@
           "regalos"
         ],
         "avisos": [
-          "dress code: sin texto en la invitación",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "LUCIANA",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "inicio",
           "claseTitulos": "disco-2",
@@ -83,12 +82,12 @@
         ],
         "avisos": [
           "música: sin <audio id=\"audio\">",
-          "dress code: sin texto en la invitación",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "LUCIANA",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
           "claseTitulos": "disco-2",
@@ -123,12 +122,11 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "dress code: sin texto en la invitación"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "Rocío<i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\">Jorge",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "inicio",
           "iconosItinerario": [
@@ -160,12 +158,12 @@
           "regalos"
         ],
         "avisos": [
-          "dress code: sin texto en la invitación",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Rocío<i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\">Jorge",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "inicio",
           "nombresCierre": "Rocío<span class=\"disco-2\">&#160;&amp;&#160;</span>Jorge",
@@ -184,12 +182,12 @@
         ],
         "avisos": [
           "música: sin <audio id=\"audio\">",
-          "dress code: sin texto en la invitación",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Rocío<i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\">Jorge",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
           "nombresCierre": "Rocío<span class=\"disco-2\">&#160;&amp;&#160;</span>Jorge",
@@ -225,12 +223,11 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "dress code: sin texto en la invitación"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "RAMIRO",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "inicio",
           "iconosItinerario": [
@@ -260,12 +257,12 @@
           "regalos"
         ],
         "avisos": [
-          "dress code: sin texto en la invitación",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "RAMIRO",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "inicio",
           "claseTitulos": "disco-2",
@@ -283,12 +280,12 @@
         ],
         "avisos": [
           "música: sin <audio id=\"audio\">",
-          "dress code: sin texto en la invitación",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "RAMIRO",
-          "portadaFotos": 1,
+          "videoPortada": true,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
           "claseTitulos": "disco-2",

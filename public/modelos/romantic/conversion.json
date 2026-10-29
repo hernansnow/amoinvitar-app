@@ -42,7 +42,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 4
         }
       },
       "premium": {
@@ -68,7 +69,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "basic": {
@@ -90,7 +92,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 1
         }
       }
     }
@@ -139,7 +142,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 4
         }
       },
       "premium": {
@@ -166,7 +170,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "basic": {
@@ -189,7 +194,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 1
         }
       }
     }
@@ -236,7 +242,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 4
         }
       },
       "premium": {
@@ -262,7 +269,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "basic": {
@@ -284,7 +292,8 @@
           "claseTitulos": "cinzel",
           "fuentes": [
             "../../comun/fonts/google/cinzel-decorative+jost.css"
-          ]
+          ],
+          "separadores": 1
         }
       }
     }

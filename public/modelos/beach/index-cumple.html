@@ -144,12 +144,12 @@
 
 <!-- /audio -->
 	  
-	  		<div data-componente="galeria"></div>
+	  		<div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 	  
 	<section class="site-section text-center" style="background-color:#eba767;">
 		  <div class="container pt-5 jost">
 			  <div class="col-md-8 ml-auto mr-auto">
-		    <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="d-none">Nuestra Historia</h2><p data-si="historia.activa" class="jost text-center text-black mb-4 g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></p>
+		    <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="d-none">Nuestra Historia</h2><h4 data-si="historia.activa" class="jost text-center text-black mb-4"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></h4>
                 <div class="col-5 mb-0 mr-auto ml-auto">
 					<hr style="border-top: 1px solid" class="bg-black m-0">
 				</div>
@@ -275,10 +275,7 @@
 		    <div class="p-3 ml-auto mr-auto">
 				  <img loading="lazy" class="img-fluid mb-3" src="img/icon-percha-verde-oscuro.png" width="70" alt="">
 		   	  <div class="jost-titulo">
-			    <h3 data-t="dress.titulo" data-seccion="dresscode" class="mb-2 pb-2 text-center text-verde-oscuro text-uppercase border-bottom border-dark">Dress code</h3><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
-            <p class="text-center text-verde-oscuro text-uppercase mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
-            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
-          </div>
+			    <h3 data-t="dress.titulo" data-seccion="dresscode" class="mb-2 pb-2 text-center text-verde-oscuro text-uppercase border-bottom border-dark">Dress code</h3>
 			  </div>
                   <p class="text-center text-black">Formal y elegante. Por favor no usar blanco.</p>
 				  	<div data-si="dresscode.sugerencias" data-seccion="estilos" class="col-12 text-center">	
@@ -307,7 +304,10 @@
 		   </div>
 		  <!-- /referencias dress -->
 		</div>
-		</div>
+		</div><p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-black">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+            <p class="text-center text-black mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
+          </div>
 	  </div>
 	
 		 <div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto mb-5" data-aos="fade-up" data-aos-delay="150">
@@ -417,10 +417,10 @@
 	<section data-seccion="testigos" class="site-section" style="background: rgba(255, 237, 148, 0.3)" id="testigos">
       <div class="container text-center jost">
         <div class="row mb-3">
-			   <div data-repetir="testigos.items" class="col-md-4 col-9 text-center ml-auto mr-auto">
-			   <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-3" src="../../comun/img/demo-testigo1.jpg" width="75" alt="">
+			   <div class="col-md-4 col-9 text-center ml-auto mr-auto">
+			   <i class="h1 icon-people" aria-hidden="true" style="color:#184d41"></i>
 		   	  <div class="jost-titulo text-center">
-			    <h3 data-i="nombre" data-t="testigos.titulo" class="mb-2 pb-2 text-verde-oscuro text-uppercase border-bottom border-dark">Cómplices</h3>
+			    <h3 data-t="testigos.titulo" class="mb-2 pb-2 text-verde-oscuro text-uppercase border-bottom border-dark">Cómplices</h3>
 			  </div>
         </div>
 		</div>
@@ -428,11 +428,16 @@
         <div class="row">
           <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="50">
             <div>
-                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo1.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
               <h6 class="text-black mb-0">Juan Fernandez</h6>
             </div> 
           </div>
-          
+          <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="150">
+            <div>
+                 <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+				<h6 class="text-black mb-0">Marcela García</h6>
+            </div> 
+          </div>
         </div>
       </div>
       <div class="text-center">
@@ -594,7 +599,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
        </div>
 
       </div>
-    </section><section class="site-section pt-4 pb-4 ai-perdiste" style="background-image: linear-gradient(rgba(235, 167, 103, 0.95), rgba(228, 217, 199, 0.0)), url(img/bg-beach3.jpg); background-color:#eba767; background-position:50% 70%; background-repeat:no-repeat; background-size:cover; position:relative;">
+    </section><section class="bg-diferido site-section pt-4 pb-4 ai-perdiste" style="background-image: linear-gradient(rgba(235, 167, 103, 0.95), rgba(228, 217, 199, 0.0)), url(img/bg-beach3.jpg); background-color:#eba767; background-position:50% 70%; background-repeat:no-repeat; background-size:cover; position:relative;">
       <div class="container"><div class="row"><div class="col-12 text-center">
         <h3 class="mb-3 text-center d-none text-white" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
         <ul class="list-unstyled">

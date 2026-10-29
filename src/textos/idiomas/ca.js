@@ -119,7 +119,7 @@ export default {
       'meta.descripcion': "T'espero per celebrar-ho junts!",
       'celebracion.sola': 'Aniversari', 'bienvenida.texto': 'Et vull convidar a la meva festa!', 'evento.nombre': 'Aniversari', 'evento.descripcion': "T'espero per celebrar el meu aniversari", 'portada.subtitulo': 'EL MEU ANIVERSARI!',
       'historia.titulo': 'La Meva Història', 'historia.texto': 'Un any més per celebrar la vida, i què millor que fer-ho amb les persones que més estimo.',
-      'rsvp.texto': 'La teva presència farà que aquest dia sigui realment especial.', 'bus.destinoTexto': 'La meva festa!', 'testigos.titulo': 'Amfitrions',
+      'rsvp.texto': 'La teva presència farà que aquest dia sigui realment especial.', 'bus.destinoTexto': 'La meva festa!', 'testigos.titulo': 'Còmplices',
       'album.texto': "Prepara't per a la meva festa!<br>Fes clic al botó i puja totes les fotos i vídeos que facis durant la festa al meu àlbum compartit, a l'instant, sense descarregar cap app.",
       'canciones.texto': 'Quines cançons no poden faltar?<br>Ajuda\'m a triar la música',
       'regalos.texto': "El millor regal és que m'acompanyis, però si em vols fer un regal, aquí tens les dades.",

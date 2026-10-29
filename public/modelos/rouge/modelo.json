@@ -83,7 +83,7 @@
     }
   },
   "nombresHTML": {
-    "portada": "{a} <span>Priscila <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> Jorge</span> {b}",
+    "portada": "<span>{a} <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> {b}</span>",
     "cierre": "{a} <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> {b}",
     "solo": "{a}"
   },

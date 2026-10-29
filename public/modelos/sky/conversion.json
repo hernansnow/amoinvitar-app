@@ -33,6 +33,7 @@
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -71,6 +72,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -137,6 +139,7 @@
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -174,6 +177,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -241,6 +245,7 @@
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -277,6 +282,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
+          "propLugar": "1/1",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",

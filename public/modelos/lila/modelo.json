@@ -83,8 +83,8 @@
     }
   },
   "nombresHTML": {
-    "portada": "{a} <i class=\"icon-heart text-lila ml-2 mr-2\" aria-hidden=\"true\"></i> {b}",
-    "cierre": "{a} <i class=\"icon-heart ml-2 mr-2\" aria-hidden=\"true\"></i> {b}",
+    "portada": "{a}<i class=\"icon-heart text-lila ml-2 mr-2\" aria-hidden=\"true\"></i>{b}",
+    "cierre": "{a}<i class=\"icon-heart ml-2 mr-2\" aria-hidden=\"true\"></i>{b}",
     "solo": "{a}"
   },
   "miniatura": {

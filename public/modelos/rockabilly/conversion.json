@@ -44,7 +44,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       },
       "premium": {
@@ -71,7 +72,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       },
       "basic": {
@@ -93,7 +95,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       }
     }
@@ -142,7 +145,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       },
       "premium": {
@@ -169,7 +173,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       },
       "basic": {
@@ -192,7 +197,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       }
     }
@@ -240,7 +246,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       },
       "premium": {
@@ -267,7 +274,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       },
       "basic": {
@@ -289,7 +297,8 @@
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
-          ]
+          ],
+          "separadores": 1
         }
       }
     }

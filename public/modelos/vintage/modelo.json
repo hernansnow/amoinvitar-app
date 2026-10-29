@@ -13,7 +13,7 @@
   ],
   "galeria": {
     "byn": false,
-    "enRsvp": false
+    "enRsvp": true
   },
   "videoPortada": false,
   "portadaSinFoto": "img/bg-vintage3.jpg",
@@ -21,7 +21,8 @@
     "basic": {
       "secciones": [
         "galeria",
-        "rsvp"
+        "rsvp",
+        "dresscode"
       ],
       "incluye": {
         "sobre": false,
@@ -37,6 +38,7 @@
         "historia",
         "galeria",
         "rsvp",
+        "dresscode",
         "instagram",
         "canciones",
         "regalos"
@@ -79,8 +81,8 @@
     }
   },
   "nombresHTML": {
-    "portada": "{a} <span class=\"fontawesome-star star\"></span><span>Carla <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> Pablo</span><span class=\"fontawesome-star star\"></span> {b}",
-    "cierre": "{a} <span class=\"text-retro display-4\">Carla <i class=\"icon-heart text-danger\" aria-hidden=\"true\"></i> Pablo</span> {b}",
+    "portada": "<span class=\"fontawesome-star star\"></span><span>{a} <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> {b}</span><span class=\"fontawesome-star star\"></span>",
+    "cierre": "<span class=\"text-retro display-4\">{a} <i class=\"icon-heart text-danger\" aria-hidden=\"true\"></i> {b}</span>",
     "solo": "{a}"
   },
   "miniatura": {

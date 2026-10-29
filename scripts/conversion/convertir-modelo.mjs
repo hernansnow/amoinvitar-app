@@ -137,7 +137,12 @@ function portada(c, home) {
   const frase = textos.find((e) => FRASES.test(txt(e)) && hojaTexto(e) && txt(e).length < 40)
     || textos.find((e) => e !== fecha && !fecha?.contains(e) && !e.contains(fecha) && txt(e).length > 3 && txt(e).length < 40
     && /[A-ZÁÉÍÓÚÑ!¡]{3}/.test(txt(e)) && txt(e) === txt(e).toUpperCase() && !/FALTAN|DÍAS|HORAS|MIN|SEG/.test(txt(e)));
-  if (frase) frase.setAttribute('data-t', 'portada.subtitulo'); else c.aviso('portada: sin frase (NOS CASAMOS / MIS 15…)');
+  if (frase) {
+    frase.setAttribute('data-t', 'portada.subtitulo');
+    // El diseño la escribe en minúsculas o "Tipo Título": el motor respeta ese caso
+    const t0 = txt(frase).replace(/[¡!¿?]/g, '');
+    if (t0 !== t0.toUpperCase()) frase.setAttribute('data-caso', /^(\S+\s*)+$/.test(t0) && t0.split(/\s+/).every((w) => w[0] === w[0].toUpperCase()) ? 'titulo' : 'oracion');
+  } else c.aviso('portada: sin frase (NOS CASAMOS / MIS 15…)');
   // Cuenta regresiva
   const reloj = $(home, '#clock-b') || $(home, '#countdown');
   if (reloj) {
@@ -158,7 +163,18 @@ function portada(c, home) {
   // Fotos de la portada: carrusel de Bootstrap, foto de fondo o foto suelta (las de la demo)
   const esDemo = (u) => u && (!/^(\.\.\/|https?:|\/)/.test(u) || /^\.\.\/\.\.\/demo\/(?!img-demo)/.test(u)) && /\.(jpe?g|png|webp)$/i.test(u);
   const urlDe = (st) => (st.match(/url\((['"]?)([^'")]+)\1\)\s*;?\s*[^u]*$/) || st.match(/url\((['"]?)([^'")]+)\1\)(?![\s\S]*url\()/) || [])[2];
-  const items = $$(home, '.carousel-item');
+  // Video de fondo (Vimeo, Cinema y Disco): el de la demo queda solo en la demo; el cliente sube el suyo (MP4)
+  // o, si no, van sus fotos de portada en un slideshow
+  const vimeo = $(home, '.vimeo-embed');
+  if (vimeo) {
+    vimeo.setAttribute('data-si', 'demo');
+    const v = nodo(d, `<video class="ai-video-portada" data-si="portada.video" autoplay muted loop playsinline preload="auto" data-attr="src:c:portada.video;poster:c:portada.poster"></video>`);
+    despues(vimeo, v);
+    const sl = nodo(d, `<div data-no="demo"><div data-no="portada.video"><div class="ai-slides ai-slides-fondo" data-intervalo="5000"><div class="ai-slide" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.35)), url(demo/${c.evento}/hero-banner.jpg)"></div></div></div></div>`);
+    despues(v, sl);
+    c.info.videoPortada = true; c.info.portadaFotos = 4;
+  }
+  const items = vimeo ? [] : $$(home, '.carousel-item');
   if (items.length) {
     const car = subir(items[0], (x) => x.classList?.contains('carousel'));
     const slides = nodo(d, '<div class="ai-slides" data-intervalo="5000"></div>');
@@ -173,7 +189,7 @@ function portada(c, home) {
     }
     car.parentNode.replaceChild(slides, car);
     c.info.portadaFotos = items.length;
-  } else {
+  } else if (!vimeo) {
     let n = 0;
     for (const e of $$(home, '[style*="url("]')) {
       const u = urlDe(e.getAttribute('style'));
@@ -244,8 +260,9 @@ function historia(c) {
   }
   h.setAttribute('data-t', 'historia.titulo'); h.setAttribute('data-si', 'historia.activa');
   if (t) {
-    const p = d.createElement('p');
-    p.setAttribute('class', [...clases(t).filter((k) => !/font-weight-lighter|^h\d$|display-/.test(k)), 'g-historia'].join(' '));
+    // Se conserva la etiqueta y las clases del diseño (la tipografía depende de ellas)
+    const p = d.createElement(t.tagName.toLowerCase());
+    p.setAttribute('class', clases(t).join(' '));
     if (t.getAttribute('style')) p.setAttribute('style', t.getAttribute('style'));
     // Comillas del diseño (íconos) a los costados del texto
     const comillas = $$(t, '[class*="icon-quote"]');
@@ -276,8 +293,16 @@ function galeria(c) {
   const reemplazo = nodo(d, '<div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>');
   // Si el bloque de primer nivel es solo la galería, se reemplaza entero
   const otro = $$(top, 'h1,h2,h3,h4,p').some((e) => !car.contains(e) && txt(e).length > 2);
-  if (top !== car && !otro && !top.matches('section#rsvp')) top.parentNode.replaceChild(reemplazo, top);
-  else { car.parentNode.replaceChild(nodo(d, '<div data-componente="galeria"></div>'), car); top.setAttribute('data-seccion', 'galeria'); if (!top.id) top.id = 'galeria'; }
+  // El bloque de primer nivel queda (con su fondo); el carrusel viejo pasa a ser el componente, en su propio
+  // contenedor con data-seccion (así, si se apaga la galería, no se va nada más). Dentro de una fila, de ancho completo.
+  const fila = car.parentElement?.classList?.contains('row');
+  const caja = nodo(d, `<div${fila ? ' class="col-12 p-0"' : ''} data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>`);
+  if (!otro && top !== car && !$$(top, 'img').some((i) => !car.contains(i))) {
+    // El bloque es solo la galería: la marca va en el bloque (con su fondo)
+    car.parentNode.replaceChild(nodo(d, '<div data-componente="galeria"></div>'), car);
+    top.setAttribute('data-seccion', 'galeria'); if (!top.id) top.id = 'galeria';
+  } else car.parentNode.replaceChild(caja, car);
+  void reemplazo;
   c.info.galeria = n;
   c.secciones.add('galeria');
 }
@@ -290,6 +315,8 @@ function lugar(c, col, cual) {
   for (const i of $$(col, 'img')) {
     const s = i.getAttribute('src') || '';
     if (/img-demo\/(iglesia|lugar)|demo-(iglesia|lugar)|\/(iglesia|lugar)\d*\.jpe?g$/i.test(s)) {
+      // Foto redonda en el diseño: la proporción del modelo es cuadrada
+      if (/rounded-circle/.test(i.getAttribute('class') || '')) c.info.propLugar = '1/1';
       i.setAttribute('src', `../../comun/img/demo-${cual === 'ceremonia' ? 'iglesia' : 'lugar'}.jpg`);
       i.setAttribute('data-si', `${cual}.foto`); i.setAttribute('data-attr', `src:c:${cual}.foto;style:c:${cual}.fotoEstilo`);
     }
@@ -451,7 +478,7 @@ function rsvp(c) {
 function colDe(el, sec) { return subir(el, (x) => esCol(x) && sec.contains(x) && x !== sec) || subir(el, (x) => x.parentElement && x.parentElement.classList?.contains('row')); }
 function dresscode(c) {
   const d = c.doc;
-  const ancla = $(d, '[data-src="#dress"]') || hoja(d.body, 'h2,h3,h4', (t) => /^dress ?code$|^vestimenta$|^c[oó]digo de vestimenta$/i.test(t));
+  const ancla = $(d, '[data-src="#dress"]') || hoja(d.body, 'h2,h3,h4', (t) => /^dr?ess ?code$|^vestimenta$|^c[oó]digo de vestimenta$/i.test(t));
   if (!ancla) { c.aviso('dress code: no se encontró'); return; }
   const sec = $(d, '#dresscode') || subir(ancla, (x) => x.tagName === 'SECTION') || nivel(ancla, c.wrap);
   sec.id = 'dresscode';
@@ -462,7 +489,7 @@ function dresscode(c) {
     if (/show-mobile|hr|border/.test(s.outerHTML) && txt(s) === '' && s.nextElementSibling) { s.nextElementSibling.insertBefore(s, s.nextElementSibling.firstChild); s.removeAttribute('class'); s.setAttribute('class', 'col-12 p-0 show-mobile'); }
   }
   // Dress
-  const hD = hoja(sec, 'h2,h3,h4', (t) => /^dress ?code$|vestimenta/i.test(t));
+  const hD = hoja(sec, 'h2,h3,h4', (t) => /^dr?ess ?code$|vestimenta/i.test(t));
   if (hD) {
     const col = colDe(hD, sec) || hD.parentElement;
     col.setAttribute('data-si', 'grupos.dressCol');
@@ -471,10 +498,19 @@ function dresscode(c) {
       if (e.matches('img,i,div,p') && !txt(e)) e.setAttribute('data-seccion', 'dresscode');
     }
     hD.setAttribute('data-seccion', 'dresscode'); hD.setAttribute('data-t', 'dress.titulo');
-    let p = hD.nextElementSibling;
-    while (p && (p.tagName !== 'P' || !txt(p))) p = p.nextElementSibling === null ? null : p.nextElementSibling;
-    if (p && !p.querySelector('button')) { p.setAttribute('data-seccion', 'dresscode'); p.setAttribute('data-campo-html', 'dresscode.texto'); }
-    else c.aviso('dress code: sin texto en la invitación');
+    // El texto: el primer párrafo de la columna después del título (antes del botón)
+    const boton0 = $(col, '[data-src="#dress"]');
+    let p = $$(col, 'p').find((x) => txt(x) && (hD.compareDocumentPosition(x) & 4) && !x.closest('#dress') && !x.querySelector('button') && (!boton0 || (x.compareDocumentPosition(boton0) & 4)));
+    if (!p) {
+      // Sin texto en la invitación (estaba en la ventana): se agrega, con el estilo del texto de hospedaje
+      const modelo = $$(sec, 'p').find((x) => /hoteles|referencias/i.test(txt(x)));
+      p = nodo(d, `<p class="${modelo ? clases(modelo).join(' ') : 'text-center'}">Formal y elegante. Por favor no usar blanco.</p>`);
+      despues(subir(hD, (x) => x.parentElement === col) || hD, p);
+    }
+    p.setAttribute('data-seccion', 'dresscode'); p.setAttribute('data-campo-html', 'dresscode.texto');
+    // El texto que repetía la ventana de sugerencias
+    const repe = $$(d, '#dress span.font-weight-light').find((x) => /formal|elegante/i.test(txt(x)));
+    if (repe) { const br = repe.previousElementSibling; if (br?.tagName === 'BR') quitar(br); quitar(repe); }
     // Colores a evitar
     const evitar = nodo(d, `<div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
             <p class="${clases(p || hD).filter((k) => /^text-/.test(k)).join(' ') || 'text-white'} mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
@@ -597,6 +633,8 @@ function itinerario(c) {
   c.secciones.add('itinerario');
 }
 
+// Color de cada pluma (icon-testigos-*.png), para el ícono de dos personas de Cómplices
+const PLUMAS = {"icon-testigos.png": "#000000", "icon-testigos-rosa.png": "#e62f83", "icon-testigos-ocre.png": "#d19643", "icon-testigos-lila.png": "#73527f", "icon-testigos-w.png": "#ffffff", "icon-testigos-bordo.png": "#890029", "icon-testigos-azul.png": "#4c8ca5", "icon-testigos-graffiti.png": "#a26e50", "icon-testigos-bordo-cinema.png": "#65201e", "icon-testigos-b.png": "#a78977", "icon-testigos-verde-oscuro.png": "#184d41", "icon-testigos-g.png": "#9c916b"};
 // ── 10. Testigos / padrinos / cómplices ──────────────────────────────────
 function testigos(c) {
   const d = c.doc;
@@ -605,6 +643,13 @@ function testigos(c) {
   const sec = $(d, '#testigos') || subir(h, (x) => x.tagName === 'SECTION') || nivel(h, c.wrap);
   sec.id = 'testigos'; sec.setAttribute('data-seccion', 'testigos');
   h.setAttribute('data-t', 'testigos.titulo');
+  // Cumpleaños (Cómplices): la pluma de los testigos pasa a ser el ícono de dos personas, del mismo color
+  if (c.evento === 'cumple') {
+    for (const i of $$(sec, 'img').filter((x) => /icon-testigos/.test(x.getAttribute('src') || ''))) {
+      const color = PLUMAS[basename(i.getAttribute('src'))] || 'inherit';
+      i.parentNode.replaceChild(nodo(d, `<i class="h1 icon-people" aria-hidden="true" style="color:${color}"></i>`), i);
+    }
+  }
   const fotos = $$(sec, 'img').filter((i) => /testigo|padrino|demo-/.test(i.getAttribute('src') || ''));
   const cols = [...new Set(fotos.map((i) => subir(i, (x) => esCol(x))).filter(Boolean))];
   cols.forEach((col, i) => {
@@ -777,7 +822,12 @@ function cierre(c) {
   if (pie) {
     pie.setAttribute('data-si', 'pie.mostrar');
     const fuerte = $(pie, 'strong');
-    (fuerte || pie).setAttribute('data-campo-html', 'pie.texto');
+    const comillas = $$(pie, '[class*="icon-quote"]');
+    if (!fuerte && comillas.length) {
+      // Las comillas del diseño quedan; el texto va en su propio span
+      const izq = comillas.find((x) => /left/.test(x.getAttribute('class'))), der = comillas.find((x) => /right/.test(x.getAttribute('class')));
+      pie.innerHTML = `${izq ? izq.outerHTML + ' ' : ''}<span data-campo-html="pie.texto">${txt(pie)}</span>${der ? ' ' + der.outerHTML : ''}`;
+    } else (fuerte || pie).setAttribute('data-campo-html', 'pie.texto');
   } else c.aviso('cierre: sin texto final');
   if (nombres) { c.info.nombresCierre = nombres.innerHTML.trim(); nombres.setAttribute('data-campo-html', 'nombres.cierre'); }
   if (redes) {
@@ -806,7 +856,7 @@ function perdiste(c) {
   const agenda = '#' + (c.info.idAgenda || 'inicio');
   const lista = (clase) => PERDISTE.filter(([s]) => !s || c.secciones.has(s))
     .map(([s, href, t, x]) => `<li${s ? ` data-seccion="${s}"` : ''}><a href="${href === '#inicio' ? agenda : href}" class="${clase}" data-t="${t}">${x}</a></li>`).join('\n            ');
-  const h = hoja(d.body, 'h1,h2,h3,h4', (t) => /te perdiste algo|did you miss/i.test(t));
+  const h = hoja(d.body, 'h1,h2,h3,h4,h5,h6,p,span', (t) => /^¿?te perdiste algo\??$|did you miss/i.test(t));
   if (c.paquete === 'basic') {
     // Basic no trae accesos rápidos
     if (h) quitar(subir(h, (x) => x.tagName === 'SECTION') || nivel(h, c.wrap));
@@ -824,7 +874,7 @@ function perdiste(c) {
   const cie = $(d, '#cierre');
   const color = cie && /text-white/.test(cie.innerHTML) ? 'text-white' : 'text-black';
   const fuente = (c.info.claseTitulos || '');
-  const bloque = nodo(d, `<section class="site-section pt-4 pb-4 ai-perdiste"${cie?.getAttribute('style') ? ` style="${cie.getAttribute('style')}"` : ''}>
+  const bloque = nodo(d, `<section class="${clases(cie).filter((k) => !/^p[tby]?-/.test(k)).join(' ') || 'site-section'} pt-4 pb-4 ai-perdiste"${cie?.getAttribute('style') ? ` style="${cie.getAttribute('style')}"` : ''}>
       <div class="container"><div class="row"><div class="col-12 text-center">
         <h3 class="mb-3 text-center ${fuente} ${color}" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
         <ul class="list-unstyled">
@@ -854,8 +904,13 @@ function pie(c) {
   const d = c.doc;
   const f = $(d, 'footer.site-footer') || $(d, 'footer');
   const nuevo = nodo(d, '<div></div>');
+  const clase = f?.getAttribute('class'), estilo = f?.getAttribute('style');
   if (f) { antes(f, nuevo); quitar(f); } else c.wrap.appendChild(nuevo);
-  nuevo.insertAdjacentHTML('beforebegin', PIE);
+  // El pie de siempre, con la clase y el color del pie del diseño
+  let html = PIE;
+  if (clase) html = html.replace('class="site-footer pt-4 pb-4"', `class="${clase}"`);
+  if (estilo) html = html.replace('data-no="marca.blanca"', `data-no="marca.blanca" style="${estilo}"`);
+  nuevo.insertAdjacentHTML('beforebegin', html);
   quitar(nuevo);
 }
 
@@ -886,7 +941,7 @@ function cabecera(c, viejo) {
     const h = l.getAttribute('href') || '';
     if (/fonts\/google\/[^/]+\.css/.test(h)) { fuentes.push(h.replace(/^.*fonts\/google\//, '../../comun/fonts/google/')); c.fuentes.add(h.replace(/^\.\.\/\.\.\//, '')); }
     else if (/font/i.test(h) && /^\.\.\/\.\.\/css\//.test(h) && !/icomoon/.test(h)) { const n = basename(h.split('?')[0]); fuentes.push(`../../comun/fonts/css/${n}`); c.fuentes.add(h.split('?')[0].replace(/^\.\.\/\.\.\//, '')); }
-    else if (/^\.\.\/\.\.\/css\/inv-/.test(h)) { c.hojas.add(h.replace(/^\.\.\/\.\.\//, '')); }
+    else if (/^\.\.\/\.\.\/css\/inv-/.test(h)) { c.hojas.add(h.split('?')[0].replace(/^\.\.\/\.\.\//, '')); }
   }
   for (const s of $$(viejo, 'style')) estilos.push(s.outerHTML);
   c.info.fuentes = fuentes;
@@ -994,6 +1049,42 @@ function bienvenida(c, original) {
   if (sobre) despues(sobre, bloque);
 }
 
+// ── Las marcas de texto bajan al <span> interno que lleva la tipografía (h2 > span.fuente > "Ceremonia") ──
+const MARCAS_TEXTO = ['data-t', 'data-campo', 'data-campo-html', 'data-fecha', 'data-fecha-formato', 'data-caso', 'data-t-html'];
+function bajarMarcas(c) {
+  for (const e of $$(c.doc.body, '[data-t],[data-campo],[data-fecha]')) {
+    let x = e;
+    while (x.children.length === 1 && [...x.childNodes].every((n) => n.nodeType !== 3 || !n.textContent.trim()) && !/^(I|IMG|SVG|BR)$/.test(x.firstElementChild.tagName)) x = x.firstElementChild;
+    if (x === e) continue;
+    for (const a of MARCAS_TEXTO) if (e.hasAttribute(a)) { x.setAttribute(a, e.getAttribute(a)); e.removeAttribute(a); }
+  }
+}
+
+// ── Separadores sueltos entre secciones (imágenes sin texto): van con la sección que les sigue ──
+// Se envuelven juntos en un <div> que lleva el data-seccion (y el id) de la sección, así si el cliente la
+// apaga se va también su separador y no quedan varios separadores seguidos.
+function separadores(c) {
+  const w = c.wrap;
+  const esSep = (e) => e.tagName !== 'FOOTER' && !e.id && !e.hasAttribute('data-seccion') && !e.hasAttribute('data-componente') && !e.hasAttribute('data-si') && !e.hasAttribute('data-no')
+    && !txt(e) && ($$(e, 'img').length > 0 || e.tagName === 'IMG' || $(e, 'hr')) && !$(e, 'audio,iframe,video,[data-repetir]');
+  const quitable = (e) => e && (e.hasAttribute('data-seccion') || $$(e, ':scope > [data-seccion]').length === 1 && e.children.length === 1);
+  for (const e of [...w.children]) {
+    if (!esSep(e)) continue;
+    let sig = e.nextElementSibling; while (sig && esSep(sig)) sig = sig.nextElementSibling;
+    let ant = e.previousElementSibling; while (ant && esSep(ant)) ant = ant.previousElementSibling;
+    const destino = quitable(sig) ? sig : quitable(ant) ? ant : null;
+    if (!destino) continue;
+    const s0 = destino.hasAttribute('data-seccion') ? destino : $(destino, ':scope > [data-seccion]');
+    const caja = c.doc.createElement('div');
+    caja.setAttribute('data-seccion', s0.getAttribute('data-seccion'));
+    if (s0.id) { caja.id = s0.id; s0.removeAttribute('id'); }
+    s0.removeAttribute('data-seccion');
+    destino.parentNode.insertBefore(caja, destino);
+    if (destino === sig) { caja.appendChild(e); caja.appendChild(destino); } else { caja.appendChild(destino); caja.appendChild(e); }
+    c.info.separadores = (c.info.separadores || 0) + 1;
+  }
+}
+
 // ── Composición ──────────────────────────────────────────────────────────
 function preparar(c) {
   const d = c.doc;
@@ -1018,6 +1109,7 @@ function preparar(c) {
   const h2 = $$(d.body, 'h2[class]').map((h) => clases(h)).flat().filter((k) => !/^(mb|mt|pb|pt|p|m|text|h\d|display)-?|^(text-center|font-weight|section)/.test(k));
   c.info.claseTitulos = h2.sort((a, b) => h2.filter((x) => x === b).length - h2.filter((x) => x === a).length)[0] || '';
   perdiste(c);
+  bajarMarcas(c);
   pie(c);
   rutas(c);
   cabecera(c, viewHead(viejoHead));
@@ -1073,6 +1165,7 @@ function componer(cs) {
       const al = $(d, '[data-seccion="album"]');
       if (hp && al) { antes(al, importar(d, hp)); deluxe.secciones.add('instagram'); }
     }
+    separadores(c);
     body.insertAdjacentHTML('beforeend', SCRIPTS);
   }
 }

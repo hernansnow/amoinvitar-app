@@ -85,15 +85,15 @@
 	   <!-- VIDEO -->
 
 				<div class="video-container">
-			<div class="vimeo-embed w-embed w-iframe">
+			<div data-si="demo" class="vimeo-embed w-embed w-iframe">
                 <iframe src="https://player.vimeo.com/video/638733465?background=1&autoplay=1&loop=1&muted=1&autopause=0&byline=0&title=0&portrait=0&controls=0&dnt=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen playsinline webkit-playsinline="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #75655C; pointer-events: none;">
                </iframe>
-        </div>
+        </div><video class="ai-video-portada" data-si="portada.video" autoplay muted loop playsinline preload="auto" data-attr="src:c:portada.video;poster:c:portada.poster"></video><div data-no="demo"><div data-no="portada.video"><div class="ai-slides ai-slides-fondo" data-intervalo="5000"><div class="ai-slide" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.35)), url(demo/boda/hero-banner.jpg)"></div></div></div></div>
 	   </div>
 
 </section>   
 	  
-	  <section data-seccion="galeria" class="site-section" style="background-color:#fff background-position:50% 0%; background-repeat:no-repeat; background-size:cover; position:relative;" id="portfolio">
+	  <section class="site-section" style="background-color:#fff background-position:50% 0%; background-repeat:no-repeat; background-size:cover; position:relative;" id="portfolio">
 		  		  <img loading="lazy" class="img-fluid show-desktop" src="img/cinema-separador-1b.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;">
 		  <img loading="lazy" class="img-fluid show-mobile" src="img/cinema-separador-m-1b.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;">
       <div class="container pt-5">
@@ -106,7 +106,7 @@
         </div>
 
         <div class="col-md-9 col-lg-7 ml-auto mr-auto text-center" data-aos="fade-up">
-        <div data-componente="galeria"></div>
+        <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 </div>
 </div>
     </section>

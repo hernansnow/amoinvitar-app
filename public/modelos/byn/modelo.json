@@ -14,7 +14,7 @@
     "#ffffff"
   ],
   "galeria": {
-    "byn": false,
+    "byn": true,
     "enRsvp": false
   },
   "videoPortada": false,
@@ -82,7 +82,7 @@
     }
   },
   "nombresHTML": {
-    "portada": "{a} <span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">LAURA</span>\n                <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"><span class=\"text-gold\">&amp;</span> <span>PABLO</span>\n                </span> {b}",
+    "portada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">{a}</span> <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"><span class=\"text-gold\">&amp;</span> <span>{b}</span> </span>",
     "cierre": "{a} <i class=\"icon-heart text-gold\" aria-hidden=\"true\"></i> {b}",
     "solo": "{a}"
   },
@@ -283,7 +283,10 @@
             "globo.jpg",
             "hero-banner.jpg",
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Martín"
+          }
         }
       }
     }

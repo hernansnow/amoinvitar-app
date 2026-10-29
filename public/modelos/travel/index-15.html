@@ -106,9 +106,9 @@
                 <img data-i-attr="src:url;style:estiloImg" data-repetir="fotos.portada" src="demo/15/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle p-1" style="width: 74%; border: 3px solid #9c916b;">
               </div>
 			 <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="amsterdam-four-font text-gold">Natalia</h1>
-			  <p class="mb-2"><span data-t="portada.subtitulo" class="text-dark section-sub-title-sm p-1 border border-dark roboto-condensed-font">&#160;DESPEGAMOS EN&#160;</span></p>
+			  <p data-si="cuenta.activa" class="mb-2"><span class="text-dark section-sub-title-sm p-1 border border-dark roboto-condensed-font">&#160;DESPEGAMOS EN&#160;</span></p>
    			 <!-- Countdown 1-->
-                 <div class="flip-countdown"></div>
+                 <div data-si="cuenta.activa" class="flip-countdown"></div>
 			 <div class="text-center vert-move mt-1 mb-5 pb-md-5">
 			       <a href="#inicio" class="smoothscroll"><span class="text-gold h1 icon-keyboard_arrow_down"></span></a>
 			 </div>
@@ -180,14 +180,14 @@
 			  <img loading="lazy" class="img-fluid" src="img/travel-icono-1.png" width="150px" alt="Imagen">
              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="text-center text-gold font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="text-center amsterdam-four-font text-gold">Mi Viaje</h2>
 			  <div class="col-md-8 ml-auto mr-auto text-center mt-0 pt-0 mb-0 pb-4">
-			 <p data-si="historia.activa" class="text-azul-fuerte roboto-condensed-font font-weight-bolder mb-0 g-historia"><span class="text-azul display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span> <span class="text-azul display-5 icon-quote-right"></span></p>
+			 <h5 data-si="historia.activa" class="text-azul-fuerte roboto-condensed-font font-weight-bolder mb-0"><span class="text-azul display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span> <span class="text-azul display-5 icon-quote-right"></span></h5>
           </div>
           </div>
         </div>
 	   </div> 
     </section>
 	
-		     <div data-componente="galeria"></div>
+		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 
    <section class="site-section bg-white" style="background-size:cover; position:relative;" id="agenda">
 	       <lottie-player src="img/travel_avion3-m.json" background="transparent" speed="1" class="img-fluid show-mobile" style="width:1000%; margin: 0 auto; position: absolute; bottom: -50px; left: 0; z-index:99" loop autoplay></lottie-player>
@@ -216,7 +216,7 @@
                      <img loading="lazy" class="mr-5 img-fluid mt-2 mb-0" src="img/travel-icono-2-15.png" width="75" alt="Imagen">
 				</div>
 				<div class="text-center">
-			     <h3 class="amsterdam-four-font text-gold pb-3">Misa</h3>
+			     <h3 data-campo="ceremonia.titulo" class="amsterdam-four-font text-gold pb-3">Misa</h3>
 	            </div>
 			</div>
 			<!-- locations -->
@@ -247,11 +247,11 @@
 				<div class="flight">
 					<div class="ml-4 flight-depart-date">
 						<span>FECHA</span>
-						<h2 class="text-uppercase">12 SEP 27</h2>
+						<h2 data-fecha-formato="{dd} {MES3} {aa}" data-fecha="ceremonia" class="text-uppercase">12 SEP 27</h2>
 					</div>
 					<div class="mr-4 flight-depart-time">
 						<span>Embarque</span>
-						<h2 class="text-uppercase">20:00</h2>
+						<h2 data-fecha-formato="{hh}:{mi}" data-fecha="ceremonia" class="text-uppercase">20:00</h2>
 					</div>
 				</div>
 				<!-- /flight -->
@@ -303,7 +303,7 @@
                      <img loading="lazy" class="mr-5 img-fluid mt-2 mb-0" src="img/travel-icono-3.png" width="75" alt="Imagen">
 				</div>
 				<div class="text-center">
-			     <h3 class="amsterdam-four-font text-gold pb-3">Fiesta</h3>
+			     <h3 data-campo="celebracion.titulo" class="amsterdam-four-font text-gold pb-3">Fiesta</h3>
 	            </div>
 			</div>
 			<!-- locations -->
@@ -334,11 +334,11 @@
 				<div class="flight">
 					<div class="ml-4 flight-depart-date">
 						<span>FECHA</span>
-						<h2 class="text-uppercase">12 SEP 27</h2>
+						<h2 data-fecha-formato="{dd} {MES3} {aa}" data-fecha="celebracion" class="text-uppercase">12 SEP 27</h2>
 					</div>
 					<div class="mr-4 flight-depart-time">
 						<span>Embarque</span>
-						<h2 class="text-uppercase">21:00</h2>
+						<h2 data-fecha-formato="{hh}:{mi}" data-fecha="celebracion" class="text-uppercase">21:00</h2>
 					</div>
 				</div>
 				<!-- /flight -->
@@ -791,25 +791,36 @@
           </div>
 		  </div>
       </div>
+    </section><section class="site-section bg-light pt-4 pb-4 ai-perdiste">
+      <div class="container"><div class="row"><div class="col-12 text-center">
+        <h3 class="mb-3 text-center amsterdam-four-font text-black" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
+        <ul class="list-unstyled">
+            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-black" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
+            <li><a href="#agenda" class="smoothscroll btn-link text-black" data-t="perdiste.agendar">Agendar evento</a></li>
+            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-black" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-black" data-t="perdiste.hospedaje">Hospedaje</a></li>
+            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-black" data-t="perdiste.bus">Traslado</a></li>
+            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-black" data-t="perdiste.itinerario">Itinerario</a></li>
+            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-black" data-t="perdiste.album">Álbum de fotos</a></li>
+            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-black" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-black" data-t="perdiste.regalos">Regalos</a></li>
+            <li><a href="#home-section" class="smoothscroll btn-link text-black" data-t="perdiste.inicio">Inicio</a></li>
+        </ul>
+      </div></div></div>
     </section>
 
 	  <div class="bg-diferido pt-4" style="background-image: linear-gradient(rgba(3, 102, 142, 0.6), rgba(150, 143, 137, 0.7)), url(img/bg-travel-3.jpg); background-color:rgb(150, 143, 137); background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
       <div class="container">
         <div class="row">
                <div class="col-12 text-center">
-				   <h4 data-t="perdiste.titulo" class="mb-3 text-center amsterdam-four-font text-white">¿&#160;&#160;Te perdiste algo?</h4>
+				   <h4 class="mb-3 text-center amsterdam-four-font text-white">¿&#160;&#160;Te perdiste algo?</h4>
 				   <ul class="list-unstyled roboto-condensed-font font-weight-bolder">
-            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
-            <li><a href="#agenda" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
-            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
-            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-white" data-t="perdiste.hospedaje">Hospedaje</a></li>
-            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-white" data-t="perdiste.bus">Traslado</a></li>
-            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-white" data-t="perdiste.itinerario">Itinerario</a></li>
-            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-white" data-t="perdiste.album">Álbum de fotos</a></li>
-            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
-            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
-            <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
-          </ul>
+				  <li><a href="#rsvp" class="smoothscroll btn-link text-white">Confirmar asistencia</a></li>
+				  <li><a href="#inicio" class="smoothscroll btn-link text-white">Agendar evento</a></li>
+				  <li><a href="#dresscode" class="smoothscroll btn-link text-white">Dress code</a></li>
+ 				  <li><a href="#musica" class="smoothscroll btn-link text-white">Sugerir canción</a></li>
+				  <li><a href="#home-section" class="smoothscroll btn-link text-white">Inicio</a></li>
+			 </ul>
 		</div>
   </div>
 </div>
@@ -847,5 +858,412 @@
 <script src="../../comun/js/invitacion.js" defer></script>
 <script src="../../comun/js/slides.js" defer></script>
 <script src="../../comun/js/diferido.js" defer></script>
+
+<script>	
+// ——————————————————————————————————————————————————
+// TextScramble
+// ——————————————————————————————————————————————————
+
+class TextScramble {
+  constructor(el) {
+    this.el = el
+    this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    this.update = this.update.bind(this)
+  }
+  setText(newText) {
+    const oldText = this.el.innerText
+    const length = Math.max(oldText.length, newText.length)
+    const promise = new Promise((resolve) => this.resolve = resolve)
+    this.queue = []
+    for (let i = 0; i < length; i++) {
+      const from = oldText[i] || ''
+      const to = newText[i] || ''
+      const start = Math.floor(Math.random() * 40)
+      const end = start + Math.floor(Math.random() * 40)
+      this.queue.push({ from, to, start, end })
+    }
+    cancelAnimationFrame(this.frameRequest)
+    this.frame = 0
+    this.update()
+    return promise
+  }
+  update() {
+    let output = ''
+    let complete = 0
+    for (let i = 0, n = this.queue.length; i < n; i++) {
+      let { from, to, start, end, char } = this.queue[i]
+      if (this.frame >= end) {
+        complete++
+        output += to
+      } else if (this.frame >= start) {
+        if (!char || Math.random() < 0.28) {
+          char = this.randomChar()
+          this.queue[i].char = char
+        }
+        output += `<span class="dud">${char}</span>`
+      } else {
+        output += from
+      }
+    }
+    this.el.innerHTML = output
+    if (complete === this.queue.length) {
+      this.resolve()
+    } else {
+      this.frameRequest = requestAnimationFrame(this.update)
+      this.frame++
+    }
+  }
+  randomChar() {
+    return this.chars[Math.floor(Math.random() * this.chars.length)]
+  }
+}
+
+// ——————————————————————————————————————————————————
+// Example
+// ——————————————————————————————————————————————————
+
+const phrases = [
+  'ARU',
+  'LOV',
+  'BOD',
+  'ROM',
+  'HYU',
+  'MAD',
+  'BUE',
+  'LON',
+  'BRA',
+  'PAR',
+]
+
+const el = document.querySelector('.text-random')
+const fx = new TextScramble(el)
+
+let counter = 0
+const next = () => {
+  fx.setText(phrases[counter]).then(() => {
+    setTimeout(next, 100)
+  })
+  counter = (counter + 1) % phrases.length
+}
+
+next()
+</script>
+
+<script>if (window.INV && INV.cuenta) {
+// == Settings ==
+const lang = "ES"; // RU or EN description
+const typeCountdown = "date"; // 'time' to set the countdown to a specific time or 'date' to set the countdown to the designated date
+
+let EndDate = (window.INV && INV.cuenta) ? INV.cuenta.slice(0, 16).replace(" ", ", ") : ""; // Expiration Date yyyy/mm/dd, hh:mm. Working only if typeCountdown = 'date'
+
+let days = 1; // Number of days before the end. Working only if typeCountdown = 'time'
+let timeOut = "00:00"; // 'hh:mm'. Number of hours and minutes before the end. Working only if typeCountdown = 'time'
+
+const ColorDigitEnd = "#bfbfbf";
+// == Settings END ==
+
+let hours, minutes, target_date, ExpirationDate;
+let formatCountdown = null;
+let day_lang = (hour_lang = minute_lang = second_lang = "");
+
+function daysLeft(target) {
+	if (target > 24 * 60 * 60 * 1000) {
+		formatCountdown = "day|hour|minute|second";
+	} else if (target > 60 * 60 * 1000) {
+		formatCountdown = "hour|minute|second";
+	} else {
+		formatCountdown = "minute|second";
+	}
+}
+
+if (typeCountdown === "time") {
+	timeOut = timeOut.split(":");
+	hours = timeOut[0];
+	minutes = timeOut[1];
+	target_date = (days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60) * 1000;
+
+	daysLeft(target_date);
+	target_date += new Date().getTime();
+} else if (typeCountdown === "date") {
+	ExpirationDate = new Date(EndDate);
+	target_date = ExpirationDate - new Date();
+	daysLeft(target_date);
+	target_date += new Date().getTime();
+} else {
+	target_date = 0;
+	formatCountdown = "day|hour|minute|second";
+}
+
+if (lang === "ES") {
+	day_lang = "DIAS";
+	hour_lang = "HORAS";
+	minute_lang = "MIN";
+	second_lang = "SEG";
+} else if (lang === "EN") {
+	day_lang = "DAYS";
+	hour_lang = "HOURS";
+	minute_lang = "MIN";
+	second_lang = "SEC";
+}
+
+class Countdown {
+	get TIMESTAMP_SECOND() {
+		return 1000;
+	}
+	get TIMESTAMP_MINUTE() {
+		return 60 * this.TIMESTAMP_SECOND;
+	}
+	get TIMESTAMP_HOUR() {
+		return 60 * this.TIMESTAMP_MINUTE;
+	}
+	get TIMESTAMP_DAY() {
+		return 24 * this.TIMESTAMP_HOUR;
+	}
+
+	constructor(userOptions) {
+		this.options = {
+			cont: null,
+			countdown: true,
+			endDate: {
+				day: 0,
+				hour: 0,
+				minute: 0,
+				second: 0
+			},
+			endCallback: null,
+			outputFormat: formatCountdown,
+			outputTranslation: {
+				day: day_lang,
+				hour: hour_lang,
+				minute: minute_lang,
+				second: second_lang
+			}
+		};
+
+		this.lastTick = null;
+		this.intervalsBySize = ["day", "hour", "minute", "second"];
+		this.interval = null;
+		this.digitConts = {};
+		this._assignOptions(this.options, userOptions);
+	}
+
+	start() {
+		let endDate, endDateData;
+		this._fixCompatibility();
+
+		endDate = this._getDate(this.options.endDate);
+		endDateData = this._prepareTimeByOutputFormat(endDate);
+
+		this._writeData(endDateData);
+		this.lastTick = endDateData;
+
+		if (this.options.countdown && endDate.getTime() <= Date.now()) {
+			if (typeof this.options.endCallback === "function") {
+				this.stop();
+				this.options.endCallback();
+			}
+		} else {
+			this.interval = setInterval(() => {
+				this._updateView(this._prepareTimeByOutputFormat(endDate));
+			}, this.TIMESTAMP_SECOND);
+		}
+	}
+
+	stop() {
+		if (this.interval !== null) {
+			clearInterval(this.interval);
+		}
+	}
+
+	_getDate(date) {
+		if (typeof date === "object") {
+			if (date instanceof Date) {
+				return date;
+			} else {
+				let expectedValues = {
+					day: 0,
+					hour: 0,
+					minute: 0,
+					second: 0
+				};
+
+				for (let i in expectedValues) {
+					if (expectedValues.hasOwnProperty(i) && date.hasOwnProperty(i)) {
+						expectedValues[i] = date[i];
+					}
+				}
+				return new Date(
+					expectedValues.day,
+					expectedValues.hour,
+					expectedValues.minute,
+					expectedValues.second
+				);
+			}
+		} else if (typeof date === "number" || typeof date === "string") {
+			return new Date(date);
+		} else {
+			return new Date();
+		}
+	}
+
+	_prepareTimeByOutputFormat(dateObj) {
+		let usedIntervals,
+			output = {},
+			timeDiff;
+
+		usedIntervals = this.intervalsBySize.filter((item) => {
+			return this.options.outputFormat.split("|").indexOf(item) !== -1;
+		});
+
+		timeDiff = this.options.countdown
+			? dateObj.getTime() - Date.now()
+			: Date.now() - dateObj.getTime();
+
+		usedIntervals.forEach((item) => {
+			let value;
+			if (timeDiff > 0) {
+				switch (item) {
+					case "day":
+						value = Math.trunc(timeDiff / this.TIMESTAMP_DAY);
+						timeDiff -= value * this.TIMESTAMP_DAY;
+						break;
+					case "hour":
+						value = Math.trunc(timeDiff / this.TIMESTAMP_HOUR);
+						timeDiff -= value * this.TIMESTAMP_HOUR;
+						break;
+					case "minute":
+						value = Math.trunc(timeDiff / this.TIMESTAMP_MINUTE);
+						timeDiff -= value * this.TIMESTAMP_MINUTE;
+						break;
+					case "second":
+						value = Math.trunc(timeDiff / this.TIMESTAMP_SECOND);
+						timeDiff -= value * this.TIMESTAMP_SECOND;
+						break;
+				}
+			} else {
+				value = "00";
+				const elements = document.querySelectorAll(".digit_cont");
+				for (let i = 0; i < elements.length; i++) {
+					elements[i].style.color = ColorDigitEnd;
+				}
+			}
+			output[item] = (("" + value).length < 2 ? "0" + value : "" + value).split(
+				""
+			);
+		});
+		return output;
+	}
+
+	_fixCompatibility() {
+		Math.trunc =
+			Math.trunc ||
+			function (x) {
+				if (isNaN(x)) {
+					return NaN;
+				}
+				if (x > 0) {
+					return Math.floor(x);
+				}
+				return Math.ceil(x);
+			};
+	}
+
+	_writeData(data) {
+		let code = ``,
+			intervalName;
+
+		for (intervalName in data) {
+			if (data.hasOwnProperty(intervalName)) {
+				let element = `<div><div class="interval_cont interval_cont_${intervalName}">`,
+					intervalDescription = `<div class="description"> ${this.options.outputTranslation[intervalName]}</div>`;
+
+				data[intervalName].forEach((digit, index) => {
+					element += `<div class="digit_cont digit_cont_${index}" id="test">${this._getDigitElementString(
+						digit,
+						0
+					)}</div>`;
+				});
+
+				code += element + "</div>" + intervalDescription + "</div>";
+			}
+		}
+		this.options.cont.innerHTML = code;
+		this.lastTick = data;
+	}
+
+	_getDigitElementString(newDigit, lastDigit) {
+		return `<div class="last_placeholder"><span>${lastDigit}</span></div>
+						<div class="new_placeholder">${newDigit}</div>
+						<div class="last_rotate">${lastDigit}</div>
+						<div class="new_rotate">
+							<div class="rotated"><span>${newDigit}</span></div>
+						</div>`;
+	}
+
+	_updateView(data) {
+		for (let intervalName in data) {
+			if (data.hasOwnProperty(intervalName)) {
+				data[intervalName].forEach((digit, index) => {
+					if (
+						this.lastTick !== null &&
+						this.lastTick[intervalName][index] !== data[intervalName][index]
+					) {
+						this._getDigitCont(
+							intervalName,
+							index
+						).innerHTML = this._getDigitElementString(
+							data[intervalName][index],
+							this.lastTick[intervalName][index]
+						);
+					}
+				});
+			}
+		}
+		this.lastTick = data;
+	}
+
+	_getDigitCont(intervalName, index) {
+		if (!this.digitConts[`${intervalName}_${index}`]) {
+			this.digitConts[
+				`${intervalName}_${index}`
+			] = this.options.cont.querySelector(
+				`.interval_cont_${intervalName} .digit_cont_${index}`
+			);
+		}
+		return this.digitConts[`${intervalName}_${index}`];
+	}
+
+	_assignOptions(options, userOptions) {
+		for (let i in options) {
+			if (options.hasOwnProperty(i) && userOptions.hasOwnProperty(i)) {
+				if (
+					options[i] !== null &&
+					typeof options[i] === "object" &&
+					typeof userOptions[i] === "object"
+				) {
+					this._assignOptions(options[i], userOptions[i]);
+				} else {
+					options[i] = userOptions[i];
+				}
+			}
+		}
+	}
+}
+
+let cd = new Countdown({
+	cont: document.querySelector(".flip-countdown"),
+	endDate: target_date,
+	outputTranslation: {
+		day: day_lang,
+		hour: hour_lang,
+		minute: minute_lang,
+		second: second_lang
+	},
+	endCallback: null,
+	outputFormat: formatCountdown
+});
+cd.start();
+
+}</script>
 </body>
 </html>

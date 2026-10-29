@@ -17,7 +17,7 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "paquetes": {
     "basic": {
       "secciones": [
@@ -29,7 +29,7 @@
         "sobre": false,
         "musica": false,
         "cuenta": false,
-        "fotosPortada": 1,
+        "fotosPortada": 4,
         "fotosGaleria": 20
       }
     },
@@ -48,7 +48,7 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 1,
+        "fotosPortada": 4,
         "fotosGaleria": 20
       }
     },
@@ -75,15 +75,15 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 1,
+        "fotosPortada": 4,
         "fotosGaleria": 20,
         "sugerenciasDress": true
       }
     }
   },
   "nombresHTML": {
-    "portada": "{a} <i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\"> {b}",
-    "cierre": "{a} <span class=\"disco-2\">&#160;&amp;&#160;</span> {b}",
+    "portada": "{a}<i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\">{b}",
+    "cierre": "{a}<span class=\"disco-2\">&#160;&amp;&#160;</span>{b}",
     "solo": "{a}"
   },
   "miniatura": {
@@ -124,7 +124,7 @@
             "sobre": false,
             "musica": false,
             "cuenta": false,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -143,7 +143,7 @@
             "sobre": true,
             "musica": true,
             "cuenta": true,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -170,7 +170,7 @@
             "sobre": true,
             "musica": true,
             "cuenta": true,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20,
             "sugerenciasDress": true
           }
@@ -211,7 +211,7 @@
             "sobre": false,
             "musica": false,
             "cuenta": false,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -230,7 +230,7 @@
             "sobre": true,
             "musica": true,
             "cuenta": true,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -257,7 +257,7 @@
             "sobre": true,
             "musica": true,
             "cuenta": true,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20,
             "sugerenciasDress": true
           }
@@ -282,7 +282,10 @@
         "cumple": {
           "portadas": [
             "globo.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Tomás"
+          }
         }
       }
     }

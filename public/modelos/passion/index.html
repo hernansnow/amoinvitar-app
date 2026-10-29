@@ -109,7 +109,7 @@
 
 <!-- /audio -->
 	
-	<div data-seccion="galeria" class="pb-0 pt-3" style="background-color:#eaeae2;" id="inicio">
+	<div class="pb-0 pt-3" style="background-color:#eaeae2;" id="inicio">
       <div class="container-countdown text-black text-center">
 	   <h6 class="text-black h6 mb-0" id="headline-countdown">Faltan</h6>
          <div class="text-center" id="countdown">
@@ -135,13 +135,13 @@
           <div class="col-12 text-center" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-0" src="img/lovestory-5.png" width="150px" alt="Imagen">
              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-black font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h4 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center texto-especial text-black">Nuestra Historia</h4>
-			  <p data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span></p>
+			  <h4 data-si="historia.activa"><span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span></h4>
           </div>
         </div>
 	   </div>
     </section>
 			  
-        <div data-componente="galeria"></div>
+        <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 	</div>		
 
     <section class="bg-diferido site-section p-3" style="background-image: linear-gradient(rgba(234, 234, 226, 0.8), rgba(234, 234, 226, 0.8)), url(img/bg-classic9b.jpg); background-color:#eaeae2; background-position:70% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
@@ -274,7 +274,7 @@
         <div class="row ml-auto mr-auto">
 			<div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto" data-aos="fade-in">
 				<div data-seccion="dresscode" class="text-center"><img loading="lazy" class="img-fluid mb-2 mt-0" src="img/icon-percha-b.png" width="75" alt="Imagen"></div>
-                  <h4 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center texto-especial text-black">Dress Code</h4><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+                  <h4 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center texto-especial text-black">Dress Code</h4><p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
             <p class="text-center text-black mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
             <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
           </div>

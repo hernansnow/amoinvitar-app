@@ -115,14 +115,14 @@
   </div>   
 
 <!-- /audio -->
-  <section data-seccion="galeria" class="site-section bg-white" id="inicio">
+  <section class="site-section bg-white" id="inicio">
 	  <div class="container">
          <div class="row item">
 	         <div class="col-md-12 ml-auto mr-auto mt-5 text-center" data-aos="fade-up">
 				 <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-gold font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center euforia text-gold">Mi Historia</h2>
-			  <p data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span></p>
+			  <h4 data-si="historia.activa" class="font-weight-lighter"><span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span></h4>
 			 </div>
-	  		 <div data-componente="galeria"></div>
+	  		 <div class="col-12 p-0" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
           <div data-si="ceremonia.separada" class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" id="agenda">
 			 <h2 data-campo="ceremonia.titulo" class="mb-0 text-center euforia text-gold">Misa</h2>
 			<h2 class="mb-2"><span data-t="lugar.diaHorario" class="text-black-50 p-1 section-sub-title-sm font-weight-bolder border border-dark bg-light">DIA Y HORARIO</span></h2>
@@ -220,7 +220,7 @@
 			
 			  <div class="text-center" data-aos="fade-in">
                   <h2 class="mb-3 text-center euforia text-gold">Etiqueta tus Fotos</h2>
-            <h4 data-si="hashtag.texto" data-campo="hashtag.texto" class="mb-4"><span class="text-white border border-light p-2">#15Vanina2027</span></h4>
+            <h4 data-si="hashtag.texto" class="mb-4"><span data-campo="hashtag.texto" class="text-white border border-light p-2">#15Vanina2027</span></h4>
 			  <p class="text-center text-white">¡Prepárate para mi fiesta! Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
 		  <div data-si="hashtag.link" class="col-12 text-center">
 			  <a data-t="hashtag.boton" data-attr="href:c:hashtag.link" href="#" target="_blank" style="filter: drop-shadow(1px 1px 2px #203636);" class="btn btn-small btn-outline-light text-uppercase rounded-pill">
@@ -292,33 +292,22 @@
 
         </div>
       </div>
-    </section><section class="site-section pt-4 pb-4 ai-perdiste">
-      <div class="container"><div class="row"><div class="col-12 text-center">
-        <h3 class="mb-3 text-center euforia text-black" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
-        <ul class="list-unstyled">
-            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-black" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
-            <li><a href="#inicio" class="smoothscroll btn-link text-black" data-t="perdiste.agendar">Agendar evento</a></li>
-            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-black" data-t="perdiste.dress">Dress code</a></li>
-            <li data-seccion="instagram"><a href="#hashtag" class="smoothscroll btn-link text-black" data-t="perdiste.instagram">Instagram Wall</a></li>
-            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-black" data-t="perdiste.canciones">Sugerir canción</a></li>
-            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-black" data-t="perdiste.regalos">Regalos</a></li>
-            <li><a href="#home-section" class="smoothscroll btn-link text-black" data-t="perdiste.inicio">Inicio</a></li>
-        </ul>
-      </div></div></div>
     </section>
     
 <section class="site-footer pt-5 pb-0">
          <div class="container">
           			<div class="row">
 			<div class="col-md-4 ml-auto mr-auto text-center">
-				<p class="mb-2 text-center euforia text-gold h1">¿Te perdiste algo?</p>
+				<p data-t="perdiste.titulo" class="mb-2 text-center euforia text-gold h1">¿Te perdiste algo?</p>
 			 <ul class="list-unstyled">
-				  <li><a href="#rsvp" class="smoothscroll btn-link text-white">Confirmar asistencia</a></li>
-				  <li><a href="#agenda" class="smoothscroll btn-link text-white">Agendar evento</a></li>
-				  <li><a href="#dresscode" class="smoothscroll btn-link text-white">Dress code</a></li>
- 				  <li><a href="#inicio" class="smoothscroll btn-link text-white">Sugerir canción</a></li>
-				  <li><a href="#home-section" class="smoothscroll btn-link text-white">Inicio</a></li>
-			 </ul>
+            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
+            <li><a href="#inicio" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
+            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="instagram"><a href="#hashtag" class="smoothscroll btn-link text-white" data-t="perdiste.instagram">Instagram Wall</a></li>
+            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
+            <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
+          </ul>
 				<div class="text-center mt-4 mb-0 pb-0 pr-5 pl-5"><hr class="bg-gold"></div>
 			</div>
 			  

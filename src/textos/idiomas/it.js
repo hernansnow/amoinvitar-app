@@ -119,7 +119,7 @@ export default {
       'meta.descripcion': 'Ti aspetto per festeggiare insieme!',
       'celebracion.sola': 'Compleanno', 'bienvenida.texto': 'Voglio invitarti alla mia festa!', 'evento.nombre': 'Compleanno', 'evento.descripcion': 'Ti aspetto per festeggiare il mio compleanno', 'portada.subtitulo': 'È IL MIO COMPLEANNO!',
       'historia.titulo': 'La Mia Storia', 'historia.texto': 'Un anno in più per celebrare la vita, e non c\'è modo migliore che farlo con le persone che amo di più.',
-      'rsvp.texto': 'La tua presenza renderà questo giorno davvero speciale.', 'bus.destinoTexto': 'La mia festa!', 'testigos.titulo': 'Padroni di casa',
+      'rsvp.texto': 'La tua presenza renderà questo giorno davvero speciale.', 'bus.destinoTexto': 'La mia festa!', 'testigos.titulo': 'Complici',
       'album.texto': "Preparati per la mia festa!<br>Tocca il pulsante e carica tutte le foto e i video che scatti durante la festa nel mio album condiviso, all'istante, senza scaricare nessuna app.",
       'canciones.texto': 'Quali canzoni non possono mancare?<br>Aiutami a scegliere la musica',
       'regalos.texto': 'Il regalo più bello è la tua presenza, ma se desideri farmi un regalo, ecco i dati.',

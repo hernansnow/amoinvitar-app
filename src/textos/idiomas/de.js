@@ -119,7 +119,7 @@ export default {
       'meta.descripcion': 'Ich freue mich, mit dir zu feiern!',
       'celebracion.sola': 'Geburtstag', 'bienvenida.texto': 'Ich möchte dich zu meiner Party einladen!', 'evento.nombre': 'Geburtstag', 'evento.descripcion': 'Feiere mit mir meinen Geburtstag', 'portada.subtitulo': 'ICH HABE GEBURTSTAG!',
       'historia.titulo': 'Meine Geschichte', 'historia.texto': 'Ein Jahr mehr, um das Leben zu feiern – und am schönsten ist das mit den Menschen, die ich am meisten liebe.',
-      'rsvp.texto': 'Mit dir wird dieser Tag wirklich besonders.', 'bus.destinoTexto': 'Meine Party!', 'testigos.titulo': 'Gastgeber',
+      'rsvp.texto': 'Mit dir wird dieser Tag wirklich besonders.', 'bus.destinoTexto': 'Meine Party!', 'testigos.titulo': 'Komplizen',
       'album.texto': 'Mach dich bereit für meine Party!<br>Tippe auf den Button und lade alle Fotos und Videos, die du auf der Party machst, sofort in mein gemeinsames Album hoch – ganz ohne App.',
       'canciones.texto': 'Welche Songs dürfen nicht fehlen?<br>Hilf mir bei der Musikauswahl',
       'regalos.texto': 'Das schönste Geschenk ist, dass du dabei bist. Wenn du mir etwas schenken möchtest, findest du hier die Daten.',

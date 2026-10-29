@@ -25,3 +25,8 @@
 
 /* ¿Te perdiste algo? (los modelos que no lo traían) */
 .ai-perdiste ul li { margin-bottom: .15rem; }
+
+/* Video de portada del cliente y slideshow de fondo (modelos con video) */
+.ai-video-portada, .ai-slides-fondo { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ai-video-portada { object-fit: cover; }
+.ai-slides-fondo .ai-slide { position: absolute; inset: 0; }

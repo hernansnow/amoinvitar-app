@@ -14,7 +14,7 @@
   ],
   "galeria": {
     "byn": false,
-    "enRsvp": false
+    "enRsvp": true
   },
   "videoPortada": false,
   "portadaSinFoto": "img/wave-mid-bronce.png",

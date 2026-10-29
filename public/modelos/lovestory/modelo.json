@@ -80,6 +80,9 @@
       }
     }
   },
+  "proporciones": {
+    "lugar": "1/1"
+  },
   "nombresHTML": {
     "portada": "{a} &amp; {b}",
     "cierre": "{a} &amp; {b}",

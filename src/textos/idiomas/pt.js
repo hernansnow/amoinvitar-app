@@ -119,7 +119,7 @@ export default {
       'meta.descripcion': 'Espero você para celebrarmos juntos!',
       'celebracion.sola': 'Aniversário', 'bienvenida.texto': 'Quero convidar você para a minha festa!', 'evento.nombre': 'Aniversário', 'evento.descripcion': 'Espero você para comemorar o meu aniversário', 'portada.subtitulo': 'MEU ANIVERSÁRIO!',
       'historia.titulo': 'Minha História', 'historia.texto': 'Mais um ano para celebrar a vida, e nada melhor do que fazer isso com as pessoas que mais amo.',
-      'rsvp.texto': 'Sua presença vai tornar este dia realmente especial.', 'bus.destinoTexto': 'Minha festa!', 'testigos.titulo': 'Anfitriões',
+      'rsvp.texto': 'Sua presença vai tornar este dia realmente especial.', 'bus.destinoTexto': 'Minha festa!', 'testigos.titulo': 'Cúmplices',
       'album.texto': 'Prepare-se para a minha festa!<br>Toque no botão e envie todas as fotos e vídeos que você fizer durante a festa para o meu álbum compartilhado, na hora, sem baixar nenhum app.',
       'canciones.texto': 'Quais músicas não podem faltar?<br>Me ajude a escolher as músicas',
       'regalos.texto': 'O melhor presente é a sua presença, mas se quiser me dar um presente, aqui estão os dados.',

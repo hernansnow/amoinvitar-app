@@ -147,7 +147,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 			
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
               <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3.png" width="110px" alt="Imagen" style="opacity: .8">
-			 <h2 data-campo="celebracion.titulo" class="mb-2 section-title text-center text-dark"><span class="text-minimal h1">Fiesta</span></h2>
+			 <h2 class="mb-2 section-title text-center text-dark"><span data-campo="celebracion.titulo" class="text-minimal h1">Fiesta</span></h2>
 			  <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded mb-3 w-75">
 			  <p data-t="lugar.diaHorario" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
 			  <p data-campo="celebracion.fechaLarga" class="text-center">12 de septiembre de 2027 a las 21:00</p>
@@ -170,15 +170,15 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 
     </section>
 	  
-			<div id="galeria" data-seccion="galeria" style="background: rgb(180, 237, 224); background: linear-gradient(rgba(180, 237, 224, 0.5), rgba(240, 240, 240, 1));">
+			<div style="background: rgb(180, 237, 224); background: linear-gradient(rgba(180, 237, 224, 0.5), rgba(240, 240, 240, 1));">
 				<div class="container p-2">
 			<div class="col-md-10 text-center ml-auto mr-auto pt-5" data-aos="fade-up">
-              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-dark font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="mb-3 section-title text-center text-dark"><span class="text-minimal h1">Mi Historia</span></h2>
-			  <p data-si="historia.activa" class="text-black g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></p>
+              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-dark font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" class="mb-3 section-title text-center text-dark"><span data-t="historia.titulo" class="text-minimal h1">Mi Historia</span></h2>
+			  <p data-si="historia.activa" class="text-black"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></p>
           
 				</div>
 				</div>
-           <div data-componente="galeria"></div>
+           <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
       </div>
 
 <div id="rsvp" data-seccion="rsvp"><section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.3)), url(img/bg-15-2.jpg); background-color:#9D848A; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
@@ -186,7 +186,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
           <div class="col-md-6 col-lg-6 ml-auto mr-auto p-1" data-aos="fade-up">
            <div class="rounded pb-4 pt-4 pr-2 pl-2 shadow" style="background-color:rgba(250, 250, 250, 0.65);">
 		   			 <div class="text-center"><i class="text-black icon-calendar h1" aria-hidden="true"></i></div>
-		   <h2 data-t="rsvp.titulo" class="mb-3 section-title text-center"><span class="text-15-2">Confirmación</span></h2>
+		   <h2 class="mb-3 section-title text-center"><span data-t="rsvp.titulo" class="text-15-2">Confirmación</span></h2>
              			<p class="text-center text-black" data-rsvp="texto" data-bloque-invitado-class="mb-4" data-bloque-invitado-inner="<div class='text-center pl-2 pr-2 pb-3 pt-3 ml-2 mr-2 mb-4 mt-0 shadow' style='border: 2px dashed #dee2e6;border-radius: 36px 36px 36px 36px; -webkit-border-radius: 36px 36px 36px 36px; -moz-border-radius: 36px 36px 36px 36px;'><i class='icon-user-circle-o h3 font-weight-normal' aria-hidden='true' style='opacity:.7'></i><br><p id='nombre' class='text-uppercase font-weight-bold mb-0'></p><p class='border-bottom mb-2 mt-1 ml-5 mr-5'></p><p id='pases' class='small font-weight-bold text-uppercase mb-0 mt-0'></p><p class='font-weight-bolder small text-uppercase mb-0 mt-0' id='mesa'></p></div>" data-bloque-general-class="mb-4" data-attr="data-texto-abierto-libre:c:rsvp.texto; data-fecha-texto:t:rsvp.hasta; data-texto-cerrado:t:rsvp.finalizado" data-texto-abierto-libre="Tu presencia hará que este día sea realmente especial e inolvidable." data-fecha-texto="Se reciben confirmaciones hasta el" data-texto-cerrado="El plazo de confirmación ha finalizado.">
               </p>
                <p></p>
@@ -217,7 +217,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 			   <div data-seccion="dresscode" class="text-center mb-0">
 		      <img loading="lazy" class="img-fluid mb-0" src="img/percha-retro-r.png" width="50px" alt="Imagen">
 			  </div>
-			   <h2 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 section-title text-center"><span class="text-minimal h1 text-rosa">Dress Code</span></h2>
+			   <h2 data-seccion="dresscode" class="mb-3 section-title text-center"><span data-t="dress.titulo" class="text-minimal h1 text-rosa">Dress Code</span></h2>
                 <p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-rosa">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
             <p class="text-center text-rosa mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
             <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
@@ -251,7 +251,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 		<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-up" data-aos-delay="150">
 				  <div class="border-top border-light mb-5 mt-5 show-mobile"></div>
 			<img loading="lazy" class="img-fluid mb-1" src="img/icon-hotel-r.png" width="80px" alt="Imagen">
-			    <h2 data-t="hospedaje.titulo" class="mb-3 section-title text-center"><span class="text-minimal h1 text-rosa">Hospedaje</span></h2>
+			    <h2 class="mb-3 section-title text-center"><span data-t="hospedaje.titulo" class="text-minimal h1 text-rosa">Hospedaje</span></h2>
                   <p data-t="hospedaje.texto" class="text-center text-rosa">Referencias de hoteles cercanos.</p>
 				  	<div data-si="hospedaje.conReferencias" class="col-12 text-center">	
 		              <button data-t="hospedaje.boton" class="btn mb-2 text-uppercase rounded-pill button-rosa2 border-2" data-fancybox="" data-src="#hospedaje" data-animation-duration="700">Referencias</button>
@@ -273,7 +273,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 		 <div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-up" data-aos-delay="150">
 				  <div class="border-top border-light mt-5 mb-5 show-mobile"></div>
 			 <img loading="lazy" class="img-fluid mb-1" src="img/icon-bus-v3-r.png" width="80px" alt="Imagen">
-			    <h2 data-t="bus.titulo" class="mb-3 section-title text-rosa"><span class="text-minimal h1 text-rosa">Traslado</span></h2>
+			    <h2 class="mb-3 section-title text-rosa"><span data-t="bus.titulo" class="text-minimal h1 text-rosa">Traslado</span></h2>
                   <p data-t="bus.texto" class="text-center text-rosa">Reserva tu lugar en el formulario de confirmación.</p>
 			 		<div data-si="busConRecorrido" class="col-12 text-center">	
 		              <button data-t="bus.boton" class="btn mb-2 text-uppercase rounded-pill button-rosa2 border-2" data-fancybox="" data-src="#bus" data-animation-duration="700">Recorrido</button>
@@ -301,7 +301,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
         <div class="row mb-3">
           <div class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-timeline2.png" width="90" alt="Imagen" style="opacity: .8">
-			  <h2 data-t="itinerario.titulo" class="mb-3 section-title text-center text-dark"><span class="text-minimal h1">Itinerario</span></h2>
+			  <h2 class="mb-3 section-title text-center text-dark"><span data-t="itinerario.titulo" class="text-minimal h1">Itinerario</span></h2>
           </div>
         </div>
 <div class="timeline-container linea-black" data-aos="fade-up" data-aos-delay="100">
@@ -339,7 +339,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
         <div class="row mb-3">
           <div class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
 			  <div class="text-center"><i class="text-dark display-4 icon-people_outline" aria-hidden="true"></i></div>
-			  <h2 data-t="testigos.titulo" class="mb-3 section-title text-center text-dark"><span class="text-minimal h1">Cómplices</span></h2>
+			  <h2 class="mb-3 section-title text-center text-dark"><span data-t="testigos.titulo" class="text-minimal h1">Cómplices</span></h2>
           </div>
         </div>
 	<div class="col-md-8 ml-auto mr-auto">
@@ -384,8 +384,8 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 			<div id="hashtag" data-seccion="instagram" class="col-md-6 ml-auto mr-auto mb-4" data-aos="fade-up">
 				<div class="bg-white rounded p-4">
 			  <div class="text-center"><i class="text-black icon-instagram display-4" aria-hidden="true"></i>
-				<h2 data-t="hashtag.titulo" class="mb-3 section-title text-center"><span class="text-minimal h1">Etiqueta tus Fotos</span></h2>
-            <h4 data-si="hashtag.texto" data-campo="hashtag.texto" class="mb-4"><span class="text-white p-1 bg-rosa">#CumpleAbi2027</span></h4>
+				<h2 class="mb-3 section-title text-center"><span data-t="hashtag.titulo" class="text-minimal h1">Etiqueta tus Fotos</span></h2>
+            <h4 data-si="hashtag.texto" class="mb-4"><span data-campo="hashtag.texto" class="text-white p-1 bg-rosa">#CumpleAbi2027</span></h4>
 			  <p data-t-html="hashtag.texto" class="text-center">¡Prepárate para la fiesta!<br>
                 Etiquétame en Instagram con mi hashtag en tus fotos y videos</p>
 			  
@@ -401,7 +401,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 </div><div id="instagram" data-seccion="album" class="col-md-6 ml-auto mr-auto mb-4" data-aos="fade-up">
 				<div class="bg-white rounded p-4">
 			  <div class="text-center"><i class="text-black icon-instagram display-4" aria-hidden="true"></i>
-				<h2 data-t="album.titulo" class="mb-3 section-title text-center"><span class="text-minimal h1">Comparte tus Fotos</span></h2>
+				<h2 class="mb-3 section-title text-center"><span data-t="album.titulo" class="text-minimal h1">Comparte tus Fotos</span></h2>
 			  <p data-t-html="album.texto" class="text-center">¡Prepárate para la fiesta!<br>
                 Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiesta a mi álbum colaborativo, al instante, sin descargar ninguna app.</p>
 			  <div data-si="fotos.album" class="text-center mb-4">
@@ -424,7 +424,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
     <div class="container">
           <div class="col-md-6 col-lg-6 ml-auto mr-auto p-lg-0 text-center" data-aos="fade-up">
 		   <img loading="lazy" class="img-fluid mb-2 mt-0" src="img/icon-gift2-b2.png" width="100" alt="Imagen" style="opacity: .8">
-			   <h2 data-t="regalos.titulo" class="mb-3 section-title text-center"><span class="text-15-2">Regalos</span></h2>	
+			   <h2 class="mb-3 section-title text-center"><span data-t="regalos.titulo" class="text-15-2">Regalos</span></h2>	
 			<p data-campo-html="regalos.texto" class="text-center">El mejor regalo es que me acompañes en este hermoso día, pero si deseas hacerme un regalo aquí te dejo los datos.</p>
 		        <button data-t="regalos.botonCuenta" data-si="regalos.cuentas" class="button button-verde mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#regalo" data-animation-duration="700">CUENTA BANCARIA</button>
 				<button data-t="regalos.botonLista" data-si="regalos.lista" class="button button-verde mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#regalo2" data-animation-duration="700" hidden>LISTA DE REGALOS</button>
@@ -468,7 +468,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
           <div class="container">
           <div class="col-md-8 text-center ml-auto mr-auto">
 			  <h1 class="text-center mt-auto ml-auto">👑</h1>
-			 <p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-white"><span class="display-5 icon-quote-left"></span> Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos. <span class="display-5 icon-quote-right"></span></p>
+			 <p data-si="pie.mostrar" class="text-white"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</span> <span class="display-5 icon-quote-right"></span></p>
             <h1 data-campo-html="nombres.cierre" class="text-center section-title text-15-2 mt-auto ml-auto text-white">Abigail <span class="text-danger" aria-hidden="true"></span></h1>
 			 <div data-si="redes.hay" data-seccion="redes" class="col-md-8 ml-auto mr-auto text-center text-white mt-5 mb-0">
 			 <div class="border-top border-light mb-3"></div>

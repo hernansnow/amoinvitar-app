@@ -81,6 +81,9 @@
       }
     }
   },
+  "proporciones": {
+    "lugar": "1/1"
+  },
   "nombresHTML": {
     "portada": "{a} <i class=\"icon-heart text-sky\" aria-hidden=\"true\"></i> {b}",
     "cierre": "{a} <i class=\"icon-heart text-sky\" aria-hidden=\"true\"></i> {b}",

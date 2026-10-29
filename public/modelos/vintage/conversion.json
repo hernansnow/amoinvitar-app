@@ -51,13 +51,13 @@
           "historia",
           "galeria",
           "rsvp",
+          "dresscode",
           "instagram",
           "canciones",
           "playlist",
           "regalos"
         ],
         "avisos": [
-          "dress code: no se encontró",
           "itinerario: sin #timeline"
         ],
         "info": {
@@ -76,12 +76,12 @@
         "archivo": "index-basic.html",
         "secciones": [
           "galeria",
-          "rsvp"
+          "rsvp",
+          "dresscode"
         ],
         "avisos": [
           "música: sin <audio id=\"audio\">",
           "historia: no se encontró el texto ni el saludo",
-          "dress code: no se encontró",
           "itinerario: sin #timeline"
         ],
         "info": {

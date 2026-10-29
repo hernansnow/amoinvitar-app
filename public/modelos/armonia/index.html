@@ -187,7 +187,7 @@
 			     <div class="col-6 col-md-6 ml-auto mr-auto p-0">
 					<hr class="mb-3 mt-2" style="border-top: 2px solid #9c916b;">
 				</div>
-			  <p data-si="historia.activa" class="text-center text-byn g-historia"><span class="display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span> <span class="display-5 icon-quote-right"></span></p>
+			  <p data-si="historia.activa" class="text-center text-byn"><span class="display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span> <span class="display-5 icon-quote-right"></span></p>
 			  <img loading="lazy" alt="foto" class="img-fluid img-thumbnail mb-3" src="demo/boda/inicial.jpg">
 			  </div>
 		  
@@ -627,7 +627,7 @@
    <section id="cierre" class="site-section bg-gold-2">
       <div class="container elegance" data-aos="fade-in">
           <div class="col-md-8 ml-auto mr-auto text-center">
-			 <p data-campo-html="pie.texto" data-si="pie.mostrar" class="elegance text-eucalipto mb-4 font-weight-bolder"><span class="display-5 icon-quote-left"></span> Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos. <span class="display-5 icon-quote-right"></span></p>
+			 <p data-si="pie.mostrar" class="elegance text-eucalipto mb-4 font-weight-bolder"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.</span> <span class="display-5 icon-quote-right"></span></p>
 			  <h3 data-campo-html="nombres.cierre" class="text-center text-eucalipto elegance text-uppercase">Noe <span class="text-gold">&amp;</span> Eze</h3>
           </div>
 				<div class="col-5 col-md-4 ml-auto mr-auto p-0 mt-3 mb-3">
@@ -643,32 +643,21 @@
 					<hr class="mb-4 mt-4" style="border-top: 2px solid #9c916b;">
 				</div>
 		        <div class="col-md-8 text-center ml-auto mr-auto">
-				 <p class="mb-2 text-center text-eucalipto font-weight-bold text-uppercase">¿Te perdiste algo?</p>
+				 <p data-t="perdiste.titulo" class="mb-2 text-center text-eucalipto font-weight-bold text-uppercase">¿Te perdiste algo?</p>
 				 <ul class="list-unstyled">
-				  <li><a href="#rsvp" class="smoothscroll btn-link text-eucalipto">Confirmar asistencia</a></li>
-				  <li><a href="#agenda" class="smoothscroll btn-link text-eucalipto">Agendar evento</a></li>
-				  <li><a href="#dresscode" class="smoothscroll btn-link text-eucalipto">Dress code</a></li>
- 				  <li><a href="#musica" class="smoothscroll btn-link text-eucalipto">Sugerir canción</a></li>
-				  <li><a href="#home-section" class="smoothscroll btn-link text-eucalipto">Inicio</a></li>
-			     </ul>
+            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
+            <li><a href="#inicio" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.agendar">Agendar evento</a></li>
+            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.hospedaje">Hospedaje</a></li>
+            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.bus">Traslado</a></li>
+            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.itinerario">Itinerario</a></li>
+            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.album">Álbum de fotos</a></li>
+            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.regalos">Regalos</a></li>
+            <li><a href="#home-section" class="smoothscroll btn-link text-eucalipto" data-t="perdiste.inicio">Inicio</a></li>
+          </ul>
 		       </div>
 		  </div>
-    </section><section class="site-section pt-4 pb-4 ai-perdiste">
-      <div class="container"><div class="row"><div class="col-12 text-center">
-        <h3 class="mb-3 text-center elegance text-white" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
-        <ul class="list-unstyled">
-            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
-            <li><a href="#inicio" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
-            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
-            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-white" data-t="perdiste.hospedaje">Hospedaje</a></li>
-            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-white" data-t="perdiste.bus">Traslado</a></li>
-            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-white" data-t="perdiste.itinerario">Itinerario</a></li>
-            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-white" data-t="perdiste.album">Álbum de fotos</a></li>
-            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
-            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
-            <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
-        </ul>
-      </div></div></div>
     </section>
     
     <div data-componente="pie-marca"></div>

@@ -17,7 +17,7 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "paquetes": {
     "basic": {
       "secciones": [
@@ -29,7 +29,7 @@
         "sobre": false,
         "musica": false,
         "cuenta": false,
-        "fotosPortada": 1,
+        "fotosPortada": 4,
         "fotosGaleria": 20
       }
     },
@@ -48,7 +48,7 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 1,
+        "fotosPortada": 4,
         "fotosGaleria": 20
       }
     },
@@ -75,11 +75,14 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 1,
+        "fotosPortada": 4,
         "fotosGaleria": 20,
         "sugerenciasDress": true
       }
     }
+  },
+  "proporciones": {
+    "lugar": "1/1"
   },
   "nombresHTML": {
     "portada": "{a} &amp; {b}",
@@ -119,7 +122,7 @@
             "sobre": false,
             "musica": false,
             "cuenta": false,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -138,7 +141,7 @@
             "sobre": true,
             "musica": true,
             "cuenta": true,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -165,7 +168,7 @@
             "sobre": true,
             "musica": true,
             "cuenta": true,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20,
             "sugerenciasDress": true
           }

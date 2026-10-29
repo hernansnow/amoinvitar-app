@@ -113,6 +113,13 @@ function textos(doc, v, t) {
   for (const el of todos(doc, '[data-campo]')) { el.textContent = valor(v, el.getAttribute('data-campo')) ?? ''; el.removeAttribute('data-campo'); }
   for (const el of todos(doc, '[data-campo-html]')) { el.innerHTML = valor(v, el.getAttribute('data-campo-html')) ?? ''; el.removeAttribute('data-campo-html'); }
   for (const el of todos(doc, '[data-t]')) { el.textContent = t(el.getAttribute('data-t')); el.removeAttribute('data-t'); }
+  // data-caso: el texto como lo escribe el diseño ("titulo": ¡Nos Casamos! · "oracion": ¡Nos casamos!)
+  for (const el of todos(doc, '[data-caso]')) {
+    const caso = el.getAttribute('data-caso'), x = el.textContent.toLocaleLowerCase();
+    el.textContent = caso === 'titulo' ? x.replace(/(^|[\s¡¿"(])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase())
+      : x.replace(/^([¡¿"(\s]*)(\p{L})/u, (m, a, b) => a + b.toLocaleUpperCase());
+    el.removeAttribute('data-caso');
+  }
   for (const el of todos(doc, '[data-t-html]')) { el.innerHTML = t(el.getAttribute('data-t-html')); el.removeAttribute('data-t-html'); }
   for (const el of todos(doc, '[data-attr]')) {
     for (const par of el.getAttribute('data-attr').split(';')) {

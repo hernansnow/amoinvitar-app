@@ -81,6 +81,9 @@
       }
     }
   },
+  "proporciones": {
+    "lugar": "1/1"
+  },
   "nombresHTML": {
     "portada": "{a}",
     "cierre": "{a}",
@@ -195,7 +198,10 @@
             "hero-banner3.jpg",
             "hero-banner4.jpg",
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Joaquín"
+          }
         }
       }
     }

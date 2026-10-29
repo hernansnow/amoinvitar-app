@@ -110,7 +110,8 @@ const nombreIcono = (v) => {
 // Solo estos eventos tienen ceremonia o misa; cumpleaños, infantiles, egresos y empresariales no
 export const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion']);
 // Lo mismo para testigos / padrinos
-export const CON_PADRINOS = new Set(['boda', '15', 'bautismo', 'comunion']);
+// En cumpleaños la sección es "Cómplices" (los amigos de quien cumple)
+export const CON_PADRINOS = new Set(['boda', '15', 'bautismo', 'comunion', 'cumple']);
 
 // Proporciones fijas de las fotos (las mismas de las fotos de muestra del modelo)
 export const PROPORCION = { galeria: '1:1', lugar: '9:4', dress: '4:9', testigo: '1:1', miniatura: '1.91:1' };
@@ -151,8 +152,8 @@ function pasosInvitacion({ tipo, modelo }) {
   const incluye = modelo.paquetes.deluxe?.incluye || modelo.paquetes.premium?.incluye || {};
   const misa = tipo === '15' || tipo === 'comunion';
   const conCeremonia = CON_CEREMONIA.has(tipo);
-  const padrinos = tipo === 'boda' ? 'Testigos' : 'Padrinos';
-  const tituloPadrinos = tipo === 'boda' ? 'Testigos/padrinos' : 'Padrinos';
+  const padrinos = tipo === 'boda' ? 'Testigos' : tipo === 'cumple' ? 'Cómplices' : 'Padrinos';
+  const tituloPadrinos = tipo === 'boda' ? 'Testigos/padrinos' : tipo === 'cumple' ? 'Cómplices' : 'Padrinos';
   const hayCeremonia = { campo: 'ceremonia.modo', es: 'separada' };
   const unificada = { campo: 'ceremonia.modo', es: 'mismo-lugar' };
   const nCer = misa ? 'misa' : 'ceremonia';
@@ -233,8 +234,8 @@ function pasosInvitacion({ tipo, modelo }) {
         ...lugarCampos('celebracion', { fecha: conCeremonia ? `Fecha de la ${misa ? 'fiesta' : 'celebración'}` : 'Fecha del evento', ejemplo: 'Estancia La Soñada' }),
         { id: 'separador.fotosLugar', tipo: 'nota', estilo: 'linea' },
         { id: 'fotosOn.lugares', tipo: 'switch', etiqueta: 'Incluir fotos', defecto: true, rearmar: true },
-        ...(conCeremonia ? [{ id: 'ceremonia.foto', tipo: 'foto', etiqueta: misa ? 'Foto de la iglesia' : 'Foto de la ceremonia', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: [siFotos('lugares'), hayCeremonia] }] : []),
-        { id: 'celebracion.foto', tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: siFotos('lugares') },
+        ...(conCeremonia ? [{ id: 'ceremonia.foto', tipo: 'foto', etiqueta: misa ? 'Foto de la iglesia' : 'Foto de la ceremonia', proporcion: (modelo.proporciones?.lugar || '').replace('/', ':') || PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: [siFotos('lugares'), hayCeremonia] }] : []),
+        { id: 'celebracion.foto', tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: (modelo.proporciones?.lugar || '').replace('/', ':') || PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: siFotos('lugares') },
       ],
     },
     // El interruptor no se muestra: la lista se prende eligiendo "Lista de invitados" o "Lista + PIN"
@@ -311,7 +312,7 @@ function pasosInvitacion({ tipo, modelo }) {
       titulo('itinerario.titulo'),
       { id: 'itinerario', tipo: 'lista', etiqueta: 'Momentos', max: 12, agregar: 'Agregar momento', campos: [
         { id: 'hora', tipo: 'texto', etiqueta: 'Hora', max: 10, placeholder: '21:00' },
-        { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 25 },
+        { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 30 },
         { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido, el círculo queda vacío.',
           valores: [...(modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })),
             ...iconosComunesDe(tipo).filter((v) => !(modelo.iconosItinerario || []).includes(v)).map((v) => ({ v, etiqueta: nombreIcono(v), src: `/comun/img/itinerario/timeline-icon-${v}.png` }))] },
