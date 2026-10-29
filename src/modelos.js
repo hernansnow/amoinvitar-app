@@ -37,6 +37,9 @@ export const MODELOS = [
   { id: 'vintage', nombre: 'Vintage', eventos: ['boda'], gratis: false },
   { id: 'oliva', nombre: 'Oliva', eventos: ['boda'], gratis: false },
   { id: 'lovestory', nombre: 'Love Story', eventos: ['boda'], gratis: false },
+  { id: 'amanecer', nombre: 'Amanecer', eventos: ['bautismo', 'comunion'], gratis: false },
+  { id: 'celeste', nombre: 'Celeste', eventos: ['bautismo'], gratis: false },
+  { id: 'rosa', nombre: 'Rosa', eventos: ['bautismo'], gratis: false },
 ];
 
 export const TIPOS_EVENTO = [

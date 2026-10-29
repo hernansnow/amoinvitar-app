@@ -132,7 +132,7 @@ function portada(c, home) {
   const fecha = textos.find((e) => RE_FECHA.test(txt(e)) && !$$(e, '*').some((x) => RE_FECHA.test(txt(x))));
   const conMes = !fecha && textos.find((e) => /\d{1,2}\s*\S?\s*(SEPTIEMBRE|Septiembre|septiembre|SEPT?|Sept?)\.?\s*\S?\s*\d{4}/.test(txt(e)) && !$$(e, '*').some((x) => /\d{4}/.test(txt(x))));
   if (fecha || conMes) marcarFecha(fecha || conMes, 'principal'); else c.aviso('portada: sin fecha');
-  const FRASES = /nos casamos|nuestra boda|mis (15|quince)|mi cumple|despegamos|me caso|nos casaremos|our wedding|getting married|mi bautismo|mi comuni|mi fiesta/i;
+  const FRASES = /nos casamos|nuestra boda|mis (15|quince)|mi cumple|despegamos|me caso|nos casaremos|our wedding|getting married|mi bautismo|mi bautizo|mi (primera )?comuni|mi fiesta|baby\s*shower|fiesta de (egresados|graduaci|navidad)/i;
   const hojaTexto = (e) => !$$(e, 'p,span,h1,h2,h3,h4,h5,h6').some((x) => FRASES.test(txt(x)));
   const frase = textos.find((e) => FRASES.test(txt(e)) && hojaTexto(e) && txt(e).length < 40)
     || textos.find((e) => e !== fecha && !fecha?.contains(e) && !e.contains(fecha) && txt(e).length > 3 && txt(e).length < 40
@@ -161,7 +161,7 @@ function portada(c, home) {
     }
   }
   // Fotos de la portada: carrusel de Bootstrap, foto de fondo o foto suelta (las de la demo)
-  const esDemo = (u) => u && (!/^(\.\.\/|https?:|\/)/.test(u) || /^\.\.\/\.\.\/demo\/(?!img-demo)/.test(u)) && /\.(jpe?g|png|webp)$/i.test(u);
+  const esDemo = (u) => u && (!/^(\.\.\/|https?:|\/)/.test(u) || /^\.\.\/\.\.\/demo\/(?!img-demo)/.test(u)) && /\.(jpe?g|webp)$/i.test(u); // los PNG de la carpeta son adornos
   const urlDe = (st) => (st.match(/url\((['"]?)([^'")]+)\1\)\s*;?\s*[^u]*$/) || st.match(/url\((['"]?)([^'")]+)\1\)(?![\s\S]*url\()/) || [])[2];
   // Video de fondo (Vimeo, Cinema y Disco): el de la demo queda solo en la demo; el cliente sube el suyo (MP4)
   // o, si no, van sus fotos de portada en un slideshow
@@ -236,7 +236,7 @@ function audio(c) {
 function historia(c) {
   const d = c.doc;
   // El texto de muestra de la historia (boda, 15, cumple…) o, si no, el título "Nuestra historia"
-  const MUESTRA = /todo comenz[oó] hace|desde muy peque[ñn]|la vida se mide en momentos|and[aá]bamos sin buscarnos|it all started|un a[ñn]o m[aá]s para celebrar/i;
+  const MUESTRA = /todo comenz[oó] hace|con la esperanza de que la bendici|desde muy peque[ñn]|la vida se mide en momentos|and[aá]bamos sin buscarnos|it all started|un a[ñn]o m[aá]s para celebrar/i;
   let t = $$(d.body, 'h3,h4,h5,p').find((e) => MUESTRA.test(txt(e)) && !$$(e, 'h3,h4,h5,p').some((x) => MUESTRA.test(txt(x))));
   let h = hoja(d.body, 'h1,h2,h3,h4', (x) => /^(nuestra|mi|my|our)\s+(historia|story|viaje)$|historia$/i.test(x));
   if (t && !h) {
@@ -502,7 +502,7 @@ function dresscode(c) {
     hD.setAttribute('data-seccion', 'dresscode'); hD.setAttribute('data-t', 'dress.titulo');
     // El texto: el primer párrafo de la columna después del título (antes del botón)
     const boton0 = $(col, '[data-src="#dress"]');
-    let p = $$(col, 'p').find((x) => txt(x) && (hD.compareDocumentPosition(x) & 4) && !x.closest('#dress') && !x.querySelector('button') && (!boton0 || (x.compareDocumentPosition(boton0) & 4)));
+    let p = $$(col, 'p,h4,h5').find((x) => x !== hD && txt(x) && (hD.compareDocumentPosition(x) & 4) && !x.closest('#dress') && !x.querySelector('button') && (!boton0 || (x.compareDocumentPosition(boton0) & 4)));
     if (!p) {
       // Sin texto en la invitación (estaba en la ventana): se agrega, con el estilo del texto de hospedaje
       const modelo = $$(sec, 'p').find((x) => /hoteles|referencias/i.test(txt(x)));
@@ -652,7 +652,7 @@ function testigos(c) {
       i.parentNode.replaceChild(nodo(d, `<i class="h1 icon-people" aria-hidden="true" style="color:${color}"></i>`), i);
     }
   }
-  const fotos = $$(sec, 'img').filter((i) => /testigo|padrino|demo-/.test(i.getAttribute('src') || ''));
+  const fotos = $$(sec, 'img').filter((i) => /testigo|padrino|demo-/.test(i.getAttribute('src') || '') && !/icon-|\.png$/.test(i.getAttribute('src') || ''));
   const cols = [...new Set(fotos.map((i) => subir(i, (x) => esCol(x))).filter(Boolean))];
   cols.forEach((col, i) => {
     if (i > 1) { quitar(col); return; }
@@ -1174,12 +1174,17 @@ function componer(cs) {
 
 // ── principal ────────────────────────────────────────────────────────────
 async function principal() {
-  const [id, evento, carpeta] = process.argv.slice(2);
+  // patrón (opcional): cómo se llaman los archivos en carpetas con varios diseños.
+  //   "amanecer" → amanecer.html, amanecer_premium.html, amanecer_basic.html
+  //   "garden_proyecto-{p}---NUEVO" → garden_proyecto-deluxe---NUEVO.html, …
+  const [id, evento, carpeta, patron] = process.argv.slice(2);
   if (!id || !evento || !carpeta) { console.log('Uso: convertir-modelo.mjs <id> <evento> <carpeta-demo>'); process.exit(1); }
   const dir = join(REPO, 'demo', carpeta);
   const salida = join(APP, 'public/modelos', id);
   await mkdir(salida, { recursive: true });
-  const archivos = { deluxe: 'index.html', premium: 'premium.html', basic: 'basic.html' };
+  const archivos = !patron ? { deluxe: 'index.html', premium: 'premium.html', basic: 'basic.html' }
+    : patron.includes('{p}') ? Object.fromEntries(['deluxe', 'premium', 'basic'].map((p) => [p, `${patron.replace('{p}', p)}.html`]))
+      : { deluxe: `${patron}.html`, premium: `${patron}_premium.html`, basic: `${patron}_basic.html` };
   const cs = {};
   for (const [paq, f] of Object.entries(archivos)) {
     const p = join(dir, f);
@@ -1187,7 +1192,7 @@ async function principal() {
     const html = await readFile(p, 'utf8');
     cs[paq] = preparar(new Conversion({ id, evento, carpeta, paquete: paq, doc: abrir(html), html }));
   }
-  if (!cs.deluxe) { console.log('No está', join(dir, 'index.html')); process.exit(1); }
+  if (!cs.deluxe) { console.log('No está', join(dir, archivos.deluxe)); process.exit(1); }
   componer(cs);
   // Ventana de bienvenida: el modal de antes del sobre
   for (const paq of ['deluxe', 'premium']) {
@@ -1271,7 +1276,7 @@ async function principal() {
   }
   const conv = join(salida, 'conversion.json');
   const previo = JSON.parse(await readFile(conv, 'utf8').catch(() => '{}'));
-  previo[evento] = { carpeta, hojas: todas('hojas'), faltan, paquetes: reporte };
+  previo[evento] = { carpeta, archivo: archivos.deluxe, hojas: todas('hojas'), faltan, paquetes: reporte };
   await writeFile(conv, JSON.stringify(previo, null, 2));
   for (const [paq, r] of Object.entries(reporte)) console.log(`${id}/${evento}/${paq}: ${r.secciones.join(' ')}${r.avisos.length ? '\n   ⚠ ' + r.avisos.join('\n   ⚠ ') : ''}`);
   if (faltan.length) console.log('Faltan:', faltan.join(', '));

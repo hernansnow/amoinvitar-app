@@ -745,6 +745,17 @@ h6 {
     font-size: 1rem;
 }
 
+.lead {
+    font-size: 1.20rem;
+    font-weight: 440
+}
+
+@media (max-width: 991.98px) {
+    .lead {
+        font-size: 1.16rem;
+    }
+}
+
 hr {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -764,6 +775,17 @@ small {
 }
 
 .img-fluid {
+    max-width: 100%;
+    height: auto
+}
+
+.img-thumbnail {
+    padding: 0.25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+
+
+    border-radius: 0.25rem;
     max-width: 100%;
     height: auto
 }
@@ -856,7 +878,9 @@ pre code {
 .col-lg-12,
 .col-md-4,
 .col-md-6,
+.col-md-7,
 .col-md-8,
+.col-md-10,
 .col-md-12,
 .col-sm-5 {
     position: relative;
@@ -917,11 +941,23 @@ pre code {
         flex: 0 0 50%;
         max-width: 50%
     }
+    .col-md-7 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 58.33333%;
+        flex: 0 0 58.33333%;
+        max-width: 58.33333%
+    }
     .col-md-8 {
         -webkit-box-flex: 0;
         -ms-flex: 0 0 66.66667%;
         flex: 0 0 66.66667%;
         max-width: 66.66667%
+    }
+    .col-md-10 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 83.33333%;
+        flex: 0 0 83.33333%;
+        max-width: 83.33333%
     }
     .col-md-12 {
         -webkit-box-flex: 0;
@@ -2657,6 +2693,10 @@ a.close.disabled {
     border-radius: 50rem !important
 }
 
+.d-none {
+    display: none !important
+}
+
 .d-block {
     display: block !important
 }
@@ -2905,9 +2945,18 @@ a.close.disabled {
     margin-left: auto !important
 }
 
+@media (min-width:768px) {
+    .p-md-3 {
+        padding: 1rem !important
+    }
+}
+
 @media (min-width:992px) {
     .mb-lg-4 {
         margin-bottom: 1.5rem !important
+    }
+    .p-lg-0 {
+        padding: 0 !important
     }
 }
 
@@ -3835,6 +3884,9 @@ span.text {
 .text-gold {
   color: #9c916b !important; }
 
+.bg-gold-2 {
+  background: #e4d9c7 !important; }
+
 .bg-flor-2 {
   background: #FAF2F3 !important; }
 
@@ -3844,6 +3896,9 @@ span.text {
 .text-bronce {
   color: var(--color-principal)  !important; }
 
+.text-ocre {
+  color: #d19643  !important; }
+
 .bg-musgo {
   background: var(--color-secundario) !important; }
 
@@ -3852,6 +3907,17 @@ span.text {
 
 .bg-gris {
   background: #747474 !important; }
+
+.button-ocre {
+  background-color: #d19643 ; 
+  color: #fff ; 
+  border: 2px solid #d19643 ;
+}
+
+.button-ocre:hover {
+  background-color: transparent;
+  color: #d19643 ;
+}
 
 .rsvp-cerrado {
     opacity: 0.6;
@@ -4875,6 +4941,16 @@ audio::-webkit-media-controls-play-button:hover {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
+}
+
+.t-musgo {
+  background: var(--color-suave) !important;
+}
+.c-ocre {
+	border:1px solid #000 !important;
+}
+.c-ocre h2 {
+  color: #D7926A  !important;
 }
 
 .timeline-container {

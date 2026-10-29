@@ -1,0 +1,118 @@
+{
+  "bautismo": {
+    "carpeta": "bautismo-nuevo",
+    "archivo": "rosa.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadas": [
+            {
+              "f": "fondo-rosa.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "brindis2",
+            "cena",
+            "disco"
+          ],
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadas": [
+            {
+              "f": "fondo-rosa.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadas": [
+            {
+              "f": "fondo-rosa.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      }
+    }
+  }
+}

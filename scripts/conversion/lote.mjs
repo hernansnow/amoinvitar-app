@@ -36,6 +36,11 @@ export const FAMILIAS = {
   vintage: ['Vintage', { boda: 'vintage' }],
   oliva: ['Oliva', { boda: 'oliva' }],
   lovestory: ['Love Story', { boda: 'lovestory' }],
+  // Carpetas con varios diseños: "carpeta:patrón" (ver convertir-modelo.mjs)
+  garden: ['Garden', { 15: 'eucalipto15', cumple: 'cumple-eucalipto', bautismo: 'bautismo-nuevo:garden', comunion: 'comunion-nuevo:garden_proyecto-{p}---NUEVO' }],
+  amanecer: ['Amanecer', { bautismo: 'bautismo-nuevo:amanecer', comunion: 'comunion-nuevo:amanecer_proyecto-{p}---NUEVO' }],
+  celeste: ['Celeste', { bautismo: 'bautismo-nuevo:celeste' }],
+  rosa: ['Rosa', { bautismo: 'bautismo-nuevo:rosa' }],
 };
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -44,7 +49,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const [nombre, eventos] = FAMILIAS[id];
     let salida = '';
     for (const [ev, carpeta] of Object.entries(eventos)) {
-      try { salida += run('scripts/conversion/convertir-modelo.mjs', id, ev, carpeta); } catch (e) { salida += `ERROR ${id}/${ev}: ${e.stderr || e.message}\n`; }
+      try { salida += run('scripts/conversion/convertir-modelo.mjs', id, ev, ...carpeta.split(':')); } catch (e) { salida += `ERROR ${id}/${ev}: ${e.stderr || e.message}\n`; }
     }
     try { salida += run('scripts/conversion/armar-modelo.mjs', id, nombre); salida += run('scripts/convertir-estilos.mjs', id); } catch (e) { salida += `ERROR armar ${id}: ${e.stderr || e.message}\n`; }
     const avisos = salida.split('\n').filter((l) => /⚠|ERROR|Faltan/.test(l) && !/itinerario: sin #timeline|música: sin <audio|perdiste: se agregó|sin foto de la demo/.test(l));

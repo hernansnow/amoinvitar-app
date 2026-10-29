@@ -16,7 +16,10 @@ const snow = await readFile(join(REPO, 'css/snow_v3.6.css'), 'utf8').catch(() =>
 
 const ORDEN = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'graduacion', 'infantil', 'babyshower', 'navidad'];
 const eventos = Object.keys(conv).sort((a, b) => ORDEN.indexOf(a) - ORDEN.indexOf(b));
-const base = eventos.includes('boda') ? 'boda' : eventos[0];
+// Modelo hecho a mano (Garden): sus eventos convertidos se suman en porEvento sin tocar lo demás
+const agregar = !!previo.id && !conv.boda && (previo.eventos || []).includes('boda');
+const base = agregar ? 'boda' : eventos.includes('boda') ? 'boda' : eventos[0];
+const ev0 = agregar ? eventos[0] : base;
 
 // Lo de cada sección según el paquete (Basic → Premium → Deluxe), con lo que el diseño trae
 const PAQ = {
@@ -50,7 +53,7 @@ function nombresHTML(html, plural) {
 }
 
 async function original(ev) {
-  return readFile(join(REPO, 'demo', conv[ev].carpeta, 'index.html'), 'utf8').catch(() => '');
+  return readFile(join(REPO, 'demo', conv[ev].carpeta, conv[ev].archivo || 'index.html'), 'utf8').catch(() => '');
 }
 function colorDeClase(k) {
   const m = snow.match(new RegExp(`\\.${k.replace(/[-]/g, '\\-')}\\s*\\{[^}]*?color\\s*:\\s*(#[0-9a-fA-F]{3,6})`));
@@ -93,22 +96,22 @@ async function fuentes(ev) {
 }
 
 const nombre = nombreArg || previo.nombre || id.charAt(0).toUpperCase() + id.slice(1);
-const d0 = await datosEvento(base);
-const f0 = await fuentes(base);
+const d0 = await datosEvento(ev0);
+const f0 = await fuentes(ev0);
 const modelo = {
   id, nombre,
   ...(previo.nombres ? { nombres: previo.nombres } : {}),
   eventos,
   gratis: previo.gratis ?? false,
   paleta: d0.paleta,
-  galeria: { byn: ['byn', 'romantic'].includes(id), enRsvp: !!conv[base].paquetes.deluxe.info.galeriaEnRsvp },
-  videoPortada: !!conv[base].paquetes.deluxe.info.videoPortada,
+  galeria: { byn: ['byn', 'romantic'].includes(id), enRsvp: !!conv[ev0].paquetes.deluxe.info.galeriaEnRsvp },
+  videoPortada: !!conv[ev0].paquetes.deluxe.info.videoPortada,
   portadaSinFoto: d0.fondoPortada ? `img/${basename(d0.fondoPortada)}` : previo.portadaSinFoto,
-  paquetes: paquetes(base),
-  ...(conv[base].paquetes.deluxe.info.propLugar ? { proporciones: { lugar: conv[base].paquetes.deluxe.info.propLugar } } : {}),
+  paquetes: paquetes(ev0),
+  ...(conv[ev0].paquetes.deluxe.info.propLugar ? { proporciones: { lugar: conv[ev0].paquetes.deluxe.info.propLugar } } : {}),
   nombresHTML: {
-    portada: nombresHTML(conv[base].paquetes.deluxe.info.nombresPortada, base === 'boda') || '{a} &amp; {b}',
-    cierre: nombresHTML(conv[base].paquetes.deluxe.info.nombresCierre || conv[base].paquetes.deluxe.info.nombresPortada, base === 'boda') || '{a} &amp; {b}',
+    portada: nombresHTML(conv[ev0].paquetes.deluxe.info.nombresPortada, ev0 === 'boda') || '{a} &amp; {b}',
+    cierre: nombresHTML(conv[ev0].paquetes.deluxe.info.nombresCierre || conv[ev0].paquetes.deluxe.info.nombresPortada, ev0 === 'boda') || '{a} &amp; {b}',
     solo: '{a}',
   },
   miniatura: {
@@ -135,9 +138,13 @@ for (const ev of eventos) {
 }
 // Cumpleaños con fotos de un hombre: la demo lleva nombre de hombre
 const HOMBRES = { byn: 'Martín', disco: 'Tomás', floral: 'Lucas', luxury: 'Joaquín', rockabilly: 'Nicolás', white: 'Mateo' };
-if (HOMBRES[id] && modelo.porEvento.cumple) {
-  const dm = (modelo.porEvento.cumple.demo ||= {});
-  dm.cumple = { ...(dm.cumple || {}), nombres: { a: HOMBRES[id] } };
+// Y los diseños con nombre propio en la demo (el bebé de Celeste es Mateo…)
+const NOMBRES_DEMO = { ...Object.fromEntries(Object.entries(HOMBRES).map(([k, v]) => [`${k}/cumple`, v])), 'celeste/bautismo': 'Mateo', 'rosa/bautismo': 'Juliana' };
+for (const ev of eventos) {
+  const n = NOMBRES_DEMO[`${id}/${ev}`];
+  if (!n) continue;
+  const dm = ev === base ? modelo.demo : (modelo.porEvento[ev].demo ||= {});
+  dm[ev] = { ...(dm[ev] || {}), nombres: { a: n } };
 }
 const POSICIONES = {
   'sky/cumple': { 'hero-banner.jpg': { posPc: '50% 4%' } },
@@ -156,6 +163,13 @@ for (const ev of eventos) {
   for (const x of portada) if (typeof x === 'object' && aMano[x.f]) Object.assign(x, aMano[x.f]);
   const actual = (ev === base ? modelo.demo : (modelo.porEvento[ev].demo ||= {}));
   actual[ev] = { ...(actual[ev] || {}), ...(portada.length ? { portadas: portada } : {}) };
+}
+if (agregar) {
+  const todos = [...new Set([...previo.eventos, ...eventos])];
+  const final = { ...previo, eventos: todos, porEvento: { ...(previo.porEvento || {}), ...modelo.porEvento } };
+  await writeFile(join(carpeta, 'modelo.json'), JSON.stringify(final, null, 2) + '\n');
+  console.log(`${id}: eventos sumados (${eventos.join(', ')})`);
+  process.exit(0);
 }
 await writeFile(join(carpeta, 'modelo.json'), JSON.stringify(modelo, null, 2) + '\n');
 
