@@ -28,6 +28,24 @@
         ],
         "info": {
           "nombresPortada": "&#160;",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "70% 90%"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "50% 50%"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "90% 50%"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "45% 50%"
+            }
+          ],
           "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -65,6 +83,24 @@
         ],
         "info": {
           "nombresPortada": "&#160;",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "70% 90%"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "50% 50%"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "90% 50%"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "45% 50%"
+            }
+          ],
           "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -88,6 +124,12 @@
         ],
         "info": {
           "nombresPortada": "&#160;",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "70% 90%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",

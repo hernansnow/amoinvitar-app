@@ -23,6 +23,12 @@
         ],
         "info": {
           "nombresPortada": "<i class=\"text-gold icon-star\" aria-hidden=\"true\"></i> Carla <i class=\"text-gold icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "claseTitulos": "",
           "fuentes": [

@@ -271,9 +271,10 @@
       "demo": {
         "cumple": {
           "portadas": [
-            "globo.jpg",
-            "hero-banner.jpg",
-            "inicial.jpg"
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 50%"
+            }
           ]
         }
       }

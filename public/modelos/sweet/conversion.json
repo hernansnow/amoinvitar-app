@@ -27,6 +27,12 @@
           "portada: sin título de nombres"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -64,6 +70,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -88,6 +100,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",
@@ -128,6 +146,12 @@
           "portada: sin título de nombres"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -163,6 +187,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -187,6 +217,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",

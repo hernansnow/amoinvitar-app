@@ -101,7 +101,10 @@
   "demo": {
     "boda": {
       "portadas": [
-        "globo.jpg"
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
       ]
     }
   },

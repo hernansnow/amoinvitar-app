@@ -29,6 +29,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -67,6 +73,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -92,6 +104,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",
@@ -133,6 +151,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> Jorge</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -171,6 +195,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> Jorge</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -197,6 +227,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> Jorge</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",
@@ -238,6 +274,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -273,6 +315,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -297,6 +345,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Priscila</span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",

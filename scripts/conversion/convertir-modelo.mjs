@@ -181,7 +181,7 @@ function portada(c, home) {
     for (const it of items) {
       const st = it.getAttribute('style') || '';
       const u = urlDe(st);
-      if (u && esDemo(u)) c.fotos.add(u);
+      if (u && esDemo(u)) { c.fotos.add(u); (c.info.portadas ||= []).push({ f: basename(u), pos: (st.match(/background-position\s*:\s*([^;]+)/) || [])[1]?.trim() || '50% 50%' }); }
       const s = it.cloneNode(true);
       s.setAttribute('class', ['ai-slide', ...clases(it).filter((k) => !['carousel-item', 'active'].includes(k))].join(' '));
       s.setAttribute('data-repetir', 'fotos.portada'); s.setAttribute('data-i-bg', 'url'); s.setAttribute('data-i-pos', 'pos'); s.setAttribute('data-i-estilo', 'estilo');
@@ -195,6 +195,7 @@ function portada(c, home) {
       const u = urlDe(e.getAttribute('style'));
       if (!esDemo(u)) continue;
       c.fotos.add(u);
+      if (!(c.info.portadas || []).some((x) => x.f === basename(u))) (c.info.portadas ||= []).push({ f: basename(u), pos: ((e.getAttribute('style') || '').match(/background-position\s*:\s*([^;]+)/) || [])[1]?.trim() || '50% 50%' });
       e.setAttribute('data-repetir', 'fotos.portada'); e.setAttribute('data-i-bg', 'url'); e.setAttribute('data-i-pos', 'pos'); e.setAttribute('data-i-estilo', 'estilo');
       e.classList.add('portada-foto-pc');
       n++;
@@ -203,6 +204,7 @@ function portada(c, home) {
       const u = i.getAttribute('src');
       if (!esDemo(u)) continue;
       c.fotos.add(u);
+      (c.info.portadas ||= []).push({ f: basename(u), pos: ((i.getAttribute('style') || '').match(/object-position\s*:\s*([^;]+)/) || [])[1]?.trim() || '50% 50%' });
       // Foto suelta (un círculo, un marco): una sola
       const w = subir(i, (x) => x.parentElement && x.parentElement.children.length > 1) || i;
       w.setAttribute('data-repetir', 'fotos.portada');
@@ -998,7 +1000,7 @@ const SCRIPTS = `
 function modalOriginal(c, rutaRepo) {
   let viejo = '';
   for (const ref of ['4b7373f2~1']) {
-    try { viejo = execFileSync('git', ['-C', REPO, 'show', `${ref}:${rutaRepo}`], { encoding: 'utf8', maxBuffer: 50 << 20 }); } catch { /* no estaba */ }
+    try { viejo = execFileSync('git', ['-C', REPO, 'show', `${ref}:${rutaRepo}`], { encoding: 'utf8', maxBuffer: 50 << 20, stdio: ['ignore', 'pipe', 'ignore'] }); } catch { /* no estaba */ }
     if (viejo) break;
   }
   if (!viejo) return null;

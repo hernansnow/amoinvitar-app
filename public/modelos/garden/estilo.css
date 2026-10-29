@@ -462,6 +462,11 @@ dt {
     font-weight: 700
 }
 
+dd {
+    margin-bottom: .5rem;
+    margin-left: 0
+}
+
 b,
 strong {
     font-weight: 500
@@ -2829,7 +2834,7 @@ a.close.disabled {
     padding-right: 0.5rem !important
 }
 
-
+.pb-2,
 .py-2 {
     padding-bottom: 0.5rem !important
 }
@@ -3688,6 +3693,9 @@ xclip
 	#tres {
 		order: 3;
 	}
+	#cuatro {
+		order: 4;
+	}
 }
 
 .show-desktop {
@@ -3786,6 +3794,7 @@ body { overflow-x: clip; }
 .arrows { z-index: 3; }
 
 /* Fondos de sección diferidos (los activa un script al final de cada invitación) */
+.bg-diferido { background-image: none !important; }
 
 /* Quicksand local (antes @import de Google, que frenaba la carga): solo se descarga si algún texto la usa */
 

@@ -26,6 +26,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -63,6 +69,12 @@
         ],
         "info": {
           "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -86,6 +98,12 @@
         ],
         "info": {
           "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -125,6 +143,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -160,6 +184,12 @@
         ],
         "info": {
           "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -183,6 +213,12 @@
         ],
         "info": {
           "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,

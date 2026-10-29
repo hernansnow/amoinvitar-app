@@ -29,6 +29,24 @@
         ],
         "info": {
           "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
           "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -68,6 +86,24 @@
         ],
         "info": {
           "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
           "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -92,6 +128,12 @@
         ],
         "info": {
           "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -132,6 +174,24 @@
         ],
         "info": {
           "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
           "portadaFotos": 4,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -168,6 +228,24 @@
         ],
         "info": {
           "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
           "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -191,6 +269,12 @@
         ],
         "info": {
           "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",

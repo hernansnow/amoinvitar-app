@@ -199,7 +199,7 @@ function pasosInvitacion({ tipo, modelo }) {
       ayudaSeccion: 'Apagada: en su lugar va un saludo corto de bienvenida.',
       campos: [
         titulo('historia.titulo'),
-        { id: 'historia.texto', tipo: 'area', etiqueta: 'Texto', max: 400, base: 'historia.texto' },
+        { id: 'historia.texto', tipo: 'area', etiqueta: 'Texto', max: 600, base: 'historia.texto' },
       ] },
     { id: 'galeria', seccion: 'galeria', titulo: 'Galería de fotos', ayudaSeccion: 'Si no quieres fotos, apagar esta sección.', campos: [
       // En los modelos con la galería dentro de la confirmación va siempre el carrusel

@@ -1,36 +1,208 @@
 {
   "id": "garden",
   "nombre": "Garden",
-  "nombres": { "15": "Eucalipto" },
-  "eventos": ["boda", "15", "bautismo", "comunion", "cumple"],
-  "gratis": false,
-
-  "paleta": ["#a78977", "#86a388", "#9ab09c", "#ffffff"],
-  "galeria": { "byn": false, "enRsvp": false },
-  "videoPortada": false,
-
-  "demo": {
-    "cumple": { "portada": "foto1.jpg", "rsvp": "foto2.jpg" },
-    "comunion": { "album": "foto3.jpg" }
+  "nombres": {
+    "15": "Eucalipto",
+    "cumple": "Eucalipto"
   },
-
-  "demoBorrosas": {"15": {"portada": ["hero-banner1.jpg", "hero-banner2.jpg", "hero-banner3.jpg", "hero-banner4.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg", "foto7.jpg", "foto8.jpg", "foto9.jpg", "foto10.jpg", "foto11.jpg", "foto12.jpg"], "rsvp": "rsvp.jpg", "instagram": "instagram.jpg", "testigos": []}, "bautismo": {"portada": ["hero-banner.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg", "foto7.jpg", "foto8.jpg", "foto9.jpg", "foto10.jpg", "foto11.jpg", "foto12.jpg"], "rsvp": "rsvp.jpg", "instagram": "instagram.jpg", "testigos": []}, "boda": {"portada": ["hero-banner1.jpg", "hero-banner2.jpg", "hero-banner3.jpg", "hero-banner4.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg", "foto7.jpg", "foto8.jpg", "foto9.jpg", "foto10.jpg", "foto11.jpg", "foto12.jpg"], "rsvp": "rsvp.jpg", "instagram": "instagram.jpg", "testigos": ["testigo1.jpg", "testigo2.jpg"]}, "comunion": {"portada": ["hero-banner.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg"], "rsvp": "rsvp.jpg", "testigos": []}, "cumple": {"portada": ["foto1.jpg"], "galeria": ["foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", "foto5.jpg", "foto6.jpg"], "instagram": "instagram.jpg", "testigos": []}},
-
-  "paquetes": {
-    "basic": {
-      "secciones": ["galeria", "rsvp", "dresscode"],
-      "incluye": { "sobre": false, "musica": false, "cuenta": false, "fotosPortada": 4, "fotosGaleria": 20 }
+  "eventos": [
+    "boda",
+    "15",
+    "bautismo",
+    "comunion",
+    "cumple"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#a78977",
+    "#86a388",
+    "#9ab09c",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "demo": {
+    "cumple": {
+      "portada": "foto1.jpg",
+      "rsvp": "foto2.jpg"
     },
-    "premium": {
-      "secciones": ["musica", "historia", "galeria", "rsvp", "dresscode", "instagram", "canciones", "regalos"],
-      "incluye": { "sobre": true, "musica": true, "cuenta": true, "fotosPortada": 4, "fotosGaleria": 20 }
-    },
-    "deluxe": {
-      "secciones": ["musica", "historia", "galeria", "rsvp", "dresscode", "estilos", "hospedaje", "bus", "itinerario", "testigos", "instagram", "album", "canciones", "playlist", "regalos", "redes"],
-      "incluye": { "sobre": true, "musica": true, "cuenta": true, "fotosPortada": 4, "fotosGaleria": 20, "sugerenciasDress": true }
+    "comunion": {
+      "album": "foto3.jpg"
     }
   },
-
+  "demoBorrosas": {
+    "15": {
+      "portada": [
+        "hero-banner1.jpg",
+        "hero-banner2.jpg",
+        "hero-banner3.jpg",
+        "hero-banner4.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "bautismo": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "boda": {
+      "portada": [
+        "hero-banner1.jpg",
+        "hero-banner2.jpg",
+        "hero-banner3.jpg",
+        "hero-banner4.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": [
+        "testigo1.jpg",
+        "testigo2.jpg"
+      ]
+    },
+    "comunion": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "testigos": []
+    },
+    "cumple": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 4,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 4,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "hospedaje",
+        "bus",
+        "itinerario",
+        "testigos",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 4,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
   "tarjetas": {
     "ancho": 1445,
     "alto": 2000,
@@ -231,13 +403,11 @@
       ]
     }
   },
-
   "nombresHTML": {
     "portada": "{a} <span class=\"circle-singleline2\">&amp;</span> {b}",
     "cierre": "{a} <span class=\"text-bronce\">&amp;</span> {b}",
     "solo": "{a}"
   },
-
   "miniatura": {
     "fondo": "/modelos/garden/img/bg-oliva-2.jpg",
     "colorFondo": "#86a388",
@@ -245,15 +415,237 @@
     "fuenteTitulos": "Great Vibes",
     "fuenteTexto": "Jost"
   },
-
   "sobre": {
-    "colores": { "lacre": "#c2a46c" },
+    "colores": {
+      "lacre": "#c2a46c"
+    },
     "bienvenida": "font-family:Jost, sans-serif; color:rgb(167, 137, 119); font-weight:500; --bv-escala:1;"
   },
-
   "iconosItinerario": [
-    "ceremonia", "iglesia", "iglesia2", "recepcion", "brindis", "brindis2", "tragos", "cena", "vals", "baile",
-    "fiesta", "disco", "torta", "torta2", "torta3", "ramo", "zapatos", "camara", "mic", "novios-a", "novios-b",
-    "novios-c", "15", "baby", "infantil", "last-call", "last-call2"
-  ]
+    "ceremonia",
+    "iglesia",
+    "iglesia2",
+    "recepcion",
+    "brindis",
+    "brindis2",
+    "tragos",
+    "cena",
+    "vals",
+    "baile",
+    "fiesta",
+    "disco",
+    "torta",
+    "torta2",
+    "torta3",
+    "ramo",
+    "zapatos",
+    "camara",
+    "mic",
+    "novios-a",
+    "novios-b",
+    "novios-c",
+    "15",
+    "baby",
+    "infantil",
+    "last-call",
+    "last-call2"
+  ],
+  "porEvento": {
+    "15": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 4,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 4,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 4,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "sobre": {
+        "colores": {
+          "lacre": "#86a388"
+        },
+        "bienvenida": "font-family:Jost, sans-serif; color:rgb(167, 137, 119); font-weight:500; --bv-escala:1;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "15": {
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ]
+        }
+      }
+    },
+    "cumple": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 4,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 4,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 4,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "sobre": {
+        "colores": {
+          "lacre": "#86a388"
+        },
+        "bienvenida": "font-family:Jost, sans-serif; color:rgb(167, 137, 119); font-weight:500; --bv-escala:1;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "cumple": {
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ]
+        }
+      }
+    }
+  }
 }

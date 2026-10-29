@@ -26,6 +26,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -62,6 +68,12 @@
         ],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -84,6 +96,12 @@
         ],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -122,6 +140,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">LAURA</span>\n                <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"><span class=\"text-gold\">&amp;</span> <span>PABLO</span>\n                </span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 60%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -158,6 +182,12 @@
         ],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">LAURA</span>\n                <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"><span class=\"text-gold\">&amp;</span> <span>PABLO</span>\n                </span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 60%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -181,6 +211,12 @@
         ],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">LAURA</span>\n                <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"><span class=\"text-gold\">&amp;</span> <span>PABLO</span>\n                </span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 60%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -220,6 +256,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -254,6 +296,12 @@
         ],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -276,6 +324,12 @@
         ],
         "info": {
           "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",

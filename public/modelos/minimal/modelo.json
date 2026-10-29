@@ -102,7 +102,10 @@
   "demo": {
     "boda": {
       "portadas": [
-        "hero-banner.jpg"
+        {
+          "f": "hero-banner.jpg",
+          "pos": "78% 50%"
+        }
       ]
     }
   },
@@ -185,7 +188,10 @@
       "demo": {
         "15": {
           "portadas": [
-            "hero-banner.jpg"
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
           ]
         }
       }
@@ -268,9 +274,10 @@
       "demo": {
         "cumple": {
           "portadas": [
-            "globo.jpg",
-            "hero-banner.jpg",
-            "inicial.jpg"
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
           ]
         }
       }

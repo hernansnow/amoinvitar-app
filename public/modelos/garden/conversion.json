@@ -1,0 +1,277 @@
+{
+  "15": {
+    "carpeta": "eucalipto15",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "Mariana",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "15",
+            "vals",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Mariana",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Mariana",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-eucalipto",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "Mariana",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Mariana",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Mariana",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

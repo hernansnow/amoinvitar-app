@@ -27,6 +27,12 @@
           "perdiste: se agregó (no había)"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "iconosItinerario": [
@@ -64,6 +70,12 @@
           "perdiste: se agregó (no había)"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "claseTitulos": "",
@@ -86,6 +98,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "claseTitulos": "",
@@ -124,6 +142,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Ariadna &amp; Mario</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 15%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "iconosItinerario": [
@@ -160,6 +184,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Ariadna &amp; Mario</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 15%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "claseTitulos": "",
@@ -182,6 +212,12 @@
         ],
         "info": {
           "nombresPortada": "<span>Ariadna &amp; Mario</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 15%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "claseTitulos": "",
@@ -220,6 +256,12 @@
           "perdiste: se agregó (no había)"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "iconosItinerario": [
@@ -255,6 +297,12 @@
           "perdiste: se agregó (no había)"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "claseTitulos": "",
@@ -277,6 +325,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "claseTitulos": "",

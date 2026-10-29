@@ -254,6 +254,12 @@
         ],
         "info": {
           "nombresPortada": "Camila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -291,6 +297,12 @@
         ],
         "info": {
           "nombresPortada": "Camila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -315,6 +327,12 @@
         ],
         "info": {
           "nombresPortada": "Camila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",

@@ -26,6 +26,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "<span class=\"fontawesome-star star\"></span><span>Carla <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> Pablo</span><span class=\"fontawesome-star star\"></span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -62,6 +68,12 @@
         ],
         "info": {
           "nombresPortada": "<span class=\"fontawesome-star star\"></span><span>Carla <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> Pablo</span><span class=\"fontawesome-star star\"></span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -86,6 +98,12 @@
         ],
         "info": {
           "nombresPortada": "<span class=\"fontawesome-star star\"></span><span>Carla <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> Pablo</span><span class=\"fontawesome-star star\"></span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "inicio",
           "galeriaEnRsvp": true,

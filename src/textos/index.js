@@ -354,7 +354,7 @@ const EVENTOS = {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'celebracion.sola': 'Cumpleaños', 'bienvenida.texto': '¡Quiero invitarte a mi fiesta!', 'evento.nombre': 'Cumpleaños', 'evento.descripcion': 'Te espero para festejar mi cumpleaños',
       'portada.subtitulo': '¡MI CUMPLEAÑOS!', 'historia.titulo': 'Mi Historia',
-      'historia.texto': 'Un año más para celebrar la vida, y qué mejor que hacerlo con las personas que más quiero.',
+      'historia.texto': 'La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta aquí rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial.',
       'bus.destinoTexto': '¡Mi Cumple!', 'testigos.titulo': 'Cómplices',
       'album.texto': '¡Prepárate para mi fiesta!<br>Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiesta a mi álbum colaborativo, al instante, sin descargar ninguna app.',
@@ -365,6 +365,7 @@ const EVENTOS = {
       'redes.titulo': 'Redes oficiales', 'sobre.bienvenida': 'Te doy la bienvenida',
     },
     'es-ar': {
+      'historia.texto': 'La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!',
       'album.texto': '¡Preparate para mi fiesta!<br>Hacé clic en el botón y subí todas las fotos y videos que saques durante la fiesta a mi álbum colaborativo, al instante, sin descargar ninguna app.',
       'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayudame con la selección de canciones',
       'regalos.texto': 'El mejor regalo es que me acompañes, pero si querés hacerme un regalo, acá te dejo los datos.',
@@ -373,7 +374,7 @@ const EVENTOS = {
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
       'celebracion.sola': 'Birthday', 'bienvenida.texto': 'I would love to invite you to my party!', 'evento.nombre': 'Birthday', 'evento.descripcion': 'Join me to celebrate my birthday', 'portada.subtitulo': "IT'S MY BIRTHDAY!",
-      'historia.titulo': 'My Story', 'historia.texto': 'One more year to celebrate life, and what better way than with the people I love most.',
+      'historia.titulo': 'My Story', 'historia.texto': 'Life is measured in moments, in shared laughter and in the good people we meet along the way. Today I get to celebrate one more year of stories, lessons and reasons to toast to everything still to come. Getting here surrounded by the people who make my world more special is the best gift of all. Thank you for always being there and for celebrating this important day with me!',
       'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My party!', 'testigos.titulo': 'Partners in crime',
       'album.texto': 'Get ready for my party!<br>Tap the button and upload all the photos and videos you take during the party to my shared album, instantly, no app needed.',
       'canciones.texto': 'Which songs can\'t be missed?<br>Help me choose the music',

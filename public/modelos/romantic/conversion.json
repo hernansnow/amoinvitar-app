@@ -27,6 +27,12 @@
           "portada: sin título de nombres"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -63,6 +69,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -86,6 +98,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -127,6 +145,12 @@
         ],
         "info": {
           "nombresSeparados": true,
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -164,6 +188,12 @@
         ],
         "info": {
           "nombresSeparados": true,
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -188,6 +218,12 @@
         ],
         "info": {
           "nombresSeparados": true,
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -228,6 +264,12 @@
           "portada: sin título de nombres"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -263,6 +305,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -286,6 +334,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",

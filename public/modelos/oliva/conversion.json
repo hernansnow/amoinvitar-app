@@ -26,6 +26,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "Sol <span class=\"text-eucalipto\">&amp;</span> Lean",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -62,6 +68,12 @@
         ],
         "info": {
           "nombresPortada": "Sol <span class=\"text-eucalipto\">&amp;</span> Lean",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
@@ -85,6 +97,12 @@
         ],
         "info": {
           "nombresPortada": "Sol <span class=\"text-eucalipto\">&amp;</span> Lean",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,

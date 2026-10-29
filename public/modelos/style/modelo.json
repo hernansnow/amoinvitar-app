@@ -102,8 +102,10 @@
   "demo": {
     "15": {
       "portadas": [
-        "hero-banner.jpg",
-        "inicial.jpg"
+        {
+          "f": "hero-banner.jpg",
+          "pos": "50% 20%"
+        }
       ]
     }
   },
@@ -186,8 +188,11 @@
       "demo": {
         "cumple": {
           "portadas": [
-            "hero-banner.jpg",
-            "inicial.jpg"
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%",
+              "posPc": "50% 38%"
+            }
           ]
         }
       }

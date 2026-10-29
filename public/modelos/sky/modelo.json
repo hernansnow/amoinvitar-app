@@ -107,7 +107,10 @@
   "demo": {
     "boda": {
       "portadas": [
-        "hero-banner.jpg"
+        {
+          "f": "hero-banner.jpg",
+          "pos": "50% 10%"
+        }
       ]
     }
   },
@@ -192,7 +195,11 @@
       "demo": {
         "15": {
           "portadas": [
-            "hero-banner.jpg"
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%",
+              "posPc": "50% 6%"
+            }
           ]
         }
       }
@@ -277,7 +284,11 @@
       "demo": {
         "cumple": {
           "portadas": [
-            "hero-banner.jpg"
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%",
+              "posPc": "50% 4%"
+            }
           ]
         }
       }

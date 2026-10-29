@@ -139,12 +139,23 @@ if (HOMBRES[id] && modelo.porEvento.cumple) {
   const dm = (modelo.porEvento.cumple.demo ||= {});
   dm.cumple = { ...(dm.cumple || {}), nombres: { a: HOMBRES[id] } };
 }
+const POSICIONES = {
+  'sky/cumple': { 'hero-banner.jpg': { posPc: '50% 4%' } },
+  'sky/15': { 'hero-banner.jpg': { posPc: '50% 6%' } },
+  'style/cumple': { 'hero-banner.jpg': { posPc: '50% 38%' } },
+  'graffiti/cumple': { 'hero-banner.jpg': { posPc: '60% 40%' } },
+};
 // Fotos de la demo que hay por evento (las borrosas las arma scripts/fotos-borrosas.py)
 for (const ev of eventos) {
   const fs = await readdir(join(carpeta, 'demo', ev)).catch(() => []);
-  const portada = fs.filter((f) => /^hero-banner\d*\.|^globo\.|^inicial\./.test(f)).sort();
+  // Las mismas fotos de portada del diseño original, con su encuadre
+  const propias = (conv[ev].paquetes.deluxe.info.portadas || []).filter((x) => fs.includes(x.f));
+  const portada = propias.length ? propias : fs.filter((f) => /^hero-banner\d*\.|^globo\.|^inicial\./.test(f)).sort();
+  // Encuadres a mano (móvil / escritorio) para las fotos nuevas de la demo
+  const aMano = POSICIONES[`${id}/${ev}`] || {};
+  for (const x of portada) if (typeof x === 'object' && aMano[x.f]) Object.assign(x, aMano[x.f]);
   const actual = (ev === base ? modelo.demo : (modelo.porEvento[ev].demo ||= {}));
-  actual[ev] = { ...(actual[ev] || {}), ...(portada.length && !actual[ev]?.portadas ? { portadas: portada } : {}) };
+  actual[ev] = { ...(actual[ev] || {}), ...(portada.length ? { portadas: portada } : {}) };
 }
 await writeFile(join(carpeta, 'modelo.json'), JSON.stringify(modelo, null, 2) + '\n');
 

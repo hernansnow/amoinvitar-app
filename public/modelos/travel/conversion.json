@@ -34,6 +34,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -76,6 +82,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -106,6 +118,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -153,6 +171,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -195,6 +219,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -224,6 +254,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -270,6 +306,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -308,6 +350,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -336,6 +384,12 @@
         ],
         "info": {
           "nombresPortada": "Natalia",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",

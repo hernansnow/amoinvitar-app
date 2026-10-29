@@ -28,6 +28,12 @@
         ],
         "info": {
           "nombresPortada": "Vanina",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "inicio",
@@ -64,6 +70,12 @@
         ],
         "info": {
           "nombresPortada": "Vanina",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
@@ -88,6 +100,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",
@@ -128,6 +146,12 @@
         ],
         "info": {
           "nombresPortada": "Sabri <span class=\"circle-singleline3\">&amp;</span> Marian",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "78% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "inicio",
@@ -164,6 +188,12 @@
         ],
         "info": {
           "nombresPortada": "Sabri <span class=\"circle-singleline3\">&amp;</span> Marian",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "78% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
@@ -189,6 +219,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "78% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",
@@ -230,6 +266,12 @@
         ],
         "info": {
           "nombresPortada": "Marta",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "inicio",
@@ -264,6 +306,12 @@
         ],
         "info": {
           "nombresPortada": "Marta",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
@@ -288,6 +336,12 @@
           "itinerario: sin #timeline"
         ],
         "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",

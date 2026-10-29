@@ -103,7 +103,10 @@
   "demo": {
     "boda": {
       "portadas": [
-        "globo.jpg"
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
       ]
     }
   },
@@ -186,7 +189,10 @@
       "demo": {
         "15": {
           "portadas": [
-            "globo.jpg"
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
           ]
         }
       }
@@ -269,7 +275,10 @@
       "demo": {
         "cumple": {
           "portadas": [
-            "globo.jpg"
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
           ]
         }
       }

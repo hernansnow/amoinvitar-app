@@ -30,6 +30,12 @@
         ],
         "info": {
           "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -69,6 +75,12 @@
         ],
         "info": {
           "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -93,6 +105,12 @@
         ],
         "info": {
           "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -136,6 +154,12 @@
         ],
         "info": {
           "nombresPortada": "Camila <i class=\"icon-heart text-sky\" aria-hidden=\"true\"></i> Gustavo",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 10%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -174,6 +198,12 @@
         ],
         "info": {
           "nombresPortada": "Camila <i class=\"icon-heart text-sky\" aria-hidden=\"true\"></i> Gustavo",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 10%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -198,6 +228,12 @@
         ],
         "info": {
           "nombresPortada": "Camila <i class=\"icon-heart text-sky\" aria-hidden=\"true\"></i> Gustavo",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 10%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -242,6 +278,12 @@
         ],
         "info": {
           "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -279,6 +321,12 @@
         ],
         "info": {
           "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -303,6 +351,12 @@
         ],
         "info": {
           "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",

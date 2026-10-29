@@ -107,10 +107,22 @@
   "demo": {
     "boda": {
       "portadas": [
-        "hero-banner1.jpg",
-        "hero-banner2.jpg",
-        "hero-banner3.jpg",
-        "hero-banner4.jpg"
+        {
+          "f": "hero-banner1.jpg",
+          "pos": "center center"
+        },
+        {
+          "f": "hero-banner2.jpg",
+          "pos": "center center"
+        },
+        {
+          "f": "hero-banner3.jpg",
+          "pos": "center center"
+        },
+        {
+          "f": "hero-banner4.jpg",
+          "pos": "center center"
+        }
       ]
     }
   },
@@ -197,10 +209,22 @@
       "demo": {
         "15": {
           "portadas": [
-            "hero-banner1.jpg",
-            "hero-banner2.jpg",
-            "hero-banner3.jpg",
-            "hero-banner4.jpg"
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
           ]
         }
       }
@@ -287,12 +311,22 @@
       "demo": {
         "cumple": {
           "portadas": [
-            "globo.jpg",
-            "hero-banner1.jpg",
-            "hero-banner2.jpg",
-            "hero-banner3.jpg",
-            "hero-banner4.jpg",
-            "inicial.jpg"
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
           ],
           "nombres": {
             "a": "Nicolás"

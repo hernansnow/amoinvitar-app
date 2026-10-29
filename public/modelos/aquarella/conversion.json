@@ -26,6 +26,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -63,6 +69,12 @@
         ],
         "info": {
           "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -86,6 +98,12 @@
         ],
         "info": {
           "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -125,6 +143,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "Romi <i class=\"icon-heart text-small-sm text-gold\" aria-hidden=\"true\"></i> Gaby",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -161,6 +185,12 @@
         ],
         "info": {
           "nombresPortada": "Romi <i class=\"icon-heart text-small-sm text-gold\" aria-hidden=\"true\"></i> Gaby",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -184,6 +214,12 @@
         ],
         "info": {
           "nombresPortada": "Romi <i class=\"icon-heart text-small-sm text-gold\" aria-hidden=\"true\"></i> Gaby",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -223,6 +259,12 @@
         "avisos": [],
         "info": {
           "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -258,6 +300,12 @@
         ],
         "info": {
           "nombresPortada": "Marta",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
@@ -280,6 +328,12 @@
         ],
         "info": {
           "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",

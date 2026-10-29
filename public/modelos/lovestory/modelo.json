@@ -104,11 +104,22 @@
   "demo": {
     "boda": {
       "portadas": [
-        "hero-banner0.jpg",
-        "hero-banner1.jpg",
-        "hero-banner2.jpg",
-        "hero-banner3.jpg",
-        "hero-banner4.jpg"
+        {
+          "f": "hero-banner1.jpg",
+          "pos": "70% 90%"
+        },
+        {
+          "f": "hero-banner2.jpg",
+          "pos": "50% 50%"
+        },
+        {
+          "f": "hero-banner3.jpg",
+          "pos": "90% 50%"
+        },
+        {
+          "f": "hero-banner4.jpg",
+          "pos": "45% 50%"
+        }
       ]
     }
   },
