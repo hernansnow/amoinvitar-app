@@ -2048,7 +2048,7 @@ a.close.disabled {
     left: 0;
     z-index: 1040;
     width: 100vw;
-    height: 100vh;
+    height:100vh;height:100svh;
 	backdrop-filter: blur(4px);
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -2738,6 +2738,37 @@ a.close.disabled {
     display: -webkit-box !important;
     display: -ms-flexbox !important;
     display: flex !important
+}
+
+.embed-responsive {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    overflow: hidden
+}
+
+.embed-responsive:before {
+    display: block;
+    content: ""
+}
+
+
+.embed-responsive embed,
+.embed-responsive iframe,
+.embed-responsive object,
+.embed-responsive video {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0
+}
+
+.embed-responsive-16by9:before {
+    padding-top: 56.25%
 }
 
 .justify-content-center {

@@ -91,5 +91,12 @@
       "/comun/fonts/google/great-vibes+jost.css",
       "/modelos/party/tema.css"
     ]
+  },
+  "demoBorrosas": {
+    "15": {
+      "portada": [],
+      "galeria": [],
+      "testigos": []
+    }
   }
 }

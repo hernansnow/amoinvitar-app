@@ -35,6 +35,8 @@ const SAFELIST = {
   greedy: [/^owl-/, /^fancybox-/, /^aos/, /data-aos/, /^modal/, /^carousel/, /^atcb/, /^compensate/, /^sobre/, /^gate/, /^countdown/, /^tooltip/, /^bs-/, /^popover/, /^site-mobile/, /^offcanvas/],
 };
 
+// Fondos de 100vh: en el celular la barra del navegador los estira o achica; 100svh (con 100vh antes para los viejos)
+export const conSvh = (t) => t.replace(/((?:min-|max-)?height)\s*:\s*100vh\s*(!important)?\s*(;|(?=["}]))/g, (m, p, imp = '', fin) => `${p}:100vh${imp};${p}:100svh${imp}${fin === ';' ? ';' : ''}`);
 const existe = (p) => access(p).then(() => true, () => false);
 
 async function convertir(modelo) {
@@ -60,7 +62,7 @@ async function convertir(modelo) {
     keyframes: true,
     variables: false,
   });
-  let css = resultado.css;
+  let css = conSvh(resultado.css);
 
   // Paleta y fuentes → variables
   for (const [hex, v] of Object.entries(cfg.colores)) css = css.replace(new RegExp(hex, 'gi'), `var(${v})`);

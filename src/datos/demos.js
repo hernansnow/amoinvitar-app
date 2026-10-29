@@ -17,6 +17,11 @@ const POR_TIPO = {
   bautismo: { nombres: { a: 'Fátima' }, portada: 1, galeria: 12, ceremonia: 'religiosa' },
   comunion: { nombres: { a: 'Mariana' }, portada: 1, galeria: 6, ceremonia: 'religiosa' },
   cumple: { nombres: { a: 'Mariel' }, portada: 0, galeria: 6, ceremonia: null },
+  infantil: { nombres: { a: 'Martín' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
+  graduacion: { nombres: { a: 'Cinthia' }, portada: 1, galeria: 6, ceremonia: 'simbolica', horas: ['18:00', '21:00'], fecha: '2027-11-12' },
+  babyshower: { nombres: { a: 'Mateo' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
+  revelacion: { nombres: { a: 'Dani', b: 'Marce' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
+  navidad: { nombres: { a: 'Familia Pérez' }, portada: 1, galeria: 8, ceremonia: null, fecha: '2027-12-24' },
 };
 
 const ITINERARIO = {
@@ -24,6 +29,11 @@ const ITINERARIO = {
   15: [['20:00', 'iglesia', 'Misa', 'Mass'], ['21:00', 'recepcion', 'Recepción', 'Reception'], ['22:00', '15', 'Entrada', 'Grand entrance'], ['23:00', 'vals', 'Vals', 'Waltz'], ['00:30', 'torta', 'Torta', 'Cake'], ['02:00', 'fiesta', 'Fiesta', 'Party']],
   bautismo: [['11:00', 'iglesia', 'Bautismo', 'Baptism'], ['13:00', 'recepcion', 'Recepción', 'Reception'], ['14:00', 'cena', 'Almuerzo', 'Lunch'], ['16:00', 'torta', 'Torta', 'Cake']],
   comunion: [['11:00', 'iglesia', 'Misa', 'Mass'], ['13:00', 'recepcion', 'Recepción', 'Reception'], ['14:00', 'cena', 'Almuerzo', 'Lunch'], ['16:00', 'torta', 'Torta', 'Cake']],
+  infantil: [['17:00', 'gorrito', 'Bienvenida', 'Welcome'], ['17:30', 'magia', 'Show de magia', 'Magic show'], ['18:30', 'pizza', 'Merienda', 'Snack time'], ['19:00', 'pinata', 'Piñata', 'Piñata'], ['19:30', 'torta', 'Torta', 'Cake']],
+  graduacion: [['21:00', 'recepcion', 'Recepción', 'Reception'], ['22:00', 'cena', 'Cena', 'Dinner'], ['23:30', 'birrete', 'Entrada de egresados', 'Graduates\' entrance'], ['00:30', 'baile', 'Fiesta', 'Party'], ['03:00', 'last-call2', 'Despedida', 'Farewell']],
+  babyshower: [['17:00', 'recepcion', 'Bienvenida', 'Welcome'], ['17:30', 'osito', 'Juegos', 'Games'], ['18:30', 'cena', 'Merienda', 'Snack time'], ['19:30', 'torta', 'Torta', 'Cake']],
+  revelacion: [['17:00', 'recepcion', 'Bienvenida', 'Welcome'], ['17:30', 'osito', 'Juegos', 'Games'], ['18:30', 'burbujas', '¿Niño o niña?', 'Boy or girl?'], ['19:00', 'torta', 'Torta', 'Cake']],
+  navidad: [['20:00', 'recepcion', 'Recepción', 'Reception'], ['21:00', 'cena', 'Cena', 'Dinner'], ['23:59', 'champagne', 'Brindis', 'Toast'], ['00:30', 'arbol', 'Regalos', 'Gifts'], ['01:00', 'baile', 'Fiesta', 'Party']],
   cumple: [['20:00', 'tragos', 'Rompiendo el hielo', 'Breaking the ice'], ['21:00', 'cena', 'A cenar se ha dicho', 'Dinner time'], ['22:00', 'disco', '¡Que empiece el baile!', 'Let the dancing begin!'], ['23:00', 'torta3', 'Mordisco al pastel y deseos', 'Cake and wishes'], ['23:30', 'baile', 'Hasta que el cuerpo aguante', 'Dance till we drop'], ['02:00', 'last-call2', 'Despedida', 'Farewell']],
 };
 
@@ -41,7 +51,7 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
     ? [['hero-banner1.jpg', '75% 25%'], ['hero-banner2.jpg', '45% 40%'], ['hero-banner3.jpg', '50% 25%'], ['hero-banner4.jpg', '50% 25%']]
     : [[archivos.portada || (cfg.portada ? 'hero-banner.jpg' : 'foto1.jpg'), '50% 40%']];
   const galeria = Array.from({ length: cfg.galeria }, (_, i) => `${fotosDe}/foto${i + 1}.jpg`);
-  const hora = tipo === 'bautismo' || tipo === 'comunion' ? ['11:00', '13:00'] : ['20:00', '21:00'];
+  const hora = cfg.horas || (tipo === 'bautismo' || tipo === 'comunion' ? ['11:00', '13:00'] : ['20:00', '21:00']);
 
   return {
     id: `demo-${modelo.id}-${tipo}`,
@@ -49,9 +59,9 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
     zonaHoraria: 'America/Argentina/Buenos_Aires',
     nombres: archivos.nombres || cfg.nombres,
     ceremonia: cfg.ceremonia
-      ? { modo: 'separada', tipo: cfg.ceremonia, inicio: `2027-09-12T${hora[0]}`, fin: `2027-09-12T${hora[0].replace(/^(\d\d)/, (h) => String(+h + 1).padStart(2, '0'))}`, ...LUGARES.iglesia, foto: comun(LUGARES.iglesia.foto) }
+      ? { modo: 'separada', tipo: cfg.ceremonia, inicio: `${cfg.fecha || '2027-09-12'}T${hora[0]}`, fin: `${cfg.fecha || '2027-09-12'}T${hora[0].replace(/^(\d\d)/, (h) => String(+h + 1).padStart(2, '0'))}`, ...LUGARES.iglesia, foto: comun(LUGARES.iglesia.foto) }
       : { modo: 'sin' },
-    celebracion: { inicio: `2027-09-12T${cfg.ceremonia ? hora[1] : '21:00'}`, ...LUGARES.estancia, foto: comun(LUGARES.estancia.foto) },
+    celebracion: { inicio: `${cfg.fecha || '2027-09-12'}T${cfg.ceremonia ? hora[1] : cfg.hora || '21:00'}`, ...LUGARES.estancia, foto: comun(LUGARES.estancia.foto) },
     fotos: {
       portada: portada.map(([f, pos, posPc]) => ({ url: `${fotosDe}/${f}`, pos, ...(posPc ? { posPc } : {}) })),
       galeria,

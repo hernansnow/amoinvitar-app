@@ -14,7 +14,7 @@ Al arrancar muestra dos links: la demo y un **panel de prueba** con un evento
 recién creado (todo se guarda en memoria mientras corre).
 
 - http://localhost:8787/demo/garden — demo (idioma según el país; local = neutro)
-- `?evento=boda|15|bautismo|comunion|cumple`
+- `?evento=boda|15|bautismo|comunion|cumple|infantil|graduacion|babyshower|revelacion|navidad`
 - `&paquete=basic|premium|deluxe`
 - `&pais=AR|ES|MX|CR|GB…` (o `&idioma=es-ar|es|es-cr|es-es|en`)
 
@@ -286,3 +286,28 @@ invitado: campo `ejemploAcceso`.
 - **Cierre**: `id="cierre"` y el texto final con `data-si="pie.mostrar"`.
 - **Planes**: cada sección es del paquete más bajo que la trae en `modelo.json`. Secciones nuevas: `musica`, `estilos`,
   `instagram`, `playlist`. Galería: `fotosGaleria: 20` en los tres paquetes.
+
+## Modelos convertidos y tipos de evento nuevos (ronda 19)
+
+- **Convertidor**: `scripts/conversion/convertir-modelo.mjs` pasa un diseño de la v2.0 al sistema nuevo,
+  `armar-modelo.mjs` arma `modelo.json` y `tema.css`, y `lote.mjs` convierte todos (`FAMILIAS`: modelo → evento → carpeta).
+  Uso: `REPO_VIEJO=../amoinvitar-v2.0 node scripts/conversion/lote.mjs [modelo …]`. El lote también arma `estilo.css`
+  y las fotos borrosas. Ajustes propios de un modelo: `scripts/conversion/<modelo>.mjs` (`ajustar(doc, ctx)`) y
+  `<modelo>.propio.css`. Carpetas con varios diseños: `"carpeta:patrón"` (`amanecer` → amanecer.html, amanecer_premium.html,
+  amanecer_basic.html; `garden_proyecto-{p}---NUEVO` → con deluxe/premium/basic en `{p}`).
+- **Garden** está hecho a mano: el lote solo le suma los eventos convertidos en `porEvento` (no toca boda).
+- **Tipos de evento**: boda, 15, cumple, bautismo, comunión, **infantil, graduacion (egresos y graduaciones), babyshower,
+  revelacion (revelación de género, dos nombres) y navidad**. Textos en `src/textos/index.js` (los nuevos salen de los de
+  cumpleaños con lo propio encima) y en los otros idiomas `src/textos/idiomas/eventos-nuevos.js`.
+- **Graduación** tiene ceremonia (acto) y mentores (la sección de testigos); egresos grupales: el nombre es la institución
+  y la segunda línea la promoción.
+- **Segunda línea de la portada** (`data-t="portada.detalle"`): la edad en infantiles ("2 Años"), la clase o promoción en
+  graduaciones, la frase de la revelación. Campo en Portada solo en esos tipos.
+- **Fotos de la demo**: los PNG de la carpeta de la demo son adornos (osito, globos…), no fotos del cliente. Galerías con letra
+  (`foto1b.jpg`, carpetas con varios diseños) se copian como `foto1.jpg…`. Encuadres a mano de las portadas de muestra:
+  `POSICIONES` en armar-modelo (`pos` celular, `posPc` escritorio); nombres de la demo por diseño: `NOMBRES_DEMO`.
+- **Ventana de bienvenida** (sobre apagado): el modal original de cada diseño, sacado de la historia de git de la v2.0
+  (antes de que tuviera sobre); los diseños nuevos, que nacieron con sobre, usan la genérica.
+- **Fondos de 100vh**: el convertidor y `npm run estilos` agregan `100svh` después de cada `100vh`.
+- **Rouge**: falta la fuente Mongolia Sky (`public/comun/fonts/mongolia-sky/MongoliaSky.woff2`) para cambiar las imágenes
+  "Nuestra Boda" / "Mis 15" por texto (`scripts/conversion/rouge.mjs` ya lo hace cuando la fuente está).

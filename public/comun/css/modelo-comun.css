@@ -30,3 +30,9 @@
 .ai-video-portada, .ai-slides-fondo { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ai-video-portada { object-fit: cover; }
 .ai-slides-fondo .ai-slide { position: absolute; inset: 0; }
+
+/* Cinta con texto (Cinema y Luxury en bautismo y comunión): la cinta del diseño en blanco y la frase encima */
+.ai-cinta { position: relative; display: inline-block; max-width: 100%; }
+.ai-cinta > img { display: block; margin: 0 auto; }
+.ai-cinta-texto { position: absolute; inset: 0 14%; display: flex; align-items: center; justify-content: center; white-space: nowrap;
+  font-family: 'Great Vibes', cursive; font-weight: 700; color: #6b6b6b; font-size: clamp(.95rem, 4.2vw, 1.35rem); line-height: 1; padding-bottom: .12em; }

@@ -36,7 +36,6 @@
     "premium": {
       "secciones": [
         "musica",
-        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -55,7 +54,6 @@
     "deluxe": {
       "secciones": [
         "musica",
-        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -109,6 +107,52 @@
       ]
     }
   },
+  "demoBorrosas": {
+    "bautismo": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "comunion": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
   "porEvento": {
     "comunion": {
       "paquetes": {
@@ -129,7 +173,6 @@
         "premium": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -148,7 +191,6 @@
         "deluxe": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",

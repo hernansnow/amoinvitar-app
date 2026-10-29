@@ -8,7 +8,7 @@ Se generan una sola vez (chicas y livianas) y se anotan en modelo.json → "demo
 Uso:  python3 scripts/fotos-borrosas.py garden [otro-modelo …]
 Necesita Pillow (pip install pillow).
 """
-import json, sys
+import json, re, sys
 from pathlib import Path
 from PIL import Image, ImageFilter
 
@@ -37,19 +37,12 @@ for modelo in sys.argv[1:]:
             borrosa(f, tipo / 'borrosas' / f.name)
         nombres = {f.name for f in fotos}
         portada = sorted(n for n in nombres if n.startswith('hero-banner')) or (['foto1.jpg'] if 'foto1.jpg' in nombres else [])
-        galeria = sorted((n for n in nombres if n.startswith('foto')), key=lambda n: int(n[4:-4]))
+        galeria = sorted((n for n in nombres if re.match(r'foto\d+\.jpg$', n)), key=lambda n: int(n[4:-4]))
         manifiesto[tipo.name] = {'portada': portada, 'galeria': galeria,
                                  **{k: f'{k}.jpg' for k in ('rsvp', 'instagram') if f'{k}.jpg' in nombres},
                                  'testigos': sorted(n for n in nombres if n.startswith('testigo'))}
     ruta = carpeta / 'modelo.json'
-    texto = ruta.read_text()
-    datos = json.loads(texto)
-    linea = '  "demoBorrosas": ' + json.dumps(manifiesto, ensure_ascii=False) + ',\n'
-    if '"demoBorrosas"' in texto:
-        import re
-        texto = re.sub(r'  "demoBorrosas": .*\n', linea, texto)
-    else:
-        texto = texto.replace('  "paquetes": {', linea + '\n  "paquetes": {', 1)
-    json.loads(texto)
-    ruta.write_text(texto)
+    datos = json.loads(ruta.read_text())
+    datos['demoBorrosas'] = manifiesto
+    ruta.write_text(json.dumps(datos, ensure_ascii=False, indent=2) + '\n')
     print(modelo, {k: len(v['galeria']) for k, v in manifiesto.items()})

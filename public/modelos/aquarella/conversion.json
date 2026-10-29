@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "aquarella15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -118,6 +119,7 @@
   },
   "boda": {
     "carpeta": "aquarella",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -234,6 +236,7 @@
   },
   "cumple": {
     "carpeta": "cumple-aquarella",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -309,6 +312,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "Marta",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -317,6 +321,244 @@
       },
       "basic": {
         "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/aquarella",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/aquarella",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
         "secciones": [
           "galeria",
           "rsvp",

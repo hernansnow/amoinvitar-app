@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "disco15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -40,6 +41,7 @@
             "brindis",
             "baile"
           ],
+          "nombresCierre": "Luciana",
           "claseTitulos": "disco-2",
           "fuentes": [
             "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
@@ -67,6 +69,7 @@
           "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "Luciana",
           "claseTitulos": "disco-2",
           "fuentes": [
             "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
@@ -90,6 +93,7 @@
           "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
+          "nombresCierre": "Luciana",
           "claseTitulos": "disco-2",
           "fuentes": [
             "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
@@ -100,6 +104,7 @@
   },
   "boda": {
     "carpeta": "disco",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -201,6 +206,7 @@
   },
   "cumple": {
     "carpeta": "cumple-discoteque",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -238,6 +244,7 @@
             "baile",
             "last-call2"
           ],
+          "nombresCierre": "RAMIRO",
           "claseTitulos": "disco-2",
           "fuentes": [
             "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
@@ -265,6 +272,7 @@
           "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "RAMIRO",
           "claseTitulos": "disco-2",
           "fuentes": [
             "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
@@ -288,6 +296,116 @@
           "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
+          "nombresCierre": "RAMIRO",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      }
+    }
+  },
+  "graduacion": {
+    "carpeta": "graduacion-nuevo",
+    "archivo": "egreso-discoteque_proyecto-deluxe---NUEVO.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-graduacion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin fecha",
+          "historia: no se encontró el texto ni el saludo",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "INSTITUTO SUPERIOR",
+          "videoPortada": true,
+          "portadaFotos": 4,
+          "galeriaLetra": "c",
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "birrete",
+            "mic",
+            "cena",
+            "disco"
+          ],
+          "nombresCierre": "Instituto Superior",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-graduacion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin fecha",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "INSTITUTO SUPERIOR",
+          "videoPortada": true,
+          "portadaFotos": 4,
+          "galeriaLetra": "c",
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "nombresCierre": "Instituto Superior",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-graduacion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin fecha",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "INSTITUTO SUPERIOR",
+          "videoPortada": true,
+          "portadaFotos": 4,
+          "galeriaLetra": "c",
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "nombresCierre": "Instituto Superior",
           "claseTitulos": "disco-2",
           "fuentes": [
             "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"

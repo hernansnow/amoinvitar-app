@@ -122,6 +122,7 @@ const modelo = {
   sobre: { colores: Object.keys(d0.colores).length ? d0.colores : { lacre: d0.principal }, ...(d0.bienvenida ? { bienvenida: d0.bienvenida } : {}) },
   ...(previo.tarjetas ? { tarjetas: previo.tarjetas } : {}),
   demo: previo.demo || {},
+  ...(previo.demoBorrosas ? { demoBorrosas: previo.demoBorrosas } : {}),
   porEvento: {},
 };
 if (f0.css[0]) modelo.acceso = { css: [...f0.css.map((u) => u.replace(/^\.\.\/\.\.\//, '/')), `/modelos/${id}/tema.css`] };
@@ -139,7 +140,7 @@ for (const ev of eventos) {
 // Cumpleaños con fotos de un hombre: la demo lleva nombre de hombre
 const HOMBRES = { byn: 'Martín', disco: 'Tomás', floral: 'Lucas', luxury: 'Joaquín', rockabilly: 'Nicolás', white: 'Mateo' };
 // Y los diseños con nombre propio en la demo (el bebé de Celeste es Mateo…)
-const NOMBRES_DEMO = { ...Object.fromEntries(Object.entries(HOMBRES).map(([k, v]) => [`${k}/cumple`, v])), 'celeste/bautismo': 'Mateo', 'rosa/bautismo': 'Juliana' };
+const NOMBRES_DEMO = { ...Object.fromEntries(Object.entries(HOMBRES).map(([k, v]) => [`${k}/cumple`, v])), 'celeste/bautismo': 'Mateo', 'rosa/bautismo': 'Juliana', 'celeste/babyshower': 'Mateo', 'rosa/babyshower': 'Juliana', 'disco/graduacion': 'Instituto Superior', 'esmeralda/graduacion': 'Instituto Superior', 'monster/infantil': 'Paula', 'peppa/infantil': 'Agustín' };
 for (const ev of eventos) {
   const n = NOMBRES_DEMO[`${id}/${ev}`];
   if (!n) continue;

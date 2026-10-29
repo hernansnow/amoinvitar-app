@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "euforia15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -41,6 +42,7 @@
             "brindis",
             "baile"
           ],
+          "nombresCierre": "Agustina",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -68,6 +70,7 @@
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "nombresCierre": "Agustina",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -91,6 +94,7 @@
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Agustina",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -101,6 +105,7 @@
   },
   "boda": {
     "carpeta": "euforia",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -203,6 +208,7 @@
   },
   "cumple": {
     "carpeta": "cumple-euforia",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -241,6 +247,7 @@
             "baile",
             "last-call2"
           ],
+          "nombresCierre": "Agustina",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -268,6 +275,7 @@
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "nombresCierre": "Agustina",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -291,6 +299,215 @@
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Agustina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/euforia",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Agustina",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Agustina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Agustina",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Agustina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Agustina",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Agustina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/euforia",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Agustina",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Agustina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Agustina",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Agustina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Agustina",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Agustina",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"

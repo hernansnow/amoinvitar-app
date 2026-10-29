@@ -1,0 +1,132 @@
+{
+  "id": "estilo",
+  "nombre": "Estilo",
+  "eventos": [
+    "graduacion"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#9c916b",
+    "#5c5a51",
+    "#b4b1a3",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "itinerario",
+        "testigos",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "{a}",
+    "cierre": "{a}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": null,
+    "colorFondo": "#5c5a51",
+    "colorTitulos": "#9c916b",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#b39b5f"
+    },
+    "bienvenida": "font-family:'Great Vibes', cursive; color:rgb(156, 145, 107); font-weight:500; --bv-escala:1.45;"
+  },
+  "demo": {
+    "graduacion": {
+      "portadas": [
+        {
+          "f": "hero-banner.jpg",
+          "pos": "50% 25%"
+        }
+      ]
+    }
+  },
+  "demoBorrosas": {
+    "graduacion": {
+      "portada": [
+        "hero-banner.jpg",
+        "hero-banner2.jpg",
+        "hero-banner3.jpg",
+        "hero-banner4.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/great-vibes+jost.css",
+      "/modelos/estilo/tema.css"
+    ]
+  }
+}

@@ -24,6 +24,7 @@ import de from './idiomas/de.js';
 import nl from './idiomas/nl.js';
 
 const OTROS = { pt, fr, it, ca, de, nl };
+import NUEVOS from './idiomas/eventos-nuevos.js';
 
 const BASE = {
   es: {
@@ -386,6 +387,116 @@ const EVENTOS = {
   },
 };
 
+// Eventos que salen de otro (mismos textos de fiesta) con lo propio encima
+const derivado = (de, propio) => {
+  const r = { plural: propio.plural ?? EVENTOS[de].plural };
+  for (const v of ['es', 'es-ar', 'es-es', 'en']) {
+    // Lo que el evento nuevo reescribe en es no se toma de la variante del evento de base
+    const baseV = Object.fromEntries(Object.entries(EVENTOS[de][v] || {}).filter(([k]) => v === 'es' || v === 'en' || !(k in (propio.es || {}))));
+    r[v] = { ...baseV, ...(propio[v] || {}) };
+  }
+  r.de = de;
+  return r;
+};
+EVENTOS.infantil = derivado('cumple', {
+  es: {
+    'evento.nombre': 'Cumpleaños', 'evento.descripcion': '¡Te espero para festejar mi cumple!', 'portada.subtitulo': '¡MI CUMPLE!', 'portada.detalle': '2 Años',
+    'historia.texto': 'Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!',
+    'bienvenida.texto': '¡Te invito a mi cumple!', 'testigos.titulo': 'Mis Padrinos', 'bus.destinoTexto': '¡Mi Cumple!',
+    'pie.texto': '¡Gracias por venir a festejar conmigo! Te espero para jugar, reír y compartir este día tan especial.',
+  },
+  'es-ar': {},
+  'es-es': {},
+  en: {
+    'evento.nombre': 'Birthday', 'evento.descripcion': 'Come and celebrate my birthday!', 'portada.subtitulo': "IT'S MY BIRTHDAY!", 'portada.detalle': '2 Years',
+    'historia.texto': 'One more year of playing, learning and smiling. It\'s amazing how fast time flies, but it\'s time to blow out more candles. It has been a wonderful time full of love and unforgettable family moments. To celebrate this special day, we\'d love to invite you to the party to share a magical afternoon together. Don\'t miss it!',
+    'bienvenida.texto': 'Come to my party!', 'pie.texto': 'Thank you for coming to celebrate with me! I can\'t wait to play, laugh and share this special day with you.',
+  },
+});
+EVENTOS.graduacion = derivado('cumple', {
+  // (es-ar: "hasta acá")
+  es: {
+    'evento.nombre': 'Graduación', 'evento.descripcion': 'Te espero para celebrar mi graduación', 'portada.subtitulo': 'FIESTA DE GRADUACIÓN', 'portada.detalle': 'CLASE 2027',
+    'historia.titulo': 'Mi Historia', 'historia.texto': 'Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta aquí. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!',
+    'bienvenida.texto': '¡Quiero invitarte a mi fiesta de graduación!', 'bus.destinoTexto': '¡La Fiesta!', 'celebracion.sola': 'Fiesta',
+    'testigos.titulo': 'Los Mentores', 'ceremonia.religiosa': 'Ceremonia de Graduación', 'ceremonia.simbolica': 'Ceremonia de Graduación', 'celebracion.titulo': 'Fiesta de Graduación', 'unificado.titulo': 'Ceremonia y Fiesta',
+    'pie.texto': 'Los logros se disfrutan más cuando se comparten con la familia y los amigos que estuvieron en cada paso. ¡Te espero para festejar juntos!',
+  },
+  'es-ar': { 'historia.texto': 'Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta acá. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!' }, 'es-es': {},
+  en: {
+    'evento.nombre': 'Graduation', 'evento.descripcion': 'Join me to celebrate my graduation', 'portada.subtitulo': 'GRADUATION PARTY', 'portada.detalle': 'CLASS OF 2027',
+    'historia.texto': 'It feels like yesterday that this journey full of challenges, late nights and unforgettable moments began. Every exam passed, every effort and the unconditional support of those who were by my side brought me here. Today I close an amazing chapter of learning and open the door to a new professional adventure. Thank you for being part of this special achievement and celebrating it with me!',
+    'bienvenida.texto': 'I would love to invite you to my graduation party!', 'bus.destinoTexto': 'The party!', 'celebracion.sola': 'Party',
+    'testigos.titulo': 'Mentors', 'ceremonia.religiosa': 'Graduation Ceremony', 'ceremonia.simbolica': 'Graduation Ceremony', 'celebracion.titulo': 'Graduation Party', 'unificado.titulo': 'Ceremony & Party',
+    'pie.texto': 'Achievements are sweeter when shared with the family and friends who were there every step of the way. I look forward to celebrating with you!',
+  },
+});
+EVENTOS.babyshower = derivado('cumple', {
+  es: {
+    'evento.nombre': 'Baby Shower', 'evento.descripcion': 'Te esperamos para celebrar la llegada del bebé', 'portada.subtitulo': 'BABY SHOWER', 'meta.descripcion': '¡Te esperamos para celebrar juntos!',
+    'historia.titulo': 'Muy pronto', 'historia.texto': 'Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!',
+    'bienvenida.texto': '¡Queremos invitarte a nuestro baby shower!', 'bus.destinoTexto': '¡Baby Shower!', 'celebracion.sola': 'Celebración',
+    'regalos.texto': 'El mejor regalo es que nos acompañes, pero si deseas hacer un regalo aquí te dejamos los datos.',
+    'regalos.listaTexto': 'Creamos una lista de regalos en una tienda online, para que puedas regalar el que gustes',
+    'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayúdanos con la selección de canciones',
+    'album.texto': '¡Prepárate para la fiesta!<br>Haz clic en el botón y sube todas las fotos y videos que tomes durante la celebración a nuestro álbum colaborativo, al instante, sin descargar ninguna app.',
+    'pie.texto': 'Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para celebrar juntos esta dulce espera.',
+  },
+  'es-ar': {
+    'regalos.texto': 'El mejor regalo es que nos acompañes, pero si querés hacer un regalo, acá te dejamos los datos.',
+    'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayudanos con la selección de canciones',
+    'album.texto': '¡Preparate para la fiesta!<br>Hacé clic en el botón y subí todas las fotos y videos que saques durante la celebración a nuestro álbum colaborativo, al instante, sin descargar ninguna app.',
+  },
+  'es-es': { 'album.texto': '¡Prepárate para la fiesta!<br>Haz clic en el botón y sube todas las fotos y vídeos que hagas durante la celebración a nuestro álbum colaborativo, al instante, sin descargar ninguna app.' },
+  en: {
+    'album.texto': 'Get ready for the party!<br>Tap the button and upload all the photos and videos you take to our shared album, instantly, no app needed.',
+    'evento.nombre': 'Baby Shower', 'evento.descripcion': 'Join us to celebrate the baby on the way', 'portada.subtitulo': 'BABY SHOWER', 'meta.descripcion': 'We look forward to celebrating with you!',
+    'historia.titulo': 'Coming soon', 'historia.texto': 'From the moment we knew you were on your way, our lives filled with huge excitement and a joy impossible to explain. Every day of waiting brings us closer to seeing your little face, hearing your laugh and finally holding you in our arms. We are preparing everything with lots of love for your arrival, and we want to celebrate this unique moment surrounded by the people we love most. Thank you for waiting for this beautiful gift of life with us!',
+    'bienvenida.texto': 'We would love to invite you to our baby shower!', 'bus.destinoTexto': 'Baby shower!', 'celebracion.sola': 'Celebration',
+    'regalos.texto': 'Your presence is the best gift, but if you wish to give something, here are the details.',
+    'regalos.listaTexto': 'We created a gift registry in an online store, so you can choose the gift you like',
+    'canciones.texto': 'Which songs can\'t be missed?<br>Help us choose the music',
+    'pie.texto': 'The happiest moments in life become unforgettable when we share them with the family and friends we love.',
+  },
+});
+EVENTOS.revelacion = derivado('babyshower', {
+  plural: true,
+  es: {
+    'evento.nombre': 'Revelación de género', 'evento.descripcion': 'Acompáñanos en la revelación de género', 'portada.subtitulo': 'BABY SHOWER',
+    'portada.detalle': 'Acompáñanos en la celebración de revelación de género', 'bienvenida.texto': '¡Queremos invitarte a descubrir si es niño o niña!',
+  },
+  'es-ar': { 'evento.descripcion': 'Acompañanos en la revelación de género', 'portada.detalle': 'Acompañanos en la celebración de revelación de género' },
+  'es-es': {},
+  en: {
+    'evento.nombre': 'Gender reveal', 'evento.descripcion': 'Join us for our gender reveal', 'portada.subtitulo': 'BABY SHOWER',
+    'portada.detalle': 'Join us for our gender reveal celebration', 'bienvenida.texto': 'Come and find out if it\'s a boy or a girl!',
+  },
+});
+EVENTOS.navidad = derivado('babyshower', {
+  plural: true,
+  es: {
+    'evento.nombre': 'Navidad', 'evento.descripcion': 'Te esperamos para celebrar la Navidad', 'portada.subtitulo': 'FIESTA DE NAVIDAD', 'meta.descripcion': '¡Te esperamos para celebrar juntos!',
+    'historia.titulo': 'Feliz Navidad', 'historia.texto': 'Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para que festejemos juntos.',
+    'bienvenida.texto': '¡Queremos invitarte a nuestra fiesta de Navidad!', 'bus.destinoTexto': '¡La Fiesta!', 'celebracion.sola': 'Celebración',
+    'regalos.texto': 'El mejor regalo es que nos acompañes, pero si deseas hacer un regalo aquí te dejamos los datos.',
+    'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayúdanos con la selección de canciones',
+    'pie.texto': 'Los momentos felices se tornan geniales si tenemos la suerte de compartirlos con las personas que más queremos. ¡Te esperamos para celebrar juntos!',
+  },
+  'es-ar': {
+    'regalos.texto': 'El mejor regalo es que nos acompañes, pero si querés hacer un regalo, acá te dejamos los datos.',
+    'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayudanos con la selección de canciones',
+  },
+  'es-es': {},
+  en: {
+    'evento.nombre': 'Christmas', 'evento.descripcion': 'Join us to celebrate Christmas', 'portada.subtitulo': 'CHRISTMAS PARTY', 'meta.descripcion': 'We look forward to celebrating with you!',
+    'historia.titulo': 'Merry Christmas', 'historia.texto': 'The happiest moments in life become unforgettable when we share them with the family and friends we love, so we look forward to celebrating together.',
+    'bienvenida.texto': 'We would love to invite you to our Christmas party!', 'bus.destinoTexto': 'The party!', 'celebracion.sola': 'Celebration',
+    'regalos.texto': 'Your presence is the best gift, but if you wish to give something, here are the details.',
+    'canciones.texto': 'Which songs can\'t be missed?<br>Help us choose the music',
+    'pie.texto': 'Happy moments become unforgettable when we share them with the people we love most. We look forward to celebrating with you!',
+  },
+});
+
 // Qué variante usa cada país
 const PAISES = {
   AR: 'es-ar', UY: 'es-ar', PY: 'es-ar',
@@ -409,7 +520,7 @@ export function diccionario(tipo, variante) {
   const v = VARIANTES.includes(variante) ? variante : 'es';
   const otro = OTROS[v];
   const capas = v === 'en' || otro
-    ? [BASE.es, BASE.en, ev.es, ev.en, otro?.base, otro?.eventos?.[tipo in EVENTOS ? tipo : 'boda']]
+    ? [BASE.es, BASE.en, ev.es, ev.en, otro?.base, ...(ev.de ? [otro?.eventos?.[EVENTOS[ev.de].de || ev.de], otro?.eventos?.[ev.de]] : []), otro?.eventos?.[tipo in EVENTOS ? tipo : 'boda'], NUEVOS[v]?.[tipo]]
     : [BASE.es, v === 'es-cr' ? BASE['es-ar'] : null, BASE[v], ev.es, v === 'es-cr' ? ev['es-ar'] : null, ev[v]];
   return Object.assign({}, ...capas.filter(Boolean));
 }

@@ -10,7 +10,7 @@ import { ICONOS_COMUNES } from '../panel/esquemas.js';
 
 const LOCALES = { es: 'es-MX', 'es-ar': 'es-AR', 'es-cr': 'es-CR', 'es-es': 'es-ES', en: 'en-GB', pt: 'pt-BR', fr: 'fr-FR', it: 'it-IT', ca: 'ca-ES', de: 'de-DE', nl: 'nl-NL' };
 // Duración típica de la fiesta para el calendario de los invitados (ya no se pide la hora de fin)
-const DURACION = { boda: 8, 15: 8, cumple: 6, bautismo: 4, comunion: 4 };
+const DURACION = { boda: 8, 15: 8, cumple: 6, bautismo: 4, comunion: 4, infantil: 4, graduacion: 8, babyshower: 4, revelacion: 4, navidad: 6 };
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const dos = (n) => String(n).padStart(2, '0');
@@ -131,8 +131,10 @@ function encuadreZoom(prop, pos, zoom) {
   return `${base};transform:scale(${z});transform-origin:${pos || '50% 50%'};clip-path:circle(${Math.round((50 / z) * 100) / 100}% at ${c(px)}% ${c(py)}%)`;
 }
 const urlDe = (f) => (typeof f === 'string' ? f : f?.url || '');
-// Solo boda, 15, bautismo y comunión tienen ceremonia o misa
-const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion']);
+// Solo boda, 15, bautismo, comunión y graduación tienen ceremonia, misa o acto
+const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion', 'graduacion']);
+// Testigos, padrinos o cómplices (cumpleaños)
+const CON_PADRINOS = new Set(['boda', '15', 'bautismo', 'comunion', 'cumple', 'graduacion']);
 
 // Lo que ya respondió el invitado (para mostrárselo y poder cambiarlo): solo sus propias respuestas
 const CAMPOS_RESPUESTA = ['asiste', 'acompanantes', 'asisten', 'personas', 'comida', 'comida_acomp', 'alcohol', 'ninos', 'traslado', 'mensaje', 'extra', 'extra2', 'extra3', 'extra4', 'extra5'];
@@ -156,7 +158,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const secciones = Object.fromEntries(paquete.secciones.map((s) => [s, !apagadas.has(s)]));
   // La historia apagada no desaparece: queda el saludo de bienvenida de los modelos Basic
   // Testigos o padrinos solo en boda, 15, bautismo y comunión
-  if (!CON_CEREMONIA.has(e.tipo) && 'testigos' in secciones) secciones.testigos = false;
+  if (!CON_PADRINOS.has(e.tipo) && 'testigos' in secciones) secciones.testigos = false;
   const historiaActiva = !!secciones.historia;
   if ('historia' in secciones) secciones.historia = true;
   // Playlist: solo si hay un link de Spotify válido

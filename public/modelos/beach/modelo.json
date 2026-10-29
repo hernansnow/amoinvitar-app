@@ -37,7 +37,6 @@
     "premium": {
       "secciones": [
         "musica",
-        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -56,7 +55,6 @@
     "deluxe": {
       "secciones": [
         "musica",
-        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -103,6 +101,74 @@
   "demo": {
     "boda": {}
   },
+  "demoBorrosas": {
+    "15": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "boda": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "cumple": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
   "porEvento": {
     "15": {
       "paquetes": {
@@ -123,7 +189,6 @@
         "premium": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -142,7 +207,6 @@
         "deluxe": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -202,7 +266,6 @@
         "premium": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -221,7 +284,6 @@
         "deluxe": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",

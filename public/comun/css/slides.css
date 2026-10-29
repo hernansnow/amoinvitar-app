@@ -12,3 +12,6 @@
   .ai-slides > .ai-slide { transition-duration: .01s; }
   .ai-slides > .ai-slide.activa { animation: none; }
 }
+/* Slideshow en el lugar de una foto (Basic): la primera ocupa su alto, las demás encima */
+.ai-slides.ai-en-linea { position: relative; inset: auto; }
+.ai-slides.ai-en-linea > .ai-slide:first-child { position: relative !important; height: var(--alto, 100vh) !important; }

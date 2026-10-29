@@ -1992,7 +1992,7 @@ a.close.disabled {
     left: 0;
     z-index: 1040;
     width: 100vw;
-    height: 100vh;
+    height:100vh;height:100svh;
 	backdrop-filter: blur(4px);
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -2932,6 +2932,10 @@ button.bg-light:hover {
 
 .text-uppercase {
     text-transform: uppercase !important
+}
+
+.font-weight-light {
+    font-weight: 250 !important
 }
 
 .font-weight-lighter {

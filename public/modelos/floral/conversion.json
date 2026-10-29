@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "floral15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -24,10 +25,10 @@
           "instagram"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)"
         ],
         "info": {
+          "nombresPortada": "Dayana",
           "portadaFotos": 0,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -40,6 +41,7 @@
             "disco",
             "brindis"
           ],
+          "nombresCierre": "Dayana",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"
@@ -59,14 +61,15 @@
           "regalos"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Dayana",
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "nombresCierre": "Dayana",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"
@@ -81,16 +84,17 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Dayana",
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Dayana",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"
@@ -101,6 +105,7 @@
   },
   "boda": {
     "carpeta": "floral",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -207,6 +212,7 @@
   },
   "cumple": {
     "carpeta": "cumple-floral",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -230,10 +236,10 @@
           "instagram"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)"
         ],
         "info": {
+          "nombresPortada": "Dayana",
           "portadaFotos": 0,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -245,6 +251,7 @@
             "baile",
             "last-call2"
           ],
+          "nombresCierre": "Dayana",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"
@@ -264,14 +271,15 @@
           "regalos"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Dayana",
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "nombresCierre": "Dayana",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"
@@ -286,16 +294,225 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Dayana",
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Dayana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/floral",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Dayana",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "tragos",
+            "baby",
+            "torta",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Dayana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Dayana",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Dayana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Dayana",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Dayana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/floral",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Dayana",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Dayana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Dayana",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Dayana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Dayana",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Dayana",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"

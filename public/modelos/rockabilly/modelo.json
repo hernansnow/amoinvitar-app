@@ -30,7 +30,7 @@
         "sobre": false,
         "musica": false,
         "cuenta": false,
-        "fotosPortada": 1,
+        "fotosPortada": 4,
         "fotosGaleria": 20
       }
     },
@@ -126,6 +126,83 @@
       ]
     }
   },
+  "demoBorrosas": {
+    "15": {
+      "portada": [
+        "hero-banner1.jpg",
+        "hero-banner2.jpg",
+        "hero-banner3.jpg",
+        "hero-banner4.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "boda": {
+      "portada": [
+        "hero-banner1.jpg",
+        "hero-banner2.jpg",
+        "hero-banner3.jpg",
+        "hero-banner4.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "cumple": {
+      "portada": [
+        "hero-banner1.jpg",
+        "hero-banner2.jpg",
+        "hero-banner3.jpg",
+        "hero-banner4.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
   "porEvento": {
     "15": {
       "paquetes": {
@@ -139,7 +216,7 @@
             "sobre": false,
             "musica": false,
             "cuenta": false,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -241,7 +318,7 @@
             "sobre": false,
             "musica": false,
             "cuenta": false,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },

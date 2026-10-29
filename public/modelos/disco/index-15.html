@@ -176,7 +176,7 @@
 				<div class="disco">
 			    <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-white font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center text-white texto-disco-inclinado disco-2 border-bottom">Mi Historia</h2>
 			  </div>
-			 <h4 data-si="historia.activa" class="text-white mb-5 texto-disco-inclinado"><span class="text-white disco-3 icon-quote-left"></span> <span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span> <span class="text-white disco-3 icon-quote-right"></span></h4>
+			 <h4 data-si="historia.activa" class="text-white mb-5 texto-disco-inclinado g-historia"><span class="text-white disco-3 icon-quote-left"></span> <span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span> <span class="text-white disco-3 icon-quote-right"></span></h4>
 			</div>
 		      <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 			</div>
@@ -396,8 +396,8 @@
 		<section data-seccion="testigos" class="site-section bg-black" id="testigos">
       <div class="container">
         <div class="row mb-3">
-           <div data-repetir="testigos.items" class="disco col-md-5 col-10 ml-auto mr-auto text-center">
-			   <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-3 mt-0" src="../../comun/img/demo-testigo1.jpg" width="70" alt="Imagen">
+           <div class="disco col-md-5 col-10 ml-auto mr-auto text-center">
+			   <img loading="lazy" class="img-fluid mb-3 mt-0" src="img/icon-testigos-w.png" width="70" alt="Imagen">
 			 <h2 data-t="testigos.titulo" class="mb-3 text-center text-white texto-disco-inclinado disco-2 border-bottom">Los Padrinos</h2>
 		  </div>
         </div>
@@ -405,8 +405,14 @@
         <div class="row">
           <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="50">
             <div>
-                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo1.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
               <h2 class="text-white section-sub-title font-weight-bolder">Juan Fernandez</h2>
+            </div> 
+          </div>
+          <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="150">
+            <div>
+                 <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+				<h2 class="text-white section-sub-title font-weight-bolder">Marcela García</h2>
             </div> 
           </div>
 
@@ -546,7 +552,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
 			 <h4 data-si="pie.mostrar" class="text-white"><strong data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos. Por eso te esperamos para festejar y compartir nuestra felicidad juntos.</strong></h4>
 		  </div>
 			 <div class="disco">
-              <h3 class="text-white disco text-uppercase neonText">Luciana</h3>
+              <h3 data-campo-html="nombres.cierre" class="text-white disco text-uppercase neonText">Luciana</h3>
 			 </div> 
 			  <div data-si="redes.hay" data-seccion="redes" class="col-md-8 text-center border-top mt-5 mb-5 ml-auto mr-auto">
                 <h4 data-t="redes.titulo" class="mb-3 mt-5 text-white">Redes oficiales de la fiesta</h4>

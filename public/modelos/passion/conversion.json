@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "passion15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -23,10 +24,10 @@
           "redes"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)"
         ],
         "info": {
+          "nombresPortada": "Milena",
           "portadaFotos": 0,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -58,11 +59,11 @@
           "regalos"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Milena",
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -80,12 +81,12 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Milena",
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
@@ -99,6 +100,7 @@
   },
   "boda": {
     "carpeta": "passion",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -199,6 +201,7 @@
   },
   "cumple": {
     "carpeta": "cumple-passion",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -221,10 +224,10 @@
           "redes"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)"
         ],
         "info": {
+          "nombresPortada": "Milena",
           "portadaFotos": 0,
           "galeria": 12,
           "idAgenda": "agenda",
@@ -254,11 +257,11 @@
           "regalos"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Milena",
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
@@ -276,12 +279,210 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Milena",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/passion",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Milena",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Milena",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Milena",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/passion",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Milena",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Milena",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Milena",
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",

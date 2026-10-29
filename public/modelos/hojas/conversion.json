@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "hojas15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -45,6 +46,7 @@
             "brindis",
             "baile"
           ],
+          "nombresCierre": "Melisa",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/fleur-de-leah+jost.css"
@@ -77,6 +79,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "Melisa",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/fleur-de-leah+jost.css"
@@ -105,6 +108,7 @@
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",
+          "nombresCierre": "Melisa",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/fleur-de-leah+jost.css"
@@ -115,6 +119,7 @@
   },
   "boda": {
     "carpeta": "hojas",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -231,6 +236,7 @@
   },
   "cumple": {
     "carpeta": "cumple-hojas",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -273,6 +279,7 @@
             "baile",
             "last-call2"
           ],
+          "nombresCierre": "Melisa",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/fleur-de-leah+jost.css"
@@ -305,6 +312,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "Melisa",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/fleur-de-leah+jost.css"
@@ -333,6 +341,245 @@
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "inicio",
+          "nombresCierre": "Melisa",
+          "claseTitulos": "hojas",
+          "fuentes": [
+            "../../comun/fonts/google/fleur-de-leah+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/hojas",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Melisa",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Melisa",
+          "claseTitulos": "hojas",
+          "fuentes": [
+            "../../comun/fonts/google/fleur-de-leah+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Melisa",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Melisa",
+          "claseTitulos": "hojas",
+          "fuentes": [
+            "../../comun/fonts/google/fleur-de-leah+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Melisa",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Melisa",
+          "claseTitulos": "hojas",
+          "fuentes": [
+            "../../comun/fonts/google/fleur-de-leah+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/hojas",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Melisa",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Melisa",
+          "claseTitulos": "hojas",
+          "fuentes": [
+            "../../comun/fonts/google/fleur-de-leah+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Melisa",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Melisa",
+          "claseTitulos": "hojas",
+          "fuentes": [
+            "../../comun/fonts/google/fleur-de-leah+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Melisa",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Melisa",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/fleur-de-leah+jost.css"

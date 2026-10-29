@@ -1,0 +1,121 @@
+{
+  "graduacion": {
+    "carpeta": "graduacion-nuevo",
+    "archivo": "egreso-esmeralda_proyecto-deluxe---NUEVO.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-graduacion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Instituto Superior",
+          "portadas": [
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeriaLetra": "c",
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "birrete",
+            "mic",
+            "cena",
+            "disco"
+          ],
+          "nombresCierre": "Instituto Superior",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-graduacion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Instituto Superior",
+          "portadas": [
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeriaLetra": "c",
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "nombresCierre": "Instituto Superior",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-graduacion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Instituto Superior",
+          "portadas": [
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeriaLetra": "c",
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "nombresCierre": "Instituto Superior",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

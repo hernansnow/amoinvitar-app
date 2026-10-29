@@ -1,0 +1,119 @@
+{
+  "infantil": {
+    "carpeta": "infantil-monster",
+    "archivo": "index_proyecto-deluxe---NUEVO.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-infantil.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Paula",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 6,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "globos",
+            "mic",
+            "cena",
+            "pinata",
+            "torta3"
+          ],
+          "nombresCierre": "<span class=\"vert-move2\" style=\"display: inline-block\">Cumple&#160;</span><span class=\"vert-move chewy display-4\" style=\"display: inline-block\">2</span><span class=\"vert-move3\" style=\"display: inline-block\">&#160;Años</span>",
+          "claseTitulos": "chewy",
+          "fuentes": [
+            "../../comun/fonts/google/chewy+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-infantil-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Paula",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 6,
+          "idAgenda": "agenda",
+          "nombresCierre": "<span class=\"vert-move2\" style=\"display: inline-block\">Cumple&#160;</span><span class=\"vert-move chewy display-4\" style=\"display: inline-block\">2</span><span class=\"vert-move3\" style=\"display: inline-block\">&#160;Años</span>",
+          "claseTitulos": "chewy",
+          "fuentes": [
+            "../../comun/fonts/google/chewy+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-infantil-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Paula",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "<span class=\"vert-move2\" style=\"display: inline-block\">Cumple&#160;</span><span class=\"vert-move chewy display-4\" style=\"display: inline-block\">2</span><span class=\"vert-move3\" style=\"display: inline-block\">&#160;Años</span>",
+          "claseTitulos": "chewy",
+          "fuentes": [
+            "../../comun/fonts/google/chewy+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

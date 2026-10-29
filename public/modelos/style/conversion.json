@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "style15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -108,6 +109,7 @@
           "portadaFotos": 1,
           "idAgenda": "inicio",
           "galeriaEnRsvp": true,
+          "nombresCierre": "Lucila",
           "claseTitulos": "elegance2",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
@@ -118,6 +120,7 @@
   },
   "cumple": {
     "carpeta": "cumple-style",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -223,6 +226,245 @@
           "portadaFotos": 1,
           "idAgenda": "inicio",
           "galeriaEnRsvp": true,
+          "nombresCierre": "Lucila",
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/style",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "Lucila",
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/style",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "Lucila",
           "claseTitulos": "elegance2",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"

@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   CARS · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #fc1119;
+  --color-secundario: #dc0f0f;
+  --color-suave: #ebebeb;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Great Vibes', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

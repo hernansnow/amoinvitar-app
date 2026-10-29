@@ -93,7 +93,7 @@
 	   <!-- VIDEO -->
       <div class="video-container">
             <div class="site-blocks-cover" style="background-color: #b5b0a3; background-image:url(img/clean-gray-paper.png);">
-				<div class="col-6 ml-auto mr-auto show-mobile p-0" style="height: 100vh; width: 100%; background: #8f8a7f;"></div>
+				<div class="col-6 ml-auto mr-auto show-mobile p-0" style="height:100vh;height:100svh; width: 100%; background: #8f8a7f;"></div>
 				<div class="col-2 ml-auto mr-auto show-desktop p-0" style="height: 100%; width: 100%; background: #8f8a7f;"></div>
              </div>
        </div>
@@ -111,8 +111,8 @@
 	
 	<div class="pb-0 pt-3" style="background-color:#eaeae2;" id="inicio">
       <div class="container-countdown text-black text-center">
-	   <h6 class="text-black h6 mb-0" id="headline-countdown">Faltan</h6>
-         <div class="text-center" id="countdown">
+	   <h6 data-si="cuenta.activa" data-t="cuenta.faltan" class="text-black h6 mb-0" id="headline-countdown">Faltan</h6>
+         <div data-si="cuenta.activa" class="text-center" id="countdown">
             <ul>
               <li><span id="days"></span>días</li>
               <li><span id="hours"></span>Horas</li>
@@ -135,7 +135,7 @@
           <div class="col-12 text-center" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-0" src="img/lovestory-5.png" width="150px" alt="Imagen">
              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-black font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h4 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center texto-especial text-black">Nuestra Historia</h4>
-			  <h4 data-si="historia.activa"><span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span></h4>
+			  <h4 data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span></h4>
           </div>
         </div>
 	   </div>
@@ -390,18 +390,23 @@
 	<section data-seccion="testigos" class="site-section" style="background: rgb(181,176,163); background: linear-gradient(180deg, rgba(181,176,163,0.6) 0%, rgba(234,234,226,1) 100%);" id="testigos">
       <div class="container">
         <div class="row mb-3">
-          <div data-repetir="testigos.items" class="col-12 text-center" data-aos="fade-up">
-			  <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-2" src="../../comun/img/demo-testigo1.jpg" width="65px" alt="Imagen">
-            <h4 data-i="nombre" data-t="testigos.titulo" class="mb-3 text-center texto-especial text-black">Los Testigos</h4>
+          <div class="col-12 text-center" data-aos="fade-up">
+			  <img loading="lazy" class="img-fluid mb-2" src="img/icon-testigos.png" width="65px" alt="Imagen">
+            <h4 data-t="testigos.titulo" class="mb-3 text-center texto-especial text-black">Los Testigos</h4>
           </div>
         </div>
 	<div class="col-md-8 ml-auto mr-auto">
         <div class="row">
           <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="50">
-					<img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3 p-1" style="border: 4px solid #9c916b;">
+					<img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo1.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3 p-1" style="border: 4px solid #9c916b;">
               <h4 data-i="nombre" class="text-gold">Juan Fernandez</h4>
               <p data-i="rol" class="mb-4 text-uppercase text-small-sm2">HERMANO DEL NOVIO</p>
           </div>
+          <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="150">
+                 <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3 p-1" style="border: 4px solid #9c916b;">
+				<h4 data-i="nombre" class="text-gold">Marcela García</h4>
+              <p data-i="rol" class="mb-4 text-uppercase text-small-sm2">MEJOR AMIGA DE LA NOVIA</p>
+            </div> 
 
           </div>
          </div>

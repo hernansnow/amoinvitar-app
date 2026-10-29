@@ -72,7 +72,7 @@
          <div class="col-md-8 text-right mb-5">
          <div class="p-3">
 		       <img class="img-fluid mb-2 pr-2" src="img/ornamental-palm2.png" width="100" alt="">
-            <h2 class="mb-3 text-verde-oscuro p-0 text-uppercase"><span class="jost-lead">Aylén</span></h2>
+            <h2 data-ajustar="0.82" data-campo-html="nombres.portada" class="mb-3 text-verde-oscuro p-0 text-uppercase"><span class="jost-lead">Aylén</span></h2>
             <h4 class="mb-2 p-0 text-black pr-2"><span data-t="portada.subtitulo" class="jost-light">MIS 15 AÑOS</span></h4>
 				<div class="col-9 col-md-4 col-xl-4 mb-0 ml-auto pr-3">
 					<hr style="border-top: 1px solid" class="bg-black m-0">
@@ -108,7 +108,7 @@
          <div class="col-md-8 text-right mb-5">
          <div class="p-3">
 		       <img class="img-fluid mb-2 pr-2" src="img/ornamental-palm2.png" width="100" alt="">
-            <h2 class="mb-3 text-verde-oscuro p-0 text-uppercase"><span class="jost-lead">Aylén</span></h2>
+            <h2 data-ajustar="0.82" data-campo-html="nombres.portada" class="mb-3 text-verde-oscuro p-0 text-uppercase"><span class="jost-lead">Aylén</span></h2>
             <h4 class="mb-2 p-0 text-black pr-2"><span data-t="portada.subtitulo" class="jost-light">MIS 15 AÑOS</span></h4>
 				<div class="col-9 col-md-4 col-xl-4 mb-0 ml-auto pr-3">
 					<hr style="border-top: 1px solid" class="bg-black m-0">
@@ -150,7 +150,7 @@
 		  <div class="container pt-5 jost">
 			  <div class="col-md-8 ml-auto mr-auto">
 				  <img loading="lazy" class="img-fluid mb-3" src="img/corona6.png" width="100" alt="" style="filter: invert(1);">
-		    <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="d-none">Nuestra Historia</h2><h4 data-si="historia.activa" class="jost text-center text-black mb-4"><span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span></h4>
+		    <h4 class="jost text-center text-black mb-4">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</h4>
                 <div class="col-5 mb-0 mr-auto ml-auto">
 					<hr style="border-top: 1px solid" class="bg-black m-0">
 				</div>
@@ -435,10 +435,10 @@
 	<section data-seccion="testigos" class="site-section" style="background: rgba(255, 237, 148, 0.3)" id="testigos">
       <div class="container text-center jost">
         <div class="row mb-3">
-			   <div data-repetir="testigos.items" class="col-md-4 col-9 text-center ml-auto mr-auto">
-			   <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-3" src="../../comun/img/demo-testigo1.jpg" width="75" alt="">
+			   <div class="col-md-4 col-9 text-center ml-auto mr-auto">
+			   <img loading="lazy" class="img-fluid mb-3" src="img/icon-testigos-verde-oscuro.png" width="75" alt="">
 		   	  <div class="jost-titulo text-center">
-			    <h3 data-i="nombre" data-t="testigos.titulo" class="mb-2 pb-2 text-verde-oscuro text-uppercase border-bottom border-dark">Los Padrinos</h3>
+			    <h3 data-t="testigos.titulo" class="mb-2 pb-2 text-verde-oscuro text-uppercase border-bottom border-dark">Los Padrinos</h3>
 			  </div>
         </div>
 		</div>
@@ -446,11 +446,16 @@
         <div class="row">
           <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="50">
             <div>
-                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo1.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
               <h6 class="text-black mb-0">Juan Fernandez</h6>
             </div> 
           </div>
-          
+          <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="150">
+            <div>
+                 <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+				<h6 class="text-black mb-0">Marcela García</h6>
+            </div> 
+          </div>
         </div>
       </div>
       <div class="text-center">
@@ -590,7 +595,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
 		  </div>
 		  <div class="row mt-md-3">
             <div data-si="redes.hay" data-seccion="redes" class="col-md-8 text-center mb-5">
-			      <h2 class="text-center mb-5 mt-auto ml-auto jost-lead text-uppercase text-verde-oscuro font-weight-normal">Aylén</h2>
+			      <h2 data-campo-html="nombres.cierre" class="text-center mb-5 mt-auto ml-auto jost-lead text-uppercase text-verde-oscuro font-weight-normal">Aylén</h2>
                 <small data-t="redes.titulo" class="mb-3 text-black">Redes oficiales de la fiesta</small><br>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h3 text-black"></span></a>
                 <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h3 text-black"></span></a>
@@ -614,7 +619,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
       </div>
     </section><section class="bg-diferido site-section pt-4 pb-4 ai-perdiste" style="background-image: linear-gradient(rgba(235, 167, 103, 0.95), rgba(228, 217, 199, 0.0)), url(img/bg-beach3.jpg); background-color:#eba767; background-position:50% 70%; background-repeat:no-repeat; background-size:cover; position:relative;">
       <div class="container"><div class="row"><div class="col-12 text-center">
-        <h3 class="mb-3 text-center d-none text-white" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
+        <h3 class="mb-3 text-center jost-lead text-white" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
         <ul class="list-unstyled">
             <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
             <li><a href="#agenda" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>

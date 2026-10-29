@@ -58,6 +58,7 @@
             "brindis",
             "baile"
           ],
+          "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -102,6 +103,7 @@
           "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -128,9 +130,10 @@
               "pos": "center center"
             }
           ],
-          "portadaFotos": 1,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
+          "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -196,6 +199,7 @@
             "baile",
             "last-call2"
           ],
+          "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -240,6 +244,7 @@
           "portadaFotos": 4,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -265,9 +270,10 @@
               "pos": "center center"
             }
           ],
-          "portadaFotos": 1,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
+          "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -285,7 +291,6 @@
       "deluxe": {
         "archivo": "index-bautismo.html",
         "secciones": [
-          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -302,6 +307,7 @@
           "instagram"
         ],
         "avisos": [
+          "historia: no se encontró el texto ni el saludo",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
@@ -323,6 +329,7 @@
             "cena",
             "disco"
           ],
+          "nombresCierre": "Fátima",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -332,7 +339,6 @@
       "premium": {
         "archivo": "index-bautismo-premium.html",
         "secciones": [
-          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -342,6 +348,7 @@
           "regalos"
         ],
         "avisos": [
+          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
@@ -356,6 +363,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "Fátima",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -402,7 +410,6 @@
       "deluxe": {
         "archivo": "index-comunion.html",
         "secciones": [
-          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -419,6 +426,7 @@
           "instagram"
         ],
         "avisos": [
+          "historia: no se encontró el texto ni el saludo",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
@@ -440,6 +448,7 @@
             "cena",
             "disco"
           ],
+          "nombresCierre": "Maiana",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"
@@ -449,7 +458,6 @@
       "premium": {
         "archivo": "index-comunion-premium.html",
         "secciones": [
-          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -459,6 +467,7 @@
           "regalos"
         ],
         "avisos": [
+          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
@@ -473,6 +482,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "inicio",
+          "nombresCierre": "Maiana",
           "claseTitulos": "euforia",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"

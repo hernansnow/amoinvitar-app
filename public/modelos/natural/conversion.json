@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "natural15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -118,6 +119,7 @@
   },
   "cumple": {
     "carpeta": "cumple-natural",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -202,6 +204,244 @@
       },
       "basic": {
         "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/natural",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/natural",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
         "secciones": [
           "galeria",
           "rsvp",

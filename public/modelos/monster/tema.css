@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   MONSTER · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #3cb3a7;
+  --color-secundario: #739d75;
+  --color-suave: #e88741;
+  --color-texto: #212529;
+
+  --fuente-titulos: "Chewy", system-ui !important;
+  --fuente-texto: 'Jost', sans-serif;
+}

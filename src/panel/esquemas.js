@@ -21,7 +21,7 @@ import { ZONAS } from '../datos/zonas.js';
 import { FUENTES } from '../datos/fuentes.js';
 
 const ORDEN_PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
-const PLURAL = new Set(['boda']);
+const PLURAL = new Set(['boda', 'revelacion']);
 
 // ── Campos reutilizables ──────────────────────────────────────────────
 
@@ -96,7 +96,7 @@ const GRUPOS_ICONOS = {
 const GRUPOS_POR_TIPO = {
   boda: ['general', 'religioso', 'navidad'], 15: ['general', 'religioso', 'graduacion'], bautismo: ['religioso', 'infantil', 'general'], comunion: ['religioso', 'infantil', 'general'],
   cumple: ['general', 'infantil', 'graduacion'], graduacion: ['graduacion', 'general'], infantil: ['infantil', 'general'], navidad: ['navidad', 'general'],
-  babyshower: ['infantil', 'general'], empresarial: ['general', 'navidad', 'graduacion'],
+  babyshower: ['infantil', 'general'], revelacion: ['infantil', 'general'], empresarial: ['general', 'navidad', 'graduacion'],
 };
 export const ICONOS_COMUNES = [...ICONOS_SIEMPRE, ...Object.values(GRUPOS_ICONOS).flat()];
 export const iconosComunesDe = (tipo) => [...ICONOS_SIEMPRE, ...(GRUPOS_POR_TIPO[tipo] || ['general']).flatMap((g) => GRUPOS_ICONOS[g])];
@@ -108,10 +108,16 @@ const nombreIcono = (v) => {
 
 // ── Pasos de la invitación web ────────────────────────────────────────
 // Solo estos eventos tienen ceremonia o misa; cumpleaños, infantiles, egresos y empresariales no
-export const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion']);
+export const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion', 'graduacion']);
+// La segunda línea de la portada: [etiqueta, largo, ayuda]
+const DETALLE = {
+  infantil: ['Edad que cumple', 15, 'Por ejemplo "2 Años".'],
+  graduacion: ['Clase o promoción', 30, 'Por ejemplo "CLASE 2027" o "PROMO 2027".'],
+  revelacion: ['Frase de la portada', 60, 'Por ejemplo "Acompáñanos en la revelación de género".'],
+};
 // Lo mismo para testigos / padrinos
 // En cumpleaños la sección es "Cómplices" (los amigos de quien cumple)
-export const CON_PADRINOS = new Set(['boda', '15', 'bautismo', 'comunion', 'cumple']);
+export const CON_PADRINOS = new Set(['boda', '15', 'bautismo', 'comunion', 'cumple', 'graduacion']);
 
 // Proporciones fijas de las fotos (las mismas de las fotos de muestra del modelo)
 export const PROPORCION = { galeria: '1:1', lugar: '9:4', dress: '4:9', testigo: '1:1', miniatura: '1.91:1' };
@@ -152,8 +158,8 @@ function pasosInvitacion({ tipo, modelo }) {
   const incluye = modelo.paquetes.deluxe?.incluye || modelo.paquetes.premium?.incluye || {};
   const misa = tipo === '15' || tipo === 'comunion';
   const conCeremonia = CON_CEREMONIA.has(tipo);
-  const padrinos = tipo === 'boda' ? 'Testigos' : tipo === 'cumple' ? 'Cómplices' : 'Padrinos';
-  const tituloPadrinos = tipo === 'boda' ? 'Testigos/padrinos' : tipo === 'cumple' ? 'Cómplices' : 'Padrinos';
+  const padrinos = tipo === 'boda' ? 'Testigos' : tipo === 'cumple' ? 'Cómplices' : tipo === 'graduacion' ? 'Mentores' : 'Padrinos';
+  const tituloPadrinos = tipo === 'boda' ? 'Testigos/padrinos' : tipo === 'cumple' ? 'Cómplices' : tipo === 'graduacion' ? 'Mentores' : 'Padrinos';
   const hayCeremonia = { campo: 'ceremonia.modo', es: 'separada' };
   const unificada = { campo: 'ceremonia.modo', es: 'mismo-lugar' };
   const nCer = misa ? 'misa' : 'ceremonia';
@@ -166,7 +172,8 @@ function pasosInvitacion({ tipo, modelo }) {
     {
       id: 'portada', titulo: 'Portada', obligatoria: true,
       campos: [
-        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : 'Nombre', max: 15, requerido: true, ancho: plural ? 'mitad' : null, placeholder: plural ? 'Lau' : 'Sofi' },
+        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : ({ graduacion: 'Nombre (o institución, si es un egreso)', navidad: 'Familia o empresa' })[tipo] || 'Nombre',
+          max: ['graduacion', 'navidad'].includes(tipo) ? 30 : 15, requerido: true, ancho: plural ? 'mitad' : null, placeholder: plural ? 'Lau' : ({ graduacion: 'Cinthia', navidad: 'Familia Pérez' })[tipo] || 'Sofi' },
         ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2', max: 15, requerido: true, ancho: 'mitad', placeholder: 'Pablo' }] : []),
         { id: 'nota.nombres', tipo: 'nota', estilo: 'ayuda', texto: plural ? '¿Cómo se tienen que ver los nombres? (nombres, diminutivos, apodos…). Por ejemplo: Lau y Pablo.'
           : '¿Cómo se tiene que ver el nombre? (nombre, diminutivo, apodo…). Por ejemplo: Sofi.' },
@@ -182,6 +189,8 @@ function pasosInvitacion({ tipo, modelo }) {
           si: modelo.videoPortada ? [siFotos('portada'), { campo: 'portada.tipo', no: 'video' }] : siFotos('portada') },
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
         { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
+        // Segunda línea de la portada en los diseños que la traen (la edad, la promoción…)
+        ...(DETALLE[tipo] ? [{ id: 'textos.portada.detalle', tipo: 'texto', etiqueta: DETALLE[tipo][0], max: DETALLE[tipo][1], base: 'portada.detalle', ancho: 'mitad', ayuda: DETALLE[tipo][2] }] : []),
         { id: 'zonaHoraria', tipo: 'zona', etiqueta: 'País / zona horaria del evento', valores: ZONAS, requerido: true, ancho: 'mitad', ayuda: 'Para la cuenta regresiva y los calendarios.' },
         // Apagada: Premium y Deluxe muestran la portada de Basic (sin cuenta regresiva)
         { id: 'portada.cuenta', tipo: 'switch', etiqueta: 'Mostrar la cuenta regresiva', defecto: true, rearmar: true,
@@ -261,7 +270,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'rsvp.preguntas.ninos', tipo: 'switch', etiqueta: 'Preguntar si va con niños y cuántos serán' },
         { id: 'rsvp.preguntas.traslado', tipo: 'switch', etiqueta: 'Preguntar si necesita traslado' },
         // Un mensaje para los anfitriones: se ve en la administración (Mensajes)
-        { id: 'rsvp.preguntas.mensaje', tipo: 'switch', defecto: true, etiqueta: `Pedir un mensaje para ${({ boda: 'los novios', 15: 'la quinceañera', bautismo: 'la familia', comunion: 'la familia', cumple: 'quien cumple años' })[tipo] || 'los anfitriones'}`,
+        { id: 'rsvp.preguntas.mensaje', tipo: 'switch', defecto: true, etiqueta: `Pedir un mensaje para ${({ boda: 'los novios', 15: 'la quinceañera', bautismo: 'la familia', comunion: 'la familia', cumple: 'quien cumple años', infantil: 'quien cumple años', graduacion: 'quien se gradúa', babyshower: 'la familia', revelacion: 'los papás', navidad: 'los anfitriones' })[tipo] || 'los anfitriones'}`,
           ayuda: 'Al final de la confirmación, cada invitado puede dejar un mensaje (es opcional).' },
         { id: 'rsvp.extras', tipo: 'lista', etiqueta: 'Preguntas propias', unaColumna: true, max: 5, agregar: 'Agregar pregunta', paquete: 'premium', campos: [
           { id: 'pregunta', tipo: 'texto', etiqueta: 'Pregunta', max: 80, placeholder: '¿Cuál es tu trago favorito?' },

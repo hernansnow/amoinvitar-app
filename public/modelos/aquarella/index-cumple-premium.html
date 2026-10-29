@@ -119,9 +119,9 @@
 				 <div class="row">
 				 <div class="col" style="top:-50px">
 				 <!-- Countdown 1-->
-                <div class="rounded text-black text-center">
+                <div data-si="cuenta.activa" class="rounded text-black text-center">
 					falta
-                    <div id="clock-b" class="countdown-deluxe-circles4 d-flex justify-content-center"></div>
+                    <div data-formato="<div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{d}</span> {dias}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{h}</span> {horas}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{m}</span> {min}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{s}</span> {seg}</div>" id="clock-b" class="countdown-deluxe-circles4 d-flex justify-content-center"></div>
                 </div>
 			 <div class="text-center vert-move mt-1 mb-3">
 			       <a href="#inicio" class="smoothscroll"><span class="text-gold h1 icon-keyboard_arrow_down"></span></a>
@@ -144,7 +144,7 @@
          <div class="row item">
 	         <div class="col-md-12 ml-auto mr-auto mt-5 text-center" data-aos="fade-up">
 				 <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-gold font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center euforia text-gold">Mi Historia</h2>
-			  <h4 data-si="historia.activa" class="font-weight-lighter"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></h4>
+			  <h4 data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></h4>
 			 </div>
 	  		 <div class="col-12 p-0" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
 
@@ -293,7 +293,7 @@
         <div class="row mb-3">
           <div class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
 			  <p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center text-black">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</p>
-			  <h2 class="mb-0 text-center euforia text-gold">Marta</h2>
+			  <h2 data-campo-html="nombres.cierre" class="mb-0 text-center euforia text-gold">Marta</h2>
           </div>			  
         </div>
 	<div class="col-md-8 ml-auto mr-auto">

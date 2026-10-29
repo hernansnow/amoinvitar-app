@@ -8,7 +8,6 @@
       "deluxe": {
         "archivo": "index-bautismo.html",
         "secciones": [
-          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -25,6 +24,7 @@
           "instagram"
         ],
         "avisos": [
+          "historia: no se encontró el texto ni el saludo",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
@@ -46,6 +46,7 @@
             "cena",
             "disco"
           ],
+          "nombresCierre": "Fátima",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+fleur-de-leah+jost.css"
@@ -55,7 +56,6 @@
       "premium": {
         "archivo": "index-bautismo-premium.html",
         "secciones": [
-          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -65,6 +65,7 @@
           "regalos"
         ],
         "avisos": [
+          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
@@ -79,6 +80,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
+          "nombresCierre": "Fátima",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+fleur-de-leah+jost.css"
@@ -125,7 +127,6 @@
       "deluxe": {
         "archivo": "index-comunion.html",
         "secciones": [
-          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -142,6 +143,7 @@
           "instagram"
         ],
         "avisos": [
+          "historia: no se encontró el texto ni el saludo",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
@@ -163,6 +165,7 @@
             "cena",
             "disco"
           ],
+          "nombresCierre": "Mariana",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+fleur-de-leah+jost.css"
@@ -172,7 +175,6 @@
       "premium": {
         "archivo": "index-comunion-premium.html",
         "secciones": [
-          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -182,6 +184,7 @@
           "regalos"
         ],
         "avisos": [
+          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
@@ -196,6 +199,7 @@
           "portadaFotos": 1,
           "galeria": 8,
           "idAgenda": "agenda",
+          "nombresCierre": "Mariana",
           "claseTitulos": "hojas",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+fleur-de-leah+jost.css"

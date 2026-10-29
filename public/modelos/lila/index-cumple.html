@@ -83,7 +83,7 @@
 					<img class="img-fluid mb-3 mt-0" src="img/icon-ornamental-paloma-lila.png" width="110px" alt="Imagen">
 				</div>
 				<div class="text-center">
-					<small class="text-small-sm text-lila mb-0 pb-0">Faltan</small>
+					<small data-si="cuenta.activa" data-t="cuenta.faltan" class="text-small-sm text-lila mb-0 pb-0">Faltan</small>
                     <div data-formato="<div class=&quot;m-2&quot;><span class=&quot;font-weight-lighter mb-2&quot;>{d}</span> {dias}</div><div class=&quot;m-2&quot;><span class=&quot;font-weight-lighter mb-2&quot;>{h}</span> {horas}</div><div class=&quot;m-2&quot;><span class=&quot;font-weight-lighter mb-2&quot;>{m}</span> {min}</div><div class=&quot;m-2&quot;><span class=&quot;font-weight-lighter mb-2&quot;>{s}</span> {seg}</div>" data-si="cuenta.activa" id="clock-b" class="p-0 m-0 countdown-deluxe-circles6 d-flex justify-content-center font-weight-light text-lila-fuerte"></div>
                 </div>
 			<div class="text-center vert-move mt-2">
@@ -183,7 +183,7 @@
 			<div class="col-md-10 text-center ml-auto mr-auto pt-5" data-aos="fade-up">
 				<div class="col-md-6 ml-auto mr-auto"><img loading="lazy" class="img-fluid mb-1" src="img/icon-ornamental-corazon-lila.png" width="120" alt="Imagen"></div>
               <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-2 text-center text-lila-fuerte font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="passconf mb-2 section-title text-center text-lila-fuerte">Mi Historia</h2>
-			  <p data-si="historia.activa" class="text-black"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></p>
+			  <p data-si="historia.activa" class="text-black g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></p>
           
 				</div>
 				</div>
@@ -351,9 +351,9 @@
 		<img loading="lazy" class="img-fluid" src="img/lila-separador-4a.png" width="100%" alt="Imagen" style="position: absolute; bottom: 0px; right: auto; left: auto;">
       <div class="container">
         <div class="row mb-3">
-          <div data-repetir="testigos.items" class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
+          <div class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
 			  <div class="text-center">
-				  <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-2" src="../../comun/img/demo-testigo1.jpg" width="120px" alt="Imagen">
+				  <img loading="lazy" class="img-fluid mb-2" src="img/icon-ornamental-testigos-lila.png" width="120px" alt="Imagen">
 			  </div>
 			  <h2 data-t="testigos.titulo" class="passconf mb-2 section-title text-center text-lila-fuerte">Cómplices</h2>
           </div>
@@ -362,8 +362,14 @@
         <div class="row">
           <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="50">
             <div>
-                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo1.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
               <h5 data-i="nombre" class="text-lila-fuerte">Juan Fernandez</h5>
+            </div> 
+          </div>
+          <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="150">
+            <div>
+                 <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+				<h5 data-i="nombre" class="text-lila-fuerte">Marcela García</h5>
             </div> 
           </div>
 
@@ -490,7 +496,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
           <div class="col-md-8 text-center ml-auto mr-auto">
 			  <img loading="lazy" class="img-fluid mb-2" src="img/lila-2.png" width="150px" alt="Imagen">
 			 <p data-si="pie.mostrar" class="text-white"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</span> <span class="display-5 icon-quote-right"></span></p>
-            <h1 class="text-center section-title passconf display-4 mt-auto ml-auto text-white">Juliana</h1>
+            <h1 data-campo-html="nombres.cierre" class="text-center section-title passconf display-4 mt-auto ml-auto text-white">Juliana</h1>
 			 <div data-si="redes.hay" data-seccion="redes" class="col-md-8 ml-auto mr-auto text-center text-white mt-5 mb-0">
 			 <div class="border-top border-light mb-3"></div>
                 <small data-t="redes.titulo" class="mb-3">Redes oficiales de la fiesta</small><br>

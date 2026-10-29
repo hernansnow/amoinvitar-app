@@ -1,0 +1,133 @@
+{
+  "graduacion": {
+    "carpeta": "graduacion-nuevo",
+    "archivo": "marino_proyecto-deluxe---NUEVO.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-graduacion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Cinthia",
+          "portadas": [
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "50% 100%"
+            },
+            {
+              "f": "globo2.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 2,
+          "galeriaLetra": "b",
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "birrete",
+            "mic",
+            "cena",
+            "disco"
+          ],
+          "nombresCierre": "Cinthia",
+          "claseTitulos": "sacramento",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez+sacramento.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-graduacion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Cinthia",
+          "portadas": [
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "50% 100%"
+            },
+            {
+              "f": "globo2.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 2,
+          "galeriaLetra": "b",
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "nombresCierre": "Cinthia",
+          "claseTitulos": "sacramento",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez+sacramento.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-graduacion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Cinthia",
+          "portadas": [
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "50% 100%"
+            },
+            {
+              "f": "globo2.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 2,
+          "galeriaLetra": "b",
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Cinthia",
+          "claseTitulos": "sacramento",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez+sacramento.css"
+          ]
+        }
+      }
+    }
+  }
+}

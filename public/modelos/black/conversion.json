@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "black15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -41,6 +42,7 @@
             "brindis",
             "baile"
           ],
+          "nombresCierre": "Cecilia",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -68,6 +70,7 @@
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "nombresCierre": "Cecilia",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -91,6 +94,7 @@
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Cecilia",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -101,6 +105,7 @@
   },
   "boda": {
     "carpeta": "black",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -203,6 +208,7 @@
   },
   "cumple": {
     "carpeta": "cumple-black",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -241,6 +247,7 @@
             "baile",
             "last-call2"
           ],
+          "nombresCierre": "Cecilia",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -268,6 +275,7 @@
           "portadaFotos": 0,
           "galeria": 8,
           "idAgenda": "agenda",
+          "nombresCierre": "Cecilia",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -291,6 +299,215 @@
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Cecilia",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/black",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Cecilia",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Cecilia",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Cecilia",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Cecilia",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Cecilia",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Cecilia",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/black",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Cecilia",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Cecilia",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Cecilia",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Cecilia",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Cecilia",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Cecilia",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"

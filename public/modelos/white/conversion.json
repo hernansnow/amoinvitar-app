@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "white15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -42,6 +43,7 @@
             "brindis",
             "baile"
           ],
+          "nombresCierre": "Juana",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -70,6 +72,7 @@
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "nombresCierre": "Juana",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -93,6 +96,7 @@
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Juana",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -103,6 +107,7 @@
   },
   "boda": {
     "carpeta": "white",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -207,6 +212,7 @@
   },
   "cumple": {
     "carpeta": "cumple-white",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -246,6 +252,7 @@
             "baile",
             "last-call2"
           ],
+          "nombresCierre": "Juana",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -274,6 +281,7 @@
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "nombresCierre": "Juana",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -297,6 +305,219 @@
           "portadaFotos": 0,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Juana",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/white",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Juana",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Juana",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juana",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "nombresCierre": "Juana",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juana",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Juana",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/white",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo"
+        ],
+        "info": {
+          "nombresPortada": "Juana",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Juana",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juana",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "nombresCierre": "Juana",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juana",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Juana",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"

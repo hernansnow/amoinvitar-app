@@ -4,7 +4,9 @@
   "eventos": [
     "boda",
     "15",
-    "cumple"
+    "cumple",
+    "bautismo",
+    "comunion"
   ],
   "gratis": false,
   "paleta": [
@@ -107,6 +109,109 @@
           "pos": "78% 50%"
         }
       ]
+    }
+  },
+  "demoBorrosas": {
+    "15": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "testigos": []
+    },
+    "bautismo": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "testigos": []
+    },
+    "boda": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "testigos": []
+    },
+    "comunion": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "testigos": []
+    },
+    "cumple": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
     }
   },
   "porEvento": {
@@ -277,6 +382,174 @@
             {
               "f": "hero-banner.jpg",
               "pos": "50% 20%"
+            }
+          ]
+        }
+      }
+    },
+    "bautismo": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "sobre": {
+        "colores": {
+          "lacre": "#b39b5f"
+        },
+        "bienvenida": "font-family:'Great Vibes', cursive; color:rgb(156, 145, 107); font-weight:500; --bv-escala:1.45;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "bautismo": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ]
+        }
+      }
+    },
+    "comunion": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "sobre": {
+        "colores": {
+          "lacre": "#b39b5f"
+        },
+        "bienvenida": "font-family:'Great Vibes', cursive; color:rgb(156, 145, 107); font-weight:500; --bv-escala:1.45;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "comunion": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
             }
           ]
         }

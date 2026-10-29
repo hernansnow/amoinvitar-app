@@ -853,6 +853,7 @@ pre code {
 .col-11,
 .col-12,
 .col-lg-3,
+.col-lg-6,
 .col-lg-7,
 .col-lg-8,
 .col-lg-10,
@@ -995,6 +996,12 @@ pre code {
         -ms-flex: 0 0 25%;
         flex: 0 0 25%;
         max-width: 25%
+    }
+    .col-lg-6 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 50%;
+        flex: 0 0 50%;
+        max-width: 50%
     }
     .col-lg-7 {
         -webkit-box-flex: 0;
@@ -2059,7 +2066,7 @@ a.close.disabled {
     left: 0;
     z-index: 1040;
     width: 100vw;
-    height: 100vh;
+    height:100vh;height:100svh;
 	backdrop-filter: blur(4px);
     background-color: rgba(0, 0, 0, 0.3);
 }

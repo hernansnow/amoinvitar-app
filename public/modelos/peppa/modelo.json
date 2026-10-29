@@ -1,0 +1,135 @@
+{
+  "id": "peppa",
+  "nombre": "Peppa",
+  "eventos": [
+    "infantil"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#e9779f",
+    "#68beef",
+    "#7dbe6c",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/infantil-peppa-fondo.jpg",
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "itinerario",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "{a}",
+    "cierre": "{a}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/peppa/img/infantil-peppa-fondo.jpg",
+    "colorFondo": "#68beef",
+    "colorTitulos": "#e9779f",
+    "fuenteTitulos": "Chewy",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#e9779f",
+      "papel": "#96d4ec",
+      "fondo": "#96d4ec"
+    },
+    "bienvenida": "font-family:Chewy, system-ui; color:rgb(240, 155, 194); font-weight:500; --bv-escala:1.05;"
+  },
+  "demo": {
+    "infantil": {
+      "portadas": [
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
+      ],
+      "nombres": {
+        "a": "Agustín"
+      }
+    }
+  },
+  "demoBorrosas": {
+    "infantil": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/chewy+jost.css",
+      "/modelos/peppa/tema.css"
+    ]
+  }
+}

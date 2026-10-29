@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "graffiti15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -22,11 +23,11 @@
           "instagram"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "agenda: no se encontró la celebración (#fiesta-button)",
           "perdiste: se agregó (no había)"
         ],
         "info": {
+          "nombresPortada": "<span>Ariadna</span>",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -63,13 +64,13 @@
           "regalos"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "agenda: no se encontró la celebración (#fiesta-button)",
           "dress code: no se encontró",
           "itinerario: sin #timeline",
           "perdiste: se agregó (no había)"
         ],
         "info": {
+          "nombresPortada": "<span>Ariadna</span>",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -91,13 +92,13 @@
           "rsvp"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "música: sin <audio id=\"audio\">",
           "agenda: no se encontró la celebración (#fiesta-button)",
           "dress code: no se encontró",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "<span>Ariadna</span>",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -106,6 +107,7 @@
           ],
           "portadaFotos": 1,
           "galeria": 4,
+          "nombresCierre": "Ariadna",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
@@ -116,6 +118,7 @@
   },
   "boda": {
     "carpeta": "graffiti",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -230,6 +233,7 @@
   },
   "cumple": {
     "carpeta": "cumple-graffiti",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -251,11 +255,11 @@
           "instagram"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "agenda: no se encontró la celebración (#fiesta-button)",
           "perdiste: se agregó (no había)"
         ],
         "info": {
+          "nombresPortada": "<span>Ariadna</span>",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -290,13 +294,13 @@
           "regalos"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "agenda: no se encontró la celebración (#fiesta-button)",
           "dress code: no se encontró",
           "itinerario: sin #timeline",
           "perdiste: se agregó (no había)"
         ],
         "info": {
+          "nombresPortada": "<span>Ariadna</span>",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -318,13 +322,13 @@
           "rsvp"
         ],
         "avisos": [
-          "portada: sin título de nombres",
           "música: sin <audio id=\"audio\">",
           "agenda: no se encontró la celebración (#fiesta-button)",
           "dress code: no se encontró",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "<span>Ariadna</span>",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -333,6 +337,7 @@
           ],
           "portadaFotos": 1,
           "galeria": 4,
+          "nombresCierre": "Ariadna",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"

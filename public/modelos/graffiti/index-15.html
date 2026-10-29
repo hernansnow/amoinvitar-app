@@ -78,7 +78,7 @@
          <div class="col-md-8 text-center align-self-center">
               <img class="img-fluid mb-2" src="img/corona4.png" alt="Imagen" width="120">
 			 <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-graffiti2 text-white mb-0"> 12 • 09 • 2027 </h4>
-			 <h3 class="text-graffiti mb-0"><span>Ariadna</span></h3>
+			 <h3 data-ajustar="0.82" data-campo-html="nombres.portada" class="text-graffiti mb-0"><span>Ariadna</span></h3>
 			  <h3 data-t="portada.subtitulo" class="text-graffiti2 text-white">MIS 15 AÑOS</h3>
           </div>
          <div class="col-md-8 text-center align-self-end pb-2">
@@ -126,7 +126,7 @@
          <div class="col-md-8 text-center align-self-center">
               <img class="img-fluid mb-2" src="img/corona4.png" alt="Imagen" width="120">
 			 <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-graffiti2 text-white mb-0"> 12 • 09 • 2027 </h4>
-			 <h3 class="text-graffiti mb-0"><span>Ariadna</span></h3>
+			 <h3 data-ajustar="0.82" data-campo-html="nombres.portada" class="text-graffiti mb-0"><span>Ariadna</span></h3>
 			  <h3 data-t="portada.subtitulo" class="text-graffiti2 text-white">MIS 15 AÑOS</h3>
           </div>
         </div>
@@ -160,7 +160,7 @@
 				<div class="container">
 			<div class="col-md-8 text-center ml-auto mr-auto pt-5" data-aos="fade-up">
               <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-black font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h1 data-si="historia.activa" class="mb-3 section-title text-center text-black"><span data-t="historia.titulo" class="text-graffiti3 text-black">Mi Historia</span></h1>
-			  <p data-si="historia.activa" class="text-black"><span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span></p>
+			  <p data-si="historia.activa" class="text-black g-historia"><span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span></p>
           
 				</div>
 				</div>
@@ -424,8 +424,8 @@
 	<section data-seccion="testigos" class="site-section bg-verde-light" id="testigos">
       <div class="container">
         <div class="row mb-3">
-          <div data-repetir="testigos.items" class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
-			  <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-1" src="../../comun/img/demo-testigo1.jpg" width="90px" alt="Imagen">
+          <div class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
+			  <img loading="lazy" class="img-fluid mb-1" src="img/icon-testigos-graffiti.png" width="90px" alt="Imagen">
 			  <h1 class="mb-3 section-title text-center text-black"><span data-t="testigos.titulo" class="text-graffiti3 text-black">Los Padrinos</span></h1>
           </div>
         </div>
@@ -433,8 +433,14 @@
         <div class="row">
           <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="50">
             <div>
-                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+                <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo1.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
               <h5 data-i="nombre" class="text-verde">Juan Fernandez</h5>
+            </div> 
+          </div>
+          <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="150">
+            <div>
+                 <img data-i-attr="src:foto;style:estilo" data-si="foto" src="../../comun/img/demo-testigo2.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle mb-3">
+				<h5 data-i="nombre" class="text-verde">Marcela García</h5>
             </div> 
           </div>
 

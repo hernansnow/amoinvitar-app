@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "rockabilly15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -131,9 +132,10 @@
               "pos": "center center"
             }
           ],
-          "portadaFotos": 1,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
+          "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
@@ -145,6 +147,7 @@
   },
   "boda": {
     "carpeta": "rockabilly",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -274,7 +277,7 @@
               "pos": "center center"
             }
           ],
-          "portadaFotos": 1,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
           "nombresCierre": "Paula <i class=\"icon-heart h4\" aria-hidden=\"true\"></i> Nicolás",
@@ -289,6 +292,7 @@
   },
   "cumple": {
     "carpeta": "cumple-rockabilly",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -417,9 +421,10 @@
               "pos": "center center"
             }
           ],
-          "portadaFotos": 1,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "inicio",
+          "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"

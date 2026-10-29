@@ -1,0 +1,120 @@
+{
+  "navidad": {
+    "carpeta": "navidad",
+    "archivo": "index_proyecto-deluxe---NUEVO.html",
+    "hojas": [
+      "css/inv-navidad.css"
+    ],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-navidad.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "album",
+          "canciones",
+          "playlist",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "historia: no se encontró el texto ni el saludo",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "iconosItinerario": [
+            "tragos",
+            "fuegos",
+            "cena",
+            "mic",
+            "regalo",
+            "brindis2"
+          ],
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-navidad-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-navidad-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 25%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      }
+    }
+  }
+}

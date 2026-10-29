@@ -1987,7 +1987,7 @@ a.close.disabled {
     left: 0;
     z-index: 1040;
     width: 100vw;
-    height: 100vh;
+    height:100vh;height:100svh;
 	backdrop-filter: blur(4px);
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -2665,10 +2665,6 @@ a.close.disabled {
     border-radius: 50rem !important
 }
 
-.d-none {
-    display: none !important
-}
-
 .d-block {
     display: block !important
 }
@@ -2846,7 +2842,7 @@ a.close.disabled {
     padding-right: 0.5rem !important
 }
 
-.pb-2,
+
 .py-2 {
     padding-bottom: 0.5rem !important
 }

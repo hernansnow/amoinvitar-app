@@ -2,7 +2,8 @@
   "id": "celeste",
   "nombre": "Celeste",
   "eventos": [
-    "bautismo"
+    "bautismo",
+    "babyshower"
   ],
   "gratis": false,
   "paleta": [
@@ -34,7 +35,6 @@
     "premium": {
       "secciones": [
         "musica",
-        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -53,7 +53,6 @@
     "deluxe": {
       "secciones": [
         "musica",
-        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -112,7 +111,135 @@
       }
     }
   },
-  "porEvento": {},
+  "demoBorrosas": {
+    "babyshower": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "testigos": []
+    },
+    "bautismo": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
+  "porEvento": {
+    "babyshower": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "sobre": {
+        "colores": {
+          "lacre": "#339aba",
+          "papel": "#d3eef5",
+          "fondo": "#bfe3f2"
+        },
+        "bienvenida": "font-family:Montez, cursive; color:rgb(242, 124, 177); font-weight:500; --bv-escala:1.45;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "babyshower": {
+          "portadas": [
+            {
+              "f": "fondo-celeste.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "nombres": {
+            "a": "Mateo"
+          }
+        }
+      }
+    }
+  },
   "acceso": {
     "css": [
       "/comun/fonts/google/abril-fatface+jost+montez.css",

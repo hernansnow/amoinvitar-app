@@ -4,7 +4,9 @@
   "eventos": [
     "boda",
     "15",
-    "cumple"
+    "cumple",
+    "bautismo",
+    "comunion"
   ],
   "gratis": false,
   "paleta": [
@@ -107,6 +109,114 @@
       "portadas": [
         "inicial.jpg"
       ]
+    }
+  },
+  "demoBorrosas": {
+    "15": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "bautismo": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "boda": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "comunion": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
+    },
+    "cumple": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
     }
   },
   "porEvento": {
@@ -277,6 +387,172 @@
           "portadas": [
             "globo.jpg",
             "hero-banner.jpg",
+            "inicial.jpg"
+          ]
+        }
+      }
+    },
+    "bautismo": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "sobre": {
+        "colores": {
+          "lacre": "#73527f",
+          "papel": "#ebe4f6",
+          "fondo": "#d8cdea"
+        },
+        "bienvenida": "font-family:Jost, sans-serif; color:rgb(115, 82, 127); font-weight:350; --bv-escala:1;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "bautismo": {
+          "portadas": [
+            "inicial.jpg"
+          ]
+        }
+      }
+    },
+    "comunion": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "sobre": {
+        "colores": {
+          "lacre": "#73527f",
+          "papel": "#ebe4f6",
+          "fondo": "#d8cdea"
+        },
+        "bienvenida": "font-family:Jost, sans-serif; color:rgb(115, 82, 127); font-weight:350; --bv-escala:1;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "comunion": {
+          "portadas": [
             "inicial.jpg"
           ]
         }

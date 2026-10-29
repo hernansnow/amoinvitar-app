@@ -11,6 +11,7 @@
 
 import { parseHTML } from 'linkedom';
 import { readFile, writeFile, mkdir, copyFile, access } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { join, resolve, basename, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -102,6 +103,9 @@ function limpiar(c) {
 }
 
 // ── 2. Portada ───────────────────────────────────────────────────────────
+// La frase de la portada y la segunda línea (edad, clase, revelación), también repetidas en el cierre
+const FRASES = /nos casamos|nuestra boda|mis (15|quince)|mi cumple|despegamos|me caso|nos casaremos|our wedding|getting married|mi bautismo|mi bautizo|mi (primera )?comuni|mi fiesta|baby\s*shower|fiesta de (egresados|graduaci|navidad)/i;
+const DETALLE = /^(cumple\s*)?\d+\s*a[ñn]os?$|^(clase|promo(ci[oó]n)?)\s*\d{4}$|revelaci[oó]n de g[eé]nero/i;
 function portada(c, home) {
   const d = c.doc;
   if (!home) { c.aviso('portada: no se encontró #home-section'); return; }
@@ -119,6 +123,12 @@ function portada(c, home) {
       c.aviso('portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona');
     }
   }
+  if (!h1 && !c.info.nombresSeparados) {
+    // Sin h1: el título con un nombre de muestra de los diseños (Beach "Aylén", Graffiti "Ariadna", Romantic "MacaRenA")
+    const DEMO = /^(ayl[eé]n|ariadna|macarena|mariana|maiana|mariel|dayana|milena|abigail|fátima|fatima|mateo|juliana|martín|martin|paula|agustín|agustin|cinthia|sofi|ale|romi|gaby|lau|pablo)$/i;
+    const cand = $$(home, 'h1,h2,h3,h4,h5,p').find((e) => DEMO.test(txt(e).replace(/\s+/g, ' ').trim()) && !e.querySelector('h1,h2,h3,h4,h5,p'));
+    if (cand) h1 = cand;
+  }
   if (h1) {
     c.info.nombresPortada = h1.innerHTML.trim();
     h1.setAttribute('data-campo-html', 'nombres.portada');
@@ -132,7 +142,6 @@ function portada(c, home) {
   const fecha = textos.find((e) => RE_FECHA.test(txt(e)) && !$$(e, '*').some((x) => RE_FECHA.test(txt(x))));
   const conMes = !fecha && textos.find((e) => /\d{1,2}\s*\S?\s*(SEPTIEMBRE|Septiembre|septiembre|SEPT?|Sept?)\.?\s*\S?\s*\d{4}/.test(txt(e)) && !$$(e, '*').some((x) => /\d{4}/.test(txt(x))));
   if (fecha || conMes) marcarFecha(fecha || conMes, 'principal'); else c.aviso('portada: sin fecha');
-  const FRASES = /nos casamos|nuestra boda|mis (15|quince)|mi cumple|despegamos|me caso|nos casaremos|our wedding|getting married|mi bautismo|mi bautizo|mi (primera )?comuni|mi fiesta|baby\s*shower|fiesta de (egresados|graduaci|navidad)/i;
   const hojaTexto = (e) => !$$(e, 'p,span,h1,h2,h3,h4,h5,h6').some((x) => FRASES.test(txt(x)));
   const frase = textos.find((e) => FRASES.test(txt(e)) && hojaTexto(e) && txt(e).length < 40)
     || textos.find((e) => e !== fecha && !fecha?.contains(e) && !e.contains(fecha) && txt(e).length > 3 && txt(e).length < 40
@@ -143,12 +152,33 @@ function portada(c, home) {
     const t0 = txt(frase).replace(/[¡!¿?]/g, '');
     if (t0 !== t0.toUpperCase()) frase.setAttribute('data-caso', /^(\S+\s*)+$/.test(t0) && t0.split(/\s+/).every((w) => w[0] === w[0].toUpperCase()) ? 'titulo' : 'oracion');
   } else c.aviso('portada: sin frase (NOS CASAMOS / MIS 15…)');
+  // Segunda línea (infantiles, egresos, revelación): la edad, la clase o la institución
+  const det = textos.find((e) => e !== frase && DETALLE.test(txt(e).replace(/\s+/g, ' ').trim()) && !$$(e, '*').some((x) => DETALLE.test(txt(x).replace(/\s+/g, ' ').trim())));
+  if (det) {
+    det.setAttribute('data-t', 'portada.detalle');
+    const t0 = txt(det);
+    if (t0 !== t0.toUpperCase()) det.setAttribute('data-caso', 'oracion');
+  }
+  // Sin h1: el nombre es el texto corto justo antes de la segunda línea (Cars: "Martín" / "2 Años")
+  if (!h1 && !c.info.nombresSeparados && det) {
+    // El texto corto más cercano a la segunda línea (antes o después), que no sea frase, fecha ni cuenta
+    const todos = $$(home, 'h2,h3,h4,p').filter((x) => !x.querySelector('h2,h3,h4,p'));
+    const i0 = todos.indexOf(det);
+    const libre = (x) => x && txt(x).length > 1 && txt(x).length < 30 && !x.closest('[data-t],[data-fecha],[data-si="cuenta.activa"]') && !/faltan/i.test(txt(x));
+    const n = [todos[i0 - 1], todos[i0 + 1]].find(libre);
+    if (n) {
+      n.setAttribute('data-campo-html', 'nombres.portada'); n.setAttribute('data-ajustar', '0.82');
+      c.info.nombresPortada = n.innerHTML.trim();
+      const k = c.avisos.indexOf('portada: sin título de nombres'); if (k >= 0) c.avisos.splice(k, 1);
+    }
+  }
   // Cuenta regresiva
-  const reloj = $(home, '#clock-b') || $(home, '#countdown');
+  // La cuenta regresiva: en la portada o, en algunos diseños (Amanecer), en la sección siguiente
+  const reloj = $(home, '#clock-b') || $(home, '#countdown') || $(d.body, '#clock-b') || $(d.body, '#countdown');
   if (reloj) {
     const caja = subir(reloj, (x) => x.parentElement && x.parentElement.children.length > 1) || reloj;
     caja.setAttribute('data-si', 'cuenta.activa');
-    const faltan = textos.find((e) => /^faltan$/i.test(txt(e)));
+    const faltan = textos.find((e) => /^faltan$/i.test(txt(e))) || $$(caja.parentElement || caja, 'h5,h6,small,p,span').find((e) => /^faltan$/i.test(txt(e)));
     if (faltan) { faltan.setAttribute('data-t', 'cuenta.faltan'); faltan.setAttribute('data-si', 'cuenta.activa'); }
     if (c.info.cuenta) {
       // El formato de la cuenta del diseño (el motor pone los números y los textos del idioma)
@@ -236,8 +266,9 @@ function audio(c) {
 function historia(c) {
   const d = c.doc;
   // El texto de muestra de la historia (boda, 15, cumple…) o, si no, el título "Nuestra historia"
-  const MUESTRA = /todo comenz[oó] hace|con la esperanza de que la bendici|desde muy peque[ñn]|la vida se mide en momentos|and[aá]bamos sin buscarnos|it all started|un a[ñn]o m[aá]s para celebrar/i;
-  let t = $$(d.body, 'h3,h4,h5,p').find((e) => MUESTRA.test(txt(e)) && !$$(e, 'h3,h4,h5,p').some((x) => MUESTRA.test(txt(x))));
+  const MUESTRA = /todo comenz[oó] hace|hoy recibo a jes[uú]s|un a[ñn]o m[aá]s para jugar|parece que fue ayer cuando comenz|desde el momento en que supimos|los momentos felices de la vida, se tornan|con la esperanza de que la bendici|desde muy peque[ñn]|la vida se mide en momentos|and[aá]bamos sin buscarnos|it all started|un a[ñn]o m[aá]s para celebrar/i;
+  const rsvp0 = $(d.body, '#rsvp');
+  let t = $$(d.body, 'h3,h4,h5,p').find((e) => MUESTRA.test(txt(e)) && !$$(e, 'h3,h4,h5,p').some((x) => MUESTRA.test(txt(x))) && (!rsvp0 || (e.compareDocumentPosition(rsvp0) & 4)));
   let h = hoja(d.body, 'h1,h2,h3,h4', (x) => /^(nuestra|mi|my|our)\s+(historia|story|viaje)$|historia$/i.test(x));
   if (t && !h) {
     // El título: el que está justo antes del texto, en la misma caja
@@ -264,7 +295,8 @@ function historia(c) {
   if (t) {
     // Se conserva la etiqueta y las clases del diseño (la tipografía depende de ellas)
     const p = d.createElement(t.tagName.toLowerCase());
-    p.setAttribute('class', clases(t).join(' '));
+    // README: el texto de la historia con g-historia y sin font-weight-lighter
+    p.setAttribute('class', [...clases(t).filter((k) => k !== 'font-weight-lighter'), 'g-historia'].join(' '));
     if (t.getAttribute('style')) p.setAttribute('style', t.getAttribute('style'));
     // Comillas del diseño (íconos) a los costados del texto
     const comillas = $$(t, '[class*="icon-quote"]');
@@ -286,11 +318,14 @@ function historia(c) {
 // ── 5. Galería ───────────────────────────────────────────────────────────
 function galeria(c) {
   const d = c.doc, wrap = c.wrap;
-  const esFoto = (i) => /(^|\/)(foto|galeria-)\d+\.(jpe?g|webp)$/i.test(i.getAttribute('src') || i.getAttribute('href') || '');
+  // foto1.jpg, galeria-1.jpg o foto1b.jpg (carpetas con varios diseños: cada uno con su letra)
+  const esFoto = (i) => /(^|\/)(foto|galeria-)\d+[a-z]?\.(jpe?g|webp)$/i.test(i.getAttribute('src') || i.getAttribute('href') || '');
   const contenedores = $$(d, '.owl-carousel, #posts, .carousel, [class*="galeria"], [id*="galeria"]').filter((x) => $$(x, 'img,a').filter(esFoto).length >= 4 && !x.closest('#rsvp'));
   const car = contenedores.sort((a, b) => $$(a, '*').length - $$(b, '*').length)[0];
   if (!car) { if (!$$(d, '#rsvp img').some(esFoto)) c.aviso('galería: no se encontró'); return; }
   const n = $$(car, 'img').filter(esFoto).length;
+  const letra = ($$(car, 'img').filter(esFoto)[0]?.getAttribute('src') || '').match(/foto\d+([a-z])\./i)?.[1];
+  if (letra) c.info.galeriaLetra = letra;
   const top = nivel(car, c.wrap);
   const reemplazo = nodo(d, '<div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>');
   // Si el bloque de primer nivel es solo la galería, se reemplaza entero
@@ -501,8 +536,10 @@ function dresscode(c) {
     }
     hD.setAttribute('data-seccion', 'dresscode'); hD.setAttribute('data-t', 'dress.titulo');
     // El texto: el primer párrafo de la columna después del título (antes del botón)
-    const boton0 = $(col, '[data-src="#dress"]');
-    let p = $$(col, 'p,h4,h5').find((x) => x !== hD && txt(x) && (hD.compareDocumentPosition(x) & 4) && !x.closest('#dress') && !x.querySelector('button') && (!boton0 || (x.compareDocumentPosition(boton0) & 4)));
+    // La caja con el botón de sugerencias (a veces el texto queda fuera de la columna del título)
+    const caja = $(col, '[data-src="#dress"]') ? col : subir(hD, (x) => !!$(x, '[data-src="#dress"]') && x !== sec) || col;
+    const boton0 = $(caja, '[data-src="#dress"]');
+    let p = $$(caja, 'p,h4,h5').find((x) => x !== hD && txt(x) && (hD.compareDocumentPosition(x) & 4) && !x.closest('#dress') && !x.querySelector('button') && (!boton0 || (x.compareDocumentPosition(boton0) & 4)));
     if (!p) {
       // Sin texto en la invitación (estaba en la ventana): se agrega, con el estilo del texto de hospedaje
       const modelo = $$(sec, 'p').find((x) => /hoteles|referencias/i.test(txt(x)));
@@ -640,7 +677,7 @@ const PLUMAS = {"icon-testigos.png": "#000000", "icon-testigos-rosa.png": "#e62f
 // ── 10. Testigos / padrinos / cómplices ──────────────────────────────────
 function testigos(c) {
   const d = c.doc;
-  const h = hoja(d.body, 'h1,h2,h3,h4', (t) => /testigos|padrinos|c[oó]mplices|godparents|witnesses|tripulaci[oó]n/i.test(t));
+  const h = hoja(d.body, 'h1,h2,h3,h4', (t) => /testigos|padrinos|c[oó]mplices|godparents|witnesses|tripulaci[oó]n|mentores|mentors/i.test(t));
   if (!h) return;
   const sec = $(d, '#testigos') || subir(h, (x) => x.tagName === 'SECTION') || nivel(h, c.wrap);
   sec.id = 'testigos'; sec.setAttribute('data-seccion', 'testigos');
@@ -807,20 +844,33 @@ function regalos(c) {
 }
 
 // ── 14. Cierre, redes, ¿te perdiste algo?, pie ───────────────────────────
+function casoDe(e) {
+  const t0 = txt(e).replace(/[¡!¿?]/g, '');
+  if (t0 !== t0.toUpperCase()) e.setAttribute('data-caso', /^(\S+\s*)+$/.test(t0) && t0.split(/\s+/).every((w) => w[0] === w[0].toUpperCase()) ? 'titulo' : 'oracion');
+}
 function cierre(c) {
   const d = c.doc;
   const redes = $$(d, 'a').find((a) => $(a, '.icon-instagram,.icon-facebook') && !a.closest('[data-seccion="instagram"],[data-seccion="album"],#hashtag'));
   const tituloRedes = hoja(d.body, 'small,h4,h5,p,span', (t) => /redes oficiales|social media|redes de la|redes del/i.test(t));
   // Los nombres del final (el último título fuera de la portada)
   const ultimos = $$(d.body, 'h1,h2').filter((x) => !x.closest('#home-section') && (x.querySelector('i,span') || /&| y /.test(txt(x))) && txt(x).length < 40);
-  const final = hoja(d.body, 'p,h4,h5', (t) => /momentos felices|te esperamos para|los esperamos|happiest moments|esperamos compartir/i.test(t));
-  const ancla = tituloRedes || redes || final || ultimos.at(-1);
+  // El texto de despedida: el último de la invitación (no el de la confirmación ni el de una ventana)
+  const FINAL = /momentos felices|te esperamos para|los esperamos|happiest moments|esperamos compartir|esperamos que nos acompa|hemos luchado mucho|te espero para (celebrar|que)/i;
+  const final = $$(d.body, 'p,h4,h5').filter((x) => FINAL.test(txt(x)) && !x.querySelector('p,h4,h5') && !x.closest('#home-section,#rsvp,.animated-modal,.modal,[data-componente]')).at(-1) || null;
+  // Si las redes están en el pie y el texto en la sección de antes, manda el texto
+  const ancla = final || tituloRedes || redes || ultimos.at(-1);
   const sec = ancla ? subir(ancla, (x) => x.tagName === 'SECTION') || nivel(ancla, c.wrap) : null;
   if (!sec) { c.aviso('cierre: sin sección de cierre'); return; }
   sec.id = 'cierre';
   // Texto final: el párrafo largo antes de los nombres
   const nombres = $$(sec, 'h1,h2,h3').find((x) => x.querySelector('i,span') || /&|y /.test(txt(x)));
-  const pie = $$(sec, 'p,h4,h5').find((x) => txt(x).length > 60);
+  const pie = final && sec.contains(final) ? final : $$(sec, 'p,h4,h5').find((x) => txt(x).length > 60);
+  // Lo que repite la portada: la frase y la edad / clase
+  for (const e of $$(sec, 'h1,h2,h3,h4,h5,h6,p,span').filter((x) => !x.querySelector('h1,h2,h3,h4,h5,h6,p') && !x.hasAttribute('data-t') && txt(x).length < 45)) {
+    const t = txt(e).replace(/\s+/g, ' ').trim();
+    if (DETALLE.test(t)) { e.setAttribute('data-t', 'portada.detalle'); casoDe(e); }
+    else if (FRASES.test(t)) { e.setAttribute('data-t', 'portada.subtitulo'); casoDe(e); }
+  }
   if (pie) {
     pie.setAttribute('data-si', 'pie.mostrar');
     const fuerte = $(pie, 'strong');
@@ -831,7 +881,10 @@ function cierre(c) {
       pie.innerHTML = `${izq ? izq.outerHTML + ' ' : ''}<span data-campo-html="pie.texto">${txt(pie)}</span>${der ? ' ' + der.outerHTML : ''}`;
     } else (fuerte || pie).setAttribute('data-campo-html', 'pie.texto');
   } else c.aviso('cierre: sin texto final');
-  if (nombres) { c.info.nombresCierre = nombres.innerHTML.trim(); nombres.setAttribute('data-campo-html', 'nombres.cierre'); }
+  // Una sola persona: el nombre del cierre es el título corto que no es frase ni detalle (Cars: "Martín")
+  const solo = !nombres && $$(sec, 'h1,h2,h3').find((x) => !x.hasAttribute('data-t') && txt(x).length > 1 && txt(x).length < 25 && !x.querySelector('h1,h2,h3') && /^[\p{Lu}][\p{L}\s.'-]*$/u.test(txt(x)) && x !== pie);
+  const nom = nombres || (c.evento !== 'boda' && !c.info.nombresSeparados ? solo : null);
+  if (nom) { c.info.nombresCierre = nom.innerHTML.trim(); nom.setAttribute('data-campo-html', 'nombres.cierre'); }
   if (redes) {
     const caja = subir(redes, (x) => x.tagName === 'DIV' && $$(x, 'a').length >= 2) || redes.parentElement;
     caja.setAttribute('data-seccion', 'redes'); caja.setAttribute('data-si', 'redes.hay');
@@ -1092,6 +1145,7 @@ function preparar(c) {
   const d = c.doc;
   const viejoHead = d.head.cloneNode(true);
   limpiar(c);
+  religioso(c);
   const home = $(d, '#home-section');
   portada(c, home);
   audio(c);
@@ -1125,6 +1179,17 @@ const importar = (doc, el) => nodo(doc, el.outerHTML);
 
 function componer(cs) {
   const { deluxe, premium, basic } = cs;
+  // README: los modelos con slideshow lo llevan también en Basic. La foto del Basic pasa a ser un slideshow en su lugar
+  const hd = deluxe && $(deluxe.doc, '#home-section'), hb0 = basic && $(basic.doc, '#home-section');
+  if (hd && hb0 && $(hd, '.ai-slides') && !$(hb0, '.ai-slides')) {
+    const f = $(hb0, '[data-repetir="fotos.portada"][data-i-bg]');
+    if (f) {
+      const alto = ((f.getAttribute('style') || '').match(/(?:^|;)\s*height\s*:\s*([^;!]+)/) || [])[1]?.trim();
+      const sl = nodo(basic.doc, `<div class="ai-slides ai-en-linea" data-intervalo="5000"${alto ? ` style="--alto:${alto}"` : ''}></div>`);
+      antes(f, sl); sl.appendChild(f); f.classList.add('ai-slide');
+      basic.info.portadaFotos = Math.max(deluxe.info.portadaFotos || 4, 2);
+    }
+  }
   for (const [paq, c] of Object.entries(cs)) {
     if (!c) continue;
     const d = c.doc;
@@ -1172,6 +1237,54 @@ function componer(cs) {
   }
 }
 
+// ── Bautismo y comunión (copias de los diseños de 15) ────────────────────
+// Las coronas pasan a ser el ícono del evento (pila bautismal o cáliz) del color de la corona; la cinta "Mis 15"
+// queda en blanco con la frase encima; los adornos con "15" usan su versión de cumpleaños.
+function religioso(c) {
+  if (!['bautismo', 'comunion'].includes(c.evento)) return;
+  const d = c.doc;
+  c.recolorear ||= [];
+  const icono = c.evento === 'bautismo' ? 'bautismo-1.png' : 'comunion-2.png';
+  for (const i of $$(d.body, 'img[src*="/corona"], img[src*="tiara"]')) {
+    const src = i.getAttribute('src');
+    const base = basename(src).replace(/\.png$/, '');
+    const nuevo = `${c.evento}-${base}.png`;
+    c.recolorear.push(['icono', `img/${icono}`, src.replace(/^\.\.\/\.\.\//, ''), nuevo]);
+    i.setAttribute('src', `img/${nuevo}`);
+    const w = parseInt(i.getAttribute('width') || '0', 10);
+    if (w) i.setAttribute('width', String(Math.max(40, Math.round(w * 0.6))));
+    i.setAttribute('alt', '');
+  }
+  for (const i of $$(d.body, 'img[src$="/mis15.png"]')) {
+    c.recolorear.push(['cinta', 'img/mis15.png', null, 'cinta-blanca.png']);
+    const w = i.getAttribute('width') || '';
+    const caja = nodo(d, `<span class="ai-cinta"><img src="img/cinta-blanca.png" alt="" class="${i.getAttribute('class') || 'img-fluid'}"${w ? ` width="${w}"` : ''}${i.getAttribute('style') ? ` style="${i.getAttribute('style')}"` : ''}><span class="ai-cinta-texto" data-t="portada.subtitulo" data-caso="titulo">Mi Bautismo</span></span>`);
+    i.parentNode.replaceChild(caja, i);
+    c.info.cinta = true;
+  }
+  for (const i of $$(d.body, 'img[src*="mis15-2"]')) i.parentNode.replaceChild(nodo(d, '<p class="rouge-titulo mb-3 mt-2" data-t="portada.subtitulo" data-caso="titulo">Mi Bautismo</p>'), i);
+  if ($(d.body, '.rouge-titulo')) c.info.mongolia = true;
+  for (const i of $$(d.body, 'img[src*="icon-ornamental-fiesta"]')) i.setAttribute('src', i.getAttribute('src').replace(/-?15\.png$/, '-cumple.png'));
+  // Padrinos: la pluma (no el ícono de personas), del color del ícono del diseño
+  const hT = hoja(d.body, 'h1,h2,h3,h4', (t) => /padrinos|testigos/i.test(t));
+  const sec = $(d.body, '#testigos') || (hT && subir(hT, (x) => x.tagName === 'SECTION'));
+  for (const i of sec ? $$(sec, 'i[class*="icon-people"]') : []) {
+    const k = clases(i).find((x) => /^text-/.test(x) && !/^text-(center|left|right)$/.test(x));
+    const color = (k && colorClase(k)) || '#9c916b';
+    const nuevo = `pluma-${color.slice(1).toLowerCase()}.png`;
+    c.recolorear.push(['icono', 'img/icon-testigos.png', color, nuevo]);
+    i.parentNode.replaceChild(nodo(d, `<img loading="lazy" class="img-fluid mb-2" src="img/${nuevo}" width="80" alt="">`), i);
+  }
+}
+// El color de una clase text-xxx en las hojas del sitio
+let HOJAS_SITIO = null;
+function colorClase(k) {
+  HOJAS_SITIO ??= ['css/snow_v3.6.css', 'css/estilo-savethedate_v2.5.css'].map((f) => { try { return readFileSync(join(REPO, f), 'utf8'); } catch { return ''; } }).join('\n');
+  if (k === 'text-white') return '#ffffff';
+  const m = HOJAS_SITIO.match(new RegExp(`\\.${k.replace(/-/g, '\\-')}\\s*\\{[^}]*?color\\s*:\\s*(#[0-9a-fA-F]{3,6})`));
+  return m?.[1] || null;
+}
+
 // ── principal ────────────────────────────────────────────────────────────
 async function principal() {
   // patrón (opcional): cómo se llaman los archivos en carpetas con varios diseños.
@@ -1198,7 +1311,8 @@ async function principal() {
   for (const paq of ['deluxe', 'premium']) {
     if (!cs[paq]) continue;
     // Las copias de cumpleaños salieron del diseño de 15: si no tienen modal propio, el de su 15
-    const de15 = carpeta.startsWith('cumple-') ? ({ discoteque: 'disco15' }[carpeta.slice(7)] || `${carpeta.slice(7)}15`) : null;
+    const de15 = carpeta.startsWith('cumple-') ? ({ discoteque: 'disco15' }[carpeta.slice(7)] || `${carpeta.slice(7)}15`)
+      : /nuevos-(bautismo|comunion)\//.test(carpeta) ? `${basename(carpeta)}15` : null;
     const lugares = [`demo/${carpeta}`, `ar/${carpeta}`, ...(de15 ? [`demo/${de15}`, `ar/${de15}`] : [])];
     let orig = null;
     for (const l of lugares) { orig = modalOriginal(cs[paq], `${l}/${archivos[paq]}`) || modalOriginal(cs[paq], `${l}/index.html`); if (orig) break; }
@@ -1209,6 +1323,18 @@ async function principal() {
   if (await existe(propio)) {
     const m = await import(pathToFileURL(propio).href);
     for (const [paq, c] of Object.entries(cs)) if (m.ajustar) await m.ajustar(c.doc, { ...c, paquete: paq, evento, $, $$, nodo, txt, subir, quitar, antes, despues });
+  }
+  // La fuente de Rouge (después de armar la cabecera)
+  for (const c of Object.values(cs)) if (c.info.mongolia && !c.doc.querySelector('link[href*="mongolia-sky"]')) c.doc.head.insertAdjacentHTML('beforeend', '\n  <link rel="stylesheet" href="../../comun/fonts/mongolia-sky/mongolia-sky.css">');
+  for (const c of Object.values(cs)) if (c.info.cinta && !c.doc.querySelector('link[href*="great-vibes"]')) c.doc.head.insertAdjacentHTML('beforeend', '\n  <link rel="stylesheet" href="../../comun/fonts/google/great-vibes+jost.css">');
+  // Íconos recoloreados y cinta en blanco (bautismo y comunión)
+  await mkdir(join(salida, 'img'), { recursive: true });
+  const { execFileSync } = await import('node:child_process');
+  const hechos = new Set();
+  for (const [modo, src, ref, out] of Object.values(cs).flatMap((c) => c.recolorear || [])) {
+    if (hechos.has(out)) continue; hechos.add(out);
+    const args = modo === 'icono' ? [join(REPO, src), ref.startsWith('#') ? ref : join(REPO, ref), join(salida, 'img', out)] : [join(REPO, src), join(salida, 'img', out)];
+    execFileSync('python3', ['-I', join(APP, 'scripts/conversion/recolorear.py'), modo, ...args], { stdio: 'ignore' });
   }
   // Escribir
   const nombre = (paq) => (evento === 'boda' ? (paq === 'deluxe' ? 'index.html' : `index-${paq}.html`) : (paq === 'deluxe' ? `index-${evento}.html` : `index-${evento}-${paq}.html`));
@@ -1223,6 +1349,7 @@ async function principal() {
   for (const [paq, c] of Object.entries(cs)) {
     let html = c.doc.documentElement.outerHTML;
     html = html.replace(/\n\s*\n\s*\n+/g, '\n\n');
+    html = html.replace(/((?:min-|max-)?height)\s*:\s*100vh\s*(!important)?\s*(;|(?=["}]))/g, (m, p, imp = '', fin) => `${p}:100vh${imp};${p}:100svh${imp}${fin === ';' ? ';' : ''}`);
     await writeFile(join(salida, nombre(paq)), cabeza + html);
     reporte[paq] = { archivo: nombre(paq), secciones: [...c.secciones], avisos: c.avisos, info: { ...c.info, cuenta: undefined } };
   }
@@ -1245,6 +1372,9 @@ async function principal() {
     const n = basename(f), de = join(dir, n), a = join(salida, 'demo', evento, n);
     if (await existe(de)) await copyFile(de, a); else faltan.push(`demo/${carpeta}/${n}`);
   }
+  // foto1b.jpg… (la letra del diseño): la demo usa foto1.jpg…
+  const letraG = cs.deluxe.info.galeriaLetra;
+  if (letraG) for (const f of fs0) { const m = f.match(new RegExp(`^foto(\\d+)${letraG}\\.jpe?g$`, 'i')); if (m) await copyFile(join(dir, f), join(salida, 'demo', evento, `foto${m[1]}.jpg`)); }
   for (const f of todas('fuentes')) {
     const de = join(REPO, f);
     if (!(await existe(de))) { faltan.push(f); continue; }

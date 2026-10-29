@@ -197,7 +197,7 @@
 			  <img loading="lazy" class="img-fluid mb-2 mt-5" src="img/hojas2.png" width="160px" alt="Imagen" style="transform: rotate(180deg);">
 			  <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="text-center text-bronce font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="hojas text-center text-bronce">Mi Historia</h2>
 			  <div class="col-md-8 ml-auto mr-auto text-center mt-0 pt-0 mb-0 pb-4">
-			 <h4 data-si="historia.activa" class="text-bronce font-weight-lighter mb-0"><span class="text-bronce display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span> <span class="text-bronce display-5 icon-quote-right"></span></h4>
+			 <h4 data-si="historia.activa" class="text-bronce mb-0 g-historia"><span class="text-bronce display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span> <span class="text-bronce display-5 icon-quote-right"></span></h4>
           </div>
           </div>
         </div>
@@ -459,8 +459,8 @@
 	<section data-seccion="testigos" class="site-section bg-light" id="testigos">
       <div class="container">
         <div class="row mb-3">
-          <div data-repetir="testigos.items" class="col-12 text-center" data-aos="fade-up">
-			  <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" class="img-fluid mb-2" src="../../comun/img/demo-testigo1.jpg" width="65px" alt="Imagen">
+          <div class="col-12 text-center" data-aos="fade-up">
+			  <img loading="lazy" class="img-fluid mb-2" src="img/icon-testigos-b.png" width="65px" alt="Imagen">
             <h2 data-t="testigos.titulo" class="hojas text-center text-bronce">Los Padrinos</h2>
 
           </div>
@@ -469,8 +469,14 @@
         <div class="row">
           <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="50">
             <div>
-                <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" src="../../comun/img/demo-testigo2.jpg" alt="foto" class="img-fluid rounded-circle mb-3">
+                <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" src="../../comun/img/demo-testigo1.jpg" alt="foto" class="img-fluid rounded-circle mb-3">
               <h4 data-i="nombre" class="text-bronce">Juan Fernandez</h4>
+            </div> 
+          </div>
+          <div data-repetir="testigos.items" class="col-xs-5 col-sm-5 col-md-3 col-lg-3 mb-4 mb-lg-3 text-center mr-auto ml-auto" data-aos="fade-up" data-aos-delay="150">
+            <div>
+                 <img data-i-attr="src:foto;style:estilo" data-si="foto" loading="lazy" src="../../comun/img/demo-testigo2.jpg" alt="foto" class="img-fluid rounded-circle mb-3">
+				<h4 data-i="nombre" class="text-bronce">Marcela García</h4>
             </div> 
           </div>
 
@@ -586,7 +592,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
 			  <h4 data-si="pie.mostrar" class="text-white font-weight-lighter mb-0"><span class="text-white display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</span> <span class="text-white display-5 icon-quote-right"></span></h4>
           </div>
 			      <div class="col-md-8 ml-auto mr-auto text-center">
-			       <h2 class="hojas text-center text-white">Melisa</h2>
+			       <h2 data-campo-html="nombres.cierre" class="hojas text-center text-white">Melisa</h2>
 				  </div>
 			  <div data-si="redes.hay" data-seccion="redes" class="col-md-8 ml-auto mr-auto text-center">
 			   <div class="text-center mt-4 mb-5"><hr class="bg-white"></div>

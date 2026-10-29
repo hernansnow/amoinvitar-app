@@ -116,8 +116,8 @@
 		<p class="section-sub-title-h3">12 - 09 - 2027</p>
 	 <h3 class="text-uppercase">La fiesta del año</h3>
     <div class="container-countdown text-white text-center">
-	 <h6 class="p-0 m-0" id="headline-countdown">Faltan</h6>
-  <div class="text-center" id="countdown">
+	 <h6 data-si="cuenta.activa" data-t="cuenta.faltan" class="p-0 m-0" id="headline-countdown">Faltan</h6>
+  <div data-si="cuenta.activa" class="text-center" id="countdown">
     <ul>
       <li><span id="days"></span>días</li>
       <li><span id="hours"></span>Horas</li>
@@ -193,7 +193,7 @@
             <div class="col-md-8 col-lg-8 ml-auto mr-auto mb-0 text-center" data-aos="fade-up">
 			 <div class="text-center"><i class="text-bordo display-4 icon-local_play" aria-hidden="true"></i></div>
 			 <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="text-center text-bordo font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="text-center text-bordo lovestory">Mi Historia</h2>		
-			<p data-si="historia.activa" class="text-center"><span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span></p>
+			<p data-si="historia.activa" class="text-center g-historia"><span data-campo-html="historia.texto">Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...</span></p>
             </div>
           </div>
     </section>
@@ -494,7 +494,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
           <div class="col-md-8 ml-auto mr-auto">
 			  <h1 class="text-center mt-auto ml-auto">👑</h1>
             <p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center text-white">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</p>
-            <h2 class="text-center text-white lovestory">Priscila</h2>	
+            <h2 data-campo-html="nombres.cierre" class="text-center text-white lovestory">Priscila</h2>	
 		 <div data-si="redes.hay" data-seccion="redes" class="col-12 text-center text-white mt-5 mb-0">
 			 <div class="border-top border-light mb-3"></div>
                 <small data-t="redes.titulo" class="mb-3">Redes oficiales de la fiesta</small><br>

@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "luxury15",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -134,9 +135,10 @@
               "pos": "50% 50%"
             }
           ],
-          "portadaFotos": 1,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -147,6 +149,7 @@
   },
   "cumple": {
     "carpeta": "cumple-luxury",
+    "archivo": "index.html",
     "hojas": [],
     "faltan": [],
     "paquetes": {
@@ -275,9 +278,306 @@
               "pos": "50% 50%"
             }
           ],
-          "portadaFotos": 1,
+          "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Flor",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/luxury",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "cinta": true,
+          "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "cinta": true,
+          "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "cinta": true,
+          "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Flor",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/luxury",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "cinta": true,
+          "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "cinta": true,
+          "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "center center"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "center center"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "cinta": true,
+          "nombresPortada": "Flor",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"

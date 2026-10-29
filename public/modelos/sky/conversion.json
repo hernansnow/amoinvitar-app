@@ -1,6 +1,7 @@
 {
   "15": {
     "carpeta": "sky15",
+    "archivo": "index.html",
     "hojas": [
       "css/inv-sky.css"
     ],
@@ -114,6 +115,7 @@
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Mariela",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -125,6 +127,7 @@
   },
   "boda": {
     "carpeta": "sky",
+    "archivo": "index.html",
     "hojas": [
       "css/inv-sky.css"
     ],
@@ -249,6 +252,7 @@
   },
   "cumple": {
     "carpeta": "cumple-sky",
+    "archivo": "index.html",
     "hojas": [
       "css/inv-sky.css"
     ],
@@ -360,6 +364,259 @@
           "portadaFotos": 1,
           "galeria": 4,
           "idAgenda": "agenda",
+          "nombresCierre": "Mariela",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/sky",
+    "archivo": "index.html",
+    "hojas": [
+      "css/inv-sky.css"
+    ],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Mariela",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/sky",
+    "archivo": "index.html",
+    "hojas": [
+      "css/inv-sky.css"
+    ],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Mariela",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Mariela",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",

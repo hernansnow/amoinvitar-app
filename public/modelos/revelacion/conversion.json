@@ -1,0 +1,80 @@
+{
+  "revelacion": {
+    "carpeta": "baby-shower-nuevo",
+    "archivo": "revelacion_proyecto-deluxe---NUEVO.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-revelacion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"text-azul-baby\">él</span>/<span class=\"text-rosa-baby\">ella</span>",
+          "portadaFotos": 0,
+          "galeria": 6,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "camara",
+            "cena",
+            "fiesta",
+            "torta3",
+            "regalo"
+          ],
+          "nombresCierre": "<span class=\"text-azul-baby\">él</span>/<span class=\"text-rosa-baby\">ella</span>",
+          "claseTitulos": "square-peg-regular",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+square-peg.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-revelacion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"text-azul-baby\">él</span>/<span class=\"text-rosa-baby\">ella</span>",
+          "portadaFotos": 0,
+          "galeria": 6,
+          "idAgenda": "agenda",
+          "nombresCierre": "<span class=\"text-azul-baby\">él</span>/<span class=\"text-rosa-baby\">ella</span>",
+          "claseTitulos": "square-peg-regular",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+square-peg.css"
+          ]
+        }
+      }
+    }
+  }
+}

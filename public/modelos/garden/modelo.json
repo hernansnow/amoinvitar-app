@@ -119,14 +119,25 @@
         "foto3.jpg",
         "foto4.jpg",
         "foto5.jpg",
-        "foto6.jpg"
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
       ],
       "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
       "testigos": []
     },
     "cumple": {
       "portada": [
-        "foto1.jpg"
+        "hero-banner.jpg",
+        "hero-banner1.jpg",
+        "hero-banner2.jpg",
+        "hero-banner3.jpg",
+        "hero-banner4.jpg"
       ],
       "galeria": [
         "foto1.jpg",
@@ -134,8 +145,15 @@
         "foto3.jpg",
         "foto4.jpg",
         "foto5.jpg",
-        "foto6.jpg"
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
       ],
+      "rsvp": "rsvp.jpg",
       "instagram": "instagram.jpg",
       "testigos": []
     }
@@ -463,7 +481,7 @@
             "sobre": false,
             "musica": false,
             "cuenta": false,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -561,7 +579,7 @@
             "sobre": false,
             "musica": false,
             "cuenta": false,
-            "fotosPortada": 1,
+            "fotosPortada": 4,
             "fotosGaleria": 20
           }
         },
@@ -666,7 +684,6 @@
         "premium": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -685,7 +702,6 @@
         "deluxe": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -752,7 +768,6 @@
         "premium": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -771,7 +786,6 @@
         "deluxe": {
           "secciones": [
             "musica",
-            "historia",
             "galeria",
             "rsvp",
             "dresscode",
