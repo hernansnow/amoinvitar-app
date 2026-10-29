@@ -34,7 +34,10 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
   const comun = (p) => `${rutas.comun}/${p}`;
   const archivos = modelo.demo?.[tipo] || {};
 
-  const portada = cfg.portada === 4
+  // El modelo puede fijar sus fotos de portada y el encuadre (modelo.json → demo.<tipo>.portadas:
+  // ["hero-banner1.jpg", …] o [{ "f": "globo.jpg", "pos": "50% 30%", "posPc": "50% 40%" }])
+  const propias = (archivos.portadas || []).map((x) => (typeof x === 'string' ? [x, '50% 50%'] : [x.f, x.pos || '50% 50%', x.posPc]));
+  const portada = propias.length ? propias : cfg.portada === 4
     ? [['hero-banner1.jpg', '75% 25%'], ['hero-banner2.jpg', '45% 40%'], ['hero-banner3.jpg', '50% 25%'], ['hero-banner4.jpg', '50% 25%']]
     : [[archivos.portada || (cfg.portada ? 'hero-banner.jpg' : 'foto1.jpg'), '50% 40%']];
   const galeria = Array.from({ length: cfg.galeria }, (_, i) => `${fotosDe}/foto${i + 1}.jpg`);
@@ -44,13 +47,13 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
     id: `demo-${modelo.id}-${tipo}`,
     tipo, modelo: modelo.id, paquete, variante,
     zonaHoraria: 'America/Argentina/Buenos_Aires',
-    nombres: cfg.nombres,
+    nombres: archivos.nombres || cfg.nombres,
     ceremonia: cfg.ceremonia
       ? { modo: 'separada', tipo: cfg.ceremonia, inicio: `2027-09-12T${hora[0]}`, fin: `2027-09-12T${hora[0].replace(/^(\d\d)/, (h) => String(+h + 1).padStart(2, '0'))}`, ...LUGARES.iglesia, foto: comun(LUGARES.iglesia.foto) }
       : { modo: 'sin' },
     celebracion: { inicio: `2027-09-12T${cfg.ceremonia ? hora[1] : '21:00'}`, ...LUGARES.estancia, foto: comun(LUGARES.estancia.foto) },
     fotos: {
-      portada: portada.map(([f, pos]) => ({ url: `${fotosDe}/${f}`, pos })),
+      portada: portada.map(([f, pos, posPc]) => ({ url: `${fotosDe}/${f}`, pos, ...(posPc ? { posPc } : {}) })),
       galeria,
       rsvp: `${fotosDe}/${archivos.rsvp || 'rsvp.jpg'}`,
       album: `${fotosDe}/${archivos.album || 'instagram.jpg'}`,

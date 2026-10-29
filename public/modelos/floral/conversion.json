@@ -1,0 +1,307 @@
+{
+  "15": {
+    "carpeta": "floral15",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "tragos",
+            "15",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "floral",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
+          "portada: sin foto de la demo (el fondo queda fijo)"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Vani <i class=\"icon-heart\" aria-hidden=\"true\"></i> Dani",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vani <i class=\"icon-heart\" aria-hidden=\"true\"></i> Dani",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vani <i class=\"icon-heart\" aria-hidden=\"true\"></i> Dani",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-floral",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+molle.css"
+          ]
+        }
+      }
+    }
+  }
+}

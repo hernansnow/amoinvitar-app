@@ -1,0 +1,113 @@
+{
+  "id": "vintage",
+  "nombre": "Vintage",
+  "eventos": [
+    "boda"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#d7926a",
+    "#f7efe3",
+    "#bfaaa6",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/bg-vintage3.jpg",
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "hospedaje",
+        "bus",
+        "itinerario",
+        "testigos",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "{a} <span class=\"fontawesome-star star\"></span><span>Carla <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> Pablo</span><span class=\"fontawesome-star star\"></span> {b}",
+    "cierre": "{a} <span class=\"text-retro display-4\">Carla <i class=\"icon-heart text-danger\" aria-hidden=\"true\"></i> Pablo</span> {b}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/vintage/img/bg-vintage3.jpg",
+    "colorFondo": "#f7efe3",
+    "colorTitulos": "#d7926a",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#d7926a"
+    },
+    "bienvenida": "font-family:Jost, sans-serif; color:rgb(215, 146, 106); font-weight:500; --bv-escala:1;"
+  },
+  "demo": {
+    "boda": {
+      "portadas": [
+        "globo.jpg"
+      ]
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/jost+oswald.css",
+      "/modelos/vintage/tema.css"
+    ]
+  }
+}

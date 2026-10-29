@@ -1,0 +1,103 @@
+{
+  "boda": {
+    "carpeta": "oliva",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Sol <span class=\"text-eucalipto\">&amp;</span> Lean",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Sol <span class=\"text-gold\">&amp;</span> Lean",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Sol <span class=\"text-eucalipto\">&amp;</span> Lean",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "Sol <span class=\"text-gold\">&amp;</span> Lean",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Sol <span class=\"text-eucalipto\">&amp;</span> Lean",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "Sol <span class=\"text-gold\">&amp;</span> Lean",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      }
+    }
+  }
+}

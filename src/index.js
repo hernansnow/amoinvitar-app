@@ -23,7 +23,7 @@ import { puertaHTML } from './componentes/puerta.js';
 import { mesaHTML } from './componentes/mesa.js';
 import { checkinHTML } from './componentes/checkin.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
-import { MODELOS, nombreModelo } from './modelos.js';
+import { MODELOS, nombreModelo, conEvento } from './modelos.js';
 import { MODELOS_GRATIS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
 import { sendEmail, mailNuevoAcceso } from './lib/email.js';
@@ -47,7 +47,17 @@ async function archivo(env, ruta, origen, tipo = 'text') {
   if (!env.SIN_CACHE) cache.set(clave, v);
   return v;
 }
-const modeloJSON = (env, id, origen) => (id && /^[a-z0-9-]+$/.test(id) ? archivo(env, `/modelos/${id}/modelo.json`, origen, 'json') : null);
+const modeloJSON = async (env, id, origen, tipo) => (id && /^[a-z0-9-]+$/.test(id) ? conEvento(await archivo(env, `/modelos/${id}/modelo.json`, origen, 'json'), tipo) : null);
+// El diseño de cada tipo de evento y paquete: index-<tipo>-<paquete>.html → index-<tipo>.html (Deluxe del evento)
+// → index-<paquete>.html → index.html. Así un modelo trae su versión de boda, de 15, de cumpleaños…
+async function plantillaDe(env, id, tipo, paquete, origen) {
+  const leer = (f) => archivo(env, `/modelos/${id}/${f}`, origen);
+  if (paquete === 'deluxe') return (await leer(`index-${tipo}.html`)) || leer('index.html');
+  const propio = await leer(`index-${tipo}-${paquete}.html`);
+  if (propio) return propio;
+  // El evento tiene su diseño pero no este paquete: su Deluxe (no el de boda, que trae otros adornos)
+  return (await leer(`index-${tipo}.html`)) || (await leer(`index-${paquete}.html`)) || leer('index.html');
+}
 
 const json = (o, status = 200, extra = {}) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...extra } });
 const html = (cuerpo, status = 200, extra = {}) => new Response(cuerpo, { status, headers: { 'content-type': 'text/html; charset=utf-8', ...extra } });
@@ -104,10 +114,10 @@ function idiomaPedido(url, datos) {
 }
 
 async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false, prueba = false } = {}) {
-  const modelo = await modeloJSON(env, evento.modelo, url.origin);
-  // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html
-  const plantilla = modelo && (await archivo(env, `/modelos/${evento.modelo}/index-${evento.paquete}.html`, url.origin)
-    || await archivo(env, `/modelos/${evento.modelo}/index.html`, url.origin));
+  const modelo = await modeloJSON(env, evento.modelo, url.origin, evento.tipo);
+  // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html.
+  // Los otros eventos: index-15.html, index-15-premium.html… (ver plantillaDe)
+  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, evento.paquete, url.origin);
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
   const idiomas = demo ? [variante(evento.variante)] : idiomasDe(evento);
   const v = demo ? variante(evento.variante) : idiomaPedido(url, evento);
@@ -134,10 +144,11 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
 
 // ── Demo ──────────────────────────────────────────────────────────────
 async function demo(env, url, request, idModelo) {
-  const modelo = await modeloJSON(env, idModelo, url.origin);
-  if (!modelo) return html('Modelo no encontrado', 404);
+  const base = await modeloJSON(env, idModelo, url.origin);
+  if (!base) return html('Modelo no encontrado', 404);
   const q = url.searchParams;
-  const tipo = modelo.eventos.includes(q.get('evento')) ? q.get('evento') : modelo.eventos[0];
+  const tipo = base.eventos.includes(q.get('evento')) ? q.get('evento') : base.eventos[0];
+  const modelo = conEvento(base, tipo);
   const paquete = ['basic', 'premium', 'deluxe'].includes(q.get('paquete')) ? q.get('paquete') : 'deluxe';
   const pais = q.get('pais') || request.cf?.country || request.headers.get('cf-ipcountry') || '';
   const v = VARIANTES.includes(q.get('idioma')) ? q.get('idioma') : varianteDePais(pais);
@@ -272,7 +283,7 @@ async function invitadosCSV(env, request, url) {
 // tema.css (las variables --fuente-titulos, --fuente-texto, --color-principal). Un modelo puede fijarlas
 // en modelo.json → "acceso": { "css": [...] }.
 async function estilosModelo(env, ev, url) {
-  let m = null; try { m = await modeloJSON(env, ev.modelo, url.origin); } catch { /* sin modelo */ }
+  let m = null; try { m = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); } catch { /* sin modelo */ }
   if (!m) return [];
   if (Array.isArray(m.acceso?.css)) return m.acceso.css;
   return [m.tarjetas?.fuentes?.css, `/modelos/${ev.modelo}/tema.css`].filter(Boolean);
@@ -388,7 +399,7 @@ async function eventoConClave(env, request, url, id) {
 }
 
 async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {}) {
-  const modelo = ev.producto === 'invitacion' ? await modeloJSON(env, ev.modelo, url.origin) : null;
+  const modelo = ev.producto === 'invitacion' ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
     gratis: ev.paquete === 'gratis' || datos.planElegido === 'gratis', disenoEnviado: !!datos.diseno?.enviado,
     publicada: ev.estado === 'publicado', admin });
@@ -497,7 +508,7 @@ async function apiPanel(env, request, url, partes) {
       modelos: modelosPara(ev.tipo),
       usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
-      modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null }; })() : null,
+      modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null }; })() : null,
       marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
@@ -757,7 +768,7 @@ async function vistaPrevia(env, url, request, id) {
   if (!ev) return html('Sin permiso', 403);
   if (!ev.modelo) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  const mj = await modeloJSON(env, ev.modelo, url.origin);
+  const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo);
   const evento = conFotosDeMuestra({ ...paraMotor(ev), paquete: await planVista(env, url, ev) }, mj);
   // Con lista de invitados se ve como la ve el primero de la lista (o un ejemplo)
   let invitado = null;

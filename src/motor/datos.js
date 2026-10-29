@@ -45,6 +45,30 @@ function fechaHora(fh, variante) {
   return h ? `${fechaCirculos(p)} - ${h}` : fechaCirculos(p);
 }
 
+// Las partes de una fecha para la marca data-fecha (plantillas con {d} {dd} {mm} {mes} {MES} {Mes} {a} {hora})
+function piezas(fh, variante) {
+  const p = partes(fh);
+  if (!p) return null;
+  let mes = '';
+  try { mes = new Intl.DateTimeFormat(LOCALES[variante] || 'es-MX', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(+p.a, +p.m - 1, 1))); } catch { /* sin Intl */ }
+  const mes3 = mes.slice(0, 3);
+  return { d: String(+p.d), dd: p.d, m: String(+p.m), mm: p.m, a: p.a, mes, MES: mes.toLocaleUpperCase(), Mes: mes.charAt(0).toLocaleUpperCase() + mes.slice(1),
+    mes3, MES3: mes3.toLocaleUpperCase(), Mes3: mes3.charAt(0).toLocaleUpperCase() + mes3.slice(1), hora: hora(p, variante) };
+}
+
+// "12 de septiembre de 2027 a las 20:00" (la fecha larga que usan muchos diseños), en el idioma de la invitación
+const A_LAS = { es: 'a las', en: 'at', pt: 'às', fr: 'à', it: 'alle', ca: 'a les', de: 'um', nl: 'om' };
+function fechaLarga(fh, variante) {
+  const p = partes(fh);
+  if (!p) return '';
+  let f;
+  try { f = new Intl.DateTimeFormat(LOCALES[variante] || 'es-MX', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(+p.a, +p.m - 1, +p.d))); }
+  catch { f = fechaCirculos(p); }
+  if (p.hh == null) return f;
+  const h = variante === 'en' ? hora(p, 'en') : `${p.hh}:${p.mm}`;
+  return `${f} ${A_LAS[variante.slice(0, 2)] || ''} ${h}`.replace(/\s+/g, ' ');
+}
+
 // Suma horas a "AAAA-MM-DDTHH:MM" (para el fin por defecto del calendario)
 function sumarHoras(fh, horas) {
   const p = partes(fh);
@@ -166,6 +190,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     foto: fotoLugar(cer),
     fotoEstilo: encuadre(PROP.lugar, cer.fotoPos),
     fechaHora: fechaHora(cerInicio, variante),
+    fechaLarga: fechaLarga(cerInicio, variante),
     lugarTexto: lugarTexto(cer),
     mapa: mapa(cer),
   };
@@ -174,6 +199,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     foto: fotoLugar(cel),
     fotoEstilo: encuadre(PROP.lugar, cel.fotoPos),
     fechaHora: fechaHora(celInicio, variante),
+    fechaLarga: fechaLarga(celInicio, variante),
     lugarTexto: lugarTexto(cel),
     mapa: mapa(cel),
   };
@@ -192,13 +218,16 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
 
   // Fecha principal: la de la ceremonia si hay, si no la de la fiesta
   const principal = partes((modo === 'separada' && cerInicio) || celInicio || e.fecha);
+  const fechas = { principal: piezas((modo === 'separada' && cerInicio) || celInicio || e.fecha, variante), ceremonia: piezas(cerInicio, variante), celebracion: piezas(celInicio, variante) };
 
   const fotos = e.fotos || {};
   // Portada: un encuadre para el celular (pos) y otro para la computadora (posPc)
   const portadaSinFoto = `${rutas.modelo}/${modelo.portadaSinFoto || 'img/bg-oliva-2.jpg'}`;
   const portada = (fotosOn('portada') ? fotos.portada || [] : []).slice(0, incluye.fotosPortada)
-    .map((f) => (typeof f === 'string' ? { url: f } : f)).map((f) => ({ url: f.url, pos: f.pos || '50% 50%', estilo: `--pos-pc:${f.posPc || f.pos || '50% 50%'}` }));
-  if (!portada.length) portada.push({ url: portadaSinFoto, pos: '50% 50%', estilo: '--pos-pc:50% 50%' });
+    .map((f) => (typeof f === 'string' ? { url: f } : f)).map((f) => ({ url: f.url, pos: f.pos || '50% 50%', estilo: `--pos-pc:${f.posPc || f.pos || '50% 50%'}`,
+      // Foto suelta (<img> en un círculo o marco): el encuadre con object-position
+      estiloImg: `object-fit:cover; object-position:${f.pos || '50% 50%'}` }));
+  if (!portada.length) portada.push({ url: portadaSinFoto, pos: '50% 50%', estilo: '--pos-pc:50% 50%', estiloImg: '' });
   // Galería: cómo se muestra (carrusel, mosaico, grilla, polaroids) y la proporción de todas las fotos
   const tipoGaleria = ['carrusel', 'mosaico', 'grilla', 'polaroids'].includes(e.galeria?.tipo) && !modelo.galeria?.enRsvp ? e.galeria.tipo : 'carrusel';
   const propGaleria = PROP_GALERIA[e.galeria?.proporcion] || PROP.galeria;
@@ -238,10 +267,12 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
 
     nombres: {
       texto: nombresTexto,
+      a: nA || '', b: plural ? (nB || '') : '',
       portada: plural ? conNombres(modelo.nombresHTML.portada) : conNombres(modelo.nombresHTML.solo),
       cierre: plural ? conNombres(modelo.nombresHTML.cierre) : conNombres(modelo.nombresHTML.solo),
       iniciales: [nA, nB].filter(Boolean).map((n) => n.trim().charAt(0).toUpperCase()),
     },
+    fechas,
     fecha: { puntos: fechaPuntos(principal), iso: principal ? `${principal.a}-${principal.m}-${principal.d}` : '' },
     cuenta: {
       activa: !!incluye.cuenta && !!principal && e.portada?.cuenta !== false,

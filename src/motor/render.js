@@ -124,6 +124,13 @@ function textos(doc, v, t) {
     }
     el.removeAttribute('data-attr');
   }
+  // data-fecha="principal|ceremonia|celebracion" + data-fecha-formato="{dd} • {mm} • {a}": la fecha como la escribe el diseño
+  for (const el of todos(doc, '[data-fecha]')) {
+    const f = v.fechas?.[el.getAttribute('data-fecha')];
+    const formato = el.getAttribute('data-fecha-formato') || '{dd} • {mm} • {a}';
+    el.textContent = f ? formato.replace(/\{(\w+)\}/g, (m, k) => f[k] ?? '') : '';
+    el.removeAttribute('data-fecha'); el.removeAttribute('data-fecha-formato');
+  }
   for (const el of todos(doc, '[data-bg]')) {
     const url = valor(v, el.getAttribute('data-bg'));
     if (url) el.setAttribute('style', cambiarFondo(el.getAttribute('style') || '', url));

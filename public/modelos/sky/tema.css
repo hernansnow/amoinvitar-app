@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   SKY · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #264c72;
+  --color-secundario: #8ccce5;
+  --color-suave: #4c8ca5;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Great Vibes', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

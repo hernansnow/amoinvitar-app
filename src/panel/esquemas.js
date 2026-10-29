@@ -82,7 +82,10 @@ const ICONOS = {
 };
 // Íconos del itinerario que van en todas las invitaciones (además de los del modelo), en public/comun/img/itinerario.
 // Los de siempre van en todos los eventos; los grupos, según el tipo de evento (así la lista no se hace eterna).
-const ICONOS_SIEMPRE = ['corazon', 'civil', 'vela', 'caliz', 'globos', 'regalo', 'mamadera', 'corona', 'cupcake', 'luna', 'estrella', 'fuegos', 'bus', 'musica'];
+// Los clásicos de las invitaciones (antes en cada modelo, ahora comunes)
+const ICONOS_CLASICOS = ['ceremonia', 'iglesia', 'iglesia2', 'recepcion', 'brindis', 'brindis2', 'tragos', 'cena', 'vals', 'baile', 'fiesta', 'disco', 'torta', 'torta2', 'torta3',
+  'ramo', 'zapatos', 'camara', 'mic', 'novios-a', 'novios-b', 'novios-c', '15', 'baby', 'infantil', 'last-call', 'last-call2'];
+const ICONOS_SIEMPRE = [...ICONOS_CLASICOS, 'corazon', 'civil', 'vela', 'caliz', 'globos', 'regalo', 'mamadera', 'corona', 'cupcake', 'luna', 'estrella', 'fuegos', 'bus', 'musica'];
 const GRUPOS_ICONOS = {
   general: ['cubiertos', 'copas', 'torta4', 'auriculares', 'vinilo', 'polaroid', 'cafe', 'hamburguesa', 'sol', 'ubicacion', 'trago', 'botella', 'bengalas', 'confeti', 'anillos', 'corazones', 'mesa', 'baile2'],
   graduacion: ['birrete', 'diploma', 'medalla', 'trofeo', 'libros', 'birretes', 'atril', 'egresado', 'grupo', 'avion'],

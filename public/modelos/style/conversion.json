@@ -1,0 +1,198 @@
+{
+  "15": {
+    "carpeta": "style15",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "15",
+            "vals",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-style",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Lucila",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

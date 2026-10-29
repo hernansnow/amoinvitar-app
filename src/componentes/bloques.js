@@ -281,7 +281,7 @@ export function canciones({ t, v }) {
   <section id="seccion-canciones" class="text-center">
     <div class="form-group">
       <label for="input-cancion">
-        <p class="mb-1"><img class="img-fluid mb-0" src="${v.rutas.modelo}/img/icon-music-b.png" width="80" alt=""></p>
+        <p class="mb-1"><img class="img-fluid mb-0" src="${v.rutas.comun}/img/icon-music-b.png" width="80" alt=""></p>
         <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">${esc(t('canciones.modal'))}</p>
         <p class="mb-1">${esc(t('canciones.ayuda'))}</p>
         <p class="text-small-sm mb-2 text-black-50">${esc(t('canciones.ejemplo'))}</p>

@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   ARMONÍA · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #497f80;
+  --color-secundario: #9c916b;
+  --color-suave: #606060;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Montserrat', sans-serif;
+  --fuente-texto: 'Jost', sans-serif;
+}

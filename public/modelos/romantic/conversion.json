@@ -1,0 +1,292 @@
+{
+  "15": {
+    "carpeta": "romantic15",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin título de nombres"
+        ],
+        "info": {
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "tragos",
+            "15",
+            "cena",
+            "disco",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "romantic",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-b",
+            "cena",
+            "disco",
+            "brindis",
+            "last-call"
+          ],
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-romantic",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin título de nombres"
+        ],
+        "info": {
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

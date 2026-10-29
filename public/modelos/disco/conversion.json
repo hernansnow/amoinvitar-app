@@ -1,0 +1,302 @@
+{
+  "15": {
+    "carpeta": "disco15",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "dress code: sin texto en la invitación"
+        ],
+        "info": {
+          "nombresPortada": "LUCIANA",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia",
+            "recepcion",
+            "15",
+            "vals",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "LUCIANA",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "LUCIANA",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "disco",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "dress code: sin texto en la invitación"
+        ],
+        "info": {
+          "nombresPortada": "Rocío<i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\">Jorge",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Rocío<span class=\"disco-2\">&#160;&amp;&#160;</span>Jorge",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Rocío<i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\">Jorge",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Rocío<span class=\"disco-2\">&#160;&amp;&#160;</span>Jorge",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Rocío<i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\">Jorge",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Rocío<span class=\"disco-2\">&#160;&amp;&#160;</span>Jorge",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-discoteque",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "dress code: sin texto en la invitación"
+        ],
+        "info": {
+          "nombresPortada": "RAMIRO",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "RAMIRO",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "RAMIRO",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "claseTitulos": "disco-2",
+          "fuentes": [
+            "../../comun/fonts/google/jost+monoton+montserrat+sacramento.css"
+          ]
+        }
+      }
+    }
+  }
+}

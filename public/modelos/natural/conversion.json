@@ -1,0 +1,204 @@
+{
+  "15": {
+    "carpeta": "natural15",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "15",
+            "vals",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-natural",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "oliva",
+          "fuentes": [
+            "../../comun/fonts/google/jost+ruthie.css"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+/* Estilos comunes a todos los modelos convertidos al sistema nuevo
+   (lo que antes estaba repetido en el HTML de cada invitación). */
+
+/* Fondos que se cargan al acercarse a la pantalla (comun/js/diferido.js) */
+.bg-diferido { background-image: none !important; }
+
+/* Portada: en la computadora, el encuadre horizontal que eligió el cliente */
+@media (min-width: 768px) {
+  .ai-slide, .portada-foto-pc, .portada-foto, .portada-pc { background-position: var(--pos-pc, center center) !important; }
+}
+.ai-slide { background-repeat: no-repeat; background-size: cover; background-position: center center; }
+
+/* Historia: párrafo (antes un h3/h4 muy grande) */
+.g-historia { font-size: 1.2rem; line-height: 1.6; }
+@media (max-width: 767px) { .g-historia { font-size: 1.1rem; } }
+
+/* Recuadro del invitado en la confirmación (si el diseño no trae el suyo) */
+.g-tarjeta-invitado { border: 2px dashed #dee2e6; border-radius: 36px; }
+
+/* Dress code: colores a evitar (una fila de círculos) */
+.g-evitar-titulo { font-size: .95rem; letter-spacing: .04em; }
+.g-evitar-colores { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.g-evitar-color { display: inline-block; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .9); box-shadow: 0 1px 5px rgba(0, 0, 0, .25); }
+@media (min-width: 768px) { .g-evitar-color { width: 40px; height: 40px; } }
+
+/* ¿Te perdiste algo? (los modelos que no lo traían) */
+.ai-perdiste ul li { margin-bottom: .15rem; }

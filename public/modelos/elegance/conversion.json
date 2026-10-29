@@ -1,0 +1,100 @@
+{
+  "boda": {
+    "carpeta": "elegance",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Agus <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> Fran",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Agus <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> Fran",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Agus <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> Fran",
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "claseTitulos": "elegance2",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

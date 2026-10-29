@@ -9,12 +9,31 @@
   if (INV.cuenta && window.jQuery && jQuery.fn.countdown) {
     var tx = INV.textos;
     jQuery('#clock-b').countdown(INV.cuenta).on('update.countdown', function (e) {
+      // El formato propio del diseño (data-formato, con {d} {dias} {h} {horas} {m} {min} {s} {seg})
+      var f = this.getAttribute('data-formato');
+      if (f) {
+        jQuery(this).html(f.replace('{d}', e.strftime('%-D')).replace('{dias}', e.offset.totalDays === 1 ? tx.dia : tx.dias)
+          .replace('{h}', e.strftime('%H')).replace('{horas}', tx.horas).replace('{m}', e.strftime('%M')).replace('{min}', tx.min)
+          .replace('{s}', e.strftime('%S')).replace('{seg}', tx.seg));
+        return;
+      }
       jQuery(this).html(e.strftime(
         '<div class="holder m-2"><span class="font-weight-lighter mb-2">%-D</span> ' + (e.offset.totalDays === 1 ? tx.dia : tx.dias) + '</div>' +
         '<div class="holder m-2"><span class="font-weight-lighter mb-2">%H</span> ' + tx.horas + '</div>' +
         '<div class="holder m-2"><span class="font-weight-lighter mb-2">%M</span> ' + tx.min + '</div>' +
         '<div class="holder m-2"><span class="font-weight-lighter mb-2">%S</span> ' + tx.seg + '</div>'));
     });
+  }
+
+  // Cuenta regresiva con casilleros propios del diseño (#days #hours #minutes #seconds, p. ej. Graffiti)
+  if (INV.cuenta && !document.getElementById('clock-b') && document.getElementById('days')) {
+    var fin = new Date(INV.cuenta.replace(/\//g, '-').replace(' ', 'T')).getTime();
+    var poner = function (id, n) { var el = document.getElementById(id); if (el) el.textContent = n < 10 && id !== 'days' ? '0' + n : String(n); };
+    var tic = function () {
+      var r = Math.max(0, fin - Date.now());
+      poner('days', Math.floor(r / 864e5)); poner('hours', Math.floor(r / 36e5) % 24); poner('minutes', Math.floor(r / 6e4) % 60); poner('seconds', Math.floor(r / 1e3) % 60);
+    };
+    tic(); setInterval(tic, 1000);
   }
 
   // Botones "Agendar": menú propio (Google, Apple, Outlook, .ics), sin librerías externas

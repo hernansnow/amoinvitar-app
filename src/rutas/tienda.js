@@ -21,7 +21,7 @@ import { reverseChargeFor } from '../lib/vies.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
 import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, precioPedido, comprable } from '../catalogo.js';
-import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo } from '../modelos.js';
+import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
 import { ZONAS } from '../datos/zonas.js';
@@ -480,7 +480,7 @@ export async function empezar(request, env) {
   // Zona horaria del visitante, si está en la lista
   const zona = ZONAS.some((z) => z.v === request.cf?.timezone) ? request.cf.timezone : (ZONAS.find((z) => z.v === 'Europe/Madrid')?.v || '');
   // Arranca con lo de Basic prendido; lo demás lo suma el cliente (y sube el plan)
-  const modeloJson = await env.ASSETS.fetch(new URL(`/modelos/${m.id}/modelo.json`, request.url)).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  const modeloJson = conEvento(await env.ASSETS.fetch(new URL(`/modelos/${m.id}/modelo.json`, request.url)).then((r) => (r.ok ? r.json() : null)).catch(() => null), tipo);
   const basicas = new Set(modeloJson?.paquetes?.basic?.secciones || ['galeria', 'rsvp', 'dresscode', 'estilos']);
   const todas = new Set(Object.values(modeloJson?.paquetes || {}).flatMap((p) => p.secciones));
   const secciones = Object.fromEntries([...todas].map((x) => [x, basicas.has(x)]));

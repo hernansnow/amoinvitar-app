@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   GRAFFITI · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #4e9c87;
+  --color-secundario: #baabb5;
+  --color-suave: #3a3d3e;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Great Vibes', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

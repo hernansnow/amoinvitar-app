@@ -1,0 +1,296 @@
+{
+  "15": {
+    "carpeta": "aquarella15",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "15",
+            "vals",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "aquarella",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "Romi <i class=\"icon-heart text-small-sm text-gold\" aria-hidden=\"true\"></i> Gaby",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Romi <i class=\"icon-heart-o text-small\" aria-hidden=\"true\"></i> Gaby",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Romi <i class=\"icon-heart text-small-sm text-gold\" aria-hidden=\"true\"></i> Gaby",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Romi <i class=\"icon-heart-o text-small\" aria-hidden=\"true\"></i> Gaby",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Romi <i class=\"icon-heart text-small-sm text-gold\" aria-hidden=\"true\"></i> Gaby",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Romi <i class=\"icon-heart-o text-small\" aria-hidden=\"true\"></i> Gaby",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-aquarella",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "Marta",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"icon-star\" aria-hidden=\"true\"></i> Romi <i class=\"icon-star\" aria-hidden=\"true\"></i>",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "<i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i> Romi <i class=\"text-white icon-star h2\" aria-hidden=\"true\"></i>",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      }
+    }
+  }
+}

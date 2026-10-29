@@ -1,0 +1,316 @@
+{
+  "15": {
+    "carpeta": "beach15",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "dress code: sin texto en la invitación",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "tragos",
+            "15",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "claseTitulos": "d-none",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "d-none",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "jost-lead",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "beach",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "dress code: sin texto en la invitación",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"jost-lead\">Aylén</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">Matías</span>",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "claseTitulos": "d-none",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"jost-lead\">Aylén</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">Matías</span>",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "d-none",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"jost-lead\">Aylén</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">Matías</span>",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-beach",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "dress code: sin texto en la invitación",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "claseTitulos": "d-none",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "d-none",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "dress code: sin texto en la invitación",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "jost-lead",
+          "fuentes": [
+            "../../comun/fonts/google/alumni-sans-pinstripe+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

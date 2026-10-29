@@ -1,0 +1,345 @@
+{
+  "15": {
+    "carpeta": "travel15",
+    "hojas": [
+      "css/inv-travel.css?ver=2"
+    ],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "ceremonia: sin \"DÍA Y HORARIO\"",
+          "ceremonia: sin fecha y hora",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora"
+        ],
+        "info": {
+          "nombresPortada": "Natalia",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "15",
+            "vals",
+            "cena",
+            "disco",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "ceremonia: sin \"DÍA Y HORARIO\"",
+          "ceremonia: sin fecha y hora",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Natalia",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "historia: sin texto",
+          "ceremonia: sin \"DÍA Y HORARIO\"",
+          "ceremonia: sin fecha y hora",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Natalia",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "travel",
+    "hojas": [
+      "css/inv-travel.css?ver=2"
+    ],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "ceremonia: sin \"DÍA Y HORARIO\"",
+          "ceremonia: sin fecha y hora",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora"
+        ],
+        "info": {
+          "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Natalia<span class=\"text-gold\">&#160;+&#160;&#160;</span>Alejo",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "ceremonia: sin \"DÍA Y HORARIO\"",
+          "ceremonia: sin fecha y hora",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Natalia<span class=\"text-gold\">&#160;+&#160;&#160;</span>Alejo",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "ceremonia: sin \"DÍA Y HORARIO\"",
+          "ceremonia: sin fecha y hora",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Natalia<span class=\"text-gold\">&#160;+&#160;&#160;</span>Alejo",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-travel",
+    "hojas": [
+      "css/inv-travel.css?ver=2"
+    ],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora"
+        ],
+        "info": {
+          "nombresPortada": "Natalia",
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Natalia",
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "historia: sin texto",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin fecha y hora",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Natalia",
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "amsterdam-four-font",
+          "fuentes": [
+            "../../comun/fonts/google/jost+roboto-condensed.css",
+            "../../comun/fonts/css/amsterdam-four-font.css"
+          ]
+        }
+      }
+    }
+  }
+}
