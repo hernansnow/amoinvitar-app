@@ -67,9 +67,36 @@ const ICONOS = {
   // Comunes a todos los modelos (public/comun/img/itinerario)
   corazon: 'Corazón', civil: 'Civil / firma', vela: 'Vela', caliz: 'Cáliz', globos: 'Globos', regalo: 'Regalos', mamadera: 'Mamadera',
   corona: 'Corona', cupcake: 'Mesa dulce', luna: 'Despedida', estrella: 'Show', fuegos: 'Fuegos artificiales', bus: 'Traslado', musica: 'Música',
+  // Ronda 19 (scripts/iconos-itinerario.mjs)
+  birrete: 'Birrete', diploma: 'Diploma', medalla: 'Medalla', trofeo: 'Trofeo', libros: 'Libros', birretes: 'Birretes al aire', atril: 'Discurso',
+  egresado: 'Egresado', grupo: 'Foto grupal', avion: 'Viaje',
+  gorrito: 'Gorrito de fiesta', chupetin: 'Chupetín', helado: 'Helado', pochoclo: 'Pochoclo', pelota: 'Juegos', magia: 'Show de magia', castillo: 'Castillo inflable',
+  osito: 'Osito', cohete: 'Cohete', auto: 'Auto', pizza: 'Pizza', pinata: 'Piñata', paleta: 'Pintacaritas', rompecabezas: 'Rompecabezas', calesita: 'Calesita',
+  burbujas: 'Burbujas', tren: 'Trencito',
+  arbol: 'Árbol de Navidad', campanas: 'Campanas', baston: 'Bastón de caramelo', muneco: 'Muñeco de nieve', gorro: 'Gorro de Papá Noel', copo: 'Copo de nieve',
+  bota: 'Bota navideña', esfera: 'Esfera', guirnalda: 'Corona navideña', belen: 'Estrella de Belén', reloj: 'Cuenta regresiva', champagne: 'Champagne',
+  paloma: 'Paloma', cruz: 'Cruz', biblia: 'Biblia', rosario: 'Rosario', concha: 'Concha bautismal', gota: 'Agua bendita', angel: 'Ángel', uvas: 'Uvas', espiga: 'Espiga',
+  cubiertos: 'Cubiertos', copas: 'Copas', torta4: 'Torta', auriculares: 'DJ', vinilo: 'Vinilo', polaroid: 'Fotos instantáneas', cafe: 'Café',
+  hamburguesa: 'Trasnoche', sol: 'Día / brunch', ubicacion: 'Llegada', trago: 'Barra de tragos', botella: 'Vino', bengalas: 'Bengalas', confeti: 'Confeti',
+  anillos: 'Anillos', corazones: 'Corazones', mesa: 'Banquete', baile2: 'Baile',
 };
-// Íconos del itinerario que van en todas las invitaciones (además de los del modelo). El corazón es el de siempre.
-export const ICONOS_COMUNES = ['corazon', 'civil', 'vela', 'caliz', 'globos', 'regalo', 'mamadera', 'corona', 'cupcake', 'luna', 'estrella', 'fuegos', 'bus', 'musica'];
+// Íconos del itinerario que van en todas las invitaciones (además de los del modelo), en public/comun/img/itinerario.
+// Los de siempre van en todos los eventos; los grupos, según el tipo de evento (así la lista no se hace eterna).
+const ICONOS_SIEMPRE = ['corazon', 'civil', 'vela', 'caliz', 'globos', 'regalo', 'mamadera', 'corona', 'cupcake', 'luna', 'estrella', 'fuegos', 'bus', 'musica'];
+const GRUPOS_ICONOS = {
+  general: ['cubiertos', 'copas', 'torta4', 'auriculares', 'vinilo', 'polaroid', 'cafe', 'hamburguesa', 'sol', 'ubicacion', 'trago', 'botella', 'bengalas', 'confeti', 'anillos', 'corazones', 'mesa', 'baile2'],
+  graduacion: ['birrete', 'diploma', 'medalla', 'trofeo', 'libros', 'birretes', 'atril', 'egresado', 'grupo', 'avion'],
+  infantil: ['gorrito', 'chupetin', 'helado', 'pochoclo', 'pelota', 'magia', 'castillo', 'osito', 'cohete', 'auto', 'pizza', 'pinata', 'paleta', 'rompecabezas', 'calesita', 'burbujas', 'tren'],
+  navidad: ['arbol', 'campanas', 'baston', 'muneco', 'gorro', 'copo', 'bota', 'esfera', 'guirnalda', 'belen', 'reloj', 'champagne'],
+  religioso: ['paloma', 'cruz', 'biblia', 'rosario', 'concha', 'gota', 'angel', 'uvas', 'espiga'],
+};
+const GRUPOS_POR_TIPO = {
+  boda: ['general', 'religioso', 'navidad'], 15: ['general', 'religioso', 'graduacion'], bautismo: ['religioso', 'infantil', 'general'], comunion: ['religioso', 'infantil', 'general'],
+  cumple: ['general', 'infantil', 'graduacion'], graduacion: ['graduacion', 'general'], infantil: ['infantil', 'general'], navidad: ['navidad', 'general'],
+  babyshower: ['infantil', 'general'], empresarial: ['general', 'navidad', 'graduacion'],
+};
+export const ICONOS_COMUNES = [...ICONOS_SIEMPRE, ...Object.values(GRUPOS_ICONOS).flat()];
+export const iconosComunesDe = (tipo) => [...ICONOS_SIEMPRE, ...(GRUPOS_POR_TIPO[tipo] || ['general']).flatMap((g) => GRUPOS_ICONOS[g])];
 const nombreIcono = (v) => {
   const [, base, n] = /^(.*?)(?:-?([a-z]|\d))?$/.exec(v) || [];
   const nombre = ICONOS[v] || ICONOS[base] || v;
@@ -284,7 +311,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 25 },
         { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido, el círculo queda vacío.',
           valores: [...(modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })),
-            ...ICONOS_COMUNES.filter((v) => !(modelo.iconosItinerario || []).includes(v)).map((v) => ({ v, etiqueta: nombreIcono(v), src: `/comun/img/itinerario/timeline-icon-${v}.png` }))] },
+            ...iconosComunesDe(tipo).filter((v) => !(modelo.iconosItinerario || []).includes(v)).map((v) => ({ v, etiqueta: nombreIcono(v), src: `/comun/img/itinerario/timeline-icon-${v}.png` }))] },
       ] },
     ] },
     // Testigos (boda) o padrinos (15, bautismo, comunión); cumpleaños, infantiles y egresos no tienen
