@@ -1,6 +1,6 @@
 // Worker de Amo Invitar 2.0
 //
-//   /demo/<modelo>?evento=&paquete=&pais=        demo de un modelo
+//   /demo/<modelo>?evento=&paquete=&pais=&sobre=no  demo de un modelo (sobre=no: ventana de bienvenida)
 //   /<tipo>/<slug>[?inv=codigo]                  invitación publicada (con su seguridad)
 //   POST /acceso/<id>                             PIN de la pantalla de acceso
 //   GET  /acceso/<id>/dueno?k=<clave>             el dueño entra sin PIN ni link personal
@@ -121,7 +121,10 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
   vista.idiomas = { lista: idiomas, actual: v, banderas: Object.fromEntries(idiomas.map((x) => [x.slice(0, 2), banderaDe(x.slice(0, 2), evento)])) };
   vista.prueba = prueba;
-  if (sinSobre) vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false }; // la vista previa del panel abre directo
+  if (sinSobre) { // la vista previa del panel abre directo (sin sobre ni ventana de bienvenida)
+    vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false };
+    vista.sobre = { activo: false }; vista.bienvenidaModal = { activa: false };
+  }
   return html(renderizar(plantilla, vista, t, { origen: url.origin }), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
     'x-robots-tag': 'noindex',
@@ -139,7 +142,9 @@ async function demo(env, url, request, idModelo) {
   const pais = q.get('pais') || request.cf?.country || request.headers.get('cf-ipcountry') || '';
   const v = VARIANTES.includes(q.get('idioma')) ? q.get('idioma') : varianteDePais(pais);
   const rutas = { comun: '/comun', modelo: `/modelos/${idModelo}` };
-  return pagina(env, url, eventoDemo({ tipo, variante: v, paquete, modelo, rutas }), { demo: true });
+  const ev = eventoDemo({ tipo, variante: v, paquete, modelo, rutas });
+  if (q.get('sobre') === 'no') ev.portada = { ...(ev.portada || {}), sobre: false }; // &sobre=no: la ventana de bienvenida
+  return pagina(env, url, ev, { demo: true });
 }
 
 // ── Invitación publicada (con su seguridad) ───────────────────────────

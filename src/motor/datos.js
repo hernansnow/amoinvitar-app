@@ -230,6 +230,9 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     idioma: { variante, fechas: LOCALES[variante] || 'es-ES', html: variante.slice(0, 2) },
     paquete: { id: e.paquete, incluye },
     modelo: { id: modelo.id, sobre: modelo.sobre },
+    // Sobre de apertura (Premium y Deluxe, se puede apagar en Portada). Apagado: la ventana de bienvenida del diseño
+    sobre: { activo: !!incluye.sobre && e.portada?.sobre !== false },
+    bienvenidaModal: { activa: !!incluye.sobre && e.portada?.sobre === false },
     secciones,
     plural,
 

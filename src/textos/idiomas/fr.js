@@ -1,6 +1,7 @@
 // Français. Lo que falte cae en inglés.
 export default {
   base: {
+    'bv.titulo': 'Bienvenue dans mon invitation !', 'bv.texto': 'J\'ai choisi la musique pour vous accompagner tout au long de ce parcours. Comment souhaitez-vous entrer ?', 'bv.conMusica': 'Entrer avec musique', 'bv.sinMusica': 'Entrer sans musique', 'bv.entrar': 'Entrer',
     'playlist.titulo': 'Ma playlist', 'playlist.texto': 'Les chansons qui passeront à la fête.', 'playlist.resumen': '{n} titres · {min} min', 'playlist.verTodas': 'Voir les {n} titres', 'playlist.verMenos': 'Voir moins', 'playlist.play': 'Écouter la playlist', 'playlist.pausa': 'Pause', 'playlist.abrir': 'Ouvrir dans Spotify', 'galeria.ver': 'Voir la photo', 'galeria.anterior': 'Précédente', 'galeria.siguiente': 'Suivante',
     'general.si': 'Oui', 'general.no': 'Non',
     'meta.titulo': 'Invitation ❤ {evento} | {nombres}', 'meta.descripcion': 'Nous avons hâte de célébrer avec vous !',
@@ -61,6 +62,7 @@ export default {
   },
   eventos: {
     boda: {
+      'bv.titulo': 'Bienvenue dans notre invitation !', 'bv.texto': 'Nous avons choisi la musique pour vous accompagner tout au long de ce parcours. Comment souhaitez-vous entrer ?',
       'playlist.titulo': 'Notre playlist',
       'celebracion.sola': 'Mariage', 'bienvenida.texto': 'Nous avons le plaisir de vous inviter à notre mariage !', 'evento.nombre': 'Mariage', 'evento.descripcion': 'Rejoignez-nous pour notre mariage',
       'portada.subtitulo': 'ON SE MARIE !', 'historia.titulo': 'Notre Histoire',

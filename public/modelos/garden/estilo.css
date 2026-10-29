@@ -1705,16 +1705,6 @@ input[type=submit].btn-block {
     border-radius: 0.25rem
 }
 
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb
-}
-
-.alert-danger hr {
-    border-top-color: #f1b0b7
-}
-
 .progress {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2740,7 +2730,8 @@ a.close.disabled {
     margin-top: 0.25rem !important
 }
 
-.mr-1 {
+.mr-1,
+.mx-1 {
     margin-right: 0.25rem !important
 }
 
@@ -2748,7 +2739,8 @@ a.close.disabled {
     margin-bottom: 0.25rem !important
 }
 
-.ml-1 {
+.ml-1,
+.mx-1 {
     margin-left: 0.25rem !important
 }
 
@@ -3330,6 +3322,14 @@ body:after {
       .site-blocks-cover .desc a:hover {
         color: #fff; }
 
+
+.half  {
+    min-height: 100%;
+    height: calc(45vh); }
+
+.half  > .container > .row  {
+    height: calc(80vh); }
+
 .bg-gris {
   background: #999999; }
 
@@ -3480,6 +3480,12 @@ body:after {
   padding: 8px 20px;
   margin: 3px;
  }
+
+.cubo {
+  background: rgba(255,255,255, 0.87);
+  padding: 30px; }
+  .cubo ul li {
+    margin-bottom: 10px; }
 
 /* Isotope Transitions
 ------------------------------- */
@@ -3782,6 +3788,15 @@ body { overflow-x: clip; }
 /* Fondos de sección diferidos (los activa un script al final de cada invitación) */
 
 /* Quicksand local (antes @import de Google, que frenaba la carga): solo se descarga si algún texto la usa */
+
+
+.circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    z-index: 1;
+    border: 5px #fff solid;
+}
 
 span.text {
     z-index: 3;
@@ -4662,8 +4677,24 @@ audio::-webkit-media-controls-play-button:hover {
 #countdown-timer .unit .label {font-size: 0.438rem; margin-top: -4px}
 
 /* Faux outline for older browsers */
+.outline {
+    color: black; /* Unfortunately you can't use transparent here … */
+    text-shadow:
+	   -1px -1px 0 #fff,  
+		1px -1px 0 #fff,
+		-1px 1px 0 #fff,
+		 1px 1px 0 #fff
+}
 
 /* Real outline for modern browsers */
+@supports((text-stroke: 1px white) or (-webkit-text-stroke: 1px white)) {
+    .outline {
+        color: transparent;
+        -webkit-text-stroke: 1px white;
+		text-stroke: 1px white;
+        text-shadow: none;
+    }
+}
 
 /*PRICE COLOR CODE START*/ 
 .row .table{

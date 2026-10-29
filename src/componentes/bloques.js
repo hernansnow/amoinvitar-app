@@ -12,8 +12,9 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 
 // ── Sobre lacrado ─────────────────────────────────────────────────────
-export function sobre({ t, v }) {
-  if (!v.paquete.incluye.sobre) return '';
+export function sobre({ t, v, el }) {
+  if (v.bienvenidaModal?.activa) return bienvenida({ t, v, el });
+  if (!v.sobre?.activo) return '';
   const s = v.modelo.sobre || {};
   return sobreHTML({
     colores: s.colores,
@@ -24,6 +25,27 @@ export function sobre({ t, v }) {
     ariaSobre: t('sobre.aria'),
     ariaLacre: t('sobre.ariaLacre'),
   });
+}
+
+// ── Ventana de bienvenida (sobre apagado en Portada) ─────────────────
+// Cada modelo trae su modal original como <div class="ai-bv" id="ai-bienvenida"
+// data-si="bienvenidaModal.activa" hidden>. Si el modelo no lo tiene, va uno genérico.
+export function bienvenida({ t, v, el }) {
+  const raiz = v.rutas.comun;
+  const recursos = `<link rel="stylesheet" href="${raiz}/css/bienvenida.css">
+<script src="${raiz}/js/bienvenida.js" defer></script>`;
+  if (el?.ownerDocument?.getElementById('ai-bienvenida')) return recursos;
+  const musica = !!v.musica?.archivo;
+  const botones = musica
+    ? `<button type="button" data-bv="musica">${esc(t('bv.conMusica'))}</button><button type="button" data-bv="entrar">${esc(t('bv.sinMusica'))}</button>`
+    : `<button type="button" data-bv="entrar">${esc(t('bv.entrar'))}</button>`;
+  return `${recursos}
+<div class="ai-bv ai-bv-generica" id="ai-bienvenida" hidden role="dialog" aria-modal="true" aria-label="${esc(t('bv.titulo'))}">
+  <div class="ai-bv-caja"><div class="ai-bv-tarjeta">
+    <h3>${esc(t('bv.titulo'))}</h3>${musica ? `<p>${esc(t('bv.texto'))}</p>` : ''}
+    <div>${botones}</div>
+  </div></div>
+</div>`;
 }
 
 // ── Datos para los scripts de lista y RSVP ────────────────────────────

@@ -1,6 +1,7 @@
 // Català. Lo que falte cae en inglés.
 export default {
   base: {
+    'bv.titulo': 'Et dono la benvinguda a la meva invitació!', 'bv.texto': 'He triat la música perquè t\'acompanyi en aquest recorregut. Com t\'agradaria entrar?', 'bv.conMusica': 'Entrar amb música', 'bv.sinMusica': 'Entrar sense música', 'bv.entrar': 'Entrar',
     'playlist.titulo': 'La meva playlist', 'playlist.texto': 'Les cançons que sonaran a la festa.', 'playlist.resumen': '{n} cançons · {min} min', 'playlist.verTodas': 'Veure les {n} cançons', 'playlist.verMenos': 'Veure menys', 'playlist.play': 'Reproduir la playlist', 'playlist.pausa': 'Pausa', 'playlist.abrir': 'Obrir a Spotify', 'galeria.ver': 'Veure la foto', 'galeria.anterior': 'Anterior', 'galeria.siguiente': 'Següent',
     'general.si': 'Sí', 'general.no': 'No',
     'meta.titulo': 'Invitació ❤ {evento} | {nombres}', 'meta.descripcion': 'Us esperem per celebrar-ho junts!',
@@ -61,6 +62,7 @@ export default {
   },
   eventos: {
     boda: {
+      'bv.titulo': 'Et donem la benvinguda a la nostra invitació!', 'bv.texto': 'Hem triat la música perquè t\'acompanyi en aquest recorregut. Com t\'agradaria entrar?',
       'playlist.titulo': 'La nostra playlist',
       'celebracion.sola': 'Casament', 'bienvenida.texto': 'Et volem convidar al nostre casament!', 'evento.nombre': 'Casament', 'evento.descripcion': "T'esperem al nostre casament",
       'portada.subtitulo': 'ENS CASEM!', 'historia.titulo': 'La Nostra Història',

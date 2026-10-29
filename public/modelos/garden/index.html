@@ -53,6 +53,23 @@
 <!-- Sobre lacrado (Premium y Deluxe): colores en modelo.json -->
 <div data-componente="sobre"></div>
 
+<!-- Ventana de bienvenida: el modal original de Garden, cuando el cliente apaga el sobre en Portada -->
+<div class="ai-bv" id="ai-bienvenida" data-si="bienvenidaModal.activa" hidden role="dialog" aria-modal="true" style="--ai-bv-fondo: rgba(250, 250, 250, 0.85); --ai-bv-ancho: 440px">
+  <div class="ai-bv-caja">
+    <img class="img-fluid mb-0" src="img/garden-1.png" width="300" alt="" style="transform: rotate(180deg)">
+    <div class="ai-bv-tarjeta rounded shadow cubo p-4">
+      <h3 class="mb-2 text-bronce font-weight-bolder" data-t="bv.titulo">¡Te damos la bienvenida a nuestra invitación!</h3>
+      <p class="mb-3 font-weight-bolder" data-si="musica.archivo" data-t="bv.texto">Elegimos la música para que te acompañe en este recorrido. ¿Cómo te gustaría ingresar?</p>
+      <div class="text-center">
+        <button type="button" class="btn button-musgo text-uppercase rounded-pill mx-1 mb-2 btn-small" data-bv="musica" data-si="musica.archivo" data-t="bv.conMusica">Ingresar con música</button>
+        <button type="button" class="btn button-musgo text-uppercase rounded-pill mx-1 mb-2 btn-small" data-bv="entrar" data-si="musica.archivo" data-t="bv.sinMusica">Ingresar sin música</button>
+        <button type="button" class="btn button-musgo text-uppercase rounded-pill mx-1 mb-2 btn-small" data-bv="entrar" data-no="musica.archivo" data-t="bv.entrar">Ingresar</button>
+      </div>
+    </div>
+    <img class="img-fluid mt-0" src="img/garden-2.png" width="250" alt="">
+  </div>
+</div>
+
   <div id="overlayer"></div>
   <div class="loader"><div class="HeartAnimation" role="status"></div></div>
 

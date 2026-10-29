@@ -1,6 +1,7 @@
 // Deutsch (du-Form, wie bei Einladungen üblich). Lo que falte cae en inglés.
 export default {
   base: {
+    'bv.titulo': 'Willkommen zu meiner Einladung!', 'bv.texto': 'Ich habe die Musik ausgesucht, die dich dabei begleitet. Wie möchtest du eintreten?', 'bv.conMusica': 'Mit Musik eintreten', 'bv.sinMusica': 'Ohne Musik eintreten', 'bv.entrar': 'Eintreten',
     'playlist.titulo': 'Meine Playlist', 'playlist.texto': 'Die Songs, die auf der Feier laufen.', 'playlist.resumen': '{n} Songs · {min} Min.', 'playlist.verTodas': 'Alle {n} Songs ansehen', 'playlist.verMenos': 'Weniger anzeigen', 'playlist.play': 'Playlist abspielen', 'playlist.pausa': 'Pause', 'playlist.abrir': 'In Spotify öffnen', 'galeria.ver': 'Foto ansehen', 'galeria.anterior': 'Zurück', 'galeria.siguiente': 'Weiter',
     'general.si': 'Ja', 'general.no': 'Nein',
     'meta.titulo': 'Einladung ❤ {evento} | {nombres}', 'meta.descripcion': 'Wir freuen uns, mit dir zu feiern!',
@@ -61,6 +62,7 @@ export default {
   },
   eventos: {
     boda: {
+      'bv.titulo': 'Willkommen zu unserer Einladung!', 'bv.texto': 'Wir haben die Musik ausgesucht, die dich dabei begleitet. Wie möchtest du eintreten?',
       'playlist.titulo': 'Unsere Playlist',
       'celebracion.sola': 'Hochzeit', 'bienvenida.texto': 'Wir möchten dich zu unserer Hochzeit einladen!', 'evento.nombre': 'Hochzeit', 'evento.descripcion': 'Feiere mit uns unsere Hochzeit',
       'portada.subtitulo': 'WIR HEIRATEN!', 'historia.titulo': 'Unsere Geschichte',

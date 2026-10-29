@@ -1,6 +1,7 @@
 // Italiano. Lo que falte cae en inglés.
 export default {
   base: {
+    'bv.titulo': 'Benvenuti nel mio invito!', 'bv.texto': 'Ho scelto la musica per accompagnarti in questo percorso. Come vuoi entrare?', 'bv.conMusica': 'Entra con la musica', 'bv.sinMusica': 'Entra senza musica', 'bv.entrar': 'Entra',
     'playlist.titulo': 'La mia playlist', 'playlist.texto': 'Le canzoni che suoneranno alla festa.', 'playlist.resumen': '{n} brani · {min} min', 'playlist.verTodas': 'Vedi tutti i {n} brani', 'playlist.verMenos': 'Vedi meno', 'playlist.play': 'Ascolta la playlist', 'playlist.pausa': 'Pausa', 'playlist.abrir': 'Apri in Spotify', 'galeria.ver': 'Vedi foto', 'galeria.anterior': 'Precedente', 'galeria.siguiente': 'Successiva',
     'general.si': 'Sì', 'general.no': 'No',
     'meta.titulo': 'Invito ❤ {evento} | {nombres}', 'meta.descripcion': 'Ti aspettiamo per festeggiare insieme!',
@@ -61,6 +62,7 @@ export default {
   },
   eventos: {
     boda: {
+      'bv.titulo': 'Benvenuti nel nostro invito!', 'bv.texto': 'Abbiamo scelto la musica per accompagnarti in questo percorso. Come vuoi entrare?',
       'playlist.titulo': 'La nostra playlist',
       'celebracion.sola': 'Matrimonio', 'bienvenida.texto': 'Vogliamo invitarti al nostro matrimonio!', 'evento.nombre': 'Matrimonio', 'evento.descripcion': 'Ti aspettiamo al nostro matrimonio',
       'portada.subtitulo': 'CI SPOSIAMO!', 'historia.titulo': 'La Nostra Storia',

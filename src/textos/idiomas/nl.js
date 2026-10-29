@@ -1,6 +1,7 @@
 // Nederlands (je-vorm). Lo que falte cae en inglés.
 export default {
   base: {
+    'bv.titulo': 'Welkom bij mijn uitnodiging!', 'bv.texto': 'Ik heb de muziek uitgekozen om je onderweg te vergezellen. Hoe wil je binnenkomen?', 'bv.conMusica': 'Binnenkomen met muziek', 'bv.sinMusica': 'Binnenkomen zonder muziek', 'bv.entrar': 'Binnenkomen',
     'playlist.titulo': 'Mijn playlist', 'playlist.texto': 'De nummers die op het feest gaan klinken.', 'playlist.resumen': '{n} nummers · {min} min', 'playlist.verTodas': 'Bekijk alle {n} nummers', 'playlist.verMenos': 'Minder tonen', 'playlist.play': 'Playlist afspelen', 'playlist.pausa': 'Pauze', 'playlist.abrir': 'Openen in Spotify', 'galeria.ver': 'Foto bekijken', 'galeria.anterior': 'Vorige', 'galeria.siguiente': 'Volgende',
     'general.si': 'Ja', 'general.no': 'Nee',
     'meta.titulo': 'Uitnodiging ❤ {evento} | {nombres}', 'meta.descripcion': 'We kijken ernaar uit om samen te vieren!',
@@ -61,6 +62,7 @@ export default {
   },
   eventos: {
     boda: {
+      'bv.titulo': 'Welkom bij onze uitnodiging!', 'bv.texto': 'We hebben de muziek uitgekozen om je onderweg te vergezellen. Hoe wil je binnenkomen?',
       'playlist.titulo': 'Onze playlist',
       'celebracion.sola': 'Bruiloft', 'bienvenida.texto': 'We nodigen je graag uit voor onze bruiloft!', 'evento.nombre': 'Bruiloft', 'evento.descripcion': 'Vier onze bruiloft met ons',
       'portada.subtitulo': 'WE GAAN TROUWEN!', 'historia.titulo': 'Ons Verhaal',

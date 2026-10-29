@@ -88,6 +88,8 @@ const BASE = {
     'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Sugerir canción', 'perdiste.inicio': 'Inicio', 'perdiste.regalos': 'Regalos', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Álbum de fotos', 'perdiste.itinerario': 'Itinerario', 'perdiste.hospedaje': 'Hospedaje', 'perdiste.bus': 'Traslado',
 
     'sobre.tocar': 'Tocar para abrir la invitación', 'sobre.aria': 'Invitación cerrada', 'sobre.ariaLacre': 'Abrir la invitación',
+    'bv.titulo': '¡Te doy la bienvenida a mi invitación!', 'bv.texto': 'Elegí la música para que te acompañe en este recorrido. ¿Cómo te gustaría ingresar?',
+    'bv.conMusica': 'Ingresar con música', 'bv.sinMusica': 'Ingresar sin música', 'bv.entrar': 'Ingresar',
     'acceso.de': 'Acceso a la invitación de', 'acceso.pin': 'Ingresar el PIN enviado junto a la invitación:',
     'acceso.confirmar': 'Confirmar PIN', 'acceso.bloqueado': 'Este enlace no es válido. Contactar a los organizadores del evento.',
     'acceso.pinError': 'El PIN no es correcto.',
@@ -175,6 +177,8 @@ const BASE = {
     'perdiste.titulo': 'Did you miss anything?', 'perdiste.rsvp': 'RSVP', 'perdiste.agendar': 'Save the date',
     'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggest a song', 'perdiste.inicio': 'Home', 'perdiste.regalos': 'Gifts', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Photo album', 'perdiste.itinerario': 'Schedule', 'perdiste.hospedaje': 'Accommodation', 'perdiste.bus': 'Transportation',
     'sobre.tocar': 'Tap to open the invitation', 'sobre.aria': 'Closed invitation', 'sobre.ariaLacre': 'Open the invitation',
+    'bv.titulo': 'Welcome to my invitation!', 'bv.texto': 'I chose the music to go with you along the way. How would you like to come in?',
+    'bv.conMusica': 'Enter with music', 'bv.sinMusica': 'Enter without music', 'bv.entrar': 'Enter',
     'acceso.de': 'Invitation access for', 'acceso.pin': 'Enter the PIN sent with your invitation:',
     'acceso.confirmar': 'Confirm PIN', 'acceso.bloqueado': 'This link is not valid. Please contact the event organizers.',
     'acceso.pinError': 'Incorrect PIN.',
@@ -202,7 +206,7 @@ const EVENTOS = {
       'regalos.listaTexto': 'Creamos una lista de regalos en una tienda online, para que puedas regalar el que gustes',
       'pie.texto': 'Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para festejar juntos este día tan especial.',
       'redes.titulo': 'Redes oficiales de la boda',
-      'hashtag.texto': '¡Prepárate para nuestra boda!<br>Etiquétanos en Instagram con nuestro hashtag en tus fotos y videos.', 'sobre.bienvenida': 'Te damos la bienvenida',
+      'hashtag.texto': '¡Prepárate para nuestra boda!<br>Etiquétanos en Instagram con nuestro hashtag en tus fotos y videos.', 'sobre.bienvenida': 'Te damos la bienvenida', 'bv.titulo': '¡Te damos la bienvenida a nuestra invitación!', 'bv.texto': 'Elegimos la música para que te acompañe en este recorrido. ¿Cómo te gustaría ingresar?',
     },
     'es-ar': {
       'hashtag.texto': '¡Preparate para nuestra boda!<br>Etiquetanos en Instagram con nuestro hashtag en tus fotos y videos.',
@@ -225,7 +229,7 @@ const EVENTOS = {
       'regalos.listaTexto': 'We created a gift registry in an online store, so you can choose the gift you like',
       'pie.texto': 'The happiest moments in life become unforgettable when we share them with the family and friends we love, so we look forward to celebrating this special day together.',
       'redes.titulo': 'Wedding social media',
-      'hashtag.texto': 'Get ready for our wedding!<br>Tag us on Instagram with our hashtag in your photos and videos.', 'sobre.bienvenida': 'Welcome',
+      'hashtag.texto': 'Get ready for our wedding!<br>Tag us on Instagram with our hashtag in your photos and videos.', 'sobre.bienvenida': 'Welcome', 'bv.titulo': 'Welcome to our invitation!', 'bv.texto': 'We chose the music to go with you along the way. How would you like to come in?',
     },
   },
 

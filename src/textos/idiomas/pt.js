@@ -1,6 +1,7 @@
 // Português (Brasil). Lo que falte cae en inglés.
 export default {
   base: {
+    'bv.titulo': 'Boas-vindas ao meu convite!', 'bv.texto': 'Escolhi a música para acompanhar você neste percurso. Como você gostaria de entrar?', 'bv.conMusica': 'Entrar com música', 'bv.sinMusica': 'Entrar sem música', 'bv.entrar': 'Entrar',
     'playlist.titulo': 'Minha playlist', 'playlist.texto': 'As músicas que vão tocar na festa.', 'playlist.resumen': '{n} músicas · {min} min', 'playlist.verTodas': 'Ver as {n} músicas', 'playlist.verMenos': 'Ver menos', 'playlist.play': 'Tocar a playlist', 'playlist.pausa': 'Pausar', 'playlist.abrir': 'Abrir no Spotify', 'galeria.ver': 'Ver foto', 'galeria.anterior': 'Anterior', 'galeria.siguiente': 'Próxima',
     'general.si': 'Sim', 'general.no': 'Não',
     'meta.titulo': 'Convite ❤ {evento} | {nombres}', 'meta.descripcion': 'Esperamos você para celebrar juntos!',
@@ -61,6 +62,7 @@ export default {
   },
   eventos: {
     boda: {
+      'bv.titulo': 'Boas-vindas ao nosso convite!', 'bv.texto': 'Escolhemos a música para acompanhar você neste percurso. Como você gostaria de entrar?',
       'playlist.titulo': 'Nossa playlist',
       'celebracion.sola': 'Casamento', 'bienvenida.texto': 'Queremos convidar você para o nosso casamento!', 'evento.nombre': 'Casamento', 'evento.descripcion': 'Esperamos você no nosso casamento',
       'portada.subtitulo': 'VAMOS CASAR!', 'historia.titulo': 'Nossa História',

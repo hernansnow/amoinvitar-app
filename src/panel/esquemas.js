@@ -155,6 +155,9 @@ function pasosInvitacion({ tipo, modelo }) {
         // Apagada: Premium y Deluxe muestran la portada de Basic (sin cuenta regresiva)
         { id: 'portada.cuenta', tipo: 'switch', etiqueta: 'Mostrar la cuenta regresiva', defecto: true, rearmar: true,
           ayuda: 'En los planes Premium y Deluxe. Apagada, la portada queda como la del plan Basic.' },
+        // Sobre de apertura (Premium y Deluxe). Apagado: la ventana de bienvenida original del diseño
+        ...(incluye.sobre ? [{ id: 'portada.sobre', tipo: 'switch', etiqueta: 'Sobre de apertura', defecto: true, rearmar: true,
+          ayuda: 'En los planes Premium y Deluxe. Al entrar se abre un sobre lacrado con las iniciales; apagado, aparece la ventana de bienvenida del diseño.' }] : []),
       ],
     },
     { id: 'musica', seccion: 'musica', titulo: 'Música de fondo', campos: [
@@ -679,9 +682,9 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     campos: CAMPOS_ACCESO.map((c) => (c.id === 'acceso.tipo' ? { ...c, valores: c.valores.filter((o) => !o.v.startsWith('lista')) } : c)) }];
   const pasos = [
     ...(producto === 'a-medida' ? [pasoBrief({ aMedida })] : []),
-    ...base,
+    // Idioma justo después de Portada: si cambia el idioma principal, cambian los textos de la invitación
+    ...base.flatMap((p) => (p.id === 'portada' ? [p, pasoIdioma] : [p])),
     ...conAcceso,
-    pasoIdioma,
     pasoPublicar(tipo),
     // Complementos: aparte, después de una línea y el título "Complementos" en el menú
     ...(producto === 'invitacion' && m?.tarjetas?.std ? [{ ...pasoTarjeta('std', m), separado: true }] : []),
