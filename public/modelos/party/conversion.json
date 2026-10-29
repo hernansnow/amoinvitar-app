@@ -1,0 +1,42 @@
+{
+  "15": {
+    "carpeta": "party15",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "rsvp"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "galería: no se encontró",
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline",
+          "cierre: sin sección de cierre",
+          "perdiste: sin lugar",
+          "perdiste: se agregó (no había)",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "<i class=\"text-gold icon-star\" aria-hidden=\"true\"></i> Carla <i class=\"text-gold icon-star\" aria-hidden=\"true\"></i>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   DISCOTEQUE · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #7a2fb3;
+  --color-secundario: #606060;
+  --color-suave: #460a6a;
+  --color-texto: #212529;
+
+  --fuente-titulos: "Sacramento", sans-serif;
+  --fuente-texto: 'Jost', sans-serif;
+}

@@ -1,0 +1,141 @@
+{
+  "id": "vintage",
+  "nombre": "Vintage",
+  "eventos": [
+    "boda"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#d7926a",
+    "#f7efe3",
+    "#bfaaa6",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": true
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/bg-vintage3.jpg",
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "hospedaje",
+        "bus",
+        "itinerario",
+        "testigos",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "<span class=\"fontawesome-star star\"></span><span>{a} <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> {b}</span><span class=\"fontawesome-star star\"></span>",
+    "cierre": "<span class=\"text-retro display-4\">{a} <i class=\"icon-heart text-danger\" aria-hidden=\"true\"></i> {b}</span>",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/vintage/img/bg-vintage3.jpg",
+    "colorFondo": "#f7efe3",
+    "colorTitulos": "#d7926a",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#d7926a"
+    },
+    "bienvenida": "font-family:Jost, sans-serif; color:rgb(215, 146, 106); font-weight:500; --bv-escala:1;"
+  },
+  "demo": {
+    "boda": {
+      "portadas": [
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
+      ]
+    }
+  },
+  "demoBorrosas": {
+    "boda": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/jost+oswald.css",
+      "/modelos/vintage/tema.css"
+    ]
+  }
+}

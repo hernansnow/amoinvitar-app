@@ -1,0 +1,602 @@
+{
+  "15": {
+    "carpeta": "romantic15",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "tragos",
+            "15",
+            "cena",
+            "disco",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 4
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 2
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 1
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "romantic",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-b",
+            "cena",
+            "disco",
+            "brindis",
+            "last-call"
+          ],
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 4
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 2
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresSeparados": true,
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 1
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-romantic",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 4
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 2
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 1
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/romantic",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "tragos",
+            "baby",
+            "cena",
+            "disco",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 4
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 2
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 1
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/romantic",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "tragos",
+            "iglesia",
+            "cena",
+            "disco",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 4
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 2
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "MacaRenA",
+          "portadas": [
+            {
+              "f": "inicial.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "MacaRenA",
+          "claseTitulos": "cinzel",
+          "fuentes": [
+            "../../comun/fonts/google/cinzel-decorative+jost.css"
+          ],
+          "separadores": 1
+        }
+      }
+    }
+  }
+}

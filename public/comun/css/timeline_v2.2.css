@@ -224,37 +224,27 @@ transform: rotate(355deg);
   -ms-transition: all 0.4s ease;
   transition: all 0.4s ease;
 }
-#timeline:before {
-  content: "";
-  width: 2px;
-  height: 87%;
-  background: #a78977;
-  left: 49.5%;
-  top: 0;
-  position: absolute;
+/* La línea ya no tiene un alto fijo: cada momento dibuja el tramo hasta el siguiente
+   y el último no dibuja nada, así siempre termina en el último ícono (con textos
+   largos o muchos momentos). Color y grosor: --linea-color y --linea-ancho. */
+#timeline:before { content: none; }
+#timeline .timeline-item {
+  background-image: linear-gradient(var(--linea-color, #a78977), var(--linea-color, #a78977));
+  background-repeat: no-repeat;
+  background-size: var(--linea-ancho, 2px) 100%;
+  background-position: calc(49.5% + 1px) 25px;
 }
+#timeline .timeline-item:last-of-type { background-image: none; }
 
-.linea-white #timeline:before {
-  background: #fff;
-  width: 1px;
-}
+.linea-white #timeline { --linea-color: #fff; --linea-ancho: 1px; }
 
-.linea-black #timeline:before {
-  background: #000;
-  width: 1px;
-}
-.linea-azul #timeline:before {
-  background:  #03779a;
-  width: 1px;
-}
+.linea-black #timeline { --linea-color: #000; --linea-ancho: 1px; }
+.linea-azul #timeline { --linea-color: #03779a; --linea-ancho: 1px; }
  #timeline .timeline-item .timeline-content:before {
   border-left: 7px solid #fff;
 }
 
-.linea-gold #timeline:before {
-  background: #9c916b;
-  width: 2px;
-}
+.linea-gold #timeline { --linea-color: #9c916b; --linea-ancho: 2px; }
  #timeline .timeline-item .timeline-content:before {
   border-left: 7px solid #fff;
 }
@@ -266,9 +256,11 @@ transform: rotate(355deg);
   width: 100%;
 }
 #timeline .timeline-item {
-  margin-bottom: 30px;
+  margin-bottom: 0;
+  padding-bottom: 30px;
   position: relative;
 }
+#timeline .timeline-item:last-of-type { padding-bottom: 0; margin-bottom: 30px; }
 #timeline .timeline-item .timeline-icon {
   background: #a78977;
   width: 50px;

@@ -1,0 +1,102 @@
+{
+  "id": "party",
+  "nombre": "Party",
+  "eventos": [
+    "15"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#a78977",
+    "#a78977",
+    "#a78977",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/bg-civil2.jpg",
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "rsvp"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "rsvp"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "rsvp"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "{a}",
+    "cierre": "{a}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/party/img/bg-civil2.jpg",
+    "colorFondo": "#a78977",
+    "colorTitulos": "#a78977",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#a78977"
+    }
+  },
+  "demo": {
+    "15": {
+      "portadas": [
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
+      ]
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/great-vibes+jost.css",
+      "/modelos/party/tema.css"
+    ]
+  },
+  "demoBorrosas": {
+    "15": {
+      "portada": [],
+      "galeria": [],
+      "testigos": []
+    }
+  }
+}

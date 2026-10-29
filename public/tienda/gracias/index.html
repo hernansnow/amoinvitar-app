@@ -37,6 +37,15 @@
           .then(function (r) { return r.json(); })
           .then(function (p) {
             if (p.error) return poner('No encontramos el pedido', [parrafo('Si el pago se hizo, llega un mail en unos minutos. Ante cualquier duda: hola@amoinvitar.com')]);
+            if (p.estado === 'pagado' && p.link) {
+              // Armada en el panel antes de pagar: ya quedó publicada
+              var ver = boton('Ver la invitación', p.link); ver.id = 'ver-invitacion'; ver.target = '_blank';
+              return poner('¡Invitación publicada!', [
+                parrafo((p.numero && p.importe ? 'Pedido #' + p.numero + ' · ' : '') + p.producto, 'sub'),
+                parrafo('Ya está online en su link para compartir. Se puede seguir editando desde el panel. También llegó un mail a ' + p.email + ' con el acceso.'),
+                ver, p.panel ? boton('Volver al panel', p.panel) : boton('Entrar con el mail', '/entrar?siguiente=/mi-cuenta'),
+              ]);
+            }
             if (p.estado === 'pagado') {
               return poner(p.medio === 'gratis' ? '¡Lista para completar!' : '¡Pago recibido!', [
                 parrafo((p.numero && p.importe ? 'Pedido #' + p.numero + ' · ' : '') + p.producto, 'sub'),

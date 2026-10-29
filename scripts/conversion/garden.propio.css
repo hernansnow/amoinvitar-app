@@ -2,6 +2,8 @@
 
 /* Portada: cada foto del carrusel ocupa la pantalla (la foto la pone el motor) */
 .portada-foto { height: 100vh; background-repeat: no-repeat; background-size: cover; background-position: center center; }
+/* En la computadora, el encuadre horizontal que eligió el cliente (portada-pc: Basic, sin cambiar la altura) */
+@media (min-width: 768px) { .portada-foto, .portada-pc { background-position: var(--pos-pc, center center) !important; } }
 
 /* Olas de la portada */
 .g-ola-media { background-image: url(img/wave-mid-b.png); }
@@ -43,3 +45,20 @@
 
 /* Recuadro del invitado en la confirmación */
 .g-tarjeta-invitado { border: 2px dashed #dee2e6; border-radius: 36px; }
+
+/* Frase de la portada: un espacio entre las líneas decorativas y el texto */
+.date-line:before { margin-right: .5em; }
+.date-line:after { margin-left: .5em; }
+
+/* Dress code: colores a evitar (una fila de círculos) */
+.g-evitar-titulo { font-size: .95rem; letter-spacing: .04em; }
+.g-evitar-colores { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.g-evitar-color { display: inline-block; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .9); box-shadow: 0 1px 5px rgba(0, 0, 0, .25); }
+@media (min-width: 768px) { .g-evitar-color { width: 40px; height: 40px; } }
+
+/* Historia: párrafo (antes h3, muy grande) */
+.g-historia { font-size: 1.2rem; line-height: 1.6; }
+@media (max-width: 767px) { .g-historia { font-size: 1.1rem; } }
+
+/* Portada: los nombres van como en el diseño original; si son muy largos,
+   invitacion.js achica la letra (data-ajustar) para que no lleguen al borde */

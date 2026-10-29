@@ -1,0 +1,609 @@
+{
+  "15": {
+    "carpeta": "minimal15",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "testigos: sin fotos de muestra"
+        ],
+        "info": {
+          "nombresPortada": "Vanina",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "15",
+            "vals",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Vanina",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin fecha",
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "minimal",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "testigos: sin fotos de muestra"
+        ],
+        "info": {
+          "nombresPortada": "Sabri <span class=\"circle-singleline3\">&amp;</span> Marian",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "78% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Sabri <i class=\"icon-heart h3\" aria-hidden=\"true\"></i> Marian",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Sabri <span class=\"circle-singleline3\">&amp;</span> Marian",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "78% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Sabri <i class=\"icon-heart h3\" aria-hidden=\"true\"></i> Marian",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin fecha",
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "78% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Sabri <i class=\"icon-heart h3\" aria-hidden=\"true\"></i> Marian",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-minimal",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "testigos: sin fotos de muestra"
+        ],
+        "info": {
+          "nombresPortada": "Marta",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "nombresCierre": "Marta",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Marta",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Marta",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin fecha",
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Marta",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/minimal",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "testigos: sin fotos de muestra"
+        ],
+        "info": {
+          "nombresPortada": "Vanina",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Vanina",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin fecha",
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/minimal",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "testigos: sin fotos de muestra"
+        ],
+        "info": {
+          "nombresPortada": "Vanina",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Vanina",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin fecha",
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Vanina",
+          "claseTitulos": "euforia",
+          "fuentes": [
+            "../../comun/fonts/google/great-vibes+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

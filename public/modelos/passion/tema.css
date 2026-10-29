@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   PASSION · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #b39b5f;
+  --color-secundario: #eaeae2;
+  --color-suave: #b5b0a3;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Great Vibes', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

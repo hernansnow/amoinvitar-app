@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   ROCKABILLY · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #9e1c28;
+  --color-secundario: #bfaaa6;
+  --color-suave: #4ea599;
+  --color-texto: #212529;
+
+  --fuente-titulos: "Shrikhand", cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

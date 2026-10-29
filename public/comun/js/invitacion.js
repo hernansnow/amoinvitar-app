@@ -9,12 +9,31 @@
   if (INV.cuenta && window.jQuery && jQuery.fn.countdown) {
     var tx = INV.textos;
     jQuery('#clock-b').countdown(INV.cuenta).on('update.countdown', function (e) {
+      // El formato propio del diseño (data-formato, con {d} {dias} {h} {horas} {m} {min} {s} {seg})
+      var f = this.getAttribute('data-formato');
+      if (f) {
+        jQuery(this).html(f.replace('{d}', e.strftime('%-D')).replace('{dias}', e.offset.totalDays === 1 ? tx.dia : tx.dias)
+          .replace('{h}', e.strftime('%H')).replace('{horas}', tx.horas).replace('{m}', e.strftime('%M')).replace('{min}', tx.min)
+          .replace('{s}', e.strftime('%S')).replace('{seg}', tx.seg));
+        return;
+      }
       jQuery(this).html(e.strftime(
         '<div class="holder m-2"><span class="font-weight-lighter mb-2">%-D</span> ' + (e.offset.totalDays === 1 ? tx.dia : tx.dias) + '</div>' +
         '<div class="holder m-2"><span class="font-weight-lighter mb-2">%H</span> ' + tx.horas + '</div>' +
         '<div class="holder m-2"><span class="font-weight-lighter mb-2">%M</span> ' + tx.min + '</div>' +
         '<div class="holder m-2"><span class="font-weight-lighter mb-2">%S</span> ' + tx.seg + '</div>'));
     });
+  }
+
+  // Cuenta regresiva con casilleros propios del diseño (#days #hours #minutes #seconds, p. ej. Graffiti)
+  if (INV.cuenta && !document.getElementById('clock-b') && document.getElementById('days')) {
+    var fin = new Date(INV.cuenta.replace(/\//g, '-').replace(' ', 'T')).getTime();
+    var poner = function (id, n) { var el = document.getElementById(id); if (el) el.textContent = n < 10 && id !== 'days' ? '0' + n : String(n); };
+    var tic = function () {
+      var r = Math.max(0, fin - Date.now());
+      poner('days', Math.floor(r / 864e5)); poner('hours', Math.floor(r / 36e5) % 24); poner('minutes', Math.floor(r / 6e4) % 60); poner('seconds', Math.floor(r / 1e3) % 60);
+    };
+    tic(); setInterval(tic, 1000);
   }
 
   // Botones "Agendar": menú propio (Google, Apple, Outlook, .ics), sin librerías externas
@@ -94,4 +113,47 @@
   var audio = document.getElementById('audio');
   var inicio = audio && parseFloat(audio.getAttribute('data-inicio'));
   if (inicio > 0) audio.addEventListener('loadedmetadata', function () { if (audio.currentTime < inicio) audio.currentTime = inicio; }, { once: true });
+
+  // Nombres de portada (data-ajustar): ningún nombre se sale de su lugar.
+  //   · El título se limita al ancho disponible (una fracción de la caja), así los
+  //     nombres largos bajan a otra línea dentro del aro y no por fuera.
+  //   · Si igual algo no entra (una palabra larga, el círculo del "&" al final de la
+  //     línea) o quedan más de 2 líneas, se achica la letra de a poco…
+  //   · …hasta un mínimo que se sigue leyendo bien en un celular (26px o el 45%).
+  // data-ajustar-en: la caja de referencia (el aro de la Basic); si no, la sección.
+  // Vale para todos los modelos: alcanza con poner data-ajustar en el título.
+  function medidas(h) {
+    var r = document.createRange(); r.selectNodeContents(h);
+    var rs = r.getClientRects(), izq = Infinity, der = -Infinity, tops = [];
+    for (var i = 0; i < rs.length; i++) {
+      if (!rs[i].width) continue;
+      izq = Math.min(izq, rs[i].left); der = Math.max(der, rs[i].right);
+      var c = rs[i].top + rs[i].height / 2;
+      if (!tops.some(function (t) { return Math.abs(t - c) < rs[i].height * 0.45; })) tops.push(c);
+    }
+    return { ancho: der > izq ? der - izq : 0, lineas: tops.length };
+  }
+  function ajustarNombres() {
+    document.querySelectorAll('[data-ajustar]').forEach(function (h) {
+      h.style.fontSize = ''; h.style.maxWidth = '';
+      if (!h.offsetParent) return; // oculto (otra portada): se ajusta cuando se vea
+      var propia = h.getAttribute('data-ajustar-en') && h.closest(h.getAttribute('data-ajustar-en'));
+      var caja = propia || h.closest('.container, section') || h.parentElement;
+      // Una caja propia (un círculo, un marco) cuenta por su lado más corto
+      var base = propia ? Math.min(caja.clientWidth, caja.clientHeight || caja.clientWidth) : caja.clientWidth;
+      var disponible = Math.floor(base * (parseFloat(h.getAttribute('data-ajustar')) || 0.9));
+      h.style.maxWidth = disponible + 'px'; h.style.marginLeft = h.style.marginRight = 'auto';
+      var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(26, fs0 * 0.45));
+      for (var i = 0; i < 40; i++) {
+        var m = medidas(h);
+        if (m.ancho <= disponible + 1 && m.lineas <= 2) break;
+        fs = Math.max(minimo, fs * 0.95);
+        h.style.fontSize = fs.toFixed(1) + 'px';
+        if (fs === minimo) break;
+      }
+    });
+  }
+  ajustarNombres();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustarNombres);
+  var tAjuste; addEventListener('resize', function () { clearTimeout(tAjuste); tAjuste = setTimeout(ajustarNombres, 150); });
 })();

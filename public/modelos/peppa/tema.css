@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   PEPPA · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #e9779f;
+  --color-secundario: #68beef;
+  --color-suave: #7dbe6c;
+  --color-texto: #212529;
+
+  --fuente-titulos: "Chewy", system-ui !important;
+  --fuente-texto: 'Jost', sans-serif;
+}

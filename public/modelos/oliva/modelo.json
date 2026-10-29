@@ -1,0 +1,141 @@
+{
+  "id": "oliva",
+  "nombre": "Oliva",
+  "eventos": [
+    "boda"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#9c916b",
+    "#e4d9c7",
+    "#606060",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": true
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/bg-oliva-1.jpg",
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "hospedaje",
+        "bus",
+        "itinerario",
+        "testigos",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "{a} <span class=\"text-eucalipto\">&amp;</span> {b}",
+    "cierre": "{a} <span class=\"text-gold\">&amp;</span> {b}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/oliva/img/bg-oliva-1.jpg",
+    "colorFondo": "#e4d9c7",
+    "colorTitulos": "#9c916b",
+    "fuenteTitulos": "Ruthie",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#7a8450"
+    },
+    "bienvenida": "font-family:Jost, sans-serif; color:rgb(156, 145, 107); font-weight:500; --bv-escala:1;"
+  },
+  "demo": {
+    "boda": {
+      "portadas": [
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
+      ]
+    }
+  },
+  "demoBorrosas": {
+    "boda": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/jost+ruthie.css",
+      "/modelos/oliva/tema.css"
+    ]
+  }
+}

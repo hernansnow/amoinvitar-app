@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<!--
+  MODELO GRAFFITI · cumple · Amo Invitar 2.0 (convertido de demo/cumple-graffiti con scripts/conversion/convertir-modelo.mjs)
+  Este archivo es el DISEÑO. Los textos que se ven acá son de muestra: el motor los reemplaza con los datos
+  de cada cliente al abrir la invitación. Marcas: ver la cabecera de public/modelos/garden/index.html y README.md.
+-->
+<html data-theme="light" lang="es">
+  <head>
+  <title>Invitación ❤ cumple | graffiti</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta name="description" content="¡Te esperamos para celebrar juntos!">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Invitación ❤ cumple | graffiti">
+  <meta property="og:description" content="¡Te esperamos para celebrar juntos!">
+  <meta property="og:image" content="">
+  <link rel="image_src" href="">
+  <meta property="og:site_name" content="Amo Invitar! | Invitaciones digitales">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
+  <link rel="stylesheet" href="../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css">
+  <link rel="preload" href="../../comun/fonts/icomoon/fonts/icomoon.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="stylesheet" href="../../comun/fonts/icomoon/style.css">
+  <!-- Todos los estilos del modelo en un solo archivo, y la paleta y fuentes aparte -->
+  <link rel="stylesheet" href="estilo.css">
+  <link rel="stylesheet" href="tema.css">
+  <link rel="stylesheet" href="../../comun/css/modelo-comun.css">
+  <link rel="preload" href="../../comun/fonts/bodoni-moda/bodoni-moda-italic-600.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="../../comun/fonts/bodoni-moda/bodoni-moda-500.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="stylesheet" href="../../comun/css/sobre_v1.2.css">
+  <script src="../../comun/js/sobre_v1.1.js" defer></script>
+  <link rel="stylesheet" href="../../comun/css/slides.css">
+  
+</head>
+	<body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
+<!-- ══ SOBRE LACRADO (entrada con música) ══════════════════════════════
+     ⚠️ Colores por modelo: --sobre-papel, --sobre-fondo y --sobre-lacre 🔴
+     ⚠️ Iniciales: las dos letras marcadas dentro del lacre 🔴 -->
+
+<!-- ══ /SOBRE LACRADO ══ -->
+
+<!-- 🔒 GATE de página completa — solo se activa si soloInvitados está en true.
+     Se muestra de forma sincrónica ACÁ MISMO, antes de que se parseen las
+     secciones de la invitación (fotos, historia, galería, etc.) que vienen
+     más abajo en el HTML, para que no haya "flash" del contenido real. -->
+
+<!-- /GATE de página completa -->
+
+<!-- Google Tag Manager (noscript) -->
+
+<!-- End Google Tag Manager (noscript) -->
+
+  <div data-componente="sobre"></div><div class="ai-bv" id="ai-bienvenida" data-si="bienvenidaModal.activa" hidden role="dialog" aria-modal="true" style="--ai-bv-fondo: rgba(250, 250, 250, 0.85)">
+  <div class="ai-bv-caja">
+				      <img class="img-fluid mb-2 invert" src="../../img/corona4.png" alt="Imagen" width="80">
+                    <h2 data-t="bv.titulo" class="text-verde text-graffiti2 ai-bv-tarjeta">¡Te damos la bienvenida a nuestra invitación!</h2>
+                        <p data-si="musica.archivo" data-t="bv.texto" class="mb-3 font-weight-bolder">Elegimos la música para que te acompañe en este recorrido. ¿Cómo te gustaría ingresar?</p>
+		<div class="text-center">
+
+        <button type="button" class="btn button-naranja text-uppercase rounded-pill mb-2 btn-small mx-1" data-bv="musica" data-si="musica.archivo" data-t="bv.conMusica">Ingresar con música</button>
+        <button type="button" class="btn button-naranja text-uppercase rounded-pill mb-2 btn-small mx-1" data-bv="entrar" data-si="musica.archivo" data-t="bv.sinMusica">Ingresar sin música</button>
+        <button type="button" class="btn button-naranja text-uppercase rounded-pill mb-2 btn-small mx-1" data-bv="entrar" data-no="musica.archivo" data-t="bv.entrar">Ingresar</button></div> 
+        </div>
+</div><div class="site-wrap"><div data-componente="acceso"></div>
+
+    <!-- HOME -->
+    <section data-si="cuenta.portada" class="site-blocks-cover overlay" id="home-section">
+		  <img class="img-fluid show-desktop" src="img/graffiti-separador-1a.png" width="100%" alt="Imagen" style="position: absolute; bottom: 0px; right: auto; left: auto;">
+		  <img class="img-fluid show-mobile" src="img/graffiti-separador-m-1a.png" width="100%" alt="Imagen" style="position: absolute; bottom: 0px; right: auto; left: auto;">
+		  <img class="img-fluid show-desktop" src="img/graffiti-separador-2a.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;">
+		  <img class="img-fluid show-mobile" src="img/graffiti-separador-m-2a.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;">
+      <div class="container">
+        <div class="row justify-content-center">
+			         <div class="col-12 mt-5 mb-5 pb-5 text-center align-self-start">
+          </div>
+         <div class="col-md-8 text-center align-self-center">
+			 <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-graffiti2 text-white mb-0"> 12 • 09 • 2027 </h4>
+			 <h3 data-ajustar="0.82" data-campo-html="nombres.portada" class="text-graffiti mb-0"><span>Ariadna</span></h3>
+			  <h3 data-t="portada.subtitulo" class="text-graffiti2 text-white">MI CUMPLE</h3>
+          </div>
+         <div class="col-md-8 text-center align-self-end pb-2">
+		   <div class="container-countdown text-white text-center">
+	         <h6 data-si="cuenta.activa" data-t="cuenta.faltan" class="text-white mb-0" id="headline-countdown">Faltan</h6>
+  <div data-si="cuenta.activa" class="text-center" id="countdown">
+    <ul>
+      <li><span class="text-graffiti3" id="days"></span>días</li>
+	  <li><span class="text-graffiti3" id="hours"></span>Horas</li>
+      <li><span class="text-graffiti3" id="minutes"></span>Minutos</li>
+	  <li><span class="text-graffiti3" id="seconds"></span>Segundos</li>
+    </ul>
+  </div>
+  <div id="content-countdown" class="emoji">
+<span>🎉</span>
+	<h4>¡Gracias por acompañarme!</h4>
+  </div>
+</div>
+          </div>
+        </div>
+  </div>
+		<a href="#inicio" class="smoothscroll">
+		<svg class="arrows-3">
+			<path stroke="#fff" class="a1" d="M0 0 L15 16 L30 0" />
+			<path stroke="#fff" class="a2" d="M0 10 L15 26 L30 10" />
+			<path stroke="#fff" class="a3" d="M0 20 L15 36 L30 20" />
+		</svg>
+		</a>
+		
+	   <!-- VIDEO -->
+      <div class="video-container">
+            <div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/cumple/hero-banner.jpg);background-color:#3A3D3E; background-position: 60% 20%;" data-aos="fade">
+      </div>
+</div>
+
+</section><section data-no="cuenta.portada" class="site-blocks-cover overlay" id="home-section">
+		  <img class="img-fluid show-desktop" src="img/graffiti-separador-1a.png" width="100%" alt="Imagen" style="position: absolute; bottom: 0px; right: auto; left: auto;">
+		  <img class="img-fluid show-mobile" src="img/graffiti-separador-m-1a.png" width="100%" alt="Imagen" style="position: absolute; bottom: 0px; right: auto; left: auto;">
+		  <img class="img-fluid show-desktop" src="img/graffiti-separador-2a.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;">
+		  <img class="img-fluid show-mobile" src="img/graffiti-separador-m-2a.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;">
+      <div class="container">
+        <div class="row justify-content-center">
+			         <div class="col-12 mt-5 mb-5 pb-5 text-center align-self-start">
+          </div>
+         <div class="col-md-8 text-center align-self-center">
+			 <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-graffiti2 text-white mb-0"> 12 • 09 • 2027 </h4>
+			 <h3 data-ajustar="0.82" data-campo-html="nombres.portada" class="text-graffiti mb-0"><span>Ariadna</span></h3>
+			  <h3 data-t="portada.subtitulo" class="text-graffiti2 text-white">MI CUMPLE</h3>
+          </div>
+        </div>
+  </div>
+		<a href="#inicio" class="smoothscroll">
+		<svg class="arrows-3">
+			<path stroke="#fff" class="a1" d="M0 0 L15 16 L30 0" />
+			<path stroke="#fff" class="a2" d="M0 10 L15 26 L30 10" />
+			<path stroke="#fff" class="a3" d="M0 20 L15 36 L30 20" />
+		</svg>
+		</a>
+		
+	   <!-- VIDEO -->
+      <div class="video-container">
+            <div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/cumple/hero-banner.jpg);background-color:#3A3D3E; background-position: 60% 20%;" data-aos="fade">
+      </div>
+</div>
+
+</section>  
+
+<!-- audio -->
+      <div data-si="musica.archivo">
+    <audio loop id="audio" preload="none" data-attr="data-inicio:c:musica.inicio">
+      <source src="../../comun/audio/demo-boda.mp3" type="audio/mpeg" data-attr="src:c:musica.archivo">
+    </audio>
+  </div>   
+
+<!-- /audio -->
+
+	  <section class="site-section" style="background-image: linear-gradient(rgba(78, 156, 135, 1), rgba(255, 238, 202, 1)); background-color:#FFEECA; background-size:cover; position:relative;" id="inicio">
+				<div class="container">
+			<div class="col-md-8 text-center ml-auto mr-auto pt-5" data-aos="fade-up">
+              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-black font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h1 data-si="historia.activa" class="mb-3 section-title text-center text-black"><span data-t="historia.titulo" class="text-graffiti3 text-black">Mi Historia</span></h1>
+			  <p data-si="historia.activa" class="text-black g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></p>
+          
+				</div>
+				</div>
+            <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+</section>
+	  
+<section class="bg-diferido site-section bg-amarillo p-3" style="background-image: linear-gradient(rgba(250, 250, 250, 0.5), rgba(250, 250, 250, 0.5)), url(img/bg-15-3.jpg); background-color:#fff ; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
+      <div class="container">
+        <div class="row item">
+
+			<div class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
+			
+          <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
+              <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-graffiti.png" width="110px" alt="Imagen" style="opacity: .8">
+			  <h1 class="mb-3 section-title text-center text-black"><span class="text-graffiti3 text-black">La Fiesta</span></h1>
+			  <img loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded mb-3 w-75">
+			  <p class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
+			  <p class="text-center">12 de septiembre de 2027 a las 21:00</p>
+			  <p class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">LUGAR</p>
+			  <p class="text-center">"Estancia La Soñada del Pilar", Sor Teresa y Cabo de Hornos</p>
+			  
+			  <button id="fiesta-button" class="button button-naranja mb-2 text-uppercase rounded-pill"><i class="icon-calendar" aria-hidden="true"></i>  Agendar</button>
+			  <button class="button button-naranja mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#map2" data-animation-duration="700"><i class="icon-map-marker" aria-hidden="true"></i>  ¿CÓMO LLEGAR?</button>
+
+    <div style="display: none;" id="map2" class="animated-modal p-4">
+				   	<p class="text-center h3 mb-0"><i class="text-black icon-map-marker" aria-hidden="true"></i></p>
+					 <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">¿Cómo llegar?</p>
+	
+	<div class="text-center" style="width: 100%"><iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" style="border:0;" allowfullscreen loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3289.2269194982823!2d-58.9727259!3d-34.471767299999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc83aeb6f85313%3A0xd7cacdc061869815!2sLa%20So%C3%B1ada%2C%20Salon%20Eventos%2C%20Estancias!5e0!3m2!1ses-419!2ses!4v1753341498200!5m2!1ses-419!2ses"></iframe><a href="https://maps.app.goo.gl/ufp3soaHBF7N4PwV9" target="_blank" class="mt-2 btn btn-outline-dark btn-small"><i class="icon-map-marker" aria-hidden="true"></i> Ver en la app de Google Maps</a></div>
+    </div>
+
+          </div>
+            </div>
+          </div>
+
+    </section>
+	  
+<div id="rsvp" data-seccion="rsvp"><div data-si="fotos.rsvp"><section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(img/bg-graffiti-1.jpg); background-color:#BAABB5 ; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
+    <div class="container">
+
+		 <div class="col-md-12 col-lg-12 ml-auto mr-auto p-lg-0" data-aos="fade-up">
+            <div class="rounded p-1" style="background-color:rgba(255, 255, 255, 0.8);">
+				<!-- 1 -->
+		   <div class="row">
+			<div data-si="fotos.rsvp" class="col-lg-6 mt-auto mb-auto">
+			<div class="text-center">
+              <img data-attr="src:c:fotos.rsvp;style:c:fotos.rsvpEstilo" src="demo/cumple/rsvp.jpg" loading="lazy" alt="foto" class="img-fluid rounded">
+              </div>
+			</div>
+     
+		   <div class="col-lg-6 p-3 mt-auto mb-auto text-center">
+			 <img loading="lazy" class="img-fluid mb-1" src="img/icon-rsvp-graffiti.png" width="90px" alt="Imagen">
+		   <h2 class="section-title text-center"><span data-t="rsvp.titulo" class="text-graffiti3 text-black">Confirmación</span></h2>
+             			<p class="text-center" data-rsvp="texto" data-bloque-invitado-class="mb-4" data-bloque-invitado-inner="<div class='text-center pl-2 pr-2 pb-3 pt-3 ml-2 mr-2 mb-4 mt-0 shadow' style='border: 2px dashed #dee2e6;border-radius: 36px 36px 36px 36px; -webkit-border-radius: 36px 36px 36px 36px; -moz-border-radius: 36px 36px 36px 36px;'><i class='icon-user-circle-o h3 font-weight-normal' aria-hidden='true' style='opacity:.7'></i><br><p id='nombre' class='text-uppercase font-weight-bold mb-0'></p><p class='border-bottom mb-2 mt-1 ml-5 mr-5'></p><p id='pases' class='small font-weight-bold text-uppercase mb-0 mt-0'></p><p class='font-weight-bolder small text-uppercase mb-0 mt-0' id='mesa'></p></div>" data-bloque-general-class="mb-4" data-attr="data-texto-abierto-libre:c:rsvp.texto; data-fecha-texto:t:rsvp.hasta; data-texto-cerrado:t:rsvp.finalizado" data-texto-abierto-libre="Tu presencia hará que este día sea realmente especial e inolvidable." data-fecha-texto="Se reciben confirmaciones hasta el" data-texto-cerrado="El plazo de confirmación ha finalizado.">
+              </p>
+               <p></p>
+
+			   <!-- BOTON RSVP --> 
+               <div class="text-center">
+			     <button data-texto-cerrado="<i class='icon-send-o' aria-hidden='true'></i> CONFIRMACIONES CERRADAS" data-texto-abierto="<i class='icon-send-o' aria-hidden='true'></i> CONFIRMAR ASISTENCIA" data-formato="corto" data-idioma="es-ES" data-fecha="2027-08-10" data-attr="data-fecha:c:rsvp.cierre; data-idioma:c:idioma.fechas; data-formato:c:rsvp.formato; data-texto-abierto:t:rsvp.botonHtml; data-texto-cerrado:t:rsvp.cerradoHtml" data-rsvp="boton" data-animation-duration="700" data-src="#confirmar-rsvp" data-fancybox="" class="button button-verde mb-2 text-uppercase rounded-pill"></button>
+               </div>
+
+               <!-- FECHA LÍMITE — va después del botón, el JS la rellena -->
+               <div class="text-center mt-2 mb-3">
+				   <i class="small" style="opacity:.7" data-rsvp="fecha"></i>
+			   </div>
+			   
+		        <!-- MODAL FORM RSVP -->
+<div data-componente="rsvp-form" data-clase-titulo="text-center text-black mb-4 font-weight-bolder border-bottom border-dark"></div>
+<!-- /RSVP DEMO VISUAL -->
+			   
+		  </div>
+		  </div>
+		</div>
+	 </div>
+  </div>	
+	
+</section></div><div data-no="fotos.rsvp"><section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(img/bg-graffiti-1.jpg); background-color:#BAABB5 ; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
+    <div class="container">
+		 <div class="col-md-6 col-lg-6 ml-auto mr-auto rounded p-4" style="background-color:rgba(255, 255, 255, 0.8);" data-aos="fade-up">
+		   <div class="text-center">
+			 <img loading="lazy" class="img-fluid mb-1" src="img/icon-rsvp-graffiti.png" width="90px" alt="Imagen">
+		   <h2 class="section-title text-center"><span data-t="rsvp.titulo" class="text-graffiti3 text-black">Confirmación</span></h2>
+             			<p class="text-center" data-rsvp="texto" data-bloque-invitado-class="mb-4" data-bloque-invitado-inner="<div class='text-center pl-2 pr-2 pb-3 pt-3 ml-2 mr-2 mb-4 mt-0 g-tarjeta-invitado'><i class='icon-user-circle-o h3 font-weight-normal' aria-hidden='true' style='opacity:.7'></i><br><p class='text-uppercase font-weight-bold mb-0' id='nombre'></p><p class='border-bottom mb-2 mt-1 ml-5 mr-5'></p><p class='small text-uppercase mb-0 mt-0' id='pases'></p><p class='font-weight-bolder small text-uppercase mb-0 mt-0' id='mesa'></p></div>" data-bloque-general-class="mb-4" data-attr="data-texto-abierto-libre:c:rsvp.texto; data-fecha-texto:t:rsvp.hasta; data-texto-cerrado:t:rsvp.finalizado" data-texto-abierto-libre="Tu presencia hará que este día sea realmente especial e inolvidable." data-fecha-texto="Se reciben confirmaciones hasta el" data-texto-cerrado="El plazo de confirmación ha finalizado.">
+              </p>
+			   
+			   			                     <!-- INVITADO -->
+
+			   <!-- BOTON RSVP --> 
+               <div class="text-center">
+			     <button data-texto-cerrado="<i class='icon-send-o' aria-hidden='true'></i> CONFIRMACIONES CERRADAS" data-texto-abierto="<i class='icon-send-o' aria-hidden='true'></i> CONFIRMAR ASISTENCIA" data-formato="corto" data-idioma="es-ES" data-fecha="2027-08-10" data-attr="data-fecha:c:rsvp.cierre; data-idioma:c:idioma.fechas; data-formato:c:rsvp.formato; data-texto-abierto:t:rsvp.botonHtml; data-texto-cerrado:t:rsvp.cerradoHtml" data-rsvp="boton" data-animation-duration="700" data-src="#confirmar-rsvp" data-fancybox="" class="button button-verde mb-2 text-uppercase rounded-pill"></button>
+               </div>
+
+               <!-- FECHA LÍMITE — va después del botón, el JS la rellena -->
+               <div class="text-center mt-2 mb-3">
+				   <i class="small" style="opacity:.7" data-rsvp="fecha"></i>
+			   </div>
+			   
+		        <!-- MODAL FORM RSVP -->
+<div data-componente="rsvp-form" data-clase-titulo="text-center text-black mb-4 font-weight-bolder border-bottom border-dark"></div>
+<!-- /RSVP DEMO VISUAL -->
+			   
+		  </div>
+		  </div>	   
+		  </div>
+</section></div></div>
+		
+    <section class="site-section bg-verde" id="dresscode">
+      <div class="container">
+        <div class="row ml-auto mr-auto">
+           <div class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-in">
+			   <div class="text-center mb-0">
+		      <img loading="lazy" class="img-fluid mb-0" src="img/icon-dress-graffiti.png" width="90px" alt="Imagen">
+			  </div>
+			   <h1 class="mb-3 section-title text-center text-white"><span class="text-graffiti3">Dress Code</span></h1>
+                <p class="text-center text-white">Formal y elegante. Por favor no usar blanco.</p>
+				   </div>
+       </div>
+     </div>
+	</section>
+
+  <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), url(img/bg-graffiti-3.jpg); background-color:#606060; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="ig">
+      <div class="container">
+          <div id="hashtag" data-seccion="instagram" class="col-md-6 ml-auto mr-auto text-center rounded p-4 shadow" data-aos="fade-up" style="background-color:rgba(255, 255, 255, 0.8);">
+			  <img loading="lazy" class="img-fluid mb-1" src="img/icon-ig-graffiti.png" width="90px" alt="Imagen">
+			  <h2 class="mb-3 section-title text-center"><span data-t="hashtag.titulo" class="text-graffiti3 text-black">Etiqueta tus Fotos</span></h2>
+            <h4 data-si="hashtag.texto" class="mb-4"><span data-campo="hashtag.texto" class="text-white bg-verde p-1">#CumpleAriadna2027</span></h4>
+			  <p data-t-html="hashtag.texto" class="text-center">¡Prepárate para mi fiesta! Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
+
+			  <div data-si="fotos.instagram" class="text-center mb-3">
+                  <img data-attr="src:c:fotos.instagram;style:c:fotos.instagramEstilo" src="demo/cumple/instagram.jpg" loading="lazy" alt="foto" class="img-fluid rounded">
+			  </div>
+       
+		  <div data-si="hashtag.link" class="col-12 text-center">
+			  <a data-t="hashtag.boton" data-attr="href:c:hashtag.link" href="#" target="_blank" class="btn button-naranja mb-2 text-uppercase rounded-pill">
+			 VER FOTOS</a>
+		      </div>
+      </div> 
+		  </div>
+    </section>
+
+<div class="bg-amarillo site-section" id="musica">
+      <div class="container">
+        <div class="row">
+                   <div id="musica" data-seccion="canciones" class="col-md-6 text-center ml-auto mr-auto" data-aos="fade-in">
+                    <img loading="lazy" class="img-fluid mb-1" src="img/icon-music-graffiti.png" width="90px" alt="Imagen">
+			  <h2 class="mb-3 section-title text-center"><span data-t="canciones.titulo" class="text-graffiti3 text-black">Música</span></h2>
+             	<p data-t-html="canciones.texto" class="text-center text-black">¿Qué canciones son infaltables?<br>
+                                                   Ayúdame con la selección de canciones</p>
+					<div class="text-center">
+		               <button data-t="canciones.boton" class="btn button-naranja text-uppercase rounded-pill mb-2" data-fancybox="" data-src="#canciones" data-animation-duration="700">Sugerir canción</button>
+		        <!-- ══ CONFIG CANCIONES (todos los textos editables acá) ══════════════ -->
+
+					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
+			  	       <div data-componente="canciones"></div>
+                     <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
+		            </div>	   	   
+	 
+	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="section-title"></div></div>
+  </div>
+</div>
+</div> 
+	  
+	  <section data-seccion="regalos" id="regalos" class="bg-diferido site-section" style="background-image: linear-gradient(rgba(218, 145, 145, 0.5), rgba(0, 0, 0, 0.5)), url(img/bg-graffiti-4.jpg); background-color:#DE9253; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
+    <div class="container">
+          <div class="col-md-6 col-lg-6 ml-auto mr-auto cubo rounded text-center" data-aos="fade-up">
+		   <img loading="lazy" class="img-fluid mb-1" src="img/icon-gift2-graffiti.png" width="110px" alt="Imagen">
+			   <h2 class="mb-3 section-title text-center text-black"><span data-t="regalos.titulo" class="text-graffiti3">Regalos</span></h2>	
+			<p data-campo-html="regalos.texto" class="text-center">El mejor regalo es que me acompañes en este hermoso día, pero si deseas hacerme un regalo aquí te dejo los datos.</p>
+				<div data-si="regalos.hayBotones" class="text-center show-desktop"><span class="vr mb-2"></span></div>
+			  		<div class="col-12 text-center">	
+		        <button data-t="regalos.botonCuenta" data-si="regalos.cuentas" class="button button-verde mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#regalo" data-animation-duration="700">CUENTA BANCARIA</button>
+				<button data-t="regalos.botonLista" data-si="regalos.lista" class="button button-verde mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#regalo2" data-animation-duration="700">LISTA DE REGALOS</button>
+		            </div>
+          </div>
+		   <!-- ventana cuenta -->
+		   <div style="display: none;" id="regalo" class="animated-modal p-4" data-selectable="true" data-si="regalos.cuentas">
+        <div class="mt-4">
+          <div class="mb-4">
+            <p class="text-center h4 mb-0"><i class="text-black icon-bank" aria-hidden="true"></i></p>
+            <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="regalos.modalCuenta">Datos Bancarios</p>
+            <ul class="list-unstyled font-weight-bolder">
+              <li data-repetir="regalos.cuentas"><p class="mb-1"><span class="font-weight-lighter"><span data-i="etiqueta">Alias</span>: </span><span id="dato-{n}" data-i="dato">XXX-XXX-XXX</span> <a href="#" onclick="copiarId('dato-{n}'); return false;" data-si="copiable"><i class="icon-copy"></i></a></p></li>
+              <li data-repetir="regalos.cuentas"><p class="mb-1"><span class="font-weight-lighter"><span data-i="etiqueta">Titular</span>: </span><span id="dato-{n}" data-i="dato">Juan Fulano</span> <a href="#" onclick="copiarId('dato-{n}'); return false;" data-si="copiable"><i class="icon-copy"></i></a></p></li>
+            </ul>
+          </div>
+          <button data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small" data-t="boton.cerrar">cerrar</button>
+        </div>
+      </div>
+      <div style="display: none;" id="regalo2" class="animated-modal p-4" data-selectable="true" data-si="regalos.lista">
+        <div class="mt-4">
+          <div class="mb-4">
+            <p class="text-center h3 mb-0"><i class="text-black icon-gift" aria-hidden="true"></i></p>
+            <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="regalos.modalLista">Lista de regalos</p>
+            <ul class="list-unstyled text-center">
+              <li><p class="mb-4" data-campo-html="regalos.lista.texto">Creamos una lista de regalos en una tienda online, para que puedas regalar el que gustes</p></li>
+              <li class="mb-3" data-repetir="regalos.listas"><p class="font-weight-bolder mb-1"><span class="font-weight-lighter" data-si="etiqueta"><span data-i="etiqueta">Falabella</span></span><span data-si="dato"><span data-si="etiqueta">: </span><span id="lista-{n}" data-i="dato">000000-00</span> <a href="#" onclick="copiarId('lista-{n}'); return false;"><i class="icon-copy"></i></a></span></p><p data-si="link"><a href="#" target="_blank" rel="noopener" class="btn btn-block mb-2 text-uppercase button-gris" data-i-attr="href:link" data-t="regalos.irLista">Ir a la lista</a></p></li>
+            </ul>
+          </div>
+          <button data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small" data-t="boton.cerrar">cerrar</button>
+        </div>
+      </div>
+		  <!-- /ventana cuenta -->
+		  <!-- ventana lista de regalos -->
+			
+		  <!-- ventana lista de regalos -->
+
+</div>
+ </section>	
+    
+	  	<section id="cierre" class="site-section bg-verde">
+			<div class="container">
+          <div class="col-md-9 ml-auto mr-auto text-center">
+			 <h4 data-campo-html="pie.texto" data-si="pie.mostrar" class="text-black"><span class="text-graffiti3 mb-0">"</span>Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple.</h4><span class="text-graffiti3 text-right m-0 p-0">"</span>
+          </div>
+		               
+      </div>
+    </section><section class="site-section bg-verde pt-4 pb-4 ai-perdiste">
+      <div class="container"><div class="row"><div class="col-12 text-center">
+        <h3 class="mb-3 text-center text-black" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
+        <ul class="list-unstyled">
+            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-black" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
+            <li><a href="#inicio" class="smoothscroll btn-link text-black" data-t="perdiste.agendar">Agendar evento</a></li>
+            <li data-seccion="instagram"><a href="#hashtag" class="smoothscroll btn-link text-black" data-t="perdiste.instagram">Instagram Wall</a></li>
+            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-black" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-black" data-t="perdiste.regalos">Regalos</a></li>
+            <li><a href="#home-section" class="smoothscroll btn-link text-black" data-t="perdiste.inicio">Inicio</a></li>
+        </ul>
+      </div></div></div>
+    </section>
+	  
+	  <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url(img/bg-graffiti-2.jpg); background-color:#BAABB5; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
+          <div class="container">
+			<div class="row">
+          <div class="col-md-8">
+            <h1 class="text-center section-title text-graffiti3 mt-auto ml-auto text-white">Ariadna</h1>
+       </div>
+		 <div class="col-md-4 text-xl-left text-lg-left text-md-left text-center">
+			 <ul class="list-unstyled">
+				  <li><a href="#rsvp" class="smoothscroll btn-link text-white">Confirmar asistencia</a></li>
+				  <li><a href="#agenda" class="smoothscroll btn-link text-white">Agendar evento</a></li>
+				  <li><a href="#dresscode" class="smoothscroll btn-link text-white">Dress code</a></li>
+ 				  <li><a href="#musica" class="smoothscroll btn-link text-white">Sugerir canción</a></li>
+				  <li><a href="#home-section" class="smoothscroll btn-link text-white">Inicio</a></li>
+			 </ul>
+       </div>
+      </div>
+	</div>
+ </section>
+
+	  <div data-componente="pie-marca"></div>
+  <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
+    <div class="container">
+      <div class="col-md-6 ml-auto mr-auto p-0">
+        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
+          <div class="col-6 ml-auto text-right p-0">
+            <a href="https://amoinvitar.com/"><img class="img-fluid mb-1 mr-1" width="90" src="../../comun/img/amoinvitar-line.svg" alt="Amo Invitar!"></a>
+          </div>
+          <div class="col-6 mr-auto text-left p-0">
+            <a href="https://amoinvitar.com/"><p class="text-small ml-1 mt-1 text-white-50"> | amoinvitar.com</p></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  </div> <!-- .site-wrap -->
+
+<script src="../../comun/js/jquery-3.5.1.min.js"></script>
+<script src="../../comun/js/owl.carousel.min.js"></script>
+<script src="../../comun/js/popper.min.js" defer></script>
+<script src="../../comun/js/bootstrap.min.js" defer></script>
+<script src="../../comun/js/jquery.countdown.min.js"></script>
+<script src="../../comun/js/jquery.fancybox.min.js"></script>
+<script src="../../comun/js/jquery.easing.1.3.js" defer></script>
+<script src="../../comun/js/jquery.sticky.js"></script>
+<script src="../../comun/js/aos.js" defer></script>
+<script src="../../comun/js/snow_2.7.1.js" defer></script>
+<script src="../../comun/js/rsvp-fecha-fin-evento.js" defer></script>
+<!-- Motor del lado del navegador: cuenta regresiva, agendar (Google, Apple, Outlook), mapas, álbum -->
+<script src="../../comun/js/invitacion.js" defer></script>
+<script src="../../comun/js/slides.js" defer></script>
+<script src="../../comun/js/diferido.js" defer></script>
+</body>
+</html>

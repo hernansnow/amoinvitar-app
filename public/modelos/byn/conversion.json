@@ -1,0 +1,589 @@
+{
+  "15": {
+    "carpeta": "byn15",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "15",
+            "vals",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "byn",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">LAURA</span>\n                <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"><span class=\"text-gold\">&amp;</span> <span>PABLO</span>\n                </span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 60%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "Laura <i class=\"icon-heart text-gold\" aria-hidden=\"true\"></i> Pablo",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">LAURA</span>\n                <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"><span class=\"text-gold\">&amp;</span> <span>PABLO</span>\n                </span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 60%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Laura <i class=\"icon-heart text-gold\" aria-hidden=\"true\"></i> Pablo",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">LAURA</span>\n                <span class=\"elegance elegance-header-bottom mb-0 p-0 text-uppercase\"><span class=\"text-gold\">&amp;</span> <span>PABLO</span>\n                </span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 60%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Laura <i class=\"icon-heart text-gold\" aria-hidden=\"true\"></i> Pablo",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-byn",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/byn",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/byn",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "iglesia",
+            "torta",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase\">VICKY</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "40% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Vicky",
+          "claseTitulos": "elegance",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      }
+    }
+  }
+}

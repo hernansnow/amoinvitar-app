@@ -13,7 +13,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const APP = fileURLToPath(new URL('..', import.meta.url));
-const REPO = resolve(APP, '..');          // repo de siempre (css/, img/, fonts/)
+const REPO = process.env.REPO_VIEJO || resolve(APP, '..'); // repo de siempre (css/, img/, fonts/)
 const COMUN = join(APP, 'public/comun');
 
 const HOJAS = [
@@ -35,17 +35,24 @@ const SAFELIST = {
   greedy: [/^owl-/, /^fancybox-/, /^aos/, /data-aos/, /^modal/, /^carousel/, /^atcb/, /^compensate/, /^sobre/, /^gate/, /^countdown/, /^tooltip/, /^bs-/, /^popover/, /^site-mobile/, /^offcanvas/],
 };
 
+// Fondos de 100vh: en el celular la barra del navegador los estira o achica; 100svh (con 100vh antes para los viejos)
+export const conSvh = (t) => t.replace(/((?:min-|max-)?height)\s*:\s*100vh\s*(!important)?\s*(;|(?=["}]))/g, (m, p, imp = '', fin) => `${p}:100vh${imp};${p}:100svh${imp}${fin === ';' ? ';' : ''}`);
 const existe = (p) => access(p).then(() => true, () => false);
 
 async function convertir(modelo) {
-  const cfg = MODELOS[modelo];
-  if (!cfg) throw new Error(`No hay configuración para "${modelo}"`);
+  // Sin configuración propia: los colores y fuentes quedan como están (tema.css igual define las variables)
+  const cfg = MODELOS[modelo] || { colores: {}, fuentes: {} };
   const carpeta = join(APP, 'public/modelos', modelo);
+  // Hojas propias del modelo (css/inv-x.css del sitio), anotadas por el convertidor en conversion.json
+  const conv = JSON.parse(await readFile(join(carpeta, 'conversion.json'), 'utf8').catch(() => '{}'));
+  const propias = [...new Set(Object.values(conv).flatMap((e) => e.hojas || []))];
 
-  const hojas = await Promise.all(HOJAS.map((h) => readFile(join(COMUN, 'css', h), 'utf8')));
+  const hojas = await Promise.all([...HOJAS.map((h) => readFile(join(COMUN, 'css', h), 'utf8')),
+    ...propias.map((h) => readFile(join(REPO, h), 'utf8').catch(() => { console.log('Falta la hoja', h); return ''; }))]);
   const [resultado] = await new PurgeCSS().purge({
     content: [
-      join(carpeta, 'index.html'),
+      // los tres diseños del modelo: Deluxe (index.html), Premium y Basic
+      join(carpeta, 'index*.html'),
       join(APP, 'src/componentes/*.js'),
       join(COMUN, 'js/*.js'),
     ],
@@ -55,7 +62,7 @@ async function convertir(modelo) {
     keyframes: true,
     variables: false,
   });
-  let css = resultado.css;
+  let css = conSvh(resultado.css);
 
   // Paleta y fuentes → variables
   for (const [hex, v] of Object.entries(cfg.colores)) css = css.replace(new RegExp(hex, 'gi'), `var(${v})`);
@@ -70,6 +77,7 @@ async function convertir(modelo) {
     const origen = resolve(REPO, 'css', limpio);
     if (/\/fonts\//.test(limpio)) {
       const rel = limpio.replace(/^.*?fonts\//, 'fonts/');
+      copias.push([origen, join(COMUN, rel)]); // la fuente va a comun/fonts (si no estaba)
       return `url(${q}../../comun/${rel}${q})`;
     }
     copias.push([origen, join(carpeta, 'img', basename(limpio))]);
@@ -90,4 +98,4 @@ async function convertir(modelo) {
   if (faltan.length) console.log('Imágenes que no se encontraron:', [...new Set(faltan)].join(', '));
 }
 
-await convertir(process.argv[2] || 'garden');
+for (const m of process.argv.slice(2).length ? process.argv.slice(2) : ['garden']) await convertir(m);

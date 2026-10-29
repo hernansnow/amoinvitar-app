@@ -1,0 +1,512 @@
+{
+  "15": {
+    "carpeta": "lila15",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia2",
+            "tragos",
+            "15",
+            "cena",
+            "disco",
+            "torta",
+            "baile"
+          ],
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "lila",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)"
+        ],
+        "info": {
+          "nombresPortada": "Juliana<i class=\"icon-heart text-lila ml-2 mr-2\" aria-hidden=\"true\"></i>Valeria",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-c",
+            "cena",
+            "disco",
+            "torta",
+            "last-call"
+          ],
+          "nombresCierre": "Juliana<i class=\"icon-heart ml-2 mr-2\" aria-hidden=\"true\"></i>Valeria",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana<i class=\"icon-heart text-lila ml-2 mr-2\" aria-hidden=\"true\"></i>Valeria",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana<i class=\"icon-heart ml-2 mr-2\" aria-hidden=\"true\"></i>Valeria",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana<i class=\"icon-heart text-lila ml-2 mr-2\" aria-hidden=\"true\"></i>Valeria",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana<i class=\"icon-heart ml-2 mr-2\" aria-hidden=\"true\"></i>Valeria",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-lila",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      }
+    }
+  },
+  "bautismo": {
+    "carpeta": "../nuevos-bautismo/lila",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia2",
+            "tragos",
+            "baby",
+            "cena",
+            "disco",
+            "torta",
+            "baile"
+          ],
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      }
+    }
+  },
+  "comunion": {
+    "carpeta": "../nuevos-comunion/lila",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-comunion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 12,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "iglesia2",
+            "tragos",
+            "iglesia",
+            "cena",
+            "disco",
+            "torta",
+            "baile"
+          ],
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-comunion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 8,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-comunion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Juliana",
+          "portadaFotos": 0,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Juliana",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+passions-conflict.css"
+          ]
+        }
+      }
+    }
+  }
+}

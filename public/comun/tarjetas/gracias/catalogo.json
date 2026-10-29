@@ -1,0 +1,1360 @@
+{
+ "nota": "Tarjetas de agradecimiento con foto (no dependen del modelo). Los diseños 1, 4, 5 y 6 usan los fondos de las Save The Date con foto.",
+ "fuentes": {
+  "titulos": "Great Vibes",
+  "texto": "Jost",
+  "serif": "Playfair Display",
+  "brush": "Alex Brush",
+  "josefin": "Josefin Sans",
+  "css": [
+   "/comun/fonts/catalogo/catalogo.css"
+  ],
+  "myriad": "Source Sans 3",
+  "rouge": "Rouge Script",
+  "juliette": "Mr Dafoe",
+  "abril": "Abril Fatface",
+  "montserrat": "Montserrat",
+  "parisienne": "Parisienne",
+  "satisfy": "Satisfy",
+  "poppins": "Poppins",
+  "pristina": "Italianno",
+  "triforce": "Cinzel",
+  "dantina": "Dantina"
+ },
+ "disenos": [
+  {
+   "id": "g1",
+   "nombre": "Ramitas",
+   "ancho": 2480,
+   "alto": 3508,
+   "fondo": "#ffffff",
+   "plural": {
+    "muestra": "g1/muestra-boda.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 2480,
+     "h": 1720
+    },
+    "capas": [
+     {
+      "img": "../foto/f3/fondo-boda.webp",
+      "x": 0,
+      "y": 0,
+      "w": 2480,
+      "h": 3508,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "nombreA",
+      "texto": "{a} &",
+      "x": 1150,
+      "y": 1824,
+      "tam": 320,
+      "fuente": "serif",
+      "peso": 900,
+      "color": "#2b304b",
+      "ancho": 1250,
+      "ajustar": true
+     },
+     {
+      "id": "nombreB",
+      "texto": "{b}",
+      "x": 1450,
+      "y": 2088,
+      "tam": 320,
+      "fuente": "serif",
+      "peso": 900,
+      "color": "#2b304b",
+      "ancho": 1100,
+      "ajustar": true
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaMomentos}",
+      "x": 1240,
+      "y": 2640,
+      "tam": 76,
+      "fuente": "texto",
+      "color": "#4a4d5c",
+      "ancho": 1900,
+      "altoLinea": 1.35
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 1240,
+      "y": 3080,
+      "tam": 76,
+      "fuente": "texto",
+      "color": "#4a4d5c",
+      "ancho": 1900,
+      "altoLinea": 1.35
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 1240,
+      "y": 3330,
+      "tam": 52,
+      "fuente": "texto",
+      "color": "#4a4d5c",
+      "ancho": 1900,
+      "extra": true
+     }
+    ]
+   },
+   "singular": {
+    "muestra": "g1/muestra-15.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 2480,
+     "h": 1720
+    },
+    "capas": [
+     {
+      "img": "../foto/f3/fondo-boda.webp",
+      "x": 0,
+      "y": 0,
+      "w": 2480,
+      "h": 3508,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 1240,
+      "y": 1955,
+      "tam": 520,
+      "fuente": "serif",
+      "peso": 900,
+      "color": "#232845",
+      "ancho": 2100,
+      "ajustar": true
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaMomentos}",
+      "x": 1240,
+      "y": 2640,
+      "tam": 76,
+      "fuente": "texto",
+      "color": "#4a4d5c",
+      "ancho": 1900,
+      "altoLinea": 1.35
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 1240,
+      "y": 3080,
+      "tam": 76,
+      "fuente": "texto",
+      "color": "#4a4d5c",
+      "ancho": 1900,
+      "altoLinea": 1.35
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 1240,
+      "y": 3330,
+      "tam": 52,
+      "fuente": "texto",
+      "color": "#4a4d5c",
+      "ancho": 1900,
+      "extra": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "g2",
+   "nombre": "Rosas",
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "plural": {
+    "muestra": "g2/muestra-boda.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 1500
+    },
+    "capas": [
+     {
+      "img": "g2/fondo.webp",
+      "x": 0,
+      "y": 0,
+      "w": 2160,
+      "h": 2989,
+      "sobreFoto": true
+     },
+     {
+      "img": "g2/anillos.webp",
+      "x": 940,
+      "y": 1250,
+      "w": 280,
+      "h": 280,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 1080,
+      "y": 1790,
+      "tam": 72,
+      "fuente": "texto",
+      "color": "#2f3433",
+      "ancho": 1640,
+      "altoLinea": 1.3
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 1080,
+      "y": 2120,
+      "tam": 72,
+      "fuente": "texto",
+      "color": "#2f3433",
+      "ancho": 1500,
+      "altoLinea": 1.3
+     },
+     {
+      "id": "teQueremos",
+      "texto": "{teQueremos}",
+      "x": 1080,
+      "y": 2330,
+      "tam": 70,
+      "fuente": "texto",
+      "color": "#2f3433"
+     },
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 1080,
+      "y": 2620,
+      "tam": 230,
+      "fuente": "dantina",
+      "color": "#3a3a3a",
+      "ancho": 1150,
+      "ajustar": true,
+      "amp": {
+       "tipo": "texto",
+       "color": "#a1977b"
+      }
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 1080,
+      "y": 2830,
+      "tam": 50,
+      "fuente": "texto",
+      "color": "#2f3433",
+      "ancho": 1600,
+      "extra": true
+     }
+    ]
+   },
+   "singular": {
+    "muestra": "g2/muestra-15.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 1500
+    },
+    "capas": [
+     {
+      "img": "g2/fondo.webp",
+      "x": 0,
+      "y": 0,
+      "w": 2160,
+      "h": 2989,
+      "sobreFoto": true
+     },
+     {
+      "img": "g2/estrella.webp",
+      "x": 940,
+      "y": 1250,
+      "w": 280,
+      "h": 280,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 1080,
+      "y": 1790,
+      "tam": 72,
+      "fuente": "texto",
+      "color": "#2f3433",
+      "ancho": 1640,
+      "altoLinea": 1.3
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 1080,
+      "y": 2120,
+      "tam": 72,
+      "fuente": "texto",
+      "color": "#2f3433",
+      "ancho": 1500,
+      "altoLinea": 1.3
+     },
+     {
+      "id": "teQueremos",
+      "texto": "{teQueremos}",
+      "x": 1080,
+      "y": 2330,
+      "tam": 70,
+      "fuente": "texto",
+      "color": "#2f3433"
+     },
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 1080,
+      "y": 2620,
+      "tam": 230,
+      "fuente": "dantina",
+      "color": "#3a3a3a",
+      "ancho": 1150,
+      "ajustar": true,
+      "amp": {
+       "tipo": "texto",
+       "color": "#a1977b"
+      }
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 1080,
+      "y": 2830,
+      "tam": 50,
+      "fuente": "texto",
+      "color": "#2f3433",
+      "ancho": 1600,
+      "extra": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "g3",
+   "nombre": "Columna",
+   "ancho": 2551,
+   "alto": 3578,
+   "fondo": "#ffffff",
+   "plural": {
+    "muestra": "g3/muestra-boda.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 1180,
+     "h": 3578
+    },
+    "capas": [
+     {
+      "img": "g3/fondo.webp",
+      "x": 0,
+      "y": 0,
+      "w": 2551,
+      "h": 3578,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "titulo",
+      "texto": "¡Gracias!",
+      "x": 1800,
+      "y": 250,
+      "tam": 64,
+      "fuente": "serif",
+      "color": "#8b6f62",
+      "mayus": true,
+      "espaciado": 6,
+      "peso": 700
+     },
+     {
+      "id": "ampFondo",
+      "texto": "&",
+      "x": 1800,
+      "y": 1440,
+      "tam": 900,
+      "fuente": "abril",
+      "color": "#8b6f62",
+      "opacidad": 0.13
+     },
+     {
+      "id": "nombreA",
+      "texto": "{a}",
+      "x": 1800,
+      "y": 1190,
+      "tam": 330,
+      "fuente": "abril",
+      "color": "#5b4a43",
+      "ancho": 1050,
+      "ajustar": true
+     },
+     {
+      "id": "nombreB",
+      "texto": "{b}",
+      "x": 1800,
+      "y": 1680,
+      "tam": 330,
+      "fuente": "abril",
+      "color": "#5b4a43",
+      "ancho": 1050,
+      "ajustar": true
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaMomentos}",
+      "x": 1250,
+      "y": 2330,
+      "tam": 82,
+      "fuente": "poppins",
+      "color": "#8b7a72",
+      "alinear": "izq",
+      "ancho": 1120,
+      "altoLinea": 1.32,
+      "peso": 300
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 1250,
+      "y": 3020,
+      "tam": 82,
+      "fuente": "poppins",
+      "color": "#8b7a72",
+      "alinear": "izq",
+      "ancho": 1120,
+      "altoLinea": 1.32,
+      "peso": 300
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 1250,
+      "y": 3340,
+      "tam": 58,
+      "fuente": "poppins",
+      "color": "#8b7a72",
+      "alinear": "izq",
+      "ancho": 1120,
+      "extra": true,
+      "peso": 300
+     }
+    ]
+   },
+   "singular": {
+    "muestra": "g3/muestra-15.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 1180,
+     "h": 3578
+    },
+    "capas": [
+     {
+      "img": "g3/fondo.webp",
+      "x": 0,
+      "y": 0,
+      "w": 2551,
+      "h": 3578,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "titulo",
+      "texto": "¡Gracias!",
+      "x": 1800,
+      "y": 250,
+      "tam": 64,
+      "fuente": "serif",
+      "color": "#8b6f62",
+      "mayus": true,
+      "espaciado": 6,
+      "peso": 700
+     },
+     {
+      "id": "quince",
+      "texto": "{quince}",
+      "x": 1800,
+      "y": 1430,
+      "tam": 900,
+      "fuente": "abril",
+      "color": "#8b6f62",
+      "opacidad": 0.13
+     },
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 1800,
+      "y": 1430,
+      "tam": 330,
+      "fuente": "abril",
+      "color": "#5b4a43",
+      "ancho": 1050,
+      "ajustar": true
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaMomentos}",
+      "x": 1250,
+      "y": 2330,
+      "tam": 82,
+      "fuente": "poppins",
+      "color": "#8b7a72",
+      "alinear": "izq",
+      "ancho": 1120,
+      "altoLinea": 1.32,
+      "peso": 300
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 1250,
+      "y": 3020,
+      "tam": 82,
+      "fuente": "poppins",
+      "color": "#8b7a72",
+      "alinear": "izq",
+      "ancho": 1120,
+      "altoLinea": 1.32,
+      "peso": 300
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 1250,
+      "y": 3340,
+      "tam": 58,
+      "fuente": "poppins",
+      "color": "#8b7a72",
+      "alinear": "izq",
+      "ancho": 1120,
+      "extra": true,
+      "peso": 300
+     }
+    ]
+   }
+  },
+  {
+   "id": "g4",
+   "nombre": "Corazón geométrico",
+   "ancho": 1748,
+   "alto": 2552,
+   "fondo": "#ffffff",
+   "plural": {
+    "muestra": "g4/muestra-boda.jpg",
+    "foto": {
+     "x": 215,
+     "y": 291,
+     "w": 1351,
+     "h": 1255
+    },
+    "capas": [
+     {
+      "img": "../foto/f1/fondo-boda.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1748,
+      "h": 2552,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "titulo",
+      "texto": "¡Gracias!",
+      "x": 874,
+      "y": 185,
+      "tam": 84,
+      "fuente": "texto",
+      "color": "#b07352",
+      "mayus": true
+     },
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 874,
+      "y": 1665,
+      "tam": 205,
+      "fuente": "titulos",
+      "degradado": [
+       "#e2a982",
+       "#b36d45",
+       "#d49470"
+      ],
+      "ancho": 1300,
+      "ajustar": true,
+      "amp": {
+       "tipo": "texto"
+      }
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 874,
+      "y": 2112,
+      "tam": 54,
+      "fuente": "texto",
+      "color": "#b07352",
+      "ancho": 1380,
+      "altoLinea": 1.3
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 874,
+      "y": 2335,
+      "tam": 54,
+      "fuente": "texto",
+      "color": "#b07352",
+      "ancho": 1250,
+      "altoLinea": 1.3
+     },
+     {
+      "id": "teQueremos",
+      "texto": "{teQueremos}",
+      "x": 874,
+      "y": 2455,
+      "tam": 52,
+      "fuente": "texto",
+      "color": "#b07352"
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 874,
+      "y": 2510,
+      "tam": 38,
+      "fuente": "texto",
+      "color": "#b07352",
+      "ancho": 1300,
+      "extra": true
+     }
+    ]
+   },
+   "singular": {
+    "muestra": "g4/muestra-15.jpg",
+    "foto": {
+     "x": 215,
+     "y": 291,
+     "w": 1351,
+     "h": 1255
+    },
+    "capas": [
+     {
+      "img": "../foto/f1/fondo-boda.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1748,
+      "h": 2552,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "titulo",
+      "texto": "¡Gracias!",
+      "x": 874,
+      "y": 185,
+      "tam": 84,
+      "fuente": "texto",
+      "color": "#b07352",
+      "mayus": true
+     },
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 874,
+      "y": 1690,
+      "tam": 270,
+      "fuente": "titulos",
+      "degradado": [
+       "#e2a982",
+       "#b36d45",
+       "#d49470"
+      ],
+      "ancho": 1300,
+      "ajustar": true
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 874,
+      "y": 2112,
+      "tam": 54,
+      "fuente": "texto",
+      "color": "#b07352",
+      "ancho": 1380,
+      "altoLinea": 1.3
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 874,
+      "y": 2335,
+      "tam": 54,
+      "fuente": "texto",
+      "color": "#b07352",
+      "ancho": 1250,
+      "altoLinea": 1.3
+     },
+     {
+      "id": "teQueremos",
+      "texto": "{teQueremos}",
+      "x": 874,
+      "y": 2455,
+      "tam": 52,
+      "fuente": "texto",
+      "color": "#b07352"
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 874,
+      "y": 2510,
+      "tam": 38,
+      "fuente": "texto",
+      "color": "#b07352",
+      "ancho": 1300,
+      "extra": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "g5",
+   "nombre": "Pinceladas",
+   "ancho": 1814,
+   "alto": 2545,
+   "fondo": "#ffffff",
+   "plural": {
+    "muestra": "g5/muestra-boda.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 1814,
+     "h": 1620
+    },
+    "capas": [
+     {
+      "img": "../foto/f2/fondo-boda.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1814,
+      "h": 2545,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 907,
+      "y": 1639,
+      "tam": 285,
+      "fuente": "titulos",
+      "color": "#3f4040",
+      "ancho": 1620,
+      "ajustar": true,
+      "amp": {
+       "tipo": "texto",
+       "color": "#9db8a2"
+      }
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 907,
+      "y": 1940,
+      "tam": 60,
+      "fuente": "texto",
+      "color": "#1f4d3a",
+      "ancho": 1500,
+      "altoLinea": 1.3,
+      "peso": 500
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 907,
+      "y": 2240,
+      "tam": 60,
+      "fuente": "texto",
+      "color": "#1f4d3a",
+      "ancho": 1400,
+      "altoLinea": 1.3,
+      "peso": 500
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 907,
+      "y": 2440,
+      "tam": 40,
+      "fuente": "texto",
+      "color": "#1f4d3a",
+      "ancho": 1500,
+      "extra": true
+     }
+    ]
+   },
+   "singular": {
+    "muestra": "g5/muestra-15.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 1814,
+     "h": 1620
+    },
+    "capas": [
+     {
+      "img": "../foto/f2/fondo-boda.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1814,
+      "h": 2545,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 881,
+      "y": 1668,
+      "tam": 420,
+      "fuente": "titulos",
+      "color": "#3f4040",
+      "ancho": 1500,
+      "ajustar": true
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 907,
+      "y": 1940,
+      "tam": 60,
+      "fuente": "texto",
+      "color": "#1f4d3a",
+      "ancho": 1500,
+      "altoLinea": 1.3,
+      "peso": 500
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 907,
+      "y": 2240,
+      "tam": 60,
+      "fuente": "texto",
+      "color": "#1f4d3a",
+      "ancho": 1400,
+      "altoLinea": 1.3,
+      "peso": 500
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 907,
+      "y": 2440,
+      "tam": 40,
+      "fuente": "texto",
+      "color": "#1f4d3a",
+      "ancho": 1500,
+      "extra": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "g6",
+   "nombre": "Encaje",
+   "ancho": 1867,
+   "alto": 2600,
+   "fondo": "#ffffff",
+   "plural": {
+    "muestra": "g6/muestra-boda.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 1867,
+     "h": 1330
+    },
+    "capas": [
+     {
+      "img": "../foto/f6/fondo-boda.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1867,
+      "h": 2600,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "nombres",
+      "texto": "{a}  {b}",
+      "x": 945,
+      "y": 1795,
+      "tam": 280,
+      "fuente": "parisienne",
+      "color": "#1d1a17",
+      "ancho": 1550,
+      "ajustar": true
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaMomentos}",
+      "x": 933,
+      "y": 2150,
+      "tam": 54,
+      "fuente": "texto",
+      "color": "#6b6b6b",
+      "ancho": 1500,
+      "altoLinea": 1.32
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 933,
+      "y": 2390,
+      "tam": 54,
+      "fuente": "texto",
+      "color": "#6b6b6b",
+      "ancho": 1450,
+      "altoLinea": 1.32
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 933,
+      "y": 2530,
+      "tam": 38,
+      "fuente": "texto",
+      "color": "#6b6b6b",
+      "ancho": 1500,
+      "extra": true
+     }
+    ]
+   },
+   "singular": {
+    "muestra": "g6/muestra-15.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 1867,
+     "h": 1330
+    },
+    "capas": [
+     {
+      "img": "../foto/f6/fondo-15.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1867,
+      "h": 2600,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 901,
+      "y": 1900,
+      "tam": 230,
+      "fuente": "triforce",
+      "color": "#8a7350",
+      "ancho": 1500,
+      "ajustar": true,
+      "mayus": true,
+      "espaciado": 6
+     },
+     {
+      "id": "mensaje",
+      "texto": "{citaMomentos}",
+      "x": 933,
+      "y": 2150,
+      "tam": 54,
+      "fuente": "texto",
+      "color": "#6b6b6b",
+      "ancho": 1500,
+      "altoLinea": 1.32
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 933,
+      "y": 2390,
+      "tam": 54,
+      "fuente": "texto",
+      "color": "#6b6b6b",
+      "ancho": 1450,
+      "altoLinea": 1.32
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 933,
+      "y": 2530,
+      "tam": 38,
+      "fuente": "texto",
+      "color": "#6b6b6b",
+      "ancho": 1500,
+      "extra": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "g7",
+   "nombre": "Marco",
+   "ancho": 1748,
+   "alto": 2552,
+   "fondo": "#222222",
+   "plural": {
+    "muestra": "g7/muestra-boda.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 1748,
+     "h": 2552
+    },
+    "capas": [
+     {
+      "img": "../foto/f7/velo.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1748,
+      "h": 2552,
+      "sobreFoto": true
+     },
+     {
+      "img": "../foto/f7/marco.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1748,
+      "h": 2552,
+      "sobreFoto": true
+     },
+     {
+      "img": "../foto/f7/barra.webp",
+      "x": 714,
+      "y": 2030,
+      "w": 320,
+      "h": 12,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 874,
+      "y": 1470,
+      "tam": 60,
+      "fuente": "texto",
+      "color": "#ffffff",
+      "ancho": 1350,
+      "altoLinea": 1.3,
+      "sombra": true
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 874,
+      "y": 1730,
+      "tam": 60,
+      "fuente": "texto",
+      "color": "#ffffff",
+      "ancho": 1250,
+      "altoLinea": 1.3,
+      "sombra": true
+     },
+     {
+      "id": "teQueremos",
+      "texto": "{teQueremos}",
+      "x": 874,
+      "y": 1930,
+      "tam": 58,
+      "fuente": "texto",
+      "color": "#ffffff",
+      "sombra": true
+     },
+     {
+      "id": "nombres",
+      "texto": "{a} + {b}",
+      "x": 874,
+      "y": 2250,
+      "tam": 200,
+      "fuente": "satisfy",
+      "color": "#ffffff",
+      "ancho": 1400,
+      "ajustar": true,
+      "sombra": true
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 874,
+      "y": 2400,
+      "tam": 38,
+      "fuente": "texto",
+      "color": "#ffffff",
+      "ancho": 1300,
+      "extra": true
+     }
+    ]
+   },
+   "singular": {
+    "muestra": "g7/muestra-15.jpg",
+    "foto": {
+     "x": 0,
+     "y": 0,
+     "w": 1748,
+     "h": 2552
+    },
+    "capas": [
+     {
+      "img": "../foto/f7/velo.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1748,
+      "h": 2552,
+      "sobreFoto": true
+     },
+     {
+      "img": "../foto/f7/marco.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1748,
+      "h": 2552,
+      "sobreFoto": true
+     },
+     {
+      "img": "../foto/f7/barra.webp",
+      "x": 714,
+      "y": 2030,
+      "w": 320,
+      "h": 12,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 874,
+      "y": 1470,
+      "tam": 60,
+      "fuente": "texto",
+      "color": "#ffffff",
+      "ancho": 1350,
+      "altoLinea": 1.3,
+      "sombra": true
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 874,
+      "y": 1730,
+      "tam": 60,
+      "fuente": "texto",
+      "color": "#ffffff",
+      "ancho": 1250,
+      "altoLinea": 1.3,
+      "sombra": true
+     },
+     {
+      "id": "teQueremos",
+      "texto": "{teQueremos}",
+      "x": 874,
+      "y": 1930,
+      "tam": 58,
+      "fuente": "texto",
+      "color": "#ffffff",
+      "sombra": true
+     },
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 874,
+      "y": 2250,
+      "tam": 240,
+      "fuente": "satisfy",
+      "color": "#ffffff",
+      "ancho": 1400,
+      "ajustar": true,
+      "sombra": true
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 874,
+      "y": 2400,
+      "tam": 38,
+      "fuente": "texto",
+      "color": "#ffffff",
+      "ancho": 1300,
+      "extra": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "g8",
+   "nombre": "Acuarela",
+   "ancho": 1748,
+   "alto": 2552,
+   "fondo": "#ffffff",
+   "plural": {
+    "muestra": "g8/muestra-boda.jpg",
+    "foto": {
+     "x": 874,
+     "y": 527,
+     "r": 383
+    },
+    "capas": [
+     {
+      "img": "g8/fondo.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1748,
+      "h": 2552,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 863,
+      "y": 1235,
+      "tam": 92,
+      "fuente": "pristina",
+      "color": "#7a3a55",
+      "ancho": 930,
+      "altoLinea": 1.12
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 863,
+      "y": 1700,
+      "tam": 92,
+      "fuente": "pristina",
+      "color": "#7a3a55",
+      "ancho": 930,
+      "altoLinea": 1.12
+     },
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 1000,
+      "y": 2010,
+      "tam": 200,
+      "fuente": "pristina",
+      "color": "#7a2848",
+      "ancho": 620,
+      "ajustar": true
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 863,
+      "y": 2165,
+      "tam": 64,
+      "fuente": "pristina",
+      "color": "#7a3a55",
+      "ancho": 930,
+      "extra": true
+     }
+    ]
+   },
+   "singular": {
+    "muestra": "g8/muestra-15.jpg",
+    "foto": {
+     "x": 874,
+     "y": 527,
+     "r": 383
+    },
+    "capas": [
+     {
+      "img": "g8/fondo.webp",
+      "x": 0,
+      "y": 0,
+      "w": 1748,
+      "h": 2552,
+      "sobreFoto": true
+     }
+    ],
+    "textos": [
+     {
+      "id": "mensaje",
+      "texto": "{citaFelices}",
+      "x": 863,
+      "y": 1235,
+      "tam": 92,
+      "fuente": "pristina",
+      "color": "#7a3a55",
+      "ancho": 930,
+      "altoLinea": 1.12
+     },
+     {
+      "id": "gracias",
+      "texto": "{graciasAcomp}",
+      "x": 863,
+      "y": 1700,
+      "tam": 92,
+      "fuente": "pristina",
+      "color": "#7a3a55",
+      "ancho": 930,
+      "altoLinea": 1.12
+     },
+     {
+      "id": "nombres",
+      "texto": "{nombres}",
+      "x": 1000,
+      "y": 2010,
+      "tam": 200,
+      "fuente": "pristina",
+      "color": "#7a2848",
+      "ancho": 620,
+      "ajustar": true
+     },
+     {
+      "id": "extra",
+      "texto": "",
+      "x": 863,
+      "y": 2165,
+      "tam": 64,
+      "fuente": "pristina",
+      "color": "#7a3a55",
+      "ancho": 930,
+      "extra": true
+     }
+    ]
+   }
+  }
+ ]
+}

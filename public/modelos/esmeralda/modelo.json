@@ -1,0 +1,135 @@
+{
+  "id": "esmeralda",
+  "nombre": "Esmeralda",
+  "eventos": [
+    "graduacion"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#d19643",
+    "#002f58",
+    "#002f58",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "itinerario",
+        "testigos",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "{a}",
+    "cierre": "{a}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": null,
+    "colorFondo": "#002f58",
+    "colorTitulos": "#d19643",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#d19643"
+    },
+    "bienvenida": "font-family:'Great Vibes', cursive; color:#d19643; font-weight:500; --bv-escala:1.45;"
+  },
+  "demo": {
+    "graduacion": {
+      "portadas": [
+        {
+          "f": "hero-banner4.jpg",
+          "pos": "50% 20%"
+        }
+      ],
+      "nombres": {
+        "a": "Instituto Superior"
+      }
+    }
+  },
+  "demoBorrosas": {
+    "graduacion": {
+      "portada": [
+        "hero-banner.jpg",
+        "hero-banner2.jpg",
+        "hero-banner3.jpg",
+        "hero-banner4.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/abril-fatface+great-vibes+jost.css",
+      "/modelos/esmeralda/tema.css"
+    ]
+  }
+}

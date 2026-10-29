@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<!--
+  ════════════════════════════════════════════════════════════════════════
+  MODELO GARDEN · Amo Invitar 2.0
+  Este archivo es el DISEÑO. Los textos que se ven acá son de muestra: el motor
+  los reemplaza con los datos de cada cliente al abrir la invitación.
+
+  Marcas que usa el motor (no las borres al editar):
+    data-campo="ruta"     dato del evento (nombres, fechas, lugares…)
+    data-t="clave"        texto del idioma (botones, títulos, párrafos)
+    data-attr="a:c:ruta"  pone un atributo con un dato (c) o un texto (t)
+    data-bg="ruta"        cambia la foto de fondo del style
+    data-seccion="x"      sección que el cliente puede encender o apagar
+    data-si / data-no     se muestra solo si el dato existe (o no existe)
+    data-repetir="ruta"   ítem de una lista (se repite por cada elemento)
+      dentro del ítem: data-i, data-i-attr, data-i-bg, data-i-pos y data-i-estilo (estilo extra, p. ej. el encuadre)
+    data-componente="x"   bloque común a todos los modelos (sobre, acceso…)
+  Guía completa: app/README.md
+  ════════════════════════════════════════════════════════════════════════
+-->
+<html lang="es" data-theme="light">
+<!-- GARDEN BASIC · diseño propio de este paquete (Deluxe: index.html · Premium: index-premium.html) -->
+<head>
+  <title>Invitación ❤ Boda | Sofi y Ale</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta name="description" content="¡Te esperamos para celebrar juntos!">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Invitación ❤ Boda | Sofi y Ale">
+  <meta property="og:description" content="¡Te esperamos para celebrar juntos!">
+  <meta property="og:image" content="demo/boda/hero-banner1.jpg">
+  <link rel="image_src" href="demo/boda/hero-banner1.jpg">
+  <meta property="og:site_name" content="Amo Invitar! | Invitaciones digitales">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
+
+  <link rel="preload" href="../../comun/fonts/google/files/jost-35841fe7.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../comun/fonts/google/great-vibes+jost.css">
+  <link rel="preload" href="../../comun/fonts/icomoon/fonts/icomoon.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../comun/fonts/icomoon/style.css">
+  <!-- Todos los estilos de Garden en un solo archivo, y la paleta y fuentes aparte -->
+  <link rel="stylesheet" href="estilo.css">
+  <link rel="stylesheet" href="tema.css">
+  <link rel="preload" href="../../comun/fonts/bodoni-moda/bodoni-moda-italic-600.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../comun/fonts/bodoni-moda/bodoni-moda-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../comun/css/sobre_v1.2.css">
+  <script src="../../comun/js/sobre_v1.1.js" defer></script>
+  <link rel="stylesheet" href="../../comun/css/slides.css">
+</head>
+<body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
+
+<!-- Sobre lacrado (Premium y Deluxe): colores en modelo.json -->
+<div data-componente="sobre"></div>
+
+  <div id="overlayer"></div>
+  <div class="loader"><div class="HeartAnimation" role="status"></div></div>
+
+<div class="site-wrap">
+
+<!-- Datos de la invitación, pantalla de acceso (PIN) y scripts de lista y RSVP -->
+<div data-componente="acceso"></div>
+
+  <!-- ═══ PORTADA ═══ -->
+  <!-- Basic: una sola foto y los nombres dentro del círculo -->
+  <section class="inner-page-cover section-hero overlay" id="home-section">
+    <div class="container">
+      <div class="row align-items-end justify-content-center"></div>
+    </div>
+    <div class="video-container">
+      <div class="ai-slides" data-intervalo="5000">
+        <div class="ai-slide inner-page-cover section-hero portada-pc" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-repeat: no-repeat; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/boda/hero-banner1.jpg); background-position: 75% 25%"></div>
+      </div>
+    </div>
+    <div class="waveWrapper waveAnimation">
+      <div class="waveWrapperInner bgMiddle"><div class="wave waveMiddle g-ola-media"></div></div>
+      <div class="waveWrapperInner bgBottom"><div class="wave waveBottom g-ola-baja"></div></div>
+    </div>
+    <div class="circulo-cuenta-regresiva mb-5 pb-5">
+      <div class="container">
+        <div class="row d-flex justify-content-center align-items-center">
+          <div class="caja-aro2 d-flex justify-content-center align-items-center">
+            <div class="text-center mb-2">
+              <p class="mb-0 p-0 text-bronce font-weight-bolder" data-campo="fecha.puntos">12 &bull; 09 &bull; 2027</p>
+              <h1 class="euforia text-bronce" data-campo-html="nombres.portada" data-ajustar="0.56" data-ajustar-en=".caja-aro2">Sofi <span class="circle-singleline2">&amp;</span> Ale</h1>
+              <p class="text-bronce text-white mt-0 mb-0 p-0 font-weight-bolder text-uppercase" data-t="portada.subtitulo">¡NOS CASAMOS!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <a href="#portfolio" class="smoothscroll">
+    <svg class="arrows-2 mb-4">
+        <path style="stroke: var(--color-principal)" class="a1" d="M0 0 L15 16 L30 0"></path>
+        <path style="stroke: var(--color-principal)" class="a2" d="M0 10 L15 26 L30 10"></path>
+        <path style="stroke: var(--color-principal)" class="a3" d="M0 20 L15 36 L30 20"></path>
+      </svg>
+  </a>
+
+  <!-- Música de fondo: el archivo lo sube el cliente (MP3) -->
+  <div data-si="musica.archivo">
+    <audio loop id="audio" preload="none" data-attr="data-inicio:c:musica.inicio">
+      <source src="../../comun/audio/demo-boda.mp3" type="audio/mpeg" data-attr="src:c:musica.archivo">
+    </audio>
+    <button class="music-play border-0" type="button" onclick="Play()" data-attr="aria-label:t:musica.boton"><i class="icon-music"></i></button>
+  </div>
+
+  <div class="pt-5"></div>
+
+  <!-- ═══ HISTORIA ═══ -->
+  <section class="site-section pb-0" id="portfolio">
+    <div class="container pt-5">
+      <div class="row mb-3">
+        <div class="col-12 text-center mt-5" data-aos="fade-up">
+          <div class="col-md-8 ml-auto mr-auto text-center mt-0 pt-0 mb-0 pb-4">
+            <img class="img-fluid mt-5 mb-3" src="img/garden-3.png" width="150" alt="">
+            <h4 class="text-bronce font-weight-bolder mb-0" data-t="bienvenida.texto">¡Queremos invitarte a nuestra boda!</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ GALERÍA ═══ -->
+  <div data-seccion="galeria" id="galeria">
+  <!-- Carrusel, mosaico, grilla o polaroids: componente común (comun/css/galeria.css) -->
+  <div data-componente="galeria"></div>
+  </div>
+
+  <!-- ═══ CEREMONIA Y CELEBRACIÓN ═══ -->
+  <section class="site-section pt-0 g-fondo-lugares" id="inicio">
+    <div class="container">
+      <div class="row item p-4">
+
+        <!-- Ceremonia: solo cuando es en otro lugar que la celebración -->
+        <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 p-2 text-center shadow g-marco" data-aos="fade-up" data-si="ceremonia.separada">
+          <div class="p-3">
+            <img class="img-fluid g-flor g-flor-1" src="img/garden-6.png" width="200" alt="">
+            <img class="img-fluid show-desktop g-flor g-flor-2" src="img/garden-5.png" width="200" alt="">
+            <div class="text-center shake-move mb-0">
+              <img class="img-fluid mb-0 mt-0" src="img/icon-anillos.png" width="80" alt="">
+            </div>
+            <h2 class="mb-3 text-center euforia text-bronce" data-campo="ceremonia.titulo">Ceremonia</h2>
+            <h2 class="mb-2"><span class="text-white bg-bronce p-1 section-sub-title font-weight-bolder" data-t="lugar.diaHorario">DÍA Y HORARIO</span></h2>
+            <p class="text-center text-black mb-0" data-campo="ceremonia.fechaHora">12 ◦ 09 ◦ 2027 - 20:00hs</p>
+            <h2 class="mb-2 mt-3"><span class="text-white bg-bronce p-1 section-sub-title font-weight-bolder" data-t="lugar.lugar">LUGAR</span></h2>
+            <p class="text-center text-black" data-campo="ceremonia.lugarTexto">"Parroquia Natividad del Señor", Av. Eugenia Tapia de Cruz 524, Escobar, Bs. As.</p>
+            <button class="button button-musgo mb-2 text-uppercase rounded-pill" data-agendar="ceremonia"><i class="icon-calendar" aria-hidden="true"></i> <span data-t="boton.agendar">Agendar</span></button>
+            <button class="button button-musgo mb-2 text-uppercase rounded-pill" data-fancybox data-src="#map1" data-animation-duration="700" data-si="ceremonia.mapa.embed"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="boton.comoLlegar">¿CÓMO LLEGAR?</span></button>
+            <div style="display: none;" id="map1" class="animated-modal p-4">
+              <p class="text-center h3 mb-0"><i class="text-black icon-map-marker" aria-hidden="true"></i></p>
+              <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="mapa.titulo">¿Cómo llegar?</p>
+              <div class="text-center" style="width: 100%"><iframe width="100%" height="400" style="border:0;" loading="lazy" title="Mapa" data-attr="data-src:c:ceremonia.mapa.embed" src="about:blank"></iframe></div>
+              <a class="btn btn-block btn-outline-dark btn-small text-uppercase mt-2" target="_blank" rel="noopener" href="#" data-attr="href:c:ceremonia.mapa.link" data-t="mapa.abrir">Ver en la app de Google Maps</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Celebración (o "Ceremonia y celebración" cuando es todo en el mismo lugar) -->
+        <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 p-2 text-center shadow g-marco" data-aos="fade-up">
+          <div class="p-3">
+            <img class="img-fluid g-flor g-flor-3" src="img/garden-5.png" width="200" alt="">
+            <img class="img-fluid g-flor g-flor-4" src="img/garden-6.png" width="200" alt="">
+            <div class="text-center mb-2 shake-move">
+              <img class="img-fluid mb-0 mt-0" src="img/icon-party.png" width="135" alt="" data-no="ceremonia.unificada">
+              <img class="img-fluid mb-0 mt-0" src="img/icon-anillos.png" width="80" alt="" data-si="ceremonia.unificada">
+            </div>
+            <h2 class="mb-3 text-center euforia text-bronce" data-campo="celebracion.titulo">Celebración</h2>
+            <h2 class="mb-2"><span class="text-white bg-bronce p-1 section-sub-title font-weight-bolder" data-t="lugar.diaHorario">DÍA Y HORARIO</span></h2>
+            <p class="text-center text-black mb-0" data-campo="celebracion.fechaHora">12 ◦ 09 ◦ 2027 - 21:00hs</p>
+            <h2 class="mb-2 mt-3"><span class="text-white bg-bronce p-1 section-sub-title font-weight-bolder" data-t="lugar.lugar">LUGAR</span></h2>
+            <p class="text-center text-black" data-campo="celebracion.lugarTexto">"Estancia La Soñada del Pilar", Sor Teresa y Cabo de Hornos, Pilar, Bs. As.</p>
+            <button class="button button-musgo mb-2 text-uppercase rounded-pill" data-agendar="celebracion"><i class="icon-calendar" aria-hidden="true"></i> <span data-t="boton.agendar">Agendar</span></button>
+            <button class="button button-musgo mb-2 text-uppercase rounded-pill" data-fancybox data-src="#map2" data-animation-duration="700" data-si="celebracion.mapa.embed"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="boton.comoLlegar">¿CÓMO LLEGAR?</span></button>
+            <div style="display: none;" id="map2" class="animated-modal p-4">
+              <p class="text-center h3 mb-0"><i class="text-black icon-map-marker" aria-hidden="true"></i></p>
+              <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="mapa.titulo">¿Cómo llegar?</p>
+              <div class="text-center" style="width: 100%"><iframe width="100%" height="400" style="border:0;" loading="lazy" title="Mapa" data-attr="data-src:c:celebracion.mapa.embed" src="about:blank"></iframe></div>
+              <a class="btn btn-block btn-outline-dark btn-small text-uppercase mt-2" target="_blank" rel="noopener" href="#" data-attr="href:c:celebracion.mapa.link" data-t="mapa.abrir">Ver en la app de Google Maps</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONFIRMACIÓN (RSVP) ═══ -->
+  <section class="site-section g-fondo-rsvp" id="rsvp" data-seccion="rsvp">
+    <div class="container">
+      <div class="col-md-6 ml-auto mr-auto" data-aos="fade-up">
+        <div class="rounded p-4 shadow" style="background-color:rgba(255, 255, 255, 0.8);">
+          <div>
+            <div>
+              <div class="text-center shake-move mt-3"><img class="img-fluid mb-0" src="img/icon-rsvp-b.png" width="80" alt=""></div>
+              <h2 class="mb-3 text-center euforia text-bronce" data-t="rsvp.titulo">Confirmación</h2>
+              <p class="text-center"
+                 data-rsvp="texto"
+                 data-bloque-invitado-class="mb-4"
+                 data-bloque-invitado-inner="<div class='text-center pl-2 pr-2 pb-3 pt-3 ml-2 mr-2 mb-4 mt-0 g-tarjeta-invitado'><i class='icon-user-circle-o h3 font-weight-normal' aria-hidden='true' style='opacity:.7'></i><br><p class='text-uppercase font-weight-bold mb-0' id='nombre'></p><p class='border-bottom mb-2 mt-1 ml-5 mr-5'></p><p class='small text-uppercase mb-0 mt-0' id='pases'></p><p class='font-weight-bolder small text-uppercase mb-0 mt-0' id='mesa'></p></div>"
+                 data-bloque-general-class="mb-4"
+                 data-attr="data-texto-abierto-libre:c:rsvp.texto; data-fecha-texto:t:rsvp.hasta; data-texto-cerrado:t:rsvp.finalizado"
+                 data-texto-abierto-libre="Tu presencia hará que este día sea realmente especial e inolvidable."
+                 data-fecha-texto="Se reciben confirmaciones hasta el"
+                 data-texto-cerrado="El plazo de confirmación ha finalizado.">
+              </p>
+              <div class="text-center">
+                <button class="button button-musgo mb-2 text-uppercase rounded-pill" data-fancybox data-src="#confirmar-rsvp" data-animation-duration="700"
+                        data-rsvp="boton"
+                        data-attr="data-fecha:c:rsvp.cierre; data-idioma:c:idioma.fechas; data-formato:c:rsvp.formato; data-texto-abierto:t:rsvp.botonHtml; data-texto-cerrado:t:rsvp.cerradoHtml"
+                        data-fecha="2027-08-10" data-idioma="es-ES" data-formato="corto"
+                        data-texto-abierto="&lt;i class='icon-send-o' aria-hidden='true'&gt;&lt;/i&gt; CONFIRMAR ASISTENCIA"
+                        data-texto-cerrado="&lt;i class='icon-send-o' aria-hidden='true'&gt;&lt;/i&gt; CONFIRMACIONES CERRADAS">
+                </button>
+              </div>
+              <div class="text-center mt-2 mb-3"><i class="small" style="opacity:.7" data-rsvp="fecha"></i></div>
+
+              <!-- Formulario de confirmación: común a todos los modelos -->
+              <div data-componente="rsvp-form" data-clase-titulo="text-center text-black mb-4 font-weight-bolder border-bottom border-dark"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DRESS CODE · HOSPEDAJE · BUS ═══ -->
+  <section class="bg-musgo site-section text-center" id="dresscode" data-si="grupos.dress">
+    <div class="container">
+      <div class="row ml-auto mr-auto pt-5">
+        <div class="col-md-4 ml-auto mr-auto pb-5" data-aos="fade-in" data-si="grupos.dressCol">
+          <div class="text-center mb-0" data-seccion="dresscode"><img class="img-fluid mb-0" src="img/dress1.png" width="55" alt=""><img class="img-fluid mb-0 ml-2" src="img/dress2.png" width="55" alt=""></div>
+          <h2 class="mb-3 text-center euforia text-white" data-seccion="dresscode" data-t="dress.titulo">Dress Code</h2>
+          <p class="text-center text-white" data-seccion="dresscode" data-campo-html="dresscode.texto">Formal y elegante. Por favor no usar blanco.</p>
+          <div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+            <p class="text-white mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
+          </div>
+          <div class="col-12 text-center" data-seccion="estilos" data-si="dresscode.sugerencias">
+            <button class="button button-bronce mb-3 text-uppercase rounded-pill" data-fancybox data-src="#dress" data-animation-duration="700" data-t="dress.boton">Sugerencias</button>
+          </div>
+          <div style="display: none;" id="dress" class="animated-modal p-4" data-seccion="estilos" data-si="dresscode.sugerencias">
+            <div class="mt-4 text-center" data-selectable="true">
+              <p class="text-center h3 mb-0"><i class="text-black icon-female" aria-hidden="true"></i><i class="text-black icon-male" aria-hidden="true"></i></p>
+              <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="dress.modal">Sugerencias de estilos</p>
+              <div class="row no-gutters">
+                <div class="item col-4 rounded" data-repetir="dresscode.fotos"><img class="img-fluid rounded p-1" src="../../comun/img/demo-dress1.jpg" alt="" data-i-attr="src:url;style:estilo"></div>
+                <div class="item col-4 rounded" data-repetir="dresscode.fotos"><img class="img-fluid rounded p-1" src="../../comun/img/demo-dress2.jpg" alt="" data-i-attr="src:url;style:estilo"></div>
+                <div class="item col-4 rounded" data-repetir="dresscode.fotos"><img class="img-fluid rounded p-1" src="../../comun/img/demo-dress3.jpg" alt="" data-i-attr="src:url;style:estilo"></div>
+              </div>
+              <button data-fancybox-close class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small" data-t="boton.cerrar">cerrar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-in" data-seccion="hospedaje" id="hospedaje-bus">
+          <div class="text-center mb-0"><img class="img-fluid mb-0" src="img/icon-hotel-bronce-o.png" width="55" alt=""></div>
+          <h2 class="mb-3 text-center euforia text-white" data-t="hospedaje.titulo">Hospedaje</h2>
+          <p class="text-center text-white" data-t="hospedaje.texto">Referencias de hoteles cercanos.</p>
+          <div class="col-12 text-center" data-si="hospedaje.conReferencias">
+            <button class="button button-bronce mb-3 text-uppercase rounded-pill" data-fancybox data-src="#hospedaje" data-animation-duration="700" data-t="hospedaje.boton">Referencias</button>
+          </div>
+          <div style="display: none;" id="hospedaje" class="animated-modal p-4">
+            <div class="mt-4" data-selectable="true">
+              <p class="text-center h3 mb-0"><i class="text-black icon-hotel" aria-hidden="true"></i></p>
+              <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-campo="hospedaje.modalTitulo">Hospedaje</p>
+              <p class="text-center" data-si="hospedaje.texto" data-campo-html="hospedaje.texto"></p>
+              <ul class="list" data-si="hospedaje.items">
+                <li data-repetir="hospedaje.items"><p class="mb-1"><span data-i="nombre">Hilton</span><span data-si="direccion"> - <span data-i="direccion">Ruta 21, Km. 60.5</span></span><span data-si="link"> - <a class="text-black font-weight-bold" target="_blank" rel="noopener" href="#" data-i-attr="href:link" data-t="hospedaje.reservas">Reservas</a></span></p></li>
+                <li data-repetir="hospedaje.items"><p class="mb-1"><span data-i="nombre">Sheraton</span><span data-si="direccion"> - <span data-i="direccion">Av. Principal 321</span></span><span data-si="link"> - <a class="text-black font-weight-bold" target="_blank" rel="noopener" href="#" data-i-attr="href:link" data-t="hospedaje.reservas">Reservas</a></span></p></li>
+              </ul>
+              <button data-fancybox-close class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small" data-t="boton.cerrar">cerrar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-in" data-seccion="bus" id="traslado">
+          <div class="text-center mb-0"><img class="img-fluid mb-0" src="img/icon-bus-bronce-o.png" width="55" alt=""></div>
+          <h2 class="mb-3 text-center euforia text-white" data-t="bus.titulo">Servicio de Bus</h2>
+          <p class="text-center text-white" data-t="bus.texto">Reservá tu lugar en el formulario de confirmación.</p>
+          <div class="col-12 text-center" data-si="busConRecorrido">
+            <button class="button button-bronce mb-3 text-uppercase rounded-pill" data-fancybox data-src="#bus" data-animation-duration="700" data-t="bus.boton">Recorrido</button>
+          </div>
+          <div style="display: none;" id="bus" class="animated-modal p-4">
+            <div class="mt-4" data-selectable="true">
+              <p class="text-center h3 mb-0"><i class="text-black icon-bus" aria-hidden="true"></i></p>
+              <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-campo="bus.modalTitulo">Servicio de Bus</p>
+              <p class="text-center text-black" data-si="bus.textoLibre" data-campo-html="bus.textoLibre"></p>
+              <div data-repetir="bus.paradas">
+                <p class="text-center mb-1 text-black section-sub-title-sm-2"><span class="text-white bg-gris p-1 pr-5 pl-5" data-i="etiqueta">Partida</span></p>
+                <p class="text-center text-black" data-i="detalle">Av. Independencia 432 - 17:00hs</p>
+              </div>
+              <div data-repetir="bus.paradas">
+                <p class="text-center mb-1 text-black section-sub-title-sm-2"><span class="text-white bg-gris p-1 pr-5 pl-5" data-i="etiqueta">Destino</span></p>
+                <p class="text-center text-black" data-i="detalle">¡Nuestra Boda!</p>
+              </div>
+              <button data-fancybox-close class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small" data-t="boton.cerrar">cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <img class="img-fluid mt-3 mb-0 p-0" src="img/garden-4.png" width="300" alt="">
+  </section>
+
+  <!-- ═══ ITINERARIO ═══ -->
+  <section class="site-section bg-white" id="itinerario" data-seccion="itinerario">
+    <div class="container">
+      <div class="col-12 text-center" data-aos="fade-up">
+        <img class="img-fluid mb-0" src="img/icon-timeline.png" width="90" alt="">
+        <h2 class="mb-3 text-center euforia text-bronce" data-t="itinerario.titulo">Itinerario</h2>
+      </div>
+      <div class="timeline-container" data-aos="fade-up" data-aos-delay="100">
+        <div id="timeline">
+          <!-- Se alternan los dos ítems de muestra: izquierda y derecha -->
+          <div class="timeline-item" data-repetir="itinerario.items">
+            <div class="timeline-icon text-center p-2"><img class="img-fluid" src="img/timeline-icon-ceremonia.png" alt="" data-si="iconoUrl" data-i-attr="src:iconoUrl"></div>
+            <div class="timeline-content">
+              <p class="text-right mb-2" data-i="hora">20:00hs</p>
+              <h2 class="text-right font-weight-bold" data-i="texto">Ceremonia</h2>
+            </div>
+          </div>
+          <div class="timeline-item" data-repetir="itinerario.items">
+            <div class="timeline-icon text-center p-2"><img class="img-fluid" src="img/timeline-icon-recepcion.png" alt="" data-si="iconoUrl" data-i-attr="src:iconoUrl"></div>
+            <div class="timeline-content right">
+              <p class="text-left mb-2" data-i="hora">21:00hs</p>
+              <h2 class="text-left font-weight-bold" data-i="texto">Recepción</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TESTIGOS / PADRINOS ═══ -->
+  <section class="site-section bg-white g-fondo-testigos" id="testigos" data-seccion="testigos">
+    <div class="container">
+      <div class="row mb-3">
+        <div class="col-12 text-center" data-aos="fade-up">
+          <div class="text-center"><i class="text-black h1 icon-people_outline" aria-hidden="true"></i></div>
+          <h2 class="mb-3 text-center euforia text-bronce" data-t="testigos.titulo">Los Testigos</h2>
+        </div>
+      </div>
+      <div class="col-md-6 ml-auto mr-auto">
+        <div class="row">
+          <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4 mb-4 mb-lg-4 text-center mr-auto ml-auto" data-aos="fade-up" data-repetir="testigos.items">
+            <img src="../../comun/img/demo-testigo1.jpg" alt="" class="img-fluid rounded-circle mb-3" data-si="foto" data-i-attr="src:foto;style:estilo">
+            <h4 class="text-bronce" data-i="nombre">Juan Fernandez</h4>
+            <p class="mb-4 text-small-sm text-black-50 text-uppercase"><small data-i="rol">HERMANO DEL NOVIO</small></p>
+          </div>
+          <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4 mb-4 mb-lg-4 text-center mr-auto ml-auto" data-aos="fade-up" data-repetir="testigos.items">
+            <img src="../../comun/img/demo-testigo2.jpg" alt="" class="img-fluid rounded-circle mb-3" data-si="foto" data-i-attr="src:foto;style:estilo">
+            <h4 class="text-bronce" data-i="nombre">Marcela García</h4>
+            <p class="mb-4 text-small-sm text-black-50 text-uppercase"><small data-i="rol">MEJOR AMIGA DE LA NOVIA</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOTOS CON HASHTAG DE INSTAGRAM ═══ -->
+  <section class="site-section bg-white g-fondo-album" id="instagram" data-seccion="album">
+    <div class="container">
+      <div class="col-md-6 col-lg-8 text-center mb-5 ml-auto mr-auto" data-aos="fade-in">
+        <div class="text-center shake-move mt-2"><div class="text-center"><i class="text-black icon-instagram h1" aria-hidden="true"></i></div></div>
+        <h2 class="mb-3 text-center euforia text-bronce" data-t="hashtag.titulo">Etiquetá tus Fotos</h2>
+        <h4 class="text-gold mb-4" data-si="hashtag.texto"><span class="text-white bg-musgo p-1" data-campo="hashtag.texto">#SofiyAle2027</span></h4>
+        <p class="text-center" data-t-html="hashtag.texto">¡Preparate para nuestra boda!<br>Etiquetanos en Instagram con nuestro hashtag en tus fotos y videos.</p>
+      </div>
+      <div class="mr-auto ml-auto col-lg-7 mb-5 text-center" data-si="fotos.album"><img src="demo/boda/instagram.jpg" alt="" class="img-fluid rounded" data-attr="src:c:fotos.album;style:c:fotos.albumEstilo"></div>
+      <div class="col-12 text-center" data-si="hashtag.link">
+        <a href="#" target="_blank" rel="noopener" class="button button-musgo mb-2 text-uppercase rounded-pill font-weight-bolder" data-attr="href:c:hashtag.link" data-t="hashtag.boton">VER FOTOS</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MÚSICA (sugerir canciones) ═══ -->
+  <div class="bg-musgo pt-4" id="musica" data-seccion="canciones">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 text-center mb-4 ml-auto mr-auto" data-aos="fade-in">
+          <h1 class="text-center"><span class="icon-music text-white h1"></span></h1>
+          <h2 class="mb-3 text-center euforia text-white" data-t="canciones.titulo">Música</h2>
+          <p class="text-center text-white" data-t-html="canciones.texto">¿Qué canciones son infaltables?<br>Ayudanos con la selección de canciones</p>
+          <div class="text-center">
+            <button class="button button-bronce mb-2 text-uppercase rounded-pill" data-fancybox data-src="#canciones" data-animation-duration="700" data-t="canciones.boton">Sugerir canción</button>
+            <div data-componente="canciones"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ REGALOS ═══ -->
+  <section class="site-section g-fondo-regalos" id="regalos" data-seccion="regalos">
+    <div class="container p-4">
+      <div class="col-md-8 col-lg-5 ml-auto mr-auto p-2 text-center shadow g-marco g-marco-claro" data-aos="fade-up">
+        <div class="p-3">
+          <div class="text-center">
+            <object type="image/svg+xml" data="img/regalo-animado-c.svg" width="80" height="80"></object>
+            <h2 class="mb-3 text-center euforia text-bronce" data-t="regalos.titulo">Regalos</h2>
+            <p class="text-center" data-campo-html="regalos.texto">Nuestro mejor regalo es que nos acompañes, pero si lo deseás, podés colaborar con nuestra luna de miel 😉</p>
+            <div class="text-center show-desktop" data-si="regalos.hayBotones"><span class="vr mb-2"></span></div>
+            <div class="col-12 text-center">
+              <button class="button button-musgo mb-2 text-uppercase rounded-pill" data-fancybox data-src="#regalo" data-animation-duration="700" data-si="regalos.cuentas" data-t="regalos.botonCuenta">CUENTA BANCARIA</button>
+              <button class="button button-musgo mb-2 text-uppercase rounded-pill" data-fancybox data-src="#regalo2" data-animation-duration="700" data-si="regalos.lista" data-t="regalos.botonLista">LISTA DE REGALOS</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display: none;" id="regalo" class="animated-modal p-4" data-selectable="true" data-si="regalos.cuentas">
+        <div class="mt-4">
+          <div class="mb-4">
+            <p class="text-center h4 mb-0"><i class="text-black icon-bank" aria-hidden="true"></i></p>
+            <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="regalos.modalCuenta">Datos Bancarios</p>
+            <ul class="list-unstyled font-weight-bolder">
+              <li data-repetir="regalos.cuentas"><p class="mb-1"><span class="font-weight-lighter"><span data-i="etiqueta">Alias</span>: </span><span id="dato-{n}" data-i="dato">XXX-XXX-XXX</span> <a href="#" onclick="copiarId('dato-{n}'); return false;" data-si="copiable"><i class="icon-copy"></i></a></p></li>
+              <li data-repetir="regalos.cuentas"><p class="mb-1"><span class="font-weight-lighter"><span data-i="etiqueta">Titular</span>: </span><span id="dato-{n}" data-i="dato">Juan Fulano</span> <a href="#" onclick="copiarId('dato-{n}'); return false;" data-si="copiable"><i class="icon-copy"></i></a></p></li>
+            </ul>
+          </div>
+          <button data-fancybox-close class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small" data-t="boton.cerrar">cerrar</button>
+        </div>
+      </div>
+      <div style="display: none;" id="regalo2" class="animated-modal p-4" data-selectable="true" data-si="regalos.lista">
+        <div class="mt-4">
+          <div class="mb-4">
+            <p class="text-center h3 mb-0"><i class="text-black icon-gift" aria-hidden="true"></i></p>
+            <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark" data-t="regalos.modalLista">Lista de regalos</p>
+            <ul class="list-unstyled text-center">
+              <li><p class="mb-4" data-campo-html="regalos.lista.texto">Creamos una lista de regalos en una tienda online, para que puedas regalar el que gustes</p></li>
+              <!-- Una por cada lista que carga el cliente; el número se copia con un toque -->
+              <li class="mb-3" data-repetir="regalos.listas"><p class="font-weight-bolder mb-1"><span class="font-weight-lighter" data-si="etiqueta"><span data-i="etiqueta">Novios Falabella</span></span><span data-si="dato"><span data-si="etiqueta">: </span><span id="lista-{n}" data-i="dato">000000-00</span> <a href="#" onclick="copiarId('lista-{n}'); return false;"><i class="icon-copy"></i></a></span></p><p data-si="link"><a href="#" target="_blank" rel="noopener" class="btn btn-block mb-2 text-uppercase button-gris" data-i-attr="href:link" data-t="regalos.irLista">Ir a la lista</a></p></li>
+            </ul>
+          </div>
+          <button data-fancybox-close class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small" data-t="boton.cerrar">cerrar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CIERRE ═══ -->
+  <section class="site-section bg-flor-2" id="cierre">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 ml-auto mr-auto text-center">
+          <h4 class="text-bronce mb-5" data-si="pie.mostrar"><strong data-campo-html="pie.texto">Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para festejar juntos este día tan especial.</strong></h4>
+          <h2 class="text-center mt-auto ml-auto euforia text-musgo" data-campo-html="nombres.cierre">Sofi <span class="text-bronce">&amp;</span> Ale</h2>
+          <div class="col-12 text-center border-top mt-5 mb-5" data-seccion="redes" data-si="redes.hay">
+            <h4 class="mb-3 mt-5" data-t="redes.titulo">Redes oficiales de la boda</h4>
+            <a href="#" target="_blank" rel="noopener" class="pl-0 pr-3" data-si="redes.instagram" data-attr="href:c:redes.instagram"><span class="icon-instagram h1 text-black"></span></a>
+            <a href="#" target="_blank" rel="noopener" class="pl-0 pr-3" data-si="redes.facebook" data-attr="href:c:redes.facebook"><span class="icon-facebook h1 text-black"></span></a>
+            <a href="#" target="_blank" rel="noopener" class="pl-0 pr-3 text-black" data-si="redes.tiktok" data-attr="href:c:redes.tiktok"><img src="img/tiktok.svg" class="pt-0 pb-4" alt="TikTok"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Con marca blanca (empresas) el pie lleva su logo en lugar del de Amo Invitar -->
+  <div data-componente="pie-marca"></div>
+  <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
+    <div class="container">
+      <div class="col-md-6 ml-auto mr-auto p-0">
+        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
+          <div class="col-6 ml-auto text-right p-0">
+            <a href="https://amoinvitar.com/"><img class="img-fluid mb-1 mr-1" width="90" src="../../comun/img/amoinvitar-line.svg" alt="Amo Invitar!"></a>
+          </div>
+          <div class="col-6 mr-auto text-left p-0">
+            <a href="https://amoinvitar.com/"><p class="text-small ml-1 mt-1 text-white-50"> | amoinvitar.com</p></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div> <!-- .site-wrap -->
+
+<script src="../../comun/js/jquery-3.5.1.min.js"></script>
+<script src="../../comun/js/owl.carousel.min.js"></script>
+<script src="../../comun/js/popper.min.js" defer></script>
+<script src="../../comun/js/bootstrap.min.js" defer></script>
+<script src="../../comun/js/jquery.countdown.min.js"></script>
+<script src="../../comun/js/jquery.fancybox.min.js"></script>
+<script src="../../comun/js/jquery.easing.1.3.js" defer></script>
+<script src="../../comun/js/jquery.sticky.js"></script>
+<script src="../../comun/js/aos.js" defer></script>
+<script src="../../comun/js/snow_2.7.1.js" defer></script>
+<script src="../../comun/js/rsvp-fecha-fin-evento.js" defer></script>
+<!-- Motor del lado del navegador: cuenta regresiva, agendar (Google, Apple, Outlook), mapas, álbum -->
+<script src="../../comun/js/invitacion.js" defer></script>
+<script src="../../comun/js/slides.js" defer></script>
+</body>
+</html>

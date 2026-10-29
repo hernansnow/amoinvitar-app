@@ -1,0 +1,132 @@
+{
+  "graduacion": {
+    "carpeta": "graduacion-nuevo",
+    "archivo": "oro_proyecto-deluxe---NUEVO.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-graduacion.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "portada: sin fecha",
+          "historia: no se encontró el texto ni el saludo",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Cinthia",
+          "portadas": [
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "50% 50%"
+            },
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 2,
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "iconosItinerario": [
+            "birrete",
+            "mic",
+            "cena",
+            "disco"
+          ],
+          "nombresCierre": "Cinthia",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-graduacion-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "portada: sin fecha",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Cinthia",
+          "portadas": [
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "50% 50%"
+            },
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 2,
+          "galeria": 6,
+          "idAgenda": "inicio",
+          "nombresCierre": "Cinthia",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-graduacion-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Cinthia",
+          "portadas": [
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "50% 50%"
+            },
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 2,
+          "galeria": 4,
+          "idAgenda": "inicio",
+          "nombresCierre": "Cinthia",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez.css"
+          ]
+        }
+      }
+    }
+  }
+}

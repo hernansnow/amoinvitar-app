@@ -1,0 +1,135 @@
+{
+  "id": "monster",
+  "nombre": "Monster",
+  "eventos": [
+    "infantil"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#3cb3a7",
+    "#739d75",
+    "#e88741",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/infantil-monster-fondo.jpg",
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "itinerario",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "{a}",
+    "cierre": "{a}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/monster/img/infantil-monster-fondo.jpg",
+    "colorFondo": "#739d75",
+    "colorTitulos": "#3cb3a7",
+    "fuenteTitulos": "Chewy",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#e88741",
+      "papel": "#dbf1f7",
+      "fondo": "#c3e5ee"
+    },
+    "bienvenida": "font-family:Chewy, system-ui; color:rgb(60, 179, 167); font-weight:500; --bv-escala:1.05;"
+  },
+  "demo": {
+    "infantil": {
+      "portadas": [
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
+      ],
+      "nombres": {
+        "a": "Paula"
+      }
+    }
+  },
+  "demoBorrosas": {
+    "infantil": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/chewy+jost.css",
+      "/modelos/monster/tema.css"
+    ]
+  }
+}

@@ -1,0 +1,239 @@
+{
+  "bautismo": {
+    "carpeta": "bautismo-nuevo",
+    "archivo": "celeste.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-bautismo.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Mateo",
+          "portadas": [
+            {
+              "f": "fondo-celeste.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "baby",
+            "brindis2",
+            "cena",
+            "disco"
+          ],
+          "nombresCierre": "Mateo",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-bautismo-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Mateo",
+          "portadas": [
+            {
+              "f": "fondo-celeste.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "nombresCierre": "Mateo",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-bautismo-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Mateo",
+          "portadas": [
+            {
+              "f": "fondo-celeste.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Mateo",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      }
+    }
+  },
+  "babyshower": {
+    "carpeta": "baby-shower-nuevo",
+    "archivo": "celeste_proyecto-deluxe---NUEVO.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-babyshower.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Baby",
+          "portadas": [
+            {
+              "f": "fondo-celeste.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 6,
+          "idAgenda": "agenda",
+          "iconosItinerario": [
+            "camara",
+            "cena",
+            "fiesta",
+            "torta3",
+            "regalo"
+          ],
+          "nombresCierre": "Mateo",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-babyshower-premium.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Baby",
+          "portadas": [
+            {
+              "f": "fondo-celeste.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 6,
+          "idAgenda": "agenda",
+          "nombresCierre": "Mateo",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-babyshower-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "Baby",
+          "portadas": [
+            {
+              "f": "fondo-celeste.jpg",
+              "pos": "40% 70%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Mateo",
+          "claseTitulos": "aquarella",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+jost+montez.css"
+          ]
+        }
+      }
+    }
+  }
+}

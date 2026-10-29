@@ -23,10 +23,13 @@ async function estatico(pathname) {
 const env = {
   SIN_CACHE: true, MODO_LOCAL: true, ADMIN_CLAVE: 'local', DEV_FAKE_PAYMENTS: '1', SIN_COTIZACION: process.env.COTIZAR ? '' : '1',
   TRANSFER_EUR: 'Titular: Amo Invitar (prueba) | IBAN: ES00 0000 0000 0000 0000 0000', TRANSFER_ARS: 'Alias: amoinvitar.prueba | CBU: 0000000000000000000000',
-  ADMINS: process.env.ADMINS || '', ULTIMOS_MAILS: [],
+  ADMINS: process.env.ADMINS || '', ULTIMOS_MAILS: [], WHATSAPP: '34621326549',
   // Facturas de prueba (en producción, los datos reales se cargan en Cloudflare)
   INVOICE_NAME: 'Amo Invitar (prueba)', INVOICE_TAX_ID: '00000000T', INVOICE_ADDRESS: 'Calle de prueba 1\n28001 Madrid', INVOICE_SERIES: 'AI', SECRETO_ACCESO: 'local',
   DB: d1Local(process.env.BASE || ':memory:'), MEDIA: r2Local(),
+  // Albunear de prueba (en Cloudflare es el enlace interno con el Worker de Albunear)
+  ALBUNEAR: { albumDeluxe: async (id) => ({ codigo: 'PRUEBA12', crear: 'https://albunear.com/crear?regalo=PRUEBA12',
+    album: process.env.ALBUM_CREADO ? { link: 'https://albunear.com/a/prueba', panel: `https://albunear.com/panel/album?id=${id}`, plan: 'classic', estado: 'active' } : null }) },
   ASSETS: { fetch: async (u) => (await estatico(new URL(typeof u === 'string' || u instanceof URL ? u : u.url).pathname)) || new Response('', { status: 404 }) },
 };
 const puerto = Number(process.env.PORT || 8787);

@@ -311,6 +311,10 @@ textarea {
  * Add the correct display in Edge, IE 10+, and Firefox.
  */
 
+details {
+  display: block;
+}
+
 /*
  * Add the correct display in all browsers.
  */
@@ -456,6 +460,11 @@ ul ul {
 
 dt {
     font-weight: 700
+}
+
+dd {
+    margin-bottom: .5rem;
+    margin-left: 0
 }
 
 b,
@@ -736,6 +745,17 @@ h6 {
     font-size: 1rem;
 }
 
+.lead {
+    font-size: 1.20rem;
+    font-weight: 440
+}
+
+@media (max-width: 991.98px) {
+    .lead {
+        font-size: 1.16rem;
+    }
+}
+
 hr {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -755,6 +775,17 @@ small {
 }
 
 .img-fluid {
+    max-width: 100%;
+    height: auto
+}
+
+.img-thumbnail {
+    padding: 0.25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+
+
+    border-radius: 0.25rem;
     max-width: 100%;
     height: auto
 }
@@ -847,7 +878,9 @@ pre code {
 .col-lg-12,
 .col-md-4,
 .col-md-6,
+.col-md-7,
 .col-md-8,
+.col-md-10,
 .col-md-12,
 .col-sm-5 {
     position: relative;
@@ -908,11 +941,23 @@ pre code {
         flex: 0 0 50%;
         max-width: 50%
     }
+    .col-md-7 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 58.33333%;
+        flex: 0 0 58.33333%;
+        max-width: 58.33333%
+    }
     .col-md-8 {
         -webkit-box-flex: 0;
         -ms-flex: 0 0 66.66667%;
         flex: 0 0 66.66667%;
         max-width: 66.66667%
+    }
+    .col-md-10 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 83.33333%;
+        flex: 0 0 83.33333%;
+        max-width: 83.33333%
     }
     .col-md-12 {
         -webkit-box-flex: 0;
@@ -1054,14 +1099,6 @@ pre code {
 select.form-control:focus::-ms-value {
     color: #495057;
     background-color: #fff
-}
-
-.form-control-sm {
-    height: calc(1.5em + 0.5rem + 2px);
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    border-radius: 0.2rem
 }
 
 select.form-control[multiple],
@@ -1709,16 +1746,6 @@ input[type=submit].btn-block {
     border-radius: 0.25rem
 }
 
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb
-}
-
-.alert-danger hr {
-    border-top-color: #f1b0b7
-}
-
 .progress {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -1984,7 +2011,7 @@ a.close.disabled {
     left: 0;
     z-index: 1040;
     width: 100vw;
-    height: 100vh;
+    height:100vh;height:100svh;
 	backdrop-filter: blur(4px);
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -2744,7 +2771,8 @@ a.close.disabled {
     margin-top: 0.25rem !important
 }
 
-.mr-1 {
+.mr-1,
+.mx-1 {
     margin-right: 0.25rem !important
 }
 
@@ -2752,7 +2780,8 @@ a.close.disabled {
     margin-bottom: 0.25rem !important
 }
 
-.ml-1 {
+.ml-1,
+.mx-1 {
     margin-left: 0.25rem !important
 }
 
@@ -2841,7 +2870,7 @@ a.close.disabled {
     padding-right: 0.5rem !important
 }
 
-
+.pb-2,
 .py-2 {
     padding-bottom: 0.5rem !important
 }
@@ -2898,7 +2927,8 @@ a.close.disabled {
     margin-top: auto !important
 }
 
-.mr-auto {
+.mr-auto,
+.mx-auto {
     margin-right: auto !important
 }
 
@@ -2906,13 +2936,23 @@ a.close.disabled {
     margin-bottom: auto !important
 }
 
-.ml-auto {
+.ml-auto,
+.mx-auto {
     margin-left: auto !important
+}
+
+@media (min-width:768px) {
+    .p-md-3 {
+        padding: 1rem !important
+    }
 }
 
 @media (min-width:992px) {
     .mb-lg-4 {
         margin-bottom: 1.5rem !important
+    }
+    .p-lg-0 {
+        padding: 0 !important
     }
 }
 
@@ -2950,15 +2990,6 @@ a.close.disabled {
 
 .text-white {
     color: #fff !important
-}
-
-.text-danger {
-    color: #D64F49 !important
-}
-
-a.text-danger:focus,
-a.text-danger:hover {
-    color: #a71d2a !important
 }
 
 .text-black-50 {
@@ -3311,6 +3342,9 @@ body:after {
   .site-blocks-cover, .site-blocks-cover > .container > .row {
     min-height: 600px;
     height: calc(100vh); }
+  .site-blocks-cover.inner-page-cover, .site-blocks-cover.inner-page-cover > .container > .row {
+    min-height: 500px;
+    height: calc(20vh); }
   .site-blocks-cover h1 {
     font-size: 2.8rem;
     font-weight: 400;
@@ -3337,6 +3371,14 @@ body:after {
       border-bottom: dotted 1px #fff; }
       .site-blocks-cover .desc a:hover {
         color: #fff; }
+
+
+.half  {
+    min-height: 100%;
+    height: calc(45vh); }
+
+.half  > .container > .row  {
+    height: calc(80vh); }
 
 .bg-gris {
   background: #999999; }
@@ -3489,6 +3531,12 @@ body:after {
   margin: 3px;
  }
 
+.cubo {
+  background: rgba(255,255,255, 0.87);
+  padding: 30px; }
+  .cubo ul li {
+    margin-bottom: 10px; }
+
 /* Isotope Transitions
 ------------------------------- */
 .isotope,
@@ -3629,6 +3677,27 @@ xclip
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%); }
 
+.section-hero, .section-hero > .container > .row {
+  height: calc(80vh);
+  min-height: 100%;
+}
+
+.section-hero.overlay {
+  position: relative; }
+  .section-hero.overlay:before {
+    z-index: 1;
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(125, 131, 132, 0.02); }
+
+.section-hero > .container {
+  z-index: 2;
+  position: relative; }
+
 .home-section {
   position: relative; }
   .home-section h1 {
@@ -3668,6 +3737,9 @@ xclip
 	}
 	#tres {
 		order: 3;
+	}
+	#cuatro {
+		order: 4;
 	}
 }
 
@@ -3767,8 +3839,18 @@ body { overflow-x: clip; }
 .arrows { z-index: 3; }
 
 /* Fondos de sección diferidos (los activa un script al final de cada invitación) */
+.bg-diferido { background-image: none !important; }
 
 /* Quicksand local (antes @import de Google, que frenaba la carga): solo se descarga si algún texto la usa */
+
+
+.circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    z-index: 1;
+    border: 5px #fff solid;
+}
 
 span.text {
     z-index: 3;
@@ -3795,6 +3877,12 @@ span.text {
     width: 100%;
 }
 
+.text-gold {
+  color: #9c916b !important; }
+
+.bg-gold-2 {
+  background: #e4d9c7 !important; }
+
 .bg-flor-2 {
   background: #FAF2F3 !important; }
 
@@ -3804,6 +3892,9 @@ span.text {
 .text-bronce {
   color: var(--color-principal)  !important; }
 
+.text-ocre {
+  color: #d19643  !important; }
+
 .bg-musgo {
   background: var(--color-secundario) !important; }
 
@@ -3812,6 +3903,17 @@ span.text {
 
 .bg-gris {
   background: #747474 !important; }
+
+.button-ocre {
+  background-color: #d19643 ; 
+  color: #fff ; 
+  border: 2px solid #d19643 ;
+}
+
+.button-ocre:hover {
+  background-color: transparent;
+  color: #d19643 ;
+}
 
 .rsvp-cerrado {
     opacity: 0.6;
@@ -4231,6 +4333,53 @@ h3.euforia:after {
 .countdown-deluxe-circles6 span:first-of-type {
     margin-left: 0;
 }
+
+
+.disco {
+      font-family: 'Monoton', cursive;
+	 font-weight: normal;
+}
+
+.disco h1 {
+
+	font-size: 5rem;
+}
+
+.disco h2 {
+	font-size: 3.75rem;
+}
+
+.disco h3 {
+	font-size: 2.188rem;
+}
+
+.disco p {
+	font-size: 1.25rem;
+}
+.disco i {
+	font-size: 5.625rem;
+}
+
+
+@media screen and (max-width: 768px) {
+.disco h3 {
+font-size: 1.75rem;
+ }
+.disco h1 {
+    font-size: 3.125rem;
+}
+.disco h2 {
+    font-size: 2.375rem;
+}
+.disco i {
+	font-size: 4.063rem;
+}
+.disco p {
+  font-size: 1.125rem;
+}
+
+	
+}
 /* Flickering animation */
 
 .circle-singleline2 {
@@ -4599,8 +4748,24 @@ audio::-webkit-media-controls-play-button:hover {
 #countdown-timer .unit .label {font-size: 0.438rem; margin-top: -4px}
 
 /* Faux outline for older browsers */
+.outline {
+    color: black; /* Unfortunately you can't use transparent here … */
+    text-shadow:
+	   -1px -1px 0 #fff,  
+		1px -1px 0 #fff,
+		-1px 1px 0 #fff,
+		 1px 1px 0 #fff
+}
 
 /* Real outline for modern browsers */
+@supports((text-stroke: 1px white) or (-webkit-text-stroke: 1px white)) {
+    .outline {
+        color: transparent;
+        -webkit-text-stroke: 1px white;
+		text-stroke: 1px white;
+        text-shadow: none;
+    }
+}
 
 /*PRICE COLOR CODE START*/ 
 .row .table{
@@ -4727,11 +4892,44 @@ audio::-webkit-media-controls-play-button:hover {
   animation-delay: 0s;
   -webkit-animation-delay: 0s; /* Safari 和 Chrome */
 }
+
+.arrows-2 {
+  width: 30px;
+  height: 36px;
+  position: absolute;
+  left: 50%;
+  margin-left: -11px;
+  bottom: 10px;
+}
+
+.arrows-2 path {
+  fill: transparent;
+  stroke-width: 2px;
+  animation: arrow 2s infinite;
+  -webkit-animation: arrow 2s infinite;
+}
+
+.arrows-2 path.a1 {
+  animation-delay: -1s;
+  -webkit-animation-delay: -1s; /* Safari 和 Chrome */
+}
+
+.arrows-2 path.a2 {
+  animation-delay: -0.5s;
+  -webkit-animation-delay: -0.5s; /* Safari 和 Chrome */
+}
+
+.arrows-2 path.a3 {
+  animation-delay: 0s;
+  -webkit-animation-delay: 0s; /* Safari 和 Chrome */
+}
 @media (max-width: 768px) {
   .arrows {
     top: 15px;
   }
 }
+
+.invert { filter: invert(100%); }
 @charset "utf-8";
 /* CSS Document */
 
@@ -4739,6 +4937,16 @@ audio::-webkit-media-controls-play-button:hover {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
+}
+
+.t-musgo {
+  background: var(--color-suave) !important;
+}
+.c-ocre {
+	border:1px solid #000 !important;
+}
+.c-ocre h2 {
+  color: #D7926A  !important;
 }
 
 .timeline-container {
@@ -4766,15 +4974,17 @@ audio::-webkit-media-controls-play-button:hover {
   -ms-transition: all 0.4s ease;
   transition: all 0.4s ease;
 }
-#timeline:before {
-  content: "";
-  width: 2px;
-  height: 87%;
-  background: var(--color-principal);
-  left: 49.5%;
-  top: 0;
-  position: absolute;
+/* La línea ya no tiene un alto fijo: cada momento dibuja el tramo hasta el siguiente
+   y el último no dibuja nada, así siempre termina en el último ícono (con textos
+   largos o muchos momentos). Color y grosor: --linea-color y --linea-ancho. */
+#timeline:before { content: none; }
+#timeline .timeline-item {
+  background-image: linear-gradient(var(--linea-color, var(--color-principal)), var(--linea-color, var(--color-principal)));
+  background-repeat: no-repeat;
+  background-size: var(--linea-ancho, 2px) 100%;
+  background-position: calc(49.5% + 1px) 25px;
 }
+#timeline .timeline-item:last-of-type { background-image: none; }
  #timeline .timeline-item .timeline-content:before {
   border-left: 7px solid #fff;
 }
@@ -4789,9 +4999,11 @@ audio::-webkit-media-controls-play-button:hover {
   width: 100%;
 }
 #timeline .timeline-item {
-  margin-bottom: 30px;
+  margin-bottom: 0;
+  padding-bottom: 30px;
   position: relative;
 }
+#timeline .timeline-item:last-of-type { padding-bottom: 0; margin-bottom: 30px; }
 #timeline .timeline-item .timeline-icon {
   background: var(--color-principal);
   width: 50px;
@@ -4886,11 +5098,14 @@ audio::-webkit-media-controls-play-button:hover {
 /* content block animation */
 
 /* ALL animation types called */
+.invert { filter: invert(100%); }
 
 /* ─── Propio de Garden: lo que antes estaba escrito dentro del HTML ─── */
 
 /* Portada: cada foto del carrusel ocupa la pantalla (la foto la pone el motor) */
 .portada-foto { height: 100vh; background-repeat: no-repeat; background-size: cover; background-position: center center; }
+/* En la computadora, el encuadre horizontal que eligió el cliente (portada-pc: Basic, sin cambiar la altura) */
+@media (min-width: 768px) { .portada-foto, .portada-pc { background-position: var(--pos-pc, center center) !important; } }
 
 /* Olas de la portada */
 .g-ola-media { background-image: url(img/wave-mid-b.png); }
@@ -4932,3 +5147,20 @@ audio::-webkit-media-controls-play-button:hover {
 
 /* Recuadro del invitado en la confirmación */
 .g-tarjeta-invitado { border: 2px dashed #dee2e6; border-radius: 36px; }
+
+/* Frase de la portada: un espacio entre las líneas decorativas y el texto */
+.date-line:before { margin-right: .5em; }
+.date-line:after { margin-left: .5em; }
+
+/* Dress code: colores a evitar (una fila de círculos) */
+.g-evitar-titulo { font-size: .95rem; letter-spacing: .04em; }
+.g-evitar-colores { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.g-evitar-color { display: inline-block; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .9); box-shadow: 0 1px 5px rgba(0, 0, 0, .25); }
+@media (min-width: 768px) { .g-evitar-color { width: 40px; height: 40px; } }
+
+/* Historia: párrafo (antes h3, muy grande) */
+.g-historia { font-size: 1.2rem; line-height: 1.6; }
+@media (max-width: 767px) { .g-historia { font-size: 1.1rem; } }
+
+/* Portada: los nombres van como en el diseño original; si son muy largos,
+   invitacion.js achica la letra (data-ajustar) para que no lleguen al borde */

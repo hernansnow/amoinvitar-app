@@ -1,0 +1,3 @@
+// Tipografías que se pueden elegir en Diseño (las que usan las invitaciones).
+// Los archivos están en public/comun/fonts/catalogo/ (catalogo.css las carga).
+export const FUENTES = ["Great Vibes", "Dantina", "Amsterdam Four", "Fleur De Leah", "Magneto", "Montez", "Abril Fatface", "Montserrat", "Molle", "Sedgwick Ave Display", "Oswald", "Neonderthaw", "Monoton", "Sacramento", "Josefin Slab", "Lavishly Yours", "Indie Flower", "Kaushan Script", "Ruthie", "Kranky", "Alex Brush", "Allura", "Alumni Sans Pinstripe", "Bodoni Moda", "Chewy", "Cinzel Decorative", "Comfortaa", "Days One", "Eater", "Josefin Sans", "Jost", "Mrs Saint Delafield", "Passions Conflict", "Playfair Display", "Poiret One", "Raleway", "Roboto Condensed", "Sail", "Shrikhand", "Square Peg", "Yellowtail"];

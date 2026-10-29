@@ -1,0 +1,137 @@
+{
+  "id": "navidad",
+  "nombre": "Navidad",
+  "eventos": [
+    "navidad"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#890029",
+    "#65201e",
+    "#a9725e",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "itinerario",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "proporciones": {
+    "lugar": "1/1"
+  },
+  "nombresHTML": {
+    "portada": "{a} &amp; {b}",
+    "cierre": "{a} &amp; {b}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": null,
+    "colorFondo": "#65201e",
+    "colorTitulos": "#890029",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#890029",
+      "papel": "#22645b",
+      "fondo": "#184b44",
+      "tinta": "rgba(255,255,255,.8)",
+      "filo": ".16"
+    },
+    "bienvenida": "font-family:Jost, sans-serif; color:#ffffff; font-weight:500; --bv-escala:1;"
+  },
+  "demo": {
+    "navidad": {
+      "portadas": [
+        {
+          "f": "hero-banner.jpg",
+          "pos": "50% 25%"
+        }
+      ]
+    }
+  },
+  "demoBorrosas": {
+    "navidad": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/jost.css",
+      "/comun/fonts/css/amsterdam-four-font.css",
+      "/modelos/navidad/tema.css"
+    ]
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "id": "elegance",
+  "nombre": "Elegance",
+  "eventos": [
+    "boda"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#a78977",
+    "#bfaaa6",
+    "#a68e8a",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": true
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/wave-mid-bronce.png",
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "galeria",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "instagram",
+        "canciones",
+        "regalos"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "hospedaje",
+        "bus",
+        "itinerario",
+        "testigos",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist",
+        "regalos",
+        "redes"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "nombresHTML": {
+    "portada": "{a} <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> {b}",
+    "cierre": "{a} <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> {b}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/elegance/img/wave-mid-bronce.png",
+    "colorFondo": "#bfaaa6",
+    "colorTitulos": "#a78977",
+    "fuenteTitulos": "Abril Fatface",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#a78977"
+    },
+    "bienvenida": "font-family:'Abril Fatface', cursive; color:rgb(167, 137, 119); font-weight:500; --bv-escala:1;"
+  },
+  "demo": {
+    "boda": {
+      "portadas": [
+        {
+          "f": "hero-banner.jpg",
+          "pos": "50% 20%"
+        }
+      ]
+    }
+  },
+  "demoBorrosas": {
+    "boda": {
+      "portada": [
+        "hero-banner.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg",
+        "foto7.jpg",
+        "foto8.jpg",
+        "foto9.jpg",
+        "foto10.jpg",
+        "foto11.jpg",
+        "foto12.jpg"
+      ],
+      "instagram": "instagram.jpg",
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/abril-fatface+alex-brush+jost.css",
+      "/modelos/elegance/tema.css"
+    ]
+  }
+}

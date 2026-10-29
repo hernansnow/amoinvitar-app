@@ -1,0 +1,349 @@
+{
+  "15": {
+    "carpeta": "graffiti15",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "iconosItinerario": [
+            "iglesia",
+            "tragos",
+            "15",
+            "vals",
+            "disco",
+            "cena",
+            "brindis",
+            "baile"
+          ],
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-15-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "nombresCierre": "Ariadna",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "graffiti",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna &amp; Mario</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 15%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna &amp; Mario</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 15%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna &amp; Mario</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 15%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      }
+    }
+  },
+  "cumple": {
+    "carpeta": "cumple-graffiti",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-cumple.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 12,
+          "iconosItinerario": [
+            "tragos",
+            "cena",
+            "disco",
+            "torta3",
+            "baile",
+            "last-call2"
+          ],
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-cumple-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 8,
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
+          "portadaFotos": 1,
+          "galeria": 4,
+          "nombresCierre": "Ariadna",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      }
+    }
+  }
+}

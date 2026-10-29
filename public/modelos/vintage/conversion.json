@@ -1,0 +1,120 @@
+{
+  "boda": {
+    "carpeta": "vintage",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [],
+        "info": {
+          "nombresPortada": "<span class=\"fontawesome-star star\"></span><span>Carla <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> Pablo</span><span class=\"fontawesome-star star\"></span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "nombresCierre": "<span class=\"text-retro display-4\">Carla <i class=\"icon-heart text-danger\" aria-hidden=\"true\"></i> Pablo</span>",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"fontawesome-star star\"></span><span>Carla <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> Pablo</span><span class=\"fontawesome-star star\"></span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "agenda",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<span class=\"text-retro display-4\">Carla <i class=\"icon-heart text-danger\" aria-hidden=\"true\"></i> Pablo</span>",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span class=\"fontawesome-star star\"></span><span>Carla <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> Pablo</span><span class=\"fontawesome-star star\"></span>",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "galeriaEnRsvp": true,
+          "nombresCierre": "<span class=\"text-retro display-4\">Carla <i class=\"icon-heart text-danger\" aria-hidden=\"true\"></i> Pablo</span>",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald.css"
+          ]
+        }
+      }
+    }
+  }
+}

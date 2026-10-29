@@ -64,6 +64,12 @@ function llenarItem(el, item, n) {
       if (pos) x.setAttribute('style', cambiarPosicion(x.getAttribute('style') || '', pos));
       x.removeAttribute('data-i-pos');
     }
+    if (x.hasAttribute('data-i-estilo')) {
+      // Estilo extra del ítem (por ejemplo el encuadre de la portada en la computadora)
+      const extra = String(item[x.getAttribute('data-i-estilo')] ?? '').replace(/[<>"]/g, '');
+      if (extra) x.setAttribute('style', `${x.getAttribute('style') || ''}; ${extra}`);
+      x.removeAttribute('data-i-estilo');
+    }
     for (const { name, value } of [...x.attributes]) {
       if (value.includes('{n}')) x.setAttribute(name, value.replaceAll('{n}', n));
     }
@@ -107,6 +113,13 @@ function textos(doc, v, t) {
   for (const el of todos(doc, '[data-campo]')) { el.textContent = valor(v, el.getAttribute('data-campo')) ?? ''; el.removeAttribute('data-campo'); }
   for (const el of todos(doc, '[data-campo-html]')) { el.innerHTML = valor(v, el.getAttribute('data-campo-html')) ?? ''; el.removeAttribute('data-campo-html'); }
   for (const el of todos(doc, '[data-t]')) { el.textContent = t(el.getAttribute('data-t')); el.removeAttribute('data-t'); }
+  // data-caso: el texto como lo escribe el diseño ("titulo": ¡Nos Casamos! · "oracion": ¡Nos casamos!)
+  for (const el of todos(doc, '[data-caso]')) {
+    const caso = el.getAttribute('data-caso'), x = el.textContent.toLocaleLowerCase();
+    el.textContent = caso === 'titulo' ? x.replace(/(^|[\s¡¿"(])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase())
+      : x.replace(/^([¡¿"(\s]*)(\p{L})/u, (m, a, b) => a + b.toLocaleUpperCase());
+    el.removeAttribute('data-caso');
+  }
   for (const el of todos(doc, '[data-t-html]')) { el.innerHTML = t(el.getAttribute('data-t-html')); el.removeAttribute('data-t-html'); }
   for (const el of todos(doc, '[data-attr]')) {
     for (const par of el.getAttribute('data-attr').split(';')) {
@@ -117,6 +130,13 @@ function textos(doc, v, t) {
       if (lleno(val)) el.setAttribute(a, val); else el.removeAttribute(a);
     }
     el.removeAttribute('data-attr');
+  }
+  // data-fecha="principal|ceremonia|celebracion" + data-fecha-formato="{dd} • {mm} • {a}": la fecha como la escribe el diseño
+  for (const el of todos(doc, '[data-fecha]')) {
+    const f = v.fechas?.[el.getAttribute('data-fecha')];
+    const formato = el.getAttribute('data-fecha-formato') || '{dd} • {mm} • {a}';
+    el.textContent = f ? formato.replace(/\{(\w+)\}/g, (m, k) => f[k] ?? '') : '';
+    el.removeAttribute('data-fecha'); el.removeAttribute('data-fecha-formato');
   }
   for (const el of todos(doc, '[data-bg]')) {
     const url = valor(v, el.getAttribute('data-bg'));

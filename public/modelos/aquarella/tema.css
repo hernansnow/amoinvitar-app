@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   AQUARELLA · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #9c916b;
+  --color-secundario: #498080;
+  --color-suave: #d5e7e7;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Montez', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

@@ -11,11 +11,25 @@
 // Variantes: es (neutro, tú/ustedes) · es-ar (vos: AR, UY, PY)
 //            es-cr (vos con subjuntivo: CR, NI) · es-es (tú/vosotros) · en
 // En los textos, {nombres} se reemplaza por los nombres del evento.
+//
+// Otros idiomas (pt, fr, it, ca, de, nl): textos/idiomas/<código>.js, sobre
+// el inglés (lo que falte en esos archivos se ve en inglés, nunca vacío).
 // ════════════════════════════════════════════════════════════════════
+
+import pt from './idiomas/pt.js';
+import fr from './idiomas/fr.js';
+import it from './idiomas/it.js';
+import ca from './idiomas/ca.js';
+import de from './idiomas/de.js';
+import nl from './idiomas/nl.js';
+
+const OTROS = { pt, fr, it, ca, de, nl };
+import NUEVOS from './idiomas/eventos-nuevos.js';
 
 const BASE = {
   es: {
     'general.si': 'Sí', 'general.no': 'No',
+    'playlist.titulo': 'Mi playlist', 'playlist.texto': 'Las canciones que van a sonar en la fiesta.', 'playlist.resumen': '{n} canciones · {min} min', 'playlist.verTodas': 'Ver las {n} canciones', 'playlist.verMenos': 'Ver menos', 'playlist.play': 'Reproducir la playlist', 'playlist.pausa': 'Pausar', 'playlist.abrir': 'Abrir en Spotify', 'galeria.ver': 'Ver foto', 'galeria.anterior': 'Anterior', 'galeria.siguiente': 'Siguiente',
     'meta.titulo': 'Invitación ❤ {evento} | {nombres}',
     'meta.descripcion': '¡Te esperamos para celebrar juntos!',
 
@@ -24,7 +38,7 @@ const BASE = {
 
     'lugar.diaHorario': 'DÍA Y HORARIO', 'lugar.lugar': 'LUGAR',
     'ceremonia.religiosa': 'Ceremonia', 'ceremonia.civil': 'Ceremonia civil', 'ceremonia.simbolica': 'Ceremonia',
-    'celebracion.titulo': 'Celebración', 'unificado.titulo': 'Ceremonia y Celebración',
+    'celebracion.titulo': 'Celebración', 'unificado.titulo': 'Ceremonia y Celebración', 'celebracion.sola': 'Celebración', 'bienvenida.texto': 'Quiero invitarte a compartir este día especial',
     'boton.agendar': 'Agendar', 'boton.comoLlegar': '¿CÓMO LLEGAR?', 'boton.cerrar': 'cerrar',
     'mapa.titulo': '¿Cómo llegar?', 'mapa.abrir': 'Ver en la app de Google Maps',
 
@@ -46,12 +60,15 @@ const BASE = {
     'rsvp.form.siAsiste': 'Sí, ahí estaré 😀', 'rsvp.form.noAsiste': 'No podré asistir 😭',
     'rsvp.form.msgNoAsiste': '😢 Una pena que no puedas asistir. ¡Gracias por avisar!',
     'rsvp.form.msgOk': '¡Gracias! 🎉 Tu confirmación fue registrada',
-    'rsvp.form.msgError': 'Error de conexión. Intenta de nuevo.',
+    'rsvp.form.msgError': 'Error de conexión. Intenta de nuevo.', 'rsvp.form.quienes': '¿Quiénes van a asistir?', 'rsvp.form.va': 'Va', 'rsvp.form.noVa': 'No va', 'rsvp.form.yaRespondiste': 'Ya respondiste', 'rsvp.form.cambiar': 'Cambiar mi respuesta', 'rsvp.form.personas': 'personas', 'rsvp.form.pase': 'Mi pase de entrada', 'rsvp.form.paseAyuda': 'Muéstralo en la entrada del evento.', 'rsvp.form.volver': 'Volver', 'rsvp.form.msgAcceso': 'No pudimos validar tu acceso. Vuelve a abrir tu link personal e inténtalo otra vez.', 'rsvp.form.msgPrueba': 'Vista previa: esta respuesta no se guarda.',
     'rsvp.form.msgInvalida': 'Respuesta inválida del servidor.',
     'rsvp.form.msgVacios': 'Por favor completa los datos.',
     'rsvp.form.comidaOpciones': 'No|Celíaco|Vegano|Vegetariano',
 
-    'dress.titulo': 'Dress Code', 'dress.boton': 'Sugerencias', 'dress.modal': 'Sugerencias de estilos',
+    'dress.titulo': 'Dress Code', 'dress.boton': 'Sugerencias', 'dress.modal': 'Sugerencias de estilos', 'dress.evitar': 'Colores a evitar',
+    'rsvp.form.comidaAcomp': '¿Algún acompañante tiene otra restricción? (opcional)',
+    'rsvp.form.msgLleno': 'Ya se completó el cupo de invitados: no se reciben más confirmaciones.',
+    'rsvp.form.mensaje': 'Un mensaje para {nombres} (opcional)', 'rsvp.form.mensajePlaceholder': 'Escribe aquí tu mensaje…', 'rsvp.form.atras': 'Atrás', 'rsvp.form.siguiente': 'Siguiente', 'rsvp.form.acompNombres': 'Nombres de tus acompañantes (puedes completar solo algunos)',
     'dresscode.texto': 'Formal y elegante. Por favor no usar blanco.',
     'hospedaje.titulo': 'Hospedaje', 'hospedaje.texto': 'Referencias de hoteles cercanos.',
     'hospedaje.boton': 'Referencias', 'hospedaje.modal': 'Referencias de hoteles cercanos', 'hospedaje.reservas': 'Reservas',
@@ -59,6 +76,7 @@ const BASE = {
     'bus.partida': 'Partida', 'bus.parada': 'Parada intermedia', 'bus.destino': 'Destino',
     'itinerario.titulo': 'Itinerario',
     'album.titulo': 'Comparte tus Fotos', 'album.boton': 'SUBE TUS IMÁGENES',
+    'hashtag.titulo': 'Etiqueta tus Fotos', 'hashtag.boton': 'VER FOTOS', 'hashtag.texto': '¡Prepárate para mi fiesta!<br>Etiquétame en Instagram con mi hashtag en tus fotos y videos.',
     'canciones.titulo': 'Música', 'canciones.spotify': 'Ir a Spotify', 'canciones.boton': 'Sugerir canción',
     'canciones.modal': 'Sugerir canciones', 'canciones.ayuda': 'Por favor completar el nombre de la canción y el intérprete.',
     'canciones.ejemplo': 'ej: Tu Amor — Juan Fulano', 'canciones.placeholder': 'Artista — Canción', 'canciones.enviar': 'Enviar',
@@ -68,12 +86,15 @@ const BASE = {
     'regalos.titulo': 'Regalos', 'regalos.botonCuenta': 'CUENTA BANCARIA', 'regalos.botonLista': 'LISTA DE REGALOS',
     'regalos.modalCuenta': 'Datos Bancarios', 'regalos.modalLista': 'Lista de regalos', 'regalos.irLista': 'Ir a la lista',
     'perdiste.titulo': '¿Te perdiste algo?', 'perdiste.rsvp': 'Confirmar asistencia', 'perdiste.agendar': 'Agendar evento',
-    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Sugerir canción', 'perdiste.inicio': 'Inicio',
+    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Sugerir canción', 'perdiste.inicio': 'Inicio', 'perdiste.regalos': 'Regalos', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Álbum de fotos', 'perdiste.itinerario': 'Itinerario', 'perdiste.hospedaje': 'Hospedaje', 'perdiste.bus': 'Traslado',
 
     'sobre.tocar': 'Tocar para abrir la invitación', 'sobre.aria': 'Invitación cerrada', 'sobre.ariaLacre': 'Abrir la invitación',
+    'bv.titulo': '¡Te doy la bienvenida a mi invitación!', 'bv.texto': 'Elegí la música para que te acompañe en este recorrido. ¿Cómo te gustaría ingresar?',
+    'bv.conMusica': 'Ingresar con música', 'bv.sinMusica': 'Ingresar sin música', 'bv.entrar': 'Ingresar',
     'acceso.de': 'Acceso a la invitación de', 'acceso.pin': 'Ingresar el PIN enviado junto a la invitación:',
     'acceso.confirmar': 'Confirmar PIN', 'acceso.bloqueado': 'Este enlace no es válido. Contactar a los organizadores del evento.',
     'acceso.pinError': 'El PIN no es correcto.',
+    'mesa.titulo': 'Busca tu mesa', 'mesa.placeholder': 'Escribe tu nombre o apellido', 'mesa.ayuda': 'Escribe al menos 3 letras.', 'mesa.mesa': 'Mesa', 'mesa.ninguno': 'No encontramos ese nombre. Prueba con tu apellido o consulta en la entrada.', 'mesa.sinMesa': 'Todavía sin mesa asignada', 'mesa.cerrada': 'Esta página no está disponible.',
     'agendar.google': 'Google Calendar', 'agendar.apple': 'Apple (iPhone, Mac)', 'agendar.outlook': 'Outlook', 'agendar.otro': 'Otro calendario (.ics)',
     'lista.faltaCSV': 'Falta configurar lista de invitados', 'lista.errorCSV': 'Error cargando datos. Actualizar la página',
     'lista.paseExtra': 'pase extra reservado', 'lista.pasesExtras': 'pases extras reservados', 'lista.mesa': 'Mesa asignada: N°',
@@ -81,14 +102,17 @@ const BASE = {
 
   // Voseo rioplatense (Argentina, Uruguay, Paraguay)
   'es-ar': {
+    'rsvp.form.mensajePlaceholder': 'Escribí acá tu mensaje…', 'rsvp.form.acompNombres': 'Nombres de tus acompañantes (podés completar solo algunos)',
     'rsvp.form.acompanantesSelect': '¿Vas a ir con acompañantes?', 'rsvp.form.alcohol': '¿Vas a beber alcohol?',
     'rsvp.form.ninos': '¿Vas a ir con niños?', 'rsvp.form.traslado': '¿Necesitás traslado?',
     'rsvp.form.noTraslado': 'No, voy por mi cuenta', 'rsvp.form.subTraslado': 'Confirmá para reservar tu asiento en el bus',
     'rsvp.form.siAsiste': 'Sí, ahí voy a estar 😀', 'rsvp.form.noAsiste': 'No voy a poder ir 😭',
-    'rsvp.form.msgError': 'Error de conexión. Intentá de nuevo.', 'rsvp.form.msgVacios': 'Por favor completá los datos.',
+    'rsvp.form.msgError': 'Error de conexión. Intentá de nuevo.', 'rsvp.form.paseAyuda': 'Mostralo en la entrada del evento.', 'rsvp.form.msgAcceso': 'No pudimos validar tu acceso. Volvé a abrir tu link personal y probá otra vez.', 'rsvp.form.msgPrueba': 'Vista previa: esta respuesta no se guarda.', 'rsvp.form.msgVacios': 'Por favor completá los datos.',
     'bus.texto': 'Reservá tu lugar en el formulario de confirmación.',
     'album.titulo': 'Compartí tus Fotos', 'album.boton': 'SUBÍ TUS IMÁGENES',
+    'hashtag.titulo': 'Etiquetá tus Fotos', 'hashtag.texto': '¡Preparate para mi fiesta!<br>Etiquetame en Instagram con mi hashtag en tus fotos y videos.',
     'canciones.msgError': 'Hubo un problema, intentá de nuevo.', 'canciones.msgConexion': 'Error de conexión, intentá de nuevo.',
+    'mesa.titulo': 'Buscá tu mesa', 'mesa.placeholder': 'Escribí tu nombre o apellido', 'mesa.ayuda': 'Escribí al menos 3 letras.', 'mesa.ninguno': 'No encontramos ese nombre. Probá con tu apellido o consultá en la entrada.',
   },
 
   // Voseo centroamericano (Costa Rica, Nicaragua): igual que el rioplatense en estos textos
@@ -104,12 +128,13 @@ const BASE = {
 
   en: {
     'general.si': 'Yes', 'general.no': 'No',
+    'playlist.titulo': 'My playlist', 'playlist.texto': 'The songs that will play at the party.', 'playlist.resumen': '{n} songs · {min} min', 'playlist.verTodas': 'See all {n} songs', 'playlist.verMenos': 'See less', 'playlist.play': 'Play the playlist', 'playlist.pausa': 'Pause', 'playlist.abrir': 'Open in Spotify', 'galeria.ver': 'See photo', 'galeria.anterior': 'Previous', 'galeria.siguiente': 'Next',
     'meta.titulo': 'Invitation ❤ {evento} | {nombres}', 'meta.descripcion': 'We look forward to celebrating with you!',
     'cuenta.faltan': 'Countdown', 'cuenta.dia': 'DAY', 'cuenta.dias': 'DAYS', 'cuenta.horas': 'HOURS', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEC',
     'musica.boton': 'Music',
     'lugar.diaHorario': 'DATE AND TIME', 'lugar.lugar': 'VENUE',
     'ceremonia.religiosa': 'Ceremony', 'ceremonia.civil': 'Civil ceremony', 'ceremonia.simbolica': 'Ceremony',
-    'celebracion.titulo': 'Reception', 'unificado.titulo': 'Ceremony & Reception',
+    'celebracion.titulo': 'Reception', 'unificado.titulo': 'Ceremony & Reception', 'celebracion.sola': 'Celebration', 'bienvenida.texto': 'I would love you to share this special day with me',
     'boton.agendar': 'Save the date', 'boton.comoLlegar': 'DIRECTIONS', 'boton.cerrar': 'close',
     'mapa.titulo': 'Directions', 'mapa.abrir': 'Open in Google Maps',
     'rsvp.titulo': 'RSVP',
@@ -128,9 +153,12 @@ const BASE = {
     'rsvp.form.siAsiste': 'Yes, I will be there 😀', 'rsvp.form.noAsiste': 'I cannot make it 😭',
     'rsvp.form.msgNoAsiste': '😢 Sorry you cannot make it. Thank you for letting us know!',
     'rsvp.form.msgOk': 'Thank you! 🎉 Your RSVP has been received',
-    'rsvp.form.msgError': 'Connection error. Please try again.', 'rsvp.form.msgInvalida': 'Invalid server response.',
+    'rsvp.form.msgError': 'Connection error. Please try again.', 'rsvp.form.quienes': 'Who will attend?', 'rsvp.form.va': 'Attending', 'rsvp.form.noVa': 'Not attending', 'rsvp.form.yaRespondiste': 'You already replied', 'rsvp.form.cambiar': 'Change my reply', 'rsvp.form.personas': 'people', 'rsvp.form.pase': 'My entry pass', 'rsvp.form.paseAyuda': 'Show it at the event entrance.', 'rsvp.form.volver': 'Back', 'rsvp.form.msgAcceso': 'We couldn’t verify your access. Open your personal link again and retry.', 'rsvp.form.msgPrueba': 'Preview: this reply is not saved.', 'rsvp.form.msgInvalida': 'Invalid server response.',
     'rsvp.form.msgVacios': 'Please fill in your details.', 'rsvp.form.comidaOpciones': 'No|Gluten-free|Vegan|Vegetarian',
-    'dress.titulo': 'Dress Code', 'dress.boton': 'Inspiration', 'dress.modal': 'Style inspiration',
+    'dress.titulo': 'Dress Code', 'dress.boton': 'Inspiration', 'dress.modal': 'Style inspiration', 'dress.evitar': 'Colors to avoid',
+    'rsvp.form.comidaAcomp': 'Does any of your guests have a different restriction? (optional)',
+    'rsvp.form.mensaje': 'A message for {nombres} (optional)', 'rsvp.form.mensajePlaceholder': 'Write your message here…', 'rsvp.form.atras': 'Back', 'rsvp.form.siguiente': 'Next', 'rsvp.form.acompNombres': 'Names of your guests (you can fill in just some)',
+    'rsvp.form.msgLleno': 'The guest limit has been reached: no more RSVPs can be accepted.',
     'dresscode.texto': 'Formal attire. Please avoid wearing white.',
     'hospedaje.titulo': 'Accommodation', 'hospedaje.texto': 'Nearby hotels.', 'hospedaje.boton': 'See hotels',
     'hospedaje.modal': 'Nearby hotels', 'hospedaje.reservas': 'Book',
@@ -138,6 +166,7 @@ const BASE = {
     'bus.partida': 'Departure', 'bus.parada': 'Stop', 'bus.destino': 'Destination',
     'itinerario.titulo': 'Schedule',
     'album.titulo': 'Share your Photos', 'album.boton': 'UPLOAD YOUR PHOTOS',
+    'hashtag.titulo': 'Tag your Photos', 'hashtag.boton': 'SEE PHOTOS', 'hashtag.texto': 'Get ready for my party!<br>Tag me on Instagram with my hashtag in your photos and videos.',
     'canciones.titulo': 'Music', 'canciones.spotify': 'Open Spotify', 'canciones.boton': 'Suggest a song',
     'canciones.modal': 'Suggest songs', 'canciones.ayuda': 'Please enter the song title and the artist.',
     'canciones.ejemplo': 'e.g. Your Love — John Smith', 'canciones.placeholder': 'Artist — Song', 'canciones.enviar': 'Send',
@@ -147,11 +176,14 @@ const BASE = {
     'regalos.titulo': 'Gifts', 'regalos.botonCuenta': 'BANK DETAILS', 'regalos.botonLista': 'GIFT REGISTRY',
     'regalos.modalCuenta': 'Bank details', 'regalos.modalLista': 'Gift registry', 'regalos.irLista': 'Go to the registry',
     'perdiste.titulo': 'Did you miss anything?', 'perdiste.rsvp': 'RSVP', 'perdiste.agendar': 'Save the date',
-    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggest a song', 'perdiste.inicio': 'Home',
+    'perdiste.dress': 'Dress code', 'perdiste.canciones': 'Suggest a song', 'perdiste.inicio': 'Home', 'perdiste.regalos': 'Gifts', 'perdiste.instagram': 'Instagram Wall', 'perdiste.album': 'Photo album', 'perdiste.itinerario': 'Schedule', 'perdiste.hospedaje': 'Accommodation', 'perdiste.bus': 'Transportation',
     'sobre.tocar': 'Tap to open the invitation', 'sobre.aria': 'Closed invitation', 'sobre.ariaLacre': 'Open the invitation',
+    'bv.titulo': 'Welcome to my invitation!', 'bv.texto': 'I chose the music to go with you along the way. How would you like to come in?',
+    'bv.conMusica': 'Enter with music', 'bv.sinMusica': 'Enter without music', 'bv.entrar': 'Enter',
     'acceso.de': 'Invitation access for', 'acceso.pin': 'Enter the PIN sent with your invitation:',
     'acceso.confirmar': 'Confirm PIN', 'acceso.bloqueado': 'This link is not valid. Please contact the event organizers.',
     'acceso.pinError': 'Incorrect PIN.',
+    'mesa.titulo': 'Find your table', 'mesa.placeholder': 'Type your first or last name', 'mesa.ayuda': 'Type at least 3 letters.', 'mesa.mesa': 'Table', 'mesa.ninguno': 'We couldn’t find that name. Try your last name or ask at the entrance.', 'mesa.sinMesa': 'No table assigned yet', 'mesa.cerrada': 'This page is not available.',
     'agendar.google': 'Google Calendar', 'agendar.apple': 'Apple (iPhone, Mac)', 'agendar.outlook': 'Outlook', 'agendar.otro': 'Other calendar (.ics)',
     'lista.faltaCSV': 'Guest list not set up yet', 'lista.errorCSV': 'Error loading data. Please refresh the page',
     'lista.paseExtra': 'extra pass reserved', 'lista.pasesExtras': 'extra passes reserved', 'lista.mesa': 'Table: No.',
@@ -164,8 +196,8 @@ const EVENTOS = {
   boda: {
     plural: true,
     es: {
-      'evento.nombre': 'Boda', 'evento.descripcion': 'Te esperamos para nuestra boda',
-      'portada.subtitulo': '¡NOS CASAMOS!', 'historia.titulo': 'Nuestra Historia',
+      'celebracion.sola': 'Boda', 'bienvenida.texto': '¡Queremos invitarte a nuestra boda!', 'evento.nombre': 'Boda', 'evento.descripcion': 'Te esperamos para nuestra boda',
+      'portada.subtitulo': '¡NOS CASAMOS!', 'historia.titulo': 'Nuestra Historia', 'playlist.titulo': 'Nuestra playlist',
       'historia.texto': 'Andábamos sin buscarnos, pero sabiendo que andábamos para encontrarnos.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial e inolvidable.',
       'bus.destinoTexto': '¡Nuestra Boda!', 'testigos.titulo': 'Los Testigos',
@@ -174,9 +206,11 @@ const EVENTOS = {
       'regalos.texto': 'Nuestro mejor regalo es que nos acompañes, pero si lo deseas, puedes colaborar con nuestra luna de miel 😉',
       'regalos.listaTexto': 'Creamos una lista de regalos en una tienda online, para que puedas regalar el que gustes',
       'pie.texto': 'Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para festejar juntos este día tan especial.',
-      'redes.titulo': 'Redes oficiales de la boda', 'sobre.bienvenida': 'Te damos la bienvenida',
+      'redes.titulo': 'Redes oficiales de la boda',
+      'hashtag.texto': '¡Prepárate para nuestra boda!<br>Etiquétanos en Instagram con nuestro hashtag en tus fotos y videos.', 'sobre.bienvenida': 'Te damos la bienvenida', 'bv.titulo': '¡Te damos la bienvenida a nuestra invitación!', 'bv.texto': 'Elegimos la música para que te acompañe en este recorrido. ¿Cómo te gustaría ingresar?',
     },
     'es-ar': {
+      'hashtag.texto': '¡Preparate para nuestra boda!<br>Etiquetanos en Instagram con nuestro hashtag en tus fotos y videos.',
       'album.texto': '¡Preparate para nuestra boda!<br>Hacé clic en el botón y subí todas las fotos y videos que saques durante la fiesta a nuestro álbum colaborativo, al instante, sin descargar ninguna app.',
       'canciones.texto': '¿Qué canciones son infaltables?<br>Ayudanos con la selección de canciones',
       'regalos.texto': 'Nuestro mejor regalo es que nos acompañes, pero si lo deseás, podés colaborar con nuestra luna de miel 😉',
@@ -185,8 +219,8 @@ const EVENTOS = {
       'album.texto': '¡Prepárate para nuestra boda!<br>Haz clic en el botón y sube todas las fotos y vídeos que hagas durante la fiesta a nuestro álbum colaborativo, al instante, sin descargar ninguna app.',
     },
     en: {
-      'evento.nombre': 'Wedding', 'evento.descripcion': 'Join us for our wedding',
-      'portada.subtitulo': "WE'RE GETTING MARRIED!", 'historia.titulo': 'Our Story',
+      'celebracion.sola': 'Wedding', 'bienvenida.texto': 'We would love to invite you to our wedding!', 'evento.nombre': 'Wedding', 'evento.descripcion': 'Join us for our wedding',
+      'portada.subtitulo': "WE'RE GETTING MARRIED!", 'historia.titulo': 'Our Story', 'playlist.titulo': 'Our playlist',
       'historia.texto': 'We were not looking for each other, but we were meant to meet.',
       'rsvp.texto': 'Your presence will make this day truly special and unforgettable.',
       'bus.destinoTexto': 'Our wedding!', 'testigos.titulo': 'Wedding Party',
@@ -195,7 +229,8 @@ const EVENTOS = {
       'regalos.texto': 'Your presence is our best gift, but if you wish, you can contribute to our honeymoon 😉',
       'regalos.listaTexto': 'We created a gift registry in an online store, so you can choose the gift you like',
       'pie.texto': 'The happiest moments in life become unforgettable when we share them with the family and friends we love, so we look forward to celebrating this special day together.',
-      'redes.titulo': 'Wedding social media', 'sobre.bienvenida': 'Welcome',
+      'redes.titulo': 'Wedding social media',
+      'hashtag.texto': 'Get ready for our wedding!<br>Tag us on Instagram with our hashtag in your photos and videos.', 'sobre.bienvenida': 'Welcome', 'bv.titulo': 'Welcome to our invitation!', 'bv.texto': 'We chose the music to go with you along the way. How would you like to come in?',
     },
   },
 
@@ -203,7 +238,7 @@ const EVENTOS = {
     plural: false,
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
-      'evento.nombre': 'Mis 15', 'evento.descripcion': 'Te espero para celebrar mis 15 años',
+      'celebracion.sola': 'Fiesta', 'bienvenida.texto': '¡Quiero invitarte a mi fiesta!', 'evento.nombre': 'Mis 15', 'evento.descripcion': 'Te espero para celebrar mis 15 años',
       'portada.subtitulo': 'MIS 15 AÑOS', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Desde muy pequeña tengo dos grandes pasiones: patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial e inolvidable.',
@@ -227,7 +262,7 @@ const EVENTOS = {
     },
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
-      'evento.nombre': 'My Sweet 15', 'evento.descripcion': 'Join me to celebrate my 15th birthday',
+      'celebracion.sola': 'Party', 'bienvenida.texto': 'I would love to invite you to my party!', 'evento.nombre': 'My Sweet 15', 'evento.descripcion': 'Join me to celebrate my 15th birthday',
       'portada.subtitulo': 'MY SWEET 15', 'historia.titulo': 'My Story', 'ceremonia.religiosa': 'Mass',
       'historia.texto': 'Since I was little I have had two big passions: skating and furry friends, and rolling along I reached my 15th birthday.',
       'rsvp.texto': 'Your presence will make this day truly special and unforgettable.',
@@ -246,7 +281,7 @@ const EVENTOS = {
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'evento.nombre': 'Bautismo', 'evento.descripcion': 'Te espero para celebrar mi bautismo',
-      'portada.subtitulo': 'MI BAUTISMO', 'historia.titulo': 'Mi Bautismo',
+      'portada.subtitulo': 'MI BAUTISMO', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial.',
       'bus.destinoTexto': '¡Mi Bautismo!', 'testigos.titulo': 'Mis Padrinos',
@@ -262,11 +297,11 @@ const EVENTOS = {
       'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayudanos con la selección de canciones',
       'regalos.texto': 'El mejor regalo es que me acompañes en este día tan especial, pero si querés hacerme un regalo, acá te dejo los datos.',
     },
-    'es-es': { 'evento.nombre': 'Bautizo', 'portada.subtitulo': 'MI BAUTIZO', 'historia.titulo': 'Mi Bautizo', 'bus.destinoTexto': '¡Mi Bautizo!', 'evento.descripcion': 'Te espero para celebrar mi bautizo' },
+    'es-es': { 'evento.nombre': 'Bautizo', 'portada.subtitulo': 'MI BAUTIZO', 'bus.destinoTexto': '¡Mi Bautizo!', 'evento.descripcion': 'Te espero para celebrar mi bautizo' },
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
       'evento.nombre': 'Baptism', 'evento.descripcion': 'Join us to celebrate my baptism', 'portada.subtitulo': 'MY BAPTISM',
-      'historia.titulo': 'My Baptism', 'historia.texto': 'Hoping that God\'s blessing will always guide me with its light.',
+      'historia.titulo': 'My Story', 'historia.texto': 'Hoping that God\'s blessing will always guide me with its light.',
       'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My baptism!', 'testigos.titulo': 'My Godparents',
       'album.texto': 'Get ready for my baptism!<br>Tap the button and upload all the photos and videos you take to my shared album, instantly, no app needed.',
       'canciones.texto': 'Which songs can\'t be missed?<br>Help us choose the music',
@@ -282,7 +317,7 @@ const EVENTOS = {
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'evento.nombre': 'Primera Comunión', 'evento.descripcion': 'Te espero para celebrar mi primera comunión',
-      'portada.subtitulo': 'MI PRIMERA COMUNIÓN', 'historia.titulo': 'Mi Primera Comunión',
+      'portada.subtitulo': 'MI PRIMERA COMUNIÓN', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial.',
       'ceremonia.religiosa': 'Misa',
@@ -303,7 +338,7 @@ const EVENTOS = {
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
       'evento.nombre': 'First Communion', 'evento.descripcion': 'Join me to celebrate my First Communion', 'portada.subtitulo': 'MY FIRST COMMUNION',
-      'historia.titulo': 'My First Communion', 'historia.texto': 'Today I receive Jesus in my heart and I want to share this joy with the people I love most.',
+      'historia.titulo': 'My Story', 'historia.texto': 'Today I receive Jesus in my heart and I want to share this joy with the people I love most.',
       'ceremonia.religiosa': 'Mass', 'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My Communion!',
       'testigos.titulo': 'My Godparents', 'album.texto': 'Get ready for my communion!<br>Tap the button and upload all the photos and videos you take to my shared album, instantly, no app needed.',
       'canciones.texto': 'Which songs can\'t be missed?<br>Help me choose the music',
@@ -318,11 +353,11 @@ const EVENTOS = {
     plural: false,
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
-      'evento.nombre': 'Cumpleaños', 'evento.descripcion': 'Te espero para festejar mi cumpleaños',
-      'portada.subtitulo': '¡MI CUMPLEAÑOS!', 'historia.titulo': 'Unas palabras',
-      'historia.texto': 'Un año más para celebrar la vida, y qué mejor que hacerlo con las personas que más quiero.',
+      'celebracion.sola': 'Cumpleaños', 'bienvenida.texto': '¡Quiero invitarte a mi fiesta!', 'evento.nombre': 'Cumpleaños', 'evento.descripcion': 'Te espero para festejar mi cumpleaños',
+      'portada.subtitulo': '¡MI CUMPLEAÑOS!', 'historia.titulo': 'Mi Historia',
+      'historia.texto': 'La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta aquí rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial.',
-      'bus.destinoTexto': '¡Mi Cumple!', 'testigos.titulo': 'Anfitriones',
+      'bus.destinoTexto': '¡Mi Cumple!', 'testigos.titulo': 'Cómplices',
       'album.texto': '¡Prepárate para mi fiesta!<br>Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiesta a mi álbum colaborativo, al instante, sin descargar ninguna app.',
       'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayúdame con la selección de canciones',
       'regalos.texto': 'El mejor regalo es que me acompañes, pero si deseas hacerme un regalo aquí te dejo los datos.',
@@ -331,6 +366,7 @@ const EVENTOS = {
       'redes.titulo': 'Redes oficiales', 'sobre.bienvenida': 'Te doy la bienvenida',
     },
     'es-ar': {
+      'historia.texto': 'La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!',
       'album.texto': '¡Preparate para mi fiesta!<br>Hacé clic en el botón y subí todas las fotos y videos que saques durante la fiesta a mi álbum colaborativo, al instante, sin descargar ninguna app.',
       'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayudame con la selección de canciones',
       'regalos.texto': 'El mejor regalo es que me acompañes, pero si querés hacerme un regalo, acá te dejo los datos.',
@@ -338,9 +374,9 @@ const EVENTOS = {
     'es-es': { 'bus.destinoTexto': '¡Mi Cumple!' },
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
-      'evento.nombre': 'Birthday', 'evento.descripcion': 'Join me to celebrate my birthday', 'portada.subtitulo': "IT'S MY BIRTHDAY!",
-      'historia.titulo': 'A few words', 'historia.texto': 'One more year to celebrate life, and what better way than with the people I love most.',
-      'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My party!', 'testigos.titulo': 'Hosts',
+      'celebracion.sola': 'Birthday', 'bienvenida.texto': 'I would love to invite you to my party!', 'evento.nombre': 'Birthday', 'evento.descripcion': 'Join me to celebrate my birthday', 'portada.subtitulo': "IT'S MY BIRTHDAY!",
+      'historia.titulo': 'My Story', 'historia.texto': 'Life is measured in moments, in shared laughter and in the good people we meet along the way. Today I get to celebrate one more year of stories, lessons and reasons to toast to everything still to come. Getting here surrounded by the people who make my world more special is the best gift of all. Thank you for always being there and for celebrating this important day with me!',
+      'rsvp.texto': 'Your presence will make this day truly special.', 'bus.destinoTexto': 'My party!', 'testigos.titulo': 'Partners in crime',
       'album.texto': 'Get ready for my party!<br>Tap the button and upload all the photos and videos you take during the party to my shared album, instantly, no app needed.',
       'canciones.texto': 'Which songs can\'t be missed?<br>Help me choose the music',
       'regalos.texto': 'Your presence is the best gift, but if you wish to give me something, here are the details.',
@@ -351,6 +387,116 @@ const EVENTOS = {
   },
 };
 
+// Eventos que salen de otro (mismos textos de fiesta) con lo propio encima
+const derivado = (de, propio) => {
+  const r = { plural: propio.plural ?? EVENTOS[de].plural };
+  for (const v of ['es', 'es-ar', 'es-es', 'en']) {
+    // Lo que el evento nuevo reescribe en es no se toma de la variante del evento de base
+    const baseV = Object.fromEntries(Object.entries(EVENTOS[de][v] || {}).filter(([k]) => v === 'es' || v === 'en' || !(k in (propio.es || {}))));
+    r[v] = { ...baseV, ...(propio[v] || {}) };
+  }
+  r.de = de;
+  return r;
+};
+EVENTOS.infantil = derivado('cumple', {
+  es: {
+    'evento.nombre': 'Cumpleaños', 'evento.descripcion': '¡Te espero para festejar mi cumple!', 'portada.subtitulo': '¡MI CUMPLE!', 'portada.detalle': '2 Años',
+    'historia.texto': 'Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!',
+    'bienvenida.texto': '¡Te invito a mi cumple!', 'testigos.titulo': 'Mis Padrinos', 'bus.destinoTexto': '¡Mi Cumple!',
+    'pie.texto': '¡Gracias por venir a festejar conmigo! Te espero para jugar, reír y compartir este día tan especial.',
+  },
+  'es-ar': {},
+  'es-es': {},
+  en: {
+    'evento.nombre': 'Birthday', 'evento.descripcion': 'Come and celebrate my birthday!', 'portada.subtitulo': "IT'S MY BIRTHDAY!", 'portada.detalle': '2 Years',
+    'historia.texto': 'One more year of playing, learning and smiling. It\'s amazing how fast time flies, but it\'s time to blow out more candles. It has been a wonderful time full of love and unforgettable family moments. To celebrate this special day, we\'d love to invite you to the party to share a magical afternoon together. Don\'t miss it!',
+    'bienvenida.texto': 'Come to my party!', 'pie.texto': 'Thank you for coming to celebrate with me! I can\'t wait to play, laugh and share this special day with you.',
+  },
+});
+EVENTOS.graduacion = derivado('cumple', {
+  // (es-ar: "hasta acá")
+  es: {
+    'evento.nombre': 'Graduación', 'evento.descripcion': 'Te espero para celebrar mi graduación', 'portada.subtitulo': 'FIESTA DE GRADUACIÓN', 'portada.detalle': 'CLASE 2027',
+    'historia.titulo': 'Mi Historia', 'historia.texto': 'Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta aquí. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!',
+    'bienvenida.texto': '¡Quiero invitarte a mi fiesta de graduación!', 'bus.destinoTexto': '¡La Fiesta!', 'celebracion.sola': 'Fiesta',
+    'testigos.titulo': 'Los Mentores', 'ceremonia.religiosa': 'Ceremonia de Graduación', 'ceremonia.simbolica': 'Ceremonia de Graduación', 'celebracion.titulo': 'Fiesta de Graduación', 'unificado.titulo': 'Ceremonia y Fiesta',
+    'pie.texto': 'Los logros se disfrutan más cuando se comparten con la familia y los amigos que estuvieron en cada paso. ¡Te espero para festejar juntos!',
+  },
+  'es-ar': { 'historia.texto': 'Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta acá. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!' }, 'es-es': {},
+  en: {
+    'evento.nombre': 'Graduation', 'evento.descripcion': 'Join me to celebrate my graduation', 'portada.subtitulo': 'GRADUATION PARTY', 'portada.detalle': 'CLASS OF 2027',
+    'historia.texto': 'It feels like yesterday that this journey full of challenges, late nights and unforgettable moments began. Every exam passed, every effort and the unconditional support of those who were by my side brought me here. Today I close an amazing chapter of learning and open the door to a new professional adventure. Thank you for being part of this special achievement and celebrating it with me!',
+    'bienvenida.texto': 'I would love to invite you to my graduation party!', 'bus.destinoTexto': 'The party!', 'celebracion.sola': 'Party',
+    'testigos.titulo': 'Mentors', 'ceremonia.religiosa': 'Graduation Ceremony', 'ceremonia.simbolica': 'Graduation Ceremony', 'celebracion.titulo': 'Graduation Party', 'unificado.titulo': 'Ceremony & Party',
+    'pie.texto': 'Achievements are sweeter when shared with the family and friends who were there every step of the way. I look forward to celebrating with you!',
+  },
+});
+EVENTOS.babyshower = derivado('cumple', {
+  es: {
+    'evento.nombre': 'Baby Shower', 'evento.descripcion': 'Te esperamos para celebrar la llegada del bebé', 'portada.subtitulo': 'BABY SHOWER', 'meta.descripcion': '¡Te esperamos para celebrar juntos!',
+    'historia.titulo': 'Muy pronto', 'historia.texto': 'Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!',
+    'bienvenida.texto': '¡Queremos invitarte a nuestro baby shower!', 'bus.destinoTexto': '¡Baby Shower!', 'celebracion.sola': 'Celebración',
+    'regalos.texto': 'El mejor regalo es que nos acompañes, pero si deseas hacer un regalo aquí te dejamos los datos.',
+    'regalos.listaTexto': 'Creamos una lista de regalos en una tienda online, para que puedas regalar el que gustes',
+    'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayúdanos con la selección de canciones',
+    'album.texto': '¡Prepárate para la fiesta!<br>Haz clic en el botón y sube todas las fotos y videos que tomes durante la celebración a nuestro álbum colaborativo, al instante, sin descargar ninguna app.',
+    'pie.texto': 'Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para celebrar juntos esta dulce espera.',
+  },
+  'es-ar': {
+    'regalos.texto': 'El mejor regalo es que nos acompañes, pero si querés hacer un regalo, acá te dejamos los datos.',
+    'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayudanos con la selección de canciones',
+    'album.texto': '¡Preparate para la fiesta!<br>Hacé clic en el botón y subí todas las fotos y videos que saques durante la celebración a nuestro álbum colaborativo, al instante, sin descargar ninguna app.',
+  },
+  'es-es': { 'album.texto': '¡Prepárate para la fiesta!<br>Haz clic en el botón y sube todas las fotos y vídeos que hagas durante la celebración a nuestro álbum colaborativo, al instante, sin descargar ninguna app.' },
+  en: {
+    'album.texto': 'Get ready for the party!<br>Tap the button and upload all the photos and videos you take to our shared album, instantly, no app needed.',
+    'evento.nombre': 'Baby Shower', 'evento.descripcion': 'Join us to celebrate the baby on the way', 'portada.subtitulo': 'BABY SHOWER', 'meta.descripcion': 'We look forward to celebrating with you!',
+    'historia.titulo': 'Coming soon', 'historia.texto': 'From the moment we knew you were on your way, our lives filled with huge excitement and a joy impossible to explain. Every day of waiting brings us closer to seeing your little face, hearing your laugh and finally holding you in our arms. We are preparing everything with lots of love for your arrival, and we want to celebrate this unique moment surrounded by the people we love most. Thank you for waiting for this beautiful gift of life with us!',
+    'bienvenida.texto': 'We would love to invite you to our baby shower!', 'bus.destinoTexto': 'Baby shower!', 'celebracion.sola': 'Celebration',
+    'regalos.texto': 'Your presence is the best gift, but if you wish to give something, here are the details.',
+    'regalos.listaTexto': 'We created a gift registry in an online store, so you can choose the gift you like',
+    'canciones.texto': 'Which songs can\'t be missed?<br>Help us choose the music',
+    'pie.texto': 'The happiest moments in life become unforgettable when we share them with the family and friends we love.',
+  },
+});
+EVENTOS.revelacion = derivado('babyshower', {
+  plural: true,
+  es: {
+    'evento.nombre': 'Revelación de género', 'evento.descripcion': 'Acompáñanos en la revelación de género', 'portada.subtitulo': 'BABY SHOWER',
+    'portada.detalle': 'Acompáñanos en la celebración de revelación de género', 'bienvenida.texto': '¡Queremos invitarte a descubrir si es niño o niña!',
+  },
+  'es-ar': { 'evento.descripcion': 'Acompañanos en la revelación de género', 'portada.detalle': 'Acompañanos en la celebración de revelación de género' },
+  'es-es': {},
+  en: {
+    'evento.nombre': 'Gender reveal', 'evento.descripcion': 'Join us for our gender reveal', 'portada.subtitulo': 'BABY SHOWER',
+    'portada.detalle': 'Join us for our gender reveal celebration', 'bienvenida.texto': 'Come and find out if it\'s a boy or a girl!',
+  },
+});
+EVENTOS.navidad = derivado('babyshower', {
+  plural: true,
+  es: {
+    'evento.nombre': 'Navidad', 'evento.descripcion': 'Te esperamos para celebrar la Navidad', 'portada.subtitulo': 'FIESTA DE NAVIDAD', 'meta.descripcion': '¡Te esperamos para celebrar juntos!',
+    'historia.titulo': 'Feliz Navidad', 'historia.texto': 'Los momentos felices de la vida se tornan geniales si tenemos la suerte de compartirlos con la familia y amigos más queridos, por eso te esperamos para que festejemos juntos.',
+    'bienvenida.texto': '¡Queremos invitarte a nuestra fiesta de Navidad!', 'bus.destinoTexto': '¡La Fiesta!', 'celebracion.sola': 'Celebración',
+    'regalos.texto': 'El mejor regalo es que nos acompañes, pero si deseas hacer un regalo aquí te dejamos los datos.',
+    'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayúdanos con la selección de canciones',
+    'pie.texto': 'Los momentos felices se tornan geniales si tenemos la suerte de compartirlos con las personas que más queremos. ¡Te esperamos para celebrar juntos!',
+  },
+  'es-ar': {
+    'regalos.texto': 'El mejor regalo es que nos acompañes, pero si querés hacer un regalo, acá te dejamos los datos.',
+    'canciones.texto': '¿Qué canciones no pueden faltar?<br>Ayudanos con la selección de canciones',
+  },
+  'es-es': {},
+  en: {
+    'evento.nombre': 'Christmas', 'evento.descripcion': 'Join us to celebrate Christmas', 'portada.subtitulo': 'CHRISTMAS PARTY', 'meta.descripcion': 'We look forward to celebrating with you!',
+    'historia.titulo': 'Merry Christmas', 'historia.texto': 'The happiest moments in life become unforgettable when we share them with the family and friends we love, so we look forward to celebrating together.',
+    'bienvenida.texto': 'We would love to invite you to our Christmas party!', 'bus.destinoTexto': 'The party!', 'celebracion.sola': 'Celebration',
+    'regalos.texto': 'Your presence is the best gift, but if you wish to give something, here are the details.',
+    'canciones.texto': 'Which songs can\'t be missed?<br>Help us choose the music',
+    'pie.texto': 'Happy moments become unforgettable when we share them with the people we love most. We look forward to celebrating with you!',
+  },
+});
+
 // Qué variante usa cada país
 const PAISES = {
   AR: 'es-ar', UY: 'es-ar', PY: 'es-ar',
@@ -358,9 +504,11 @@ const PAISES = {
   ES: 'es-es',
   US: 'es', MX: 'es', CO: 'es', CL: 'es', PE: 'es', BO: 'es', EC: 'es', VE: 'es', DO: 'es', GT: 'es', HN: 'es', SV: 'es', PA: 'es', CU: 'es', PR: 'es',
   GB: 'en', IE: 'en', AU: 'en', NZ: 'en', CA: 'en', ZA: 'en',
+  BR: 'pt', PT: 'pt', AO: 'pt', MZ: 'pt', FR: 'fr', MC: 'fr', LU: 'fr', IT: 'it', SM: 'it', AD: 'ca',
+  DE: 'de', AT: 'de', LI: 'de', NL: 'nl', SR: 'nl',
 };
 
-export const VARIANTES = ['es', 'es-ar', 'es-cr', 'es-es', 'en'];
+export const VARIANTES = ['es', 'es-ar', 'es-cr', 'es-es', 'en', ...Object.keys(OTROS)];
 export const TIPOS = Object.keys(EVENTOS);
 
 export function varianteDePais(pais) { return PAISES[(pais || '').toUpperCase()] || 'es'; }
@@ -370,8 +518,9 @@ export function esPlural(tipo) { return !!EVENTOS[tipo]?.plural; }
 export function diccionario(tipo, variante) {
   const ev = EVENTOS[tipo] || EVENTOS.boda;
   const v = VARIANTES.includes(variante) ? variante : 'es';
-  const capas = v === 'en'
-    ? [BASE.es, BASE.en, ev.es, ev.en]
+  const otro = OTROS[v];
+  const capas = v === 'en' || otro
+    ? [BASE.es, BASE.en, ev.es, ev.en, otro?.base, ...(ev.de ? [otro?.eventos?.[EVENTOS[ev.de].de || ev.de], otro?.eventos?.[ev.de]] : []), otro?.eventos?.[tipo in EVENTOS ? tipo : 'boda'], NUEVOS[v]?.[tipo]]
     : [BASE.es, v === 'es-cr' ? BASE['es-ar'] : null, BASE[v], ev.es, v === 'es-cr' ? ev['es-ar'] : null, ev[v]];
   return Object.assign({}, ...capas.filter(Boolean));
 }

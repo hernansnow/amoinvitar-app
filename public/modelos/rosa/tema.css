@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   ROSA · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #f27cb1;
+  --color-secundario: #a5896e;
+  --color-suave: #fbbcd7;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Montez', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

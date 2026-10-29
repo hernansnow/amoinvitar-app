@@ -1,0 +1,57 @@
+/* Tipografías del selector de Diseño (panel). Archivos propios, sin cargar nada de Google. */
+@font-face { font-family: 'Great Vibes'; src: url('great-vibes.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Dantina'; src: url('dantina.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Amsterdam Four'; src: url('amsterdam-four.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Fleur De Leah'; src: url('fleur-de-leah.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Magneto'; src: url('magneto.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Montez'; src: url('montez.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Abril Fatface'; src: url('abril-fatface.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Montserrat'; src: url('montserrat-var.woff2') format('woff2'); font-style: normal; font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Molle'; src: url('molle.woff2') format('woff2'); font-style: italic; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Sedgwick Ave Display'; src: url('sedgwick-ave-display.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Oswald'; src: url('oswald.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Neonderthaw'; src: url('neonderthaw.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Monoton'; src: url('monoton.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Sacramento'; src: url('sacramento.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Josefin Slab'; src: url('josefin-slab.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Lavishly Yours'; src: url('lavishly-yours.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Indie Flower'; src: url('indie-flower.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Kaushan Script'; src: url('kaushan-script.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Ruthie'; src: url('ruthie.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Kranky'; src: url('kranky.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Alex Brush'; src: url('alex-brush.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Allura'; src: url('allura.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Alumni Sans Pinstripe'; src: url('alumni-sans-pinstripe.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Bodoni Moda'; src: url('bodoni-moda.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Chewy'; src: url('chewy.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Cinzel Decorative'; src: url('cinzel-decorative.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Comfortaa'; src: url('comfortaa.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Days One'; src: url('days-one.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Eater'; src: url('eater.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Josefin Sans'; src: url('josefin-sans.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Jost'; src: url('jost.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Mrs Saint Delafield'; src: url('mrs-saint-delafield.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Passions Conflict'; src: url('passions-conflict.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('playfair-display.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Poiret One'; src: url('poiret-one.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Raleway'; src: url('raleway.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Roboto Condensed'; src: url('roboto-condensed.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Sail'; src: url('sail.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Shrikhand'; src: url('shrikhand.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Square Peg'; src: url('square-peg.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Yellowtail'; src: url('yellowtail.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('playfair-display-700.woff2') format('woff2'); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('playfair-display-900.woff2') format('woff2'); font-style: normal; font-weight: 900; font-display: swap; }
+
+/* Tarjetas con foto (Save The Date 5, 7 y 8 y agradecimiento). Sustitutos libres: Myriad Pro → Source Sans 3,
+   Juliette → Mr Dafoe, Pristina → Italianno, Triforce → Cinzel */
+@font-face { font-family: 'Parisienne'; src: url('parisienne.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Rouge Script'; src: url('rouge-script.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Satisfy'; src: url('satisfy.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('poppins-300.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('poppins.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('poppins-600.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Mr Dafoe'; src: url('mr-dafoe.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Italianno'; src: url('italianno.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Cinzel'; src: url('cinzel.woff2') format('woff2'); font-weight: 400 900; font-display: swap; }
+@font-face { font-family: 'Source Sans 3'; src: url('source-sans-3.woff2') format('woff2'); font-weight: 200 900; font-display: swap; }

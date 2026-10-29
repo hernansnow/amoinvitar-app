@@ -1,0 +1,146 @@
+{
+  "boda": {
+    "carpeta": "lovestory",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "testigos",
+          "album",
+          "canciones",
+          "playlist",
+          "regalos",
+          "redes",
+          "instagram"
+        ],
+        "avisos": [
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "&#160;",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "70% 90%"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "50% 50%"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "90% 50%"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "45% 50%"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 12,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "iconosItinerario": [
+            "ceremonia",
+            "recepcion",
+            "novios-a",
+            "vals",
+            "cena",
+            "disco",
+            "brindis"
+          ],
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "premium": {
+        "archivo": "index-premium.html",
+        "secciones": [
+          "historia",
+          "galeria",
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist",
+          "regalos"
+        ],
+        "avisos": [
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "&#160;",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "70% 90%"
+            },
+            {
+              "f": "hero-banner2.jpg",
+              "pos": "50% 50%"
+            },
+            {
+              "f": "hero-banner3.jpg",
+              "pos": "90% 50%"
+            },
+            {
+              "f": "hero-banner4.jpg",
+              "pos": "45% 50%"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "propLugar": "1/1",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "&#160;",
+          "portadas": [
+            {
+              "f": "hero-banner1.jpg",
+              "pos": "70% 90%"
+            }
+          ],
+          "portadaFotos": 4,
+          "galeria": 4,
+          "idAgenda": "agenda",
+          "nombresCierre": "Fanny <i class=\"icon-heart\" aria-hidden=\"true\"></i> Rei",
+          "claseTitulos": "lovestory",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  }
+}

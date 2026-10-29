@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   FLORAL · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #86a388;
+  --color-secundario: #c9e7ea;
+  --color-suave: #a7ccd0;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Great Vibes', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

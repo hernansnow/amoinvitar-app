@@ -14,7 +14,7 @@ Al arrancar muestra dos links: la demo y un **panel de prueba** con un evento
 recién creado (todo se guarda en memoria mientras corre).
 
 - http://localhost:8787/demo/garden — demo (idioma según el país; local = neutro)
-- `?evento=boda|15|bautismo|comunion|cumple`
+- `?evento=boda|15|bautismo|comunion|cumple|infantil|graduacion|babyshower|revelacion|navidad`
 - `&paquete=basic|premium|deluxe`
 - `&pais=AR|ES|MX|CR|GB…` (o `&idioma=es-ar|es|es-cr|es-es|en`)
 
@@ -23,7 +23,8 @@ recién creado (todo se guarda en memoria mientras corre).
 | Carpeta | Qué hay |
 |---|---|
 | `public/comun/` | CSS, JS, fuentes e imágenes que comparten todos los modelos |
-| `public/modelos/<modelo>/index.html` | el diseño (se puede abrir y editar en Dreamweaver) |
+| `public/modelos/<modelo>/index.html` | el diseño Deluxe (se puede abrir y editar en Dreamweaver) |
+| `public/modelos/<modelo>/index-premium.html` · `index-basic.html` | el diseño de cada paquete, en su propio archivo |
 | `public/modelos/<modelo>/tema.css` | paleta y fuentes del modelo |
 | `public/modelos/<modelo>/estilo.css` | estilos del modelo (se arma con `npm run estilos -- <modelo>`) |
 | `public/modelos/<modelo>/modelo.json` | qué secciones trae cada paquete, colores del sobre, fotos de la demo |
@@ -67,6 +68,15 @@ El cliente elige en el panel:
 | Solo con link personal | cada invitado recibe `…/boda/sofi-y-ale?inv=juan-rodriguez-fpzv`; sin eso, pantalla de bloqueo |
 | Con PIN | uno para todos o uno por invitado; se pide antes de mostrar nada |
 
+**Con la lista de invitados prendida la invitación es de LISTA CERRADA** (aunque el modo sea
+"cualquiera con el link"): solo se entra con `?inv=<código>` de la lista, y además el PIN si hay.
+Sin lista: abierta o un PIN para todos. El dueño entra siempre por `/acceso/<id>/dueno?k=<clave>`
+(o con la sesión): cookie `@dueno`, sus RSVP quedan con `prueba: 1` y se pueden borrar en Administración.
+La vista previa del panel (`/vista/<id>`) lleva `INVITACION_CONFIG.prueba`: el RSVP se recorre entero pero no se manda;
+con lista muestra al primer invitado (o uno de ejemplo). La fila del invitado (nombre, pases, mesa) va en
+`INVITACION_CONFIG.invitado` (ya no hace falta pedir el CSV). Pantalla de acceso: `src/componentes/puerta.js`
+(diseño de `demo/lovestory/lista-de-invitados-sep26.html` de la v2.0).
+
 La decisión es del servidor: quien no tiene permiso no recibe el HTML de la
 invitación (ni fotos, ni lugares), solo la pantalla de acceso con los nombres.
 Al entrar bien queda una cookie firmada por 90 días. La lista de invitados ya
@@ -95,5 +105,209 @@ intentos de PIN tienen un límite por minuto.
 ## Pendiente
 
 Reorganizar la tienda, administración de cupones y pedidos,
-tablero de empresas, modelos de Save The Date web, vencimientos de los planes
+tablero de empresas (un wedding planner / fotógrafo con marca blanca administra varios eventos a la vez desde su panel: ver la nota en `docs/empresas.md`), modelos de Save The Date web, vencimientos de los planes
 pagos, descargas, envíos y recordatorios.
+
+## Un archivo por paquete (regla para todos los modelos)
+
+Cada modelo lleva **tres diseños**, uno por paquete, igual que las plantillas originales
+(`garden-basic.html`, `garden-premium.html`, `garden-deluxe.html`):
+
+- `index.html` → Deluxe
+- `index-premium.html` → Premium
+- `index-basic.html` → Basic (y el plan gratis)
+
+**De dónde salen:** de las demos publicadas, `ar/<modelo>/index.html` (Deluxe), `ar/<modelo>/premium.html`
+y `ar/<modelo>/basic.html`. Las copias de las carpetas `boda/++base-*` están desactualizadas.
+Después de agregar o cambiar un diseño: `REPO_VIEJO=../amoinvitar-v2.0 npm run estilos -- <modelo>`
+(el CSS se arma mirando los tres archivos).
+
+No se arma el Basic "sacándole cosas" al Deluxe: cada paquete tiene su propio diseño (por ejemplo
+Garden Basic tiene una sola foto de portada, el saludo de bienvenida en lugar de la historia y el
+RSVP sin foto; Premium usa hashtag de Instagram en lugar del álbum QR). Si falta el archivo de un
+paquete, se usa `index.html`. Las secciones que un paquete no trae se apagan además con
+`data-seccion` y la lista `secciones` de `modelo.json`.
+
+
+## modelo.json: opciones del panel (ronda 4)
+
+- `paleta`: los 4 colores del diseño. En Diseño → "Quiero otros colores" aparecen ya cargados para cambiarlos.
+- `galeria.enRsvp: true`: modelos con la galería dentro de la confirmación. No se muestra "Cómo se muestran"
+  (carrusel, mosaico, grilla, polaroids) porque la galería no es una sección propia.
+- `galeria.byn: true`: solo Romantic y B&N (css byn, fotos en blanco y negro). Suma la casilla
+  "Mostrar las fotos en color". Al convertir esos modelos, la clase `ai-color` tiene que sacar el filtro.
+- `videoPortada: true`: modelos con video en la portada. El panel deja subir un MP4 de hasta 30 s.
+  En pantallas horizontales, un video vertical va al centro con una copia desenfocada de fondo.
+- La galería que no es carrusel la arma el componente común `data-componente="galeria"`
+  (comun/css/galeria.css): el modelo solo marca su carrusel con `data-si="galeria.carrusel"`.
+
+## Administración (panel)
+
+`public/panel/admin.js`: resumen con cuenta regresiva, envío (WhatsApp, link, QR; links personales con la lista),
+respuestas (colores, filtros, búsqueda, recordatorios, Excel/PDF), mensajes, canciones (acceso a Spotify), mesas con
+croquis y Albunear. Los textos de WhatsApp y los asientos por mesa se guardan en `datos.admin` (POST /api/panel/:id/admin).
+- El menú no se redibuja al cambiar de pestaña (no pierde el deslizamiento en el celular) y tiene la flecha › al borde.
+- Mesas: arrastrar invitados entre mesas (pointer events, funciona con el dedo) o a "+ Mesa nueva". Croquis 2 mesas por fila
+  en el celular, 3 al imprimir.
+- **Buscá tu mesa**: `/mesa/<id>` (página) y `GET /api/mesa?e=&q=` (≥3 letras, máx. 6 resultados, también acompañantes
+  confirmados). Solo si `datos.admin.buscaMesa`; QR para la entrada desde Mesas.
+- Con lista cerrada, Enviar no muestra el envío general: solo los links personales, "Ver" como cada invitado y "Editar lista".
+- Respuestas: Excel y PDF con la casilla "Solo confirmados".
+- Spotify: la API ya no sirve para esto (desde 2026 el modo desarrollo admite 5 usuarios en una lista blanca y la cuota
+  ampliada pide empresa con 250.000 usuarios activos). Se usa "Copiar y abrir TuneMyMusic" (pegar texto → Spotify).
+
+## Lista de invitados (ronda 11)
+
+Migración `0002_invitados_extra.sql` (columnas nuevas en `invitados`): `integrantes`, `telefono`, `abierto`, `ultima`,
+`visitas`, `llego`, `llegaron`. **Aplicarla en la base remota antes de publicar el código**:
+`npx wrangler d1 migrations apply amoinvitar --remote`.
+- **Familias**: `integrantes` ("Juan, Ana"). El RSVP pregunta "¿Quiénes van?" con Va / No va por integrante y manda
+  `asisten`, `no_asisten` y `personas` (el aforo y la administración cuentan `personas` cuando está).
+- **Aperturas**: cada vez que el invitado entra con su link (no el dueño) suma `visitas`, `abierto` (primera) y `ultima`.
+  Enviar muestra "Lo abrió (n)" / "No lo abrió" con filtros; los recordatorios ponen primero a los que no lo abrieron.
+- **Cambiar la respuesta**: `INVITACION_CONFIG.invitado.respuesta` trae su última respuesta (solo la suya); el modal
+  muestra el resumen y "Cambiar mi respuesta" (precargada). Vale la última.
+- **Contactos**: Contact Picker API (Android/Chrome) o archivo .vcf (`leerVcf` en `planilla.js`). WhatsApp directo con
+  `wa.me/<número>` si hay teléfono.
+- **Llegadas (check-in)**: `datos.admin.checkin` muestra "Mi pase de entrada" (QR del link personal) a quien confirmó.
+  Recepción: `/puerta/<id>?t=<token>` (token = HMAC del id + clave del panel; se renueva si cambia la clave),
+  `GET/POST /api/puerta`. Lector: BarcodeDetector o `comun/js/jsqr.min.js` (jsQR 1.4.0, Apache-2.0) en el iPhone.
+
+## Envío en tanda y avisos (ronda 12)
+
+- Migración `0003_invitados_envios.sql`: `enviado` y `recordado` en `invitados`.
+- "Enviar a todos" / "Recordar a todos" (`enviarEnTanda` en admin.js): un `wa.me` por invitado, uno tras otro, desde el
+  WhatsApp del cliente (no hay envío automático: WhatsApp no lo permite desde una web, y la API oficial manda desde
+  nuestro número, cobra por mensaje y pide consentimiento previo). Cada uno se marca con `POST /api/panel/:id/enviado`.
+- Aviso por mail a los dueños 7, 3 y 1 día antes de `rsvp.cierre` si hay invitados de la lista sin responder
+  (`src/avisos.js`, en la tarea diaria de las 4:00 UTC). Se apaga con `datos.admin.avisosMail = false`.
+
+## Accesos y páginas sueltas (ronda 13)
+
+- (ronda 15) **Quién puede ver la invitación** está al principio de **Lista de invitados** (campos `siempre: true`, editables con la lista apagada) y el paso **Idioma** quedó solo, antes del link, con un botón a Idioma adicional (nota `estilo: 'boton'`).
+- (ronda 15) Lista: casillas separadas **Familias** y **Teléfonos**. Ejemplo de número según la zona del evento (`public/panel/prefijos.json`, generado con `scripts/prefijos.py`); sin código de país se completa solo (en Argentina saca el 15 y suma el 9). La zona del evento ya se elige sola con la del visitante (`request.cf.timezone`) y se puede cambiar.
+- **Accesos** (Administración → Accesos): titular (`cliente`, quien compró) + `pareja` (1, solo bodas) + hasta 3 `admin`
+  (wedding planner, organizador…). `GET/POST/DELETE /api/panel/:id/accesos`; los cambian el titular, la pareja o quien
+  tiene la clave del panel. Al sumar a alguien le llega un mail (`mailNuevoAcceso`) para entrar con su mail o Google.
+- **Pantalla de acceso (PIN / bloqueo) y "Buscá tu mesa" con la tipografía de la invitación**: cargan las fuentes del
+  modelo y su `tema.css` (`estilosModelo()` en index.js) y usan `--fuente-titulos` (los nombres, en `--color-principal`)
+  y `--fuente-texto`. **Regla para todos los modelos**: tener `tema.css` con esas variables y `tarjetas.fuentes.css`
+  en modelo.json, o fijar `"acceso": { "css": [...] }` en modelo.json.
+
+## Invitados y acceso (ronda 16)
+
+Una sola pregunta en el panel: `acceso.tipo` = `abierta` | `pin` | `lista` | `listaPin` (tarjetas con ícono y plan).
+`aplicarTipoAcceso()` (src/panel/esquemas.js) deriva al guardar los campos de siempre que usa src/acceso.js:
+abierta → modo abierta · pin → modo pin (PIN para todos) · lista → modo codigo + lista · listaPin → modo pin + PIN por
+invitado + lista. Con lista la invitación es cerrada (solo con link personal). Las invitaciones de antes se traducen solas
+(`tipoAcceso()`), también si llega el formato viejo de un panel abierto antes del cambio. El paso "Invitados y acceso"
+no tiene interruptor (`sinInterruptor`): la lista se prende eligiendo una opción de lista. Ejemplo de lo que recibe el
+invitado: campo `ejemploAcceso`.
+
+## Reglas para convertir los demás modelos (ronda 5, 6 y 7)
+
+- **Cuenta regresiva** (switch en Portada): en Premium y Deluxe la portada con cuenta va con `data-si="cuenta.portada"` y,
+  justo después, la portada del Basic del mismo modelo con `data-no="cuenta.portada"` (se copia tal cual de `index-basic.html`).
+- **Tarjetas de agradecimiento con foto**: `public/comun/tarjetas/gracias/catalogo.json` (8 diseños; 1, 4, 5, 6 y 7 usan
+  fondos de las Save The Date con foto). Variables propias: {citaMomentos} {citaFelices} {graciasAcomp} {teQueremos} {quince}.
+  El motor de tarjetas (`public/panel/tarjeta.js`) acepta además alinear "der", opacidad, sombra, foto.filtro y capas con "excepto".
+- **Álbum de Albunear**: el Worker tiene un enlace interno (`services` → `ALBUNEAR`, entrypoint `Socios` del Worker de Albunear)
+  que da un código de regalo Classic por cada invitación Deluxe (GET /api/panel/:id/albunear). Si el enlace no está, el panel
+  muestra los links generales.
+- **Tarjetas con foto** (Save The Date): no dependen del modelo; están en `public/comun/tarjetas/foto/catalogo.json`
+  (fondos con el hueco transparente, muestra para elegir y versión para dos nombres o uno). Faltan los diseños 5, 7 y 8:
+  vinieron con los textos puestos, hacen falta los fondos limpios. Al diseño 3 en 15 años le falta el adorno de la tiara.
+- **Tarjeta Save The Date de cada modelo**: los fondos limpios y las versiones terminadas de todos los modelos están en
+  el material que mandó Hernán (std tarjeta). Al convertir cada modelo: fondo en `img/std-fondo.jpg`, el adorno de cada
+  evento como capa con `tipos`, y los textos medidos contra la versión terminada. "Próximamente la invitación formal"
+  va con `"opcional": "proximamente"` (el cliente lo prende o apaga). Rouge (boda y 15) usa Mongolia Sky en bordó:
+  reemplazar también en la invitación la imagen con esa fuente por texto (para poder traducirlo o cambiarlo).
+- **Después de publicar**: los nombres y la fecha quedan fijos (se cambian pidiéndolo por WhatsApp) y el resto se puede
+  editar hasta 7 días después del evento. El superusuario (administrador) edita todo, también las tarjetas generadas.
+- **Tarjetas** (Save The Date y agradecimiento): en `modelo.json → tarjetas`. Se parte del diseño en JPG: se le borran los
+  textos (queda `img/std-fondo.jpg`) y, para las versiones con foto, una capa con las hojas y el aro con el centro
+  transparente (`img/std-aro.webp`, con `"sobreFoto": true`). Los textos se definen con posición, tamaño, color y
+  espaciado (ver el comentario de `public/panel/tarjeta.js`). Variables: {nombres} {a} {b} {fecha} {fechaCorta} {lugar}
+  {evento} {mensaje}. `fuentes.css` carga las fuentes del modelo.
+  El "&" de los nombres (con `amp`) es parte del diseño: se mueve junto con los nombres pero no se puede escribir ni
+  borrar; al editar, cada nombre se escribe por separado. Mantenerlo así en todos los modelos.
+- **Modales**: el común (`comun/js/modal.js` + `comun/css/modal.css`) toma los botones de siempre (`data-fancybox
+  data-src="#id"` y `data-toggle="modal" data-target="#id"`) y abre el contenido en un `<dialog>` propio, claro y con un
+  desenfoque leve. No hace falta cambiar el HTML de los modelos; el botón "Cerrar" viejo se oculta (está la ✕).
+- **Confirmación por pasos**: `comun/js/rsvp-pasos.js` (reemplaza a rsvp-universal_v2.2.js). El HTML del modal lo arma
+  el componente `rsvp-form`. Incluye el paso "Un mensaje para {nombres}" (se ve en la administración → Mensajes).
+- **Accesos rápidos del pie** ("¿Te perdiste algo?", solo Premium y Deluxe; **Basic no trae accesos rápidos**):
+  confirmar, agendar, dress code, hospedaje (`#hospedaje-bus`), traslado (`#traslado`), itinerario, Instagram Wall
+  (`#hashtag`), álbum QR (`#instagram`), sugerir canción, regalos e inicio. Cada `<li>` con su `data-seccion`, así
+  aparece solo si la sección está prendida. Textos `perdiste.*` (ya están en todos los idiomas).
+- **Slideshow de portada**: el común (`comun/js/slides.js` + `comun/css/slides.css`), no el carrusel de Bootstrap:
+  `<div class="ai-slides" data-intervalo="5000"><div class="ai-slide …" data-repetir="fotos.portada" …></div></div>`.
+  **Los modelos con slideshow lo llevan también en Basic** (`fotosPortada: 4` en basic). Al convertir cada modelo:
+  cambiar la portada de Basic de una foto a slideshow.
+- **Hospedaje y traslado**: el botón de "Referencias" va con `data-si="hospedaje.conReferencias"` y el de "Recorrido"
+  con `data-si="busConRecorrido"` (sin datos cargados, no aparece). La columna del bus lleva `id="traslado"`.
+- **Itinerario**: además de los íconos del modelo, todos tienen los comunes de `comun/img/itinerario/` (corazón,
+  civil, vela, cáliz, globos, regalos, mamadera, corona, mesa dulce, despedida, show, fuegos, traslado, música).
+  Sin ícono elegido, el círculo queda vacío (el `<img>` lleva `data-si="iconoUrl"`). Íconos nuevos: glifo blanco sólido de 350 × 350 px.
+- **Fotos de muestra en la vista previa del panel**: las de la demo del modelo, muy desenfocadas. Se generan con
+  `python3 scripts/fotos-borrosas.py <modelo>` (quedan en `demo/<evento>/borrosas/`, ~8 KB cada una, y la lista en
+  `modelo.json → demoBorrosas`). Sin ellas, la vista previa usa las siluetas genéricas.
+- **Lugares** (pendiente): en los eventos que no tienen ceremonia por defecto, un botón para agregar otro lugar con su
+  fecha y horario.
+- **Fondos de 100vh** (pendiente en los modelos): en el celular, el alto de la ventana cambia cuando aparece o se esconde la
+  barra del navegador, y los fondos con `height: 100vh` se estiran o se achican. Usar `100svh` (con `100vh` antes, para
+  navegadores viejos) o un alto fijo en px calculado al cargar. En la vista previa del panel ya no pasa: la invitación
+  se arma siempre con el alto de la pantalla.
+
+- **Nombres de portada (TODOS los modelos y todas las portadas, con o sin cuenta regresiva)**: el h1 con
+  `data-campo-html="nombres.portada"` lleva `data-ajustar="0.82"` (fracción del ancho del contenedor). Dentro de un círculo
+  o marco: `data-ajustar="0.56" data-ajustar-en=".clase-del-circulo"` (cuenta el lado más corto; medir el aro dibujado,
+  no la caja, y bajar la fracción si el aro es más chico que su caja). `invitacion.js` limita el ancho del título a esa
+  fracción (los nombres largos bajan de línea dentro del aro), y si algo igual no entra o quedan más de 2 líneas achica la
+  letra de a poco hasta un mínimo legible en el celular (26px o el 45%). Probar siempre con "Maximiliano & Guadalupe" y
+  "Roberto & Marcela" en un iPhone SE. No agregar padding ni `max-width` a mano.
+- **Música e idioma**: los pone el componente común (`acceso`) como un control flotante arriba a la izquierda
+  (`comun/js/flotante.js`). El `<audio id="audio">` del modelo se mantiene; el botón viejo `.music-play` se oculta solo.
+
+- **Galería**: siempre `<div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>`. El componente común
+  arma carrusel, mosaico, grilla o polaroids, con zoom al tocar. Sacar el owl de la galería (owl.carousel.min.js queda cargado:
+  lo usa snow_2.7.1.js).
+- **Galería dentro de la confirmación** (`galeria.enRsvp: true`): carrusel por defecto, sin elegir tipo; la confirmación no tiene
+  opción de foto. Si el cliente apaga la galería, la confirmación usa el bloque de Basic.
+- **Confirmación sin foto** (Premium y Deluxe): el bloque con foto va en `<div data-si="fotos.rsvp">` y, al lado, el bloque idéntico
+  de la versión Basic en `<div data-no="fotos.rsvp">`. El `id="rsvp"` y `data-seccion="rsvp"` van en el contenedor de los dos.
+- **Dress code, hospedaje y bus**: en casi todos los modelos el `id="dresscode"` envuelve a los tres. La sección lleva
+  `data-si="grupos.dress"` (se ve si alguno está prendido); el título y el texto `data-seccion="dresscode"`; colores a evitar y
+  sugerencias `data-seccion="estilos"`; hospedaje y bus su propio `data-seccion`.
+- **Historia**: el texto en `<p class="… g-historia">`, sin `font-weight-lighter` (antes era un h3 muy grande).
+- **Instagram Wall** (`data-seccion="instagram"`, `id="hashtag"`) y **álbum compartido** (`data-seccion="album"`): uno u otro.
+- **Playlist**: `<div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="CLASE-DE-LA-FUENTE-DE-ÉNFASIS"></div></div>`
+  después de Sugerir canciones. Sin botón de Spotify en Sugerir canciones.
+- **Cierre**: `id="cierre"` y el texto final con `data-si="pie.mostrar"`.
+- **Planes**: cada sección es del paquete más bajo que la trae en `modelo.json`. Secciones nuevas: `musica`, `estilos`,
+  `instagram`, `playlist`. Galería: `fotosGaleria: 20` en los tres paquetes.
+
+## Modelos convertidos y tipos de evento nuevos (ronda 19)
+
+- **Convertidor**: `scripts/conversion/convertir-modelo.mjs` pasa un diseño de la v2.0 al sistema nuevo,
+  `armar-modelo.mjs` arma `modelo.json` y `tema.css`, y `lote.mjs` convierte todos (`FAMILIAS`: modelo → evento → carpeta).
+  Uso: `REPO_VIEJO=../amoinvitar-v2.0 node scripts/conversion/lote.mjs [modelo …]`. El lote también arma `estilo.css`
+  y las fotos borrosas. Ajustes propios de un modelo: `scripts/conversion/<modelo>.mjs` (`ajustar(doc, ctx)`) y
+  `<modelo>.propio.css`. Carpetas con varios diseños: `"carpeta:patrón"` (`amanecer` → amanecer.html, amanecer_premium.html,
+  amanecer_basic.html; `garden_proyecto-{p}---NUEVO` → con deluxe/premium/basic en `{p}`).
+- **Garden** está hecho a mano: el lote solo le suma los eventos convertidos en `porEvento` (no toca boda).
+- **Tipos de evento**: boda, 15, cumple, bautismo, comunión, **infantil, graduacion (egresos y graduaciones), babyshower,
+  revelacion (revelación de género, dos nombres) y navidad**. Textos en `src/textos/index.js` (los nuevos salen de los de
+  cumpleaños con lo propio encima) y en los otros idiomas `src/textos/idiomas/eventos-nuevos.js`.
+- **Graduación** tiene ceremonia (acto) y mentores (la sección de testigos); egresos grupales: el nombre es la institución
+  y la segunda línea la promoción.
+- **Segunda línea de la portada** (`data-t="portada.detalle"`): la edad en infantiles ("2 Años"), la clase o promoción en
+  graduaciones, la frase de la revelación. Campo en Portada solo en esos tipos.
+- **Fotos de la demo**: los PNG de la carpeta de la demo son adornos (osito, globos…), no fotos del cliente. Galerías con letra
+  (`foto1b.jpg`, carpetas con varios diseños) se copian como `foto1.jpg…`. Encuadres a mano de las portadas de muestra:
+  `POSICIONES` en armar-modelo (`pos` celular, `posPc` escritorio); nombres de la demo por diseño: `NOMBRES_DEMO`.
+- **Ventana de bienvenida** (sobre apagado): el modal original de cada diseño, sacado de la historia de git de la v2.0
+  (antes de que tuviera sobre); los diseños nuevos, que nacieron con sobre, usan la genérica.
+- **Fondos de 100vh**: el convertidor y `npm run estilos` agregan `100svh` después de cada `100vh`.
+- **Rouge**: falta la fuente Mongolia Sky (`public/comun/fonts/mongolia-sky/MongoliaSky.woff2`) para cambiar las imágenes
+  "Nuestra Boda" / "Mis 15" por texto (`scripts/conversion/rouge.mjs` ya lo hace cuando la fuente está).

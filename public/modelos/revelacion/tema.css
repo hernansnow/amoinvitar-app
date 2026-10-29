@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   REVELACIÓN · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #8d745a;
+  --color-secundario: #c79199;
+  --color-suave: #6f8ba3;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Great Vibes', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}
