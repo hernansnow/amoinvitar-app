@@ -229,7 +229,7 @@ function cumple(s) {
   if (Array.isArray(s)) return s.every(cumple);
   if (s.o) return s.o.some(cumple);
   const v = leer(datos, s.campo);
-  return s.es !== undefined ? v === s.es : s.no !== undefined ? (v ?? '') !== s.no : !!v;
+  return s.es !== undefined ? v === s.es : s.no !== undefined ? (v ?? '') !== s.no : Array.isArray(v) ? v.length > 0 : !!v;
 }
 const visible = (c) => !c.si || cumple(c.si);
 function actualizarCondiciones() {
@@ -928,7 +928,7 @@ function campoLista(c, valor, alCambiar) {
         el('button', { type: 'button', class: 'btn-icono', 'aria-label': 'Quitar', onclick: () => { lista.splice(i, 1); dibujar(); emitir(); } }, '✕'))),
       el('div', { class: 'sub' }, c.campos.map((sc) => campo(sc, item[sc.id] ?? sc.defecto, (v) => { item[sc.id] = v; emitir(); }, `${c.id}-${i}`,
         { pos: () => item[`${sc.id}Pos`], alPos: (p) => { item[`${sc.id}Pos`] = p; emitir(); }, zoom: () => item[`${sc.id}Zoom`], alZoom: (z) => { item[`${sc.id}Zoom`] = z; emitir(); } }))))));
-    if (lista.length < (c.max || 10) && !c.bloqueado && !c.cerrado && !c.sinExtra) caja.append(el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { lista.push({}); dibujar(); emitir(); } }, `＋ ${c.agregar || 'Agregar'}`));
+    if (lista.length < (c.max || 10) && !c.bloqueado && !c.cerrado && !c.sinExtra) caja.append(el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { lista.push({}); dibujar(); emitir(); } }, `＋ ${(!lista.length && c.agregarPrimero) || c.agregar || 'Agregar'}`));
   };
   dibujar();
   return caja;
@@ -1085,6 +1085,14 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
       return el('button', { type: 'button', class: 'btn btn-textos', 'aria-expanded': abierto ? 'true' : 'false',
         onclick: () => { abierto ? uiIdiomas.abiertos.delete(c.idioma) : uiIdiomas.abiertos.add(c.idioma); dibujarPaso(); } },
       `${abierto ? '▾' : '▸'} ${c.etiqueta}`);
+    }
+    case 'revelar': {
+      // Botón "＋ Agregar …" que muestra un campo (c.texto); con el campo a la vista, "Quitar"
+      const abierto = !!valor || !!String(leer(datos, c.texto) || '').trim();
+      if (dis) return el('span', {});
+      return abierto
+        ? el('button', { type: 'button', class: 'btn-link', onclick: () => { cambio(c.texto, ''); alCambiar(false, { rearmar: true }); } }, `✕ Quitar ${c.etiqueta.replace(/^Agregar\s+/i, '')}`)
+        : el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => alCambiar(true, { rearmar: true }) }, `＋ ${c.etiqueta}`);
     }
     case 'agregarIdioma':
       return el('button', { type: 'button', class: 'btn btn-borde', onclick: () => { uiIdiomas.extra = proximoIdioma(); dibujarPaso(); } }, `+ ${c.etiqueta}`);
@@ -1283,7 +1291,7 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
     c.pedirCambio && whatsapp() ? el('a', { class: 'btn-link', target: '_blank', rel: 'noopener', href: `${whatsapp()}${encodeURIComponent(` Quiero pedir un cambio en: ${c.etiqueta || c.id}.`)}` }, 'Pedir el cambio por WhatsApp') : null) : null;
   const extra = { ...posicion, desactivado, fijo };
   if (!posicion.pos && (c.tipo === 'foto' && c.encuadre)) { extra.pos = () => leer(datos, `${c.id}Pos`); extra.alPos = (p) => cambio(`${c.id}Pos`, p); }
-  const sinEtiqueta = (c.tipo === 'switch' && !c.opciones) || ['nota', 'botonTextos', 'agregarIdioma'].includes(c.tipo) || c.titulo || c.sinEtiqueta;
+  const sinEtiqueta = (c.tipo === 'switch' && !c.opciones) || ['nota', 'botonTextos', 'agregarIdioma', 'revelar'].includes(c.tipo) || c.titulo || c.sinEtiqueta;
   const etiqueta = sinEtiqueta ? null
     : ['texto', 'url', 'area', 'numero', 'fecha', 'fechaHora', 'hora', 'color', 'zona', 'idioma'].includes(c.tipo) || (c.tipo === 'opciones' && !c.multiple && !c.tarjetas && (c.iconos || c.valores.length > 4))
       ? el('label', { for: idHtml, class: c.requerido ? 'requerido' : '' }, c.etiqueta, insignia)

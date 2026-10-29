@@ -297,11 +297,15 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       fotos: (e.dresscode?.fotos || []).map((f) => ({ url: urlDe(f), estilo: encuadre(PROP.dress, f?.pos) })),
     },
     // El botón de referencias / recorrido va solo si el cliente cargó algo
-    hospedaje: { texto: esc(e.hospedaje?.texto || ''), items: (e.hospedaje?.items || []).filter((x) => x.nombre),
+    // texto = las indicaciones (van en la ventana antes de la lista). La ventana lleva el título de la sección
+    // salvo que el cliente le ponga otro (textos.hospedaje.modal / textos.bus.modal).
+    hospedaje: { texto: esc(e.hospedaje?.texto || '').replace(/\n/g, '<br>'), items: (e.hospedaje?.items || []).filter((x) => x.nombre),
+      modalTitulo: String(e.textos?.hospedaje?.modal || '').trim() || t('hospedaje.titulo'),
       conReferencias: (e.hospedaje?.items || []).some((x) => x.nombre) || !!String(e.hospedaje?.texto || '').trim() },
     busConRecorrido: (bus.paradas || []).some((p) => String(p.detalle || '').trim()) || !!String(bus.texto || '').trim(),
     bus: {
-      textoLibre: esc(bus.texto || ''),
+      textoLibre: esc(bus.texto || '').replace(/\n/g, '<br>'),
+      modalTitulo: String(e.textos?.bus?.modal || '').trim() || t('bus.titulo'),
       paradas: (bus.paradas || []).map((p, i, todas) => ({
         etiqueta: p.etiqueta || t(i === 0 ? 'bus.partida' : i === todas.length - 1 ? 'bus.destino' : 'bus.parada'),
         detalle: p.detalle || (i === todas.length - 1 ? t('bus.destinoTexto') : ''),

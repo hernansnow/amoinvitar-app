@@ -251,9 +251,16 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'dresscode.evitar', tipo: 'colores', etiqueta: 'Colores a evitar (opcional)', max: 4 },
       { id: 'dresscode.fotos', tipo: 'fotos', etiqueta: 'Fotos de sugerencias de estilo', max: 6, paquete: 'deluxe', proporcion: PROPORCION.dress, porFila: 3 },
     ] },
+    // Hospedaje y traslado: la ventana (modal) lleva el mismo título que la sección, salvo que se cambie.
+    // "Agregar indicaciones": texto libre que va en la ventana antes de la lista de hoteles / del recorrido.
     { id: 'hospedaje', seccion: 'hospedaje', titulo: 'Hospedaje', campos: [
       titulo('hospedaje.titulo'),
       { id: 'textos.hospedaje.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'hospedaje.texto' },
+      { id: 'textos.hospedaje.modal', tipo: 'texto', etiqueta: 'Título de la ventana de referencias', max: 40, traducible: true, placeholder: 'Vacío: el mismo título de la sección',
+        si: { o: [{ campo: 'hospedaje.items' }, { campo: 'hospedaje.conIndicaciones' }, { campo: 'hospedaje.texto' }] } },
+      { id: 'hospedaje.texto', tipo: 'area', etiqueta: 'Indicaciones', max: 500, traducible: true, placeholder: 'Por ejemplo: hay tarifa especial mencionando la boda; reservar antes del 30 de julio.',
+        si: { o: [{ campo: 'hospedaje.conIndicaciones' }, { campo: 'hospedaje.texto' }] } },
+      { id: 'hospedaje.conIndicaciones', tipo: 'revelar', etiqueta: 'Agregar indicaciones', texto: 'hospedaje.texto' },
       { id: 'hospedaje.items', tipo: 'lista', etiqueta: 'Hoteles', max: 6, agregar: 'Agregar hotel', campos: [
         { id: 'nombre', tipo: 'texto', etiqueta: 'Hotel', max: 60 }, { id: 'direccion', tipo: 'texto', etiqueta: 'Dirección', max: 100 }, { id: 'link', tipo: 'url', etiqueta: 'Link de reservas' },
       ] },
@@ -261,7 +268,12 @@ function pasosInvitacion({ tipo, modelo }) {
     { id: 'bus', seccion: 'bus', titulo: 'Traslado/Bus', campos: [
       titulo('bus.titulo'),
       { id: 'textos.bus.texto', tipo: 'area', etiqueta: 'Texto', max: 200, base: 'bus.texto' },
-      { id: 'bus.paradas', tipo: 'lista', etiqueta: 'Recorrido', max: 5, agregar: 'Agregar parada', campos: [
+      { id: 'textos.bus.modal', tipo: 'texto', etiqueta: 'Título de la ventana del recorrido', max: 40, traducible: true, placeholder: 'Vacío: el mismo título de la sección',
+        si: { o: [{ campo: 'bus.paradas' }, { campo: 'bus.conIndicaciones' }, { campo: 'bus.texto' }] } },
+      { id: 'bus.texto', tipo: 'area', etiqueta: 'Indicaciones', max: 500, traducible: true, placeholder: 'Por ejemplo: el bus sale puntual; llegar 15 minutos antes.',
+        si: { o: [{ campo: 'bus.conIndicaciones' }, { campo: 'bus.texto' }] } },
+      { id: 'bus.conIndicaciones', tipo: 'revelar', etiqueta: 'Agregar indicaciones', texto: 'bus.texto' },
+      { id: 'bus.paradas', tipo: 'lista', etiqueta: 'Recorrido', max: 5, agregarPrimero: 'Agregar recorrido', agregar: 'Agregar parada', campos: [
         { id: 'etiqueta', tipo: 'texto', etiqueta: 'Parada (vacío: "Partida", "Destino"…)', max: 30 }, { id: 'detalle', tipo: 'texto', etiqueta: 'Lugar y hora', max: 100 },
       ] },
     ] },
@@ -407,7 +419,7 @@ function pasoIdiomaAdicional(base, datos) {
   const principal = String(datos.variante || 'es').slice(0, 2);
   // Los textos que el cliente puede personalizar en el idioma principal, para cada idioma elegido
   const traducibles = base.filter((p) => !p.complemento).flatMap((p) => p.campos
-    .filter((c) => ['texto', 'area'].includes(c.tipo) && (c.base || c.titulo) && !c.id.startsWith('nombres.'))
+    .filter((c) => ['texto', 'area'].includes(c.tipo) && (c.base || c.titulo || c.traducible) && !c.id.startsWith('nombres.'))
     .map((c) => ({ c, seccion: p.titulo })));
   const bandera = (l, etiqueta) => ({ id: `idiomas.banderas.${l}`, tipo: 'bandera', etiqueta, valores: BANDERAS[l] || [], defecto: banderaDe(l, datos) });
   // Primero solo el selector; al elegir un idioma aparecen su bandera, "Editar textos en …" y "Agregar otro idioma"
@@ -701,7 +713,7 @@ export function cumple(s, datos) {
   if (Array.isArray(s)) return s.every((x) => cumple(x, datos));
   if (s.o) return s.o.some((x) => cumple(x, datos));
   const v = leer(datos, s.campo);
-  return s.es !== undefined ? v === s.es : s.no !== undefined ? (v ?? '') !== s.no : !!v;
+  return s.es !== undefined ? v === s.es : s.no !== undefined ? (v ?? '') !== s.no : Array.isArray(v) ? v.length > 0 : !!v;
 }
 
 // ── Limpieza al guardar: solo lo que el esquema permite ───────────────
@@ -727,7 +739,7 @@ function limpiarValor(c, v) {
       return s;
     }
     case 'numero': case 'contador': { const n = Number(v); return Number.isFinite(n) ? Math.min(c.max ?? n, Math.max(c.min ?? n, n)) : undefined; }
-    case 'switch': return !!v;
+    case 'switch': case 'revelar': return !!v;
     case 'fecha': return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : undefined;
     case 'fechaHora': return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v) ? v : undefined;
     case 'hora': return /^\d{2}:\d{2}$/.test(v) ? v : undefined;
