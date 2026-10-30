@@ -135,11 +135,30 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false };
     vista.sobre = { activo: false }; vista.bienvenidaModal = { activa: false };
   }
-  return html(renderizar(plantilla, vista, t, { origen: url.origin }), 200, {
+  return html(await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
     'x-robots-tag': 'noindex',
     ...(demo ? { vary: 'cf-ipcountry' } : {}),
   });
+}
+
+// Armar la página cuesta procesador (en el plan gratis de Workers el límite es 10 ms por pedido): la página armada se
+// guarda en la caché de Cloudflare con una clave que sale del diseño y de todos los datos que la arman. Si el cliente
+// cambia algo en el panel, cambia la clave y se arma de nuevo; nunca se sirve una versión vieja.
+async function renderGuardado(plantilla, vista, t, origen, extra) {
+  const cache = globalThis.caches?.default;
+  if (!cache) return renderizar(plantilla, vista, t, { origen });
+  let clave;
+  try {
+    const datos = new TextEncoder().encode(plantilla + '\u0000' + JSON.stringify([vista, extra, origen]));
+    const h = await crypto.subtle.digest('SHA-256', datos);
+    clave = new Request(`https://render.amoinvitar.internal/v1/${[...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, '0')).join('')}`);
+    const hit = await cache.match(clave);
+    if (hit) return hit.text();
+  } catch { /* sin caché: se arma igual */ }
+  const out = renderizar(plantilla, vista, t, { origen });
+  if (clave) try { await cache.put(clave, new Response(out, { headers: { 'cache-control': 'public, max-age=604800', 'content-type': 'text/html; charset=utf-8' } })); } catch { /* nada */ }
+  return out;
 }
 
 // ── Demo ──────────────────────────────────────────────────────────────
