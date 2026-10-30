@@ -51,7 +51,7 @@
           "galeria": 12,
           "galeriaFija": true,
           "idAgenda": "inicio",
-          "rsvpConFoto": false,
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -65,6 +65,7 @@
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],
@@ -112,10 +113,11 @@
           "galeria": 8,
           "galeriaFija": true,
           "idAgenda": "inicio",
-          "rsvpConFoto": false,
+          "rsvpConFoto": true,
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],
@@ -150,6 +152,7 @@
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],
@@ -210,7 +213,7 @@
           "galeria": 12,
           "galeriaFija": true,
           "idAgenda": "inicio",
-          "rsvpConFoto": false,
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -223,6 +226,7 @@
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Paula <i class=\"icon-heart h4\" aria-hidden=\"true\"></i> Nicolás",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],
@@ -270,10 +274,11 @@
           "galeria": 8,
           "galeriaFija": true,
           "idAgenda": "inicio",
-          "rsvpConFoto": false,
+          "rsvpConFoto": true,
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Paula <i class=\"icon-heart h4\" aria-hidden=\"true\"></i> Nicolás",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],
@@ -308,6 +313,7 @@
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Paula <i class=\"icon-heart h4\" aria-hidden=\"true\"></i> Nicolás",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],
@@ -368,7 +374,7 @@
           "galeria": 12,
           "galeriaFija": true,
           "idAgenda": "inicio",
-          "rsvpConFoto": false,
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -380,6 +386,7 @@
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],
@@ -427,10 +434,11 @@
           "galeria": 8,
           "galeriaFija": true,
           "idAgenda": "inicio",
-          "rsvpConFoto": false,
+          "rsvpConFoto": true,
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],
@@ -465,6 +473,7 @@
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
+          "filtroFotos": "rockabilly-filtered",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
           ],

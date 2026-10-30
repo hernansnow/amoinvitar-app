@@ -193,6 +193,7 @@ function pasosInvitacion({ tipo, modelo }) {
         ] : []),
         { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
         // Segunda línea de la portada en los diseños que la traen (la edad, la promoción…)
+        ...(modelo.sepiaPortada ? [{ id: 'portada.color', tipo: 'switch', estilo: 'check', etiqueta: 'Portada en color', detalle: 'este diseño la muestra en sepia', si: siFotos('portada') }] : []),
         ...(modelo.ciudadPortada ? [{ id: 'portada.ciudad', tipo: 'texto', etiqueta: 'Ciudad (junto a la fecha)', max: 18, ancho: 'mitad', ayuda: 'Por ejemplo "Miami". Vacío, no se muestra.' }] : []),
         ...(DETALLE[tipo] ? [{ id: 'textos.portada.detalle', tipo: 'texto', etiqueta: DETALLE[tipo][0], max: DETALLE[tipo][1], base: 'portada.detalle', ancho: 'mitad', ayuda: DETALLE[tipo][2] }] : []),
         { id: 'zonaHoraria', tipo: 'zona', etiqueta: 'País / zona horaria del evento', valores: ZONAS, requerido: true, ancho: 'mitad', ayuda: 'Para la cuenta regresiva y los calendarios.' },

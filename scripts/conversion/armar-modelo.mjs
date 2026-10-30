@@ -145,6 +145,8 @@ const modelo = {
   ...(id === 'romantic' ? { textosCaso: { 'rsvp.botonHtml': 'oracion', 'rsvp.cerradoHtml': 'oracion' } } : {}),
   paquetes: paquetes(ev0),
   ...(conv[ev0].paquetes.deluxe.info.ciudadPortada ? { ciudadPortada: true } : {}),
+  // Portada en sepia (Minimal): el cliente puede ponerla en color
+  ...(id === 'minimal' ? { sepiaPortada: true } : {}),
   // Sin foto en la confirmación del diseño (Black, Lila, White): el panel no la ofrece
   ...(conv[ev0].paquetes.deluxe.info.rsvpConFoto === false ? { sinFotoRsvp: true } : {}),
   ...(textosDemo(ev0) ? { textosDemo: textosDemo(ev0) } : {}),

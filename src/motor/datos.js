@@ -299,7 +299,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     },
     fechas,
     // Video de portada (modelos con video): el MP4 que subió el cliente
-    portada: { hayFoto: hayFotoPortada || demo, ciudad: String(e.portada?.ciudad ?? (demo ? 'Miami' : '')).slice(0, 30), video: modelo.videoPortada && fotosOn('portada') && e.portada?.tipo === 'video' ? (e.portada?.video || '') : '', poster: portada[0]?.url || '' },
+    portada: { color: !!(modelo.sepiaPortada && e.portada?.color), hayFoto: hayFotoPortada || demo, ciudad: String(e.portada?.ciudad ?? (demo ? 'Miami' : '')).slice(0, 30), video: modelo.videoPortada && fotosOn('portada') && e.portada?.tipo === 'video' ? (e.portada?.video || '') : '', poster: portada[0]?.url || '' },
     fecha: { puntos: fechaPuntos(principal), iso: principal ? `${principal.a}-${principal.m}-${principal.d}` : '' },
     cuenta: {
       activa: !!incluye.cuenta && !!principal && e.portada?.cuenta !== false,

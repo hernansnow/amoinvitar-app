@@ -5071,3 +5071,11 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* Computadoras con pantalla baja: el contenido de la portada se achica para que entre (README ronda 21) */
+@media (min-width: 768px) and (max-height: 800px) {
+  #home-section > .container { transform: scale(.82); transform-origin: center center; }
+}
+@media (min-width: 768px) and (max-height: 680px) {
+  #home-section > .container { transform: scale(.7); }
+}

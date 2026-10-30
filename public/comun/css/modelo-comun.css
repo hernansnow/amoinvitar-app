@@ -71,3 +71,12 @@ img.ai-lugar-redondo { width: 200px !important; max-width: 62% !important; heigh
 .row > :first-child > .ai-sep { display: none !important; }
 /* Cinema / Lila / Travel con Dress, Hospedaje y Traslado apagados: la franja queda con un poco de aire */
 .ai-dress-franja { min-height: 120px; }
+
+/* Minimal: portada en color (el cliente apagó el sepia) */
+.ai-portada-color #home-section .site-blocks-cover, .ai-portada-color #home-section img { -webkit-filter: none !important; filter: none !important; }
+
+/* ¿Te perdiste algo? más chico (Passion: el título; Armonía: los links) */
+.ai-perdiste-chico { font-size: 1.7rem !important; }
+.ai-perdiste-links ul a { font-size: .85rem !important; }
+/* Foto del álbum / Instagram más chica y cuadrada (Armonía, Oliva) */
+img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-left: auto; margin-right: auto; display: block; }

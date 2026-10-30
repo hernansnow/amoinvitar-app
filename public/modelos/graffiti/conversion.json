@@ -106,7 +106,7 @@
           "itinerario: sin #timeline"
         ],
         "info": {
-          "nombresPortada": "<span>Ariadna</span>",
+          "nombresPortada": "<span class=\"text-graffiti3 text-black\">Mi Fiesta</span>",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -361,7 +361,7 @@
           "itinerario: sin #timeline"
         ],
         "info": {
-          "nombresPortada": "<span>Ariadna</span>",
+          "nombresPortada": "<span class=\"text-graffiti3 text-black\">Mi Fiesta</span>",
           "portadas": [
             {
               "f": "hero-banner.jpg",

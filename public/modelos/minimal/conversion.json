@@ -106,13 +106,11 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
-          "portada: sin fecha",
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Vanina",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -241,13 +239,11 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
-          "portada: sin fecha",
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Sabri <span class=\"circle-singleline3\">&amp;</span> Marian",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -375,13 +371,11 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
-          "portada: sin fecha",
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Marta",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -511,13 +505,11 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
-          "portada: sin fecha",
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Vanina",
           "portadas": [
             {
               "f": "hero-banner.jpg",
@@ -647,13 +639,11 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin título de nombres",
-          "portada: sin fecha",
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "nombresPortada": "Vanina",
           "portadas": [
             {
               "f": "hero-banner.jpg",

@@ -139,11 +139,12 @@
           "instagram"
         ],
         "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
-          "nombresPortada": "Baby",
+          "nombresPortada": "Mateo",
           "portadaFotos": 0,
           "textoHistoria": "Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!",
           "galeriaEnHistoria": true,
@@ -178,12 +179,13 @@
           "regalos"
         ],
         "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
-          "nombresPortada": "Baby",
+          "nombresPortada": "Mateo",
           "portadaFotos": 0,
           "textoHistoria": "Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!",
           "galeriaEnHistoria": true,
@@ -206,13 +208,14 @@
           "dresscode"
         ],
         "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline"
         ],
         "info": {
-          "nombresPortada": "Baby",
+          "nombresPortada": "Mateo",
           "portadaFotos": 0,
           "galeriaEnHistoria": true,
           "galeria": 4,

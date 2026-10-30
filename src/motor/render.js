@@ -208,6 +208,8 @@ function cabecera(doc, v, origen) {
   if (inv.videoPortada) doc.body.insertAdjacentHTML('beforeend', `<script src="${v.rutas.comun}/js/video-portada.js" defer></script>`);
   // Byn / Romantic: "mostrar en color" vale para todas las fotos de la invitación
   if (v.galeria?.color) doc.body.classList.add('ai-fotos-color');
+  // Minimal: la portada en color (sin el sepia del diseño)
+  if (v.portada?.color) doc.body.classList.add('ai-portada-color');
 }
 
 // Comentarios del modelo (guías para quien edita) fuera del HTML final
