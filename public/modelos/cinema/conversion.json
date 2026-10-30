@@ -27,16 +27,17 @@
           "instagram"
         ],
         "avisos": [
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
-          "perdiste: se agregó (no había)"
+          "portada: sin frase (NOS CASAMOS / MIS 15…)"
         ],
         "info": {
           "nombresPortada": "Camila",
           "videoPortada": true,
           "portadaFotos": 4,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia2",
             "tragos",
@@ -47,6 +48,8 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -68,16 +71,19 @@
         ],
         "avisos": [
           "portada: sin frase (NOS CASAMOS / MIS 15…)",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Camila",
           "videoPortada": true,
           "portadaFotos": 4,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -103,6 +109,8 @@
           "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -141,16 +149,17 @@
           "instagram"
         ],
         "avisos": [
-          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
-          "perdiste: se agregó (no había)"
+          "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona"
         ],
         "info": {
           "nombresSeparados": true,
           "videoPortada": true,
           "portadaFotos": 4,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -160,6 +169,7 @@
             "disco",
             "brindis"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -181,16 +191,18 @@
         ],
         "avisos": [
           "portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresSeparados": true,
           "videoPortada": true,
           "portadaFotos": 4,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -216,6 +228,8 @@
           "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Victoria <i class=\"icon-heart text-bronce\" aria-hidden=\"true\"></i> Marcos",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -253,9 +267,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "Camila",
           "portadas": [
@@ -264,10 +276,13 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -276,6 +291,8 @@
             "baile",
             "last-call2"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -296,8 +313,7 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Camila",
@@ -307,10 +323,15 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -337,9 +358,12 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 12,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -377,17 +401,17 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "cinta": true,
           "nombresPortada": "Camila",
           "videoPortada": true,
           "portadaFotos": 4,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia2",
             "tragos",
@@ -398,6 +422,8 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -418,17 +444,20 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "cinta": true,
           "nombresPortada": "Camila",
           "videoPortada": true,
           "portadaFotos": 4,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -454,6 +483,8 @@
           "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -491,17 +522,17 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "cinta": true,
           "nombresPortada": "Camila",
           "videoPortada": true,
           "portadaFotos": 4,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia2",
             "tragos",
@@ -512,6 +543,8 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -532,17 +565,20 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "cinta": true,
           "nombresPortada": "Camila",
           "videoPortada": true,
           "portadaFotos": 4,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -568,6 +604,8 @@
           "portadaFotos": 4,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Camila",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [

@@ -65,7 +65,7 @@
 		</a>
 	   <!-- VIDEO -->
       <div class="video-container">
-         <div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url(demo/comunion/hero-banner.jpg);background-color:#A68E8A; background-position: 50% 20%;" data-aos="fade">
+         <div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url(demo/comunion/hero-banner.jpg);background-color:#A68E8A; background-position: 50% 20%;" data-aos="fade">
 			 </div>
 
 </div>
@@ -105,8 +105,7 @@
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
    <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8)), url(img/bg-oliva-6.jpg); background-color:#fff; background-position:70% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="cierre">
       <div class="container">
@@ -120,7 +119,7 @@
                    <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-comunion-ocre.png" width="120px" alt="Imagen">
 				</div>
 			 <h2 data-campo="ceremonia.titulo" class="mb-1 text-center euforia text-ocre" style="text-shadow: 1px 1px 0px #fff;">Ceremonia</h2>
-             <h2 data-campo-html="nombres.cierre" class="mb-2"><span data-t="lugar.diaHorario" class="text-white bg-musgo p-1 section-sub-title font-weight-bolder">DIA Y HORARIO</span></h2>
+             <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="mb-2"><span data-t="lugar.diaHorario" class="text-white bg-musgo p-1 section-sub-title font-weight-bolder">DIA Y HORARIO</span></h2>
 			  <p data-fecha-formato="{dd} ◦ {mm} ◦ {a} - {hora}" data-fecha="ceremonia" class="text-center text-black mb-0">12 ◦ 09 ◦ 2027 - 17:00</p>
 			  <h2 class="mb-2 mt-3"><span data-t="lugar.lugar" class="text-white bg-musgo p-1 section-sub-title font-weight-bolder">LUGAR</span></h2>
 			  <p data-campo-html="pie.texto" data-si="pie.mostrar" data-campo="ceremonia.lugarTexto" class="text-center text-black">"Parroquia Natividad del Señor", Av. Eugenia Tapia de Cruz 524</p>
@@ -141,8 +140,8 @@
 			  <img loading="lazy" class="img-fluid" src="img/garden-6.png" width="200px" alt="Imagen" style="position: absolute; top: -54px;left: 10px;transform: rotate(180deg);">
 				   <img loading="lazy" class="img-fluid show-desktop" src="img/garden-5.png" width="200px" alt="Imagen" style="position: absolute; bottom: -55px;right: -58px;transform: rotate(180deg);">
 			  	<div class="text-center mb-2 shake-move">
-                   <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-ocre.png" width="120px" alt="Imagen">
-				   <img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-comunion-ocre.png" width="120px" alt="Imagen">
+                   <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-ocre.png" width="120px" alt="Imagen">
+				   <img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-comunion-ocre.png" width="120px" alt="Imagen">
 				</div>
 			  <h2 data-campo="celebracion.titulo" class="mb-1 text-center euforia text-ocre" style="text-shadow: 1px 1px 0px #fff;">Celebración</h2>
 			  	<h2 class="mb-2"><span data-t="lugar.diaHorario" class="text-white bg-musgo p-1 section-sub-title font-weight-bolder">DIA Y HORARIO</span></h2>
@@ -223,7 +222,7 @@
         <div class="row">
           <div class="col-md-7 ml-auto mr-auto text-center">
 			  <img loading="lazy" class="img-fluid mb-3" src="img/comunion-2.png" width="130px" alt="Imagen">
-			  <h2 class="text-center mt-auto ml-auto euforia text-musgo mb-0" style="text-shadow: 1px 1px 0px rgba(255,255,255,1)">Maiana</h2>
+			  <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto euforia text-musgo mb-0" style="text-shadow: 1px 1px 0px rgba(255,255,255,1)">Maiana</h2>
 			  <h3 class="text-center mt-auto ml-auto euforia text-ocre" style="text-shadow: 1px 1px 0px rgba(255,255,255,1);">Mi Primera Comunión</h3>
           </div>
 		  </div>

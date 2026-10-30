@@ -61,7 +61,7 @@
 			</div> 
 				 
 			 	<div data-repetir="fotos.portada" class="zoom-move col-md-7 col-9 ml-auto mr-auto mb-3">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-0" style="border: 7px solid #f09bc2">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-0 ai-foto-1x1" style="border: 7px solid #f09bc2">
               </div>
 	       <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="mb-4 p-0 chewy texto-peppa-pig font-weight-bolder"> 12 • 09 • 2027 </h4>
 			 <div class="text-center mb-2">
@@ -114,8 +114,7 @@
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
    <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 0.0)), url(img/infantil-peppa-fondo.jpg); background-color:#68beef; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
       <div class="container">
@@ -178,10 +177,10 @@
 	 </div>	
  </section></div>
 	  
-    <section class="site-section" style="background-color: #68beef">
+    <section data-si="grupos.dress" id="dresscode" class="site-section" style="background-color: #68beef">
       <div class="container">
         <div class="row">
-          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5" id="dresscode">
+          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5">
 			   <div data-seccion="dresscode" class="text-center mt-2">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-peppa-icono-dress.png" width="110" alt="Imagen">
 			  </div>
@@ -204,7 +203,7 @@
 			  <img loading="lazy" class="img-fluid mb-3 w-75" src="img/infantil-peppa-icono-personaje.png" width="250px" alt="Imagen">
 			  </div>
 			 <h4 class="texto-peppa-pig-azul-simple mb-5">¡Gracias por acompañarme en mi cumple!</h4>
-			  <h2 class="text-center mt-auto ml-auto chewy texto-peppa-pig mb-3">Agustín</h2>
+			  <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto chewy texto-peppa-pig mb-3">Agustín</h2>
 			  <h3 class="chewy texto-peppa-pig"><span class="vert-move2" style="display: inline-block">Cumple&#160;</span><span class="vert-move chewy display-4" style="display: inline-block">1</span><span class="vert-move3" style="display: inline-block">&#160;Año</span></h3>
           </div>
 		  </div>

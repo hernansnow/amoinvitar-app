@@ -15,7 +15,7 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "paquetes": {
     "basic": {
       "secciones": [
@@ -34,6 +34,7 @@
     "premium": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -52,10 +53,13 @@
     "deluxe": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
         "estilos",
+        "hospedaje",
+        "bus",
         "itinerario",
         "testigos",
         "instagram",
@@ -75,6 +79,12 @@
       }
     }
   },
+  "sinFotoRsvp": true,
+  "textosDemo": {
+    "historia.texto": "Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta aquí. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!",
+    "pie.texto": "Hemos luchado mucho para estudiar y graduarnos, pero lo irónico de todo esto es que… hoy empieza la verdadera lucha"
+  },
+  "proporciones": {},
   "nombresHTML": {
     "portada": "{a}",
     "cierre": "{a}",

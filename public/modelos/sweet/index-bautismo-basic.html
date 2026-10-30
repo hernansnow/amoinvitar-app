@@ -58,7 +58,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 -webkit-box-shadow: -2px 0px 12px 0px rgba(107,85,85,0.5);
 -moz-box-shadow: -2px 0px 12px 0px rgba(107,85,85,0.5);">
 			 	<div data-repetir="fotos.portada" class="ml-auto mr-auto">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/bautismo/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50" style="outline: 3px solid #e62f83;">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/bautismo/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 ai-foto-1x1" style="outline: 3px solid #e62f83;">
               </div>
 			 <h2 data-ajustar="0.82" data-campo-html="nombres.portada" class="text-minimal mb-lg-2 mb-2 mt-lg-2 mt-2 text-center text-rosa"><span>Abigail</span></h2>
               <h3 data-t="portada.subtitulo" class="text-rosa section-sub-title-bg font-weight-bolder">MI BAUTISMO</h3>
@@ -104,10 +104,10 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
 
           </div>
 			
-			<div class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
+			<div data-si="ceremonia.separada" class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
 			
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3.png" width="110px" alt="Imagen" style="opacity: .8"><img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church.png" width="110px" alt="Imagen" style="opacity: .8">
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3.png" width="110px" alt="Imagen" style="opacity: .8"><img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church.png" width="110px" alt="Imagen" style="opacity: .8">
 			 <h2 class="mb-2 section-title text-center text-dark"><span data-campo="celebracion.titulo" class="text-minimal h1">Fiesta</span></h2>
 			  <p data-t="lugar.diaHorario" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
 			  <p data-campo="celebracion.fechaLarga" class="text-center">12 de septiembre de 2027 a las 21:00</p>
@@ -128,11 +128,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
             </div>
           </div>
 
-    </section>
-	  
-			<div id="galeria" data-seccion="galeria" style="background: rgb(180, 237, 224); background: linear-gradient(rgba(180, 237, 224, 0.5), rgba(240, 240, 240, 1));">
-           <div data-componente="galeria"></div>
-      </div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
 <div id="rsvp" data-seccion="rsvp"><section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.3)), url(img/bg-15-2.jpg); background-color:#9D848A; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
     <div class="container">
@@ -186,7 +182,7 @@ background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(217,210,213,1) 
           <div class="col-md-8 text-center ml-auto mr-auto">
 			  <h1 class="text-center mt-auto ml-auto">👑</h1>
 			 <p data-si="pie.mostrar" class="text-white"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</span> <span class="display-5 icon-quote-right"></span></p>
-            <h1 data-campo-html="nombres.cierre" class="text-center section-title text-15-2 mt-auto ml-auto text-white">Abigail <span class="text-danger" aria-hidden="true"></span></h1>
+            <h1 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center section-title text-15-2 mt-auto ml-auto text-white">Abigail <span class="text-danger" aria-hidden="true"></span></h1>
        </div>
       </div>
 	

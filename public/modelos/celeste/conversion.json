@@ -8,6 +8,7 @@
       "deluxe": {
         "archivo": "index-bautismo.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -24,20 +25,17 @@
           "instagram"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
+          "portada: sin foto de la demo (el fondo queda fijo)",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
           "nombresPortada": "Mateo",
-          "portadas": [
-            {
-              "f": "fondo-celeste.jpg",
-              "pos": "40% 70%"
-            }
-          ],
-          "portadaFotos": 1,
+          "portadaFotos": 0,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -46,6 +44,7 @@
             "cena",
             "disco"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Mateo",
           "claseTitulos": "aquarella",
           "fuentes": [
@@ -56,6 +55,7 @@
       "premium": {
         "archivo": "index-bautismo-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -65,21 +65,19 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
+          "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
           "nombresPortada": "Mateo",
-          "portadas": [
-            {
-              "f": "fondo-celeste.jpg",
-              "pos": "40% 70%"
-            }
-          ],
-          "portadaFotos": 1,
+          "portadaFotos": 0,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Mateo",
           "claseTitulos": "aquarella",
           "fuentes": [
@@ -95,20 +93,18 @@
           "dresscode"
         ],
         "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Mateo",
-          "portadas": [
-            {
-              "f": "fondo-celeste.jpg",
-              "pos": "40% 70%"
-            }
-          ],
-          "portadaFotos": 1,
+          "portadaFotos": 0,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Mateo",
           "claseTitulos": "aquarella",
           "fuentes": [
@@ -127,6 +123,7 @@
       "deluxe": {
         "archivo": "index-babyshower.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -142,20 +139,17 @@
           "instagram"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
+          "portada: sin foto de la demo (el fondo queda fijo)",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
           "nombresPortada": "Baby",
-          "portadas": [
-            {
-              "f": "fondo-celeste.jpg",
-              "pos": "40% 70%"
-            }
-          ],
-          "portadaFotos": 1,
+          "portadaFotos": 0,
+          "textoHistoria": "Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!",
+          "galeriaEnHistoria": true,
           "galeria": 6,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "camara",
             "cena",
@@ -163,6 +157,7 @@
             "torta3",
             "regalo"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Mateo",
           "claseTitulos": "aquarella",
           "fuentes": [
@@ -173,6 +168,7 @@
       "premium": {
         "archivo": "index-babyshower-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -182,21 +178,19 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
+          "portada: sin foto de la demo (el fondo queda fijo)",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
           "nombresPortada": "Baby",
-          "portadas": [
-            {
-              "f": "fondo-celeste.jpg",
-              "pos": "40% 70%"
-            }
-          ],
-          "portadaFotos": 1,
+          "portadaFotos": 0,
+          "textoHistoria": "Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!",
+          "galeriaEnHistoria": true,
           "galeria": 6,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Mateo",
           "claseTitulos": "aquarella",
           "fuentes": [
@@ -212,21 +206,19 @@
           "dresscode"
         ],
         "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
           "música: sin <audio id=\"audio\">",
           "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Baby",
-          "portadas": [
-            {
-              "f": "fondo-celeste.jpg",
-              "pos": "40% 70%"
-            }
-          ],
-          "portadaFotos": 1,
+          "portadaFotos": 0,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Mateo",
           "claseTitulos": "aquarella",
           "fuentes": [

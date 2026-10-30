@@ -151,7 +151,10 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const incluye = paquete.incluye;
   const nA = e.nombres?.a || '', nB = e.nombres?.b || '';
   const nombresTexto = plural ? `${nA} & ${nB}` : nA;
-  const conNombres = (plantilla) => plantilla.replace('{a}', esc(nA)).replace('{b}', esc(nB));
+  // Cada nombre en su caja (ai-n): un nombre compuesto no se parte entre el corazón y el otro nombre;
+  // si no entran en una línea, el segundo nombre baja entero
+  const caja = (n) => (n ? `<span class="ai-n">${esc(n)}</span>` : '');
+  const conNombres = (plantilla) => plantilla.replace('{a}', caja(nA)).replace('{b}', caja(nB));
 
   // Secciones: las del paquete, menos las que el cliente apagó
   const apagadas = new Set(Object.entries(e.secciones || {}).filter(([, on]) => on === false).map(([k]) => k));
@@ -159,6 +162,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   // La historia apagada no desaparece: queda el saludo de bienvenida de los modelos Basic
   // Testigos o padrinos solo en boda, 15, bautismo y comunión
   if (!CON_PADRINOS.has(e.tipo) && 'testigos' in secciones) secciones.testigos = false;
+  // Dress code apagado: tampoco van las sugerencias de estilos (son parte del dress code)
+  if (secciones.dresscode === false && 'estilos' in secciones) secciones.estilos = false;
   const historiaActiva = !!secciones.historia;
   if ('historia' in secciones) secciones.historia = true;
   // Playlist: solo si hay un link de Spotify válido
@@ -189,6 +194,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const ceremonia = {
     separada: modo === 'separada',
     unificada: modo === 'mismo-lugar',
+    // Un solo ícono en la celebración: el de la ceremonia si es en el mismo lugar; en la boda, también sin ceremonia (anillos)
+    iconoUnico: modo === 'mismo-lugar' || (e.tipo === 'boda' && modo === 'sin'),
     titulo: tituloCer,
     foto: fotoLugar(cer),
     fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cer.fotoPos),
@@ -230,11 +237,22 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     .map((f) => (typeof f === 'string' ? { url: f } : f)).map((f) => ({ url: f.url, pos: f.pos || '50% 50%', estilo: `--pos-pc:${f.posPc || f.pos || '50% 50%'}`,
       // Foto suelta (<img> en un círculo o marco): el encuadre con object-position
       estiloImg: `object-fit:cover; object-position:${f.pos || '50% 50%'}` }));
-  if (!portada.length) portada.push({ url: portadaSinFoto, pos: '50% 50%', estilo: '--pos-pc:50% 50%', estiloImg: '' });
+  // Con video de portada: una sola caja de foto (el video va adentro; la foto queda de poster)
+  if (modelo.videoPortada && fotosOn('portada') && e.portada?.tipo === 'video' && e.portada?.video) {
+    portada.splice(1);
+    if (!portada.length) portada.push({ url: '', pos: '50% 50%', estilo: '', estiloImg: '' });
+  }
+  // Sin foto de portada: un color liso del diseño (Travel: su avión, una imagen fija del modelo)
+  const hayFotoPortada = portada.length > 0;
+  const colorLiso = String(modelo.colorSinFoto || modelo.miniatura?.colorFondo || modelo.paleta?.[1] || '#cfcfcf').replace(/[^#0-9a-zA-Z(),.% ]/g, '');
+  const liso = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="${colorLiso}"/></svg>`).replace(/\(/g, '%28').replace(/\)/g, '%29')}`;
+  if (!portada.length) portada.push({ url: modelo.portadaSinFotoImagen ? portadaSinFoto : liso, pos: '50% 50%', estilo: '--pos-pc:50% 50%', estiloImg: '' });
   // Galería: cómo se muestra (carrusel, mosaico, grilla, polaroids) y la proporción de todas las fotos
   const tipoGaleria = ['carrusel', 'mosaico', 'grilla', 'polaroids'].includes(e.galeria?.tipo) && !modelo.galeria?.enRsvp ? e.galeria.tipo : 'carrusel';
   const propGaleria = PROP_GALERIA[e.galeria?.proporcion] || PROP.galeria;
   const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((f) => ({ url: urlDe(f), pos: f?.pos || '50% 50%', estilo: encuadre(propGaleria, f?.pos) }));
+  // Publicada sin fotos cargadas: como si se hubiera apagado (sin galería; la confirmación sin foto)
+  if (!demo && !galeria.length && 'galeria' in secciones) secciones.galeria = false;
 
   const itinerario = (e.itinerario || []).map((i) => ({
     hora: i.hora || '', texto: i.texto || '',
@@ -264,7 +282,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     modelo: { id: modelo.id, sobre: modelo.sobre },
     // Sobre de apertura (Premium y Deluxe, se puede apagar en Portada). Apagado: la ventana de bienvenida del diseño
     sobre: { activo: !!incluye.sobre && e.portada?.sobre !== false },
-    bienvenidaModal: { activa: !!incluye.sobre && e.portada?.sobre === false },
+    // Sobre apagado: la ventana de bienvenida del diseño, solo si hay música de fondo (es para elegir con o sin música)
+    bienvenidaModal: { activa: !!incluye.sobre && e.portada?.sobre === false && !!(e.musica?.archivo && secciones.musica !== false) },
     secciones,
     plural,
 
@@ -274,10 +293,13 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       portada: plural ? conNombres(modelo.nombresHTML.portada) : conNombres(modelo.nombresHTML.solo),
       cierre: plural ? conNombres(modelo.nombresHTML.cierre) : conNombres(modelo.nombresHTML.solo),
       iniciales: [nA, nB].filter(Boolean).map((n) => n.trim().charAt(0).toUpperCase()),
+      // Las letras del diseño (Euforia: a los costados de la espiga)
+      inicialA: (nA || '').trim().charAt(0).toUpperCase(),
+      inicialB: plural ? (nB || '').trim().charAt(0).toUpperCase() : '',
     },
     fechas,
     // Video de portada (modelos con video): el MP4 que subió el cliente
-    portada: { video: modelo.videoPortada && fotosOn('portada') && e.portada?.tipo === 'video' ? (e.portada?.video || '') : '', poster: portada[0]?.url || '' },
+    portada: { hayFoto: hayFotoPortada || demo, ciudad: String(e.portada?.ciudad ?? (demo ? 'Miami' : '')).slice(0, 30), video: modelo.videoPortada && fotosOn('portada') && e.portada?.tipo === 'video' ? (e.portada?.video || '') : '', poster: portada[0]?.url || '' },
     fecha: { puntos: fechaPuntos(principal), iso: principal ? `${principal.a}-${principal.m}-${principal.d}` : '' },
     cuenta: {
       activa: !!incluye.cuenta && !!principal && e.portada?.cuenta !== false,
@@ -306,6 +328,9 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       portada, galeria,
       // Confirmación y álbum: la foto va tal cual se subió, sin recortar
       rsvp: fotosOn('rsvp') ? fotos.rsvp || '' : '', rsvpEstilo: '',
+      // La foto de la historia (la "inicial" de Armonía, Lila, Style…)
+      historia: fotosOn('historia') ? fotos.historia || '' : '',
+      historiaEstilo: modelo.fotoHistoria ? `aspect-ratio:${String(modelo.fotoHistoria).replace(':', '/')};object-fit:cover;object-position:${e.fotos?.historiaPos || '50% 50%'}` : '',
       album: fotosOn('album') ? fotos.album || '' : '', albumEstilo: '',
       // Instagram Wall (en Premium antes usaba la foto del álbum)
       instagram: fotosOn('instagram') ? fotos.instagram || (e.paquete === 'premium' ? fotos.album || '' : '') : '', instagramEstilo: '',

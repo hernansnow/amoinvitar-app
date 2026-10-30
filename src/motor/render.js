@@ -25,8 +25,17 @@ function cambiarPosicion(style, pos) {
 // ── data-seccion: fuera lo que el paquete no trae o el cliente apagó ─────
 function secciones(doc, v) {
   for (const el of todos(doc, '[data-seccion]')) {
-    if (!v.secciones[el.getAttribute('data-seccion')]) el.remove();
-    else el.removeAttribute('data-seccion');
+    if (!el.parentNode) continue;
+    if (v.secciones[el.getAttribute('data-seccion')]) { el.removeAttribute('data-seccion'); continue; }
+    // Apagada, pero con una sección prendida adentro (la playlist dentro de Música):
+    // queda la caja (su fondo) solo con el camino hasta la sección prendida.
+    const dentro = todos(el, '[data-seccion]').filter((x) => v.secciones[x.getAttribute('data-seccion')]);
+    if (!dentro.length) { el.remove(); continue; }
+    const camino = new Set();
+    for (let x of dentro) for (; x && x !== el; x = x.parentNode) camino.add(x);
+    const podar = (n) => { for (const h of [...n.children]) { if (!camino.has(h)) h.remove(); else if (!dentro.includes(h)) podar(h); } };
+    podar(el);
+    el.removeAttribute('data-seccion');
   }
 }
 
@@ -121,6 +130,14 @@ function textos(doc, v, t) {
     el.removeAttribute('data-caso');
   }
   for (const el of todos(doc, '[data-t-html]')) { el.innerHTML = t(el.getAttribute('data-t-html')); el.removeAttribute('data-t-html'); }
+  // (antes de data-attr) data-fecha="principal|ceremonia|celebracion" + data-fecha-formato="{dd} • {mm} • {a}": la fecha como la escribe el diseño
+  for (const el of todos(doc, '[data-fecha]')) {
+    if (!/^(principal|ceremonia|celebracion)$/.test(el.getAttribute('data-fecha'))) continue; // el botón de confirmar usa data-fecha para la fecha límite
+    const f = v.fechas?.[el.getAttribute('data-fecha')];
+    const formato = el.getAttribute('data-fecha-formato') || '{dd} • {mm} • {a}';
+    el.textContent = f ? formato.replace(/\{(\w+)\}/g, (m, k) => f[k] ?? '') : '';
+    el.removeAttribute('data-fecha'); el.removeAttribute('data-fecha-formato');
+  }
   for (const el of todos(doc, '[data-attr]')) {
     for (const par of el.getAttribute('data-attr').split(';')) {
       const [a, tipo, ...resto] = par.split(':').map((s) => s.trim());
@@ -131,12 +148,11 @@ function textos(doc, v, t) {
     }
     el.removeAttribute('data-attr');
   }
-  // data-fecha="principal|ceremonia|celebracion" + data-fecha-formato="{dd} • {mm} • {a}": la fecha como la escribe el diseño
-  for (const el of todos(doc, '[data-fecha]')) {
-    const f = v.fechas?.[el.getAttribute('data-fecha')];
-    const formato = el.getAttribute('data-fecha-formato') || '{dd} • {mm} • {a}';
-    el.textContent = f ? formato.replace(/\{(\w+)\}/g, (m, k) => f[k] ?? '') : '';
-    el.removeAttribute('data-fecha'); el.removeAttribute('data-fecha-formato');
+  // data-estilo: estilo que se suma al del diseño (proporción y encuadre de una foto)
+  for (const el of todos(doc, '[data-estilo]')) {
+    const x = valor(v, el.getAttribute('data-estilo'));
+    if (x) el.setAttribute('style', `${el.getAttribute('style') || ''};${x}`);
+    el.removeAttribute('data-estilo');
   }
   for (const el of todos(doc, '[data-bg]')) {
     const url = valor(v, el.getAttribute('data-bg'));
@@ -179,6 +195,8 @@ function cabecera(doc, v, origen) {
   meta('meta[property="og:image"]', img);
   doc.querySelector('link[rel="image_src"]')?.setAttribute('href', img);
   const inv = {
+    // Video de portada de los modelos sin video propio en el diseño (lo pone comun/js/video-portada.js)
+    videoPortada: v.portada?.video && !doc.querySelector('.ai-video-portada') && doc.querySelector('[data-video-portada]') ? { url: v.portada.video, poster: v.portada.poster || '' } : null,
     cuenta: v.cuenta.activa ? v.cuenta.fecha : '',
     calendarios: v.calendarios,
     textos: {
@@ -187,6 +205,9 @@ function cabecera(doc, v, origen) {
     },
   };
   doc.head.insertAdjacentHTML('beforeend', `<script>window.INV = ${JSON.stringify(inv).replace(/</g, '\\u003c')};</script>`);
+  if (inv.videoPortada) doc.body.insertAdjacentHTML('beforeend', `<script src="${v.rutas.comun}/js/video-portada.js" defer></script>`);
+  // Byn / Romantic: "mostrar en color" vale para todas las fotos de la invitación
+  if (v.galeria?.color) doc.body.classList.add('ai-fotos-color');
 }
 
 // Comentarios del modelo (guías para quien edita) fuera del HTML final

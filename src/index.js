@@ -65,8 +65,13 @@ const almacenDe = (env) => env.almacen || almacenD1(env);
 const secretoDe = (env) => env.SECRETO_ACCESO || 'solo-para-pruebas-locales';
 const variante = (v) => (VARIANTES.includes(v) ? v : 'es');
 
-function traductor(tipo, varnt, propios = {}, nombres = '') {
-  const d = { ...diccionario(tipo, varnt), ...propios };
+// Los textos de muestra del diseño (historia y despedida) pisan los generales, solo en castellano
+const conTextosModelo = (dic, modelo, varnt) => (modelo?.textosDemo && String(varnt).startsWith('es') ? { ...dic, ...modelo.textosDemo } : dic);
+// "Confirmar asistencia" en vez de "CONFIRMAR ASISTENCIA" (modelo.textosCaso: { clave: 'oracion' }), sin tocar las etiquetas
+const aOracion = (html) => { let primera = true; return html.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, tx) => { if (tag) return tag; const t = tx.toLocaleLowerCase(); if (!primera || !t.trim()) return t; primera = false; return t.replace(/\p{L}/u, (l) => l.toLocaleUpperCase()); }); };
+function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null) {
+  const d = { ...conTextosModelo(diccionario(tipo, varnt), modelo, varnt), ...propios };
+  for (const [k, caso] of Object.entries(modelo?.textosCaso || {})) if (caso === 'oracion' && d[k] && !(k in propios)) d[k] = aOracion(String(d[k]));
   return (k) => String(d[k] ?? '').replaceAll('{nombres}', nombres);
 }
 const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');
@@ -126,7 +131,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     evento = structuredClone(evento);
     for (const [ruta, val] of Object.entries(aplanar(evento.traducciones?.[v.slice(0, 2)] || {}))) if (typeof val === 'string' && val.trim()) escribirRuta(evento, ruta, val);
   }
-  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres));
+  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres), modelo);
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
   vista.idiomas = { lista: idiomas, actual: v, banderas: Object.fromEntries(idiomas.map((x) => [x.slice(0, 2), banderaDe(x.slice(0, 2), evento)])) };
@@ -174,6 +179,11 @@ async function demo(env, url, request, idModelo) {
   const rutas = { comun: '/comun', modelo: `/modelos/${idModelo}` };
   const ev = eventoDemo({ tipo, variante: v, paquete, modelo, rutas });
   if (q.get('sobre') === 'no') ev.portada = { ...(ev.portada || {}), sobre: false }; // &sobre=no: la ventana de bienvenida
+  // Solo en la compu (npm run local): &prueba={json} pisa datos de la demo para revisar casos (nombres largos, secciones apagadas…)
+  if (env.MODO_LOCAL && q.get('prueba')) {
+    const mezclar = (a, b) => { for (const [k, x] of Object.entries(b)) a[k] = x && typeof x === 'object' && !Array.isArray(x) && a[k] && typeof a[k] === 'object' ? mezclar(a[k], x) : x; return a; };
+    mezclar(ev, JSON.parse(q.get('prueba')));
+  }
   return pagina(env, url, ev, { demo: true });
 }
 
@@ -412,7 +422,15 @@ async function eventoConClave(env, request, url, id) {
   const ev = await almacenDe(env).evento(id);
   if (!ev) return null;
   const clave = request.headers.get('x-clave') || url.searchParams.get('k') || '';
-  if (clave && igual(clave, ev.clave)) return ev;
+  if (clave && igual(clave, ev.clave)) {
+    // Abierto con la sesión iniciada: el borrador queda guardado en "Mi cuenta" (si todavía no tiene dueño)
+    if (ev.estado === 'borrador' && request.method === 'GET') {
+      const u = await usuarioActual(request, env).catch(() => null);
+      const alm = almacenDe(env);
+      if (u && alm.sinCliente && await alm.sinCliente(ev.id)) await alm.darAcceso(ev.id, u.id, 'cliente').catch(() => {});
+    }
+    return ev;
+  }
   const u = await usuarioActual(request, env);
   return u && (u.esAdmin || await almacenDe(env).tieneAcceso(ev.id, u.id)) ? ev : null;
 }
@@ -517,7 +535,7 @@ async function apiPanel(env, request, url, partes) {
 
   if (!accion && request.method === 'GET') {
     const v = variante(ev.datos.variante);
-    const dic = diccionario(ev.tipo, v);
+    const dic = conTextosModelo(diccionario(ev.tipo, v), ev.modelo ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null, v);
     return json({
       evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
       esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
@@ -527,7 +545,7 @@ async function apiPanel(env, request, url, partes) {
       modelos: modelosPara(ev.tipo),
       usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
-      modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null }; })() : null,
+      modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
       marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
@@ -827,6 +845,7 @@ function conFotosDeMuestra(ev, modelo) {
   if (on('portada') && vacio(f.portada)) f.portada = muestra.portada.map((url) => ({ url, pos: '50% 30%' }));
   if (vacio(f.galeria)) f.galeria = muestra.galeria.map((url) => ({ url }));
   if (ev.fotosOn?.rsvp === true && !f.rsvp) f.rsvp = muestra.rsvp;
+  if (on('historia') && !f.historia && modelo?.fotoHistoria) f.historia = borrosas ? `${dir}/inicial.jpg` : `${BASE}/rsvp.jpg`;
   if (on('instagram') && !f.instagram) f.instagram = muestra.instagram;
   if (on('album') && !f.album) f.album = muestra.instagram;
   const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || (on('lugares') ? foto : '') });

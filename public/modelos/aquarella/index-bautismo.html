@@ -77,10 +77,10 @@
         <div class="row align-items-center justify-content-center">
          <div class="col-md-8 text-center">
 			 	<div data-repetir="fotos.portada" class="col-lg-5 col-8 ml-auto mr-auto mb-3">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/bautismo/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50" style="outline: 3px solid #9c916b;">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/bautismo/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 ai-foto-1x1" style="outline: 3px solid #9c916b;">
               </div>
 			 <h3 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-gold mb-0 font-weight-bolder date-lineg"> 12 • 09 • 2027 </h3>
-           <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="aquarella m-0 text-gold"><i class="icon-star" aria-hidden="true"></i> Romi <i class="icon-star" aria-hidden="true"></i></h1>
+           <h1 data-ajustar-pc="0.32" data-ajustar="0.62" data-campo-html="nombres.portada" class="aquarella m-0 text-gold"><i class="icon-star" aria-hidden="true"></i> Romi <i class="icon-star" aria-hidden="true"></i></h1>
 			 <h3 data-t="portada.subtitulo" class="text-gold mb-2 date-lineg font-weight-bolder"> MI BAUTISMO </h3>
    			 <!-- Countdown 1-->
                 <div data-si="cuenta.activa" class="rounded text-gold text-center">
@@ -107,10 +107,10 @@
         <div class="row align-items-center justify-content-center">
          <div class="col-md-8 text-center">
 			 	<div data-repetir="fotos.portada" class="col-lg-5 col-8 ml-auto mr-auto mb-3">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/bautismo/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50" style="outline: 3px solid #9c916b;">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/bautismo/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 ai-foto-1x1" style="outline: 3px solid #9c916b;">
               </div>
 			 <h3 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-gold mb-0 font-weight-bolder date-lineg"> 12 • 09 • 2027 </h3>
-           <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="aquarella m-0 text-gold"><i class="icon-star" aria-hidden="true"></i> Romi <i class="icon-star" aria-hidden="true"></i></h1>
+           <h1 data-ajustar-pc="0.32" data-ajustar="0.62" data-campo-html="nombres.portada" class="aquarella m-0 text-gold"><i class="icon-star" aria-hidden="true"></i> Romi <i class="icon-star" aria-hidden="true"></i></h1>
 			 <h3 data-t="portada.subtitulo" class="text-gold mb-2 date-lineg font-weight-bolder"> MI BAUTISMO </h3>
 			 <div class="text-center vert-move mt-3">
 			       <a href="#inicio" class="smoothscroll"><span class="text-gold h1 icon-keyboard_arrow_down"></span></a>
@@ -144,16 +144,13 @@
         <div class="row pb-3">
           <div class="col-12 text-center mb-3 pb-md-5" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-0" src="img/acuarela-3.png" width="200px" alt="Imagen">
-             <h2 class="mt-0 text-center aquarella text-white">Mi Bautismo</h2>
-			  <h4 class="text-white">Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.</h4>
+             <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mt-0 text-center text-white font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="mt-0 text-center aquarella text-white">Mi Bautismo</h2>
+			  <h4 data-si="historia.activa" class="text-white g-historia"><span data-campo-html="historia.texto">Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.</span></h4>
           </div>
         </div>
 	   </div>
-	  </section>
-		  <div id="galeria" data-seccion="galeria" style="background-color:#fff;">
-		      <div data-componente="galeria"></div>
-	    </div> 
-			  
+	  <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
+
      <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(218, 240, 240, 0.5), rgba(73, 128, 128, 0.9)), url(img/bg-acuarela-6.jpg); background-color:#498080; background-position:20% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
       <div class="container">
          <div class="row item">
@@ -177,8 +174,8 @@
 
           </div>
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-3" src="img/icon-party-3-g.png" width="115" alt="Imagen">
-			  <img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-g.png" width="140px" alt="Imagen">
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-3" src="img/icon-party-3-g.png" width="115" alt="Imagen">
+			  <img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-g.png" width="140px" alt="Imagen">
 			 <h2 data-campo="celebracion.titulo" class="mb-3 text-center aquarella text-gold">La Fiesta</h2>	
 			  <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded mb-3 w-75">
 			  <p class="mb-1"><span data-t="lugar.diaHorario" class="text-white p-1 font-weight-bolder section-sub-title-sm" style="background-color:#498080;">DIA Y HORARIO</span></p>
@@ -442,9 +439,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	   	   
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	   	   
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="aquarella"></div></div>
+	</div>
 
           <div data-si="hashtag.link" data-seccion="instagram" class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up" id="hashtag">
             <div class="rounded p-3 shadow" style="background-color:rgba(255, 255, 255, 0.2);"> 
@@ -537,8 +534,8 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
           <div class="container">
           <div class="col-md-8 ml-auto mr-auto">
             <p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center mb-5 text-white">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</p>
-            <h2 data-campo-html="nombres.cierre" class="mb-3 text-center aquarella text-white"><i class="text-white icon-star h2" aria-hidden="true"></i> Romi <i class="text-white icon-star h2" aria-hidden="true"></i></h2>
-		 <div data-si="redes.hay" data-seccion="redes" class="col-12 text-center text-white mt-5 mb-0">
+            <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="mb-3 text-center aquarella text-white"><i class="text-white icon-star h2" aria-hidden="true"></i> Romi <i class="text-white icon-star h2" aria-hidden="true"></i></h2>
+		 <div data-si="redes.hay" data-seccion="redes" class="col-12 text-center text-white mt-5 mb-0 ai-redes">
 			 <div class="border-top border-light mb-3"></div>
                 <small data-t="redes.titulo" class="mb-3">Redes oficiales de la fiesta</small><br>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h1 text-white"></span></a>

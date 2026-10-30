@@ -30,7 +30,9 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "rsvpConFoto": false,
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/great-vibes+jost.css"

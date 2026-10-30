@@ -35,9 +35,13 @@
               "pos": "40% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
           "galeria": 12,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -48,6 +52,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -78,9 +83,14 @@
               "pos": "40% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
           "galeria": 8,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -109,9 +119,13 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 4,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -157,9 +171,13 @@
               "pos": "78% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
           "galeria": 12,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -169,6 +187,7 @@
             "disco",
             "brindis"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Sabri <i class=\"icon-heart h3\" aria-hidden=\"true\"></i> Marian",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -199,9 +218,14 @@
               "pos": "78% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
           "galeria": 8,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Sabri <i class=\"icon-heart h3\" aria-hidden=\"true\"></i> Marian",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -230,9 +254,13 @@
               "pos": "78% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 4,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Sabri <i class=\"icon-heart h3\" aria-hidden=\"true\"></i> Marian",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -278,9 +306,13 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
           "galeria": 12,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -289,6 +321,7 @@
             "baile",
             "last-call2"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Marta",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -319,9 +352,14 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
           "galeria": 8,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Marta",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -350,9 +388,13 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 4,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Marta",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -371,6 +413,7 @@
       "deluxe": {
         "archivo": "index-bautismo.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -387,7 +430,6 @@
           "instagram"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "testigos: sin fotos de muestra"
         ],
         "info": {
@@ -398,9 +440,13 @@
               "pos": "40% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
           "galeria": 12,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -411,6 +457,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -421,6 +468,7 @@
       "premium": {
         "archivo": "index-bautismo-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -430,7 +478,6 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline"
         ],
         "info": {
@@ -441,9 +488,14 @@
               "pos": "40% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
           "galeria": 8,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -472,9 +524,13 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 4,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -493,6 +549,7 @@
       "deluxe": {
         "archivo": "index-comunion.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -509,7 +566,6 @@
           "instagram"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "testigos: sin fotos de muestra"
         ],
         "info": {
@@ -520,9 +576,13 @@
               "pos": "40% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
           "galeria": 12,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -533,6 +593,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -543,6 +604,7 @@
       "premium": {
         "archivo": "index-comunion-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -552,7 +614,6 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline"
         ],
         "info": {
@@ -563,9 +624,14 @@
               "pos": "40% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
           "galeria": 8,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -594,9 +660,13 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 4,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Vanina",
           "claseTitulos": "euforia",
           "fuentes": [

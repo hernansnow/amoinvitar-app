@@ -55,7 +55,7 @@
         <div class="row align-items-end justify-content-center">
          <div class="text-center mb-1 ml-auto mr-auto">
 			 	<div data-repetir="fotos.portada" class="col-md-7 col-9 ml-auto mr-auto mb-2">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/bautismo/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-1" style="border: 3px solid #9c916b;">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/bautismo/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-1 ai-foto-1x1" style="border: 3px solid #9c916b;">
               </div>
 			 <div class="col-md-3 col-6 ml-auto mr-auto mt-0" hidden>
 				<img class="img-fluid mb-0" src="img/passion-1.png" alt="Imagen" style="transform: rotate(180deg);">
@@ -103,8 +103,7 @@
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
    <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url(img/bg-civil1.jpg); background-color:#fff; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="cierre">
       <div class="container">
@@ -114,7 +113,7 @@
                    <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-ocre.png" width="120px" alt="Imagen">
 				</div>
 			 <h2 data-campo="ceremonia.titulo" class="mb-1 text-center hojas text-gold" style="text-shadow: 1px 1px 0px #fff;">Ceremonia</h2>
-             <h2 data-campo-html="nombres.cierre" class="mb-2"><span data-t="lugar.diaHorario" class="text-white bg-ocre2 p-1 section-sub-title font-weight-bolder">DIA Y HORARIO</span></h2>
+             <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="mb-2"><span data-t="lugar.diaHorario" class="text-white bg-ocre2 p-1 section-sub-title font-weight-bolder">DIA Y HORARIO</span></h2>
 			  <p data-fecha-formato="{dd} ◦ {mm} ◦ {a} - {hora}" data-fecha="ceremonia" class="text-center text-black mb-0">12 ◦ 09 ◦ 2027 - 17:00</p>
 			  <h2 class="mb-2 mt-3"><span data-t="lugar.lugar" class="text-white bg-ocre2 p-1 section-sub-title font-weight-bolder">LUGAR</span></h2>
 			  <p data-campo-html="pie.texto" data-si="pie.mostrar" data-campo="ceremonia.lugarTexto" class="text-center text-black">"Parroquia Natividad del Señor", Av. Eugenia Tapia de Cruz 524</p>
@@ -132,8 +131,8 @@
           </div>
           <div class="col-md-5 ml-auto mr-auto mb-5 text-center" data-aos="fade-up" data-aos-delay="150">
 			  	<div class="text-center mb-2 shake-move">
-                   <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-ocre.png" width="120px" alt="Imagen">
-				   <img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-ocre.png" width="120px" alt="Imagen">
+                   <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-ocre.png" width="120px" alt="Imagen">
+				   <img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-ocre.png" width="120px" alt="Imagen">
 				</div>
 			  <h2 data-campo="celebracion.titulo" class="mb-1 text-center hojas text-gold" style="text-shadow: 1px 1px 0px #fff;">Celebración</h2>
 			  	<h2 class="mb-2"><span data-t="lugar.diaHorario" class="text-white bg-ocre2 p-1 section-sub-title font-weight-bolder">DIA Y HORARIO</span></h2>
@@ -213,7 +212,7 @@
         <div class="row">
           <div class="col-md-7 ml-auto mr-auto text-center">
 			  <img loading="lazy" class="img-fluid mb-3" src="img/bautismo-1.png" width="130px" alt="Imagen">
-			  <h2 class="text-center mt-auto ml-auto hojas text-ocre mb-0" style="text-shadow: 1px 1px 0px rgba(255,255,255,1)">Fátima</h2>
+			  <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto hojas text-ocre mb-0" style="text-shadow: 1px 1px 0px rgba(255,255,255,1)">Fátima</h2>
 			  <h3 class="elegance2 text-gold text-white mt-0 mb-0 p-0 font-weight-bolder text-uppercase" style="text-shadow: 1px 1px 0px rgba(255,255,255,1);">Mi Bautismo</h3>
           </div>
 		  </div>

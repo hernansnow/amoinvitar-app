@@ -394,7 +394,8 @@ function marcoEncuadre({ url, pos, proporcion, etiqueta, redonda = false, zoom =
 // toda la pantalla (celular 9:19,5 como la vista previa; computadora 16:10); la portada de Basic
 // (también Premium/Deluxe sin cuenta regresiva) es más baja: 80% del alto en el celular y 2:1 en la computadora.
 const portadaBasic = () => ['gratis', 'basic'].includes(S.plan?.plan) || datos.portada?.cuenta === false;
-const aspectoPortada = () => (portadaBasic() ? { cel: 9 / (19.5 * 0.8), pc: 2 } : { cel: 9 / 19.5, pc: 16 / 10 });
+// La foto redonda (globo): 1:1 en los dos recortes
+const aspectoPortada = () => (S.modelo?.proporciones?.portada === '1:1' ? { cel: 1, pc: 1 } : portadaBasic() ? { cel: 9 / (19.5 * 0.8), pc: 2 } : { cel: 9 / 19.5, pc: 16 / 10 });
 function encuadrePortada({ url, pos, posPc, alCambiar }) {
   const p = { cel: leerPos(pos), pc: leerPos(posPc || pos) };
   const img = el('img', { src: url, alt: '', draggable: 'false' });
@@ -1381,6 +1382,13 @@ function prenderPaso(p, on) {
     const otro = S.esquema.pasos.find((x) => x.id === p.excluye);
     if (otro?.seccion && pasoActivo(otro)) { escribir(datos, `secciones.${otro.seccion}`, false); aviso(`Se apagó "${otro.titulo}": va uno u otro.`); }
   }
+  // Sin dress code no van las sugerencias de estilos
+  if (!on && p.seccion === 'dresscode') escribir(datos, 'secciones.estilos', false);
+  // La primera sección Premium o Deluxe prende la Save The Date del diseño (viene incluida en esos planes)
+  if (on && ['premium', 'deluxe'].includes(p.nivel)) {
+    const std = S.esquema.pasos.find((x) => x.id === 'std');
+    if (std?.incluidaPremium && leer(datos, 'secciones.std') === undefined) { escribir(datos, 'secciones.std', true); escribir(datos, 'std.tipo', 'tarjeta'); aviso('Se sumó la tarjeta Save The Date: viene incluida en Premium y Deluxe.'); }
+  }
   cambio(`secciones.${p.seccion}`, on, { rearmar: true });
 }
 function interruptorPaso(p) {
@@ -1521,11 +1529,13 @@ function pintarModelo() {
 }
 function elegirModelo() {
   abrirModal('Cambiar de modelo', el('div', { class: 'modelos-grilla' }, (S.modelos || []).map((m) => el('div', { class: `modelo-opcion${m.id === S.evento.modelo ? ' actual' : ''}` },
-    el('img', { src: `/modelos/${m.id}/miniatura.jpg`, alt: '' }), el('strong', {}, m.nombre), m.gratis ? el('small', {}, 'También en plan gratis') : null,
+    el('img', { src: `/modelos/${m.id}/tienda-${S.evento.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { if (e.target.dataset.f) return; e.target.dataset.f = 1; e.target.src = `/modelos/${m.id}/miniatura.jpg`; } }), el('strong', {}, m.nombre), m.gratis ? el('small', {}, 'También en plan gratis') : null,
     m.id === S.evento.modelo ? el('span', { class: 'chip' }, 'En uso') : el('button', { type: 'button', class: 'btn btn-chico', onclick: async () => {
       try { clearTimeout(guardarTimer); await guardar(); await api('/modelo', { method: 'POST', body: JSON.stringify({ modelo: m.id }) }); cerrarModal(); await recargar(); aviso(`Ahora con ${m.nombre}`); } catch (e) { aviso(e.message, true); }
     } }, 'Usar este')))),
   el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/tienda/', target: '_blank' }, 'la tienda'), '.'));
+  // El foco en el modelo que está en uso, no al principio de la lista
+  requestAnimationFrame(() => document.querySelector('.modelo-opcion.actual')?.scrollIntoView({ block: 'center' }));
 }
 $('#btn-modelo-movil').addEventListener('click', elegirModelo);
 

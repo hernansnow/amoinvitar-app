@@ -45,9 +45,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "inicio",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -58,6 +62,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -100,9 +105,14 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "inicio",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -130,9 +140,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -188,9 +202,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "inicio",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -199,6 +217,7 @@
             "baile",
             "last-call2"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -241,9 +260,14 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "inicio",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -270,9 +294,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Mariana",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -291,6 +319,7 @@
       "deluxe": {
         "archivo": "index-bautismo.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -307,7 +336,6 @@
           "instagram"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
@@ -318,9 +346,13 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "inicio",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -329,6 +361,7 @@
             "cena",
             "disco"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Fátima",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -339,6 +372,7 @@
       "premium": {
         "archivo": "index-bautismo-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -348,7 +382,6 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
@@ -360,9 +393,14 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "inicio",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Fátima",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -389,9 +427,13 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Parroquia Natividad del Señor, Av. Eugenia Tapia de Cruz 524",
           "nombresCierre": "<span data-t=\"lugar.diaHorario\" class=\"text-white bg-musgo p-1 section-sub-title font-weight-bolder\">DIA Y HORARIO</span>",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -410,6 +452,7 @@
       "deluxe": {
         "archivo": "index-comunion.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -426,7 +469,6 @@
           "instagram"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
@@ -437,9 +479,13 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "inicio",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -448,6 +494,7 @@
             "cena",
             "disco"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Maiana",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -458,6 +505,7 @@
       "premium": {
         "archivo": "index-comunion-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -467,7 +515,6 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
@@ -479,9 +526,14 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "inicio",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.",
           "nombresCierre": "Maiana",
           "claseTitulos": "euforia",
           "fuentes": [
@@ -508,9 +560,13 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Parroquia Natividad del Señor, Av. Eugenia Tapia de Cruz 524",
           "nombresCierre": "<span data-t=\"lugar.diaHorario\" class=\"text-white bg-musgo p-1 section-sub-title font-weight-bolder\">DIA Y HORARIO</span>",
           "claseTitulos": "euforia",
           "fuentes": [

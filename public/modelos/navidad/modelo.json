@@ -15,7 +15,7 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "paquetes": {
     "basic": {
       "secciones": [
@@ -34,6 +34,7 @@
     "premium": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -51,10 +52,13 @@
     "deluxe": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
         "estilos",
+        "hospedaje",
+        "bus",
         "itinerario",
         "instagram",
         "album",
@@ -70,6 +74,10 @@
         "sugerenciasDress": true
       }
     }
+  },
+  "textosDemo": {
+    "historia.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+    "pie.texto": "Esperamos que nos acompañes para celebrar en familia y con amigos. ¡No te lo pierdas!"
   },
   "proporciones": {
     "lugar": "1/1"

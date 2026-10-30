@@ -33,9 +33,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "fotoHistoria": "1:1",
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -46,6 +50,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -76,9 +81,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "fotoHistoria": "1:1",
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -105,9 +115,12 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -151,9 +164,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "fotoHistoria": "1:1",
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -162,6 +179,7 @@
             "baile",
             "last-call2"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -192,9 +210,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "fotoHistoria": "1:1",
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -221,9 +244,12 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -242,6 +268,7 @@
       "deluxe": {
         "archivo": "index-bautismo.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -257,9 +284,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "historia: no se encontró el texto ni el saludo"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
           "portadas": [
@@ -268,9 +293,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
+          "fotoHistoria": "1:1",
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -281,6 +310,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -291,6 +321,7 @@
       "premium": {
         "archivo": "index-bautismo-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -300,7 +331,6 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline"
         ],
         "info": {
@@ -311,9 +341,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
+          "fotoHistoria": "1:1",
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -340,9 +375,12 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -361,6 +399,7 @@
       "deluxe": {
         "archivo": "index-comunion.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -376,9 +415,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "historia: no se encontró el texto ni el saludo"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "<i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i> Martina <i class=\"text-eucalipto icon-star\" aria-hidden=\"true\"></i>",
           "portadas": [
@@ -387,9 +424,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
+          "fotoHistoria": "1:1",
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -400,6 +441,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -410,6 +452,7 @@
       "premium": {
         "archivo": "index-comunion-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -419,7 +462,6 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline"
         ],
         "info": {
@@ -430,9 +472,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
+          "fotoHistoria": "1:1",
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [
@@ -459,9 +506,12 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
           "idAgenda": "agenda",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "<i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i> Martina <i class=\"text-gold icon-star-o h3\" aria-hidden=\"true\"></i>",
           "claseTitulos": "oliva",
           "fuentes": [

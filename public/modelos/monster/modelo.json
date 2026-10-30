@@ -35,6 +35,7 @@
     "premium": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -53,10 +54,13 @@
     "deluxe": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
         "estilos",
+        "hospedaje",
+        "bus",
         "itinerario",
         "instagram",
         "album",
@@ -74,6 +78,13 @@
         "sugerenciasDress": true
       }
     }
+  },
+  "textosDemo": {
+    "historia.texto": "Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos."
+  },
+  "proporciones": {
+    "portada": "1:1"
   },
   "nombresHTML": {
     "portada": "{a}",

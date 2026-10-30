@@ -59,7 +59,14 @@ export async function salir(request, env) {
 export async function cuenta(request, env) {
   const u = await usuarioActual(request, env);
   if (!u) return json({ usuario: null });
-  const eventos = await almacenD1(env).eventosDe(u.id);
+  // Los borradores armados en este navegador sin la cuenta se suman a la cuenta
+  const recordados = (getCookie(request, 'ai_bor') || '').split(',').map((x) => x.split(':')).filter(([id, k]) => /^ev_[a-z0-9]+$/i.test(id || '') && k);
+  const alm = almacenD1(env);
+  for (const [id, k] of recordados) {
+    const ev = await alm.evento(id).catch(() => null);
+    if (ev && ev.clave === k && !(await alm.tieneAcceso(id, u.id))) await alm.darAcceso(id, u.id, 'cliente');
+  }
+  const eventos = await alm.eventosDe(u.id);
   const { results: pendientes } = await env.DB.prepare("SELECT id, numero, importe, moneda, medio, evento_id FROM pedidos WHERE usuario_id = ? AND estado = 'pendiente' AND medio = 'transferencia'").bind(u.id).all();
   return json({
     usuario: { email: u.email, nombre: u.nombre, admin: !!u.esAdmin },
@@ -69,6 +76,6 @@ export async function cuenta(request, env) {
       fecha: (e.datos.celebracion?.inicio || e.datos.std?.fecha || '').slice(0, 10),
       pagoPendiente: pendientes.some((p) => p.evento_id === e.id),
     })),
-  });
+  }, 200, recordados.length ? { 'set-cookie': cookie('ai_bor', '', { maxAge: 0, secure: isSecureRequest(request) }) } : {});
 }
 

@@ -2693,6 +2693,10 @@ a.close.disabled {
     border-radius: 50rem !important
 }
 
+.d-none {
+    display: none !important
+}
+
 .d-block {
     display: block !important
 }

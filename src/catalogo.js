@@ -37,6 +37,8 @@ export const PRODUCTOS = {
   'std-tarjeta-medida': { precio: 50, nombre: 'Save The Date · tarjeta con diseño personalizado' },
   'std-video': { desde: 50, manual: true, nombre: 'Save The Date · video' },
   agradecimiento: { precio: 15, nombre: 'Tarjeta de agradecimiento' },
+  // Video propio en la portada (los modelos con foto de portada a pantalla completa)
+  'video-portada': { precio: 8, nombre: 'Video de portada' },
 };
 
 // ── Extras de la invitación ─────────────────────────────────────────────

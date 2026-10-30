@@ -1,8 +1,9 @@
 /* Playlist de Spotify (igual en todos los modelos): fondo blanco, texto negro,
    disco de vinilo con el logo y el play verde de Spotify */
-.ai-playlist { background: #fff; padding: 3rem 15px; }
-.ai-pl-tarjeta { max-width: 560px; margin: 0 auto; text-align: center; color: #111; }
-.ai-pl-titulo { color: #111 !important; font-size: 2.2rem; margin: 0 0 .25rem; line-height: 1.2; }
+.ai-playlist { background: #fff; border-radius: 22px; padding: 2rem 18px; margin: 2rem auto; width: calc(100% - 30px); max-width: 560px; box-shadow: 0 6px 22px rgba(0,0,0,.08); text-align: center; clear: both; }
+.ai-pl-tarjeta { max-width: 520px; margin: 0 auto; text-align: center; color: #111; display: block; }
+/* Título en la fuente base del modelo (no la de destaque), más grande y en negrita */
+.ai-playlist .ai-pl-titulo { font-family: inherit !important; font-weight: 700 !important; color: #111 !important; font-size: 1.6rem !important; letter-spacing: normal !important; text-transform: none !important; margin: 0 0 .35rem; line-height: 1.2; border: 0 !important; background: none !important; }
 .ai-pl-texto { color: #222; margin: 0 0 1.4rem; font-size: 1.05rem; }
 .ai-vinilo { position: relative; width: min(240px, 66vw); aspect-ratio: 1; margin: 0 auto 1rem; }
 .ai-v-disco { position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: center;

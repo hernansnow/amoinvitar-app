@@ -17,12 +17,13 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "paquetes": {
     "basic": {
       "secciones": [
         "galeria",
-        "rsvp"
+        "rsvp",
+        "dresscode"
       ],
       "incluye": {
         "sobre": false,
@@ -38,6 +39,7 @@
         "historia",
         "galeria",
         "rsvp",
+        "dresscode",
         "instagram",
         "canciones",
         "regalos"
@@ -58,6 +60,8 @@
         "rsvp",
         "dresscode",
         "estilos",
+        "hospedaje",
+        "bus",
         "itinerario",
         "testigos",
         "instagram",
@@ -77,9 +81,14 @@
       }
     }
   },
+  "textosDemo": {
+    "historia.texto": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos."
+  },
+  "proporciones": {},
   "nombresHTML": {
     "portada": "<span>{a} &amp; {b}</span>",
-    "cierre": "<span>{a} &amp; {b}</span>",
+    "cierre": "{a} &amp; {b}",
     "solo": "{a}"
   },
   "miniatura": {
@@ -179,7 +188,8 @@
         "basic": {
           "secciones": [
             "galeria",
-            "rsvp"
+            "rsvp",
+            "dresscode"
           ],
           "incluye": {
             "sobre": false,
@@ -195,6 +205,7 @@
             "historia",
             "galeria",
             "rsvp",
+            "dresscode",
             "instagram",
             "canciones",
             "regalos"
@@ -215,6 +226,8 @@
             "rsvp",
             "dresscode",
             "estilos",
+            "hospedaje",
+            "bus",
             "itinerario",
             "testigos",
             "instagram",
@@ -234,6 +247,13 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {},
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#4e9c87"
@@ -261,7 +281,8 @@
         "basic": {
           "secciones": [
             "galeria",
-            "rsvp"
+            "rsvp",
+            "dresscode"
           ],
           "incluye": {
             "sobre": false,
@@ -277,6 +298,7 @@
             "historia",
             "galeria",
             "rsvp",
+            "dresscode",
             "instagram",
             "canciones",
             "regalos"
@@ -297,6 +319,8 @@
             "rsvp",
             "dresscode",
             "estilos",
+            "hospedaje",
+            "bus",
             "itinerario",
             "testigos",
             "instagram",
@@ -316,6 +340,13 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {},
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#4e9c87"

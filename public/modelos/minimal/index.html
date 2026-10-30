@@ -78,13 +78,13 @@
       </div>
 	   <!-- VIDEO -->
       <div class="video-container">
-            <div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover half portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)), url(demo/boda/hero-banner.jpg);background-color:#000; background-position: 78% 50%; -webkit-filter: sepia(100%); filter: sepia(100%);" data-aos="fade">
+            <div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover half portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)), url(demo/boda/hero-banner.jpg);background-color:#000; background-position: 78% 50%; -webkit-filter: sepia(100%); filter: sepia(100%);" data-aos="fade">
       </div>
 </div>
 </section><section data-no="cuenta.portada" class="inner-page-cover section-hero overlay slanted" id="home-section">
 	   <!-- VIDEO -->
       <div class="video-container">
-            <div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover half portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)), url(demo/boda/hero-banner.jpg);background-color:#000; background-position: 78% 50%; -webkit-filter: sepia(100%); filter: sepia(100%);" data-aos="fade">
+            <div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover half portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)), url(demo/boda/hero-banner.jpg);background-color:#000; background-position: 78% 50%; -webkit-filter: sepia(100%); filter: sepia(100%);" data-aos="fade">
       </div>
 
 </div>
@@ -99,7 +99,7 @@
 					falta
                     <div data-formato="<div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{d}</span> {dias}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{h}</span> {horas}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{m}</span> {min}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{s}</span> {seg}</div>" id="clock-b" class="countdown-deluxe-circles4 d-flex justify-content-center"></div>
                 </div>
-			 <div class="text-center vert-move mt-1 mb-3">
+			 <div data-si="cuenta.activa" class="text-center vert-move mt-1 mb-3">
 			       <a href="#inicio" class="smoothscroll"><span class="text-gold h1 icon-keyboard_arrow_down"></span></a>
 			 </div>
 			 </div>
@@ -122,7 +122,10 @@
 				 <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-gold font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center euforia text-gold">Nuestra Historia</h2>
 			  <h4 data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span></h4>
 			 </div>
-	  		 <div class="col-12 p-0" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+	  		 <div data-seccion="galeria" id="galeria"><div class="presupuesto slide-one-item home-slider owl-carousel" style="clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);">
+				<img data-i-estilo="estilo" data-i-attr="src:url" data-repetir="fotos.galeria" loading="lazy" src="demo/boda/foto1.jpg" alt="Imagen" class="img-fluid">
+
+            </div></div>
           <div data-si="ceremonia.separada" class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" id="agenda">
 			 <h2 data-campo="ceremonia.titulo" class="mb-0 text-center euforia text-gold">Ceremonia</h2>
 			<h2 class="mb-2"><span data-t="lugar.diaHorario" class="text-black-50 p-1 section-sub-title-sm font-weight-bolder border border-dark bg-light">DIA Y HORARIO</span></h2>
@@ -226,7 +229,7 @@
 		  <!-- /referencias dress -->
 	          </div>
 
-			<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile"><hr class="bg-light"></div>
+			<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile ai-sep"><hr class="bg-light"></div>
                   <h2 data-t="hospedaje.titulo" class="mb-3 text-center euforia text-gold">Hospedaje</h2>
 				  <p data-t="hospedaje.texto" class="text-center text-white">Referencias de hoteles cercanos.</p>
 				   <div data-si="hospedaje.conReferencias" class="col-12 text-center">	
@@ -247,7 +250,7 @@
 			<!-- /referencias hospedaje -->
 	          </div>
 
-			<div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile"><hr class="bg-light"></div>
+			<div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile ai-sep"><hr class="bg-light"></div>
                   <h2 data-t="bus.titulo" class="mb-3 text-center euforia text-gold">Traslado</h2>
 				  <p data-t="bus.texto" class="text-center text-white">Reserva tu lugar en el formulario de confirmación.</p>
 				   <div data-si="busConRecorrido" class="col-12 text-center">	
@@ -351,9 +354,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	      
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	      
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="euforia"></div></div>
+	</div>
   </div>
 </div>
 </section>
@@ -382,8 +385,8 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-	          </div>
-			</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="euforia"></div></div>
+	          </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>
+			</div>
 			<div data-seccion="dresscode" class="col-md-8 ml-auto mr-auto p-3"><hr class="bg-light"></div>	   
 			
 			  <div class="text-center" data-aos="fade-in">
@@ -464,9 +467,9 @@
         <div class="row mb-3">
           <div class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
 			  <p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center text-black">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.</p>
-			  <h2 data-campo-html="nombres.cierre" class="mb-0 text-center euforia text-gold">Sabri <i class="icon-heart h3" aria-hidden="true"></i> Marian</h2>
+			  <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="mb-0 text-center euforia text-gold">Sabri <i class="icon-heart h3" aria-hidden="true"></i> Marian</h2>
           </div>			  
-			  <div data-si="redes.hay" data-seccion="redes" class="col-md-8 ml-auto mr-auto text-center">
+			  <div data-si="redes.hay" data-seccion="redes" class="col-md-8 ml-auto mr-auto text-center ai-redes">
 			   <div class="text-center mt-4 mb-5"><hr class="bg-gold"></div>
                 <div><small data-t="redes.titulo" class="text-black">Redes oficiales de la boda</small></div>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h2 text-black"></span></a>

@@ -60,7 +60,8 @@ export const TIPOS_EVENTO = [
   { id: 'infantil', nombre: 'Cumpleaños infantil' },
   { id: 'graduacion', nombre: 'Egreso / Graduación' },
   { id: 'babyshower', nombre: 'Baby shower' },
-  { id: 'revelacion', nombre: 'Revelación de género' },
+  // Se elige dentro de Baby Shower (es un diseño de baby shower con dos nombres)
+  { id: 'revelacion', nombre: 'Revelación de género', grupo: 'babyshower' },
   { id: 'navidad', nombre: 'Navidad' },
 ];
 

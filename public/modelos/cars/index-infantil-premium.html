@@ -77,7 +77,7 @@
 
 		   <div class="module-cars logo-cars">
 			   <div data-repetir="fotos.portada" class="text-center">
-			   <img data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50" style="border:8px ridge #c7c7c7;border-width:8px;border-style:ridge;border-color:#c7c7c7;">
+			   <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 ai-foto-1x1" style="border:8px ridge #c7c7c7;border-width:8px;border-style:ridge;border-color:#c7c7c7;">
 
                </div>
 			   <p data-ajustar="0.82" data-campo-html="nombres.portada" class="cars-h2 cars-chrome_text">Martín</p>
@@ -132,14 +132,13 @@
                     <div data-formato="<div class=&quot;holder m-2&quot;><span class=&quot;magneto-font mb-1&quot; style=&quot;border: 6px solid #fc1119; background-color:rgba(0, 0, 0, 0.25);&quot;>{d}</span> {dias}</div><div class=&quot;holder m-2&quot;><span class=&quot;magneto-font mb-1&quot; style=&quot;border: 6px solid #fc1119; background-color:rgba(0, 0, 0, 0.25);&quot;>{h}</span> {horas}</div><div class=&quot;holder m-2&quot;><span class=&quot;magneto-font mb-1&quot; style=&quot;border: 6px solid #fc1119; background-color:rgba(0, 0, 0, 0.25);&quot;>{m}</span> {min}</div><div class=&quot;holder m-2&quot;><span class=&quot;magneto-font mb-1&quot; style=&quot;border: 6px solid #fc1119; background-color:rgba(0, 0, 0, 0.25);&quot;>{s}</span> {seg}</div>" data-si="cuenta.activa" id="clock-b" class="countdown-deluxe-circles4 d-flex text-rojo justify-content-center"></div>
                 </div>
 			  <img loading="lazy" class="img-fluid mb-0" src="img/infantil-cars-icono-cake.png" width="150px" alt="Imagen">
-			 <h3 class="text-rojo mb-3 magneto-font">El tiempo vuela</h3>
-			 <h4 class="text-rojo">Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos  maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!</h4>
+			 <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="text-rojo mb-3 font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h3 data-si="historia.activa" data-t="historia.titulo" class="text-rojo mb-3 magneto-font">El tiempo vuela</h3>
+			 <h4 data-si="historia.activa" class="text-rojo g-historia"><span data-campo-html="historia.texto">Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!</span></h4>
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
-	  
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
+
     <section class="p-4" style="background-color: #ffffff; opacity: 1; background-image:  repeating-linear-gradient(45deg, #090a14 25%, transparent 25%, transparent 75%, #090a14 75%, #090a14), repeating-linear-gradient(45deg, #090a14 25%, #ffffff 25%, #ffffff 75%, #090a14 75%, #090a14); background-position: 0 0, 10px 10px; background-size: 20px 20px;">
 	  </section>
 	  
@@ -252,10 +251,10 @@
 	 </div>
  </section></div></div>
 	  
-    <section class="site-section bg-black">
+    <section data-si="grupos.dress" id="dresscode" class="site-section bg-black">
       <div class="container">
         <div class="row">
-          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5" id="dresscode">
+          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5">
 			   <div data-seccion="dresscode" class="text-center mt-2">
 				 <img loading="lazy" class="img-fluid mb-2" src="img/infantil-cars-icono-dress.png" width="110" alt="Imagen">
 			  </div>
@@ -283,9 +282,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	  
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	  
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="cars-chrome_text"></div></div>
+	</div>
   </div>
 </div>
 </div>
@@ -362,7 +361,7 @@
         <div class="row">
           <div class="col-md-7 ml-auto mr-auto text-center">
 			 <h4 data-campo-html="pie.texto" data-si="pie.mostrar" class="text-white mb-2">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.</h4>
-             <h1 data-campo-html="nombres.cierre" class="mb-1 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.9)">Martín</h1>
+             <h1 data-ajustar="0.86" data-campo-html="nombres.cierre" class="mb-1 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.9)">Martín</h1>
 			  <h2 data-caso="titulo" data-t="portada.detalle" class="mb-3 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.9)">2 Años</h2>
 			  <div class="text-center">
 			  <img loading="lazy" class="img-fluid mb-0 ml-5 ml-md-0 mr-md-5 w-75" src="img/infantil-cars-icono-personaje.png" width="250px" alt="Imagen">

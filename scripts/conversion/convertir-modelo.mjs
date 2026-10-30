@@ -28,6 +28,17 @@ const subir = (e, f) => { for (let x = e; x; x = x.parentElement) if (f(x)) retu
 const clases = (e) => String(e?.getAttribute?.('class') || '').split(/\s+/).filter(Boolean);
 const esCol = (e) => clases(e).some((c) => /^col(-|$)/.test(c));
 const quitar = (e) => e?.parentNode?.removeChild(e);
+// a está antes que b en el documento (compareDocumentPosition de linkedom falla en algunos casos)
+function antesQue(a, b) {
+  if (a === b || !a || !b) return false;
+  const cadena = (x) => { const c = []; for (; x; x = x.parentNode) c.unshift(x); return c; };
+  const ca = cadena(a), cb = cadena(b);
+  let i = 0; while (i < ca.length && i < cb.length && ca[i] === cb[i]) i++;
+  if (i === ca.length) return true; // a contiene a b
+  if (i === cb.length) return false;
+  const hijos = [...ca[i - 1].childNodes];
+  return hijos.indexOf(ca[i]) < hijos.indexOf(cb[i]);
+}
 const RE_FECHA = /\d{1,2}\s*(?:•|&bull;|·|\.|\/|-|◦)\s*\d{1,2}\s*(?:•|&bull;|·|\.|\/|-|◦)\s*\d{2,4}/;
 const RE_FECHA_HORA = /\d{1,2}\s*◦\s*\d{1,2}\s*◦\s*\d{4}/;
 
@@ -106,12 +117,19 @@ function limpiar(c) {
 // La frase de la portada y la segunda línea (edad, clase, revelación), también repetidas en el cierre
 const FRASES = /nos casamos|nuestra boda|mis (15|quince)|mi cumple|despegamos|me caso|nos casaremos|our wedding|getting married|mi bautismo|mi bautizo|mi (primera )?comuni|mi fiesta|baby\s*shower|fiesta de (egresados|graduaci|navidad)/i;
 const DETALLE = /^(cumple\s*)?\d+\s*a[ñn]os?$|^(clase|promo(ci[oó]n)?)\s*\d{4}$|revelaci[oó]n de g[eé]nero/i;
+// Fracción del ancho para los nombres: [celular, computadora]
+const AJUSTE_NOMBRES = {
+  aquarella: [0.62, 0.32], armonia: [0.72, 0.6], beach: [0.5, 0.36], black: [0.66, 0.36], byn: [0.8, 0.6], cinema: [0.6, 0.42],
+  euforia: [0.74, 0.6], floral: [0.62, 0.22], lila: [0.7, 0.5], passion: [0.5, 0.26], rouge: [0.62, 0.3], sky: [0.5, 0.36],
+  travel: [0.72, 0.5], white: [0.5, 0.3], oliva: [0.6, 0.4], vintage: [0.7, 0.45], elegance: [0.8, 0.6], lovestory: [0.8, 0.6],
+};
 function portada(c, home) {
   const d = c.doc;
   if (!home) { c.aviso('portada: no se encontró #home-section'); return; }
   // Nombres: el primer h1 (o el título más grande)
   // Los nombres: el h1, o el título con "&" / un corazón entre los nombres
-  let h1 = $(home, 'h1') || $$(home, 'h2,h3,h4').find((e) => (/&|\+|\sy\s/.test(txt(e)) || e.querySelector('[class*="icon-heart"]')) && txt(e).length < 45);
+  // (sin contar los títulos vacíos de espacio, Lovestory)
+  let h1 = $$(home, 'h1').find((e) => txt(e).replace(/[\s\u00a0]+/g, '').length > 1) || $$(home, 'h2,h3,h4').find((e) => (/&|\+|\sy\s/.test(txt(e)) || e.querySelector('[class*="icon-heart"]')) && txt(e).length < 45);
   if (!h1) {
     // Dos títulos iguales, uno por nombre (Cinema): nombres.a y nombres.b por separado
     const hs = $$(home, 'h2,h3').filter((e) => /^[A-ZÁÉÍÓÚÑa-záéíóúñ]+$/.test(txt(e)) && !/^(ceremonia|celebraci[oó]n)$/i.test(txt(e)));
@@ -136,6 +154,12 @@ function portada(c, home) {
     const aro = subir(h1, (x) => x !== home && /aro|circulo|circle|marco|frame/i.test(clases(x).join(' ')) && !/cuenta-regresiva/.test(clases(x).join(' ')));
     if (aro) { h1.setAttribute('data-ajustar', '0.56'); h1.setAttribute('data-ajustar-en', '.' + clases(aro).find((k) => /aro|circulo|circle|marco|frame/i.test(k))); }
     else h1.setAttribute('data-ajustar', '0.82');
+    // README (ronda 21): el lugar de los nombres en cada diseño (el aro, la palmera, el hexágono, el recuadro…)
+    const lugarNombres = AJUSTE_NOMBRES[c.id];
+    if (lugarNombres) {
+      h1.setAttribute('data-ajustar', String(lugarNombres[0]));
+      if (lugarNombres[1] != null) h1.setAttribute('data-ajustar-pc', String(lugarNombres[1]));
+    }
   } else if (!c.info.nombresSeparados) c.aviso('portada: sin título de nombres');
   // Fecha y frase
   const textos = $$(home, 'h2,h3,h4,h5,h6,p,span').filter((e) => e !== h1 && !h1?.contains(e) && !e.querySelector('h1,h2,h3,h4,p'));
@@ -178,8 +202,22 @@ function portada(c, home) {
   if (reloj) {
     const caja = subir(reloj, (x) => x.parentElement && x.parentElement.children.length > 1) || reloj;
     caja.setAttribute('data-si', 'cuenta.activa');
-    const faltan = textos.find((e) => /^faltan$/i.test(txt(e))) || $$(caja.parentElement || caja, 'h5,h6,small,p,span').find((e) => /^faltan$/i.test(txt(e)));
-    if (faltan) { faltan.setAttribute('data-t', 'cuenta.faltan'); faltan.setAttribute('data-si', 'cuenta.activa'); }
+    const faltan = textos.find((e) => /^faltan$/i.test(txt(e))) || $$(caja.parentElement || caja, 'h1,h2,h3,h4,h5,h6,small,p,span').find((e) => /^faltan$/i.test(txt(e))) || $(d.body, '#headline-countdown');
+    // La cuenta en una sección aparte (Armonía): su flecha va solo con la cuenta (si no, quedan dos flechas)
+    const secReloj = subir(reloj, (x) => x.tagName === 'SECTION');
+    if (secReloj && secReloj !== home && !secReloj.closest('#home-section')) {
+      for (const a of $$(secReloj, 'a[href^="#"]').filter((x) => $(x, '[class*="arrow"]'))) (subir(a, (x) => x.tagName === 'DIV' && x.children.length === 1) || a).setAttribute('data-si', 'cuenta.activa');
+    }
+    if (faltan) { if (/^faltan$/i.test(txt(faltan))) faltan.setAttribute('data-t', 'cuenta.faltan'); faltan.setAttribute('data-si', 'cuenta.activa'); }
+    // Una sección que es solo la cuenta (Floral: la franja verde): sin cuenta, no queda nada (como en Basic)
+    if (secReloj && secReloj !== home && !secReloj.closest('#home-section')) {
+      const resto = secReloj.cloneNode(true);
+      for (const x of $$(resto, '#countdown,#clock-b,#headline-countdown,#content-countdown,.container-countdown')) quitar(x);
+      if (!txt(resto).trim() && !$$(resto, 'h1,h2,h3,h4,p,a,button,iframe').length) {
+        secReloj.setAttribute('data-si', 'cuenta.activa');
+        if (secReloj.id) antes(secReloj, nodo(d, `<div id="${secReloj.id}" data-no="cuenta.activa"></div>`));
+      }
+    }
     if (c.info.cuenta) {
       // El formato de la cuenta del diseño (el motor pone los números y los textos del idioma)
       const m = c.info.cuenta.match(/strftime\(([\s\S]*?)\)\);/);
@@ -191,11 +229,13 @@ function portada(c, home) {
     }
   }
   // Fotos de la portada: carrusel de Bootstrap, foto de fondo o foto suelta (las de la demo)
-  const esDemo = (u) => u && (!/^(\.\.\/|https?:|\/)/.test(u) || /^\.\.\/\.\.\/demo\/(?!img-demo)/.test(u)) && /\.(jpe?g|webp)$/i.test(u); // los PNG de la carpeta son adornos
+  // Los PNG de la carpeta son adornos y los fondo-*.jpg (Celeste, Rosa) son el fondo del diseño, no fotos del cliente
+  const esDemo = (u) => u && (!/^(\.\.\/|https?:|\/)/.test(u) || /^\.\.\/\.\.\/demo\/(?!img-demo)/.test(u)) && /\.(jpe?g|webp)$/i.test(u) && !/(^|\/)fondo-[^/]*$/i.test(u);
   const urlDe = (st) => (st.match(/url\((['"]?)([^'")]+)\1\)\s*;?\s*[^u]*$/) || st.match(/url\((['"]?)([^'")]+)\1\)(?![\s\S]*url\()/) || [])[2];
   // Video de fondo (Vimeo, Cinema y Disco): el de la demo queda solo en la demo; el cliente sube el suyo (MP4)
   // o, si no, van sus fotos de portada en un slideshow
-  const vimeo = $(home, '.vimeo-embed');
+  // Disco: el video es parte del diseño (queda siempre); la foto del cliente es la de la estrella
+  const vimeo = c.id === 'disco' ? null : $(home, '.vimeo-embed');
   if (vimeo) {
     vimeo.setAttribute('data-si', 'demo');
     const v = nodo(d, `<video class="ai-video-portada" data-si="portada.video" autoplay muted loop playsinline preload="auto" data-attr="src:c:portada.video;poster:c:portada.poster"></video>`);
@@ -218,6 +258,7 @@ function portada(c, home) {
       slides.appendChild(s);
     }
     car.parentNode.replaceChild(slides, car);
+    slides.setAttribute('data-video-portada', ''); c.info.fondoCompleto = true;
     c.info.portadaFotos = items.length;
   } else if (!vimeo) {
     let n = 0;
@@ -228,6 +269,8 @@ function portada(c, home) {
       if (!(c.info.portadas || []).some((x) => x.f === basename(u))) (c.info.portadas ||= []).push({ f: basename(u), pos: ((e.getAttribute('style') || '').match(/background-position\s*:\s*([^;]+)/) || [])[1]?.trim() || '50% 50%' });
       e.setAttribute('data-repetir', 'fotos.portada'); e.setAttribute('data-i-bg', 'url'); e.setAttribute('data-i-pos', 'pos'); e.setAttribute('data-i-estilo', 'estilo');
       e.classList.add('portada-foto-pc');
+      // La primera caja de foto a pantalla completa: ahí va el video de portada del cliente (comun/js/video-portada.js)
+      if (!n) { e.setAttribute('data-video-portada', ''); c.info.fondoCompleto = true; }
       n++;
     }
     for (const i of $$(home, 'img')) {
@@ -239,10 +282,31 @@ function portada(c, home) {
       const w = subir(i, (x) => x.parentElement && x.parentElement.children.length > 1) || i;
       w.setAttribute('data-repetir', 'fotos.portada');
       i.setAttribute('data-i-attr', 'src:url;style:estiloImg');
+      // La foto redonda (globo, la estrella de Disco): siempre 1:1, aunque el cliente suba una foto vertical u horizontal
+      if (/globo|rounded-circle|estrella/i.test(u + ' ' + (i.getAttribute('class') || '')) || c.id === 'disco') {
+        i.classList.add('ai-foto-1x1'); c.info.portadaRedonda = true;
+        // Sin foto del cliente, la foto redonda no se muestra (Travel pone el avión; Disco, su estrella)
+        if (!/^(travel|disco)$/.test(c.id)) i.setAttribute('data-si', 'portada.hayFoto');
+      }
       n++;
     }
     c.info.portadaFotos = n;
     if (!n) c.aviso('portada: sin foto de la demo (el fondo queda fijo)');
+  }
+}
+
+// Letras sueltas en la portada (Euforia: "A    B" a los costados de la espiga): las iniciales de los nombres
+function inicialesPortada(c) {
+  const home = $(c.doc, '#home-section');
+  if (!home) return;
+  // B&N: la ciudad junto a la fecha ("MIAMI"): un campo; vacío, no se muestra
+  for (const e of $$(c.doc.body, 'span,p,h3,h4').filter((x) => x.closest('#home-section') && !x.children.length && /^\s*MIAMI\s*$/.test(x.textContent))) {
+    e.setAttribute('data-campo', 'portada.ciudad'); e.setAttribute('data-si', 'portada.ciudad'); c.info.ciudadPortada = true;
+  }
+  for (const e of $$(c.doc.body, 'div,span,p,h1,h2,h3,h4,h5').filter((x) => x.closest('#home-section') && !x.children.length)) {
+    const m = /^\s*([A-ZÁÉÍÓÚÑ])(?:[\s\u00a0]+([A-ZÁÉÍÓÚÑ]))?\s*$/.exec(e.textContent);
+    if (!m || e.closest('[data-campo],[data-campo-html],[data-t],[data-fecha],a,button')) continue;
+    e.innerHTML = m[2] ? '<span data-campo="nombres.inicialA">A</span>&#160;&#160;&#160;&#160;<span data-campo="nombres.inicialB">B</span>' : '<span data-campo="nombres.inicialA">A</span>';
   }
 }
 
@@ -268,12 +332,12 @@ function historia(c) {
   // El texto de muestra de la historia (boda, 15, cumple…) o, si no, el título "Nuestra historia"
   const MUESTRA = /todo comenz[oó] hace|hoy recibo a jes[uú]s|un a[ñn]o m[aá]s para jugar|parece que fue ayer cuando comenz|desde el momento en que supimos|los momentos felices de la vida, se tornan|con la esperanza de que la bendici|desde muy peque[ñn]|la vida se mide en momentos|and[aá]bamos sin buscarnos|it all started|un a[ñn]o m[aá]s para celebrar/i;
   const rsvp0 = $(d.body, '#rsvp');
-  let t = $$(d.body, 'h3,h4,h5,p').find((e) => MUESTRA.test(txt(e)) && !$$(e, 'h3,h4,h5,p').some((x) => MUESTRA.test(txt(x))) && (!rsvp0 || (e.compareDocumentPosition(rsvp0) & 4)));
+  let t = $$(d.body, 'h3,h4,h5,p').find((e) => MUESTRA.test(txt(e)) && !$$(e, 'h3,h4,h5,p').some((x) => MUESTRA.test(txt(x))) && (!rsvp0 || antesQue(e, rsvp0)));
   let h = hoja(d.body, 'h1,h2,h3,h4', (x) => /^(nuestra|mi|my|our)\s+(historia|story|viaje)$|historia$/i.test(x));
   if (t && !h) {
     // El título: el que está justo antes del texto, en la misma caja
     const caja = t.parentElement;
-    h = $$(caja, 'h1,h2,h3,h4').filter((x) => x !== t && !x.contains(t) && x.compareDocumentPosition(t) & 4).at(-1) || null;
+    h = $$(caja, 'h1,h2,h3,h4').filter((x) => x !== t && !x.contains(t) && antesQue(x, t)).at(-1) || null;
   }
   if (!h && !t) {
     // Basic: el saludo de bienvenida en lugar de la historia
@@ -301,6 +365,7 @@ function historia(c) {
     // Comillas del diseño (íconos) a los costados del texto
     const comillas = $$(t, '[class*="icon-quote"]');
     const izq = comillas.find((x) => /left/.test(x.getAttribute('class'))), der = comillas.find((x) => /right/.test(x.getAttribute('class')));
+    c.info.textoHistoria = txt(t).replace(/[“”"]/g, '').replace(/\s+/g, ' ').trim();
     p.innerHTML = `${izq ? izq.outerHTML + ' ' : ''}<span data-campo-html="historia.texto">${txt(t).replace(/[“”"]/g, '')}</span>${der ? ' ' + der.outerHTML : ''}`;
     p.setAttribute('data-si', 'historia.activa');
     t.parentNode.replaceChild(p, t);
@@ -315,7 +380,20 @@ function historia(c) {
   return caja;
 }
 
+// La foto "inicial" (Armonía, Lila, Style, Oliva…): es para la foto del cliente; se carga en Historia del panel
+function fotoHistoria(c) {
+  const d = c.doc;
+  for (const i of $$(d.body, 'img').filter((x) => /(^|\/)inicial\.jpe?g$/i.test(x.getAttribute('src') || '') && !x.closest('#home-section'))) {
+    i.setAttribute('data-si', 'fotos.historia');
+    i.setAttribute('data-attr', 'src:c:fotos.historia');
+    i.setAttribute('data-estilo', 'fotos.historiaEstilo'); // proporción y encuadre elegidos en el panel
+    if (/rounded-circle/.test(i.getAttribute('class') || '')) { i.classList.add('ai-foto-1x1'); c.info.fotoHistoria = '1:1'; }
+    else c.info.fotoHistoria ||= 'demo';
+  }
+}
+
 // ── 5. Galería ───────────────────────────────────────────────────────────
+const GALERIA_FIJA = /^(minimal|rockabilly)$/;
 function galeria(c) {
   const d = c.doc, wrap = c.wrap;
   // foto1.jpg, galeria-1.jpg o foto1b.jpg (carpetas con varios diseños: cada uno con su letra)
@@ -326,6 +404,21 @@ function galeria(c) {
   const n = $$(car, 'img').filter(esFoto).length;
   const letra = ($$(car, 'img').filter(esFoto)[0]?.getAttribute('src') || '').match(/foto\d+([a-z])\./i)?.[1];
   if (letra) c.info.galeriaLetra = letra;
+  // Minimal y Rockabilly: la galería original del diseño (torcida / con puntos) queda tal cual;
+  // solo cambian las fotos (el cliente elige la proporción, no el tipo)
+  if (GALERIA_FIJA.test(c.id)) {
+    const fotos = $$(car, 'img').filter(esFoto);
+    const molde = fotos[0];
+    molde.setAttribute('data-repetir', 'fotos.galeria');
+    molde.setAttribute('data-i-attr', 'src:url');
+    molde.setAttribute('data-i-estilo', 'estilo');
+    fotos.slice(1).forEach(quitar);
+    const w = envolver(d, car, '<div data-seccion="galeria" id="galeria"></div>');
+    void w;
+    c.info.galeria = n; c.info.galeriaFija = true;
+    c.secciones.add('galeria');
+    return;
+  }
   const top = nivel(car, c.wrap);
   const reemplazo = nodo(d, '<div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>');
   // Si el bloque de primer nivel es solo la galería, se reemplaza entero
@@ -334,7 +427,29 @@ function galeria(c) {
   // contenedor con data-seccion (así, si se apaga la galería, no se va nada más). Dentro de una fila, de ancho completo.
   const fila = car.parentElement?.classList?.contains('row');
   const caja = nodo(d, `<div${fila ? ' class="col-12 p-0"' : ''} data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>`);
-  if (!otro && top !== car && !$$(top, 'img').some((i) => !car.contains(i))) {
+  const soloGaleria = !otro && !$$(top, 'img').some((i) => !car.contains(i));
+  // README (ronda 21): la galería va debajo de la historia, dentro de esa sección, así toma su fondo
+  // y no quedan franjas en blanco. Se puede cuando el bloque de la galería es solo la galería y viene
+  // justo después de la sección con texto (la historia o la primera sección).
+  const vecino = (dir) => {
+    let x = top[dir];
+    while (x && (/^(SCRIPT|STYLE|LINK)$/.test(x.tagName) || (!txt(x).trim() && !$$(x, 'h1,h2,h3,h4,p').length))) x = x[dir];
+    return x && x.id !== 'home-section' && !x.querySelector('#home-section,audio') && $$(x, 'h1,h2,h3,h4,p').some((e) => txt(e).length > 2) ? x : null;
+  };
+  const conHistoria = (x) => x && x.querySelector('[data-campo-html="historia.texto"],[data-t="historia.titulo"]');
+  const ant = vecino('previousElementSibling'), sig = vecino('nextElementSibling');
+  // Primero la sección de la historia (antes o después, Beach); si no, la sección de antes
+  const prev = conHistoria(ant) ? ant : conHistoria(sig) ? sig : ant;
+  const conTexto = !!prev;
+  if (soloGaleria && conTexto && !c.info.galeriaFija) {
+    car.parentNode.replaceChild(caja, car);
+    caja.removeAttribute('class');
+    caja.classList.add('ai-galeria-historia');
+    prev.appendChild(caja);
+    // Los separadores sueltos entre las dos (imágenes sin texto) quedan como estaban
+    top.remove();
+    c.info.galeriaEnHistoria = true;
+  } else if (soloGaleria && top !== car) {
     // El bloque es solo la galería: la marca va en el bloque (con su fondo)
     car.parentNode.replaceChild(nodo(d, '<div data-componente="galeria"></div>'), car);
     top.setAttribute('data-seccion', 'galeria'); if (!top.id) top.id = 'galeria';
@@ -347,13 +462,13 @@ function galeria(c) {
 // ── 6. Ceremonia y celebración ───────────────────────────────────────────
 function lugar(c, col, cual) {
   const d = c.doc;
-  const h = $(col, 'h2') || $(col, 'h3') || $(col, 'h4');
+  const h = $(col, 'h2') || $(col, 'h3') || $(col, 'h4') || $(col, 'h1');
   if (h) { h.setAttribute('data-campo', `${cual}.titulo`); h.removeAttribute('data-t'); }
   for (const i of $$(col, 'img')) {
     const s = i.getAttribute('src') || '';
     if (/img-demo\/(iglesia|lugar)|demo-(iglesia|lugar)|\/(iglesia|lugar)\d*\.jpe?g$/i.test(s)) {
       // Foto redonda en el diseño: la proporción del modelo es cuadrada
-      if (/rounded-circle/.test(i.getAttribute('class') || '')) c.info.propLugar = '1/1';
+      if (/rounded-circle/.test(i.getAttribute('class') || '')) { c.info.propLugar = '1/1'; i.classList.add('ai-lugar-redondo'); }
       i.setAttribute('src', `../../comun/img/demo-${cual === 'ceremonia' ? 'iglesia' : 'lugar'}.jpg`);
       i.setAttribute('data-si', `${cual}.foto`); i.setAttribute('data-attr', `src:c:${cual}.foto;style:c:${cual}.fotoEstilo`);
     }
@@ -415,7 +530,7 @@ function lugar(c, col, cual) {
 function agenda(c) {
   const d = c.doc;
   const bC = $(d, '#iglesia-button'), bF = $(d, '#fiesta-button');
-  const colDe = (b) => subir(b, (x) => esCol(x) && $$(x, 'h2,h3,h4').length >= 1) || subir(b, (x) => x.tagName === 'DIV' && $$(x, 'h2,h3,h4').length === 1);
+  const colDe = (b) => subir(b, (x) => esCol(x) && $$(x, 'h1,h2,h3,h4').length >= 1) || subir(b, (x) => x.tagName === 'DIV' && $$(x, 'h1,h2,h3,h4').length === 1);
   const colC = bC && colDe(bC), colF = bF && colDe(bF);
   if (!colF) { c.aviso('agenda: no se encontró la celebración (#fiesta-button)'); return; }
   const sec = subir(colF, (x) => x.tagName === 'SECTION') || nivel(colF, c.wrap);
@@ -424,17 +539,31 @@ function agenda(c) {
   if (colC) {
     colC.setAttribute('data-si', 'ceremonia.separada');
     lugar(c, colC, 'ceremonia');
+    // El separador entre las dos columnas (una línea en el celular) se va con la ceremonia
+    if (colC.parentNode === colF.parentNode) {
+      for (let x = colC.nextElementSibling; x && x !== colF; x = x.nextElementSibling) {
+        if (!txt(x).trim() && !$$(x, 'button,iframe,h1,h2,h3,h4').length) x.setAttribute('data-si', 'ceremonia.separada');
+      }
+    }
   }
   lugar(c, colF, 'celebracion');
   // Ícono: fiesta, o el de la ceremonia cuando es todo en el mismo lugar
   const icos = $$(colF, 'img').filter((i) => /icon-|party|fiesta|anillo|church|iglesia/i.test(i.getAttribute('src') || ''));
   const oculto = icos.find((i) => i.hasAttribute('hidden'));
   const fiesta = icos.find((i) => !i.hasAttribute('hidden'));
-  if (fiesta) fiesta.setAttribute('data-no', 'ceremonia.unificada');
-  if (oculto) { oculto.removeAttribute('hidden'); oculto.setAttribute('data-si', 'ceremonia.unificada'); }
+  // README (ronda 21): en la boda sin ceremonia aparte (sin ceremonia o en el mismo lugar) el ícono de la
+  // fiesta pasa a ser el de los anillos; nunca una iglesia
+  if (fiesta) fiesta.setAttribute('data-no', 'ceremonia.iconoUnico');
+  let unico = null;
+  if (oculto) { oculto.removeAttribute('hidden'); oculto.setAttribute('data-si', 'ceremonia.iconoUnico'); unico = oculto; }
   else if (fiesta && colC) {
-    const ic = $$(colC, 'img').find((i) => /icon-/i.test(i.getAttribute('src') || ''));
-    if (ic) { const x = ic.cloneNode(true); x.setAttribute('data-si', 'ceremonia.unificada'); x.removeAttribute('data-no'); despues(fiesta, x); }
+    const ic = $$(colC, 'img').find((i) => /icon-|iglesia|church|anillo/i.test(i.getAttribute('src') || ''));
+    if (ic) { const x = ic.cloneNode(true); x.setAttribute('data-si', 'ceremonia.iconoUnico'); x.removeAttribute('data-no'); x.removeAttribute('data-si-x'); despues(fiesta, x); unico = x; }
+  }
+  if (unico && c.evento === 'boda') {
+    const src = unico.getAttribute('src') || '';
+    const anillos = src.replace(/icon-church(-[a-z-]+)?\.png$/i, (_, k) => `icon-anillos${k || ''}.png`).replace(/iglesia-retro\.png$/, 'icon-anillos-b.png');
+    if (anillos !== src) unico.setAttribute('src', anillos);
   }
 }
 
@@ -502,31 +631,44 @@ function rsvp(c) {
   const enRsvp = $$(top, '.carousel, .owl-carousel').find((x) => $$(x, 'img').filter((i) => /(^|\/)(foto|galeria-)\d+\./.test(i.getAttribute('src') || '')).length >= 3);
   if (enRsvp) {
     const col = subir(enRsvp, (x) => esCol(x)) || enRsvp;
-    enRsvp.parentNode.replaceChild(nodo(d, '<div data-componente="galeria"></div>'), enRsvp);
+    enRsvp.parentNode.replaceChild(nodo(d, '<div data-componente="galeria" data-rsvp="1"></div>'), enRsvp);
     c.info.galeriaEnRsvp = true; c.secciones.add('galeria');
     void col;
   }
   c.secciones.add('rsvp');
   if (top.id === 'rsvp') top.removeAttribute('id');
+  c.info.rsvpConFoto = !!foto;
   return { top, conFoto: !!foto };
 }
 
 // ── 8. Dress code, hospedaje, bus ────────────────────────────────────────
-function colDe(el, sec) { return subir(el, (x) => esCol(x) && sec.contains(x) && x !== sec) || subir(el, (x) => x.parentElement && x.parentElement.classList?.contains('row')); }
+// La columna de la fila (no un col-11 que envuelve solo el título, Disco)
+function colDe(el, sec) { return subir(el, (x) => esCol(x) && sec.contains(x) && x !== sec && x.parentElement?.classList?.contains('row')) || subir(el, (x) => esCol(x) && sec.contains(x) && x !== sec) || subir(el, (x) => x.parentElement && x.parentElement.classList?.contains('row')); }
+// El texto debajo de un título: el párrafo hermano o, si el título está envuelto, el primero que le sigue en la columna
+function textoDe(h, col) {
+  const boton = $$(col, 'button,a.btn').find((x) => antesQue(h, x) && !x.closest('.animated-modal'));
+  return siguienteP(h) || $$(col, 'p').find((p) => antesQue(h, p) && (!boton || antesQue(p, boton)) && txt(p) && !p.closest('.animated-modal') && !p.querySelector('button,a') && !p.hasAttribute('data-t') && !p.hasAttribute('data-campo-html')) || null;
+}
 function dresscode(c) {
   const d = c.doc;
-  const ancla = $(d, '[data-src="#dress"]') || hoja(d.body, 'h2,h3,h4', (t) => /^dr?ess ?code$|^vestimenta$|^c[oó]digo de vestimenta$/i.test(t));
+  const ancla = $(d, '[data-src="#dress"]') || hoja(d.body, 'h1,h2,h3,h4', (t) => /^dr?ess ?code$|^vestimenta$|^c[oó]digo de vestimenta$/i.test(t));
   if (!ancla) { c.aviso('dress code: no se encontró'); return; }
-  const sec = $(d, '#dresscode') || subir(ancla, (x) => x.tagName === 'SECTION') || nivel(ancla, c.wrap);
+  // La sección entera (en algunos diseños el id="dresscode" está en la columna del dress, no en la sección)
+  const idViejo = $(d, '#dresscode');
+  const sec = (idViejo && (idViejo.tagName === 'SECTION' ? idViejo : subir(idViejo, (x) => x.tagName === 'SECTION'))) || subir(ancla, (x) => x.tagName === 'SECTION') || nivel(ancla, c.wrap);
+  if (idViejo && idViejo !== sec) idViejo.removeAttribute('id');
   sec.id = 'dresscode';
-  sec.setAttribute('data-si', 'grupos.dress');
+  // README (ronda 21): en Cinema, Lila y Travel, con las tres apagadas queda la franja (su fondo y su adorno)
+  const cont = /^(cinema|lila|travel)$/.test(c.id) && $$(sec, '.container').find((x) => x.parentElement === sec || x.parentElement?.parentElement === sec);
+  if (cont) { cont.setAttribute('data-si', 'grupos.dress'); sec.classList.add('ai-dress-franja'); }
+  else sec.setAttribute('data-si', 'grupos.dress');
   // Separadores sueltos entre columnas (una línea en el celular): van con la columna que sigue
   for (const s of $$(sec, '.row > div')) {
     if (!esCol(s) || $$(s, 'h2,h3,button,img,i').length) continue;
-    if (/show-mobile|hr|border/.test(s.outerHTML) && txt(s) === '' && s.nextElementSibling) { s.nextElementSibling.insertBefore(s, s.nextElementSibling.firstChild); s.removeAttribute('class'); s.setAttribute('class', 'col-12 p-0 show-mobile'); }
+    if (/show-mobile|hr|border/.test(s.outerHTML) && txt(s) === '' && s.nextElementSibling) { s.nextElementSibling.insertBefore(s, s.nextElementSibling.firstChild); s.removeAttribute('class'); s.setAttribute('class', 'col-12 p-0 show-mobile ai-sep'); }
   }
   // Dress
-  const hD = hoja(sec, 'h2,h3,h4', (t) => /^dr?ess ?code$|vestimenta/i.test(t));
+  const hD = hoja(sec, 'h1,h2,h3,h4', (t) => /^dr?ess ?code$|vestimenta/i.test(t));
   if (hD) {
     const col = colDe(hD, sec) || hD.parentElement;
     col.setAttribute('data-si', 'grupos.dressCol');
@@ -539,7 +681,7 @@ function dresscode(c) {
     // La caja con el botón de sugerencias (a veces el texto queda fuera de la columna del título)
     const caja = $(col, '[data-src="#dress"]') ? col : subir(hD, (x) => !!$(x, '[data-src="#dress"]') && x !== sec) || col;
     const boton0 = $(caja, '[data-src="#dress"]');
-    let p = $$(caja, 'p,h4,h5').find((x) => x !== hD && txt(x) && (hD.compareDocumentPosition(x) & 4) && !x.closest('#dress') && !x.querySelector('button') && (!boton0 || (x.compareDocumentPosition(boton0) & 4)));
+    let p = $$(caja, 'p,h4,h5').find((x) => x !== hD && txt(x) && antesQue(hD, x) && !x.closest('#dress') && !x.querySelector('button') && (!boton0 || antesQue(x, boton0)));
     if (!p) {
       // Sin texto en la invitación (estaba en la ventana): se agrega, con el estilo del texto de hospedaje
       const modelo = $$(sec, 'p').find((x) => /hoteles|referencias/i.test(txt(x)));
@@ -581,12 +723,12 @@ function dresscode(c) {
   }
   // Hospedaje
   const bH = $(sec, '[data-src="#hospedaje"]') || $(d, '[data-src="#hospedaje"]');
-  const hH = hoja(sec, 'h2,h3,h4', (t) => /hospedaje|alojamiento|accommodation|hoteles/i.test(t));
+  const hH = hoja(sec, 'h1,h2,h3,h4', (t) => /hospedaje|alojamiento|accommodation|hoteles/i.test(t));
   if (hH) {
     const col = colDe(hH, sec);
     col.setAttribute('data-seccion', 'hospedaje'); col.id = 'hospedaje-bus';
     hH.setAttribute('data-t', 'hospedaje.titulo');
-    const p = siguienteP(hH);
+    const p = textoDe(hH, col);
     if (p) p.setAttribute('data-t', 'hospedaje.texto');
     if (bH) { const caja = subir(bH, (x) => x.tagName === 'DIV' && x.children.length === 1) || bH; caja.setAttribute('data-si', 'hospedaje.conReferencias'); bH.setAttribute('data-t', 'hospedaje.boton'); }
     const m = $(d, '#hospedaje');
@@ -607,12 +749,12 @@ function dresscode(c) {
     c.secciones.add('hospedaje');
   }
   // Bus / traslado
-  const hB = hoja(sec, 'h2,h3,h4', (t) => /bus|traslado|transporte|transfer|shuttle/i.test(t));
+  const hB = hoja(sec, 'h1,h2,h3,h4', (t) => /bus|traslado|transporte|transfer|shuttle/i.test(t));
   if (hB) {
     const col = colDe(hB, sec);
     col.setAttribute('data-seccion', 'bus'); col.id = 'traslado';
     hB.setAttribute('data-t', 'bus.titulo');
-    const p = siguienteP(hB);
+    const p = textoDe(hB, col);
     if (p) p.setAttribute('data-t', 'bus.texto');
     const bB = $(d, '[data-src="#bus"]');
     if (bB) { const caja = subir(bB, (x) => x.tagName === 'DIV' && x.children.length === 1) || bB; caja.setAttribute('data-si', 'busConRecorrido'); bB.setAttribute('data-t', 'bus.boton'); }
@@ -702,6 +844,23 @@ function testigos(c) {
     if (r) r.setAttribute('data-i', 'rol');
   });
   if (!cols.length) c.aviso('testigos: sin fotos de muestra');
+  // Diseños con dos grupos (15 de Cinema/Sky: "Los Padres" y "Los Padrinos"): queda un solo grupo; el título es el
+  // de arriba de las fotos y el segundo título (con su fila vacía) se va
+  const primera = cols[0];
+  if (primera) {
+    const titulos = $$(sec, 'h1,h2,h3').filter((x) => !primera.contains(x) && !cols.some((k) => k.contains(x)) && txt(x).length > 2);
+    const arriba = titulos.filter((x) => antesQue(x, primera)).at(-1);
+    const abajo = titulos.filter((x) => antesQue(primera, x));
+    if (arriba && abajo.length) {
+      h.removeAttribute('data-t'); arriba.setAttribute('data-t', 'testigos.titulo');
+      for (const t of abajo) {
+        const fila = subir(t, (x) => x.parentElement === primera.closest('.container')) || t;
+        const resto = fila.nextElementSibling;
+        quitar(fila);
+        if (resto && !txt(resto).trim() && !$(resto, 'img')) quitar(resto);
+      }
+    }
+  }
   c.secciones.add('testigos');
 }
 
@@ -786,7 +945,10 @@ function canciones(c) {
   if (m) m.parentNode.replaceChild(nodo(d, '<div data-componente="canciones"></div>'), m);
   else despues(b, nodo(d, '<div data-componente="canciones"></div>'));
   const fuente = h ? clases(h).find((k) => !/^(mb|mt|pb|pt|p|m|text|h\d|display)-?/.test(k) && !/^(text-center|font-weight)/.test(k)) : '';
-  despues(caja, nodo(d, `<div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="${fuente || ''}"></div></div>`));
+  // La playlist va dentro de la sección Música, después del botón Sugerir (tarjeta blanca redondeada)
+  const pl = nodo(d, `<div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>`);
+  const tras = subir(b, (x) => x.parentNode === caja) || b;
+  if (tras.parentNode === caja) despues(tras, pl); else caja.appendChild(pl);
   c.secciones.add('canciones'); c.secciones.add('playlist');
 }
 
@@ -873,6 +1035,7 @@ function cierre(c) {
   }
   if (pie) {
     pie.setAttribute('data-si', 'pie.mostrar');
+    c.info.textoPie = txt(pie).replace(/[“”"]/g, '').replace(/\s+/g, ' ').trim();
     const fuerte = $(pie, 'strong');
     const comillas = $$(pie, '[class*="icon-quote"]');
     if (!fuerte && comillas.length) {
@@ -884,9 +1047,32 @@ function cierre(c) {
   // Una sola persona: el nombre del cierre es el título corto que no es frase ni detalle (Cars: "Martín")
   const solo = !nombres && $$(sec, 'h1,h2,h3').find((x) => !x.hasAttribute('data-t') && txt(x).length > 1 && txt(x).length < 25 && !x.querySelector('h1,h2,h3') && /^[\p{Lu}][\p{L}\s.'-]*$/u.test(txt(x)) && x !== pie);
   const nom = nombres || (c.evento !== 'boda' && !c.info.nombresSeparados ? solo : null);
-  if (nom) { c.info.nombresCierre = nom.innerHTML.trim(); nom.setAttribute('data-campo-html', 'nombres.cierre'); }
+  if (nom) { c.info.nombresCierre = nom.innerHTML.trim(); nom.setAttribute('data-campo-html', 'nombres.cierre'); nom.setAttribute('data-ajustar', '0.86'); }
+  // Los nombres de la demo que quedan en otras secciones (el pie con las redes, Graffiti/Rockabilly; un h4, Passion)
+  const tPortada = c.info.nombresPortada ? txt(nodo(d, `<span>${c.info.nombresPortada}</span>`)).replace(/\s+/g, ' ').trim() : '';
+  if (tPortada) {
+    for (const x of $$(d.body, 'h1,h2,h3,h4,h5,p').filter((e) => !e.closest('#home-section') && !e.hasAttribute('data-campo-html') && !e.hasAttribute('data-campo') && !e.closest('[data-campo-html],[data-campo]') && !e.querySelector('h1,h2,h3,h4,h5,p,img'))) {
+      if (txt(x).replace(/\s+/g, ' ').trim() !== tPortada) continue;
+      x.setAttribute('data-campo-html', 'nombres.cierre'); x.setAttribute('data-ajustar', '0.86');
+      c.info.nombresCierre ||= x.innerHTML.trim();
+    }
+  }
   if (redes) {
-    const caja = subir(redes, (x) => x.tagName === 'DIV' && $$(x, 'a').length >= 2) || redes.parentElement;
+    const esRed = (a) => $(a, '.icon-instagram,.icon-facebook') || /tiktok/i.test(a.innerHTML);
+    let caja = subir(redes, (x) => x.tagName === 'DIV' && $$(x, 'a').filter(esRed).length >= 2) || redes.parentElement;
+    // Si la caja trae otras cosas (los nombres, Beach), la marca va solo en los íconos: apagar las redes no borra nada más
+    const otros = $$(caja, 'h1,h2,h3,h4,p,img').filter((e) => !e.closest('a') && e !== tituloRedes && !(tituloRedes && tituloRedes.contains(e)) && !(e.contains && e.contains(redes)));
+    if (otros.length) {
+      const links = $$(caja, 'a').filter(esRed);
+      const padre = links[0].parentNode;
+      if (links.every((a) => a.parentNode === padre)) {
+        const w = d.createElement('div'); w.setAttribute('class', 'ai-redes-iconos');
+        padre.insertBefore(w, links[0]); links.forEach((a) => w.appendChild(a));
+        caja = w;
+        if (tituloRedes && !w.contains(tituloRedes)) { tituloRedes.setAttribute('data-si', 'redes.hay'); tituloRedes.setAttribute('data-seccion', 'redes'); }
+      }
+    }
+    caja.classList.add('ai-redes');
     caja.setAttribute('data-seccion', 'redes'); caja.setAttribute('data-si', 'redes.hay');
     if (tituloRedes) tituloRedes.setAttribute('data-t', 'redes.titulo');
     for (const a of $$(caja, 'a')) {
@@ -911,14 +1097,28 @@ function perdiste(c) {
   const agenda = '#' + (c.info.idAgenda || 'inicio');
   const lista = (clase) => PERDISTE.filter(([s]) => !s || c.secciones.has(s))
     .map(([s, href, t, x]) => `<li${s ? ` data-seccion="${s}"` : ''}><a href="${href === '#inicio' ? agenda : href}" class="${clase}" data-t="${t}">${x}</a></li>`).join('\n            ');
-  const h = hoja(d.body, 'h1,h2,h3,h4,h5,h6,p,span', (t) => /^¿?te perdiste algo\??$|did you miss/i.test(t));
+  let h = hoja(d.body, 'h1,h2,h3,h4,h5,h6,p,span', (t) => /^¿?te perdiste algo\??$|did you miss|^accesos? r[aá]pidos?$/i.test(t));
+  // README (ronda 21): si el diseño ya trae la lista de accesos (Beach: la segunda columna del cierre), se usa esa
+  if (!h) {
+    const ulx = $$(d.body, 'ul').find((u) => !u.closest('.animated-modal,#home-section,nav') && $$(u, 'a[href^="#"]').length >= 3 && $(u, 'a[href="#rsvp"],a[href="#home-section"]'));
+    if (ulx) {
+      h = ulx.previousElementSibling && txt(ulx.previousElementSibling).length < 40 ? ulx.previousElementSibling : null;
+      if (!h) { h = d.createElement('span'); h.setAttribute('class', 'd-none'); antes(ulx, h); }
+    }
+  }
   if (c.paquete === 'basic') {
     // Basic no trae accesos rápidos
-    if (h) quitar(subir(h, (x) => x.tagName === 'SECTION') || nivel(h, c.wrap));
+    if (h) {
+      const sec = subir(h, (x) => x.tagName === 'SECTION') || nivel(h, c.wrap);
+      const col = subir(h, (x) => esCol(x) && sec.contains(x) && x !== sec);
+      // Si la sección trae más cosas (los nombres del cierre), se va solo la columna de los accesos
+      const mas = col && $$(sec, 'h1,h2,h3,h4,p').some((e) => !col.contains(e) && txt(e).length > 2);
+      quitar(mas ? col : sec);
+    }
     return;
   }
   if (h) {
-    h.setAttribute('data-t', 'perdiste.titulo');
+    if (!/^accesos? r[aá]pidos?$/i.test(txt(h))) h.setAttribute('data-t', 'perdiste.titulo');
     const ul = subir(h, (x) => x.querySelector('ul'))?.querySelector('ul');
     const a = ul && $(ul, 'a');
     const clase = a ? clases(a).join(' ') : 'smoothscroll btn-link text-white';
@@ -1148,8 +1348,10 @@ function preparar(c) {
   religioso(c);
   const home = $(d, '#home-section');
   portada(c, home);
+  inicialesPortada(c);
   audio(c);
   historia(c);
+  fotoHistoria(c);
   galeria(c);
   agenda(c);
   c.rsvp = rsvp(c);
@@ -1263,7 +1465,7 @@ function religioso(c) {
     c.info.cinta = true;
   }
   for (const i of $$(d.body, 'img[src*="mis15-2"]')) i.parentNode.replaceChild(nodo(d, '<p class="rouge-titulo mb-3 mt-2" data-t="portada.subtitulo" data-caso="titulo">Mi Bautismo</p>'), i);
-  if ($(d.body, '.rouge-titulo')) c.info.mongolia = true;
+  if ($(d.body, '.rouge-titulo')) c.info.magnolia = true;
   for (const i of $$(d.body, 'img[src*="icon-ornamental-fiesta"]')) i.setAttribute('src', i.getAttribute('src').replace(/-?15\.png$/, '-cumple.png'));
   // Padrinos: la pluma (no el ícono de personas), del color del ícono del diseño
   const hT = hoja(d.body, 'h1,h2,h3,h4', (t) => /padrinos|testigos/i.test(t));
@@ -1325,7 +1527,7 @@ async function principal() {
     for (const [paq, c] of Object.entries(cs)) if (m.ajustar) await m.ajustar(c.doc, { ...c, paquete: paq, evento, $, $$, nodo, txt, subir, quitar, antes, despues });
   }
   // La fuente de Rouge (después de armar la cabecera)
-  for (const c of Object.values(cs)) if (c.info.mongolia && !c.doc.querySelector('link[href*="mongolia-sky"]')) c.doc.head.insertAdjacentHTML('beforeend', '\n  <link rel="stylesheet" href="../../comun/fonts/mongolia-sky/mongolia-sky.css">');
+  for (const c of Object.values(cs)) if (c.info.magnolia && !c.doc.querySelector('link[href*="magnolia-sky"]')) c.doc.head.insertAdjacentHTML('beforeend', '\n  <link rel="stylesheet" href="../../comun/fonts/magnolia-sky/magnolia-sky.css">');
   for (const c of Object.values(cs)) if (c.info.cinta && !c.doc.querySelector('link[href*="great-vibes"]')) c.doc.head.insertAdjacentHTML('beforeend', '\n  <link rel="stylesheet" href="../../comun/fonts/google/great-vibes+jost.css">');
   // Íconos recoloreados y cinta en blanco (bautismo y comunión)
   await mkdir(join(salida, 'img'), { recursive: true });

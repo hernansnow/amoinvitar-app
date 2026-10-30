@@ -164,7 +164,8 @@ function pasosInvitacion({ tipo, modelo }) {
   const unificada = { campo: 'ceremonia.modo', es: 'mismo-lugar' };
   const nCer = misa ? 'misa' : 'ceremonia';
   const g = modelo.galeria || {};
-  const maxPortada = incluye.fotosPortada || 1;
+  // 0: el diseño no lleva foto de portada (Armonía, Beach, Black…) y no se muestra la opción
+  const maxPortada = incluye.fotosPortada ?? 1;
   // Los modelos con slideshow lo traen también en Basic (fotosPortada > 1 en basic)
   const maxPortadaBasic = modelo.paquetes.basic?.incluye?.fotosPortada || 1;
 
@@ -177,19 +178,22 @@ function pasosInvitacion({ tipo, modelo }) {
         ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2', max: 15, requerido: true, ancho: 'mitad', placeholder: 'Pablo' }] : []),
         { id: 'nota.nombres', tipo: 'nota', estilo: 'ayuda', texto: plural ? '¿Cómo se tienen que ver los nombres? (nombres, diminutivos, apodos…). Por ejemplo: Lau y Pablo.'
           : '¿Cómo se tiene que ver el nombre? (nombre, diminutivo, apodo…). Por ejemplo: Sofi.' },
+        ...(maxPortada ? [
         { id: 'nota.portada', tipo: 'nota', texto: maxPortada > 1 ? 'Fotos de portada' : 'Foto de portada', estilo: 'etiqueta' },
         conFotos('portada', maxPortada > 1 ? 'Incluir fotos en la portada' : 'Incluir foto en la portada'),
         // Modelos con video de portada: se elige foto o video
         ...(modelo.videoPortada ? [{ id: 'portada.tipo', tipo: 'opciones', etiqueta: 'En la portada va', defecto: 'fotos', rearmar: true, si: siFotos('portada'),
-          valores: [{ v: 'fotos', etiqueta: 'Fotos' }, { v: 'video', etiqueta: 'Un video (hasta 30 segundos)' }] },
+          valores: [{ v: 'fotos', etiqueta: 'Fotos' }, { v: 'video', etiqueta: 'Un video (hasta 30 segundos)', extra: 'video-portada' }] },
         { id: 'portada.video', tipo: 'video', etiqueta: 'Video de portada', maxSeg: 30, maxMB: 40, si: [siFotos('portada'), { campo: 'portada.tipo', es: 'video' }],
           ayuda: 'MP4 de hasta 30 segundos. En pantallas horizontales un video vertical se ve al centro, con una copia desenfocada de fondo.' }] : []),
         // Más de una foto de portada es de Premium
         { id: 'fotos.portada', tipo: 'fotos', etiqueta: maxPortada > 1 ? 'Fotos de portada' : 'Foto de portada', sinEtiqueta: true, max: maxPortada, portada: true, nivelCantidad: maxPortada > maxPortadaBasic ? [maxPortadaBasic + 1, 'premium'] : null,
           si: modelo.videoPortada ? [siFotos('portada'), { campo: 'portada.tipo', no: 'video' }] : siFotos('portada') },
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
+        ] : []),
         { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
         // Segunda línea de la portada en los diseños que la traen (la edad, la promoción…)
+        ...(modelo.ciudadPortada ? [{ id: 'portada.ciudad', tipo: 'texto', etiqueta: 'Ciudad (junto a la fecha)', max: 18, ancho: 'mitad', ayuda: 'Por ejemplo "Miami". Vacío, no se muestra.' }] : []),
         ...(DETALLE[tipo] ? [{ id: 'textos.portada.detalle', tipo: 'texto', etiqueta: DETALLE[tipo][0], max: DETALLE[tipo][1], base: 'portada.detalle', ancho: 'mitad', ayuda: DETALLE[tipo][2] }] : []),
         { id: 'zonaHoraria', tipo: 'zona', etiqueta: 'País / zona horaria del evento', valores: ZONAS, requerido: true, ancho: 'mitad', ayuda: 'Para la cuenta regresiva y los calendarios.' },
         // Apagada: Premium y Deluxe muestran la portada de Basic (sin cuenta regresiva)
@@ -197,7 +201,7 @@ function pasosInvitacion({ tipo, modelo }) {
           ayuda: 'En los planes Premium y Deluxe. Apagada, la portada queda como la del plan Basic.' },
         // Sobre de apertura (Premium y Deluxe). Apagado: la ventana de bienvenida original del diseño
         ...(incluye.sobre ? [{ id: 'portada.sobre', tipo: 'switch', etiqueta: 'Sobre de apertura', defecto: true, rearmar: true,
-          ayuda: 'En los planes Premium y Deluxe. Al entrar se abre un sobre lacrado con las iniciales; apagado, aparece la ventana de bienvenida del diseño.' }] : []),
+          ayuda: 'En los planes Premium y Deluxe. Al entrar se abre un sobre lacrado con las iniciales; apagado, aparece la ventana de bienvenida del diseño (si la invitación no tiene música de fondo, esta ventana no se muestra).' }] : []),
       ],
     },
     { id: 'musica', seccion: 'musica', titulo: 'Música de fondo', campos: [
@@ -209,10 +213,13 @@ function pasosInvitacion({ tipo, modelo }) {
       campos: [
         titulo('historia.titulo'),
         { id: 'historia.texto', tipo: 'area', etiqueta: 'Texto', max: 600, base: 'historia.texto' },
+        // Diseños con una foto junto a la historia (la "inicial" de Armonía, Lila, Style, Oliva…)
+        ...(modelo.fotoHistoria ? [conFotos('historia'),
+          { id: 'fotos.historia', tipo: 'foto', etiqueta: 'Foto', proporcion: modelo.fotoHistoria, encuadre: true, redonda: modelo.fotoHistoria === '1:1', si: siFotos('historia') }] : []),
       ] },
     { id: 'galeria', seccion: 'galeria', titulo: 'Galería de fotos', ayudaSeccion: 'Si no quieres fotos, apagar esta sección.', campos: [
       // En los modelos con la galería dentro de la confirmación va siempre el carrusel
-      ...(g.enRsvp ? [] : [{ id: 'galeria.tipo', tipo: 'opciones', etiqueta: 'Cómo se muestran', tarjetas: 'galeria', defecto: 'carrusel', valores: TIPOS_GALERIA }]),
+      ...(g.enRsvp || g.fija ? [] : [{ id: 'galeria.tipo', tipo: 'opciones', etiqueta: 'Cómo se muestran', tarjetas: 'galeria', defecto: 'carrusel', valores: TIPOS_GALERIA }]),
       // Solo en los diseños que muestran las fotos en blanco y negro (Romantic, B&N)
       ...(g.byn ? [{ id: 'galeria.color', tipo: 'switch', estilo: 'check', etiqueta: 'Mostrar las fotos en color', detalle: 'este diseño las muestra en blanco y negro' }] : []),
       { id: 'galeria.proporcion', tipo: 'opciones', etiqueta: 'Proporción de la miniatura', tarjetas: 'proporcion', defecto: 'cuadrada', rearmar: true, valores: [
@@ -277,7 +284,7 @@ function pasosInvitacion({ tipo, modelo }) {
           { id: 'opciones', tipo: 'texto', etiqueta: 'Opciones (separadas con coma)', max: 160, placeholder: 'Vacío = respuesta libre · Ej.: Fernet, Gin tonic' },
         ] },
         // Los modelos con la galería dentro de la confirmación no llevan foto acá
-        ...(g.enRsvp ? [] : [
+        ...(g.enRsvp || modelo.sinFotoRsvp ? [] : [
           { ...conFotos('rsvp'), defecto: false },
           { id: 'fotos.rsvp', tipo: 'foto', etiqueta: 'Foto', sinRecorte: true, paquete: 'premium', si: { campo: 'fotosOn.rsvp' } },
         ]),
@@ -425,11 +432,15 @@ export const DISENOS_FOTO = [
 ];
 const pasoTarjeta = (clase, modelo) => (clase === 'std' ? {
   id: 'std', seccion: 'std', complemento: true, titulo: 'Tarjeta Save The Date',
+  // Con tarjeta propia del diseño: viene incluida en Premium y Deluxe (se prende sola con la primera sección de esos planes)
+  incluidaPremium: !!modelo?.tarjetas?.std,
   campos: [
-    { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: 'Una tarjeta para mandar antes de la invitación. La del mismo diseño viene incluida en Premium y Deluxe; la tarjeta con foto se suma en cualquier plan.' },
-    { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
+    { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: modelo?.tarjetas?.std
+      ? 'Una tarjeta para mandar antes de la invitación. La del mismo diseño viene incluida en Premium y Deluxe; la tarjeta con foto se suma en cualquier plan.'
+      : 'Una tarjeta para mandar antes de la invitación, con una foto y el diseño que se elija. Se suma en cualquier plan.' },
+    ...(modelo?.tarjetas?.std ? [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
       { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'std-foto' },
-    ] },
+    ] }] : [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'foto', oculto: true, valores: [{ v: 'foto', etiqueta: 'Tarjeta con foto', extra: 'std-foto' }] }]),
     // Diseños con foto: no dependen del modelo (public/comun/tarjetas/foto/catalogo.json)
     { id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseño', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true, si: { campo: 'std.tipo', es: 'foto' } },
     { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true },
@@ -644,8 +655,10 @@ export function complementos(esquema, datos) {
     if (datos.diseno?.paleta?.modo === 'cambiar') x.push('paleta');
     if (datos.diseno?.tipografia?.modo === 'cambiar') x.push('tipografia');
   }
-  if (paso('std') && seccionActiva(paso('std'), datos)) x.push(datos.std?.tipo === 'foto' ? 'std-foto' : 'std-tarjeta');
+  if (paso('std') && seccionActiva(paso('std'), datos)) x.push((datos.std?.tipo || (paso('std').incluidaPremium ? 'tarjeta' : 'foto')) === 'foto' ? 'std-foto' : 'std-tarjeta');
   if (paso('agradecimiento') && seccionActiva(paso('agradecimiento'), datos)) x.push('agradecimiento');
+  // Video de portada: complemento en cualquier plan
+  if (paso('portada')?.campos.some((c) => c.id === 'portada.video') && datos.portada?.tipo === 'video' && datos.fotosOn?.portada !== false) x.push('video-portada');
   if (paso('idiomaAdicional') && seccionActiva(paso('idiomaAdicional'), datos)) {
     const principal = String(datos.variante || 'es').slice(0, 2);
     const ls = new Set([2, 3, 4].map((n) => datos.idiomas?.[`l${n}`]).filter((l) => l && l !== principal));
@@ -739,8 +752,9 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     ...conAcceso,
     pasoPublicar(tipo),
     // Complementos: aparte, después de una línea y el título "Complementos" en el menú
-    ...(producto === 'invitacion' && m?.tarjetas?.std ? [{ ...pasoTarjeta('std', m), separado: true }] : []),
-    { ...pasoDiseno(m), separado: !(producto === 'invitacion' && m?.tarjetas?.std) },
+    // Save The Date en todos los modelos (la del diseño, si el modelo la tiene; si no, las con foto)
+    ...(producto === 'invitacion' ? [{ ...pasoTarjeta('std', m), separado: true }] : []),
+    { ...pasoDiseno(m), separado: producto !== 'invitacion' },
     pasoIdiomaAdicional(base, datos),
     ...(producto === 'invitacion' ? [pasoTarjeta('agradecimiento', m)] : []),
   ];

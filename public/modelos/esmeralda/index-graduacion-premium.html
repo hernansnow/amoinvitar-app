@@ -77,7 +77,7 @@
 		</a>
 	   <!-- VIDEO -->
       <div class="video-container">
-		<div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="inner-page-cover section-hero portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.6)), url(demo/graduacion/hero-banner4.jpg);background-color:#002f58;background-position: 50% 20%; background-repeat:no-repeat; background-size:cover;" data-aos="fade">
+		<div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="inner-page-cover section-hero portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.6)), url(demo/graduacion/hero-banner4.jpg);background-color:#002f58;background-position: 50% 20%; background-repeat:no-repeat; background-size:cover;" data-aos="fade">
       </div>
 </div>
 
@@ -99,17 +99,15 @@
                 <div data-si="cuenta.activa" class="rounded text-white text-center mb-5">
                     <div data-formato="<div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{d}</span> {dias}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{h}</span> {horas}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{m}</span> {min}</div><div class=&quot;holder font-weight-light m-2&quot;><span class=&quot;font-weight-light mb-2&quot;>{s}</span> {seg}</div>" id="clock-b" class="countdown-deluxe-circles5 d-flex justify-content-center"></div>
                 </div>
-			  <h2 class="text-center euforia text-white mt-5">Nuestro Recorrido</h2>
-	              <p class="text-center text-white">Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes nos acompañaron nos trajeron hasta aquí. Hoy cerramos una etapa increíble de aprendizaje y abrimos la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo con nosotros!</p>
+			  <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="text-center text-white mt-5 font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="text-center euforia text-white mt-5">Nuestro Recorrido</h2>
+	              <p data-si="historia.activa" class="text-center text-white g-historia"><span data-campo-html="historia.texto">Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes nos acompañaron nos trajeron hasta aquí. Hoy cerramos una etapa increíble de aprendizaje y abrimos la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo con nosotros!</span></p>
 				
   </div>
 </div>
 
 </div>
-</section>
-			  
-	  		 <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
-			  
+<div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
+
   <section id="inicio" class="site-section pt-3 bg-verde">
       <div class="container pt-0">
 		  <div class="row pt-0">
@@ -133,7 +131,7 @@
 
           </div>
           <div class="col-md-6 col-lg-6 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-			  <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-w.png" width="100" alt="Imagen"><img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-2 mt-0" src="img/icon-graduacion-w.png" width="100" alt="Imagen">
+			  <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-w.png" width="100" alt="Imagen"><img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-2 mt-0" src="img/icon-graduacion-w.png" width="100" alt="Imagen">
 			     <h2 data-campo="celebracion.titulo" class="mb-0 text-center euforia text-white">Fiesta</h2>
 				 <h4 class="elegance2 text-white text-center text-uppercase">de Egresados</h4>
 			  	<h2 class="mb-2"><span data-t="lugar.diaHorario" class="text-white p-1 section-sub-title-sm font-weight-bolder border border-light">DIA Y HORARIO</span></h2>
@@ -181,10 +179,10 @@
 </div>
 </section></div>
 
-    <section class="site-section" style="background: rgba(217, 232, 227,1.00);">
+    <section data-si="grupos.dress" id="dresscode" class="site-section" style="background: rgba(217, 232, 227,1.00);">
       <div class="container">
 		  <div class="row ml-auto mr-auto">
-			  <div data-si="grupos.dressCol" class="col-md-8 ml-auto mr-auto" data-aos="fade-in" id="dresscode">
+			  <div data-si="grupos.dressCol" class="col-md-8 ml-auto mr-auto" data-aos="fade-in">
 			<div class="text-center" data-aos="fade-in">
 				<div class="text-center"><img loading="lazy" class="img-fluid mb-0" src="img/icon-percha-b.png" width="95" alt="Imagen"></div>
                   <h2 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center euforia text-ocre2">Dress Code</h2>
@@ -194,9 +192,8 @@
           </div>
 		  </div>
 		  </div>
-		  <div class="col-md-8 ml-auto mr-auto p-3"><hr class="bg-light"></div>	  
-			
-			  <div data-seccion="canciones" class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-in" id="musica">
+
+			  <div data-seccion="canciones" class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-in" id="musica"><div class="col-12 p-0 show-mobile ai-sep"><hr class="bg-light"></div>
 				  <div class="text-center"><img loading="lazy" class="img-fluid mb-0" src="img/icon-music-b.png" width="95" alt="Imagen"></div>
                   <h2 data-t="canciones.titulo" class="mb-3 text-center euforia text-ocre2">Música</h2>
              	<p data-t-html="canciones.texto" class="text-center text-black">¿Qué canciones no pueden faltar?</p>
@@ -207,11 +204,10 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-	          </div>
-			</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="euforia"></div></div>
-			<div class="col-md-8 ml-auto mr-auto p-3"><hr class="bg-light"></div>	   
-			
-			  <div data-seccion="instagram" class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-in" id="hashtag">
+	          </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>
+			</div>
+
+			  <div data-seccion="instagram" class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-in" id="hashtag"><div class="col-12 p-0 show-mobile ai-sep"><hr class="bg-light"></div>
 				  <div class="text-center"><img class="img-fluid mb-0" src="img/icon-ig-b.png" width="95" alt="Imagen"></div>
                   <h2 data-t="hashtag.titulo" class="mb-3 text-center euforia text-ocre2">Etiqueta tus Fotos</h2>
             <h4 data-si="hashtag.texto" class="mb-4"><span data-campo="hashtag.texto" class="text-white border border-light p-1 bg-verde">#EgresadosInstSup2027</span></h4>
@@ -277,7 +273,7 @@
       <div class="container">
           <div class="col-md-6 ml-auto mr-auto text-center border border-light p-3" data-aos="fade-up" style="background:rgba(0,0,0,0.2)">
 			  <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/graduacion-icono-2b.png" width="85" alt="Imagen">
-			  <h2 data-campo-html="nombres.cierre" class="mb-0 text-center euforia text-white">Instituto Superior</h2>
+			  <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="mb-0 text-center euforia text-white">Instituto Superior</h2>
 			  <h5 data-caso="oracion" data-t="portada.subtitulo" class="elegance2 text-white mt-0 text-uppercase"> Fiesta de Egresados</h5>
 			  <h5 data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center text-white">"Hemos luchado mucho para estudiar y graduarnos, pero lo irónico de todo esto es que… hoy empieza la verdadera lucha"</h5>
                                                 <p class="mt-2 text-white-50">- Fernando Anfus -</p>

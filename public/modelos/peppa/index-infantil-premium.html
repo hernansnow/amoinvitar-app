@@ -79,7 +79,7 @@
 			</div> 
 				 
 			 	<div data-repetir="fotos.portada" class="zoom-move col-md-7 col-9 ml-auto mr-auto mb-3">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-0" style="border: 7px solid #f09bc2">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-0 ai-foto-1x1" style="border: 7px solid #f09bc2">
               </div>
 	       <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="mb-4 p-0 chewy texto-peppa-pig font-weight-bolder"> 12 • 09 • 2027 </h4>
 			 <div class="text-center mb-2">
@@ -142,13 +142,12 @@
                     <div data-formato="<div class=&quot;holder m-2&quot;><span class=&quot;h1 chewy font-weight-bolder&quot; style=&quot;border: 7px solid #3293e2; background-color:rgba(242, 177, 209, 0.6);&quot;>{d}</span> {dias}</div><div class=&quot;holder m-2&quot;><span class=&quot;h1 chewy font-weight-bolder&quot; style=&quot;border: 7px solid #3293e2; background-color:rgba(242, 177, 209, 0.6);&quot;>{h}</span> {horas}</div><div class=&quot;holder m-2&quot;><span class=&quot;h1 chewy font-weight-bolder&quot; style=&quot;border: 7px solid #3293e2; background-color:rgba(242, 177, 209, 0.6);&quot;>{m}</span> {min}</div><div class=&quot;holder m-2&quot;><span class=&quot;h1 chewy font-weight-bolder&quot; style=&quot;border: 7px solid #3293e2; background-color:rgba(242, 177, 209, 0.6);&quot;>{s}</span> {seg}</div>" data-si="cuenta.activa" id="clock-b" class="countdown-deluxe-circles5 d-flex chewy justify-content-center"></div>
                 </div>
 			  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-peppa-icono-cake.png" width="120px" alt="Imagen">
-				<h3 class="mb-1 text-center chewy texto-peppa-pig-rosa">El tiempo vuela</h3>
-			 <h4 class="texto-peppa-pig-azul-simple mb-0">Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos  maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!</h4>
+				<h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-1 text-center font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h3 data-si="historia.activa" data-t="historia.titulo" class="mb-1 text-center chewy texto-peppa-pig-rosa">El tiempo vuela</h3>
+			 <h4 data-si="historia.activa" class="texto-peppa-pig-azul-simple mb-0 g-historia"><span data-campo-html="historia.texto">Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!</span></h4>
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
    <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 0.0)), url(img/infantil-peppa-fondo.jpg); background-color:#68beef; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
       <div class="container">
@@ -256,10 +255,10 @@
 	 </div>	
  </section></div></div>
 	  
-    <section class="site-section" style="background-color: #68beef">
+    <section data-si="grupos.dress" id="dresscode" class="site-section" style="background-color: #68beef">
       <div class="container">
         <div class="row">
-          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5" id="dresscode">
+          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5">
 			   <div data-seccion="dresscode" class="text-center mt-2">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-peppa-icono-dress.png" width="110" alt="Imagen">
 			  </div>
@@ -288,9 +287,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	  
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	  
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="chewy"></div></div>
+	</div>
           <div data-seccion="instagram" class="col-md-8 text-center mb-5 ml-auto mr-auto" data-aos="fade-in" id="hashtag">
 			   <div class="text-center shake-move mt-2">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-peppa-icono-instagram.png" width="70" alt="Imagen">
@@ -357,8 +356,8 @@
       <div class="container">
         <div class="row">
           <div class="col-md-7 ml-auto mr-auto text-center">
-			<h2 class="text-center mt-auto ml-auto chewy texto-peppa-pig mb-3">Agustín</h2>
-			  <h3 data-campo-html="nombres.cierre" data-caso="titulo" data-t="portada.detalle" class="chewy texto-peppa-pig"><span class="vert-move2" style="display: inline-block">Cumple&#160;</span><span class="vert-move chewy display-4" style="display: inline-block">1</span><span class="vert-move3" style="display: inline-block">&#160;Año</span></h3>
+			<h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto chewy texto-peppa-pig mb-3">Agustín</h2>
+			  <h3 data-ajustar="0.86" data-campo-html="nombres.cierre" data-caso="titulo" data-t="portada.detalle" class="chewy texto-peppa-pig"><span class="vert-move2" style="display: inline-block">Cumple&#160;</span><span class="vert-move chewy display-4" style="display: inline-block">1</span><span class="vert-move3" style="display: inline-block">&#160;Año</span></h3>
 			  <h4 data-campo-html="pie.texto" data-si="pie.mostrar" class="texto-peppa-pig-azul-simple mb-3">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.</h4>
 			  <div class="text-center">
 			  <img loading="lazy" class="img-fluid mb-0 w-75" src="img/infantil-peppa-icono-personaje.png" width="250px" alt="Imagen">

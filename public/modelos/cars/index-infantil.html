@@ -77,7 +77,7 @@
 
 		   <div class="module-cars logo-cars">
 			   <div data-repetir="fotos.portada" class="text-center">
-			   <img data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50" style="border:8px ridge #c7c7c7;border-width:8px;border-style:ridge;border-color:#c7c7c7;">
+			   <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 ai-foto-1x1" style="border:8px ridge #c7c7c7;border-width:8px;border-style:ridge;border-color:#c7c7c7;">
 
                </div>
 			   <p data-ajustar="0.82" data-campo-html="nombres.portada" class="cars-h2 cars-chrome_text">Martín</p>
@@ -132,14 +132,13 @@
                     <div data-formato="<div class=&quot;holder m-2&quot;><span class=&quot;magneto-font mb-1&quot; style=&quot;border: 6px solid #fc1119; background-color:rgba(0, 0, 0, 0.25);&quot;>{d}</span> {dias}</div><div class=&quot;holder m-2&quot;><span class=&quot;magneto-font mb-1&quot; style=&quot;border: 6px solid #fc1119; background-color:rgba(0, 0, 0, 0.25);&quot;>{h}</span> {horas}</div><div class=&quot;holder m-2&quot;><span class=&quot;magneto-font mb-1&quot; style=&quot;border: 6px solid #fc1119; background-color:rgba(0, 0, 0, 0.25);&quot;>{m}</span> {min}</div><div class=&quot;holder m-2&quot;><span class=&quot;magneto-font mb-1&quot; style=&quot;border: 6px solid #fc1119; background-color:rgba(0, 0, 0, 0.25);&quot;>{s}</span> {seg}</div>" data-si="cuenta.activa" id="clock-b" class="countdown-deluxe-circles4 d-flex text-rojo justify-content-center"></div>
                 </div>
 			  <img loading="lazy" class="img-fluid mb-0" src="img/infantil-cars-icono-cake.png" width="150px" alt="Imagen">
-			 <h3 class="text-rojo mb-3 magneto-font">El tiempo vuela</h3>
-			 <h4 class="text-rojo">Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos  maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!</h4>
+			 <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="text-rojo mb-3 font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h3 data-si="historia.activa" data-t="historia.titulo" class="text-rojo mb-3 magneto-font">El tiempo vuela</h3>
+			 <h4 data-si="historia.activa" class="text-rojo g-historia"><span data-campo-html="historia.texto">Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!</span></h4>
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
-	  
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
+
     <section class="p-4" style="background-color: #ffffff; opacity: 1; background-image:  repeating-linear-gradient(45deg, #090a14 25%, transparent 25%, transparent 75%, #090a14 75%, #090a14), repeating-linear-gradient(45deg, #090a14 25%, #ffffff 25%, #ffffff 75%, #090a14 75%, #090a14); background-position: 0 0, 10px 10px; background-size: 20px 20px;">
 	  </section>
 	  
@@ -252,10 +251,10 @@
 	 </div>
  </section></div></div>
 	  
-    <section class="site-section bg-black">
+    <section data-si="grupos.dress" id="dresscode" class="site-section bg-black">
       <div class="container">
         <div class="row">
-          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5" id="dresscode">
+          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5">
 			   <div data-seccion="dresscode" class="text-center mt-2">
 				 <img loading="lazy" class="img-fluid mb-2" src="img/infantil-cars-icono-dress.png" width="110" alt="Imagen">
 			  </div>
@@ -290,51 +289,47 @@
 		   </div>
 		  <!-- /referencias dress -->
 	</div>
-		<div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150">
+		<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-cars-icono-hotel.png" width="110" alt="Imagen">
-			    <h2 class="mb-3 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.8)">Hospedaje</h2>
+			    <h2 data-t="hospedaje.titulo" class="mb-3 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.8)">Hospedaje</h2>
                   <h4 class="text-center mb-3 text-white">Referencias de hoteles cercanos.</h4>
-				  	<div class="col-12 text-center">	
-		              <button class="btn button-rojo mb-2 text-uppercase rounded-pill font-weight-bolder p-2" data-fancybox="" data-src="#hospedaje" data-animation-duration="700">Referencias</button>
+				  	<div data-si="hospedaje.conReferencias" class="col-12 text-center">	
+		              <button data-t="hospedaje.boton" class="btn button-rojo mb-2 text-uppercase rounded-pill font-weight-bolder p-2" data-fancybox="" data-src="#hospedaje" data-animation-duration="700">Referencias</button>
 		            </div>	
-		</div>
-			<!-- referencias hospedaje -->
-		   <div style="display: none;" id="hospedaje" class="animated-modal p-4">
+		<div style="display: none;" id="hospedaje" class="animated-modal p-4">
 			   <div class="mt-4" data-selectable="true">
 				   	<p class="text-center h3 mb-0"><i class="text-black icon-hotel" aria-hidden="true"></i></p>
-					 <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Referencias de hoteles cercanos</p>
-			             <ul class="list">
-                           <li><p class="mb-1">Hilton - Ruta 21, Km. 60.5 - <a class="text-black font-weight-bold" target="_blank" href="#">Reservas</a></p></li>
-				           <li><p class="mb-1">Sheraton - Av. Principal 321 - <a class="text-black font-weight-bold" target="_blank" href="#">Reservas</a></p></li>
-				           <li><p class="mb-1">Howard Johnson - Ruta 8, Km. 49 - <a class="text-black font-weight-bold" target="_blank" href="#">Reservas</a></p></li>
-				           <li><p class="mb-1">Ibis - Av. Pergamino 501 - <a class="text-black font-weight-bold" target="_blank" href="#">Reservas</a></p></li>
-			             </ul>
-				   <button data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small">cerrar</button>
+					 <p data-campo="hospedaje.modalTitulo" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Hospedaje</p><p class="text-center" data-si="hospedaje.texto" data-campo-html="hospedaje.texto"></p>
+			             <ul data-si="hospedaje.items" class="list">
+                <li data-repetir="hospedaje.items"><p class="mb-1"><span data-i="nombre">Hilton</span><span data-si="direccion"> - <span data-i="direccion">Ruta 21, Km. 60.5</span></span><span data-si="link"> - <a class="text-black font-weight-bold" target="_blank" rel="noopener" href="#" data-i-attr="href:link" data-t="hospedaje.reservas">Reservas</a></span></p></li>
+                <li data-repetir="hospedaje.items"><p class="mb-1"><span data-i="nombre">Sheraton</span><span data-si="direccion"> - <span data-i="direccion">Av. Principal 321</span></span><span data-si="link"> - <a class="text-black font-weight-bold" target="_blank" rel="noopener" href="#" data-i-attr="href:link" data-t="hospedaje.reservas">Reservas</a></span></p></li>
+              </ul>
+				   <button data-t="boton.cerrar" data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small">cerrar</button>
                </div>
-		   </div>
+		   </div></div>
+			<!-- referencias hospedaje -->
+		   
 			<!-- /referencias hospedaje -->
-		 <div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150">
+		 <div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-cars-icono-bus.png" width="110" alt="Imagen">
-			    <h2 class="mb-3 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.8)">Traslado</h2>
+			    <h2 data-t="bus.titulo" class="mb-3 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.8)">Traslado</h2>
                   <h4 class="text-center mb-3 text-white">Reserva tu lugar en el formulario de confirmación.</h4>
-			 		<div class="col-12 text-center">	
-		              <button class="btn button-rojo mb-2 text-uppercase rounded-pill font-weight-bolder p-2" data-fancybox="" data-src="#bus" data-animation-duration="700">Recorrido</button>
+			 		<div data-si="busConRecorrido" class="col-12 text-center">	
+		              <button data-t="bus.boton" class="btn button-rojo mb-2 text-uppercase rounded-pill font-weight-bolder p-2" data-fancybox="" data-src="#bus" data-animation-duration="700">Recorrido</button>
 		            </div>	
-		</div>
-			<!-- referencias bus -->
-		   <div style="display: none;" id="bus" class="animated-modal p-4">
+		<div style="display: none;" id="bus" class="animated-modal p-4">
 			   <div class="mt-4" data-selectable="true">
 			     	<p class="text-center h3 mb-0"><i class="text-black icon-bus" aria-hidden="true"></i></p>
-					 <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Servicio de Bus</p>
-			          <p class="text-center mb-1 text-black section-sub-title-sm-2"><span class="text-white bg-gris p-1 pr-5 pl-5">Partida</span></p>
-			          <p class="text-center text-black">Av. Independencia 432 - 17:00</p>
-				   	  <p class="text-center mb-1 text-black section-sub-title-sm-2"><span class="text-white bg-gris p-1 pr-5 pl-5">Parada intermedia</span></p>
-			          <p class="text-center text-black">Av. 1° de Mayo 1234 - 17:30</p>
-			          <p class="text-center mb-1 text-black section-sub-title-sm-2"><span class="text-white bg-gris p-1 pr-5 pl-5">Destino</span></p>
-			          <p class="text-center text-black">¡Mi Fiesta!</p>
-				   <button data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small">cerrar</button>
+					 <p data-campo="bus.modalTitulo" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Servicio de Bus</p><p class="text-center text-black" data-si="bus.textoLibre" data-campo-html="bus.textoLibre"></p>
+			          <div data-repetir="bus.paradas"><p class="text-center mb-1 text-black section-sub-title-sm-2"><span data-i="etiqueta" class="text-white bg-gris p-1 pr-5 pl-5">Partida</span></p><p data-i="detalle" class="text-center text-black">Av. Independencia 432 - 17:00</p></div>
+			          
+				   	  <div data-repetir="bus.paradas"><p class="text-center mb-1 text-black section-sub-title-sm-2"><span data-i="etiqueta" class="text-white bg-gris p-1 pr-5 pl-5">Parada intermedia</span></p><p data-i="detalle" class="text-center text-black">Av. 1° de Mayo 1234 - 17:30</p></div>
+
+				   <button data-t="boton.cerrar" data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small">cerrar</button>
                </div>
-		   </div>
+		   </div></div>
+			<!-- referencias bus -->
+		   
 			<!-- /referencias bus -->
 		  </div>
       </div>
@@ -421,9 +416,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	  
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	  
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="cars-chrome_text"></div></div>
+	</div>
   </div>
 </div>
 </div>
@@ -517,7 +512,7 @@
         <div class="row">
           <div class="col-md-7 ml-auto mr-auto text-center">
 			 <h4 data-campo-html="pie.texto" data-si="pie.mostrar" class="text-white mb-2">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.</h4>
-             <h1 data-campo-html="nombres.cierre" class="mb-1 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.9)">Martín</h1>
+             <h1 data-ajustar="0.86" data-campo-html="nombres.cierre" class="mb-1 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.9)">Martín</h1>
 			  <h2 data-caso="titulo" data-t="portada.detalle" class="mb-3 text-center magneto-font cars-chrome_text" style="text-shadow: 2px 2px 0px rgba(252, 17, 25,0.9)">2 Años</h2>
 			  <div class="text-center">
 			  <img loading="lazy" class="img-fluid mb-0 ml-5 ml-md-0 mr-md-5 w-75" src="img/infantil-cars-icono-personaje.png" width="250px" alt="Imagen">
@@ -531,7 +526,7 @@
 	  <div class="site-footer pt-4 pb-4">
       <div class="container">
         <div class="row">
-			<div data-si="redes.hay" data-seccion="redes" class="col-md-6 ml-auto mr-auto text-center border-bottom mb-4">
+			<div data-si="redes.hay" data-seccion="redes" class="col-md-6 ml-auto mr-auto text-center border-bottom mb-4 ai-redes">
                 <div><small data-t="redes.titulo" class="text-white-50">Redes oficiales</small></div>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h2 text-white-50"></span></a>
                 <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h2 text-white-50"></span></a>
@@ -543,6 +538,8 @@
             <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
             <li><a href="#agenda" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
             <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-white" data-t="perdiste.hospedaje">Hospedaje</a></li>
+            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-white" data-t="perdiste.bus">Traslado</a></li>
             <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-white" data-t="perdiste.itinerario">Itinerario</a></li>
             <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-white" data-t="perdiste.album">Álbum de fotos</a></li>
             <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>

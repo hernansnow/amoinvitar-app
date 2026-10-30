@@ -76,7 +76,7 @@
 		
 	   <!-- VIDEO -->
       <div class="video-container">
-            <div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/cumple/hero-banner.jpg);background-color:#3A3D3E; background-position: 60% 20%;" data-aos="fade">
+            <div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/cumple/hero-banner.jpg);background-color:#3A3D3E; background-position: 60% 20%;" data-aos="fade">
       </div>
 </div>
 
@@ -98,21 +98,21 @@
 			<div class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
 			
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-graffiti.png" width="110px" alt="Imagen" style="opacity: .8">
-			  <h1 class="mb-3 section-title text-center text-black"><span class="text-graffiti3 text-black">La Fiesta</span></h1>
-			  <p class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
-			  <p class="text-center">12 de septiembre de 2027 a las 21:00</p>
-			  <p class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">LUGAR</p>
-			  <p class="text-center">"Estancia La Soñada del Pilar", Sor Teresa y Cabo de Hornos</p>
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-graffiti.png" width="110px" alt="Imagen" style="opacity: .8">
+			  <h1 class="mb-3 section-title text-center text-black"><span data-campo="celebracion.titulo" class="text-graffiti3 text-black">La Fiesta</span></h1>
+			  <p data-t="lugar.diaHorario" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
+			  <p data-campo="celebracion.fechaLarga" class="text-center">12 de septiembre de 2027 a las 21:00</p>
+			  <p data-t="lugar.lugar" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">LUGAR</p>
+			  <p data-campo="celebracion.lugarTexto" class="text-center">"Estancia La Soñada del Pilar", Sor Teresa y Cabo de Hornos</p>
 			  
-			  <button id="fiesta-button" class="button button-naranja mb-2 text-uppercase rounded-pill"><i class="icon-calendar" aria-hidden="true"></i>  Agendar</button>
-			  <button class="button button-naranja mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#map2" data-animation-duration="700"><i class="icon-map-marker" aria-hidden="true"></i>  ¿CÓMO LLEGAR?</button>
+			  <button data-agendar="celebracion" class="button button-naranja mb-2 text-uppercase rounded-pill"><i class="icon-calendar" aria-hidden="true"></i> <span data-t="boton.agendar">Agendar</span></button>
+			  <button data-si="celebracion.mapa.embed" class="button button-naranja mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#map2" data-animation-duration="700"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="boton.comoLlegar">¿CÓMO LLEGAR?</span></button>
 
     <div style="display: none;" id="map2" class="animated-modal p-4">
 				   	<p class="text-center h3 mb-0"><i class="text-black icon-map-marker" aria-hidden="true"></i></p>
-					 <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">¿Cómo llegar?</p>
+					 <p data-t="mapa.titulo" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">¿Cómo llegar?</p>
 	
-	<div class="text-center" style="width: 100%"><iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" style="border:0;" allowfullscreen loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3289.2269194982823!2d-58.9727259!3d-34.471767299999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc83aeb6f85313%3A0xd7cacdc061869815!2sLa%20So%C3%B1ada%2C%20Salon%20Eventos%2C%20Estancias!5e0!3m2!1ses-419!2ses!4v1753341498200!5m2!1ses-419!2ses"></iframe><a href="https://maps.app.goo.gl/ufp3soaHBF7N4PwV9" target="_blank" class="mt-2 btn btn-outline-dark btn-small"><i class="icon-map-marker" aria-hidden="true"></i> Ver en la app de Google Maps</a></div>
+	<div class="text-center" style="width: 100%"><iframe width="100%" height="400" style="border:0;" loading="lazy" title="Mapa" data-attr="data-src:c:celebracion.mapa.embed" src="about:blank"></iframe><a data-attr="href:c:celebracion.mapa.link" rel="noopener" href="#" target="_blank" class="mt-2 btn btn-outline-dark btn-small"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="mapa.abrir">Ver en la app de Google Maps</span></a></div>
     </div>
 
           </div>
@@ -151,15 +151,18 @@
 		  </div>
 </section></div>
 		
-    <section class="site-section bg-verde" id="dresscode">
+    <section data-si="grupos.dress" class="site-section bg-verde" id="dresscode">
       <div class="container">
         <div class="row ml-auto mr-auto">
-           <div class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-in">
-			   <div class="text-center mb-0">
+           <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-in">
+			   <div data-seccion="dresscode" class="text-center mb-0">
 		      <img loading="lazy" class="img-fluid mb-0" src="img/icon-dress-graffiti.png" width="90px" alt="Imagen">
 			  </div>
-			   <h1 class="mb-3 section-title text-center text-white"><span class="text-graffiti3">Dress Code</span></h1>
-                <p class="text-center text-white">Formal y elegante. Por favor no usar blanco.</p>
+			   <h1 data-seccion="dresscode" class="mb-3 section-title text-center text-white"><span data-t="dress.titulo" class="text-graffiti3">Dress Code</span></h1>
+                <p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-white">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+            <p class="text-center text-white mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
+          </div>
 				   </div>
        </div>
      </div>
@@ -169,7 +172,7 @@
     <div class="container">
           <div class="col-md-9 ml-auto mr-auto text-center">
 			 <h4 data-campo-html="pie.texto" data-si="pie.mostrar" class="text-white"><span class="text-graffiti3 mb-0">"</span>Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple.</h4><span class="text-graffiti3 text-right m-0 p-0 text-white">"</span>
-			  <h1 data-campo-html="nombres.cierre" class="text-center section-title text-graffiti3 mt-auto ml-auto text-white">Ariadna</h1>
+			  <h1 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center section-title text-graffiti3 mt-auto ml-auto text-white">Ariadna</h1>
           </div>
 </div>
  </section>	

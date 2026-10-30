@@ -72,7 +72,7 @@
          <div class="col-md-8 text-right mb-5">
          <div class="p-3">
 		       <img class="img-fluid mb-2 pr-2" src="img/ornamental-palm2.png" width="100" alt="">
-            <h2 data-ajustar="0.82" data-campo-html="nombres.portada" class="mb-3 text-verde-oscuro p-0 text-uppercase"><span class="jost-lead">Aylén</span></h2>
+            <h2 data-ajustar-pc="0.36" data-ajustar="0.5" data-campo-html="nombres.portada" class="mb-3 text-verde-oscuro p-0 text-uppercase"><span class="jost-lead">Aylén</span></h2>
             <h4 class="mb-2 p-0 text-black pr-2"><span data-t="portada.subtitulo" class="jost-light">MI CUMPLE</span></h4>
 				<div class="col-9 col-md-4 col-xl-4 mb-0 ml-auto pr-3">
 					<hr style="border-top: 1px solid" class="bg-black m-0">
@@ -108,7 +108,7 @@
          <div class="col-md-8 text-right mb-5">
          <div class="p-3">
 		       <img class="img-fluid mb-2 pr-2" src="img/ornamental-palm2.png" width="100" alt="">
-            <h2 data-ajustar="0.82" data-campo-html="nombres.portada" class="mb-3 text-verde-oscuro p-0 text-uppercase"><span class="jost-lead">Aylén</span></h2>
+            <h2 data-ajustar-pc="0.36" data-ajustar="0.5" data-campo-html="nombres.portada" class="mb-3 text-verde-oscuro p-0 text-uppercase"><span class="jost-lead">Aylén</span></h2>
             <h4 class="mb-2 p-0 text-black pr-2"><span data-t="portada.subtitulo" class="jost-light">MI CUMPLE</span></h4>
 				<div class="col-9 col-md-4 col-xl-4 mb-0 ml-auto pr-3">
 					<hr style="border-top: 1px solid" class="bg-black m-0">
@@ -143,19 +143,17 @@
   </div>   
 
 <!-- /audio -->
-	  
-	  		<div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
-	  
+
 	<section class="site-section text-center" style="background-color:#eba767;">
 		  <div class="container pt-5 jost">
 			  <div class="col-md-8 ml-auto mr-auto">
-		    <h4 class="jost text-center text-black mb-4">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</h4>
+		    <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="d-none">Nuestra Historia</h2><h4 data-si="historia.activa" class="jost text-center text-black mb-4 g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></h4>
                 <div class="col-5 mb-0 mr-auto ml-auto">
 					<hr style="border-top: 1px solid" class="bg-black m-0">
 				</div>
 		   </div>
 		</div>
-	</section>
+	<div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
 	  <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(235, 167, 103, 0.9), rgba(168, 221, 254, 0.95)), url(img/bg-palm-2.png); background-color:#eba767; background-position:50% 100%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
          <div class="container jost">
@@ -169,7 +167,7 @@
     </div>
 				 
           <div class="col-md-8 col-lg-5 ml-auto mr-auto p-lg-0 text-center mb-5" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-2 mt-1" src="img/icon-party-3-verde-oscuro.png" width="80" alt="">
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-2 mt-1" src="img/icon-party-3-verde-oscuro.png" width="80" alt="">
 		   	  <div class="jost-titulo">
 			    <h3 data-campo="celebracion.titulo" class="mb-2 pb-2 text-center text-verde-oscuro text-uppercase border-bottom border-dark">Fiesta</h3>
 			  </div>
@@ -277,7 +275,10 @@
 		   	  <div class="jost-titulo">
 			    <h3 data-t="dress.titulo" data-seccion="dresscode" class="mb-2 pb-2 text-center text-verde-oscuro text-uppercase border-bottom border-dark">Dress code</h3>
 			  </div>
-                  <p class="text-center text-black">Formal y elegante. Por favor no usar blanco.</p>
+                  <p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-black">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+            <p class="text-center text-black mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
+          </div>
 				  	<div data-si="dresscode.sugerencias" data-seccion="estilos" class="col-12 text-center">	
 		              <button data-t="dress.boton" class="btn mb-2 text-uppercase rounded-pill button-verde-oscuro jost-sub2 btn-sm" data-fancybox="" data-src="#dress" data-animation-duration="700"><i class="icon-info-circle" aria-hidden="true"></i> Sugerencias</button>
 		            </div>
@@ -304,10 +305,7 @@
 		   </div>
 		  <!-- /referencias dress -->
 		</div>
-		</div><p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-black">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
-            <p class="text-center text-black mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
-            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
-          </div>
+		</div>
 	  </div>
 	
 		 <div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto mb-5" data-aos="fade-up" data-aos-delay="150">
@@ -318,7 +316,7 @@
 		   	  <div class="jost-titulo">
 			    <h3 data-t="hospedaje.titulo" class="mb-2 pb-2 text-center text-verde-oscuro text-uppercase border-bottom border-dark">Hospedaje</h3>
 			  </div>
-                  <p class="text-center text-black">Referencias de hoteles cercanos.</p>
+                  <p data-t="hospedaje.texto" class="text-center text-black">Referencias de hoteles cercanos.</p>
 				  	<div data-si="hospedaje.conReferencias" class="col-12 text-center">	
 		              <button data-t="hospedaje.boton" class="btn text-uppercase rounded-pill button-verde-oscuro jost-sub2 btn-sm" data-fancybox="" data-src="#hospedaje" data-animation-duration="700"><i class="icon-info-circle" aria-hidden="true"></i> Referencias</button>
 		            </div>	
@@ -347,7 +345,7 @@
 		   	  <div class="jost-titulo">
 			    <h3 data-t="bus.titulo" class="mb-2 pb-2 text-center text-verde-oscuro text-uppercase border-bottom border-dark">Traslado</h3>
 			  </div>
-                  <p class="text-center text-black">Reserva tu lugar en el formulario de confirmación.</p>
+                  <p data-t="bus.texto" class="text-center text-black">Reserva tu lugar en el formulario de confirmación.</p>
 				  	<div data-si="busConRecorrido" class="col-12 text-center">	
 		              <button data-t="bus.boton" class="btn text-uppercase rounded-pill button-verde-oscuro jost-sub2 btn-sm" data-fancybox="" data-src="#bus" data-animation-duration="700"><i class="icon-info-circle" aria-hidden="true"></i> Recorrido</button>
 		            </div>	
@@ -461,13 +459,13 @@
 					<div class="text-center">	
 		               
 					  <button data-t="canciones.boton" class="btn mb-2 text-uppercase rounded-pill button-verde-oscuro jost-sub2 btn-sm" data-fancybox="" data-src="#canciones" data-animation-duration="700"><i class="icon-send-o" aria-hidden="true"></i> Sugerir canción</button>
-		            </div>
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>
 		        <!-- ══ CONFIG CANCIONES (todos los textos editables acá) ══════════════ -->
 
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="border-bottom"></div></div> 	   
+		            </div> 	   
 	 </div>            
 	</div>
     </section>
@@ -576,45 +574,33 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
           </div>
 		  </div>
 		  <div class="row mt-md-3">
-            <div data-si="redes.hay" data-seccion="redes" class="col-md-8 text-center mb-5">
-			      <h2 data-campo-html="nombres.cierre" class="text-center mb-5 mt-auto ml-auto jost-lead text-uppercase text-verde-oscuro font-weight-normal">Aylén</h2>
-                <small data-t="redes.titulo" class="mb-3 text-black">Redes oficiales de la fiesta</small><br>
-				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h3 text-black"></span></a>
-                <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h3 text-black"></span></a>
-				<a data-attr="href:c:redes.tiktok" data-si="redes.tiktok" rel="noopener" href="#" target="_blank" class="pl-0 pr-3 text-black"><img alt="TikTok" loading="lazy" src="img/tiktok.svg" width="26" class="pt-1 pb-4"></a>
+            <div class="col-md-8 text-center mb-5">
+			      <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mb-5 mt-auto ml-auto jost-lead text-uppercase text-verde-oscuro font-weight-normal">Aylén</h2>
+                <small data-t="redes.titulo" data-seccion="redes" data-si="redes.hay" class="mb-3 text-black">Redes oficiales de la fiesta</small><br>
+				<div data-si="redes.hay" data-seccion="redes" class="ai-redes-iconos ai-redes"><a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h3 text-black"></span></a><a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h3 text-black"></span></a><a data-attr="href:c:redes.tiktok" data-si="redes.tiktok" rel="noopener" href="#" target="_blank" class="pl-0 pr-3 text-black"><img alt="TikTok" loading="lazy" src="img/tiktok.svg" width="26" class="pt-1 pb-4"></a></div>
+
               </div> 
 
 			<div class="col-md-4 text-xl-left text-lg-left text-md-left text-center">
 				
 				<p class="smoothscroll btn-link text-white jost-sub text-small-sm2 bg-verde-oscuro p-1 mb-1">Acceso rápido</p>
 			 <ul class="list-unstyled">
-				  <li><a href="#rsvp" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2">Confirmar asistencia</a></li>
-				  <li><a href="#agenda" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2">Agendar evento</a></li>
-				  <li><a href="#dresscode" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2">Dress code</a></li>
- 				  <li><a href="#musica" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2">Sugerir canción</a></li>
-				  <li><a href="#home-section" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2">Inicio</a></li>
-			 </ul> 
+            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
+            <li><a href="#agenda" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.agendar">Agendar evento</a></li>
+            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.hospedaje">Hospedaje</a></li>
+            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.bus">Traslado</a></li>
+            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.itinerario">Itinerario</a></li>
+            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.album">Álbum de fotos</a></li>
+            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.regalos">Regalos</a></li>
+            <li><a href="#home-section" class="smoothscroll btn-link text-black-50 jost-sub text-uppercase text-small-sm2" data-t="perdiste.inicio">Inicio</a></li>
+          </ul> 
 			</div>
 			  
        </div>
 
       </div>
-    </section><section class="bg-diferido site-section pt-4 pb-4 ai-perdiste" style="background-image: linear-gradient(rgba(235, 167, 103, 0.95), rgba(228, 217, 199, 0.0)), url(img/bg-beach3.jpg); background-color:#eba767; background-position:50% 70%; background-repeat:no-repeat; background-size:cover; position:relative;">
-      <div class="container"><div class="row"><div class="col-12 text-center">
-        <h3 class="mb-3 text-center jost-lead text-white" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
-        <ul class="list-unstyled">
-            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
-            <li><a href="#agenda" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
-            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
-            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-white" data-t="perdiste.hospedaje">Hospedaje</a></li>
-            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-white" data-t="perdiste.bus">Traslado</a></li>
-            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-white" data-t="perdiste.itinerario">Itinerario</a></li>
-            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-white" data-t="perdiste.album">Álbum de fotos</a></li>
-            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
-            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
-            <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
-        </ul>
-      </div></div></div>
     </section>
 <div data-componente="pie-marca"></div>
   <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">

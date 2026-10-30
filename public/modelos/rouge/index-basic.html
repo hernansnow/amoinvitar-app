@@ -32,8 +32,8 @@
   <link rel="stylesheet" href="../../comun/css/sobre_v1.2.css">
   <script src="../../comun/js/sobre_v1.1.js" defer></script>
   <link rel="stylesheet" href="../../comun/css/slides.css">
-  
-</head>
+
+  <link rel="stylesheet" href="../../comun/fonts/magnolia-sky/magnolia-sky.css"></head>
 	<body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
 
 <!-- 🔒 GATE de página completa — solo se activa si soloInvitados está en true.
@@ -56,11 +56,11 @@
          <div class="col-md-8 text-center">
               <img class="img-fluid mb-3" src="img/icon-wedding-w.png" alt="Imagen" width="110px">
 			 	<div data-repetir="fotos.portada" class="col-lg-6 col-9 ml-auto mr-auto mb-0">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/boda/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle border w-50">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/boda/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle border w-50 ai-foto-1x1">
               </div>
-			 <h2 data-ajustar="0.82" data-campo-html="nombres.portada" class="lovestory mb-0 pb-0"><span>Priscila <i class="icon-heart text-small-sm text-white" aria-hidden="true"></i> Jorge</span></h2>
+			 <h2 data-ajustar-pc="0.3" data-ajustar="0.62" data-campo-html="nombres.portada" class="lovestory mb-0 pb-0"><span>Priscila <i class="icon-heart text-small-sm text-white" aria-hidden="true"></i> Jorge</span></h2>
 		   <div class="col-8 col-md-5 ml-auto mr-auto text-center"><hr class="border border-2 mt-0 mb-0"></div>
-		   <img class="img-fluid mb-3 mt-2" src="img/nuestra-boda.png" width="200px" alt="Imagen">
+		   <p class="rouge-titulo mb-3 mt-2" data-t="portada.subtitulo" data-caso="titulo">Nuestra Boda</p>
           </div>
         </div>
       </div>
@@ -105,11 +105,11 @@
 
           </div>
 			
-			<div class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
+			<div data-si="ceremonia.separada" class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
 			
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-bordo.png" width="110px" alt="Imagen" style="opacity: .8">
-			  <img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-bordo.png" width="110px" alt="Imagen" style="opacity: .8">
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-bordo.png" width="110px" alt="Imagen" style="opacity: .8">
+			  <img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-anillos-bordo.png" width="110px" alt="Imagen" style="opacity: .8">
 			  <h2 data-campo="celebracion.titulo" class="text-center text-bordo lovestory">Celebración</h2>
 			  <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded mb-3 w-75">
 			  <p data-t="lugar.diaHorario" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
@@ -131,12 +131,8 @@
             </div>
           </div>
 
-    </section>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
-     	<div id="galeria" data-seccion="galeria" class="row ml-0 mr-0 p-0">  
-           <div data-componente="galeria"></div>
-      </div>
-	  
 <div id="rsvp" data-seccion="rsvp"><section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)), url(img/bg-rouge5.jpg); background-color:#fff ; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
     <div class="container">
           <div class="col-md-6 col-lg-6 ml-auto mr-auto rounded text-center pt-0 pl-4 pb-4 pr-4" data-aos="fade-up" style="background-color:rgba(255, 255, 255, 0.7);">
@@ -189,7 +185,7 @@
           <div class="container">
           <div class="col-md-8 ml-auto mr-auto">
             <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="d-none">Nuestra Historia</h2><p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center text-white g-historia"><span data-campo-html="historia.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.</span></p>
-            <h2 data-campo-html="nombres.cierre" class="text-center text-white lovestory">Priscila <i class="icon-heart text-small-sm text-white" aria-hidden="true"></i> Jorge</h2>	
+            <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center text-white lovestory">Priscila <i class="icon-heart text-small-sm text-white" aria-hidden="true"></i> Jorge</h2>	
 			  
        </div>
       </div>

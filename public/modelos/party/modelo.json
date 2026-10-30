@@ -58,6 +58,10 @@
       }
     }
   },
+  "sinFotoRsvp": true,
+  "proporciones": {
+    "portada": "1:1"
+  },
   "nombresHTML": {
     "portada": "{a}",
     "cierre": "{a}",
@@ -85,18 +89,18 @@
       ]
     }
   },
-  "porEvento": {},
-  "acceso": {
-    "css": [
-      "/comun/fonts/google/great-vibes+jost.css",
-      "/modelos/party/tema.css"
-    ]
-  },
   "demoBorrosas": {
     "15": {
       "portada": [],
       "galeria": [],
       "testigos": []
     }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/great-vibes+jost.css",
+      "/modelos/party/tema.css"
+    ]
   }
 }

@@ -8,8 +8,11 @@
       "deluxe": {
         "archivo": "index-graduacion.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
+          "hospedaje",
+          "bus",
           "dresscode",
           "estilos",
           "itinerario",
@@ -22,7 +25,6 @@
           "instagram"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "bienvenida: sin modal original (queda la genérica)"
         ],
         "info": {
@@ -37,16 +39,21 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
+          "portadaRedonda": true,
           "portadaFotos": 2,
+          "textoHistoria": "Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta aquí. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!",
           "galeriaLetra": "b",
           "galeria": 6,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "birrete",
             "mic",
             "cena",
             "disco"
           ],
+          "textoPie": "Hemos luchado mucho para estudiar y graduarnos, pero lo irónico de todo esto es que… hoy empieza la verdadera lucha",
           "nombresCierre": "Cinthia",
           "claseTitulos": "sacramento",
           "fuentes": [
@@ -57,6 +64,7 @@
       "premium": {
         "archivo": "index-graduacion-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -66,7 +74,6 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "itinerario: sin #timeline",
           "bienvenida: sin modal original (queda la genérica)"
         ],
@@ -82,10 +89,15 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
+          "portadaRedonda": true,
           "portadaFotos": 2,
+          "textoHistoria": "Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta aquí. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!",
           "galeriaLetra": "b",
           "galeria": 6,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Hemos luchado mucho para estudiar y graduarnos, pero lo irónico de todo esto es que… hoy empieza la verdadera lucha",
           "nombresCierre": "Cinthia",
           "claseTitulos": "sacramento",
           "fuentes": [
@@ -117,10 +129,14 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
+          "portadaRedonda": true,
           "portadaFotos": 2,
           "galeriaLetra": "b",
           "galeria": 4,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Hemos luchado mucho para estudiar y graduarnos, pero lo irónico de todo esto es que… hoy empieza la verdadera lucha",
           "nombresCierre": "Cinthia",
           "claseTitulos": "sacramento",
           "fuentes": [

@@ -212,7 +212,7 @@ export function rsvpForm({ t, v, el }) {
 
 // ── Galería: carrusel, mosaico, grilla o polaroids (igual en todos los modelos) ──
 // Al tocar una foto se abre entera, sin recorte, y se puede ampliar (fancybox).
-export function galeria({ v, t }) {
+export function galeria({ v, t, el }) {
   const g = v.galeria || {};
   const fotos = v.fotos.galeria || [];
   if (!fotos.length) return '';
@@ -222,7 +222,7 @@ export function galeria({ v, t }) {
   if (g.carrusel) {
     const varias = fotos.length > 1;
     return `${css}
-<div class="ai-carrusel${varias ? '' : ' ai-una'}${g.color ? ' ai-color' : ''}" style="--prop:${esc(g.proporcion)}" data-aos="fade-up">
+<div class="ai-carrusel${varias ? '' : ' ai-una'}${g.color ? ' ai-color' : ''}${el?.hasAttribute('data-rsvp') ? ' ai-c-rsvp' : ''}" style="--prop:${esc(g.proporcion)}" data-aos="fade-up">
   <div class="ai-c-pista" tabindex="0">${items('ai-c-item')}
   </div>${varias ? `
   <button type="button" class="ai-c-flecha ai-c-ant" aria-label="${esc(t('galeria.anterior') || 'Anterior')}"><span class="icon-keyboard_arrow_left"></span></button>
@@ -244,7 +244,6 @@ export function galeria({ v, t }) {
 export function playlist({ t, v, el }) {
   const pl = v.playlist;
   if (!pl) return '';
-  const claseTitulo = el.getAttribute('data-clase-titulo') || 'euforia';
   const lista = pl.pistas.length ? `
     <p class="ai-pl-resumen">${esc(t('playlist.resumen').replace('{n}', pl.cantidad || pl.pistas.length).replace('{min}', pl.minutos || ''))}</p>
     <ol class="ai-pl-lista">${pl.pistas.map((x, i) => `
@@ -254,7 +253,7 @@ export function playlist({ t, v, el }) {
   return `<link rel="stylesheet" href="${v.rutas.comun}/css/playlist.css">
 <section class="ai-playlist">
   <div class="ai-pl-tarjeta" data-aos="fade-up">
-    <h2 class="ai-pl-titulo ${esc(claseTitulo)}">${esc(t('playlist.titulo'))}</h2>
+    <h2 class="ai-pl-titulo">${esc(t('playlist.titulo'))}</h2>
     <p class="ai-pl-texto">${esc(t('playlist.texto'))}</p>
     <div class="ai-vinilo${v.marca.blanca ? ' sin-logo' : ''}">
       <div class="ai-v-disco"><div class="ai-v-etiqueta"></div></div>

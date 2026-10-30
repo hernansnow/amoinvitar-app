@@ -102,8 +102,11 @@ export async function catalogo(request, env) {
   const precio = (clave, eur) => { const p = priceIn(clave, eur, moneda, rates, pais, env); return { eur, importe: p.amount, texto: p.amount ? formatMoney(p.amount, moneda) : 'Gratis' }; };
   return json({
     pais, moneda, monedas: CURRENCIES,
-    tipos: TIPOS_EVENTO,
-    modelos: MODELOS.map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {}, eventos: m.eventos, gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)) })),
+    // Los tipos con grupo (revelación de género) se eligen dentro de su grupo (Baby Shower)
+    tipos: TIPOS_EVENTO.filter((t) => !t.grupo),
+    modelos: MODELOS.map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {},
+      eventos: [...new Set([...m.eventos, ...TIPOS_EVENTO.filter((t) => t.grupo && m.eventos.includes(t.id)).map((t) => t.grupo)])],
+      gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), dosNombres: m.eventos.includes('revelacion') })),
     paquetes: ORDEN.map((id) => ({ id, nombre: NOMBRES_PAQUETE[id], incluye: RESUMEN_PAQUETES[id], precio: precio(id, PAQUETES[id].precio) })),
     extras: Object.entries(EXTRAS).map(([id, e]) => ({ id, nombre: e.nombre, precio: precio(id, e.precio) })),
     productos: Object.entries(PRODUCTOS).map(([id, p]) => ({ id, nombre: p.nombre, manual: !!p.manual, precio: p.manual ? { texto: `desde ${formatMoney(priceIn(id, p.desde, moneda, rates, pais, env).amount, moneda)}` } : precio(id, p.precio) })),
@@ -437,7 +440,7 @@ export async function estadoPlan(env, request, ev, esquema) {
     aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,
     // Precio de cada tarjeta con este plan (para mostrarlo en los selectores del panel)
-    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'agradecimiento'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
+    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'agradecimiento', 'video-portada'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
     // Primera vez: aunque sea gratis pasa por la "compra" (queda el mail de la cuenta y la factura si corresponde)
     activar: !pagado,
   };
@@ -471,7 +474,9 @@ export async function empezar(request, env) {
   }
   const b = await readJson(request);
   const m = buscarModelo(b.modelo);
-  const tipo = str(b.tipo, 20);
+  let tipo = str(b.tipo, 20);
+  // Elegido dentro de un grupo (Baby Shower → Revelación de género): el tipo propio del diseño
+  if (m && !m.eventos.includes(tipo)) tipo = TIPOS_EVENTO.find((t) => t.grupo === tipo && m.eventos.includes(t.id))?.id || tipo;
   if (!m || !m.eventos.includes(tipo)) throw new HttpError(400, 'Elegir un diseño disponible para ese evento');
   const a = str(b.nombres?.a, 15), bb = str(b.nombres?.b, 15);
   if (!a) throw new HttpError(400, 'Falta el nombre');
@@ -497,5 +502,9 @@ export async function empezar(request, env) {
   await almacen.guardarEvento(ev);
   const usuario = await usuarioActual(request, env);
   if (usuario) await almacen.darAcceso(ev.id, usuario.id, 'cliente');
-  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201);
+  // Sin cuenta: el navegador recuerda el borrador (al entrar con la cuenta se suma solo a "Mi cuenta")
+  const previos = (getCookie(request, 'ai_bor') || '').split(',').filter((x) => /^ev_[a-z0-9]+:[a-z0-9]+$/i.test(x));
+  const lista = [...new Set([`${ev.id}:${ev.clave}`, ...previos])].slice(0, 20).join(',');
+  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201,
+    usuario ? {} : { 'set-cookie': cookie('ai_bor', lista, { maxAge: 365 * 86400, secure: isSecureRequest(request) }) });
 }

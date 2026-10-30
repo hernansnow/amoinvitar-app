@@ -78,7 +78,7 @@
 		   <img class="img-fluid shadow" src="img/passion1.jpg" alt="Imagen">
 		     <div class="text-center m-0" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%)">
 				 <img class="img-fluid mb-0 invert" src="img/comunion-corona6.png" width="42" alt="">
-			   <h3 data-ajustar="0.82" data-campo-html="nombres.portada" class="hero-text text-black mb-0 pb-0">Milena</h3>
+			   <h3 data-ajustar-pc="0.26" data-ajustar="0.5" data-campo-html="nombres.portada" class="hero-text text-black mb-0 pb-0">Milena</h3>
 			   <p data-t="portada.subtitulo" class="text-black p-0 m-1">MI PRIMERA COMUNIÓN</p>
 			   <p data-fecha-formato="{dd} • {mm} • {a}" data-fecha="principal" class="text-black p-0 m-0">12 • 09 • 2027</p>
 	         </div>
@@ -134,8 +134,8 @@
         <div class="row mb-3">
           <div class="col-12 text-center" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-0" src="img/lovestory-5.png" width="150px" alt="Imagen">
-             <h4 class="mb-3 text-center texto-especial text-black">Mi Primera Comunión</h4>
-			  <h4>Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.</h4>
+             <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-3 text-center text-black font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h4 data-si="historia.activa" data-t="historia.titulo" class="mb-3 text-center texto-especial text-black">Mi Primera Comunión</h4>
+			  <h4 data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.</span></h4>
           </div>
         </div>
 	   </div>
@@ -168,11 +168,11 @@
     </div>
        </div>
 				  
-			<div class="col-12 text-center show-mobile"><hr class="bg-gold"></div>	  
+			<div data-si="ceremonia.separada" class="col-12 text-center show-mobile"><hr class="bg-gold"></div>	  
 				  
             <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-                <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3.png" width="110" alt="Imagen">
-				<img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church.png" width="110px" alt="Imagen">
+                <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3.png" width="110" alt="Imagen">
+				<img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church.png" width="110px" alt="Imagen">
 			    <h4 data-campo="celebracion.titulo" class="mb-2 text-center texto-especial text-black">Fiesta</h4>
 				<img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded mb-3 p-1 w-75" style="border: 4px solid #9c916b;">
 			    <h4 class="mb-2"><span data-t="lugar.diaHorario" class="text-dark section-sub-title font-weight-bolder">DIA Y HORARIO</span></h4>
@@ -305,7 +305,7 @@
 		  <!-- /referencias dress -->
 	          </div>
 
-			<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile"><hr class="bg-gold"></div>
+			<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile ai-sep"><hr class="bg-gold"></div>
 				<div class="text-center"><img loading="lazy" class="img-fluid mb-2 mt-0" src="img/icon-hotel-b.png" width="75" alt="Imagen"></div>
                   <h4 data-t="hospedaje.titulo" class="mb-3 text-center texto-especial text-black">Hospedaje</h4>
 				   <div data-si="hospedaje.conReferencias" class="col-12 text-center">	
@@ -326,7 +326,7 @@
 			<!-- /referencias hospedaje -->
 	          </div>
 
-			<div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile"><hr class="bg-gold"></div>
+			<div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile ai-sep"><hr class="bg-gold"></div>
 				<div class="text-center"><img loading="lazy" class="img-fluid mb-2 mt-0" src="img/icon-bus-v2.png" width="75" alt="Imagen"></div>
                   <h4 data-t="bus.titulo" class="mb-3 text-center texto-especial text-black">Traslado</h4>
 				   <div data-si="busConRecorrido" class="col-12 text-center">	
@@ -427,8 +427,8 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		    </div>	      
-	       </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo=""></div></div>
+		    </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	      
+	       </div>
 		    <div id="instagram" data-seccion="album" class="col-md-6 ml-auto mr-auto mb-4" data-aos="fade-up">
 			 <div class="p-2 shadow text-center" style="background-color: rgba(234, 234, 226, 0.5)">
 			   <div style="border: 3px solid #9c916b;"><img loading="lazy" class="img-fluid m-0 p-0" src="img/passion-1.png" width="250px" alt="Imagen">   
@@ -507,11 +507,11 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
           <div class="container">
 		   <div class="row">
             <div class="col-md-8 ml-auto mr-auto">
-              <h4 class="text-center texto-especial mt-auto ml-auto text-white">Milena</h4>
+              <h4 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center texto-especial mt-auto ml-auto text-white">Milena</h4>
 			  <p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center text-white">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</p>
 			</div>
 				  
-			  <div data-si="redes.hay" data-seccion="redes" class="col-md-8 ml-auto mr-auto text-center">
+			  <div data-si="redes.hay" data-seccion="redes" class="col-md-8 ml-auto mr-auto text-center ai-redes">
 			   <div class="text-center mt-4 mb-5"><hr class="bg-white"></div>
                 <h4 data-t="redes.titulo" class="text-white">Redes oficiales de la fiesta</h4>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h2 text-white"></span></a>

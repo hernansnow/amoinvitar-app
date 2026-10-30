@@ -196,7 +196,7 @@ body.sin-scroll { overflow: hidden; }
 .modelos-grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 .modelo-opcion { border: 1px solid var(--borde); border-radius: 12px; padding: 8px; display: grid; gap: 6px; justify-items: start; }
 .modelo-opcion.actual { border-color: var(--acento); }
-.modelo-opcion img { width: 100%; aspect-ratio: 1.91 / 1; object-fit: cover; border-radius: 8px; background: var(--fondo); }
+.modelo-opcion img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 8px; background: var(--fondo); }
 .modelo-opcion small { color: var(--suave); }
 .chip { background: color-mix(in srgb, var(--acento) 15%, #fff); color: var(--acento); border-radius: 999px; padding: 2px 10px; font-size: .8rem; font-weight: 600; }
 .guardar-cuenta p { margin: 0 0 10px; font-size: .92rem; }

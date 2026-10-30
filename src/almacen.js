@@ -82,6 +82,9 @@ export function almacenD1(env) {
     async quitarAcceso(eventoId, usuarioId) {
       await db.prepare("DELETE FROM accesos_evento WHERE evento_id = ? AND usuario_id = ? AND rol <> 'cliente'").bind(eventoId, usuarioId).run();
     },
+    async sinCliente(eventoId) {
+      return !(await db.prepare("SELECT 1 FROM accesos_evento WHERE evento_id = ? AND rol = 'cliente'").bind(eventoId).first());
+    },
     async tieneAcceso(eventoId, usuarioId) {
       return !!(usuarioId && await db.prepare('SELECT 1 FROM accesos_evento WHERE evento_id = ? AND usuario_id = ?').bind(eventoId, usuarioId).first());
     },

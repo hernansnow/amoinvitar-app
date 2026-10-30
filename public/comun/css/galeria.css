@@ -61,3 +61,12 @@
   .ai-c-item { flex-basis: 32cqw; }
   .ai-c-flecha { left: auto; } .ai-c-ant { left: 14px; } .ai-c-sig { right: 14px; }
 }
+
+/* Galería dentro de la confirmación (Armonía, Elegance, Vintage, Oliva): en la computadora
+   igual que en el celular, la foto del centro y las de los costados asomando */
+@media (min-width: 768px) {
+  .ai-c-rsvp .ai-c-pista { padding: 6px 11cqw; }
+  .ai-c-rsvp .ai-c-item { flex-basis: 78cqw; }
+  .ai-c-rsvp .ai-c-flecha { top: calc(50% - 30px); }
+}
+.ai-c-rsvp { margin-bottom: 1.5rem; }

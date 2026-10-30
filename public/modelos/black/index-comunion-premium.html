@@ -73,7 +73,7 @@
         <div class="row align-items-center justify-content-center">
          <div class="col-md-8 text-center">
 			<p class="mb-3"><span data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-white section-sub-title p-1 border border-white">&#160;12 • 09 • 2027&#160;</span></p>
-           <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="lovestory">Cecilia</h1>
+           <h1 data-ajustar-pc="0.36" data-ajustar="0.66" data-campo-html="nombres.portada" class="lovestory">Cecilia</h1>
 	  		   <h3 data-t="portada.subtitulo" class="text-white mb-0 date-line"> ¡MI PRIMERA COMUNIÓN! </h3>
 			     <div class="mt-3 text-white text-center">
 					 <h6 data-si="cuenta.activa" class="text-uppercase mb-0"><span data-t="cuenta.faltan" class="text-small-sm2 mb-0">Faltan</span></h6>
@@ -103,7 +103,7 @@
         <div class="row align-items-center justify-content-center">
          <div class="col-md-8 text-center">
 			<p class="mb-3"><span data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-white section-sub-title p-1 border border-white">&#160;12 • 09 • 2027&#160;</span></p>
-           <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="lovestory">Cecilia</h1>
+           <h1 data-ajustar-pc="0.36" data-ajustar="0.66" data-campo-html="nombres.portada" class="lovestory">Cecilia</h1>
 	  		   <h3 data-t="portada.subtitulo" class="text-white mb-0 date-line"> ¡MI PRIMERA COMUNIÓN! </h3>
           </div>
         </div> 
@@ -140,16 +140,13 @@
         <div class="row">
           <div class="col-md-8 text-center ml-auto mr-auto mt-3" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-0" src="img/black-3.png" width="200px" alt="Imagen">
-              <h2 class="lovestory text-center texto-especial text-white">Mi Primera Comunión</h2>
-			  <p class="text-white">Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.</p>
+              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="text-center text-white font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="lovestory text-center texto-especial text-white">Mi Primera Comunión</h2>
+			  <p data-si="historia.activa" class="text-white g-historia"><span data-campo-html="historia.texto">Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.</span></p>
           </div>
         </div>
 	   </div>
-	  </section>
-		  <div id="galeria" data-seccion="galeria" style="background-color:#000;">
-		      <div data-componente="galeria"></div>
-	    </div>   
-			  
+	  <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
+
    <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(img/bg-dark7.jpg); background-color:#606060; background-position:25% 100%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
       <div class="container">
          <div class="row item">
@@ -176,8 +173,8 @@
           </div>
 
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-3" src="img/icon-party-3-w.png" width="95" alt="Imagen">
-			  <img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-w.png" width="120px" alt="Imagen">
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-3" src="img/icon-party-3-w.png" width="95" alt="Imagen">
+			  <img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-w.png" width="120px" alt="Imagen">
 			 <h2 data-campo="celebracion.titulo" class="lovestory text-center text-white">Fiesta</h2>	
 			      <div class="mb-3 ml-auto mr-auto hexagon">
 				   <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid">
@@ -266,9 +263,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	   	   
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	   	   
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="lovestory"></div></div>
+	</div>
   </div>
           <div id="hashtag" data-seccion="instagram" class="col-md-6 text-center mt-3 ml-auto mr-auto p-lg-0" data-aos="fade-in">
 			  <img loading="lazy" class="img-fluid mb-0" src="img/black-1.png" width="200px" alt="Imagen" style="transform: rotate(180deg);">
@@ -345,7 +342,7 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
           <div class="container">
           <div class="col-md-8 text-center ml-auto mr-auto">
 			 <p data-si="pie.mostrar" class="text-white"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</span> <span class="display-5 icon-quote-right"></span></p>
-            <h2 data-campo-html="nombres.cierre" class="text-center lovestory mt-auto ml-auto text-white">Cecilia</h2>
+            <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center lovestory mt-auto ml-auto text-white">Cecilia</h2>
        </div>
       </div>
 	

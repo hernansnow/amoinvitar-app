@@ -30,8 +30,7 @@
           "ceremonia: sin \"DÍA Y HORARIO\"",
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
-          "celebracion: sin fecha y hora",
-          "perdiste: se agregó (no había)"
+          "celebracion: sin fecha y hora"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -41,9 +40,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -54,6 +57,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -79,8 +83,7 @@
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
           "celebracion: sin fecha y hora",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -90,9 +93,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -127,9 +135,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -151,6 +163,7 @@
       "deluxe": {
         "archivo": "index.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -167,12 +180,10 @@
           "instagram"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "ceremonia: sin \"DÍA Y HORARIO\"",
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
-          "celebracion: sin fecha y hora",
-          "perdiste: se agregó (no había)"
+          "celebracion: sin fecha y hora"
         ],
         "info": {
           "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
@@ -182,9 +193,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -194,6 +209,7 @@
             "disco",
             "brindis"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Natalia<span class=\"text-gold\">&#160;+&#160;&#160;</span>Alejo",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -205,6 +221,7 @@
       "premium": {
         "archivo": "index-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -214,13 +231,11 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
           "ceremonia: sin \"DÍA Y HORARIO\"",
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
           "celebracion: sin fecha y hora",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Natalia<span class=\"text-azul\">&#160;+&#160;&#160;</span>Alejo",
@@ -230,9 +245,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Natalia<span class=\"text-gold\">&#160;+&#160;&#160;</span>Alejo",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -265,9 +285,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Natalia<span class=\"text-gold\">&#160;+&#160;&#160;</span>Alejo",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -307,8 +331,7 @@
         ],
         "avisos": [
           "celebracion: sin \"DÍA Y HORARIO\"",
-          "celebracion: sin fecha y hora",
-          "perdiste: se agregó (no había)"
+          "celebracion: sin fecha y hora"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -318,9 +341,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -329,6 +356,7 @@
             "baile",
             "last-call2"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -352,8 +380,7 @@
         "avisos": [
           "celebracion: sin \"DÍA Y HORARIO\"",
           "celebracion: sin fecha y hora",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -363,9 +390,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -398,9 +430,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -442,8 +478,7 @@
           "ceremonia: sin \"DÍA Y HORARIO\"",
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
-          "celebracion: sin fecha y hora",
-          "perdiste: se agregó (no había)"
+          "celebracion: sin fecha y hora"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -453,9 +488,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -466,6 +505,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -491,8 +531,7 @@
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
           "celebracion: sin fecha y hora",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -502,9 +541,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -539,9 +583,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -583,8 +631,7 @@
           "ceremonia: sin \"DÍA Y HORARIO\"",
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
-          "celebracion: sin fecha y hora",
-          "perdiste: se agregó (no había)"
+          "celebracion: sin fecha y hora"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -594,9 +641,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -607,6 +658,7 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -632,8 +684,7 @@
           "ceremonia: sin fecha y hora",
           "celebracion: sin \"DÍA Y HORARIO\"",
           "celebracion: sin fecha y hora",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Natalia",
@@ -643,9 +694,14 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
@@ -680,9 +736,13 @@
               "pos": "50% 50%"
             }
           ],
+          "portadaRedonda": true,
           "portadaFotos": 1,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Natalia",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [

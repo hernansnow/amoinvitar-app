@@ -55,7 +55,7 @@ function dibujar() {
   // Invitación: se elige el diseño y se personaliza gratis; se paga al publicar
   $('#modelos').replaceChildren(...(modelos.length ? modelos.map((m) => el('div', { class: 'opcion modelo' },
     el('button', { type: 'button', class: 'miniatura', 'aria-label': `Vista previa de ${m.nombres[S.tipo] || m.nombre}`, onclick: () => verDemo(m) },
-      el('img', { class: 'modelo-img', src: `/modelos/${m.id}/miniatura.jpg`, alt: '', loading: 'lazy' })),
+      el('img', { class: 'modelo-img', src: `/modelos/${m.id}/tienda-${S.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { if (e.target.dataset.f) return; e.target.dataset.f = 1; e.target.src = `/modelos/${m.id}/miniatura.jpg`; } })),
     el('strong', {}, m.nombres[S.tipo] || m.nombre, m.gratis ? el('span', { class: 'insignia', style: 'margin-left:6px' }, 'Gratis') : null),
     el('div', { class: 'botones-modelo' },
       el('button', { type: 'button', class: 'btn btn-sec', onclick: () => verDemo(m) }, 'Vista previa'),
@@ -208,7 +208,7 @@ function verDemo(m) {
 $('#btn-personalizar-este').addEventListener('click', () => { $('#modal-vista').close(); empezar(elegido); });
 function empezar(m) {
   elegido = m;
-  const dos = S.tipo === 'boda';
+  const dos = S.tipo === 'boda' || !!m.dosNombres; // Revelación de género: los dos papás
   $('#empezar-modelo').textContent = m.nombres[S.tipo] || m.nombre;
   const campo = (id, etiqueta, ph) => el('div', { class: 'campo' }, el('label', { for: id }, etiqueta), el('input', { type: 'text', id, maxlength: 15, required: true, placeholder: ph }));
   $('#campos-nombres').replaceChildren(...(dos ? [campo('emp-a', 'Nombre 1', 'Lau'), campo('emp-b', 'Nombre 2', 'Pablo')] : [campo('emp-a', 'Nombre', 'Sofi')]));

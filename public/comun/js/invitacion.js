@@ -141,9 +141,11 @@
       var caja = propia || h.closest('.container, section') || h.parentElement;
       // Una caja propia (un círculo, un marco) cuenta por su lado más corto
       var base = propia ? Math.min(caja.clientWidth, caja.clientHeight || caja.clientWidth) : caja.clientWidth;
-      var disponible = Math.floor(base * (parseFloat(h.getAttribute('data-ajustar')) || 0.9));
+      // En la computadora, la fracción propia del diseño (data-ajustar-pc: el marco es más angosto que la sección)
+      var fr = (innerWidth >= 768 && h.getAttribute('data-ajustar-pc')) || h.getAttribute('data-ajustar');
+      var disponible = Math.floor(base * (parseFloat(fr) || 0.9));
       h.style.maxWidth = disponible + 'px'; h.style.marginLeft = h.style.marginRight = 'auto';
-      var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(26, fs0 * 0.45));
+      var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(18, fs0 * 0.32));
       for (var i = 0; i < 40; i++) {
         var m = medidas(h);
         if (m.ancho <= disponible + 1 && m.lineas <= 2) break;

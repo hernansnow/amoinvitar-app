@@ -122,7 +122,7 @@
 	   <!-- VIDEO -->
       <div class="video-container" style="z-index: -99">
 		 <!-- Slider -->
-	<div class="ai-slides" data-intervalo="5000"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.4)), url(demo/boda/hero-banner1.jpg); background-position: 50% 20%;">
+	<div data-video-portada="" class="ai-slides" data-intervalo="5000"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.4)), url(demo/boda/hero-banner1.jpg); background-position: 50% 20%;">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.4)), url(demo/boda/hero-banner2.jpg); background-position: 50% 80%">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.4)), url(demo/boda/hero-banner3.jpg); background-position: 50% 30%">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.4)), url(demo/boda/hero-banner4.jpg); background-position: 30% 50%">
@@ -174,7 +174,7 @@
 		</a>
 	   <!-- VIDEO -->
 	  <div class="video-container" style="z-index: -99">
-		  <div class="ai-slides ai-en-linea" data-intervalo="5000" style="--alto:100vh"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover rockabilly-filtered portada-foto-pc ai-slide" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.4)), url(demo/boda/hero-banner1.jpg); background-position: 50% 20%;">
+		  <div class="ai-slides ai-en-linea" data-intervalo="5000" style="--alto:100vh"><div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover rockabilly-filtered portada-foto-pc ai-slide" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.4)), url(demo/boda/hero-banner1.jpg); background-position: 50% 20%;">
 		  </div></div>
 	  </div>
 
@@ -208,7 +208,10 @@
 	   </div>
     </section>
 
-		     <div id="galeria" data-seccion="galeria"><div><div data-componente="galeria"></div></div><div class="col-md-4 col-10 ml-auto mr-auto text-center mt-0 mb-0 pb-0">
+		     <div id="galeria" data-seccion="galeria"><div><div class="presupuesto slide-one-item home-slider owl-carousel p-0 mb-3 bg-white rockabilly-div3b">
+				<img data-i-estilo="estilo" data-i-attr="src:url" data-repetir="fotos.galeria" loading="lazy" src="demo/boda/foto1.jpg" alt="Imagen" class="img-fluid">
+
+            </div></div><div class="col-md-4 col-10 ml-auto mr-auto text-center mt-0 mb-0 pb-0">
 			<img loading="lazy" class="img-fluid mb-4 w-50" src="img/guitarra-rockabilly.png" alt="Imagen">
           </div></div>
 
@@ -254,7 +257,7 @@
 
           </div>
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-			  <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-2 mt-0" src="img/party-rockabilly.png" width="100" alt="Imagen">
+			  <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-2 mt-0" src="img/party-rockabilly.png" width="100" alt="Imagen"><img data-attr="src:c:ceremonia.foto;style:c:ceremonia.fotoEstilo" data-si="ceremonia.iconoUnico" loading="lazy" src="../../comun/img/demo-iglesia.jpg" alt="lugar" class="img-fluid rockabilly-filtered w-75">
 			 <h2 data-campo="celebracion.titulo" class="mb-4 text-center rockabilly-title">Celebración</h2>
 			      <div class="text-center mr-auto ml-auto p-0" data-aos="fade-up" data-aos-delay="50">
                     <figure class="rockabilly-div2 red"><img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="lugar" class="img-fluid rockabilly-filtered w-75">
@@ -509,12 +512,12 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>
 					     <div class="col text-left p-0 m-0">
 					        <img loading="lazy" class="img-fluid p-0" src="img/horn2-rockabilly.png" width="70" alt="Imagen">
                          </div>
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="rockabilly-title"></div></div>
+	</div>
   </div>
 </div>
 </div>
@@ -611,7 +614,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
           <div class="col-md-9 ml-auto mr-auto text-center">
 			 <h4 data-si="pie.mostrar" class="text-white mb-4 shadow button rockabilly-button-2 verde-d"><span class="text-rockabilly display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.</span> <span class="text-rockabilly display-5 icon-quote-right"></span></h4>
           </div>
-			<div data-si="redes.hay" data-seccion="redes" class="col-md-4 text-center ml-auto mr-auto mt-4 mb-0 button verde-i">
+			<div data-si="redes.hay" data-seccion="redes" class="col-md-4 text-center ml-auto mr-auto mt-4 mb-0 button verde-i ai-redes">
                 <h6 class="mb-3 text-rockabilly-font-2 text-uppercase text-black">Redes oficiales de la boda</h6>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h1 text-black"></span></a>
                 <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h1 text-black"></span></a>
@@ -619,10 +622,17 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
           </div>
 	</div>
       </div>
-    </section><section class="site-section rockabilly-cuadrille pt-4 pb-4 ai-perdiste">
-      <div class="container"><div class="row"><div class="col-12 text-center">
-        <h3 class="mb-3 text-center rockabilly-title text-white" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
-        <ul class="list-unstyled">
+    </section>
+
+<section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.5)), url(img/bg-rockabilly-5.jpg); background-color:#212121 ; background-position:40% 20%; background-repeat:no-repeat; background-size:cover; position:relative;">
+          <div class="container">
+			<div class="row">
+               <div class="col-md-8">
+			     <h1 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto rockabilly-title-2 mb-4">Paula <i class="icon-heart h4" aria-hidden="true"></i> Nicolás</h1>
+				  </div>
+			
+			  <div class="col-md-4 text-xl-left text-lg-left text-md-left text-rockabilly-font-2 text-center">
+			 <span data-t="perdiste.titulo" class="d-none"></span><ul class="list-unstyled">
             <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
             <li><a href="#inicio" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
             <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
@@ -633,25 +643,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
             <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
             <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
             <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
-        </ul>
-      </div></div></div>
-    </section>
-
-<section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.5)), url(img/bg-rockabilly-5.jpg); background-color:#212121 ; background-position:40% 20%; background-repeat:no-repeat; background-size:cover; position:relative;">
-          <div class="container">
-			<div class="row">
-               <div class="col-md-8">
-			     <h1 class="text-center mt-auto ml-auto rockabilly-title-2 mb-4">Paula <i class="icon-heart h4" aria-hidden="true"></i> Nicolás</h1>
-				  </div>
-			
-			  <div class="col-md-4 text-xl-left text-lg-left text-md-left text-rockabilly-font-2 text-center">
-			 <ul class="list-unstyled">
-				  <li><a href="#rsvp" class="smoothscroll btn-link text-white">Confirmar asistencia</a></li>
-				  <li><a href="#agenda" class="smoothscroll btn-link text-white">Agendar evento</a></li>
-				  <li><a href="#dresscode" class="smoothscroll btn-link text-white">Dress code</a></li>
- 				  <li><a href="#musica" class="smoothscroll btn-link text-white">Sugerir canción</a></li>
-				  <li><a href="#home-section" class="smoothscroll btn-link text-white">Inicio</a></li>
-			 </ul> 
+          </ul> 
 				</div>
        </div>
       </div>

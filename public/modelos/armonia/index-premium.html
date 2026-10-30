@@ -82,7 +82,7 @@
                 <div class="col-3 col-md-2 mr-auto p-0">
 					<hr style="border-top: 2px solid #9c916b">
 				</div>
-                <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="mb-0 p-0 text-eucalipto">
+                <h1 data-ajustar-pc="0.6" data-ajustar="0.72" data-campo-html="nombres.portada" class="mb-0 p-0 text-eucalipto">
                   <span class="elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase">Noe</span>
                   <span class="elegance elegance-header-bottom mb-0 p-0 text-uppercase">
                     <span class="text-gold">&amp;</span>
@@ -113,7 +113,7 @@
                 <div class="col-3 col-md-2 mr-auto p-0">
 					<hr style="border-top: 2px solid #9c916b">
 				</div>
-                <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="mb-0 p-0 text-eucalipto">
+                <h1 data-ajustar-pc="0.6" data-ajustar="0.72" data-campo-html="nombres.portada" class="mb-0 p-0 text-eucalipto">
                   <span class="elegance-header elegance-header-top elegance mb-0 p-0 text-uppercase">Noe</span>
                   <span class="elegance elegance-header-bottom mb-0 p-0 text-uppercase">
                     <span class="text-gold">&amp;</span>
@@ -168,7 +168,7 @@
                   <span>🤵</span>
                 </div>
               </div>
-			 <div class="text-center vert-move mt-1 mb-3">
+			 <div data-si="cuenta.activa" class="text-center vert-move mt-1 mb-3">
 			       <a href="#inicio" class="smoothscroll"><span class="text-gold h1 icon-keyboard_arrow_down"></span></a>
 			 </div>
 			 </div>
@@ -188,7 +188,7 @@
 					<hr class="mb-3 mt-2" style="border-top: 2px solid #9c916b;">
 				</div>
 			  <p data-si="historia.activa" class="text-center text-byn g-historia"><span class="display-5 icon-quote-left"></span> <span data-campo-html="historia.texto">Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.</span> <span class="display-5 icon-quote-right"></span></p>
-			  <img loading="lazy" alt="foto" class="img-fluid img-thumbnail mb-3" src="demo/boda/inicial.jpg">
+			  <img data-estilo="fotos.historiaEstilo" data-attr="src:c:fotos.historia" data-si="fotos.historia" loading="lazy" alt="foto" class="img-fluid img-thumbnail mb-3" src="demo/boda/inicial.jpg">
 			  </div>
 		  
 			  <div id="agenda"></div>
@@ -218,8 +218,8 @@
           </div>
 			 
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-g.png" width="150" alt="Imagen">
-			  <img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-g.png" width="150px" alt="Imagen">
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-g.png" width="150" alt="Imagen">
+			  <img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-anillos-g.png" width="150px" alt="Imagen">
 			<div class="elegance">
 			  <h3 data-campo="celebracion.titulo" class="mb-2 text-center text-eucalipto elegance"><span style="font-weight: 400;">LA</span> FIESTA</h3>
 			  </div>
@@ -255,7 +255,7 @@
 		   <div class="row">
 			<div class="col-lg-6 mt-auto mb-auto">
 
-				<div data-componente="galeria"></div>
+				<div data-componente="galeria" data-rsvp="1"></div>
 			</div>
      
 		    <div class="col-lg-6 p-3 mt-auto mb-auto">
@@ -300,7 +300,7 @@
 		   <div class="row">
 			<div class="col-lg-6 mt-auto mb-auto">
 
-				<div data-componente="galeria"></div>
+				<div data-componente="galeria" data-rsvp="1"></div>
 			</div>
      
 		    <div class="col-lg-6 p-3 mt-auto mb-auto">
@@ -403,9 +403,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	      
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	      
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="elegance"></div></div>
+	</div>
   </div>
 </div>
 </section>
@@ -471,7 +471,7 @@
       <div class="container elegance" data-aos="fade-in">
           <div class="col-md-8 ml-auto mr-auto text-center">
 			 <p data-si="pie.mostrar" class="elegance text-eucalipto mb-4 font-weight-bolder"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.</span> <span class="display-5 icon-quote-right"></span></p>
-			  <h3 data-campo-html="nombres.cierre" class="text-center text-eucalipto elegance text-uppercase">Noe <span class="text-gold">&amp;</span> Eze</h3>
+			  <h3 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center text-eucalipto elegance text-uppercase">Noe <span class="text-gold">&amp;</span> Eze</h3>
           </div>
 		  		<div class="col-5 col-md-4 ml-auto mr-auto p-0 mt-3 mb-3">
 					<hr class="mb-4 mt-4" style="border-top: 2px solid #9c916b;">

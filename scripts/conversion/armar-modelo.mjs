@@ -30,7 +30,8 @@ const PAQ = {
 function paquetes(ev) {
   const p = conv[ev].paquetes;
   const tiene = (paq, s) => s === 'musica' || (p[paq]?.secciones || p.deluxe.secciones).includes(s);
-  const fotosPortada = (paq) => Math.max(1, p[paq]?.info?.portadaFotos || p.deluxe.info.portadaFotos || 1);
+  // Sin foto de portada en el diseño (Armonía, Beach, Black…): 0, y el panel no muestra la opción
+  const fotosPortada = (paq) => (p.deluxe.info.portadaFotos === 0 ? 0 : Math.max(1, p[paq]?.info?.portadaFotos || p.deluxe.info.portadaFotos || 1));
   return {
     basic: { secciones: PAQ.basic.filter((s) => tiene('basic', s)), incluye: { sobre: false, musica: false, cuenta: false, fotosPortada: fotosPortada('basic'), fotosGaleria: 20 } },
     premium: { secciones: PAQ.premium.filter((s) => tiene('premium', s)), incluye: { sobre: true, musica: true, cuenta: true, fotosPortada: fotosPortada('premium'), fotosGaleria: 20 } },
@@ -95,6 +96,36 @@ async function fuentes(ev) {
   return { titulos: titulos || "'Great Vibes', cursive", texto: "'Jost', sans-serif", css: info.fuentes || [] };
 }
 
+
+// Medidas de un JPG (para la proporción de la foto de historia)
+async function medidasJpg(f) {
+  const b = await readFile(f).catch(() => null);
+  if (!b) return null;
+  for (let i = 2; i < b.length - 9;) {
+    if (b[i] !== 0xff) return null;
+    const m = b[i + 1], l = b.readUInt16BE(i + 2);
+    if (m >= 0xc0 && m <= 0xc3) return { h: b.readUInt16BE(i + 5), w: b.readUInt16BE(i + 7) };
+    i += 2 + l;
+  }
+  return null;
+}
+const proporcionTexto = (w, h) => { const r = w / h; const opciones = [['1:1', 1], ['4:5', 0.8], ['3:4', 0.75], ['2:3', 2 / 3], ['4:3', 4 / 3], ['3:2', 1.5], ['16:9', 16 / 9]]; return opciones.sort((a, b) => Math.abs(a[1] - r) - Math.abs(b[1] - r))[0][0]; };
+async function propHistoria(ev) {
+  const info = conv[ev].paquetes.deluxe.info.fotoHistoria;
+  if (!info) return null;
+  if (info !== 'demo') return info;
+  const m = await medidasJpg(join(carpeta, 'demo', ev, 'inicial.jpg'));
+  return m ? proporcionTexto(m.w, m.h) : '4:5';
+}
+
+// Los textos de muestra del propio diseño (historia y despedida), en castellano: se usan si el cliente no escribe los suyos
+const textosDemo = (ev) => {
+  const i = conv[ev]?.paquetes?.deluxe?.info || {};
+  const o = {};
+  if (i.textoHistoria && i.textoHistoria.length > 40) o['historia.texto'] = i.textoHistoria;
+  if (i.textoPie && i.textoPie.length > 40) o['pie.texto'] = i.textoPie;
+  return Object.keys(o).length ? o : null;
+};
 const nombre = nombreArg || previo.nombre || id.charAt(0).toUpperCase() + id.slice(1);
 const d0 = await datosEvento(ev0);
 const f0 = await fuentes(ev0);
@@ -104,11 +135,21 @@ const modelo = {
   eventos,
   gratis: previo.gratis ?? false,
   paleta: d0.paleta,
-  galeria: { byn: ['byn', 'romantic'].includes(id), enRsvp: !!conv[ev0].paquetes.deluxe.info.galeriaEnRsvp },
-  videoPortada: !!conv[ev0].paquetes.deluxe.info.videoPortada,
-  portadaSinFoto: d0.fondoPortada ? `img/${basename(d0.fondoPortada)}` : previo.portadaSinFoto,
+  galeria: { byn: ['byn', 'romantic'].includes(id), enRsvp: !!conv[ev0].paquetes.deluxe.info.galeriaEnRsvp, ...(conv[ev0].paquetes.deluxe.info.galeriaFija ? { fija: true } : {}) },
+  // Video de portada del cliente: los diseños con video (Cinema) y los de foto a pantalla completa; Disco no (su video es parte del diseño)
+  videoPortada: id !== 'disco' && !!(conv[ev0].paquetes.deluxe.info.videoPortada || conv[ev0].paquetes.deluxe.info.fondoCompleto),
+  portadaSinFoto: id === 'travel' ? 'img/portada-avion.jpg' : d0.fondoPortada ? `img/${basename(d0.fondoPortada)}` : previo.portadaSinFoto,
+  // Sin foto de portada va un color liso; Travel tiene su imagen (el avión)
+  ...(id === 'travel' ? { portadaSinFotoImagen: true } : {}),
+  // Textos que el diseño escribe en minúsculas (Romantic: el botón de confirmar)
+  ...(id === 'romantic' ? { textosCaso: { 'rsvp.botonHtml': 'oracion', 'rsvp.cerradoHtml': 'oracion' } } : {}),
   paquetes: paquetes(ev0),
-  ...(conv[ev0].paquetes.deluxe.info.propLugar ? { proporciones: { lugar: conv[ev0].paquetes.deluxe.info.propLugar } } : {}),
+  ...(conv[ev0].paquetes.deluxe.info.ciudadPortada ? { ciudadPortada: true } : {}),
+  // Sin foto en la confirmación del diseño (Black, Lila, White): el panel no la ofrece
+  ...(conv[ev0].paquetes.deluxe.info.rsvpConFoto === false ? { sinFotoRsvp: true } : {}),
+  ...(textosDemo(ev0) ? { textosDemo: textosDemo(ev0) } : {}),
+  ...(await propHistoria(ev0) ? { fotoHistoria: await propHistoria(ev0) } : {}),
+  proporciones: { ...(conv[ev0].paquetes.deluxe.info.propLugar ? { lugar: conv[ev0].paquetes.deluxe.info.propLugar } : {}), ...(conv[ev0].paquetes.deluxe.info.portadaRedonda ? { portada: '1:1' } : {}) },
   nombresHTML: {
     portada: nombresHTML(conv[ev0].paquetes.deluxe.info.nombresPortada, ev0 === 'boda') || '{a} &amp; {b}',
     cierre: nombresHTML(conv[ev0].paquetes.deluxe.info.nombresCierre || conv[ev0].paquetes.deluxe.info.nombresPortada, ev0 === 'boda') || '{a} &amp; {b}',
@@ -132,9 +173,14 @@ for (const ev of eventos) {
   const pl = ev === 'boda';
   modelo.porEvento[ev] = {
     paquetes: paquetes(ev),
+    ...(textosDemo(ev) ? { textosDemo: textosDemo(ev) } : {}),
+    sinFotoRsvp: conv[ev].paquetes.deluxe.info.rsvpConFoto === false,
+    ...(await propHistoria(ev) ? { fotoHistoria: await propHistoria(ev) } : {}),
+    proporciones: { ...(conv[ev].paquetes.deluxe.info.propLugar ? { lugar: conv[ev].paquetes.deluxe.info.propLugar } : {}), ...(conv[ev].paquetes.deluxe.info.portadaRedonda ? { portada: '1:1' } : {}) },
+    videoPortada: id !== 'disco' && !!(conv[ev].paquetes.deluxe.info.videoPortada || conv[ev].paquetes.deluxe.info.fondoCompleto),
     sobre: { colores: Object.keys(d.colores).length ? d.colores : { lacre: d.principal }, ...(d.bienvenida ? { bienvenida: d.bienvenida } : {}) },
     nombresHTML: { portada: nombresHTML(conv[ev].paquetes.deluxe.info.nombresPortada, pl) || '{a}', cierre: nombresHTML(conv[ev].paquetes.deluxe.info.nombresCierre, pl) || '{a}', solo: '{a}' },
-    ...(previo.porEvento?.[ev] ? Object.fromEntries(Object.entries(previo.porEvento[ev]).filter(([k]) => !['paquetes', 'sobre', 'nombresHTML'].includes(k))) : {}),
+    ...(previo.porEvento?.[ev] ? Object.fromEntries(Object.entries(previo.porEvento[ev]).filter(([k]) => !['paquetes', 'sobre', 'nombresHTML', 'textosDemo', 'videoPortada', 'proporciones', 'fotoHistoria', 'sinFotoRsvp'].includes(k))) : {}),
   };
 }
 // Cumpleaños con fotos de un hombre: la demo lleva nombre de hombre

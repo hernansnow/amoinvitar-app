@@ -103,7 +103,7 @@
 <div class="video-container">
 	
 <!-- Slider -->
-	<div class="ai-slides" data-intervalo="5000"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/comunion/hero-banner1.jpg); background-position: 50% 50%">
+	<div data-video-portada="" class="ai-slides" data-intervalo="5000"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/comunion/hero-banner1.jpg); background-position: 50% 50%">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/comunion/hero-banner2.jpg); background-position: 50% 10%">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/comunion/hero-banner3.jpg); background-position: 50% 50%">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/comunion/hero-banner4.jpg); background-position: 50% 90%">
@@ -146,7 +146,7 @@
 		
 	   <!-- VIDEO -->
       <div class="video-container">
-            <div class="ai-slides ai-en-linea" data-intervalo="5000"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc ai-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/comunion/hero-banner1.jpg);background-color:#9c916b; background-position: 50% 50%;" data-aos="fade">
+            <div class="ai-slides ai-en-linea" data-intervalo="5000"><div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc ai-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05)), url(demo/comunion/hero-banner1.jpg);background-color:#9c916b; background-position: 50% 50%;" data-aos="fade">
       </div></div>
 </div>
 	  
@@ -173,15 +173,13 @@
       <div class="container pt-5">
         <div class="row mb-3">
           <div class="col-md-8 ml-auto mr-auto text-center" data-aos="fade-up">
-             <h2 class="text-center text-gold mt-5 lovestory">Mi Primera Comunión</h2>
-			  <h5>Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.</h5>
+             <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="text-center text-gold mt-5 font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="text-center text-gold mt-5 lovestory">Mi Primera Comunión</h2>
+			  <h5 data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.</span></h5>
           </div>
         </div>
 	   </div>
-    </section>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>  
-			  
 	   <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(239, 236, 208 , 0.0), rgba(239, 236, 208 , 0.0)), url(img/bg23.jpg); background-color:#e4d9c7; background-repeat: no-repeat;
      background-size: 100% 100%;" id="agenda">
       <div class="container">
@@ -193,7 +191,7 @@
                    <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-w.png" width="115px" alt="Imagen">
 				</div>
 			  <h2 data-campo="ceremonia.titulo" class="text-center text-white lovestory">Misa</h2>
-		    <img data-attr="src:c:ceremonia.foto;style:c:ceremonia.fotoEstilo" data-si="ceremonia.foto" loading="lazy" src="../../comun/img/demo-iglesia.jpg" alt="Imagen" class="img-fluid mb-3 img-thumbnail rounded-circle w-75">
+		    <img data-attr="src:c:ceremonia.foto;style:c:ceremonia.fotoEstilo" data-si="ceremonia.foto" loading="lazy" src="../../comun/img/demo-iglesia.jpg" alt="Imagen" class="img-fluid mb-3 img-thumbnail rounded-circle w-75 ai-lugar-redondo">
 			  <p class="mb-1"><span data-t="lugar.diaHorario" class="text-gold bg-light p-1 font-weight-bolder section-sub-title-sm">DIA Y HORARIO</span></p>
 			  <p data-fecha-formato="{dd} ◦ {mm} ◦ {a} - {hora}" data-fecha="ceremonia" class="text-center text-white mb-0">12 ◦ 09 ◦ 2027 - 20:00</p>
 			  <p class="mb-1 mt-2"><span data-t="lugar.lugar" class="text-gold bg-light p-1 font-weight-bolder section-sub-title-sm">LUGAR</span></p>
@@ -214,13 +212,13 @@
           <div class="col-md-6 ml-auto mr-auto mb-2 mt-3 p-lg-3 text-center" data-aos="fade-up" data-aos-delay="150">
 			  <div class="p-3 rounded text-center">
                 <div class="text-center zoom-move mb-2">
-				   <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-3 mt-2" src="img/icon-party-3-w.png" width="80px" alt="Imagen"><img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-w.png" width="115px" alt="Imagen">
+				   <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-3 mt-2" src="img/icon-party-3-w.png" width="80px" alt="Imagen"><img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-w.png" width="115px" alt="Imagen">
 				</div>
 				<div class="text-center shake-move mb-2" hidden>
                    <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-church-w.png" width="115px" alt="Imagen">
 				</div>
 			 <h2 data-campo="celebracion.titulo" class="text-center text-white lovestory">Fiesta</h2>	
-			  <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid mb-3 img-thumbnail rounded-circle w-75">
+			  <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid mb-3 img-thumbnail rounded-circle w-75 ai-lugar-redondo">
 			  <p class="mb-1"><span data-t="lugar.diaHorario" class="text-gold bg-light p-1 font-weight-bolder section-sub-title-sm">DIA Y HORARIO</span></p>
 			  <p data-fecha-formato="{dd} ◦ {mm} ◦ {a} - {hora}" data-fecha="celebracion" class="text-center text-white mb-0">12 ◦ 09 ◦ 2027 - 21:00</p>
 			  <p class="mb-1 mt-2"><span data-t="lugar.lugar" class="text-gold bg-light p-1 font-weight-bolder section-sub-title-sm">LUGAR</span></p>
@@ -345,9 +343,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	   
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	   
 	 
-	      </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="lovestory"></div></div>
+	      </div>
 		  </div>
        </div>
    </div>
@@ -443,36 +441,25 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
           </div>
 		               
       </div>
-    </section><section class="bg-diferido site-section pt-4 pb-4 ai-perdiste" style="background-image: url(img/bg25.jpg); background-color:#fff; background-position: 50% 0%; background-repeat:no-repeat; background-size:cover; position:relative;">
-      <div class="container"><div class="row"><div class="col-12 text-center">
-        <h3 class="mb-3 text-center lovestory text-black" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
-        <ul class="list-unstyled">
-            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-black" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
-            <li><a href="#agenda" class="smoothscroll btn-link text-black" data-t="perdiste.agendar">Agendar evento</a></li>
-            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-black" data-t="perdiste.dress">Dress code</a></li>
-            <li data-seccion="instagram"><a href="#hashtag" class="smoothscroll btn-link text-black" data-t="perdiste.instagram">Instagram Wall</a></li>
-            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-black" data-t="perdiste.canciones">Sugerir canción</a></li>
-            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-black" data-t="perdiste.regalos">Regalos</a></li>
-            <li><a href="#home-section" class="smoothscroll btn-link text-black" data-t="perdiste.inicio">Inicio</a></li>
-        </ul>
-      </div></div></div>
     </section> 
     
 <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(255, 255, 255, 0.2)), url(img/bg27-lovestory.jpg); background-color:#9c916b ; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
           <div class="container">
 			<div class="row">
           <div class="col-md-8">
-			      <h1 class="text-center lovestory mt-auto ml-auto text-white">Flor</h1>
+			      <h1 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center lovestory mt-auto ml-auto text-white">Flor</h1>
 				  </div>
 			
 			  <div class="col-md-4 text-xl-left text-lg-left text-md-left text-center">
-			 <ul class="list-unstyled">
-				  <li><a href="#rsvp" class="smoothscroll btn-link text-white">Confirmar asistencia</a></li>
-				  <li><a href="#agenda" class="smoothscroll btn-link text-white">Agendar evento</a></li>
-				  <li><a href="#dresscode" class="smoothscroll btn-link text-white">Dress code</a></li>
- 				  <li><a href="#musica" class="smoothscroll btn-link text-white">Sugerir canción</a></li>
-				  <li><a href="#home-section" class="smoothscroll btn-link text-white">Inicio</a></li>
-			 </ul> 
+			 <span data-t="perdiste.titulo" class="d-none"></span><ul class="list-unstyled">
+            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
+            <li><a href="#agenda" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
+            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="instagram"><a href="#hashtag" class="smoothscroll btn-link text-white" data-t="perdiste.instagram">Instagram Wall</a></li>
+            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
+            <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
+          </ul> 
 				</div>
        </div>
       </div>

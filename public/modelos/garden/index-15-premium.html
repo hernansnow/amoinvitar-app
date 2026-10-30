@@ -89,7 +89,7 @@
 	   <!-- VIDEO -->
       <div class="video-container">
 <!-- Slider -->
-	<div class="ai-slides" data-intervalo="5000"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/15/hero-banner1.jpg); background-position: 50% 25%">
+	<div data-video-portada="" class="ai-slides" data-intervalo="5000"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/15/hero-banner1.jpg); background-position: 50% 25%">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/15/hero-banner2.jpg); background-position: 50% 5%">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/15/hero-banner3.jpg); background-position: 60% 30%">
 			</div><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="ai-slide bg-diferido d-block" style="height:100vh;height:100svh; background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/15/hero-banner4.jpg); background-position: 50% 20%">
@@ -135,7 +135,7 @@
 
 	   <!-- VIDEO -->
       <div class="video-container">
-		  <div class="ai-slides ai-en-linea" data-intervalo="5000"><div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="inner-page-cover section-hero portada-foto-pc ai-slide" style="background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/15/hero-banner1.jpg); background-position: 50% 25%">
+		  <div class="ai-slides ai-en-linea" data-intervalo="5000"><div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="inner-page-cover section-hero portada-foto-pc ai-slide" style="background-repeat: no-repeat; background-position: center center; background-size: cover; background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(demo/15/hero-banner1.jpg); background-position: 50% 25%">
 		  </div></div>
 	  </div>
 		
@@ -184,8 +184,7 @@
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
    <section class="bg-diferido site-section pt-0" style="background-image: linear-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8)), url(img/bg-oliva-6.jpg); background-color:#fff; background-position:70% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="inicio">
       <div class="container">
@@ -221,7 +220,7 @@
 			  <img loading="lazy" class="img-fluid" src="img/garden-5.png" width="200px" alt="Imagen" style="position: absolute; top: -55px;left: -58px;">
 				  <img loading="lazy" class="img-fluid" src="img/garden-6.png" width="200px" alt="Imagen" style="position: absolute; bottom: -54px;right: 20px;">
 			  	<div class="text-center mb-2 shake-move">
-                   <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party.png" width="135px" alt="Imagen"><img data-si="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-2" src="img/icon-church.png" width="120px" alt="Imagen">
+                   <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party.png" width="135px" alt="Imagen"><img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-2" src="img/icon-church.png" width="120px" alt="Imagen">
 				</div>
 			  <h2 data-campo="celebracion.titulo" class="mb-3 text-center euforia text-bronce">Celebración</h2>
 			  <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded mb-3 border border-dark w-75">
@@ -386,9 +385,9 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	  
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	  
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="euforia"></div></div>
+	</div>
   </div>
 </div>
 </div>
@@ -451,7 +450,7 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
         <div class="row">
           <div class="col-md-8 ml-auto mr-auto text-center">
 			 <h4 data-si="pie.mostrar" class="text-bronce mb-5"><strong data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</strong></h4>
-			  <h2 data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto euforia text-musgo">Mariana</h2>
+			  <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto euforia text-musgo">Mariana</h2>
           </div>
 		  </div>
       </div>

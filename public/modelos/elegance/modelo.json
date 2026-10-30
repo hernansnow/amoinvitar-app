@@ -15,7 +15,7 @@
     "byn": false,
     "enRsvp": true
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "portadaSinFoto": "img/wave-mid-bronce.png",
   "paquetes": {
     "basic": {
@@ -80,6 +80,13 @@
       }
     }
   },
+  "sinFotoRsvp": true,
+  "textosDemo": {
+    "historia.texto": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos."
+  },
+  "fotoHistoria": "3:2",
+  "proporciones": {},
   "nombresHTML": {
     "portada": "{a} <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> {b}",
     "cierre": "{a} <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> {b}",

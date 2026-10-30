@@ -2850,7 +2850,7 @@ button.bg-light:hover {
     padding-right: 0.5rem !important
 }
 
-
+.pb-2,
 .py-2 {
     padding-bottom: 0.5rem !important
 }
@@ -3685,6 +3685,16 @@ xclip
 	#tres {
 		order: 3;
 	}
+}
+.show-mobile {
+	display: none;
+}
+
+@media screen and (max-width: 768px) {
+.show-mobile{
+		display: block;
+	}
+
 }
 /* -------------------------------- 
 

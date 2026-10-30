@@ -1,7 +1,7 @@
 /* Tienda: modelos con vista previa y "Personalizar" */
 .opcion.modelo { display: grid; gap: 8px; align-content: start; cursor: default; }
 .opcion.modelo .miniatura { border: 0; padding: 0; background: none; cursor: pointer; display: block; border-radius: 10px; overflow: hidden; }
-.opcion.modelo .modelo-img { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; display: block; transition: transform .3s; }
+.opcion.modelo .modelo-img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; transition: transform .3s; }
 .opcion.modelo .miniatura:hover .modelo-img { transform: scale(1.03); }
 .botones-modelo { display: flex; gap: 8px; flex-wrap: wrap; }
 .botones-modelo .btn { flex: 1; }

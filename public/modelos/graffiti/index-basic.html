@@ -77,7 +77,7 @@
 		
 	   <!-- VIDEO -->
       <div class="video-container">
-            <div data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.05)), url(demo/boda/hero-banner.jpg);background-color:#3A3D3E; background-position: 50% 15%;" data-aos="fade">
+            <div data-video-portada="" data-i-estilo="estilo" data-i-pos="pos" data-i-bg="url" data-repetir="fotos.portada" class="site-blocks-cover portada-foto-pc" style="background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.05)), url(demo/boda/hero-banner.jpg);background-color:#3A3D3E; background-position: 50% 15%;" data-aos="fade">
       </div>
 </div>
 
@@ -95,45 +95,45 @@
 <section class="bg-diferido site-section bg-amarillo p-3" style="background-image: linear-gradient(rgba(250, 250, 250, 0.5), rgba(250, 250, 250, 0.5)), url(img/bg-15-3.jpg); background-color:#fff ; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
       <div class="container">
         <div class="row item">
-          <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up">
+          <div data-si="ceremonia.separada" class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up">
               <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-anillos-graffiti.png" width="110px" alt="Imagen" style="opacity: .8">
-			  <h1 class="mb-3 section-title text-center text-black"><span class="text-graffiti3 text-black">Ceremonia</span></h1>
-			  <p class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
-			  <p class="text-center">12 de septiembre de 2027 a las 20:00</p>
-			  <p class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">LUGAR</p>
-			  <p class="text-center">"Basílica de Santa Eulalia", Av. Extremadura, 13, Mérida, Badajoz</p>
+			  <h1 class="mb-3 section-title text-center text-black"><span data-campo="ceremonia.titulo" class="text-graffiti3 text-black">Ceremonia</span></h1>
+			  <p data-t="lugar.diaHorario" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
+			  <p data-campo="ceremonia.fechaLarga" class="text-center">12 de septiembre de 2027 a las 20:00</p>
+			  <p data-t="lugar.lugar" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">LUGAR</p>
+			  <p data-campo="ceremonia.lugarTexto" class="text-center">"Basílica de Santa Eulalia", Av. Extremadura, 13, Mérida, Badajoz</p>
 			  
-			  <button id="iglesia-button" class="button button-naranja mb-2 text-uppercase rounded-pill"><i class="icon-calendar" aria-hidden="true"></i>  Agendar</button>
-			  <button class="button button-naranja mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#map1" data-animation-duration="700"><i class="icon-map-marker" aria-hidden="true"></i>  ¿CÓMO LLEGAR?</button>
+			  <button data-agendar="ceremonia" class="button button-naranja mb-2 text-uppercase rounded-pill"><i class="icon-calendar" aria-hidden="true"></i> <span data-t="boton.agendar">Agendar</span></button>
+			  <button data-si="ceremonia.mapa.embed" class="button button-naranja mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#map1" data-animation-duration="700"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="boton.comoLlegar">¿CÓMO LLEGAR?</span></button>
 
     <div style="display: none;" id="map1" class="animated-modal p-4">
 				   	<p class="text-center h3 mb-0"><i class="text-black icon-map-marker" aria-hidden="true"></i></p>
-					 <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">¿Cómo llegar?</p>
+					 <p data-t="mapa.titulo" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">¿Cómo llegar?</p>
 	
-	<div class="text-center" style="width: 100%"><iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" style="border:0;" allowfullscreen loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6208.292342931486!2d-6.341909200000001!3d38.9206364!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd14269564d0f457%3A0xbcd1b9eda781a33d!2sBas%C3%ADlica%20de%20Santa%20Eulalia!5e0!3m2!1ses-419!2ses!4v1753344339698!5m2!1ses-419!2ses"></iframe><a href="https://maps.app.goo.gl/v5z7e4uJKxRu4mTp9" target="_blank" class="mt-2 btn btn-outline-dark btn-small"><i class="icon-map-marker" aria-hidden="true"></i> Ver en la app de Google Maps</a></div>
+	<div class="text-center" style="width: 100%"><iframe width="100%" height="400" style="border:0;" loading="lazy" title="Mapa" data-attr="data-src:c:ceremonia.mapa.embed" src="about:blank"></iframe><a data-attr="href:c:ceremonia.mapa.link" rel="noopener" href="#" target="_blank" class="mt-2 btn btn-outline-dark btn-small"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="mapa.abrir">Ver en la app de Google Maps</span></a></div>
     </div>
 
           </div>
 			
-			<div class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
+			<div data-si="ceremonia.separada" class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
 			
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-graffiti.png" width="110px" alt="Imagen" style="opacity: .8">
-			  <img loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-anillos-graffiti.png" width="110px" alt="Imagen" style="opacity: .8" hidden>
-			  <h1 class="mb-3 section-title text-center text-black"><span class="text-graffiti3 text-black">Fiesta</span></h1>
-			  <p class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
-			  <p class="text-center">12 de septiembre de 2027 a las 21:00</p>
-			  <p class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">LUGAR</p>
-			  <p class="text-center">"Finca Dehesa Las Rozas", N-630, P.K. 631, Mérida, Badajoz</p>
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-graffiti.png" width="110px" alt="Imagen" style="opacity: .8">
+			  <img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-anillos-graffiti.png" width="110px" alt="Imagen" style="opacity: .8">
+			  <h1 class="mb-3 section-title text-center text-black"><span data-campo="celebracion.titulo" class="text-graffiti3 text-black">Fiesta</span></h1>
+			  <p data-t="lugar.diaHorario" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
+			  <p data-campo="celebracion.fechaLarga" class="text-center">12 de septiembre de 2027 a las 21:00</p>
+			  <p data-t="lugar.lugar" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">LUGAR</p>
+			  <p data-campo="celebracion.lugarTexto" class="text-center">"Finca Dehesa Las Rozas", N-630, P.K. 631, Mérida, Badajoz</p>
 			  
-			  <button id="fiesta-button" class="button button-naranja mb-2 text-uppercase rounded-pill"><i class="icon-calendar" aria-hidden="true"></i>  Agendar</button>
-			  <button class="button button-naranja mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#map2" data-animation-duration="700"><i class="icon-map-marker" aria-hidden="true"></i>  ¿CÓMO LLEGAR?</button>
+			  <button data-agendar="celebracion" class="button button-naranja mb-2 text-uppercase rounded-pill"><i class="icon-calendar" aria-hidden="true"></i> <span data-t="boton.agendar">Agendar</span></button>
+			  <button data-si="celebracion.mapa.embed" class="button button-naranja mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#map2" data-animation-duration="700"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="boton.comoLlegar">¿CÓMO LLEGAR?</span></button>
 
     <div style="display: none;" id="map2" class="animated-modal p-4">
 				   	<p class="text-center h3 mb-0"><i class="text-black icon-map-marker" aria-hidden="true"></i></p>
-					 <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">¿Cómo llegar?</p>
+					 <p data-t="mapa.titulo" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">¿Cómo llegar?</p>
 	
-	<div class="text-center" style="width: 100%"><iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" style="border:0;" allowfullscreen loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3107.199824535361!2d-6.3590988!3d38.850782699999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd1421e01126afa1%3A0x16e897854b8b0b30!2sFinca%20Dehesa%20Las%20Rozas!5e0!3m2!1ses-419!2ses!4v1753343964905!5m2!1ses-419!2ses"></iframe><a href="https://maps.app.goo.gl/9hgCFjsgVENmW7qe9" target="_blank" class="mt-2 btn btn-outline-dark btn-small"><i class="icon-map-marker" aria-hidden="true"></i> Ver en la app de Google Maps</a></div>
+	<div class="text-center" style="width: 100%"><iframe width="100%" height="400" style="border:0;" loading="lazy" title="Mapa" data-attr="data-src:c:celebracion.mapa.embed" src="about:blank"></iframe><a data-attr="href:c:celebracion.mapa.link" rel="noopener" href="#" target="_blank" class="mt-2 btn btn-outline-dark btn-small"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="mapa.abrir">Ver en la app de Google Maps</span></a></div>
 &#160;   </div>
 
           </div>
@@ -172,15 +172,18 @@
 		  </div>
 </section></div>
 		
-    <section class="site-section bg-verde" id="dresscode">
+    <section data-si="grupos.dress" class="site-section bg-verde" id="dresscode">
       <div class="container">
         <div class="row ml-auto mr-auto">
-           <div class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-in">
-			   <div class="text-center mb-0">
+           <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center" data-aos="fade-in">
+			   <div data-seccion="dresscode" class="text-center mb-0">
 		      <img loading="lazy" class="img-fluid mb-0" src="img/icon-dress-graffiti.png" width="90px" alt="Imagen">
 			  </div>
-			   <h1 class="mb-3 section-title text-center text-white"><span class="text-graffiti3">Dress Code</span></h1>
-                <p class="text-center text-white">Formal y elegante. Por favor no usar blanco.</p>
+			   <h1 data-seccion="dresscode" class="mb-3 section-title text-center text-white"><span data-t="dress.titulo" class="text-graffiti3">Dress Code</span></h1>
+                <p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-white">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
+            <p class="text-center text-white mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
+          </div>
 				   </div>
        </div>
      </div>
@@ -190,7 +193,7 @@
     <div class="container">
           <div class="col-md-9 ml-auto mr-auto text-center">
 			 <h4 data-campo-html="pie.texto" data-si="pie.mostrar" class="text-white"><span class="text-graffiti3 mb-0">"</span>Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.</h4><span class="text-graffiti3 text-right m-0 p-0 text-white">"</span>
-			  <h4 class="text-center text-graffiti2 mt-auto ml-auto text-white">Ariadna &amp; Mario</h4>
+			  <h4 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center text-graffiti2 mt-auto ml-auto text-white">Ariadna &amp; Mario</h4>
           </div>
 </div>
  </section>	

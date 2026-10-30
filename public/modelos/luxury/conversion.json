@@ -25,8 +25,7 @@
           "instagram"
         ],
         "avisos": [
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
-          "perdiste: se agregó (no había)"
+          "portada: sin frase (NOS CASAMOS / MIS 15…)"
         ],
         "info": {
           "nombresPortada": "Flor",
@@ -48,10 +47,14 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -62,6 +65,8 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -82,8 +87,7 @@
         ],
         "avisos": [
           "portada: sin frase (NOS CASAMOS / MIS 15…)",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Flor",
@@ -105,10 +109,16 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -135,9 +145,13 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
@@ -172,9 +186,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "Flor",
           "portadas": [
@@ -195,10 +207,14 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -207,6 +223,8 @@
             "baile",
             "last-call2"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -226,8 +244,7 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Flor",
@@ -249,10 +266,16 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -278,9 +301,13 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
@@ -299,6 +326,7 @@
       "deluxe": {
         "archivo": "index-bautismo.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -314,10 +342,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "historia: no se encontró el texto ni el saludo",
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "cinta": true,
           "nombresPortada": "Flor",
@@ -339,10 +364,14 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -353,6 +382,8 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -362,6 +393,7 @@
       "premium": {
         "archivo": "index-bautismo-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -371,9 +403,7 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "cinta": true,
@@ -396,10 +426,16 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -426,9 +462,13 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
@@ -447,6 +487,7 @@
       "deluxe": {
         "archivo": "index-comunion.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "hospedaje",
@@ -462,10 +503,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "historia: no se encontró el texto ni el saludo",
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "cinta": true,
           "nombresPortada": "Flor",
@@ -487,10 +525,14 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -501,6 +543,8 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -510,6 +554,7 @@
       "premium": {
         "archivo": "index-comunion-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -519,9 +564,7 @@
           "regalos"
         ],
         "avisos": [
-          "historia: no se encontró el texto ni el saludo",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "cinta": true,
@@ -544,10 +587,16 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -574,9 +623,13 @@
               "pos": "50% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Flor",
           "claseTitulos": "lovestory",
           "fuentes": [

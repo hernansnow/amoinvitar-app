@@ -24,9 +24,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "Agus <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> Fran",
           "portadas": [
@@ -35,9 +33,13 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+          "fotoHistoria": "demo",
           "idAgenda": "inicio",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -47,6 +49,7 @@
             "disco",
             "brindis"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "claseTitulos": "elegance2",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
@@ -66,8 +69,7 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Agus <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> Fran",
@@ -77,9 +79,14 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+          "fotoHistoria": "demo",
           "idAgenda": "inicio",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "claseTitulos": "elegance2",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
@@ -105,9 +112,12 @@
               "pos": "50% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "idAgenda": "inicio",
           "galeriaEnRsvp": true,
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "claseTitulos": "elegance2",
           "fuentes": [
             "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"

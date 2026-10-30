@@ -24,9 +24,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "Paula",
           "portadas": [
@@ -47,9 +45,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
           "galeria": 12,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -60,6 +62,8 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
@@ -80,8 +84,7 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Paula",
@@ -103,9 +106,15 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
           "galeria": 8,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
@@ -132,9 +141,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
           "galeria": 4,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
@@ -170,9 +183,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "Paula <span class=\"icon-heart text-rockabilly\" aria-hidden=\"true\"></span> Nicolás",
           "portadas": [
@@ -193,9 +204,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
           "galeria": 12,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -205,6 +220,8 @@
             "disco",
             "brindis"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Paula <i class=\"icon-heart h4\" aria-hidden=\"true\"></i> Nicolás",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
@@ -225,8 +242,7 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Paula <span class=\"icon-heart text-rockabilly\" aria-hidden=\"true\"></span> Nicolás",
@@ -248,9 +264,15 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
           "galeria": 8,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Paula <i class=\"icon-heart h4\" aria-hidden=\"true\"></i> Nicolás",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
@@ -277,9 +299,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
           "galeria": 4,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Paula <i class=\"icon-heart h4\" aria-hidden=\"true\"></i> Nicolás",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
@@ -315,9 +341,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "Paula",
           "portadas": [
@@ -338,9 +362,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
           "galeria": 12,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -349,6 +377,8 @@
             "baile",
             "last-call2"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
@@ -369,8 +399,7 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "nombresPortada": "Paula",
@@ -392,9 +421,15 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
           "galeria": 8,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+shrikhand.css"
@@ -421,9 +456,13 @@
               "pos": "center center"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
           "galeria": 4,
+          "galeriaFija": true,
           "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
           "nombresCierre": "Paula",
           "claseTitulos": "rockabilly-title",
           "fuentes": [

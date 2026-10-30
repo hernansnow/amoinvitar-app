@@ -79,7 +79,7 @@
 			</div> 
 				 
 			 	<div data-repetir="fotos.portada" class="zoom-move col-md-7 col-9 ml-auto mr-auto mb-3">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-0" style="border: 7px solid #f09bc2">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-0 ai-foto-1x1" style="border: 7px solid #f09bc2">
               </div>
 	       <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="mb-4 p-0 chewy texto-peppa-pig font-weight-bolder"> 12 • 09 • 2027 </h4>
 			 <div class="text-center mb-2">
@@ -131,7 +131,7 @@
 			</div> 
 				 
 			 	<div data-repetir="fotos.portada" class="zoom-move col-md-7 col-9 ml-auto mr-auto mb-3">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-0" style="border: 7px solid #f09bc2">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/infantil/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle w-50 p-0 ai-foto-1x1" style="border: 7px solid #f09bc2">
               </div>
 	       <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="mb-4 p-0 chewy texto-peppa-pig font-weight-bolder"> 12 • 09 • 2027 </h4>
 			 <div class="text-center mb-2">
@@ -194,13 +194,12 @@
                     <div data-formato="<div class=&quot;holder m-2&quot;><span class=&quot;h1 chewy font-weight-bolder&quot; style=&quot;border: 7px solid #3293e2; background-color:rgba(242, 177, 209, 0.6);&quot;>{d}</span> {dias}</div><div class=&quot;holder m-2&quot;><span class=&quot;h1 chewy font-weight-bolder&quot; style=&quot;border: 7px solid #3293e2; background-color:rgba(242, 177, 209, 0.6);&quot;>{h}</span> {horas}</div><div class=&quot;holder m-2&quot;><span class=&quot;h1 chewy font-weight-bolder&quot; style=&quot;border: 7px solid #3293e2; background-color:rgba(242, 177, 209, 0.6);&quot;>{m}</span> {min}</div><div class=&quot;holder m-2&quot;><span class=&quot;h1 chewy font-weight-bolder&quot; style=&quot;border: 7px solid #3293e2; background-color:rgba(242, 177, 209, 0.6);&quot;>{s}</span> {seg}</div>" data-si="cuenta.activa" id="clock-b" class="countdown-deluxe-circles5 d-flex chewy justify-content-center"></div>
                 </div>
 			  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-peppa-icono-cake.png" width="120px" alt="Imagen">
-				<h3 class="mb-1 text-center chewy texto-peppa-pig-rosa">El tiempo vuela</h3>
-			 <h4 class="texto-peppa-pig-azul-simple mb-0">Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos  maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!</h4>
+				<h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-1 text-center font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h3 data-si="historia.activa" data-t="historia.titulo" class="mb-1 text-center chewy texto-peppa-pig-rosa">El tiempo vuela</h3>
+			 <h4 data-si="historia.activa" class="texto-peppa-pig-azul-simple mb-0 g-historia"><span data-campo-html="historia.texto">Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!</span></h4>
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
    <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 0.0)), url(img/infantil-peppa-fondo.jpg); background-color:#68beef; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
       <div class="container">
@@ -308,10 +307,10 @@
 	 </div>	
  </section></div></div>
 	  
-    <section class="site-section" style="background-color: #68beef">
+    <section data-si="grupos.dress" id="dresscode" class="site-section" style="background-color: #68beef">
       <div class="container">
         <div class="row">
-          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5" id="dresscode">
+          <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto text-center pb-5">
 			   <div data-seccion="dresscode" class="text-center mt-2">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-peppa-icono-dress.png" width="110" alt="Imagen">
 			  </div>
@@ -346,51 +345,47 @@
 		   </div>
 		  <!-- /referencias dress -->
 	</div>
-		<div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150">
+		<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-monster-hospedaje.png" width="90" alt="Imagen">
-			    <h2 class="mb-3 text-center chewy texto-peppa-pig">Hospedaje</h2>
+			    <h2 data-t="hospedaje.titulo" class="mb-3 text-center chewy texto-peppa-pig">Hospedaje</h2>
                   <h4 class="text-center mb-3 text-white">Referencias de hoteles cercanos.</h4>
-				  	<div class="col-12 text-center">	
-		              <button class="btn button-peppa-pig mb-2 text-uppercase rounded-pill p-2 chewy" data-fancybox="" data-src="#hospedaje" data-animation-duration="700">Referencias</button>
+				  	<div data-si="hospedaje.conReferencias" class="col-12 text-center">	
+		              <button data-t="hospedaje.boton" class="btn button-peppa-pig mb-2 text-uppercase rounded-pill p-2 chewy" data-fancybox="" data-src="#hospedaje" data-animation-duration="700">Referencias</button>
 		            </div>	
-		</div>
-			<!-- referencias hospedaje -->
-		   <div style="display: none;" id="hospedaje" class="animated-modal p-4">
+		<div style="display: none;" id="hospedaje" class="animated-modal p-4">
 			   <div class="mt-4" data-selectable="true">
 				   	<p class="text-center h3 mb-0"><i class="text-black icon-hotel" aria-hidden="true"></i></p>
-					 <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Referencias de hoteles cercanos</p>
-			             <ul class="list">
-                           <li><p class="mb-1">Hilton - Ruta 21, Km. 60.5 - <a class="text-black font-weight-bold" target="_blank" href="#">Reservas</a></p></li>
-				           <li><p class="mb-1">Sheraton - Av. Principal 321 - <a class="text-black font-weight-bold" target="_blank" href="#">Reservas</a></p></li>
-				           <li><p class="mb-1">Howard Johnson - Ruta 8, Km. 49 - <a class="text-black font-weight-bold" target="_blank" href="#">Reservas</a></p></li>
-				           <li><p class="mb-1">Ibis - Av. Pergamino 501 - <a class="text-black font-weight-bold" target="_blank" href="#">Reservas</a></p></li>
-			             </ul>
-				   <button data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small">cerrar</button>
+					 <p data-campo="hospedaje.modalTitulo" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Hospedaje</p><p class="text-center" data-si="hospedaje.texto" data-campo-html="hospedaje.texto"></p>
+			             <ul data-si="hospedaje.items" class="list">
+                <li data-repetir="hospedaje.items"><p class="mb-1"><span data-i="nombre">Hilton</span><span data-si="direccion"> - <span data-i="direccion">Ruta 21, Km. 60.5</span></span><span data-si="link"> - <a class="text-black font-weight-bold" target="_blank" rel="noopener" href="#" data-i-attr="href:link" data-t="hospedaje.reservas">Reservas</a></span></p></li>
+                <li data-repetir="hospedaje.items"><p class="mb-1"><span data-i="nombre">Sheraton</span><span data-si="direccion"> - <span data-i="direccion">Av. Principal 321</span></span><span data-si="link"> - <a class="text-black font-weight-bold" target="_blank" rel="noopener" href="#" data-i-attr="href:link" data-t="hospedaje.reservas">Reservas</a></span></p></li>
+              </ul>
+				   <button data-t="boton.cerrar" data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small">cerrar</button>
                </div>
-		   </div>
+		   </div></div>
+			<!-- referencias hospedaje -->
+		   
 			<!-- /referencias hospedaje -->
-		 <div class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150">
+		 <div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto text-center pb-5" data-aos="fade-up" data-aos-delay="150">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-peppa-icono-bus.png" width="90" alt="Imagen">
-			    <h2 class="mb-3 text-center chewy texto-peppa-pig">Traslado</h2>
+			    <h2 data-t="bus.titulo" class="mb-3 text-center chewy texto-peppa-pig">Traslado</h2>
                   <h4 class="text-center mb-3 text-white">Reserva tu lugar en el formulario de confirmación.</h4>
-			 		<div class="col-12 text-center">	
-		              <button class="btn button-peppa-pig mb-2 text-uppercase rounded-pill p-2 chewy" data-fancybox="" data-src="#bus" data-animation-duration="700">Recorrido</button>
+			 		<div data-si="busConRecorrido" class="col-12 text-center">	
+		              <button data-t="bus.boton" class="btn button-peppa-pig mb-2 text-uppercase rounded-pill p-2 chewy" data-fancybox="" data-src="#bus" data-animation-duration="700">Recorrido</button>
 		            </div>	
-		</div>
-			<!-- referencias bus -->
-		   <div style="display: none;" id="bus" class="animated-modal p-4">
+		<div style="display: none;" id="bus" class="animated-modal p-4">
 			   <div class="mt-4" data-selectable="true">
 			     	<p class="text-center h3 mb-0"><i class="text-black icon-bus" aria-hidden="true"></i></p>
-					 <p class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Servicio de Bus</p>
-			          <p class="text-center mb-1 text-black section-sub-title-sm-2"><span class="text-white bg-gris p-1 pr-5 pl-5">Partida</span></p>
-			          <p class="text-center text-black">Av. Independencia 432 - 17:00</p>
-				   	  <p class="text-center mb-1 text-black section-sub-title-sm-2"><span class="text-white bg-gris p-1 pr-5 pl-5">Parada intermedia</span></p>
-			          <p class="text-center text-black">Av. 1° de Mayo 1234 - 17:30</p>
-			          <p class="text-center mb-1 text-black section-sub-title-sm-2"><span class="text-white bg-gris p-1 pr-5 pl-5">Destino</span></p>
-			          <p class="text-center text-black">¡Mi Fiesta!</p>
-				   <button data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small">cerrar</button>
+					 <p data-campo="bus.modalTitulo" class="text-center text-black mb-3 font-weight-bolder border-bottom border-dark">Servicio de Bus</p><p class="text-center text-black" data-si="bus.textoLibre" data-campo-html="bus.textoLibre"></p>
+			          <div data-repetir="bus.paradas"><p class="text-center mb-1 text-black section-sub-title-sm-2"><span data-i="etiqueta" class="text-white bg-gris p-1 pr-5 pl-5">Partida</span></p><p data-i="detalle" class="text-center text-black">Av. Independencia 432 - 17:00</p></div>
+			          
+				   	  <div data-repetir="bus.paradas"><p class="text-center mb-1 text-black section-sub-title-sm-2"><span data-i="etiqueta" class="text-white bg-gris p-1 pr-5 pl-5">Parada intermedia</span></p><p data-i="detalle" class="text-center text-black">Av. 1° de Mayo 1234 - 17:30</p></div>
+
+				   <button data-t="boton.cerrar" data-fancybox-close="" class="mt-2 btn btn-block text-uppercase btn-outline-dark btn-small">cerrar</button>
                </div>
-		   </div>
+		   </div></div>
+			<!-- referencias bus -->
+		   
 			<!-- /referencias bus -->
 		  </div>
       </div>
@@ -477,9 +472,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	  
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	  
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="chewy"></div></div>
+	</div>
           <div data-seccion="instagram" class="col-md-8 text-center mb-5 ml-auto mr-auto" data-aos="fade-in" id="hashtag">
 			   <div class="text-center shake-move mt-2">
 				  <img loading="lazy" class="img-fluid mb-2" src="img/infantil-peppa-icono-instagram.png" width="70" alt="Imagen">
@@ -558,8 +553,8 @@
       <div class="container">
         <div class="row">
           <div class="col-md-7 ml-auto mr-auto text-center">
-			<h2 class="text-center mt-auto ml-auto chewy texto-peppa-pig mb-3">Agustín</h2>
-			  <h3 data-campo-html="nombres.cierre" data-caso="titulo" data-t="portada.detalle" class="chewy texto-peppa-pig"><span class="vert-move2" style="display: inline-block">Cumple&#160;</span><span class="vert-move chewy display-4" style="display: inline-block">1</span><span class="vert-move3" style="display: inline-block">&#160;Año</span></h3>
+			<h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto chewy texto-peppa-pig mb-3">Agustín</h2>
+			  <h3 data-ajustar="0.86" data-campo-html="nombres.cierre" data-caso="titulo" data-t="portada.detalle" class="chewy texto-peppa-pig"><span class="vert-move2" style="display: inline-block">Cumple&#160;</span><span class="vert-move chewy display-4" style="display: inline-block">1</span><span class="vert-move3" style="display: inline-block">&#160;Año</span></h3>
 			  <h4 data-campo-html="pie.texto" data-si="pie.mostrar" class="texto-peppa-pig-azul-simple mb-3">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.</h4>
 			  <div class="text-center">
 			  <img loading="lazy" class="img-fluid mb-0 w-75" src="img/infantil-peppa-icono-personaje.png" width="250px" alt="Imagen">
@@ -572,7 +567,7 @@
 	  <div class="pt-4" style="background-color: #65a356">
       <div class="container">
         <div class="row">
-			<div data-si="redes.hay" data-seccion="redes" class="col-md-12 ml-auto mr-auto text-center border-bottom mb-4">
+			<div data-si="redes.hay" data-seccion="redes" class="col-md-12 ml-auto mr-auto text-center border-bottom mb-4 ai-redes">
                 <div><small data-t="redes.titulo" class="text-white-50">Redes oficiales</small></div>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h2 text-white-50"></span></a>
                 <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h2 text-white-50"></span></a>
@@ -584,6 +579,8 @@
             <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
             <li><a href="#agenda" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
             <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-white" data-t="perdiste.hospedaje">Hospedaje</a></li>
+            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-white" data-t="perdiste.bus">Traslado</a></li>
             <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-white" data-t="perdiste.itinerario">Itinerario</a></li>
             <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-white" data-t="perdiste.album">Álbum de fotos</a></li>
             <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>

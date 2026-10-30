@@ -32,8 +32,8 @@
   <link rel="stylesheet" href="../../comun/css/sobre_v1.2.css">
   <script src="../../comun/js/sobre_v1.1.js" defer></script>
   <link rel="stylesheet" href="../../comun/css/slides.css">
-  
-</head>
+
+  <link rel="stylesheet" href="../../comun/fonts/magnolia-sky/magnolia-sky.css"></head>
 	<body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
 <!-- ══ SOBRE LACRADO (entrada con música) ══════════════════════════════
      ⚠️ Colores por modelo: --sobre-papel, --sobre-fondo y --sobre-lacre 🔴
@@ -73,11 +73,11 @@
         <div class="row align-items-center justify-content-center pb-5">
          <div class="col-md-8 text-center">
 			 	<div data-repetir="fotos.portada" class="col-lg-6 col-9 ml-auto mr-auto mb-0">
-                <img data-i-attr="src:url;style:estiloImg" src="demo/cumple/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle border w-50">
+                <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" src="demo/cumple/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle border w-50 ai-foto-1x1">
               </div>
-			 <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="lovestory mb-0 pb-0"><span>Priscila</span></h1>
+			 <h1 data-ajustar-pc="0.3" data-ajustar="0.62" data-campo-html="nombres.portada" class="lovestory mb-0 pb-0"><span>Priscila</span></h1>
 		   <div class="col-8 col-md-5 ml-auto mr-auto text-center"><hr class="border border-2 mt-0 mb-0"></div>
-		   <span data-t="portada.subtitulo" class="d-block font-weight-bolder mb-3 mt-2" style="letter-spacing:.35em; color:#9b1d3a">¡MI CUMPLE!</span>
+		   <p class="rouge-titulo mb-3 mt-2" data-t="portada.subtitulo" data-caso="titulo">Nuestra Boda</p>
           </div>
         </div>
       </div>
@@ -143,7 +143,7 @@
 			<div class="col-12 text-center show-mobile"><hr class="bg-musgo"></div>
 			
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-bordo.png" width="110px" alt="Imagen" style="opacity: .8">
+              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-0 mt-0" src="img/icon-party-3-bordo.png" width="110px" alt="Imagen" style="opacity: .8">
 			  <h2 data-campo="celebracion.titulo" class="text-center text-bordo lovestory">Fiesta</h2>
 			  <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded mb-3 w-75">
 			  <p data-t="lugar.diaHorario" class="mb-2 text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</p>
@@ -175,12 +175,8 @@
 			<p data-si="historia.activa" class="text-center g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></p>
             </div>
           </div>
-    </section>
-	  
-     	<div id="galeria" data-seccion="galeria" class="row ml-0 mr-0 p-0">  
-           <div data-componente="galeria"></div>
-      </div>
-	  
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
+
 <div id="rsvp" data-seccion="rsvp"><section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)), url(img/bg-rouge5.jpg); background-color:#fff ; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
     <div class="container">
           <div class="col-md-6 col-lg-6 ml-auto mr-auto rounded text-center pt-0 pl-4 pb-4 pr-4" data-aos="fade-up" style="background-color:rgba(255, 255, 255, 0.7);">
@@ -243,9 +239,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	
 				
-  </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="lovestory"></div></div>
+  </div>
 </div>
 </div>
 		</div>
@@ -326,7 +322,7 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
           <div class="col-md-8 ml-auto mr-auto">
 
             <p data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center text-white">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</p>
-            <h2 data-campo-html="nombres.cierre" class="text-center text-white lovestory">Priscila</h2>	
+            <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center text-white lovestory">Priscila</h2>	
        </div>
       </div>
  </section>

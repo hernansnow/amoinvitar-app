@@ -18,7 +18,7 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": true,
+  "videoPortada": false,
   "paquetes": {
     "basic": {
       "secciones": [
@@ -30,7 +30,7 @@
         "sobre": false,
         "musica": false,
         "cuenta": false,
-        "fotosPortada": 4,
+        "fotosPortada": 1,
         "fotosGaleria": 20
       }
     },
@@ -49,7 +49,7 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 4,
+        "fotosPortada": 1,
         "fotosGaleria": 20
       }
     },
@@ -76,11 +76,19 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 4,
+        "fotosPortada": 1,
         "fotosGaleria": 20,
         "sugerenciasDress": true
       }
     }
+  },
+  "sinFotoRsvp": true,
+  "textosDemo": {
+    "historia.texto": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos. Por eso te esperamos para festejar y compartir nuestra felicidad juntos."
+  },
+  "proporciones": {
+    "portada": "1:1"
   },
   "nombresHTML": {
     "portada": "{a}<i class=\"disco-2\">&#160;&amp;&#160;</i><br class=\"d-md-none\">{b}",
@@ -107,287 +115,12 @@
   "demo": {
     "boda": {
       "portadas": [
-        "globo.jpg",
-        "inicial.jpg"
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
       ]
     }
-  },
-  "porEvento": {
-    "15": {
-      "paquetes": {
-        "basic": {
-          "secciones": [
-            "galeria",
-            "rsvp",
-            "dresscode"
-          ],
-          "incluye": {
-            "sobre": false,
-            "musica": false,
-            "cuenta": false,
-            "fotosPortada": 4,
-            "fotosGaleria": 20
-          }
-        },
-        "premium": {
-          "secciones": [
-            "musica",
-            "historia",
-            "galeria",
-            "rsvp",
-            "dresscode",
-            "instagram",
-            "canciones",
-            "regalos"
-          ],
-          "incluye": {
-            "sobre": true,
-            "musica": true,
-            "cuenta": true,
-            "fotosPortada": 4,
-            "fotosGaleria": 20
-          }
-        },
-        "deluxe": {
-          "secciones": [
-            "musica",
-            "historia",
-            "galeria",
-            "rsvp",
-            "dresscode",
-            "estilos",
-            "hospedaje",
-            "bus",
-            "itinerario",
-            "testigos",
-            "instagram",
-            "album",
-            "canciones",
-            "playlist",
-            "regalos",
-            "redes"
-          ],
-          "incluye": {
-            "sobre": true,
-            "musica": true,
-            "cuenta": true,
-            "fotosPortada": 4,
-            "fotosGaleria": 20,
-            "sugerenciasDress": true
-          }
-        }
-      },
-      "sobre": {
-        "colores": {
-          "lacre": "#7a2fb3",
-          "papel": "#1c1b1d",
-          "fondo": "#0f0e10",
-          "tinta": "rgba(255,255,255,.75)",
-          "filo": ".12"
-        },
-        "bienvenida": "font-family:Sacramento, sans-serif; color:rgb(255, 255, 255); font-weight:400; --bv-escala:1.45;"
-      },
-      "nombresHTML": {
-        "portada": "{a}",
-        "cierre": "{a}",
-        "solo": "{a}"
-      },
-      "demo": {
-        "15": {
-          "portadas": [
-            "globo.jpg"
-          ]
-        }
-      }
-    },
-    "cumple": {
-      "paquetes": {
-        "basic": {
-          "secciones": [
-            "galeria",
-            "rsvp",
-            "dresscode"
-          ],
-          "incluye": {
-            "sobre": false,
-            "musica": false,
-            "cuenta": false,
-            "fotosPortada": 4,
-            "fotosGaleria": 20
-          }
-        },
-        "premium": {
-          "secciones": [
-            "musica",
-            "historia",
-            "galeria",
-            "rsvp",
-            "dresscode",
-            "instagram",
-            "canciones",
-            "regalos"
-          ],
-          "incluye": {
-            "sobre": true,
-            "musica": true,
-            "cuenta": true,
-            "fotosPortada": 4,
-            "fotosGaleria": 20
-          }
-        },
-        "deluxe": {
-          "secciones": [
-            "musica",
-            "historia",
-            "galeria",
-            "rsvp",
-            "dresscode",
-            "estilos",
-            "hospedaje",
-            "bus",
-            "itinerario",
-            "testigos",
-            "instagram",
-            "album",
-            "canciones",
-            "playlist",
-            "regalos",
-            "redes"
-          ],
-          "incluye": {
-            "sobre": true,
-            "musica": true,
-            "cuenta": true,
-            "fotosPortada": 4,
-            "fotosGaleria": 20,
-            "sugerenciasDress": true
-          }
-        }
-      },
-      "sobre": {
-        "colores": {
-          "lacre": "#7a2fb3",
-          "papel": "#1c1b1d",
-          "fondo": "#0f0e10",
-          "tinta": "rgba(255,255,255,.75)",
-          "filo": ".12"
-        },
-        "bienvenida": "font-family:Sacramento, sans-serif; color:rgb(255, 255, 255); font-weight:400; --bv-escala:1.45;"
-      },
-      "nombresHTML": {
-        "portada": "{a}",
-        "cierre": "{a}",
-        "solo": "{a}"
-      },
-      "demo": {
-        "cumple": {
-          "portadas": [
-            "globo.jpg"
-          ],
-          "nombres": {
-            "a": "Tomás"
-          }
-        }
-      }
-    },
-    "graduacion": {
-      "paquetes": {
-        "basic": {
-          "secciones": [
-            "galeria",
-            "rsvp",
-            "dresscode"
-          ],
-          "incluye": {
-            "sobre": false,
-            "musica": false,
-            "cuenta": false,
-            "fotosPortada": 4,
-            "fotosGaleria": 20
-          }
-        },
-        "premium": {
-          "secciones": [
-            "musica",
-            "galeria",
-            "rsvp",
-            "dresscode",
-            "instagram",
-            "canciones",
-            "regalos"
-          ],
-          "incluye": {
-            "sobre": true,
-            "musica": true,
-            "cuenta": true,
-            "fotosPortada": 4,
-            "fotosGaleria": 20
-          }
-        },
-        "deluxe": {
-          "secciones": [
-            "musica",
-            "galeria",
-            "rsvp",
-            "dresscode",
-            "estilos",
-            "hospedaje",
-            "bus",
-            "itinerario",
-            "testigos",
-            "instagram",
-            "album",
-            "canciones",
-            "playlist",
-            "regalos",
-            "redes"
-          ],
-          "incluye": {
-            "sobre": true,
-            "musica": true,
-            "cuenta": true,
-            "fotosPortada": 4,
-            "fotosGaleria": 20,
-            "sugerenciasDress": true
-          }
-        }
-      },
-      "sobre": {
-        "colores": {
-          "lacre": "#7a2fb3",
-          "papel": "#1c1b1d",
-          "fondo": "#0f0e10",
-          "tinta": "rgba(255,255,255,.75)",
-          "filo": ".12"
-        },
-        "bienvenida": "font-family:Sacramento, sans-serif; color:rgb(255, 255, 255); font-weight:400; --bv-escala:1.45;"
-      },
-      "nombresHTML": {
-        "portada": "{a}",
-        "cierre": "{a}",
-        "solo": "{a}"
-      },
-      "demo": {
-        "graduacion": {
-          "nombres": {
-            "a": "Instituto Superior"
-          },
-          "portadas": [
-            "globo.jpg",
-            "hero-banner.jpg",
-            "hero-banner2.jpg",
-            "hero-banner3.jpg",
-            "hero-banner4.jpg"
-          ]
-        }
-      }
-    }
-  },
-  "acceso": {
-    "css": [
-      "/comun/fonts/google/jost+monoton+montserrat+sacramento.css",
-      "/modelos/disco/tema.css"
-    ]
   },
   "demoBorrosas": {
     "15": {
@@ -470,5 +203,316 @@
       ],
       "testigos": []
     }
+  },
+  "porEvento": {
+    "15": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "textosDemo": {
+        "historia.texto": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos. Por eso te esperamos para festejar y compartir nuestra felicidad juntos."
+      },
+      "sinFotoRsvp": true,
+      "proporciones": {
+        "portada": "1:1"
+      },
+      "videoPortada": false,
+      "sobre": {
+        "colores": {
+          "lacre": "#7a2fb3",
+          "papel": "#1c1b1d",
+          "fondo": "#0f0e10",
+          "tinta": "rgba(255,255,255,.75)",
+          "filo": ".12"
+        },
+        "bienvenida": "font-family:Sacramento, sans-serif; color:rgb(255, 255, 255); font-weight:400; --bv-escala:1.45;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "15": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ]
+        }
+      }
+    },
+    "cumple": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "textosDemo": {
+        "historia.texto": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos. Por eso te esperamos para festejar y compartir nuestra felicidad juntos."
+      },
+      "sinFotoRsvp": true,
+      "proporciones": {
+        "portada": "1:1"
+      },
+      "videoPortada": false,
+      "sobre": {
+        "colores": {
+          "lacre": "#7a2fb3",
+          "papel": "#1c1b1d",
+          "fondo": "#0f0e10",
+          "tinta": "rgba(255,255,255,.75)",
+          "filo": ".12"
+        },
+        "bienvenida": "font-family:Sacramento, sans-serif; color:rgb(255, 255, 255); font-weight:400; --bv-escala:1.45;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "cumple": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "nombres": {
+            "a": "Tomás"
+          }
+        }
+      }
+    },
+    "graduacion": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "testigos",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 1,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "textosDemo": {
+        "historia.texto": "Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes nos acompañaron nos trajeron hasta aquí. Hoy cerramos una etapa increíble de aprendizaje y abrimos la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo con nosotros!",
+        "pie.texto": "Hemos luchado mucho para estudiar y graduarnos, pero lo irónico de todo esto es que… hoy empieza la verdadera lucha"
+      },
+      "sinFotoRsvp": true,
+      "proporciones": {
+        "portada": "1:1"
+      },
+      "videoPortada": false,
+      "sobre": {
+        "colores": {
+          "lacre": "#7a2fb3",
+          "papel": "#1c1b1d",
+          "fondo": "#0f0e10",
+          "tinta": "rgba(255,255,255,.75)",
+          "filo": ".12"
+        },
+        "bienvenida": "font-family:Sacramento, sans-serif; color:rgb(255, 255, 255); font-weight:400; --bv-escala:1.45;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "graduacion": {
+          "nombres": {
+            "a": "Instituto Superior"
+          },
+          "portadas": [
+            {
+              "f": "globo3.jpg",
+              "pos": "50% 50%"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/jost+monoton+montserrat+sacramento.css",
+      "/modelos/disco/tema.css"
+    ]
   }
 }

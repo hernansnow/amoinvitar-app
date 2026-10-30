@@ -220,7 +220,7 @@ invitado: campo `ejemploAcceso`.
 - **Tarjeta Save The Date de cada modelo**: los fondos limpios y las versiones terminadas de todos los modelos están en
   el material que mandó Hernán (std tarjeta). Al convertir cada modelo: fondo en `img/std-fondo.jpg`, el adorno de cada
   evento como capa con `tipos`, y los textos medidos contra la versión terminada. "Próximamente la invitación formal"
-  va con `"opcional": "proximamente"` (el cliente lo prende o apaga). Rouge (boda y 15) usa Mongolia Sky en bordó:
+  va con `"opcional": "proximamente"` (el cliente lo prende o apaga). Rouge (boda y 15) usa Magnolia Sky en bordó:
   reemplazar también en la invitación la imagen con esa fuente por texto (para poder traducirlo o cambiarlo).
 - **Después de publicar**: los nombres y la fecha quedan fijos (se cambian pidiéndolo por WhatsApp) y el resto se puede
   editar hasta 7 días después del evento. El superusuario (administrador) edita todo, también las tarjetas generadas.
@@ -309,5 +309,5 @@ invitado: campo `ejemploAcceso`.
 - **Ventana de bienvenida** (sobre apagado): el modal original de cada diseño, sacado de la historia de git de la v2.0
   (antes de que tuviera sobre); los diseños nuevos, que nacieron con sobre, usan la genérica.
 - **Fondos de 100vh**: el convertidor y `npm run estilos` agregan `100svh` después de cada `100vh`.
-- **Rouge**: falta la fuente Mongolia Sky (`public/comun/fonts/mongolia-sky/MongoliaSky.woff2`) para cambiar las imágenes
+- **Rouge**: falta la fuente Magnolia Sky (`public/comun/fonts/magnolia-sky/MagnoliaSky.woff2`) para cambiar las imágenes
   "Nuestra Boda" / "Mis 15" por texto (`scripts/conversion/rouge.mjs` ya lo hace cuando la fuente está).

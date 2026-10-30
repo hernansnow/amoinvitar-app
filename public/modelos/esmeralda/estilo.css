@@ -3622,6 +3622,16 @@ xclip
 		order: 3;
 	}
 }
+.show-mobile {
+	display: none;
+}
+
+@media screen and (max-width: 768px) {
+.show-mobile{
+		display: block;
+	}
+
+}
 /* -------------------------------- 
 
 Main Components 

@@ -11,6 +11,8 @@
           "historia",
           "galeria",
           "rsvp",
+          "hospedaje",
+          "bus",
           "dresscode",
           "estilos",
           "itinerario",
@@ -22,10 +24,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "<span>Ariadna</span>",
           "portadas": [
@@ -34,8 +33,12 @@
               "pos": "60% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
           "galeria": 12,
+          "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "iglesia",
             "tragos",
@@ -46,6 +49,8 @@
             "brindis",
             "baile"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple.",
+          "nombresCierre": "Ariadna",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
@@ -58,43 +63,13 @@
           "historia",
           "galeria",
           "rsvp",
+          "dresscode",
           "instagram",
           "canciones",
           "playlist",
           "regalos"
         ],
         "avisos": [
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "dress code: no se encontró",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
-        ],
-        "info": {
-          "nombresPortada": "<span>Ariadna</span>",
-          "portadas": [
-            {
-              "f": "hero-banner.jpg",
-              "pos": "60% 20%"
-            }
-          ],
-          "portadaFotos": 1,
-          "galeria": 8,
-          "claseTitulos": "",
-          "fuentes": [
-            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
-          ]
-        }
-      },
-      "basic": {
-        "archivo": "index-15-basic.html",
-        "secciones": [
-          "galeria",
-          "rsvp"
-        ],
-        "avisos": [
-          "música: sin <audio id=\"audio\">",
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "dress code: no se encontró",
           "itinerario: sin #timeline"
         ],
         "info": {
@@ -105,8 +80,45 @@
               "pos": "60% 20%"
             }
           ],
+          "fondoCompleto": true,
+          "portadaFotos": 1,
+          "textoHistoria": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple.",
+          "nombresCierre": "Ariadna",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-15-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 4,
+          "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple.",
           "nombresCierre": "Ariadna",
           "claseTitulos": "",
           "fuentes": [
@@ -128,6 +140,8 @@
           "historia",
           "galeria",
           "rsvp",
+          "hospedaje",
+          "bus",
           "dresscode",
           "estilos",
           "itinerario",
@@ -139,10 +153,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "<span>Ariadna &amp; Mario</span>",
           "portadas": [
@@ -151,8 +162,12 @@
               "pos": "50% 15%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
           "galeria": 12,
+          "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -162,6 +177,8 @@
             "disco",
             "brindis"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Ariadna &amp; Mario",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
@@ -174,43 +191,13 @@
           "historia",
           "galeria",
           "rsvp",
+          "dresscode",
           "instagram",
           "canciones",
           "playlist",
           "regalos"
         ],
         "avisos": [
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "dress code: no se encontró",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
-        ],
-        "info": {
-          "nombresPortada": "<span>Ariadna &amp; Mario</span>",
-          "portadas": [
-            {
-              "f": "hero-banner.jpg",
-              "pos": "50% 15%"
-            }
-          ],
-          "portadaFotos": 1,
-          "galeria": 8,
-          "claseTitulos": "",
-          "fuentes": [
-            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
-          ]
-        }
-      },
-      "basic": {
-        "archivo": "index-basic.html",
-        "secciones": [
-          "galeria",
-          "rsvp"
-        ],
-        "avisos": [
-          "música: sin <audio id=\"audio\">",
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "dress code: no se encontró",
           "itinerario: sin #timeline"
         ],
         "info": {
@@ -221,8 +208,46 @@
               "pos": "50% 15%"
             }
           ],
+          "fondoCompleto": true,
+          "portadaFotos": 1,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Ariadna &amp; Mario",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna &amp; Mario</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "50% 15%"
+            }
+          ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 4,
+          "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Ariadna &amp; Mario",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
@@ -243,6 +268,8 @@
           "historia",
           "galeria",
           "rsvp",
+          "hospedaje",
+          "bus",
           "dresscode",
           "estilos",
           "itinerario",
@@ -254,10 +281,7 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
           "nombresPortada": "<span>Ariadna</span>",
           "portadas": [
@@ -266,8 +290,12 @@
               "pos": "60% 20%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
           "galeria": 12,
+          "idAgenda": "agenda",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "tragos",
             "cena",
@@ -276,6 +304,8 @@
             "baile",
             "last-call2"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple.",
+          "nombresCierre": "Ariadna",
           "claseTitulos": "",
           "fuentes": [
             "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
@@ -288,43 +318,13 @@
           "historia",
           "galeria",
           "rsvp",
+          "dresscode",
           "instagram",
           "canciones",
           "playlist",
           "regalos"
         ],
         "avisos": [
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "dress code: no se encontró",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
-        ],
-        "info": {
-          "nombresPortada": "<span>Ariadna</span>",
-          "portadas": [
-            {
-              "f": "hero-banner.jpg",
-              "pos": "60% 20%"
-            }
-          ],
-          "portadaFotos": 1,
-          "galeria": 8,
-          "claseTitulos": "",
-          "fuentes": [
-            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
-          ]
-        }
-      },
-      "basic": {
-        "archivo": "index-cumple-basic.html",
-        "secciones": [
-          "galeria",
-          "rsvp"
-        ],
-        "avisos": [
-          "música: sin <audio id=\"audio\">",
-          "agenda: no se encontró la celebración (#fiesta-button)",
-          "dress code: no se encontró",
           "itinerario: sin #timeline"
         ],
         "info": {
@@ -335,8 +335,45 @@
               "pos": "60% 20%"
             }
           ],
+          "fondoCompleto": true,
+          "portadaFotos": 1,
+          "textoHistoria": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+          "galeria": 8,
+          "idAgenda": "agenda",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple.",
+          "nombresCierre": "Ariadna",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+oswald+sedgwick-ave-display.css"
+          ]
+        }
+      },
+      "basic": {
+        "archivo": "index-cumple-basic.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "dresscode"
+        ],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "itinerario: sin #timeline"
+        ],
+        "info": {
+          "nombresPortada": "<span>Ariadna</span>",
+          "portadas": [
+            {
+              "f": "hero-banner.jpg",
+              "pos": "60% 20%"
+            }
+          ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
           "galeria": 4,
+          "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple.",
           "nombresCierre": "Ariadna",
           "claseTitulos": "",
           "fuentes": [

@@ -66,6 +66,7 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
       portada: portada.map(([f, pos, posPc]) => ({ url: `${fotosDe}/${f}`, pos, ...(posPc ? { posPc } : {}) })),
       galeria,
       rsvp: `${fotosDe}/${archivos.rsvp || 'rsvp.jpg'}`,
+      historia: modelo.fotoHistoria ? `${fotosDe}/inicial.jpg` : '',
       album: `${fotosDe}/${archivos.album || 'instagram.jpg'}`,
     },
     musica: { archivo: comun(`audio/demo-${tipo}.mp3`) },
