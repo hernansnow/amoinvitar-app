@@ -1,0 +1,4 @@
+
+/* Testigos: el fondo crema si viene después del itinerario; con el itinerario apagado, blanco (README ronda 21) */
+.travel-testigos { background-color: #fff; }
+#itinerario + .travel-testigos { background-color: #F5F2EF; }

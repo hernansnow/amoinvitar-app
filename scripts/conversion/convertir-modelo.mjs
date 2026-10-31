@@ -139,7 +139,14 @@ function portada(c, home) {
     if (hs.length >= 2 && clases(hs[0])[0] === clases(hs[1])[0]) {
       hs[0].setAttribute('data-campo', 'nombres.a'); hs[1].setAttribute('data-campo', 'nombres.b'); hs[1].setAttribute('data-si', 'nombres.b');
       // El adorno entre los dos nombres (un corazón, un "&") va solo si hay dos nombres
-      for (let x = hs[0].nextSibling; x && x !== hs[1]; x = x.nextSibling) if (x.nodeType === 1 && !txt(x).match(/[A-Za-z]{3}/)) x.setAttribute('data-si', 'nombres.b');
+      for (let x = hs[0].nextSibling; x && x !== hs[1]; x = x.nextSibling) if (x.nodeType === 1 && !txt(x).match(/[A-Za-z]{3}/)) {
+        x.setAttribute('data-si', 'nombres.b');
+        // Floral: el corazón entre los nombres, más chico
+        if (c.id === 'floral' && /col-5/.test(x.getAttribute('class') || '')) x.setAttribute('class', x.getAttribute('class').replace('col-5', 'col-3').replace('col-md-3', 'col-md-2'));
+      }
+      // Cada nombre se achica para entrar en su lugar
+      const lugarN = AJUSTE_NOMBRES[c.id] || [0.82, null];
+      for (const x of hs.slice(0, 2)) { x.setAttribute('data-ajustar', String(lugarN[0])); if (lugarN[1] != null) x.setAttribute('data-ajustar-pc', String(lugarN[1])); }
       c.info.nombresSeparados = true;
       c.aviso('portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona');
     }
@@ -642,7 +649,7 @@ function rsvp(c) {
     foto = fondo;
   } else if (foto) {
     c.fotos.add(foto.getAttribute('src'));
-    foto.setAttribute('data-attr', 'src:c:fotos.rsvp;style:c:fotos.rsvpEstilo');
+    foto.setAttribute('data-attr', 'src:c:fotos.rsvp;style:c:fotos.rsvpEstilo'); foto.classList.add('ai-foto-rsvp');
     const col = subir(foto, (x) => esCol(x)) || foto;
     col.setAttribute('data-si', 'fotos.rsvp');
   }
@@ -955,6 +962,7 @@ function canciones(c) {
   let caja = subir(b, (x) => $$(x, 'h2,h3,h4').length >= 1 && !x.querySelector('[data-seccion="album"],[data-seccion="instagram"]'));
   if (!caja) { c.aviso('canciones: sin caja'); return; }
   caja.setAttribute('data-seccion', 'canciones'); caja.id = 'musica';
+  nivel(caja, c.wrap).classList.add('ai-sec-musica');
   const h = hoja(caja, 'h2,h3,h4', () => true);
   if (h) h.setAttribute('data-t', 'canciones.titulo');
   const p = h && siguienteP(h);
@@ -1467,15 +1475,33 @@ function componer(cs) {
         const b = importar(d, basic.rsvp.top);
         // El formulario va una sola vez en la página: en el bloque sin foto se repite el componente (se usa uno solo)
         sinFoto.appendChild(b);
+        // Hojas: sin foto, el recuadro con el mismo aire que con foto (el de Basic tenía mucho margen)
+        if (c.id === 'hojas') for (const x of $$(b, '.rounded.p-5')) { x.classList.remove('p-5'); x.classList.add('p-3', 'p-md-4'); }
       } else caja.appendChild(top);
     }
     // Deluxe: el muro de Instagram de Premium junto al álbum (son excluyentes)
     if (paq === 'deluxe' && premium && !$(d, '[data-seccion="instagram"]')) {
       const hp = $(premium.doc, '[data-seccion="instagram"]');
       const al = $(d, '[data-seccion="album"]');
-      if (hp && al) { antes(al, importar(d, hp)); deluxe.secciones.add('instagram'); }
+      if (hp && al) {
+        // Si el álbum es una sección entera (Cinema, Sky) y el muro de Premium una columna, va su sección completa
+        // (con el fondo y el adorno que une con Testigos)
+        const secP = al.tagName === 'SECTION' && hp.tagName !== 'SECTION' ? subir(hp, (x) => x.tagName === 'SECTION') : null;
+        if (secP) {
+          const copia = importar(d, secP);
+          const dentro = $(copia, '[data-seccion="instagram"]');
+          if (dentro) dentro.removeAttribute('data-seccion');
+          copia.setAttribute('data-seccion', 'instagram');
+          antes(al, copia);
+        } else antes(al, importar(d, hp));
+        deluxe.secciones.add('instagram');
+      }
     }
     separadores(c);
+    // Cinema y Sky: el adorno de abajo de Testigos (7a) y el de arriba del Álbum/Instagram (7b) forman uno solo:
+    // cada mitad va solo si está la otra sección
+    for (const i of $$(d.body, 'img[src*="separador-7a"]')) i.setAttribute('data-si', 'grupos.fotos');
+    for (const i of $$(d.body, 'img[src*="separador-7b"]')) i.setAttribute('data-si', 'secciones.testigos');
     body.insertAdjacentHTML('beforeend', SCRIPTS);
   }
 }

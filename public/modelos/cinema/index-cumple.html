@@ -221,7 +221,7 @@
 		   <div class="row">
 			<div data-si="fotos.rsvp" class="col-md-6 col-lg-6 mt-auto mb-auto">
 			<div class="text-center">
-                <img data-attr="src:c:fotos.rsvp;style:c:fotos.rsvpEstilo" src="demo/cumple/rsvp.jpg" loading="lazy" alt="foto" class="img-fluid rounded img-thumbnail shadow">
+                <img data-attr="src:c:fotos.rsvp;style:c:fotos.rsvpEstilo" src="demo/cumple/rsvp.jpg" loading="lazy" alt="foto" class="img-fluid rounded img-thumbnail shadow ai-foto-rsvp">
               </div>
 			</div>
      
@@ -413,7 +413,7 @@
 	</section>
 	  
 	<section data-seccion="testigos" class="site-section" style="background: linear-gradient(180deg,rgba(255, 255, 255, 1) 0%, rgba(247, 245, 228, 1) 100%); background-color:#FFFFFF; background-repeat:no-repeat; background-size:cover; position:relative;" id="testigos">
-		<img loading="lazy" class="img-fluid" src="img/cinema-separador-7a.png" width="100%" alt="Imagen" style="position: absolute; bottom: 0px; right: auto; left: auto;">
+		<img data-si="grupos.fotos" loading="lazy" class="img-fluid" src="img/cinema-separador-7a.png" width="100%" alt="Imagen" style="position: absolute; bottom: 0px; right: auto; left: auto;">
       <div class="container pb-md-5">
           <div class="text-center" data-aos="fade-up">
 			  <div class="text-center"><i class="h1 icon-people" aria-hidden="true" style="color:#65201e"></i></div>
@@ -438,15 +438,29 @@
 		</div>
     </section>
 	
- <div id="hashtag" data-seccion="instagram" class="col-md-10 col-lg-8 text-center mb-2 ml-auto mr-auto" data-aos="fade-in">
+ <section data-seccion="instagram" class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.85)), url(img/bg-cinema1.jpg); background-color:#F7F2E8; background-position:60% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="ig">
+	 <img data-si="secciones.testigos" loading="lazy" class="img-fluid" src="img/cinema-separador-7b.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;" hidden>
+    <div class="container pt-mb-5">
+          <div id="hashtag" class="col-md-10 col-lg-8 text-center mb-2 ml-auto mr-auto" data-aos="fade-in">
                    <lottie-player src="img/icon-anim-instagram-bordo-cinema.json" background="transparent" speed="1" class="text-center" style="width: 60px; height: 60px; margin: 0 auto;" loop autoplay>
 					</lottie-player>
 			<h2 data-t="hashtag.titulo" class="text-center text-cinema-bordo amsterdam-four-font mb-4">Etiqueta tus Fotos</h2>
 			  <p data-t-html="hashtag.texto" class="text-center">¡Prepárate para mi fiesta!<br>
 Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
             <h5 class="mb-4"><span data-si="hashtag.texto" data-campo="hashtag.texto" class="text-white bg-cinema-verde p-1">#CumpleCamila2027</span></h5>
-          </div><section data-seccion="album" class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url(img/bg-cinema1.jpg); background-color:#F7F2E8; background-position:60% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="instagram">
-	 <img loading="lazy" class="img-fluid" src="img/cinema-separador-7b.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;">
+          </div>
+
+          <div class="mr-auto ml-auto col-md-6 col-lg-7 text-center">
+            <img loading="lazy" class="img-fluid rounded w-75 img-thumbnail shadow mb-4" src="demo/cumple/instagram.jpg">
+			  <div class="text-center">
+			  <a href="https://www.instagram.com/explore/tags/CumpleCamila2027/" target="_blank" class="btn button-cinema-bordo mb-2 text-uppercase rounded-pill">
+			 VER FOTOS</a>
+		  </div>
+      </div> 
+      </div>   
+		
+    </section><section data-seccion="album" class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url(img/bg-cinema1.jpg); background-color:#F7F2E8; background-position:60% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="instagram">
+	 <img data-si="secciones.testigos" loading="lazy" class="img-fluid" src="img/cinema-separador-7b.png" width="100%" alt="Imagen" style="position: absolute; top: 0px; right: auto; left: auto;">
     <div class="container pt-mb-5">
           <div class="col-md-10 col-lg-8 text-center mb-2 ml-auto mr-auto" data-aos="fade-in">
                    <lottie-player src="img/icon-anim-instagram-bordo-cinema.json" background="transparent" speed="1" class="text-center" style="width: 60px; height: 60px; margin: 0 auto;" loop autoplay>
@@ -469,7 +483,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
 		
     </section>
 	
- <div style="background-image: linear-gradient(rgba(133, 92, 77, 1), rgba(169, 114, 94, 1)); background-color:#a9725e; background-position:90% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="musica">
+ <div class="ai-sec-musica" style="background-image: linear-gradient(rgba(133, 92, 77, 1), rgba(169, 114, 94, 1)); background-color:#a9725e; background-position:90% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="musica">
      <div class="container text-center">
 	   <img loading="lazy" class="img-fluid mb-md-4" src="img/cinema-0.png" width="350px" alt="Imagen">
         <div class="row">

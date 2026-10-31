@@ -1,3 +1,6 @@
 /* Galería en blanco y negro (el cliente puede pedirla en color: clase ai-color) */
 .ai-galeria img, .ai-carrusel img { filter: grayscale(1); }
 .ai-galeria.ai-color img, .ai-carrusel.ai-color img { filter: none; }
+
+/* Confirmación: el texto con aire a los costados (README ronda 21) */
+#rsvp [data-rsvp="texto"] { padding-left: 1.25rem; padding-right: 1.25rem; }

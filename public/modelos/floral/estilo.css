@@ -851,12 +851,14 @@ pre code {
 
 
 .col,
+.col-3,
 .col-4,
 .col-5,
 .col-6,
 .col-12,
 .col-lg-3,
 .col-lg-5,
+.col-md-2,
 .col-md-3,
 .col-md-4,
 .col-md-6,
@@ -876,6 +878,13 @@ pre code {
     -ms-flex-positive: 1;
     flex-grow: 1;
     max-width: 100%
+}
+
+.col-3 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 25%;
+    flex: 0 0 25%;
+    max-width: 25%
 }
 
 .col-4 {
@@ -916,6 +925,12 @@ pre code {
 }
 
 @media (min-width:768px) {
+    .col-md-2 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 16.66667%;
+        flex: 0 0 16.66667%;
+        max-width: 16.66667%
+    }
     .col-md-3 {
         -webkit-box-flex: 0;
         -ms-flex: 0 0 25%;

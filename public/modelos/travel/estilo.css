@@ -2885,6 +2885,10 @@ button.bg-light:hover {
     padding-bottom: 1.5rem !important
 }
 
+.pt-5 {
+    padding-top: 3rem !important
+}
+
 .pr-5 {
     padding-right: 3rem !important
 }
@@ -5168,3 +5172,7 @@ line-height:inherit
 }
 
 
+
+/* Testigos: el fondo crema si viene después del itinerario; con el itinerario apagado, blanco (README ronda 21) */
+.travel-testigos { background-color: #fff; }
+#itinerario + .travel-testigos { background-color: #F5F2EF; }

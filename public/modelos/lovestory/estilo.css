@@ -5002,3 +5002,8 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* Itinerario y testigos apagados: Música toma el fondo del itinerario (README ronda 21) */
+#dresscode + .ai-sec-musica { background-image: url(img/bg25.jpg) !important; background-color: #fff !important; background-position: 50% 0% !important; }
+/* Confirmación con foto en el celular: aire debajo de la foto */
+@media (max-width: 767px) { .ai-foto-rsvp { margin-bottom: 1.5rem; } }

@@ -5063,3 +5063,11 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* Galería de la historia: menos aire arriba y los puntos claros sobre el fondo oscuro (README ronda 21) */
+.bg-gris2 > .container.disco { padding-bottom: 1rem !important; }
+.bg-gris2 > .container.disco .g-historia { margin-bottom: 1rem !important; }
+.ai-c-puntos button { background: rgba(255, 255, 255, .3); }
+.ai-c-puntos button[aria-current] { background: rgba(255, 255, 255, .75); }
+/* La tarjeta del invitado en la confirmación: derecha (el texto de arriba va inclinado) */
+[data-rsvp="texto"].texto-disco-inclinado > div { transform: rotateZ(-5deg) skew(0, 12deg); }

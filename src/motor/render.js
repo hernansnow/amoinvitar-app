@@ -33,10 +33,12 @@ function secciones(doc, v) {
     if (!dentro.length) { el.remove(); continue; }
     const camino = new Set();
     for (let x of dentro) for (; x && x !== el; x = x.parentNode) camino.add(x);
-    const podar = (n) => { for (const h of [...n.children]) { if (!camino.has(h)) h.remove(); else if (!dentro.includes(h)) podar(h); } };
+    // data-mantener: lo que acompaña a la sección prendida (el encabezado "ENTRETENIMIENTO A BORDO" de Travel)
+    const podar = (n) => { for (const h of [...n.children]) { if (!camino.has(h)) { if (!h.hasAttribute('data-mantener')) h.remove(); } else if (!dentro.includes(h)) podar(h); } };
     podar(el);
     el.removeAttribute('data-seccion');
   }
+  for (const el of todos(doc, '[data-mantener]')) el.removeAttribute('data-mantener');
 }
 
 // ── data-repetir: un ítem por elemento de la lista ───────────────────────

@@ -311,6 +311,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     grupos: {
       dress: !!(secciones.dresscode || secciones.estilos || secciones.hospedaje || secciones.bus),
       dressCol: !!(secciones.dresscode || secciones.estilos),
+      fotos: !!(secciones.album || secciones.instagram),
     },
     playlist: playlistId.length ? {
       tipo: playlistId[0], id: playlistId[1], link: e.playlist.link,
