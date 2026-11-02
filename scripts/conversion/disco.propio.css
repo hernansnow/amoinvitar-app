@@ -6,3 +6,6 @@
 .ai-c-puntos button[aria-current] { background: rgba(255, 255, 255, .75); }
 /* La tarjeta del invitado en la confirmación: derecha (el texto de arriba va inclinado) */
 [data-rsvp="texto"].texto-disco-inclinado > div { transform: rotateZ(-5deg) skew(0, 12deg); }
+
+/* Nombres de la portada y del pie siempre en mayúsculas */
+[data-ajustar] { text-transform: uppercase; }

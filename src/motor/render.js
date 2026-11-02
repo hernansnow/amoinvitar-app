@@ -8,6 +8,18 @@ import { COMPONENTES } from '../componentes/bloques.js';
 const valor = (obj, ruta) => ruta.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
 const lleno = (x) => (Array.isArray(x) ? x.length > 0 : x != null && x !== '' && x !== false);
 const todos = (raiz, sel) => [...raiz.querySelectorAll(sel)];
+// El estilo que pone el motor (encuadre, proporción de una foto) se suma al del diseño (bordes, tamaños): solo pisa
+// las propiedades que repite. Vacío, queda el del diseño.
+function sumarEstilo(original, nuevo) {
+  if (!nuevo) return original || '';
+  const props = (st) => String(st || '').split(';').map((d) => d.trim()).filter(Boolean);
+  const pisa = new Set(props(nuevo).map((d) => d.split(':')[0].trim().toLowerCase()));
+  return [...props(original).filter((d) => !pisa.has(d.split(':')[0].trim().toLowerCase())), ...props(nuevo)].join('; ');
+}
+const ponerAttr = (el, a, val) => {
+  if (a === 'style') { const st = sumarEstilo(el.getAttribute('style'), lleno(val) ? String(val) : ''); if (st) el.setAttribute('style', st); else el.removeAttribute('style'); return; }
+  if (lleno(val)) el.setAttribute(a, val); else el.removeAttribute(a);
+};
 
 // Reemplaza la última url(...) de un style (la foto; el degradé queda igual)
 function cambiarFondo(style, url) {
@@ -62,7 +74,8 @@ function llenarItem(el, item, n) {
     if (x.hasAttribute('data-i-attr')) {
       for (const par of x.getAttribute('data-i-attr').split(';')) {
         const [a, campo] = par.split(':').map((s) => s.trim());
-        if (a) x.setAttribute(a, item[campo] ?? '');
+        if (a === 'style') ponerAttr(x, a, item[campo] ?? '');
+        else if (a) x.setAttribute(a, item[campo] ?? '');
       }
       x.removeAttribute('data-i-attr');
     }
@@ -108,6 +121,16 @@ function repetir(doc, v) {
   }
 }
 
+// ── Separadores entre columnas (Dress code / Hospedaje / Traslado): si la columna quedó primera, su línea no va ──
+function separadores(doc) {
+  for (const sep of todos(doc, '.ai-sep')) {
+    const col = sep.parentElement;
+    let ant = col && col.previousElementSibling;
+    while (ant && (/^(SCRIPT|STYLE|LINK)$/.test(ant.tagName) || ant.classList.contains('animated-modal'))) ant = ant.previousElementSibling;
+    if (!ant) sep.remove();
+  }
+}
+
 // ── data-si / data-no globales ───────────────────────────────────────────
 function condiciones(doc, v) {
   for (const el of todos(doc, '[data-si],[data-no]')) {
@@ -146,7 +169,7 @@ function textos(doc, v, t) {
       if (!a) continue;
       const ruta = resto.join(':');
       const val = tipo === 't' ? t(ruta) : valor(v, ruta);
-      if (lleno(val)) el.setAttribute(a, val); else el.removeAttribute(a);
+      ponerAttr(el, a, val);
     }
     el.removeAttribute('data-attr');
   }
@@ -228,6 +251,7 @@ export function renderizar(html, v, t, { origen = 'https://amoinvitar.com' } = {
   secciones(doc, v);
   repetir(doc, v);
   condiciones(doc, v);
+  separadores(doc);
   textos(doc, v, t);
   rutas(doc, v.rutas.modelo);
   componentes(doc, v, t); // después de rutas: los bloques ya traen rutas absolutas

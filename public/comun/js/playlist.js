@@ -4,7 +4,8 @@
   var caja = document.querySelector('.ai-playlist');
   if (!caja) return;
   // Título y textos en la fuente base de la invitación (la del body)
-  try { caja.style.fontFamily = getComputedStyle(document.body).fontFamily; } catch (e) {}
+  // (la de los párrafos de la historia; el body a veces trae la fuente de los títulos)
+  try { var ref = document.querySelector('.g-historia, #cierre p, p'); caja.style.fontFamily = getComputedStyle(ref || document.body).fontFamily; } catch (e) {}
   var vinilo = caja.querySelector('.ai-vinilo');
   var play = caja.querySelector('.ai-v-play');
   var lugar = caja.querySelector('.ai-pl-reproductor');

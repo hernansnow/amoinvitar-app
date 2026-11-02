@@ -37,8 +37,6 @@ export const PRODUCTOS = {
   'std-tarjeta-medida': { precio: 50, nombre: 'Save The Date · tarjeta con diseño personalizado' },
   'std-video': { desde: 50, manual: true, nombre: 'Save The Date · video' },
   agradecimiento: { precio: 15, nombre: 'Tarjeta de agradecimiento' },
-  // Video propio en la portada (los modelos con foto de portada a pantalla completa)
-  'video-portada': { precio: 8, nombre: 'Video de portada' },
 };
 
 // ── Extras de la invitación ─────────────────────────────────────────────
@@ -52,6 +50,8 @@ export const EXTRAS = {
   'std-tarjeta': { precio: 10, nombre: 'Tarjeta Save The Date', gratisDesde: 'premium' },
   'std-foto': { precio: 15, nombre: 'Tarjeta Save The Date con foto' },
   agradecimiento: { precio: 15, nombre: 'Tarjeta de agradecimiento' },
+  // Video propio en la portada: se paga aparte en todos los planes y modelos (Cinema incluido)
+  'video-portada': { precio: 8, nombre: 'Video de portada' },
 };
 
 // Qué paquete hace falta para cada sección (para el "Pasate a Premium/Deluxe")

@@ -851,14 +851,15 @@ pre code {
 .col-12,
 .col-lg-3,
 .col-lg-5,
+.col-lg-10,
 .col-md-3,
 .col-md-4,
-.col-md-5,
 .col-md-6,
 .col-md-8,
 .col-md-10,
 .col-md-12,
-.col-sm-5 {
+.col-sm-5,
+.col-xl-8 {
     position: relative;
     width: 100%;
     padding-right: 15px;
@@ -924,12 +925,6 @@ pre code {
         flex: 0 0 33.33333%;
         max-width: 33.33333%
     }
-    .col-md-5 {
-        -webkit-box-flex: 0;
-        -ms-flex: 0 0 41.66667%;
-        flex: 0 0 41.66667%;
-        max-width: 41.66667%
-    }
     .col-md-6 {
         -webkit-box-flex: 0;
         -ms-flex: 0 0 50%;
@@ -968,6 +963,21 @@ pre code {
         -ms-flex: 0 0 41.66667%;
         flex: 0 0 41.66667%;
         max-width: 41.66667%
+    }
+    .col-lg-10 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 83.33333%;
+        flex: 0 0 83.33333%;
+        max-width: 83.33333%
+    }
+}
+
+@media (min-width:1200px) {
+    .col-xl-8 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 66.66667%;
+        flex: 0 0 66.66667%;
+        max-width: 66.66667%
     }
 }
 

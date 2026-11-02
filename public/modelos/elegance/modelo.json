@@ -89,7 +89,7 @@
   "proporciones": {},
   "nombresHTML": {
     "portada": "{a} <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> {b}",
-    "cierre": "{a} <br class=\"d-md-none\"><span class=\"circle-singleline\">&amp;</span><br class=\"d-md-none\"> {b}",
+    "cierre": "{a} + {b}",
     "solo": "{a}"
   },
   "miniatura": {

@@ -254,9 +254,15 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   // Publicada sin fotos cargadas: como si se hubiera apagado (sin galería; la confirmación sin foto)
   if (!demo && !galeria.length && 'galeria' in secciones) secciones.galeria = false;
 
-  const itinerario = (e.itinerario || []).map((i) => ({
+  // Momento sin ícono elegido: el que corresponde al texto (si no, uno genérico de fiesta), nunca el círculo vacío
+  const ICONO_TEXTO = [[/ceremon|misa|iglesia|church/i, 'ceremonia'], [/civil/i, 'civil'], [/recep|bienven|welcome|c[oó]ctel|cocktail/i, 'recepcion'],
+    [/cena|almuerzo|comida|dinner|lunch|banquete/i, 'cena'], [/vals|waltz/i, 'vals'], [/torta|pastel|tarta|cake/i, 'torta'], [/brindis|toast/i, 'brindis'],
+    [/baile|dance|pista/i, 'baile'], [/foto|photo/i, 'camara'], [/carioca|cotill[oó]n|show/i, 'confeti'], [/trago|barra|drink/i, 'tragos'],
+    [/fin|cierre|end|despedida/i, 'last-call'], [/fiesta|party/i, 'fiesta']];
+  const iconoDe = (i) => i.icono || (ICONO_TEXTO.find(([re]) => re.test(i.texto || '')) || [, 'fiesta'])[1];
+  const itinerario = (e.itinerario || []).map((i) => ({ ...i, icono: iconoDe(i) })).map((i) => ({
     hora: i.hora || '', texto: i.texto || '',
-    // El del modelo o uno de los comunes; sin elegir, el círculo vacío
+    // El del modelo o uno de los comunes
     iconoUrl: (modelo.iconosItinerario || []).includes(i.icono) ? `${rutas.modelo}/img/timeline-icon-${i.icono}.png`
       : ICONOS_COMUNES.includes(i.icono) ? `${rutas.comun}/img/itinerario/timeline-icon-${i.icono}.png` : '',
   }));
@@ -332,9 +338,10 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       // La foto de la historia (la "inicial" de Armonía, Lila, Style…)
       historia: fotosOn('historia') ? fotos.historia || '' : '',
       historiaEstilo: modelo.fotoHistoria ? `aspect-ratio:${String(modelo.fotoHistoria).replace(':', '/')};object-fit:cover;object-position:${e.fotos?.historiaPos || '50% 50%'}` : '',
-      album: fotosOn('album') ? fotos.album || '' : '', albumEstilo: '',
+      // Instagram Wall y Álbum QR: la misma foto (van una u otra)
+      album: fotosOn('album') ? fotos.instagram || fotos.album || '' : '', albumEstilo: '',
       // Instagram Wall (en Premium antes usaba la foto del álbum)
-      instagram: fotosOn('instagram') ? fotos.instagram || (e.paquete === 'premium' ? fotos.album || '' : '') : '', instagramEstilo: '',
+      instagram: fotosOn('instagram') ? fotos.instagram || fotos.album || '' : '', instagramEstilo: '',
       cantidadGaleria: galeria.length,
     },
 

@@ -57,7 +57,7 @@ export const TIPOS_EVENTO = [
   { id: 'bautismo', nombre: 'Bautismo' },
   { id: 'comunion', nombre: 'Comunión' },
   { id: 'cumple', nombre: 'Cumpleaños' },
-  { id: 'infantil', nombre: 'Cumpleaños infantil' },
+  { id: 'infantil', nombre: 'Cumpleaños infantil', grupo: 'cumple' },
   { id: 'graduacion', nombre: 'Egreso / Graduación' },
   { id: 'babyshower', nombre: 'Baby shower' },
   // Se elige dentro de Baby Shower (es un diseño de baby shower con dos nombres)

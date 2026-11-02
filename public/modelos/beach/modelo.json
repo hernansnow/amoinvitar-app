@@ -89,7 +89,7 @@
   "proporciones": {},
   "nombresHTML": {
     "portada": "<span class=\"jost-lead\">{a}</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">{b}</span>",
-    "cierre": "<span class=\"jost-lead\">{a}</span> <span class=\"jost-lead-light\">&amp;</span><br class=\"d-md-none\"> <span class=\"jost-lead\">{b}</span>",
+    "cierre": "{a}<span class=\"jost-lead-light\">&amp;</span>{b}",
     "solo": "{a}"
   },
   "miniatura": {

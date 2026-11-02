@@ -89,7 +89,7 @@
   "proporciones": {},
   "nombresHTML": {
     "portada": "{a} &amp; {b}",
-    "cierre": "{a} &amp; {b}",
+    "cierre": "{a} <i class=\"icon-heart\" aria-hidden=\"true\"></i> {b}",
     "solo": "{a}"
   },
   "miniatura": {

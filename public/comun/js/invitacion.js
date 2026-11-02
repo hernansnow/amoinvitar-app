@@ -144,11 +144,16 @@
       // En la computadora, la fracción propia del diseño (data-ajustar-pc: el marco es más angosto que la sección)
       var fr = (innerWidth >= 768 && h.getAttribute('data-ajustar-pc')) || h.getAttribute('data-ajustar');
       var disponible = Math.floor(base * (parseFloat(fr) || 0.9));
-      h.style.maxWidth = disponible + 'px'; h.style.marginLeft = h.style.marginRight = 'auto';
+      h.style.maxWidth = disponible + 'px';
+      // Respeta la alineación del diseño (Armonía y B&N a la izquierda, Beach a la derecha)
+      var al = getComputedStyle(h).textAlign;
+      h.style.marginLeft = /left|start/.test(al) ? '0' : 'auto';
+      h.style.marginRight = /right|end/.test(al) ? '0' : 'auto';
+      if (/right|end/.test(al)) h.style.marginLeft = 'auto';
       var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(18, fs0 * 0.32));
       for (var i = 0; i < 40; i++) {
         var m = medidas(h);
-        if (m.ancho <= disponible + 1 && m.lineas <= 2) break;
+        if (m.ancho <= disponible + 1) break; // cada nombre va entero (nowrap): solo se achica si no entra a lo ancho
         fs = Math.max(minimo, fs * 0.95);
         h.style.fontSize = fs.toFixed(1) + 'px';
         if (fs === minimo) break;

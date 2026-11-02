@@ -43,12 +43,9 @@
 /* Foto de portada redonda (globo): siempre 1:1, con el recorte que eligió el cliente */
 img.ai-foto-1x1 { aspect-ratio: 1 / 1; object-fit: cover; height: auto; }
 
-/* Subtítulo con líneas a los costados (date-line): aire entre las líneas y el texto, y ancho según el texto */
-.date-line { width: auto !important; min-width: 250px; max-width: 100%; display: block; }
-.date-line:before { margin-right: .7em !important; }
-.date-line:after { margin-left: .7em !important; }
-.date-line:before, .date-line:after { border-width: 0 !important; width: 50% !important; }
-@media (max-width: 768px) { .date-line { min-width: 200px; } }
+/* Subtítulo con líneas a los costados (date-line y variantes): el ancho del diseño; solo un poco de aire entre las líneas y el texto */
+[class*="date-line"]:before { margin-right: .6em !important; }
+[class*="date-line"]:after { margin-left: .6em !important; }
 
 /* Íconos de redes: todos del mismo tamaño y más chicos */
 .ai-redes a, [data-seccion="redes"] a, .ai-redes-iconos a { font-size: 1.35rem !important; line-height: 1 !important; }
@@ -60,7 +57,7 @@ body.ai-fotos-color img, body.ai-fotos-color [style*="background-image"] { filte
 .ai-redes-iconos { display: flex; justify-content: center; align-items: center; gap: .8rem; }
 
 /* Nombres: cada uno en su caja; el segundo baja entero a la línea siguiente si no entran */
-.ai-n { display: inline-block; max-width: 100%; }
+.ai-n { display: inline-block; white-space: nowrap; }
 
 /* Fotos de los lugares en círculo: un tamaño medido (el encuadre del cliente pisa el ancho del diseño) */
 img.ai-lugar-redondo { width: 200px !important; max-width: 62% !important; height: auto !important; aspect-ratio: 1 / 1; object-fit: cover; }
@@ -80,3 +77,8 @@ img.ai-lugar-redondo { width: 200px !important; max-width: 62% !important; heigh
 .ai-perdiste-links ul a { font-size: .85rem !important; }
 /* Foto del álbum / Instagram más chica y cuadrada (Armonía, Oliva) */
 img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-left: auto; margin-right: auto; display: block; }
+.ai-nowrap { white-space: nowrap; }
+
+/* Redes: el mismo aire a los dos lados de cada ícono (con una sola red no se corre del centro) */
+.ai-redes a { padding-left: .45rem !important; padding-right: .45rem !important; margin-left: 0 !important; margin-right: 0 !important; }
+.ai-redes a img { max-height: 1.6rem; }

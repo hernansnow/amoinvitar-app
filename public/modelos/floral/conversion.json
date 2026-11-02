@@ -159,7 +159,7 @@
           ],
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Vani <i class=\"icon-heart\" aria-hidden=\"true\"></i> Dani",
-          "claseTitulos": "",
+          "claseTitulos": "ai-nowrap",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"
           ]
@@ -191,7 +191,7 @@
           "rsvpConFoto": false,
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Vani <i class=\"icon-heart\" aria-hidden=\"true\"></i> Dani",
-          "claseTitulos": "",
+          "claseTitulos": "ai-nowrap",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"
           ]
@@ -220,7 +220,7 @@
           "rsvpConFoto": false,
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Vani <i class=\"icon-heart\" aria-hidden=\"true\"></i> Dani",
-          "claseTitulos": "",
+          "claseTitulos": "ai-nowrap",
           "fuentes": [
             "../../comun/fonts/google/jost+molle.css"
           ]

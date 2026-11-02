@@ -4,3 +4,6 @@
 
 /* Confirmación: el texto con aire a los costados (README ronda 21) */
 #rsvp [data-rsvp="texto"] { padding-left: 1.25rem; padding-right: 1.25rem; }
+
+/* Nombres (portada y pie) y títulos siempre en mayúsculas, como el diseño; los textos respetan lo que escribe el cliente */
+#home-section h1, #home-section [data-ajustar], #cierre [data-ajustar], .site-wrap section h1, .site-wrap section h2 { text-transform: uppercase; }

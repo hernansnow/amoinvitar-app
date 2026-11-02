@@ -18,7 +18,7 @@ const POR_TIPO = {
   comunion: { nombres: { a: 'Mariana' }, portada: 1, galeria: 6, ceremonia: 'religiosa' },
   cumple: { nombres: { a: 'Mariel' }, portada: 0, galeria: 6, ceremonia: null },
   infantil: { nombres: { a: 'Martín' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
-  graduacion: { nombres: { a: 'Cinthia' }, portada: 1, galeria: 6, ceremonia: 'simbolica', horas: ['18:00', '21:00'], fecha: '2027-11-12' },
+  graduacion: { nombres: { a: 'Cinthia' }, portada: 1, galeria: 6, ceremonia: 'simbolica', horas: ['14:00', '18:00'], fecha: '2027-11-12' },
   babyshower: { nombres: { a: 'Mateo' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
   revelacion: { nombres: { a: 'Dani', b: 'Marce' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
   navidad: { nombres: { a: 'Familia Pérez' }, portada: 1, galeria: 8, ceremonia: null, fecha: '2027-12-24' },
@@ -26,14 +26,14 @@ const POR_TIPO = {
 
 const ITINERARIO = {
   boda: [['20:00', 'ceremonia', 'Ceremonia', 'Ceremony'], ['21:00', 'recepcion', 'Recepción', 'Reception'], ['22:00', 'cena', 'Cena', 'Dinner'], ['23:30', 'vals', 'Vals', 'First dance'], ['00:30', 'torta', 'Torta', 'Cake'], ['02:00', 'fiesta', 'Fiesta', 'Party']],
-  15: [['20:00', 'iglesia', 'Misa', 'Mass'], ['21:00', 'recepcion', 'Recepción', 'Reception'], ['22:00', '15', 'Entrada', 'Grand entrance'], ['23:00', 'vals', 'Vals', 'Waltz'], ['00:30', 'torta', 'Torta', 'Cake'], ['02:00', 'fiesta', 'Fiesta', 'Party']],
+  15: [['20:00', 'iglesia', 'Ceremonia', 'Ceremony'], ['21:00', 'recepcion', 'Recepción', 'Reception'], ['22:00', '15', 'Entrada', 'Grand entrance'], ['23:00', 'vals', 'Vals', 'Waltz'], ['00:30', 'torta', 'Torta', 'Cake'], ['02:00', 'fiesta', 'Fiesta', 'Party']],
   bautismo: [['11:00', 'iglesia', 'Bautismo', 'Baptism'], ['13:00', 'recepcion', 'Recepción', 'Reception'], ['14:00', 'cena', 'Almuerzo', 'Lunch'], ['16:00', 'torta', 'Torta', 'Cake']],
   comunion: [['11:00', 'iglesia', 'Misa', 'Mass'], ['13:00', 'recepcion', 'Recepción', 'Reception'], ['14:00', 'cena', 'Almuerzo', 'Lunch'], ['16:00', 'torta', 'Torta', 'Cake']],
-  infantil: [['17:00', 'gorrito', 'Bienvenida', 'Welcome'], ['17:30', 'magia', 'Show de magia', 'Magic show'], ['18:30', 'pizza', 'Merienda', 'Snack time'], ['19:00', 'pinata', 'Piñata', 'Piñata'], ['19:30', 'torta', 'Torta', 'Cake']],
-  graduacion: [['21:00', 'recepcion', 'Recepción', 'Reception'], ['22:00', 'cena', 'Cena', 'Dinner'], ['23:30', 'birrete', 'Entrada de egresados', 'Graduates\' entrance'], ['00:30', 'baile', 'Fiesta', 'Party'], ['03:00', 'last-call2', 'Despedida', 'Farewell']],
-  babyshower: [['17:00', 'recepcion', 'Bienvenida', 'Welcome'], ['17:30', 'osito', 'Juegos', 'Games'], ['18:30', 'cena', 'Merienda', 'Snack time'], ['19:30', 'torta', 'Torta', 'Cake']],
+  infantil: [['15:00', 'gorrito', '¡Bienvenidos a la aventura!', 'Welcome to the adventure!'], ['16:00', 'magia', 'Animación especial', 'Special entertainment'], ['17:00', 'pizza', 'Recarga de energía', 'Snack time'], ['18:30', 'pinata', 'Hora de la piñata', 'Piñata time'], ['19:00', 'torta', 'Pastel y fin de la fiesta', 'Cake and goodbye']],
+  graduacion: [['20:00', 'recepcion', 'Recepción del Graduado', 'Graduate\'s welcome'], ['20:30', 'mic', 'Palabras de agradecimiento', 'Thank-you words'], ['21:00', 'cena', 'Cena', 'Dinner'], ['22:00', 'baile', '¡Que empiece la fiesta!', 'Let the party begin!']],
+  babyshower: [['16:00', 'recepcion', '¡Bienvenidos! (Abrazos y fotos)', 'Welcome! (Hugs and photos)'], ['16:30', 'cena', 'A comer delicioso', 'Time to eat'], ['17:00', 'osito', '¡Que comiencen los juegos!', 'Let the games begin!'], ['18:00', 'torta', 'Pastel y deseos para el bebé', 'Cake and wishes for the baby'], ['18:30', 'regalo', 'Regalos y despedida', 'Gifts and goodbye']],
   revelacion: [['17:00', 'recepcion', 'Bienvenida', 'Welcome'], ['17:30', 'osito', 'Juegos', 'Games'], ['18:30', 'burbujas', '¿Niño o niña?', 'Boy or girl?'], ['19:00', 'torta', 'Torta', 'Cake']],
-  navidad: [['20:00', 'recepcion', 'Recepción', 'Reception'], ['21:00', 'cena', 'Cena', 'Dinner'], ['23:59', 'champagne', 'Brindis', 'Toast'], ['00:30', 'arbol', 'Regalos', 'Gifts'], ['01:00', 'baile', 'Fiesta', 'Party']],
+  navidad: [['19:00', 'tragos', 'Cóctel de bienvenida', 'Welcome cocktail'], ['20:00', 'bengalas', 'Luces de bengala', 'Sparklers'], ['21:00', 'cena', '¡A cenar!', 'Dinner time!'], ['23:00', 'mic', 'Karaoke navideño', 'Christmas karaoke'], ['00:00', 'regalo', 'Intercambio de regalos', 'Gift exchange'], ['00:30', 'arbol', 'Brindis y risas junto al árbol', 'Toasts by the tree']],
   cumple: [['20:00', 'tragos', 'Rompiendo el hielo', 'Breaking the ice'], ['21:00', 'cena', 'A cenar se ha dicho', 'Dinner time'], ['22:00', 'disco', '¡Que empiece el baile!', 'Let the dancing begin!'], ['23:00', 'torta3', 'Mordisco al pastel y deseos', 'Cake and wishes'], ['23:30', 'baile', 'Hasta que el cuerpo aguante', 'Dance till we drop'], ['02:00', 'last-call2', 'Despedida', 'Farewell']],
 };
 

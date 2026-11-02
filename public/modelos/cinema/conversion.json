@@ -170,6 +170,7 @@
             "brindis"
           ],
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Victoria <i class=\"icon-heart text-bronce\" aria-hidden=\"true\"></i> Marcos",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -203,6 +204,7 @@
           "propLugar": "1/1",
           "rsvpConFoto": true,
           "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Victoria <i class=\"icon-heart text-bronce\" aria-hidden=\"true\"></i> Marcos",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",

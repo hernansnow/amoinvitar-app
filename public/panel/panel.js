@@ -1384,6 +1384,8 @@ function prenderPaso(p, on) {
   }
   // Sin dress code no van las sugerencias de estilos
   if (!on && p.seccion === 'dresscode') escribir(datos, 'secciones.estilos', false);
+  // Y las sugerencias de estilos van siempre con el dress code: prenderlas prende también el dress code
+  if (on && p.seccion === 'estilos' && leer(datos, 'secciones.dresscode') === false) { escribir(datos, 'secciones.dresscode', true); aviso('Se prendió también "Dress code": las referencias de estilo van con él.'); }
   // La primera sección Premium o Deluxe prende la Save The Date del diseño (viene incluida en esos planes)
   if (on && ['premium', 'deluxe'].includes(p.nivel)) {
     const std = S.esquema.pasos.find((x) => x.id === 'std');
@@ -1528,11 +1530,15 @@ function pintarModelo() {
   caja.replaceChildren(el('button', { type: 'button', class: 'btn-modelo', onclick: elegirModelo }, el('strong', {}, actual.nombre), el('small', {}, 'cambiar ▾')));
 }
 function elegirModelo() {
-  abrirModal('Cambiar de modelo', el('div', { class: 'modelos-grilla' }, (S.modelos || []).map((m) => el('div', { class: `modelo-opcion${m.id === S.evento.modelo ? ' actual' : ''}` },
+  // Toda la tarjeta (imagen, nombre y botón) elige el modelo
+  const usar = async (m) => {
+    if (m.id === S.evento.modelo) return;
+    try { clearTimeout(guardarTimer); await guardar(); await api('/modelo', { method: 'POST', body: JSON.stringify({ modelo: m.id }) }); cerrarModal(); await recargar(); aviso(`Ahora con ${m.nombre}`); } catch (e) { aviso(e.message, true); }
+  };
+  abrirModal('Cambiar de modelo', el('div', { class: 'modelos-grilla' }, (S.modelos || []).map((m) => el('div', { class: `modelo-opcion${m.id === S.evento.modelo ? ' actual' : ''}`, role: 'button', tabindex: '0',
+      onclick: () => usar(m), onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); usar(m); } } },
     el('img', { src: `/modelos/${m.id}/tienda-${S.evento.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { if (e.target.dataset.f) return; e.target.dataset.f = 1; e.target.src = `/modelos/${m.id}/miniatura.jpg`; } }), el('strong', {}, m.nombre), m.gratis ? el('small', {}, 'También en plan gratis') : null,
-    m.id === S.evento.modelo ? el('span', { class: 'chip' }, 'En uso') : el('button', { type: 'button', class: 'btn btn-chico', onclick: async () => {
-      try { clearTimeout(guardarTimer); await guardar(); await api('/modelo', { method: 'POST', body: JSON.stringify({ modelo: m.id }) }); cerrarModal(); await recargar(); aviso(`Ahora con ${m.nombre}`); } catch (e) { aviso(e.message, true); }
-    } }, 'Usar este')))),
+    m.id === S.evento.modelo ? el('span', { class: 'chip' }, 'En uso') : el('span', { class: 'btn btn-chico' }, 'Usar este')))),
   el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/tienda/', target: '_blank' }, 'la tienda'), '.'));
   // El foco en el modelo que está en uso, no al principio de la lista
   requestAnimationFrame(() => document.querySelector('.modelo-opcion.actual')?.scrollIntoView({ block: 'center' }));

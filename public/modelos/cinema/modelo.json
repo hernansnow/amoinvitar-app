@@ -92,7 +92,7 @@
   },
   "nombresHTML": {
     "portada": "{a} &amp; {b}",
-    "cierre": "{a} &amp; {b}",
+    "cierre": "{a} <i class=\"icon-heart text-bronce\" aria-hidden=\"true\"></i> {b}",
     "solo": "{a}"
   },
   "miniatura": {

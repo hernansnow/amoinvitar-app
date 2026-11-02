@@ -2818,10 +2818,6 @@ button.bg-light:hover {
     padding: 0 !important
 }
 
-.pt-0 {
-    padding-top: 0 !important
-}
-
 .pr-0 {
     padding-right: 0 !important
 }
@@ -5184,3 +5180,6 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* Nombres (portada y pie) y títulos siempre en mayúsculas, como el diseño; los textos respetan lo que escribe el cliente */
+#home-section h1, #home-section [data-ajustar], #cierre [data-ajustar], .site-wrap section h1, .site-wrap section h2 { text-transform: uppercase; }

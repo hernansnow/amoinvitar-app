@@ -146,7 +146,7 @@ function portada(c, home) {
       }
       // Cada nombre se achica para entrar en su lugar
       const lugarN = AJUSTE_NOMBRES[c.id] || [0.82, null];
-      for (const x of hs.slice(0, 2)) { x.setAttribute('data-ajustar', String(lugarN[0])); if (lugarN[1] != null) x.setAttribute('data-ajustar-pc', String(lugarN[1])); }
+      for (const x of hs.slice(0, 2)) { x.classList.add('ai-nowrap'); x.setAttribute('data-ajustar', String(lugarN[0])); if (lugarN[1] != null) x.setAttribute('data-ajustar-pc', String(lugarN[1])); }
       c.info.nombresSeparados = true;
       c.aviso('portada: nombres en dos títulos (nombres.a / nombres.b); revisar el adorno del medio en eventos de una persona');
     }
@@ -458,7 +458,8 @@ function galeria(c) {
   // Primero la sección de la historia (antes o después, Beach); si no, la sección de antes
   const prev = conHistoria(ant) ? ant : conHistoria(sig) ? sig : ant;
   const conTexto = !!prev;
-  if (soloGaleria && conTexto && !c.info.galeriaFija) {
+  // (Aquarella no: su galería va aparte, con su fondo)
+  if (soloGaleria && conTexto && !c.info.galeriaFija && c.id !== 'aquarella') {
     car.parentNode.replaceChild(caja, car);
     caja.removeAttribute('class');
     caja.classList.add('ai-galeria-historia');
@@ -802,6 +803,12 @@ function dresscode(c) {
     }
     c.secciones.add('bus');
   }
+  // Las líneas que separan las columnas en el celular (al principio de Hospedaje y Traslado): el motor las quita
+  // cuando la columna queda primera (porque se apagó la de antes)
+  for (const col of $$(sec, '[data-seccion="hospedaje"], [data-seccion="bus"]')) {
+    const primero = col.firstElementChild;
+    if (primero && !txt(primero).trim() && !$$(primero, 'img,button,i').length && /border|show-mobile|ai-sep/.test((primero.getAttribute('class') || '') + (primero.tagName === 'HR' ? ' border' : ''))) primero.classList.add('ai-sep');
+  }
   c.secciones.add('dresscode');
   if ($(d, '#dress')) c.secciones.add('estilos');
 }
@@ -834,8 +841,8 @@ function itinerario(c) {
     if (im) { im.setAttribute('data-si', 'iconoUrl'); im.setAttribute('data-i-attr', 'src:iconoUrl'); im.setAttribute('alt', ''); }
     const hora = $$(it, 'p').find((x) => /\d{1,2}:\d{2}/.test(txt(x)));
     if (hora) hora.setAttribute('data-i', 'hora');
-    const t = $(it, 'h2') || $(it, 'h3') || $(it, 'h4');
-    if (t) t.setAttribute('data-i', 'texto');
+    const t = $(it, 'h2') || $(it, 'h3') || $(it, 'h4') || $(it, 'h5') || $(it, 'h6') || $$(it, 'p').find((x) => x !== hora && txt(x));
+    if (t) t.setAttribute('data-i', 'texto'); else c.aviso('itinerario: sin texto del momento');
   });
   c.secciones.add('itinerario');
 }
@@ -857,7 +864,9 @@ function testigos(c) {
       i.parentNode.replaceChild(nodo(d, `<i class="h1 icon-people" aria-hidden="true" style="color:${color}"></i>`), i);
     }
   }
-  const fotos = $$(sec, 'img').filter((i) => /testigo|padrino|demo-/.test(i.getAttribute('src') || '') && !/icon-|\.png$/.test(i.getAttribute('src') || ''));
+  // (también las que cargan con lazyload: data-src, Navidad)
+  for (const i of $$(sec, 'img[data-src]').filter((x) => !x.getAttribute('src'))) { i.setAttribute('src', i.getAttribute('data-src')); i.removeAttribute('data-src'); i.classList.remove('lazyload'); }
+  const fotos = $$(sec, 'img').filter((i) => /testigo|padrino|anfitri|demo-/.test(i.getAttribute('src') || '') && !/icon-|\.png$/.test(i.getAttribute('src') || ''));
   const cols = [...new Set(fotos.map((i) => subir(i, (x) => esCol(x))).filter(Boolean))];
   cols.forEach((col, i) => {
     if (i > 1) { quitar(col); return; }
@@ -1077,6 +1086,31 @@ function cierre(c) {
   const solo = !nombres && $$(sec, 'h1,h2,h3').find((x) => !x.hasAttribute('data-t') && txt(x).length > 1 && txt(x).length < 25 && !x.querySelector('h1,h2,h3') && /^[\p{Lu}][\p{L}\s.'-]*$/u.test(txt(x)) && x !== pie);
   const nom = nombres || (c.evento !== 'boda' && !c.info.nombresSeparados ? solo : null);
   if (nom) { c.info.nombresCierre = nom.innerHTML.trim(); nom.setAttribute('data-campo-html', 'nombres.cierre'); nom.setAttribute('data-ajustar', '0.86'); }
+  // Los nombres del pie con otros nombres de demo ("Aylén & Matías", "Victoria ♥ Marcos", "Agus + Fran"): dos palabras con
+  // un "&", "+", "y" o un corazón en el medio, en la sección del cierre o las dos siguientes
+  const zonaPie = [sec, sec.nextElementSibling, sec.nextElementSibling?.nextElementSibling].filter(Boolean);
+  const PAR = /^[\p{Lu}][\p{L}'.-]*\s*(&|\+|\by\b|\band\b)?\s*[\p{Lu}][\p{L}'.-]*$/u;
+  for (const z of zonaPie) {
+    for (const x of $$(z, 'h1,h2,h3,h4,h5').filter((e) => !e.closest('[data-campo-html],[data-campo],[data-t]') && !e.hasAttribute('data-t') && !e.querySelector('h1,h2,h3,h4,h5,p,img') && txt(e).length < 40)) {
+      const t = txt(x).replace(/\s+/g, ' ').trim();
+      const conAdorno = x.querySelector('[class*="icon-heart"], span');
+      if (PAR.test(t) && (/&|\+|\by\b|\band\b/.test(t) || conAdorno) && t.split(/\s|&|\+/).filter(Boolean).length >= 2) {
+        x.setAttribute('data-campo-html', 'nombres.cierre'); x.setAttribute('data-ajustar', '0.86');
+        c.info.nombresCierre ||= x.innerHTML.trim();
+      }
+    }
+    // Dos títulos seguidos, uno por nombre (Romantic: "MaRianO" / "GonZalO")
+    const hs = $$(z, 'h2,h3,h4').filter((e) => !e.closest('[data-campo-html],[data-campo],[data-t]') && /^[\p{L}]{2,20}$/u.test(txt(e).trim()));
+    for (let i = 0; i + 1 < hs.length; i++) {
+      const [x, y] = [hs[i], hs[i + 1]];
+      if (clases(x).join(' ') !== clases(y).join(' ').replace(/\bmt-\d\b/, '').trim() && clases(x)[0] !== clases(y)[0]) continue;
+      if (x.parentNode !== y.parentNode) continue;
+      if (c.evento !== 'boda') { x.setAttribute('data-campo', 'nombres.a'); quitar(y); }
+      else { x.setAttribute('data-campo', 'nombres.a'); y.setAttribute('data-campo', 'nombres.b'); y.setAttribute('data-si', 'nombres.b');
+        for (let k = x.nextElementSibling; k && k !== y; k = k.nextElementSibling) k.setAttribute('data-si', 'nombres.b'); }
+      break;
+    }
+  }
   // Los nombres de la demo que quedan en otras secciones (el pie con las redes, Graffiti/Rockabilly; un h4, Passion)
   const tPortada = c.info.nombresPortada ? txt(nodo(d, `<span>${c.info.nombresPortada}</span>`)).replace(/\s+/g, ' ').trim() : '';
   if (tPortada) {
@@ -1108,7 +1142,14 @@ function cierre(c) {
       const red = $(a, '.icon-instagram') ? 'instagram' : $(a, '.icon-facebook') ? 'facebook' : /tiktok/.test(a.innerHTML) ? 'tiktok' : null;
       if (!red) continue;
       a.setAttribute('href', '#'); a.setAttribute('rel', 'noopener'); a.setAttribute('data-si', `redes.${red}`); a.setAttribute('data-attr', `href:c:redes.${red}`);
-      if (red === 'tiktok') { const im = $(a, 'img'); if (im) im.setAttribute('alt', 'TikTok'); }
+      // TikTok: el ícono de la fuente (como Instagram y Facebook), del mismo tamaño y color, y el link con las mismas clases
+      if (red === 'tiktok') {
+        const ig = $(caja, '[class*="icon-instagram"]'); const aIg = ig && ig.closest('a');
+        const im = $(a, 'img');
+        if (im) im.parentNode.replaceChild(nodo(d, `<i class="${ig ? (ig.getAttribute('class') || '').replace(/icon-instagram/, 'icon-tiktok') : 'icon-tiktok h3'}" aria-hidden="true"></i>`), im);
+        if (aIg) a.setAttribute('class', aIg.getAttribute('class') || '');
+        a.setAttribute('aria-label', 'TikTok');
+      }
     }
     c.secciones.add('redes');
   }
@@ -1498,6 +1539,13 @@ function componer(cs) {
       }
     }
     separadores(c);
+    // La foto de Instagram Wall / Álbum QR que quedó sin marcar (la del bloque de Premium sumado a Deluxe, etc.): la del cliente
+    for (const i of $$(d.body, 'img').filter((x) => /(^|\/)(instagram|album)\d*\.(jpe?g|webp)$/i.test(x.getAttribute('src') || '') && !x.hasAttribute('data-attr'))) {
+      const cual = i.closest('[data-seccion="instagram"],#hashtag') ? 'instagram' : 'album';
+      i.setAttribute('data-attr', `src:c:fotos.${cual};style:c:fotos.${cual}Estilo`);
+      const w = subir(i, (x) => x.parentElement && x.parentElement.children.length > 1) || i;
+      if (!w.hasAttribute('data-si')) w.setAttribute('data-si', `fotos.${cual}`);
+    }
     // Cinema y Sky: el adorno de abajo de Testigos (7a) y el de arriba del Álbum/Instagram (7b) forman uno solo:
     // cada mitad va solo si está la otra sección
     for (const i of $$(d.body, 'img[src*="separador-7a"]')) i.setAttribute('data-si', 'grupos.fotos');

@@ -209,7 +209,7 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'musica.archivo', tipo: 'mp3', etiqueta: 'Canción (MP3)', sinEtiqueta: true, boton: 'Cargar canción (MP3)', maxMB: 12 },
       { id: 'musica.inicio', tipo: 'contador', etiqueta: 'Empezar la canción en el segundo…', min: 0, max: 600, paso: 5, si: { campo: 'musica.archivo' } },
     ] },
-    { id: 'historia', seccion: 'historia', titulo: plural ? 'Nuestra historia' : 'Mi historia',
+    { id: 'historia', seccion: 'historia', titulo: ({ graduacion: 'Mi recorrido', infantil: 'El tiempo vuela', navidad: 'Texto inicial', babyshower: 'Texto inicial', revelacion: 'Texto inicial' })[tipo] || (plural ? 'Nuestra historia' : 'Mi historia'),
       ayudaSeccion: 'Apagada: en su lugar va un saludo corto de bienvenida.',
       campos: [
         titulo('historia.titulo'),
@@ -233,7 +233,7 @@ function pasosInvitacion({ tipo, modelo }) {
       id: 'lugares', titulo: 'Lugares y fecha', obligatoria: true,
       campos: [
         ...(conCeremonia ? [
-          { id: 'ceremonia.modo', tipo: 'opciones', etiqueta: misa ? '¿Hay misa?' : '¿Hay ceremonia?', defecto: 'mismo-lugar', valores: [
+          { id: 'ceremonia.modo', tipo: 'opciones', etiqueta: misa ? '¿Hay misa?' : '¿Hay ceremonia?', defecto: tipo === 'graduacion' ? 'separada' : 'mismo-lugar', valores: [
             { v: 'mismo-lugar', etiqueta: 'Sí, en el mismo lugar de la celebración' },
             { v: 'separada', etiqueta: 'Sí, y se realiza en otro lugar' },
             { v: 'sin', etiqueta: misa ? 'No habrá misa' : 'No habrá ceremonia' },
@@ -330,7 +330,7 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'itinerario', tipo: 'lista', etiqueta: 'Momentos', max: 12, agregar: 'Agregar momento', campos: [
         { id: 'hora', tipo: 'texto', etiqueta: 'Hora', max: 10, placeholder: '21:00' },
         { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 30 },
-        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido, el círculo queda vacío.',
+        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido, se usa el que corresponde al texto (o uno de fiesta).',
           valores: [...(modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })),
             ...iconosComunesDe(tipo).filter((v) => !(modelo.iconosItinerario || []).includes(v)).map((v) => ({ v, etiqueta: nombreIcono(v), src: `/comun/img/itinerario/timeline-icon-${v}.png` }))] },
       ] },
@@ -362,7 +362,8 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'nota.albumAlbunear', tipo: 'nota', estilo: 'ayuda', texto: 'Luego podrás configurar el álbum en la pestaña Administración.', si: { campo: 'album.origen', no: 'propio' } },
       { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', si: { campo: 'album.origen', es: 'propio' } },
       conFotos('album'),
-      { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album') },
+      // La misma foto que Instagram Wall (van una u otra): si ya la cargó allá, acá aparece cargada
+      { id: 'fotos.instagram', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album'), ayuda: 'Es la misma foto de Instagram Wall.' },
     ] },
     { id: 'canciones', seccion: 'canciones', titulo: 'Sugerir canciones', campos: [
       { id: 'nota.canciones', tipo: 'nota', texto: 'Un formulario para que los invitados sugieran canciones. Las sugerencias se ven en la administración de la invitación.' },
