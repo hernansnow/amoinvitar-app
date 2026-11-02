@@ -20,7 +20,7 @@ const POR_TIPO = {
   infantil: { nombres: { a: 'Martín' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
   graduacion: { nombres: { a: 'Cinthia' }, portada: 1, galeria: 6, ceremonia: 'simbolica', horas: ['14:00', '18:00'], fecha: '2027-11-12' },
   babyshower: { nombres: { a: 'Mateo' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
-  revelacion: { nombres: { a: 'Dani', b: 'Marce' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
+  revelacion: { nombres: { a: 'Dani & Marce' }, portada: 1, galeria: 6, ceremonia: null, hora: '17:00' },
   navidad: { nombres: { a: 'Familia Pérez' }, portada: 1, galeria: 8, ceremonia: null, fecha: '2027-12-24' },
 };
 

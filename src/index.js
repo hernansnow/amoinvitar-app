@@ -72,6 +72,8 @@ const aOracion = (html) => { let primera = true; return html.replace(/(<[^>]*>)|
 function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null) {
   const d = { ...conTextosModelo(diccionario(tipo, varnt), modelo, varnt), ...propios };
   for (const [k, caso] of Object.entries(modelo?.textosCaso || {})) if (caso === 'oracion' && d[k] && !(k in propios)) d[k] = aOracion(String(d[k]));
+  // Un prefijo propio del diseño (Travel: "Tripulación – Testigos"); si el cliente escribe su título, va el suyo entero
+  for (const [k, pre] of Object.entries(modelo?.textosPrefijo || {})) if (d[k] && !(k in propios)) d[k] = `${pre}${d[k]}`;
   return (k) => String(d[k] ?? '').replaceAll('{nombres}', nombres);
 }
 const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');

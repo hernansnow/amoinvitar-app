@@ -72,5 +72,5 @@
 .ai-c-rsvp { margin-bottom: 1.5rem; }
 
 /* El aire de abajo de la galería queda dentro de su sección (con su fondo): sin franjas blancas debajo de los puntos */
-#galeria { display: flow-root; }
+#galeria { display: flow-root; width: 100%; }
 #galeria .ai-carrusel, #galeria .ai-galeria { margin-bottom: 1.5rem; }

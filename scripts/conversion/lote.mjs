@@ -39,8 +39,8 @@ export const FAMILIAS = {
   // Carpetas con varios diseños: "carpeta:patrón" (ver convertir-modelo.mjs)
   garden: ['Garden', { 15: 'eucalipto15', cumple: 'cumple-eucalipto', bautismo: 'bautismo-nuevo:garden', comunion: 'comunion-nuevo:garden_proyecto-{p}---NUEVO' }],
   amanecer: ['Amanecer', { bautismo: 'bautismo-nuevo:amanecer', comunion: 'comunion-nuevo:amanecer_proyecto-{p}---NUEVO' }],
-  celeste: ['Celeste', { bautismo: 'bautismo-nuevo:celeste', babyshower: 'baby-shower-nuevo:celeste_proyecto-{p}---NUEVO' }],
-  rosa: ['Rosa', { bautismo: 'bautismo-nuevo:rosa', babyshower: 'baby-shower-nuevo:rosa_proyecto-{p}---NUEVO' }],
+  celeste: ['Celeste', { bautismo: 'bautismo-nuevo:celeste', babyshower: 'baby-shower-nuevo:celeste_proyecto-{p}---NUEVO', infantil: 'baby-shower-nuevo:celeste_proyecto-{p}---NUEVO' }],
+  rosa: ['Rosa', { bautismo: 'bautismo-nuevo:rosa', babyshower: 'baby-shower-nuevo:rosa_proyecto-{p}---NUEVO', infantil: 'baby-shower-nuevo:rosa_proyecto-{p}---NUEVO' }],
   revelacion: ['Revelación', { revelacion: 'baby-shower-nuevo:revelacion_proyecto-{p}---NUEVO' }],
   esmeralda: ['Esmeralda', { graduacion: 'graduacion-nuevo:egreso-esmeralda_proyecto-{p}---NUEVO' }],
   estilo: ['Estilo', { graduacion: 'graduacion-nuevo:estilo_proyecto-{p}---NUEVO' }],

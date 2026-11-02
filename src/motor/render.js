@@ -129,6 +129,13 @@ function separadores(doc) {
     while (ant && (/^(SCRIPT|STYLE|LINK)$/.test(ant.tagName) || ant.classList.contains('animated-modal'))) ant = ant.previousElementSibling;
     if (!ant) sep.remove();
   }
+  // Una línea entre dos bloques va solo si hay algo antes y algo después (y no otra línea)
+  const visible = (x) => x && !/^(SCRIPT|STYLE|LINK)$/.test(x.tagName) && !x.classList.contains('animated-modal') && !(x.getAttribute('style') || '').includes('display: none');
+  const vecino = (x, dir) => { let y = x[dir]; while (y && !visible(y)) y = y[dir]; return y; };
+  for (const sep of todos(doc, '.ai-sep-entre')) {
+    const ant = vecino(sep, 'previousElementSibling'), sig = vecino(sep, 'nextElementSibling');
+    if (!ant || !sig || sig.classList.contains('ai-sep-entre') || ant.classList.contains('ai-sep-entre')) sep.remove();
+  }
 }
 
 // ── data-si / data-no globales ───────────────────────────────────────────

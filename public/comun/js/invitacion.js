@@ -5,6 +5,11 @@
   var INV = window.INV;
   if (!INV) return;
 
+  // Videos de fondo del diseño (Disco): esperan al sobre o a la ventana de bienvenida; sin ninguno de los dos, cargan ya
+  if (!document.getElementById('sobre') && !document.getElementById('ai-bienvenida')) {
+    [].forEach.call(document.querySelectorAll('iframe[data-sobre-src]'), function (f) { f.src = f.getAttribute('data-sobre-src'); f.removeAttribute('data-sobre-src'); });
+  }
+
   // Cuenta regresiva
   if (INV.cuenta && window.jQuery && jQuery.fn.countdown) {
     var tx = INV.textos;
@@ -150,7 +155,7 @@
       h.style.marginLeft = /left|start/.test(al) ? '0' : 'auto';
       h.style.marginRight = /right|end/.test(al) ? '0' : 'auto';
       if (/right|end/.test(al)) h.style.marginLeft = 'auto';
-      var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(18, fs0 * 0.32));
+      var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(13, fs0 * 0.3));
       for (var i = 0; i < 40; i++) {
         var m = medidas(h);
         if (m.ancho <= disponible + 1) break; // cada nombre va entero (nowrap): solo se achica si no entra a lo ancho
@@ -163,4 +168,9 @@
   ajustarNombres();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustarNombres);
   var tAjuste; addEventListener('resize', function () { clearTimeout(tAjuste); tAjuste = setTimeout(ajustarNombres, 150); });
+  // Al cambiar de tamaño (girar el celular, pasar a la compu) las galerías cambian de alto: las animaciones de entrada
+  // se recalculan, si no las secciones de abajo quedan sin aparecer
+  var tAos; function refrescarAos() { clearTimeout(tAos); tAos = setTimeout(function () { if (window.AOS) { try { AOS.refreshHard(); } catch (e) { AOS.refresh(); } } }, 300); }
+  addEventListener('resize', refrescarAos);
+  if (window.jQuery) jQuery(document).on('refreshed.owl.carousel initialized.owl.carousel', refrescarAos);
 })();

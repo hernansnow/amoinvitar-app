@@ -208,7 +208,7 @@ function verDemo(m) {
 $('#btn-personalizar-este').addEventListener('click', () => { $('#modal-vista').close(); empezar(elegido); });
 function empezar(m) {
   elegido = m;
-  const dos = S.tipo === 'boda' || !!m.dosNombres; // Revelación de género: los dos papás
+  const dos = S.tipo === 'boda'; // Revelación de género: un solo campo ("Dani & Marce")
   $('#empezar-modelo').textContent = m.nombres[S.tipo] || m.nombre;
   const campo = (id, etiqueta, ph) => el('div', { class: 'campo' }, el('label', { for: id }, etiqueta), el('input', { type: 'text', id, maxlength: 15, required: true, placeholder: ph }));
   $('#campos-nombres').replaceChildren(...(dos ? [campo('emp-a', 'Nombre 1', 'Lau'), campo('emp-b', 'Nombre 2', 'Pablo')] : [campo('emp-a', 'Nombre', 'Sofi')]));

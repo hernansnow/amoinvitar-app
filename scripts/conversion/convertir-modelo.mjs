@@ -46,6 +46,8 @@ const RE_FECHA_HORA = /\d{1,2}\s*◦\s*\d{1,2}\s*◦\s*\d{4}/;
 function plantillaFecha(t) {
   return t.replace(/\b(\d{1,2}:\d{2})(\s*hs\b|\s*h\b)?/g, '{hora}').replace(/\b2027\b/g, '{a}')
     .replace(/SEPTIEMBRE/g, '{MES}').replace(/Septiembre/g, '{Mes}').replace(/septiembre/g, '{mes}').replace(/\bSEPT?\b/g, '{MES3}').replace(/\bSept?\b/g, '{Mes3}').replace(/\bsept?\b/g, '{mes3}')
+    // Demos con otra fecha (Navidad 24/12, graduación 12/11): día y mes en su orden
+    .replace(/\b24\b(\D{1,4})\b12\b/, '{dd}$1{mm}').replace(/\b12\b(\D{1,4})\b11\b/, '{dd}$1{mm}')
     .replace(/\b12\b/, '{dd}').replace(/\b09\b/, '{mm}').replace(/\b9\b/, '{m}');
 }
 function marcarFecha(e, ruta) {
@@ -120,9 +122,9 @@ const DETALLE = /^(cumple\s*)?\d+\s*a[ñn]os?$|^(clase|promo(ci[oó]n)?)\s*\d{4}
 const DEMO_NOMBRE = /^(ayl[eé]n|ariadna|macarena|mariana|maiana|mariel|dayana|milena|abigail|fátima|fatima|mateo|juliana|martín|martin|paula|agustín|agustin|cinthia|sofi|ale|romi|gaby|lau|pablo|vanina)$/i;
 // Fracción del ancho para los nombres: [celular, computadora]
 const AJUSTE_NOMBRES = {
-  aquarella: [0.62, 0.32], armonia: [0.72, 0.6], beach: [0.5, 0.36], black: [0.66, 0.36], byn: [0.8, 0.6], cinema: [0.6, 0.42],
+  aquarella: [0.52, 0.3], armonia: [0.72, 0.6], beach: [0.6, 0.36], black: [0.66, 0.36], byn: [0.8, 0.6], cinema: [0.6, 0.42],
   euforia: [0.74, 0.6], floral: [0.62, 0.22], lila: [0.7, 0.5], passion: [0.5, 0.26], rouge: [0.62, 0.3], sky: [0.5, 0.36],
-  travel: [0.72, 0.5], white: [0.5, 0.3], oliva: [0.6, 0.4], vintage: [0.7, 0.45], elegance: [0.8, 0.6], lovestory: [0.8, 0.6],
+  travel: [0.55, 0.34], white: [0.5, 0.3], oliva: [0.6, 0.4], vintage: [0.7, 0.45], elegance: [0.8, 0.6], lovestory: [0.8, 0.6],
 };
 function portada(c, home) {
   const d = c.doc;
@@ -141,7 +143,8 @@ function portada(c, home) {
       // El adorno entre los dos nombres (un corazón, un "&") va solo si hay dos nombres
       for (let x = hs[0].nextSibling; x && x !== hs[1]; x = x.nextSibling) if (x.nodeType === 1 && !txt(x).match(/[A-Za-z]{3}/)) {
         x.setAttribute('data-si', 'nombres.b');
-        // Floral: el corazón entre los nombres, más chico
+        // Floral: el corazón entre los nombres, más chico y con el color por filtro (el truco de la sombra corrida se perdía)
+        for (const im of $$(x, 'img').filter((i) => /drop-shadow\(0px 1000px/.test(i.getAttribute('style') || ''))) im.setAttribute('style', 'filter: brightness(0) invert(20%);');
         if (c.id === 'floral' && /col-5/.test(x.getAttribute('class') || '')) x.setAttribute('class', x.getAttribute('class').replace('col-5', 'col-3').replace('col-md-3', 'col-md-2'));
       }
       // Cada nombre se achica para entrar en su lugar
@@ -188,7 +191,7 @@ function portada(c, home) {
     || textos.find((e) => e !== fecha && !fecha?.contains(e) && !e.contains(fecha) && txt(e).length > 3 && txt(e).length < 40
     && /[A-ZÁÉÍÓÚÑ!¡]{3}/.test(txt(e)) && txt(e) === txt(e).toUpperCase() && !/FALTAN|DÍAS|HORAS|MIN|SEG|^\s*SHOWER\s*$/.test(txt(e)));
   if (frase) {
-    frase.setAttribute('data-t', 'portada.subtitulo');
+    frase.setAttribute('data-t', 'portada.subtitulo'); frase.classList.add('ai-frase');
     // El diseño la escribe en minúsculas o "Tipo Título": el motor respeta ese caso
     const t0 = txt(frase).replace(/[¡!¿?]/g, '');
     if (t0 !== t0.toUpperCase()) frase.setAttribute('data-caso', /^(\S+\s*)+$/.test(t0) && t0.split(/\s+/).every((w) => w[0] === w[0].toUpperCase()) ? 'titulo' : 'oracion');
@@ -279,9 +282,11 @@ function portada(c, home) {
     c.info.portadaFotos = items.length;
   } else if (!vimeo) {
     let n = 0;
+    // Con una foto redonda (globo) en la portada, el fondo es parte del diseño (Marino, Oro): no se reemplaza
+    const hayGlobo = $$(home, 'img').some((i) => esDemo(i.getAttribute('src')) && /globo|rounded-circle|estrella/i.test((i.getAttribute('src') || '') + ' ' + (i.getAttribute('class') || '')));
     for (const e of $$(home, '[style*="url("]')) {
       const u = urlDe(e.getAttribute('style'));
-      if (!esDemo(u)) continue;
+      if (!esDemo(u) || hayGlobo) continue;
       c.fotos.add(u);
       if (!(c.info.portadas || []).some((x) => x.f === basename(u))) (c.info.portadas ||= []).push({ f: basename(u), pos: ((e.getAttribute('style') || '').match(/background-position\s*:\s*([^;]+)/) || [])[1]?.trim() || '50% 50%' });
       e.setAttribute('data-repetir', 'fotos.portada'); e.setAttribute('data-i-bg', 'url'); e.setAttribute('data-i-pos', 'pos'); e.setAttribute('data-i-estilo', 'estilo');
@@ -302,8 +307,14 @@ function portada(c, home) {
       // La foto redonda (globo, la estrella de Disco): siempre 1:1, aunque el cliente suba una foto vertical u horizontal
       if (/globo|rounded-circle|estrella/i.test(u + ' ' + (i.getAttribute('class') || '')) || c.id === 'disco') {
         i.classList.add('ai-foto-1x1'); c.info.portadaRedonda = true;
-        // Sin foto del cliente, la foto redonda no se muestra (Travel pone el avión; Disco, su estrella)
-        if (!/^(travel|disco)$/.test(c.id)) i.setAttribute('data-si', 'portada.hayFoto');
+        // Disco: la foto siempre dentro de la estrella (la versión de graduación traía un círculo)
+        if (c.id === 'disco' && !/globo-star/.test(i.getAttribute('class') || '')) {
+          i.setAttribute('class', 'img-fluid globo-star ai-foto-1x1'); i.removeAttribute('style'); i.removeAttribute('width');
+          if (w !== i) w.setAttribute('class', 'col-md-2 col-5 ml-auto mr-auto mb-2 disco-circulo');
+          else { const caja = envolver(d, i, '<div class="col-md-2 col-5 ml-auto mr-auto mb-2 disco-circulo"></div>'); i.removeAttribute('data-repetir'); caja.setAttribute('data-repetir', 'fotos.portada'); }
+        }
+        // Sin foto del cliente, la foto redonda no se muestra, con su marco (la estrella de Disco); Travel pone el avión
+        if (c.id !== 'travel') (w !== i ? w : i).setAttribute('data-si', 'portada.hayFoto');
       }
       n++;
     }
@@ -316,6 +327,11 @@ function portada(c, home) {
 function inicialesPortada(c) {
   const home = $(c.doc, '#home-section');
   if (!home) return;
+  // Navidad: el título en dos partes ("FIESTA DE" / "Navidad"), las dos se pueden cambiar
+  if (c.evento === 'navidad') {
+    for (const e of $$(c.doc.body, 'h1,h2,h3').filter((x) => x.closest('#home-section') && /^navidad$/i.test(txt(x).trim()))) { e.setAttribute('data-t', 'portada.titulo'); e.removeAttribute('data-caso'); }
+    for (const e of $$(c.doc.body, '[data-t="portada.subtitulo"]').filter((x) => x.closest('#home-section') && /^\s*fiesta de\s*$/i.test(txt(x)))) e.setAttribute('data-t', 'portada.antetitulo');
+  }
   // B&N: la ciudad junto a la fecha ("MIAMI"): un campo; vacío, no se muestra
   for (const e of $$(c.doc.body, 'span,p,h3,h4').filter((x) => x.closest('#home-section') && !x.children.length && /^\s*MIAMI\s*$/.test(x.textContent))) {
     e.setAttribute('data-campo', 'portada.ciudad'); e.setAttribute('data-si', 'portada.ciudad'); c.info.ciudadPortada = true;
@@ -432,6 +448,14 @@ function galeria(c) {
     fotos.slice(1).forEach(quitar);
     const w = envolver(d, car, '<div data-seccion="galeria" id="galeria"></div>');
     void w;
+    // Rockabilly: en la compu, tres fotos a la vez (una sola quedaba enorme); en el celular, una
+    if (c.id === 'rockabilly') {
+      car.classList.remove('slide-one-item', 'home-slider'); car.classList.add('ai-owl-3');
+      car.insertAdjacentHTML('afterend', `<script>addEventListener('load', function () { var $ = window.jQuery; if (!$ || !$.fn.owlCarousel) return; $('.ai-owl-3').owlCarousel({ items: 1, loop: true, margin: 14, autoplay: true, autoplayTimeout: 3500, autoplayHoverPause: true, nav: true,
+        navText: ['<span class="icon-keyboard_arrow_left">', '<span class="icon-keyboard_arrow_right">'], responsive: { 768: { items: 3 } } }); });</script>`);
+    }
+    // Las fotos de la galería no esperan a verse para cargar (las copias del carrusel quedaban sin foto)
+    for (const im of $$(car, 'img')) im.removeAttribute('loading');
     c.info.galeria = n; c.info.galeriaFija = true;
     c.secciones.add('galeria');
     return;
@@ -686,13 +710,13 @@ function dresscode(c) {
   if (idViejo && idViejo !== sec) idViejo.removeAttribute('id');
   sec.id = 'dresscode';
   // README (ronda 21): en Cinema, Lila y Travel, con las tres apagadas queda la franja (su fondo y su adorno)
-  const cont = /^(cinema|lila|travel)$/.test(c.id) && $$(sec, '.container').find((x) => x.parentElement === sec || x.parentElement?.parentElement === sec);
+  const cont = /^(cinema|lila|travel|sky|navidad)$/.test(c.id) && $$(sec, '.container').find((x) => x.parentElement === sec || x.parentElement?.parentElement === sec);
   if (cont) { cont.setAttribute('data-si', 'grupos.dress'); sec.classList.add('ai-dress-franja'); }
   else sec.setAttribute('data-si', 'grupos.dress');
   // Separadores sueltos entre columnas (una línea en el celular): van con la columna que sigue
   for (const s of $$(sec, '.row > div')) {
     if (!esCol(s) || $$(s, 'h2,h3,button,img,i').length) continue;
-    if (/show-mobile|hr|border/.test(s.outerHTML) && txt(s) === '' && s.nextElementSibling) { s.nextElementSibling.insertBefore(s, s.nextElementSibling.firstChild); s.removeAttribute('class'); s.setAttribute('class', 'col-12 p-0 show-mobile ai-sep'); }
+    if (/show-mobile|hr|border/.test(s.outerHTML) && txt(s) === '' && s.nextElementSibling) { s.nextElementSibling.insertBefore(s, s.nextElementSibling.firstChild); const soloCel = /show-mobile/.test(s.getAttribute('class') || ''); s.removeAttribute('class'); s.setAttribute('class', `col-12 p-0${soloCel ? ' show-mobile' : ''} ai-sep`); }
   }
   // Dress
   const hD = hoja(sec, 'h1,h2,h3,h4', (t) => /^dr?ess ?code$|vestimenta/i.test(t));
@@ -908,7 +932,7 @@ function album(c) {
   if (!caja) { c.aviso('álbum: sin caja'); return null; }
   const sec = (caja.tagName === 'SECTION' || $$(caja.parentElement, 'h2').length === $$(caja, 'h2').length) ? caja : caja;
   sec.setAttribute('data-seccion', 'album'); sec.id = 'instagram';
-  const h = hoja(caja, 'h2,h3,h4', () => true);
+  const h = hoja(caja, 'h2,h3,h4', (t) => t.trim().length > 1);
   if (h) h.setAttribute('data-t', 'album.titulo');
   const p = h && siguienteP(h);
   if (p) { p.setAttribute('data-t-html', 'album.texto'); }
@@ -933,8 +957,14 @@ function hashtag(c) {
   const tag = hoja(d.body, 'span,h4,h3,p', (t) => /^#\w{4,}$/.test(t));
   const ancla = tag || h;
   if (!ancla) return null;
-  const caja = subir(ancla, (x) => $$(x, 'h2,h3').length >= 1 && (esCol(x) || x.tagName === 'SECTION'));
+  let caja = subir(ancla, (x) => $$(x, 'h2,h3').length >= 1 && (esCol(x) || x.tagName === 'SECTION'));
   if (!caja) return null;
+  // Si la caja junta otras secciones (Minimal Premium: Dress code, Música e Instagram en la misma columna),
+  // se usa el bloque más chico que tiene el título de Instagram y el hashtag, nada más
+  if ($$(caja, 'h2,h3').filter((x) => txt(x).length > 2 && !/^#/.test(txt(x))).length > 1) {
+    const chico = subir(ancla, (x) => x !== caja && caja.contains(x) && $$(x, 'h2,h3').filter((y) => txt(y).length > 2 && !/^#/.test(txt(y))).length === 1 && (!h || x.contains(h)));
+    if (chico) caja = chico;
+  }
   caja.setAttribute('data-seccion', 'instagram'); caja.id = 'hashtag';
   const ti = hoja(caja, 'h2,h3', (t) => !/^#/.test(t));
   if (ti) ti.setAttribute('data-t', 'hashtag.titulo');
@@ -971,8 +1001,14 @@ function canciones(c) {
   let caja = subir(b, (x) => $$(x, 'h2,h3,h4').length >= 1 && !x.querySelector('[data-seccion="album"],[data-seccion="instagram"]'));
   if (!caja) { c.aviso('canciones: sin caja'); return; }
   caja.setAttribute('data-seccion', 'canciones'); caja.id = 'musica';
-  nivel(caja, c.wrap).classList.add('ai-sec-musica');
-  const h = hoja(caja, 'h2,h3,h4', () => true);
+  const secM = nivel(caja, c.wrap);
+  secM.classList.add('ai-sec-musica');
+  // Si la sección es solo Música (con sus adornos), la marca va en la sección entera: apagada no queda vacía
+  // (con la playlist sola, el motor deja el camino hasta la playlist)
+  if (secM !== caja && !$$(secM, 'h1,h2,h3,h4,p').some((e) => !caja.contains(e) && txt(e).trim().length > 2)) {
+    caja.removeAttribute('data-seccion'); secM.setAttribute('data-seccion', 'canciones');
+  }
+  const h = hoja(caja, 'h2,h3,h4', (t) => t.trim().length > 1);
   if (h) h.setAttribute('data-t', 'canciones.titulo');
   const p = h && siguienteP(h);
   if (p) p.setAttribute('data-t-html', 'canciones.texto');
@@ -986,7 +1022,9 @@ function canciones(c) {
   // La playlist va dentro de la sección Música, después del botón Sugerir (tarjeta blanca redondeada)
   const pl = nodo(d, `<div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>`);
   const tras = subir(b, (x) => x.parentNode === caja) || b;
-  if (tras.parentNode === caja) despues(tras, pl); else caja.appendChild(pl);
+  // Elegance / Style: los bordes de la caja de Música la rompen en el celular; va en su propio bloque, debajo
+  if (/^(elegance|style)$/.test(c.id)) { pl.setAttribute('class', 'ai-playlist-aparte container'); despues(nivel(caja, c.wrap), pl); }
+  else if (tras.parentNode === caja) despues(tras, pl); else caja.appendChild(pl);
   c.secciones.add('canciones'); c.secciones.add('playlist');
 }
 
@@ -1548,9 +1586,23 @@ function componer(cs) {
     }
     // Cinema y Sky: el adorno de abajo de Testigos (7a) y el de arriba del Álbum/Instagram (7b) forman uno solo:
     // cada mitad va solo si está la otra sección
+    // (la mitad de arriba va con la sección que tiene la mitad de abajo: Testigos en Cinema y Sky, Música en Navidad)
+    const a7 = $(d.body, 'img[src*="separador-7a"]');
+    const secA = a7 && (a7.closest('[data-seccion]') || subir(a7, (x) => x.tagName === 'SECTION'));
+    const cual = secA?.getAttribute('data-seccion') || (secA && $(secA, '[data-seccion="canciones"]') ? 'canciones' : 'testigos');
     for (const i of $$(d.body, 'img[src*="separador-7a"]')) i.setAttribute('data-si', 'grupos.fotos');
-    for (const i of $$(d.body, 'img[src*="separador-7b"]')) i.setAttribute('data-si', 'secciones.testigos');
+    for (const i of $$(d.body, 'img[src*="separador-7b"]')) i.setAttribute('data-si', `secciones.${cual}`);
     body.insertAdjacentHTML('beforeend', SCRIPTS);
+    // Colores mal escritos en los fondos del diseño (White: "rgba(245, 2345, 245, …)" dejaba el degradado inválido)
+    for (const x of $$(d.body, '[style*="rgba("]')) {
+      const st = x.getAttribute('style');
+      const ok = st.replace(/rgba\((\s*\d+\s*),(\s*\d+\s*),(\s*\d+\s*),/g, (m, r, g, b) => `rgba(${[r, g, b].map((n) => Math.min(255, +n)).join(', ')},`);
+      if (ok !== st) x.setAttribute('style', ok);
+    }
+    // Líneas sueltas entre bloques (un div que solo tiene un <hr>): el motor las saca si falta lo de un lado
+    for (const x of $$(d.body, 'div,p').filter((e) => !txt(e).trim() && e.children.length === 1 && e.firstElementChild.tagName === 'HR' && !e.closest('.animated-modal,#home-section'))) x.classList.add('ai-sep-entre');
+    // Animaciones del diseño (Travel: mundo, aviones y órbita; Cinema y Love Story: íconos animados)
+    if ($(d.body, 'lottie-player')) body.insertAdjacentHTML('beforeend', '\n<script src="../../comun/js/lottie-player.js" defer></script>\n');
   }
 }
 

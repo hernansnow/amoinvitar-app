@@ -6,3 +6,9 @@
 @media (min-width: 768px) and (max-height: 680px) {
   #home-section > .container { transform: scale(.7); }
 }
+
+/* Computadoras medianas: Peppa y los regalos más chicos y hacia el costado, sin tapar el nombre (README ronda 22) */
+@media (min-width: 768px) and (max-width: 1500px) {
+  #personaje2 img { width: clamp(170px, 19vw, 290px); margin-left: 4%; }
+  #torta2 img { width: clamp(150px, 17vw, 290px); margin-right: 4%; }
+}

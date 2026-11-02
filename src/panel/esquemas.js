@@ -21,7 +21,8 @@ import { ZONAS } from '../datos/zonas.js';
 import { FUENTES } from '../datos/fuentes.js';
 
 const ORDEN_PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
-const PLURAL = new Set(['boda', 'revelacion']);
+// Revelación de género: un solo campo de nombre libre (uno o dos nombres, como lo escriba el cliente)
+const PLURAL = new Set(['boda']);
 
 // ── Campos reutilizables ──────────────────────────────────────────────
 
@@ -173,8 +174,8 @@ function pasosInvitacion({ tipo, modelo }) {
     {
       id: 'portada', titulo: 'Portada', obligatoria: true,
       campos: [
-        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : ({ graduacion: 'Nombre (o institución, si es un egreso)', navidad: 'Familia o empresa' })[tipo] || 'Nombre',
-          max: ['graduacion', 'navidad'].includes(tipo) ? 30 : 15, requerido: true, ancho: plural ? 'mitad' : null, placeholder: plural ? 'Lau' : ({ graduacion: 'Cinthia', navidad: 'Familia Pérez' })[tipo] || 'Sofi' },
+        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : ({ graduacion: 'Nombre (o institución, si es un egreso)', navidad: 'Familia o empresa', revelacion: 'Nombre o nombres (como se tienen que ver)' })[tipo] || 'Nombre',
+          max: ['graduacion', 'navidad', 'revelacion'].includes(tipo) ? 30 : 15, requerido: true, ancho: plural ? 'mitad' : null, placeholder: plural ? 'Lau' : ({ graduacion: 'Cinthia', navidad: 'Familia Pérez' })[tipo] || 'Sofi' },
         ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2', max: 15, requerido: true, ancho: 'mitad', placeholder: 'Pablo' }] : []),
         { id: 'nota.nombres', tipo: 'nota', estilo: 'ayuda', texto: plural ? '¿Cómo se tienen que ver los nombres? (nombres, diminutivos, apodos…). Por ejemplo: Lau y Pablo.'
           : '¿Cómo se tiene que ver el nombre? (nombre, diminutivo, apodo…). Por ejemplo: Sofi.' },
@@ -191,7 +192,10 @@ function pasosInvitacion({ tipo, modelo }) {
           si: modelo.videoPortada ? [siFotos('portada'), { campo: 'portada.tipo', no: 'video' }] : siFotos('portada') },
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
         ] : []),
-        { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
+        ...(tipo === 'navidad' ? [
+          { id: 'textos.portada.antetitulo', tipo: 'texto', etiqueta: 'Título (primera línea)', max: 20, base: 'portada.antetitulo', ancho: 'mitad' },
+          { id: 'textos.portada.titulo', tipo: 'texto', etiqueta: 'Título (en grande)', max: 16, base: 'portada.titulo', ancho: 'mitad' },
+        ] : [{ id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' }]),
         // Segunda línea de la portada en los diseños que la traen (la edad, la promoción…)
         ...(modelo.sepiaPortada ? [{ id: 'portada.color', tipo: 'switch', estilo: 'check', etiqueta: 'Portada en color', detalle: 'este diseño la muestra en sepia', si: siFotos('portada') }] : []),
         ...(modelo.ciudadPortada ? [{ id: 'portada.ciudad', tipo: 'texto', etiqueta: 'Ciudad (junto a la fecha)', max: 18, ancho: 'mitad', ayuda: 'Por ejemplo "Miami". Vacío, no se muestra.' }] : []),

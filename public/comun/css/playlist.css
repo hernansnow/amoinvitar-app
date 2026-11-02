@@ -46,3 +46,6 @@
 .ai-v-etiqueta::after { display: none !important; }
 .ai-vinilo.sin-logo .ai-v-etiqueta { background: url("../img/vinilo-etiqueta-blanca.webp") center / cover no-repeat; }
 .ai-v-etiqueta > * { display: none; }
+/* En el celular la tarjeta usa todo el ancho de la sección de Música (los diseños con mucho margen la apretaban) */
+@media (max-width: 767px) { .ai-playlist { width: 100%; padding: 1.5rem 12px; margin: 1.5rem auto 0; } }
+.ai-playlist-aparte { padding-top: .5rem; padding-bottom: 2rem; }

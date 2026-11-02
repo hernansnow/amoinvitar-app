@@ -57,7 +57,7 @@ body.ai-fotos-color img, body.ai-fotos-color [style*="background-image"] { filte
 .ai-redes-iconos { display: flex; justify-content: center; align-items: center; gap: .8rem; }
 
 /* Nombres: cada uno en su caja; el segundo baja entero a la línea siguiente si no entran */
-.ai-n { display: inline-block; white-space: nowrap; }
+.ai-n { display: inline-block; white-space: nowrap; font-size: inherit !important; font-style: inherit !important; font-weight: inherit !important; color: inherit !important; letter-spacing: inherit !important; text-transform: inherit !important; }
 
 /* Fotos de los lugares en círculo: un tamaño medido (el encuadre del cliente pisa el ancho del diseño) */
 img.ai-lugar-redondo { width: 200px !important; max-width: 62% !important; height: auto !important; aspect-ratio: 1 / 1; object-fit: cover; }
@@ -82,3 +82,4 @@ img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-
 /* Redes: el mismo aire a los dos lados de cada ícono (con una sola red no se corre del centro) */
 .ai-redes a { padding-left: .45rem !important; padding-right: .45rem !important; margin-left: 0 !important; margin-right: 0 !important; }
 .ai-redes a img { max-height: 1.6rem; }
+#galeria { width: 100%; }

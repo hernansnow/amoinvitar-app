@@ -1,3 +1,6 @@
 /* Galería en blanco y negro (el cliente puede pedirla en color: clase ai-color) */
 .ai-galeria img, .ai-carrusel img { filter: grayscale(1); }
 .ai-galeria.ai-color img, .ai-carrusel.ai-color img { filter: none; }
+
+/* Música: menos margen en el recuadro, así la playlist no queda apretada */
+@media (max-width: 767px) { .ai-sec-musica .rounded.p-3 { padding: .5rem !important; } .ai-sec-musica .container { padding-left: 8px; padding-right: 8px; } }

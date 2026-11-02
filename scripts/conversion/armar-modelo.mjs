@@ -124,6 +124,8 @@ const textosDemo = (ev) => {
   const o = {};
   if (i.textoHistoria && i.textoHistoria.length > 40) o['historia.texto'] = i.textoHistoria;
   if (i.textoPie && i.textoPie.length > 40) o['pie.texto'] = i.textoPie;
+  // Infantiles desde el Baby Shower (Celeste, Rosa): los textos de los infantiles, no los del baby shower; la frase de la portada
+  if (ev === 'infantil' && /^(celeste|rosa)$/.test(id)) return { 'portada.subtitulo': 'PRIMER AÑITO' };
   return Object.keys(o).length ? o : null;
 };
 const nombre = nombreArg || previo.nombre || id.charAt(0).toUpperCase() + id.slice(1);
@@ -142,6 +144,7 @@ const modelo = {
   // Sin foto de portada va un color liso; Travel tiene su imagen (el avión)
   ...(id === 'travel' ? { portadaSinFotoImagen: true } : {}),
   // Textos que el diseño escribe en minúsculas (Romantic: el botón de confirmar)
+  ...(id === 'travel' ? { textosPrefijo: { 'testigos.titulo': 'Tripulación – ' } } : {}),
   ...(id === 'romantic' ? { textosCaso: { 'rsvp.botonHtml': 'oracion', 'rsvp.cerradoHtml': 'oracion' } } : {}),
   paquetes: paquetes(ev0),
   ...(conv[ev0].paquetes.deluxe.info.ciudadPortada ? { ciudadPortada: true } : {}),
@@ -188,7 +191,7 @@ for (const ev of eventos) {
 // Cumpleaños con fotos de un hombre: la demo lleva nombre de hombre
 const HOMBRES = { byn: 'Martín', disco: 'Tomás', floral: 'Lucas', luxury: 'Joaquín', rockabilly: 'Nicolás', white: 'Mateo' };
 // Y los diseños con nombre propio en la demo (el bebé de Celeste es Mateo…)
-const NOMBRES_DEMO = { ...Object.fromEntries(Object.entries(HOMBRES).map(([k, v]) => [`${k}/cumple`, v])), 'celeste/bautismo': 'Mateo', 'rosa/bautismo': 'Juliana', 'celeste/babyshower': 'Mateo', 'rosa/babyshower': 'Juliana', 'disco/graduacion': 'Instituto Superior', 'esmeralda/graduacion': 'Instituto Superior', 'monster/infantil': 'Paula', 'peppa/infantil': 'Agustín' };
+const NOMBRES_DEMO = { ...Object.fromEntries(Object.entries(HOMBRES).map(([k, v]) => [`${k}/cumple`, v])), 'celeste/bautismo': 'Mateo', 'rosa/bautismo': 'Juliana', 'celeste/babyshower': 'Mateo', 'rosa/babyshower': 'Juliana', 'celeste/infantil': 'Mateo', 'rosa/infantil': 'Juliana', 'disco/graduacion': 'Instituto Superior', 'esmeralda/graduacion': 'Instituto Superior', 'monster/infantil': 'Paula', 'peppa/infantil': 'Agustín' };
 for (const ev of eventos) {
   const n = NOMBRES_DEMO[`${id}/${ev}`];
   if (!n) continue;
