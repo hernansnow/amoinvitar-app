@@ -32,29 +32,26 @@
     },
     "premium": {
       "secciones": [
-        "musica",
         "rsvp"
       ],
       "incluye": {
-        "sobre": true,
-        "musica": true,
-        "cuenta": true,
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
         "fotosPortada": 1,
         "fotosGaleria": 20
       }
     },
     "deluxe": {
       "secciones": [
-        "musica",
         "rsvp"
       ],
       "incluye": {
-        "sobre": true,
-        "musica": true,
-        "cuenta": true,
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
         "fotosPortada": 1,
-        "fotosGaleria": 20,
-        "sugerenciasDress": true
+        "fotosGaleria": 20
       }
     }
   },
@@ -96,7 +93,9 @@
   },
   "demoBorrosas": {
     "boda": {
-      "portada": [],
+      "portada": [
+        "globo.jpg"
+      ],
       "galeria": [],
       "testigos": []
     }
@@ -107,5 +106,7 @@
       "/comun/fonts/google/great-vibes+jost.css",
       "/modelos/civil/tema.css"
     ]
-  }
+  },
+  "simple": true,
+  "std": false
 }

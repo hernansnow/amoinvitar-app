@@ -1018,3 +1018,9 @@ body.modo-admin #btn-ojo { display: none !important; }
 /* Celular: el modelo y el tipo debajo de "Paso 1 de 26" */
 .modelo-movil { margin: 2px 0 6px; font-size: .78rem; font-weight: 700; line-height: 1.2; }
 .modelo-movil .btn-link { font: inherit; padding: 0; border: 0; background: none; color: var(--acento, inherit); text-decoration: underline; cursor: pointer; }
+
+/* Link de la Save The Date web */
+.link-std { display: grid; gap: 8px; }
+.link-std input { width: 100%; padding: 8px 10px; border: 1px solid var(--borde, #ccc); border-radius: 8px; font: inherit; background: #fff; }
+.link-std-botones { display: flex; flex-wrap: wrap; gap: 8px; }
+.sin-admin #modos { display: none !important; }

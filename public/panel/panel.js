@@ -1081,6 +1081,27 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
         return el('label', { class: 'diseno-foto' }, i, el('img', { src: `/comun/tarjetas/${c.carpeta || 'foto'}/${o.v}/muestra-${plural ? 'boda' : '15'}.jpg`, alt: '', loading: 'lazy' }), el('span', {}, o.etiqueta));
       }));
     }
+    // Diseño de la Save The Date web (Classic o Soft)
+    case 'disenoStd': {
+      const actual = valor || c.defecto;
+      return el('div', { class: 'disenos-foto', role: 'radiogroup' }, c.valores.map((o) => {
+        const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: o.v, checked: o.v === actual, disabled: dis });
+        i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
+        return el('label', { class: 'diseno-foto' }, i, el('img', { src: `/modelos/${o.v}/tienda-${S.evento.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { e.target.remove(); } }), el('span', {}, o.etiqueta));
+      }));
+    }
+    // El link de la Save The Date web: copiar, mandar por WhatsApp y verla
+    case 'linkStd': {
+      const link = `${location.origin}/std/${S.evento.id}`;
+      const ver = `${link}?k=${encodeURIComponent(clave || '')}`;
+      const caja = el('div', { class: 'link-std' },
+        el('input', { type: 'text', readonly: true, value: link, onclick: (e) => e.target.select(), 'aria-label': c.etiqueta }),
+        el('div', { class: 'link-std-botones' },
+          el('button', { type: 'button', class: 'btn btn-chico', onclick: async () => { try { await navigator.clipboard.writeText(link); aviso('Link copiado'); } catch { aviso('No se pudo copiar: seleccionarlo y copiarlo a mano', true); } } }, 'Copiar link'),
+          el('a', { class: 'btn btn-sec btn-chico', target: '_blank', rel: 'noopener', href: `https://wa.me/?text=${encodeURIComponent(`¡Reservá la fecha! ${link}`)}` }, 'Mandar por WhatsApp'),
+          el('a', { class: 'btn btn-sec btn-chico', target: '_blank', rel: 'noopener', href: ver }, 'Ver')));
+      return caja;
+    }
     case 'botonTextos': {
       const abierto = uiIdiomas.abiertos.has(c.idioma);
       return el('button', { type: 'button', class: 'btn btn-textos', 'aria-expanded': abierto ? 'true' : 'false',
@@ -1792,6 +1813,8 @@ function recordarBorrador() {
     try { const r = await api('/vincular', { method: 'POST' }); S.usuario = { email: r.email }; aviso(`Guardada en la cuenta ${r.email}`); } catch { aviso('No se pudo guardar en la cuenta. Probar de nuevo.', true); }
   }
   aplicarDefectos();
+  // La Save The Date web no tiene administración (respuestas, envío, mesas)
+  if (S.esquema?.sinAdmin) { $('#modos').hidden = true; document.body.classList.add('sin-admin'); }
   if (S.modelo?.miniatura?.colorTitulos) document.documentElement.style.setProperty('--icono-fondo', S.modelo.miniatura.colorTitulos);
   aplicarMarca(S.marca);
   botonAyuda();

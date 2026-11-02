@@ -29,8 +29,9 @@ export const A_MEDIDA = {
 
 // ── Otros productos ─────────────────────────────────────────────────────
 export const PRODUCTOS = {
-  'compromiso-web': { precio: 15, nombre: 'Compromiso / pedida de mano / civil' },
-  'std-web': { precio: 15, nombre: 'Save The Date web (Soft, Classic) · Compromiso · Pedida · Civil · Party' },
+  // Modelos simples de una pantalla (se elige el diseño en el panel; Party es de 15 años)
+  'compromiso-web': { precio: 15, nombre: 'Invitación web simple · Civil, Compromiso, Pedida de mano o Party' },
+  'std-web': { precio: 15, nombre: 'Save The Date web (Classic o Soft)' },
   'std-web-medida': { precio: 70, nombre: 'Save The Date web · diseño a medida' },
   'std-tarjeta': { precio: 12, nombre: 'Save The Date · tarjeta' },
   'std-foto': { precio: 15, nombre: 'Save The Date · foto' },
@@ -49,6 +50,8 @@ export const EXTRAS = {
   // las tarjetas con foto (Save The Date y agradecimiento) se pagan aparte en cualquier plan
   'std-tarjeta': { precio: 10, nombre: 'Tarjeta Save The Date', gratisDesde: 'premium' },
   'std-foto': { precio: 15, nombre: 'Tarjeta Save The Date con foto' },
+  // Save The Date web (Classic o Soft) de la invitación de boda o 15, con su propio link
+  'std-web': { precio: 15, nombre: 'Save The Date web' },
   agradecimiento: { precio: 15, nombre: 'Tarjeta de agradecimiento' },
   // Video propio en la portada: se paga aparte en todos los planes y modelos (Cinema incluido)
   'video-portada': { precio: 8, nombre: 'Video de portada' },

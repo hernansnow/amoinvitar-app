@@ -30,28 +30,23 @@
       }
     },
     "premium": {
-      "secciones": [
-        "musica"
-      ],
+      "secciones": [],
       "incluye": {
-        "sobre": true,
-        "musica": true,
-        "cuenta": true,
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
         "fotosPortada": 1,
         "fotosGaleria": 20
       }
     },
     "deluxe": {
-      "secciones": [
-        "musica"
-      ],
+      "secciones": [],
       "incluye": {
-        "sobre": true,
-        "musica": true,
-        "cuenta": true,
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
         "fotosPortada": 1,
-        "fotosGaleria": 20,
-        "sugerenciasDress": true
+        "fotosGaleria": 20
       }
     }
   },
@@ -87,12 +82,16 @@
   },
   "demoBorrosas": {
     "15": {
-      "portada": [],
+      "portada": [
+        "globo.jpg"
+      ],
       "galeria": [],
       "testigos": []
     },
     "boda": {
-      "portada": [],
+      "portada": [
+        "globo.jpg"
+      ],
       "galeria": [],
       "testigos": []
     }
@@ -111,28 +110,23 @@
           }
         },
         "premium": {
-          "secciones": [
-            "musica"
-          ],
+          "secciones": [],
           "incluye": {
-            "sobre": true,
-            "musica": true,
-            "cuenta": true,
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
             "fotosPortada": 1,
             "fotosGaleria": 20
           }
         },
         "deluxe": {
-          "secciones": [
-            "musica"
-          ],
+          "secciones": [],
           "incluye": {
-            "sobre": true,
-            "musica": true,
-            "cuenta": true,
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
             "fotosPortada": 1,
-            "fotosGaleria": 20,
-            "sugerenciasDress": true
+            "fotosGaleria": 20
           }
         }
       },
@@ -168,5 +162,7 @@
       "/comun/fonts/google/abril-fatface+alex-brush+jost.css",
       "/modelos/std-classic/tema.css"
     ]
-  }
+  },
+  "simple": false,
+  "std": true
 }

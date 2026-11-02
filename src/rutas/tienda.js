@@ -54,8 +54,12 @@ function validarPedido(p) {
     const tipoNombre = TIPOS_EVENTO.find((t) => t.id === tipo)?.nombre || tipo;
     return { producto, tipo, modelo: m.id, paquete, extras: paquete === 'gratis' ? [] : extras, nombre: `Invitación ${tipoNombre} · ${nombreModelo(m, tipo)} ${NOMBRES_PAQUETE[paquete]}` };
   }
-  const tipo = producto === 'agradecimiento' ? (str(p.tipo, 20) || 'boda') : producto === 'compromiso-web' ? 'compromiso' : 'save-the-date';
-  return { producto, tipo, modelo: null, paquete: 'basic', extras: extras.filter((e) => e === 'idioma'), nombre: PRODUCTOS[producto].nombre };
+  // Invitación web simple y Save The Date web: arrancan con un diseño (Compromiso, Web Classic); en el panel se cambia
+  // por otro (Civil, Pedida, Party de 15; Web Soft, o la de 15)
+  const simple = { 'compromiso-web': 'compromiso', 'std-web': 'std-classic' }[producto];
+  const tipo = producto === 'agradecimiento' ? (str(p.tipo, 20) || 'boda') : simple ? (['boda', '15'].includes(p.tipo) ? p.tipo : 'boda') : 'save-the-date';
+  const modelo = simple && producto === 'compromiso-web' && tipo === '15' ? 'party' : simple || null;
+  return { producto, tipo, modelo, paquete: 'basic', extras: extras.filter((e) => e === 'idioma'), nombre: PRODUCTOS[producto].nombre };
 }
 
 // ── Cupones ──────────────────────────────────────────────────────────
@@ -104,7 +108,8 @@ export async function catalogo(request, env) {
     pais, moneda, monedas: CURRENCIES,
     // Los tipos con grupo (revelación de género) se eligen dentro de su grupo (Baby Shower)
     tipos: TIPOS_EVENTO.filter((t) => !t.grupo),
-    modelos: MODELOS.map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {},
+    // Los modelos simples y las Save The Date web se compran como producto (Invitación web simple, Save The Date web)
+    modelos: MODELOS.filter((m) => !m.simple && !m.std).map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {},
       eventos: [...new Set([...m.eventos, ...TIPOS_EVENTO.filter((t) => t.grupo && m.eventos.includes(t.id)).map((t) => t.grupo)])],
       gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), dosNombres: m.eventos.includes('revelacion') })),
     paquetes: ORDEN.map((id) => ({ id, nombre: NOMBRES_PAQUETE[id], incluye: RESUMEN_PAQUETES[id], precio: precio(id, PAQUETES[id].precio) })),
@@ -440,7 +445,7 @@ export async function estadoPlan(env, request, ev, esquema) {
     aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,
     // Precio de cada tarjeta con este plan (para mostrarlo en los selectores del panel)
-    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'agradecimiento', 'video-portada'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
+    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'agradecimiento', 'video-portada'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
     // Primera vez: aunque sea gratis pasa por la "compra" (queda el mail de la cuenta y la factura si corresponde)
     activar: !pagado,
   };

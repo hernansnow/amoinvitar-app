@@ -32,29 +32,26 @@
     },
     "premium": {
       "secciones": [
-        "musica",
         "rsvp"
       ],
       "incluye": {
-        "sobre": true,
-        "musica": true,
-        "cuenta": true,
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
         "fotosPortada": 0,
         "fotosGaleria": 20
       }
     },
     "deluxe": {
       "secciones": [
-        "musica",
         "rsvp"
       ],
       "incluye": {
-        "sobre": true,
-        "musica": true,
-        "cuenta": true,
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
         "fotosPortada": 0,
-        "fotosGaleria": 20,
-        "sugerenciasDress": true
+        "fotosGaleria": 20
       }
     }
   },
@@ -97,5 +94,7 @@
       "/comun/fonts/google/jost+montez-2bf25c.css",
       "/modelos/pedida/tema.css"
     ]
-  }
+  },
+  "simple": true,
+  "std": false
 }

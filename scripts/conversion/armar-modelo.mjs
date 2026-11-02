@@ -231,6 +231,14 @@ if (agregar) {
   console.log(`${id}: eventos sumados (${eventos.join(', ')})`);
   process.exit(0);
 }
+// Modelos simples y Save The Date web: una sola pantalla, lo mismo en cualquier plan (sin sobre, música ni cuenta)
+if (/^(party|civil|compromiso|pedida|std-classic|std-soft)$/.test(id)) {
+  for (const m of [modelo, ...Object.values(modelo.porEvento || {})]) {
+    if (!m.paquetes?.basic) continue;
+    m.paquetes.premium = structuredClone(m.paquetes.basic); m.paquetes.deluxe = structuredClone(m.paquetes.basic);
+  }
+  modelo.simple = !/^std-/.test(id); modelo.std = /^std-/.test(id);
+}
 await writeFile(join(carpeta, 'modelo.json'), JSON.stringify(modelo, null, 2) + '\n');
 
 // tema.css: las variables que usan la pantalla de acceso y "Buscá tu mesa"

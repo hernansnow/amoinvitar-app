@@ -8,7 +8,7 @@
 //   fecha      'principal' | 'celebracion' (la fecha de la portada)
 //   lugares    { map1: 'ceremonia', map2: 'celebracion' } (las ventanas con día, lugar, Agendar y mapa)
 //   agendar    lo que agenda el botón suelto de la portada ('principal' en las Save The Date)
-export function simple(doc, { $, $$, nodo, txt, plantillaFecha }, op = {}) {
+export function simple(doc, { $, $$, nodo, txt }, op = {}) {
   // Los elementos de texto más internos (si un <p> solo envuelve un <span> con el mismo texto, va el <span>: tiene el color)
   const hojas = (sel) => $$(doc.body, sel).filter((e) => !$$(e, 'p,h1,h2,h3,h4,h5,h6,div').length
     && !$$(e, 'span').some((x) => txt(x).trim() === txt(e).trim()));
@@ -37,7 +37,8 @@ export function simple(doc, { $, $$, nodo, txt, plantillaFecha }, op = {}) {
     const m = t.match(RE);
     const conHora = /\d{1,2}[:.]\d{2}/.test(t.slice(m.index + m[0].length));
     const ico = $(e, 'i[class*="icon-"]');
-    const formato = plantillaFecha(m[0].replace(/\s+/g, ' '));
+    // El orden del diseño (día, mes, año) con sus separadores; no se adivina por los números de la demo (Civil: 18/12)
+    const formato = m[0].replace(/\s+/g, ' ').replace(RE, (x, d, sep, mo, a) => x.replace(/^\d{1,2}/, '{dd}').replace(new RegExp(`(\\${sep}\\s*)\\d{1,2}(\\s*\\${sep})`), '$1{mm}$2').replace(/\d{4}$/, '{a}'));
     e.removeAttribute('data-fecha'); e.removeAttribute('data-fecha-formato');
     e.innerHTML = `<span data-fecha="${F}" data-fecha-formato="${formato}"></span>${conHora ? `<span data-si="fechas.${F}.hora">&#160;&#160;${ico ? ico.outerHTML : '-'}&#160;&#160;<span data-fecha="${F}" data-fecha-formato="{hora}"></span></span>` : ''}`;
   }

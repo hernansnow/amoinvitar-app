@@ -456,12 +456,19 @@ const pasoTarjeta = (clase, modelo, tipo) => (clase === 'std' ? {
       : 'Una tarjeta para mandar antes de la invitación, con una foto y el diseño que se elija. Se suma en cualquier plan.' },
     ...(modelo?.tarjetas?.std && !CON_FOTO.has(tipo) ? [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', oculto: true, valores: [
       { v: 'tarjeta', etiqueta: 'Tarjeta', extra: 'std-tarjeta' }] }]
-      : modelo?.tarjetas?.std ? [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
-      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'std-foto' },
-    ] }] : [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'foto', oculto: true, valores: [{ v: 'foto', etiqueta: 'Tarjeta con foto', extra: 'std-foto' }] }]),
+      : [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de Save The Date', defecto: modelo?.tarjetas?.std ? 'tarjeta' : 'foto', rearmar: true, valores: [
+      ...(modelo?.tarjetas?.std ? [{ v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }] : []),
+      { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'std-foto' },
+      // README (ronda 22): la Save The Date web (Classic o Soft) solo en boda y 15, con su propio link
+      { v: 'web', etiqueta: 'Save The Date web', ayuda: 'Una página con su link: foto, nombres, fecha y botón para agendar.', extra: 'std-web' },
+    ] }]),
+    { id: 'std.web', tipo: 'disenoStd', etiqueta: 'Diseño de la Save The Date web', defecto: 'std-classic', valores: DISENOS_STD_WEB, rearmar: true, si: { campo: 'std.tipo', es: 'web' } },
+    { id: 'textos.std.titulo', tipo: 'texto', etiqueta: 'Texto de arriba', max: 20, base: 'std.titulo', ancho: 'mitad', si: { campo: 'std.tipo', es: 'web' } },
+    { id: 'textos.std.mensaje', tipo: 'area', etiqueta: 'Mensaje', max: 140, base: 'std.mensaje', si: { campo: 'std.tipo', es: 'web' } },
+    { ...CAMPO_LINK_STD, si: { campo: 'std.tipo', es: 'web' } },
     // Diseños con foto: no dependen del modelo (public/comun/tarjetas/foto/catalogo.json)
     { id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseño', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true, si: { campo: 'std.tipo', es: 'foto' } },
-    { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true },
+    { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true, si: { campo: 'std.tipo', no: 'web' } },
   ],
 } : {
   id: 'agradecimiento', seccion: 'agradecimiento', complemento: true, titulo: 'Tarjeta de agradecimiento',
@@ -674,7 +681,7 @@ export function complementos(esquema, datos) {
     if (datos.diseno?.paleta?.modo === 'cambiar') x.push('paleta');
     if (datos.diseno?.tipografia?.modo === 'cambiar') x.push('tipografia');
   }
-  if (paso('std') && seccionActiva(paso('std'), datos)) x.push((datos.std?.tipo || (paso('std').incluidaPremium ? 'tarjeta' : 'foto')) === 'foto' ? 'std-foto' : 'std-tarjeta');
+  if (paso('std') && seccionActiva(paso('std'), datos)) { const t = datos.std?.tipo || (paso('std').incluidaPremium ? 'tarjeta' : 'foto'); x.push(t === 'web' ? 'std-web' : t === 'foto' ? 'std-foto' : 'std-tarjeta'); }
   if (paso('agradecimiento') && seccionActiva(paso('agradecimiento'), datos)) x.push('agradecimiento');
   // Video de portada: complemento en cualquier plan
   if (paso('portada')?.campos.some((c) => c.id === 'portada.video') && datos.portada?.tipo === 'video' && datos.fotosOn?.portada !== false) x.push('video-portada');
@@ -687,7 +694,7 @@ export function complementos(esquema, datos) {
 }
 
 // Cada paso con su nivel (para los avisos Basic / Premium / Deluxe / Complemento del menú)
-function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false }) {
+function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false, motivoCerrada = null }) {
   return pasos.map((paso) => ({
     ...paso,
     nivel: paso.complemento ? 'complemento' : paso.nivelPaso || (paso.seccion ? paqueteMinimo(modelo, paso.seccion) : 'basic'),
@@ -695,7 +702,7 @@ function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicad
       if (paso.complemento && gratis) return { ...c, cerrado: 'Los complementos no están disponibles en el plan gratis.' };
       if (admin) return c;
       if (paso.id === 'diseno' && disenoEnviado && c.tipo !== 'nota') return { ...c, cerrado: 'El pedido de diseño ya se envió al equipo.' };
-      if (cerrada && c.tipo !== 'nota') return { ...c, cerrado: 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
+      if (cerrada && !['nota', 'linkStd'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
       if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'La invitación ya está publicada: los nombres y la fecha se cambian pidiéndolo por WhatsApp.', pedirCambio: true };
       return c;
     }),
@@ -753,13 +760,70 @@ const CAMPOS_ACCESO = [
   { id: 'acceso.ejemplo', tipo: 'ejemploAcceso' },
 ];
 
+// ── Modelos simples y Save The Date web ───────────────────────────────
+// Party, Civil, Compromiso, Pedida de mano: una sola pantalla. Se edita la foto (si el diseño la tiene), el texto de
+// arriba ("Save the date"), los nombres, la frase, la fecha y hora, el mensaje, los lugares y la confirmación (como en
+// Basic). Sin secciones para sumar, ni música, ni sobre, ni Save The Date. Idioma, colores y tipografía, con su costo.
+// Las Save The Date web (Classic y Soft): foto, textos, nombres, frase y fecha (la hora es opcional: sin hora se agenda
+// como evento de todo el día). Sin administración: al final, el link para copiar o mandar.
+const CON_MENSAJE = new Set(['pedida', 'std-classic', 'std-soft']);
+function portadaSimple(base, modelo, { std = false } = {}) {
+  const p = base.find((x) => x.id === 'portada');
+  const conFoto = (modelo?.paquetes?.basic?.incluye?.fotosPortada || 0) > 0;
+  const fuera = new Set(['portada.cuenta', 'portada.sobre', 'portada.tipo', 'portada.video', 'portada.color', 'portada.ciudad', 'nota.portada', 'nota.portadaSinFoto',
+    ...(conFoto ? [] : ['fotosOn.portada', 'fotos.portada'])]);
+  const campos = p.campos.filter((c) => !fuera.has(c.id)).map((c) => (c.id === 'fotos.portada' ? { ...c, max: 1, nivelCantidad: null, etiqueta: 'Foto', sinEtiqueta: false } : c));
+  const i = campos.findIndex((c) => c.id === 'textos.portada.subtitulo');
+  const extra = [
+    { id: 'textos.std.titulo', tipo: 'texto', etiqueta: 'Texto de arriba', max: 20, base: 'std.titulo', ancho: 'mitad', ayuda: 'Por ejemplo "Save the date".' },
+    ...(CON_MENSAJE.has(modelo?.id) ? [{ id: 'textos.std.mensaje', tipo: 'area', etiqueta: 'Mensaje', max: 140, base: 'std.mensaje' }] : []),
+  ];
+  campos.splice(i < 0 ? campos.length : i + 1, 0, ...extra);
+  // La Save The Date: la fecha va en la portada (sin lugares)
+  if (std) campos.push(
+    { id: 'celebracion.fecha', tipo: 'fecha', etiqueta: 'Fecha', requerido: true, ancho: 'mitad' },
+    { id: 'celebracion.hora', tipo: 'hora', etiqueta: 'Hora (opcional)', ancho: 'mitad', ayuda: 'Sin hora, en el calendario se agenda como evento de todo el día.' },
+  );
+  return { ...p, campos, obligatoria: true };
+}
+function pasosSimple({ tipo, modelo, datos }) {
+  const base = pasosInvitacion({ tipo, modelo });
+  const de = (id) => base.find((x) => x.id === id);
+  const lugares = de('lugares');
+  // Civil: ceremonia y banquete; los demás, un solo lugar
+  const soloFiesta = modelo?.id !== 'civil';
+  const lug = lugares && { ...lugares, obligatoria: true, campos: lugares.campos.filter((c) => !/^(separador\.fotosLugar|fotosOn\.lugares|ceremonia\.foto|celebracion\.foto)$/.test(c.id)
+    && (!soloFiesta || !/^(ceremonia\.|separador\.ceremonia|separador\.fiesta|celebracion\.tituloUnico|celebracion\.titulo$)/.test(c.id))) };
+  const rsvp = de('rsvp') && { ...de('rsvp'), obligatoria: true, campos: de('rsvp').campos.filter((c) => !/^(rsvp\.aforo|rsvp\.extras|rsvp\.preguntas\.traslado)$/.test(c.id)) };
+  const acceso = { id: 'seguridad', titulo: 'Acceso', obligatoria: true,
+    campos: CAMPOS_ACCESO.map((c) => (c.id === 'acceso.tipo' ? { ...c, valores: c.valores.filter((o) => !o.v.startsWith('lista')) } : c)) };
+  return [portadaSimple(base, modelo), pasoIdioma, lug, rsvp, acceso, pasoPublicar(tipo), { ...pasoDiseno(modelo), separado: true }, pasoIdiomaAdicional([], datos)].filter(Boolean);
+}
+// El link de la Save The Date web, para copiarlo o mandarlo (lo arma el panel)
+const CAMPO_LINK_STD = { id: 'std.link', tipo: 'linkStd', etiqueta: 'Link de la Save The Date', ayuda: 'Copialo o mandalo por WhatsApp. Se ve apenas se paga.' };
+// Las dos Save The Date web (el diseño se elige; la de 15 años es la "Web Classic" de 15)
+export const DISENOS_STD_WEB = [{ v: 'std-classic', etiqueta: 'Web Classic' }, { v: 'std-soft', etiqueta: 'Web Soft' }];
+function pasosStdWeb({ tipo, modelo, datos }) {
+  const base = pasosInvitacion({ tipo, modelo });
+  return [portadaSimple(base, modelo, { std: true }), pasoIdioma,
+    { id: 'publicar', titulo: 'Link', obligatoria: true, campos: [CAMPO_LINK_STD] },
+    { ...pasoDiseno(modelo), separado: true }, pasoIdiomaAdicional([], datos)].filter(Boolean);
+}
+
 // ── Entrada principal ─────────────────────────────────────────────────
 // producto: 'invitacion' | 'a-medida' | 'std-web' | 'std-tarjeta' | …
 export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false }) {
-  if (PRODUCTOS_STD[producto]) {
+  if (PRODUCTOS_STD[producto] && !(modelo?.simple || modelo?.std)) {
     return { producto, pasos: PRODUCTOS_STD[producto]() };
   }
   const m = producto === 'a-medida' ? MODELO_A_MEDIDA : modelo;
+  // Modelos simples y Save The Date web: su panel reducido; al publicarse ya no se editan
+  if (m?.simple || m?.std) {
+    const pasos = m.std ? pasosStdWeb({ tipo, modelo: m, datos }) : pasosSimple({ tipo, modelo: m, datos });
+    const cerrada = publicada && !admin;
+    return { producto, tipo, paquete, publicada, simple: !!m.simple, std: !!m.std, sinAdmin: !!m.std, cerrada,
+      pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, motivoCerrada: 'Ya está publicada: no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.' }) };
+  }
   const base = pasosInvitacion({ tipo, modelo: m });
   // Sin lista de invitados en el modelo (a medida, etc.), la seguridad va sola antes del idioma
   const conAcceso = base.some((p) => p.id === 'invitados') ? [] : [{ id: 'seguridad', titulo: 'Acceso', obligatoria: true,
@@ -821,7 +885,7 @@ function limpiarValor(c, v) {
     case 'zona': return ZONAS_OK.has(v) ? v : undefined;
     case 'idioma': return IDIOMAS_OK.has(v) ? v : undefined;
     case 'fuente': return c.valores.includes(v) ? v : undefined;
-    case 'bandera': case 'disenoFoto': return c.valores.some((o) => o.v === v) ? v : undefined;
+    case 'bandera': case 'disenoFoto': case 'disenoStd': return c.valores.some((o) => o.v === v) ? v : undefined;
     // Tarjeta editada sobre el diseño: textos con su corrimiento y tamaño, la foto y su encuadre.
     // La imagen generada (y el bloqueo) los pone solo el servidor al generarla.
     case 'tarjeta': {

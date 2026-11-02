@@ -198,6 +198,22 @@ async function demo(env, url, request, idModelo) {
   return pagina(env, url, ev, { demo: true });
 }
 
+// ── Save The Date web ─────────────────────────────────────────────────
+// /std/<id>: la de la invitación (sección Save The Date, opción web, paga) o la comprada suelta (publicada).
+// El dueño la ve siempre desde el panel (?k=clave).
+async function saveTheDate(env, url, request, id) {
+  const ev = await almacenDe(env).evento(id);
+  if (!ev) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Save The Date no encontrada.</p>', 404);
+  const dueno = !!(await eventoConClave(env, request, url, id));
+  const suelta = MODELOS.find((m) => m.id === ev.modelo)?.std;
+  const modelo = suelta ? ev.modelo : (ev.datos.std?.web || 'std-classic');
+  const m = MODELOS.find((x) => x.id === modelo);
+  const lista = suelta ? ev.estado === 'publicado' : ev.datos.std?.tipo === 'web' && (ev.datos.extras || []).includes('std-web');
+  if (!m?.std || !m.eventos.includes(ev.tipo) || (!lista && !dueno)) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Esta Save The Date todavía no está disponible.</p>', 404);
+  const evento = { ...paraMotor(ev), modelo, paquete: 'basic' };
+  return pagina(env, url, evento, { sinSobre: true, prueba: dueno && !lista });
+}
+
 // ── Invitación publicada (con su seguridad) ───────────────────────────
 async function publicada(env, url, request, tipo, slug) {
   const almacen = almacenDe(env);
@@ -447,7 +463,7 @@ async function eventoConClave(env, request, url, id) {
 }
 
 async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {}) {
-  const modelo = ev.producto === 'invitacion' ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
+  const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
     gratis: ev.paquete === 'gratis' || datos.planElegido === 'gratis', disenoEnviado: !!datos.diseno?.enviado,
     publicada: ev.estado === 'publicado', admin });
@@ -468,6 +484,8 @@ async function publicarEvento(env, request, ev) {
   const url = new URL(request.url);
   const esquema = await esquemaDe(env, url, ev);
   const faltan = faltantes(esquema, ev.datos);
+  // La Save The Date web no lleva link propio: queda en /std/<id>
+  if (esquema.std && !faltan.length) { ev.estado = 'publicado'; await almacenDe(env).guardarEvento(ev); return { ok: true, estado: ev.estado, link: `${url.origin}/std/${ev.id}` }; }
   if (faltan.length || !ev.slug) return { faltan };
   if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return { error: 'Falta el PIN' };
   // Plan gratis: online hasta 15 días después del evento
@@ -475,19 +493,22 @@ async function publicarEvento(env, request, ev) {
     const fecha = (ev.datos.celebracion?.inicio || '').slice(0, 10);
     if (fecha) ev.vence = new Date(Date.parse(fecha) + 16 * 86400000).toISOString();
   }
-  ev.estado = ev.producto === 'invitacion' || ev.producto === 'std-web' ? 'publicado' : 'en-diseno';
+  ev.estado = ['invitacion', 'std-web', 'compromiso-web'].includes(ev.producto) ? 'publicado' : 'en-diseno';
   await avisarDiseno(env, url, ev);
   await almacenDe(env).guardarEvento(ev);
   return { ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null };
 }
 
 // Modelos a los que se puede cambiar (los del mismo tipo de evento)
-const modelosPara = (tipo) => MODELOS.filter((m) => m.eventos.includes(tipo)).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)) }));
+const modelosPara = (tipo) => MODELOS.filter((m) => m.eventos.includes(tipo) && !m.std).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), simple: !!m.simple }));
 const nombreTipo = (tipo) => TIPOS_EVENTO.find((t) => t.id === tipo)?.nombre || tipo;
 // Para cambiar de modelo en el panel: los del mismo tipo y los de su grupo (Cumpleaños con los infantiles,
 // Baby Shower con Revelación). Cada uno con el tipo de evento con el que queda.
 const GRUPO_TIPO = (tipo) => { const g = TIPOS_EVENTO.find((t) => t.id === tipo)?.grupo || tipo; return TIPOS_EVENTO.filter((t) => t.id === g || t.grupo === g).map((t) => t.id); };
-const modelosCambio = (tipo) => {
+const modelosCambio = (tipo, producto = 'invitacion') => {
+  if (producto === 'compromiso-web') return ['boda', '15'].flatMap((t) => modelosPara(t).filter((m) => m.simple).map((m) => ({ ...m, tipo: t, tipoNombre: nombreTipo(t) })));
+  if (producto === 'std-web') return ['boda', '15'].flatMap((t) => MODELOS.filter((m) => m.std && m.eventos.includes(t)).map((m) => ({ id: m.id, nombre: nombreModelo(m, t), gratis: false, tipo: t, tipoNombre: nombreTipo(t) })));
+  if (producto !== 'invitacion') return [];
   const tipos = [tipo, ...GRUPO_TIPO(tipo).filter((t) => t !== tipo)];
   const vistos = new Set();
   return tipos.flatMap((t) => modelosPara(t).filter((m) => !vistos.has(m.id) && vistos.add(m.id)).map((m) => ({ ...m, tipo: t, tipoNombre: nombreTipo(t) })));
@@ -562,7 +583,7 @@ async function apiPanel(env, request, url, partes) {
       // Textos de cada idioma adicional (para traducir en el panel)
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,
-      modelos: modelosCambio(ev.tipo),
+      modelos: modelosCambio(ev.tipo, ev.producto),
       usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
@@ -572,7 +593,7 @@ async function apiPanel(env, request, url, partes) {
   }
   if (!accion && request.method === 'PUT') {
     const { datos } = await request.json();
-    if (esquema.cerrada) return json({ error: 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escribinos por WhatsApp.' }, 403);
+    if (esquema.cerrada) return json({ error: esquema.simple || esquema.std ? 'Ya está publicada: no se puede modificar. Para un cambio, escribinos por WhatsApp.' : 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escribinos por WhatsApp.' }, 403);
     // Publicada: los nombres y la fecha quedan como estaban (evita reciclar la invitación para otro evento)
     if (ev.estado === 'publicado' && !admin && datos) for (const ruta of FIJOS_PUBLICADA) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
     // Los campos de cada idioma (bandera, traducciones) dependen de los idiomas que llegan ahora
@@ -603,8 +624,16 @@ async function apiPanel(env, request, url, partes) {
   // Cambiar de modelo (el mismo tipo de evento); lo cargado queda igual
   if (accion === 'modelo' && request.method === 'POST') {
     const { modelo } = await request.json();
-    const elegido = modelosCambio(ev.tipo).find((m) => m.id === modelo);
+    const elegido = modelosCambio(ev.tipo, ev.producto).find((m) => m.id === modelo);
     if (!elegido) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
+    const antes = MODELOS.find((x) => x.id === ev.modelo);
+    if (ev.estado === 'publicado' && antes?.simple && !admin) return json({ error: 'La invitación ya está publicada y no se puede cambiar. Escribinos por WhatsApp.' }, 400);
+    // README (ronda 22): entre un modelo simple y uno completo el panel arranca de nuevo; quedan los nombres y la fecha
+    if (!!antes?.simple !== !!elegido.simple) {
+      const d = ev.datos, quedan = { nombres: d.nombres, variante: d.variante, zonaHoraria: d.zonaHoraria, idiomas: d.idiomas, extras: d.extras, acceso: d.acceso,
+        celebracion: d.celebracion && { fecha: d.celebracion.fecha, hora: d.celebracion.hora }, ceremonia: d.ceremonia && { fecha: d.ceremonia.fecha, hora: d.ceremonia.hora } };
+      ev.datos = JSON.parse(JSON.stringify(quedan));
+    }
     // Otro tipo del mismo grupo (de Cumpleaños a infantil, de Baby Shower a Revelación): solo antes de publicar,
     // porque el link lleva el tipo de evento
     if (elegido.tipo !== ev.tipo) {
@@ -966,6 +995,7 @@ export default {
       if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);
       if (p0 === 'demo' && partes.length === 2) return await demo(env, url, request, p1);
+      if (p0 === 'std' && partes.length === 2 && p1.startsWith('ev_')) return await saveTheDate(env, url, request, p1);
       if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return env.ASSETS.fetch(new URL('/panel/', url.origin));
       if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, url, p1);
       if (p0 === 'puerta' && partes.length === 2) return await paginaPuerta(env, url, p1);
