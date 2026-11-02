@@ -77,7 +77,7 @@
 	<div class="row justify-content-center">
 		<div class="rockabilly pb-5">
                  <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="mb-md-3 mb-2 display-1">Paula</h1>
-                  <h6 data-t="portada.subtitulo">¡MI CUMPLE!</h6><br>
+                  <h6 class="ai-frase" data-t="portada.subtitulo">¡MI CUMPLE!</h6><br>
                  <i class="icon-star pr-3"></i><h5 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal"> 12 • 09 • 2027 </h5><i class="icon-star pl-3"></i>
              </div>
 	  <div class="circulo-cuenta-regresiva-3 pt-md-5">
@@ -142,7 +142,7 @@
 	<div class="row justify-content-center">
 		<div class="rockabilly pb-5">
                  <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="mb-md-3 mb-2 display-1">Paula</h1>
-                  <h6 data-t="portada.subtitulo">¡MI CUMPLE!</h6><br>
+                  <h6 class="ai-frase" data-t="portada.subtitulo">¡MI CUMPLE!</h6><br>
              </div>
 	  <div class="circulo-cuenta-regresiva-3 pt-0">
        <div class="caja-aro3 text-center pt-5">
@@ -207,10 +207,11 @@
 	   </div>
     </section>
 
-		     <div id="galeria" data-seccion="galeria"><div><div class="presupuesto slide-one-item home-slider owl-carousel p-0 mb-3 bg-white rockabilly-div3b">
-				<img data-i-estilo="estilo" data-i-attr="src:url" data-repetir="fotos.galeria" loading="lazy" src="demo/cumple/foto1.jpg" alt="Imagen" class="img-fluid rockabilly-filtered">
+		     <div id="galeria" data-seccion="galeria"><div><div class="presupuesto owl-carousel p-0 mb-3 bg-white rockabilly-div3b ai-owl-3">
+				<img data-i-estilo="estilo" data-i-attr="src:url" data-repetir="fotos.galeria" src="demo/cumple/foto1.jpg" alt="Imagen" class="img-fluid rockabilly-filtered">
 
-            </div></div><div class="col-md-4 col-10 ml-auto mr-auto text-center mt-0 mb-0 pb-0">
+            </div><script>addEventListener('load', function () { var $ = window.jQuery; if (!$ || !$.fn.owlCarousel) return; $('.ai-owl-3').owlCarousel({ items: 1, loop: true, margin: 14, autoplay: true, autoplayTimeout: 3500, autoplayHoverPause: true, nav: true,
+        navText: ['<span class="icon-keyboard_arrow_left">', '<span class="icon-keyboard_arrow_right">'], responsive: { 768: { items: 3 } } }); });</script></div><div class="col-md-4 col-10 ml-auto mr-auto text-center mt-0 mb-0 pb-0">
 			<img loading="lazy" class="img-fluid mb-4 w-50" src="img/guitarra-rockabilly.png" alt="Imagen">
           </div></div>
 
@@ -234,7 +235,7 @@
          <div class="row item" id="agenda">
 
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-			  <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-2 mt-0" src="img/party-rockabilly.png" width="100" alt="Imagen">
+			  <img loading="lazy" class="img-fluid mb-2 mt-0" src="img/party-rockabilly.png" width="100" alt="Imagen">
 			 <h2 data-campo="celebracion.titulo" class="mb-4 text-center rockabilly-title">Fiesta</h2>
 			      <div class="text-center mr-auto ml-auto p-0" data-aos="fade-up" data-aos-delay="50">
                     <figure class="rockabilly-div2 red"><img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="lugar" class="img-fluid rockabilly-filtered w-75">
@@ -375,10 +376,10 @@
 		
 	</section>
 	
-<div class="bg-diferido site-section ai-sec-musica" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6)), url(img/bg-rockabilly-4.jpg); background-color:#000; background-position:50% 30%; background-repeat:no-repeat; background-size:cover; position:relative;" id="musica">
+<div data-seccion="canciones" class="bg-diferido site-section ai-sec-musica" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6)), url(img/bg-rockabilly-4.jpg); background-color:#000; background-position:50% 30%; background-repeat:no-repeat; background-size:cover; position:relative;" id="musica">
       <div class="container">
         <div class="row p-2">
-                   <div data-seccion="canciones" class="col-md-6 text-center ml-auto mr-auto rockabilly-div p-3" id="musica" data-aos="fade-in">
+                   <div class="col-md-6 text-center ml-auto mr-auto rockabilly-div p-3" id="musica" data-aos="fade-in">
                      <h1 class="text-center"><img loading="lazy" class="img-fluid mb-2 mt-0" src="img/music-rockabilly.png" width="100" alt="Imagen"></h1>
 			  <h2 data-t="canciones.titulo" class="mb-3 rockabilly-title text-center">Música</h2>
              	<h4 class="text-center text-black">¿Qué canciones son infaltables?<br>
@@ -515,7 +516,7 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</h4>
   <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
     <div class="container">
       <div class="col-md-6 ml-auto mr-auto p-0">
-        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
+        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0, 0, 0,0.15)">
           <div class="col-6 ml-auto text-right p-0">
             <a href="https://amoinvitar.com/"><img class="img-fluid mb-1 mr-1" width="90" src="../../comun/img/amoinvitar-line.svg" alt="Amo Invitar!"></a>
           </div>

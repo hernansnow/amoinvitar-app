@@ -63,7 +63,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "premium": {
@@ -106,7 +107,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "basic": {
@@ -215,7 +217,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "premium": {
@@ -258,7 +261,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "basic": {
@@ -362,7 +366,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "premium": {
@@ -403,7 +408,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "basic": {
@@ -511,7 +517,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "premium": {
@@ -554,7 +561,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "basic": {
@@ -664,7 +672,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "premium": {
@@ -707,7 +716,8 @@
           "fuentes": [
             "../../comun/fonts/google/jost+roboto-condensed.css",
             "../../comun/fonts/css/amsterdam-four-font.css"
-          ]
+          ],
+          "separadores": 2
         }
       },
       "basic": {

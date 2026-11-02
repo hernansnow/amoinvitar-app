@@ -5413,3 +5413,7 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* Confirmación: el título sobre la foto en dos líneas dentro del marco, como el diseño (el texto del idioma no trae el salto) */
+.rockabilly-frame h2 { white-space: normal; max-width: 7.5em !important; line-height: 1.05; }
+@media (max-width: 767px) { .rockabilly-frame h2 { font-size: 1.7rem; } }

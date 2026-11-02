@@ -78,7 +78,7 @@
 			  <img class="img-fluid" src="img/lila-portada-1.png" alt="Imagen">
            <h1 data-ajustar-pc="0.5" data-ajustar="0.7" data-campo-html="nombres.portada" class="passconf text-lila-fuerte mb-1">Juliana</h1>
 			  <img class="img-fluid" src="img/lila-portada-2.png" alt="Imagen">
-			  <p class="mb-3"><span data-t="portada.subtitulo" class="text-lila-fuerte section-sub-title-h3">MI BAUTISMO</span></p>
+			  <p class="mb-3"><span data-t="portada.subtitulo" class="text-lila-fuerte section-sub-title-h3 ai-frase">MI BAUTISMO</span></p>
 				<div class="text-center">
 					<img class="img-fluid mb-3 mt-0" src="img/icon-ornamental-paloma-lila.png" width="110px" alt="Imagen">
 				</div>
@@ -110,7 +110,7 @@
 			  <img class="img-fluid" src="img/lila-portada-1.png" alt="Imagen">
            <h1 data-ajustar-pc="0.5" data-ajustar="0.7" data-campo-html="nombres.portada" class="passconf text-lila-fuerte mb-1">Juliana</h1>
 			  <img class="img-fluid" src="img/lila-portada-2.png" alt="Imagen">
-			  <p class="mb-3"><span data-t="portada.subtitulo" class="text-lila-fuerte section-sub-title-h3">MI BAUTISMO</span></p>
+			  <p class="mb-3"><span data-t="portada.subtitulo" class="text-lila-fuerte section-sub-title-h3 ai-frase">MI BAUTISMO</span></p>
 				<div class="text-center">
 					<img class="img-fluid mb-3 mt-0" src="img/icon-ornamental-paloma-lila.png" width="110px" alt="Imagen">
 				</div>
@@ -172,10 +172,10 @@
 
           </div>
 			
-			<div data-si="ceremonia.separada" class="col-12 text-center show-mobile"><hr class="bg-lila"></div>
+			<div data-si="ceremonia.separada" class="col-12 text-center show-mobile ai-sep-entre"><hr class="bg-lila"></div>
 			
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-2" src="img/icon-ornamental-fiesta-lila-cumple.png" width="130px" alt="Imagen"><img data-si="ceremonia.iconoUnico" loading="lazy" class="img-fluid mb-2" src="img/icon-ornamental-iglesia-lila15.png" width="110px" alt="Imagen">
+              <img loading="lazy" class="img-fluid mb-2" src="img/icon-ornamental-fiesta-lila-cumple.png" width="130px" alt="Imagen">
 			 <h2 data-campo="celebracion.titulo" class="passconf mb-2 section-title text-center text-lila-fuerte">Fiesta</h2>
 			  <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded mb-3 w-50">
 			  <p data-t="lugar.diaHorario" class="mb-2 text-lila-fuerte section-sub-title font-weight-bolder">DIA Y HORARIO</p>
@@ -203,7 +203,7 @@
 				<div class="container p-2">
 			<div class="col-md-10 text-center ml-auto mr-auto pt-5" data-aos="fade-up">
 				<div class="col-md-6 ml-auto mr-auto"><img loading="lazy" class="img-fluid mb-1" src="img/icon-ornamental-corazon-lila.png" width="120" alt="Imagen"></div>
-              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-2 text-center text-lila-fuerte font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="passconf mb-2 section-title text-center text-lila-fuerte">Mi Bautismo</h2>
+              <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-2 text-center text-lila-fuerte font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-caso="titulo" data-t="historia.titulo" class="passconf mb-2 section-title text-center text-lila-fuerte">Mi Bautismo</h2>
 			  <p data-si="historia.activa" class="text-black g-historia"><span data-campo-html="historia.texto">Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.</span></p>
           
 				</div>
@@ -399,11 +399,11 @@
 		</div>
     </section>
 
-	 <section class="site-section ai-sec-musica" style="background-size:cover; position:relative;" id="musica">
+	 <div id="musica" data-seccion="canciones"><section class="site-section ai-sec-musica" style="background-size:cover; position:relative;">
 		      
       <div class="container">
         <div class="row">
-		   <div id="musica" data-seccion="canciones" class="col-md-6 text-center ml-auto mr-auto" data-aos="fade-in">
+		   <div id="musica" class="col-md-6 text-center ml-auto mr-auto" data-aos="fade-in">
 			   <div class="text-center"><img loading="lazy" class="img-fluid mb-2" src="img/icon-ornamental-musica-lila.png" width="110px" alt="Imagen"></div>
              	  <h2 data-t="canciones.titulo" class="passconf mb-2 section-title text-center text-lila-fuerte">Música</h2>
                     <p data-t-html="canciones.texto" class="text-center">¿Qué canciones son infaltables?<br>
@@ -420,8 +420,8 @@
 	       </div>
 </div>
 </div>
-    </section>
-	 <img loading="lazy" class="img-fluid" src="img/lila-separador-5.png" width="100%" alt="Imagen"> 	
+    </section><img loading="lazy" class="img-fluid" src="img/lila-separador-5.png" width="100%" alt="Imagen"></div>
+	  	
 	 <section class="site-section" style="background-size:cover; position:relative;" id="instagram">
       <div class="container">
 			<div id="hashtag" data-seccion="instagram" class="col-md-8 ml-auto mr-auto mb-4 text-center" data-aos="fade-up">
@@ -554,7 +554,7 @@ Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiest
   <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
     <div class="container">
       <div class="col-md-6 ml-auto mr-auto p-0">
-        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
+        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0, 0, 0,0.15)">
           <div class="col-6 ml-auto text-right p-0">
             <a href="https://amoinvitar.com/"><img class="img-fluid mb-1 mr-1" width="90" src="../../comun/img/amoinvitar-line.svg" alt="Amo Invitar!"></a>
           </div>

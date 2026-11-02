@@ -164,6 +164,13 @@
         if (fs === minimo) break;
       }
     });
+    // La frase sobre la cinta (Cinema y Luxury): si no entra (una traducción más larga), se achica
+    document.querySelectorAll('.ai-cinta-texto').forEach(function (t) {
+      t.style.fontSize = '';
+      if (!t.offsetParent) return;
+      var fs = parseFloat(getComputedStyle(t).fontSize);
+      for (var i = 0; i < 30 && t.scrollWidth > t.clientWidth + 1 && fs > 9; i++) { fs *= 0.94; t.style.fontSize = fs.toFixed(1) + 'px'; }
+    });
   }
   ajustarNombres();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustarNombres);

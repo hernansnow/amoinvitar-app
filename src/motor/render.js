@@ -157,7 +157,7 @@ function textos(doc, v, t) {
   // data-caso: el texto como lo escribe el diseño ("titulo": ¡Nos Casamos! · "oracion": ¡Nos casamos!)
   for (const el of todos(doc, '[data-caso]')) {
     const caso = el.getAttribute('data-caso'), x = el.textContent.toLocaleLowerCase();
-    el.textContent = caso === 'titulo' ? x.replace(/(^|[\s¡¿"(])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase())
+    el.textContent = caso === 'minus' ? x : caso === 'titulo' ? x.replace(/(^|[\s¡¿"(])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase())
       : x.replace(/^([¡¿"(\s]*)(\p{L})/u, (m, a, b) => a + b.toLocaleUpperCase());
     el.removeAttribute('data-caso');
   }

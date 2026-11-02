@@ -31,17 +31,12 @@
           "nombresPortada": "Cinthia",
           "portadas": [
             {
-              "f": "hero-banner3.jpg",
-              "pos": "50% 100%"
-            },
-            {
               "f": "globo2.jpg",
               "pos": "50% 50%"
             }
           ],
-          "fondoCompleto": true,
           "portadaRedonda": true,
-          "portadaFotos": 2,
+          "portadaFotos": 1,
           "textoHistoria": "Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta aquí. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!",
           "galeriaLetra": "b",
           "galeria": 6,
@@ -81,17 +76,12 @@
           "nombresPortada": "Cinthia",
           "portadas": [
             {
-              "f": "hero-banner3.jpg",
-              "pos": "50% 100%"
-            },
-            {
               "f": "globo2.jpg",
               "pos": "50% 50%"
             }
           ],
-          "fondoCompleto": true,
           "portadaRedonda": true,
-          "portadaFotos": 2,
+          "portadaFotos": 1,
           "textoHistoria": "Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta aquí. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!",
           "galeriaLetra": "b",
           "galeria": 6,
@@ -121,17 +111,12 @@
           "nombresPortada": "Cinthia",
           "portadas": [
             {
-              "f": "hero-banner3.jpg",
-              "pos": "50% 100%"
-            },
-            {
               "f": "globo2.jpg",
               "pos": "50% 50%"
             }
           ],
-          "fondoCompleto": true,
           "portadaRedonda": true,
-          "portadaFotos": 2,
+          "portadaFotos": 1,
           "galeriaLetra": "b",
           "galeria": 4,
           "idAgenda": "inicio",

@@ -260,8 +260,11 @@ function portada(c, home) {
     vimeo.setAttribute('data-si', 'demo');
     const v = nodo(d, `<video class="ai-video-portada" data-si="portada.video" autoplay muted loop playsinline preload="auto" data-attr="src:c:portada.video;poster:c:portada.poster"></video>`);
     despues(vimeo, v);
-    const sl = nodo(d, `<div data-no="demo"><div data-no="portada.video"><div class="ai-slides ai-slides-fondo" data-intervalo="5000"><div class="ai-slide" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.35)), url(demo/${c.evento}/hero-banner.jpg)"></div></div></div></div>`);
-    despues(v, sl);
+    // README (ronda 22): la foto va también en la demo, debajo del video de Vimeo (si el video no carga, se ve la foto)
+    const sl = nodo(d, `<div data-no="portada.video"><div class="ai-slides ai-slides-fondo" data-intervalo="5000"><div class="ai-slide" data-repetir="fotos.portada" data-i-bg="url" data-i-pos="pos" data-i-estilo="estilo" style="background-image: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.35)), url(demo/${c.evento}/hero-banner.jpg)"></div></div></div>`);
+    antes(vimeo, sl);
+    const ifr = $(vimeo, 'iframe');
+    if (ifr) ifr.setAttribute('style', (ifr.getAttribute('style') || '').replace(/background-color:\s*#[0-9a-f]+;?/i, 'background-color: transparent;'));
     c.info.videoPortada = true; c.info.portadaFotos = 4;
   }
   const items = vimeo ? [] : $$(home, '.carousel-item');
@@ -595,6 +598,17 @@ function agenda(c) {
   const fiesta = icos.find((i) => !i.hasAttribute('hidden'));
   // README (ronda 21): en la boda sin ceremonia aparte (sin ceremonia o en el mismo lugar) el ícono de la
   // fiesta pasa a ser el de los anillos; nunca una iglesia
+  // README (ronda 22): fuera de la boda la celebración lleva siempre el ícono de fiesta (no las copas ni la bola
+  // de disco), en el color del diseño, también cuando no hay ceremonia aparte
+  if (c.evento !== 'boda') {
+    for (const i of $$(d.body, 'img[src*="icon-party"]')) {
+      const src = i.getAttribute('src');
+      const n = src.replace(/icon-party(?:-2)?(-(?:b|bordo|g|lila|w|r|verde-oscuro))?\.png$/, (_, k) => `icon-party-3${k || ''}.png`);
+      if (n !== src) i.setAttribute('src', n);
+    }
+    if (oculto) quitar(oculto);
+    return;
+  }
   if (fiesta) fiesta.setAttribute('data-no', 'ceremonia.iconoUnico');
   let unico = null;
   if (oculto) { oculto.removeAttribute('hidden'); oculto.setAttribute('data-si', 'ceremonia.iconoUnico'); unico = oculto; }
@@ -1456,7 +1470,9 @@ function preparar(c) {
   const d = c.doc;
   const viejoHead = d.head.cloneNode(true);
   limpiar(c);
+  cintas(c);
   religioso(c);
+  frasesFijas(c);
   const home = $(d, '#home-section');
   portada(c, home);
   inicialesPortada(c);
@@ -1609,6 +1625,37 @@ function componer(cs) {
 // ── Bautismo y comunión (copias de los diseños de 15) ────────────────────
 // Las coronas pasan a ser el ícono del evento (pila bautismal o cáliz) del color de la corona; la cinta "Mis 15"
 // queda en blanco con la frase encima; los adornos con "15" usan su versión de cumpleaños.
+// README (ronda 22): la cinta "Mis 15" de Cinema y Luxury en blanco, con la frase de la portada encima e inclinada
+// como la cinta (en todos los eventos, también en 15). En Cinema, más larga.
+function cintas(c) {
+  const d = c.doc;
+  const larga = c.id === 'cinema';
+  const img = larga ? 'cinta-larga.png' : 'cinta-blanca.png';
+  const demo = { '15': 'Mis 15 Años', bautismo: 'Mi Bautismo', comunion: 'Mi Primera Comunión' }[c.evento] || 'Mi Cumple';
+  for (const i of $$(d.body, 'img[src$="/mis15.png"]')) {
+    c.recolorear ||= [];
+    c.recolorear.push(['cinta', 'img/mis15.png', larga ? '360' : null, img]);
+    let w = parseInt(i.getAttribute('width') || '0', 10);
+    if (w && larga) w = Math.round(w * 1.3);
+    const caja = nodo(d, `<span class="ai-cinta${larga ? ' ai-cinta-larga' : ''}"><img src="img/${img}" alt="" class="${i.getAttribute('class') || 'img-fluid'}"${w ? ` width="${w}"` : ''}${i.getAttribute('style') ? ` style="${i.getAttribute('style')}"` : ''}><span class="ai-cinta-texto" data-t="portada.subtitulo" data-caso="titulo">${demo}</span></span>`);
+    i.parentNode.replaceChild(caja, i);
+    c.info.cinta = true;
+  }
+}
+// README (ronda 22): la frase del evento escrita en el diseño ("¡MI CUMPLE!", "Mi Bautismo"…) es la frase de la
+// portada que elige el cliente, con las mayúsculas del diseño
+const FRASE_EVENTO = /^\s*(¡?mi cumple(años)?!?|mis 15( años)?|mi bautismo|mi bautizo|mi primera comuni[oó]n)\s*$/i;
+function frasesFijas(c) {
+  if (c.evento === 'boda') return;
+  for (const e of $$(c.doc.body, 'h1,h2,h3,h4,h5,h6,span,p')) {
+    if (e.children.length || e.hasAttribute('data-t') || e.closest('[data-t],[data-campo],[data-campo-html],title')) continue;
+    const t = txt(e);
+    if (!FRASE_EVENTO.test(t)) continue;
+    e.setAttribute('data-t', 'portada.subtitulo');
+    if (/text-uppercase/.test(e.getAttribute('class') || '') || t === t.toUpperCase()) continue;
+    e.setAttribute('data-caso', t === t.toLowerCase() ? 'minus' : 'titulo');
+  }
+}
 function religioso(c) {
   if (!['bautismo', 'comunion'].includes(c.evento)) return;
   const d = c.doc;
@@ -1623,13 +1670,6 @@ function religioso(c) {
     const w = parseInt(i.getAttribute('width') || '0', 10);
     if (w) i.setAttribute('width', String(Math.max(40, Math.round(w * 0.6))));
     i.setAttribute('alt', '');
-  }
-  for (const i of $$(d.body, 'img[src$="/mis15.png"]')) {
-    c.recolorear.push(['cinta', 'img/mis15.png', null, 'cinta-blanca.png']);
-    const w = i.getAttribute('width') || '';
-    const caja = nodo(d, `<span class="ai-cinta"><img src="img/cinta-blanca.png" alt="" class="${i.getAttribute('class') || 'img-fluid'}"${w ? ` width="${w}"` : ''}${i.getAttribute('style') ? ` style="${i.getAttribute('style')}"` : ''}><span class="ai-cinta-texto" data-t="portada.subtitulo" data-caso="titulo">Mi Bautismo</span></span>`);
-    i.parentNode.replaceChild(caja, i);
-    c.info.cinta = true;
   }
   for (const i of $$(d.body, 'img[src*="mis15-2"]')) i.parentNode.replaceChild(nodo(d, '<p class="rouge-titulo mb-3 mt-2" data-t="portada.subtitulo" data-caso="titulo">Mi Bautismo</p>'), i);
   if ($(d.body, '.rouge-titulo')) c.info.magnolia = true;
@@ -1702,7 +1742,7 @@ async function principal() {
   const hechos = new Set();
   for (const [modo, src, ref, out] of Object.values(cs).flatMap((c) => c.recolorear || [])) {
     if (hechos.has(out)) continue; hechos.add(out);
-    const args = modo === 'icono' ? [join(REPO, src), ref.startsWith('#') ? ref : join(REPO, ref), join(salida, 'img', out)] : [join(REPO, src), join(salida, 'img', out)];
+    const args = modo === 'icono' ? [join(REPO, src), ref.startsWith('#') ? ref : join(REPO, ref), join(salida, 'img', out)] : [join(REPO, src), join(salida, 'img', out), ...(ref ? [ref] : [])];
     execFileSync('python3', ['-I', join(APP, 'scripts/conversion/recolorear.py'), modo, ...args], { stdio: 'ignore' });
   }
   // Escribir

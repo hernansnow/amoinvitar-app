@@ -2787,6 +2787,10 @@ button.bg-light:hover {
     margin-bottom: 0 !important
 }
 
+.m-1 {
+    margin: 0.25rem !important
+}
+
 .mt-1 {
     margin-top: 0.25rem !important
 }
@@ -3723,16 +3727,6 @@ xclip
 	#tres {
 		order: 3;
 	}
-}
-.show-mobile {
-	display: none;
-}
-
-@media screen and (max-width: 768px) {
-.show-mobile{
-		display: block;
-	}
-
 }
 /* -------------------------------- 
 

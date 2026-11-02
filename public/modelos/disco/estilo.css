@@ -2808,6 +2808,10 @@ a.close.disabled {
     margin-bottom: 0 !important
 }
 
+.m-1 {
+    margin: 0.25rem !important
+}
+
 .mt-1 {
     margin-top: 0.25rem !important
 }
@@ -5070,3 +5074,7 @@ audio::-webkit-media-controls-play-button:hover {
 
 /* Nombres de la portada y del pie siempre en mayúsculas */
 [data-ajustar] { text-transform: uppercase; }
+
+/* Música: menos margen alrededor, así la playlist no queda apretada */
+.ai-sec-musica { padding-left: 8px !important; padding-right: 8px !important; }
+.ai-sec-musica [data-aos].col-md-6, .ai-sec-musica .col-md-6 { flex: 0 0 100%; max-width: 640px; }

@@ -22,6 +22,9 @@
   "videoPortada": false,
   "portadaSinFoto": "img/portada-avion.jpg",
   "portadaSinFotoImagen": true,
+  "textosPrefijo": {
+    "testigos.titulo": "Tripulación – "
+  },
   "paquetes": {
     "basic": {
       "secciones": [

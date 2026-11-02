@@ -3,6 +3,7 @@
   "nombre": "Rosa",
   "eventos": [
     "bautismo",
+    "infantil",
     "babyshower"
   ],
   "gratis": false,
@@ -153,9 +154,114 @@
       "rsvp": "rsvp.jpg",
       "instagram": "instagram.jpg",
       "testigos": []
+    },
+    "infantil": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "testigos": []
     }
   },
   "porEvento": {
+    "infantil": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 0,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 0,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 0,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "textosDemo": {
+        "portada.subtitulo": "PRIMER AÑITO"
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {},
+      "videoPortada": false,
+      "sobre": {
+        "colores": {
+          "lacre": "#f27cb1",
+          "papel": "#ffe0eb",
+          "fondo": "#fbd0e1"
+        },
+        "bienvenida": "font-family:Montez, cursive; color:rgb(242, 124, 177); font-weight:500; --bv-escala:1.45;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "infantil": {
+          "nombres": {
+            "a": "Juliana"
+          }
+        }
+      }
+    },
     "babyshower": {
       "paquetes": {
         "basic": {

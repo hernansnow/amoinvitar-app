@@ -24,10 +24,9 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "portada: sin frase (NOS CASAMOS / MIS 15…)"
-        ],
+        "avisos": [],
         "info": {
+          "cinta": true,
           "nombresPortada": "Flor",
           "portadas": [
             {
@@ -86,10 +85,10 @@
           "regalos"
         ],
         "avisos": [
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "cinta": true,
           "nombresPortada": "Flor",
           "portadas": [
             {
@@ -133,11 +132,11 @@
           "dresscode"
         ],
         "avisos": [
-          "portada: sin frase (NOS CASAMOS / MIS 15…)",
           "música: sin <audio id=\"audio\">",
           "itinerario: sin #timeline"
         ],
         "info": {
+          "cinta": true,
           "nombresPortada": "Flor",
           "portadas": [
             {

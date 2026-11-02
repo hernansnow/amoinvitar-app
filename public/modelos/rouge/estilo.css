@@ -2769,6 +2769,10 @@ button.bg-light:hover {
     margin-bottom: 0 !important
 }
 
+.m-1 {
+    margin: 0.25rem !important
+}
+
 .mt-1 {
     margin-top: 0.25rem !important
 }
@@ -5041,3 +5045,8 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* Portada: aire debajo de los nombres (no tocan la línea) y la frase con la fuente del diseño, más grande y en bordó */
+#home-section [data-ajustar] { margin-bottom: .9rem !important; padding-bottom: .2rem !important; }
+#home-section .rouge-titulo { font-size: 3.2rem !important; color: #890029 !important; }
+@media (max-width: 767px) { #home-section .rouge-titulo { font-size: 2.6rem !important; } }

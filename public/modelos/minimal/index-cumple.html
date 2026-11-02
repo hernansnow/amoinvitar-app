@@ -72,7 +72,7 @@
          <div class="col-12 text-center mb-5 pb-5 ml-auto mr-auto">
 			 <h5 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="date-line text-white"> 12 • 09 • 2027 </h5>
 			 <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="euforia text-white">Marta</h1>
-	            <p data-t="portada.subtitulo" class="date-line text-white mt-2 mb-2"> 50 AÑOS </p>
+	            <p data-t="portada.subtitulo" class="date-line text-white mt-2 mb-2 ai-frase"> 50 AÑOS </p>
           </div>
         </div> 
       </div>
@@ -95,7 +95,7 @@
 				 <div class="col-12 text-center mt-0 ml-auto mr-auto" style="top:-55px">
 			 <h5 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="date-lineg text-gold"> 12 • 09 • 2027 </h5>
 			 <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="euforia text-gold">Marta</h1>
-	            <p data-t="portada.subtitulo" class="date-lineg text-gold mt-2 mb-2"> 50 AÑOS </p>
+	            <p data-t="portada.subtitulo" class="date-lineg text-gold mt-2 mb-2 ai-frase"> 50 AÑOS </p>
 			 <div class="text-center vert-move mt-1 mb-3">
 			       <a href="#inicio" class="smoothscroll"><span class="text-gold h2 icon-keyboard_arrow_down"></span></a>
 			 </div>
@@ -136,7 +136,7 @@
 			  <h4 data-si="historia.activa" class="g-historia"><span data-campo-html="historia.texto">La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!</span></h4>
 			 </div>
 	  		 <div data-seccion="galeria" id="galeria"><div class="presupuesto slide-one-item home-slider owl-carousel" style="clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);">
-				<img data-i-estilo="estilo" data-i-attr="src:url" data-repetir="fotos.galeria" loading="lazy" src="demo/cumple/foto1.jpg" alt="Imagen" class="img-fluid">
+				<img data-i-estilo="estilo" data-i-attr="src:url" data-repetir="fotos.galeria" src="demo/cumple/foto1.jpg" alt="Imagen" class="img-fluid">
 
             </div></div>
 
@@ -226,7 +226,7 @@
 		  <!-- /referencias dress -->
 	          </div>
 
-			<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile ai-sep"><hr class="bg-light"></div>
+			<div id="hospedaje-bus" data-seccion="hospedaje" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile ai-sep ai-sep-entre"><hr class="bg-light"></div>
                   <h2 data-t="hospedaje.titulo" class="mb-3 text-center euforia text-gold">Hospedaje</h2>
 				  <p data-t="hospedaje.texto" class="text-center text-white">Referencias de hoteles cercanos.</p>
 				   <div data-si="hospedaje.conReferencias" class="col-12 text-center">	
@@ -247,7 +247,7 @@
 			<!-- /referencias hospedaje -->
 	          </div>
 
-			<div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile ai-sep"><hr class="bg-light"></div>
+			<div id="traslado" data-seccion="bus" class="col-md-4 ml-auto mr-auto" data-aos="fade-in"><div class="col-12 p-0 show-mobile ai-sep ai-sep-entre"><hr class="bg-light"></div>
                   <h2 data-t="bus.titulo" class="mb-3 text-center euforia text-gold">Traslado</h2>
 				  <p data-t="bus.texto" class="text-center text-white">Reserva tu lugar en el formulario de confirmación.</p>
 				   <div data-si="busConRecorrido" class="col-12 text-center">	
@@ -332,10 +332,10 @@
       </div>
     </section>
 	
-<section class="site-section ai-sec-musica" id="musica" style="background-color:#b4b1a3;transform: skewY(-5deg);">
+<section data-seccion="canciones" class="site-section ai-sec-musica" id="musica" style="background-color:#b4b1a3;transform: skewY(-5deg);">
       <div class="container" style="transform: skewY(5deg);">
         <div class="row">
-             <div id="musica" data-seccion="canciones" class="col-md-6 text-center ml-auto mr-auto" data-aos="fade-in">
+             <div id="musica" class="col-md-6 text-center ml-auto mr-auto" data-aos="fade-in">
 			  <h2 data-t="canciones.titulo" class="mb-3 text-center euforia text-white">Música</h2>
              	<p data-t-html="canciones.texto" class="text-center text-white">¿Qué canciones son infaltables?<br>
                                                    Ayúdame con la selección de canciones</p>
@@ -357,41 +357,15 @@
     <section class="site-section" style="background-color: #5c5a51; transform: skewY(-5deg);box-shadow: 0px 10px #9c916b" id="instagram">
       <div class="container" style="transform: skewY(5deg);">
 		  <div class="row ml-auto mr-auto">
-          <div id="hashtag" data-seccion="instagram" data-si="grupos.dressCol" class="col-md-6 ml-auto mr-auto" data-aos="fade-in">
-			<div class="text-center" data-aos="fade-in">
-                  <h2 data-t="hashtag.titulo" data-seccion="dresscode" class="mb-3 text-center euforia text-gold">Dress code</h2>
-				    <p data-t-html="hashtag.texto" data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center mb-3 text-white">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
-            <p class="text-center text-white mb-2 g-evitar-titulo"><span data-t="dress.evitar">Colores a evitar</span></p>
-            <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
-          </div>
-		  </div>
-		  <div data-seccion="dresscode" class="col-md-8 ml-auto mr-auto p-3"><hr class="bg-light"></div>	  
-			
-			  <div id="musica" data-seccion="canciones" class="text-center" data-aos="fade-in">
-                  <h2 data-t="canciones.titulo" class="mb-3 text-center euforia text-gold">Música</h2>
-             	<p data-t-html="canciones.texto" class="text-center text-white">¿Qué canciones son infaltables?<br>
-                                                   Ayúdame con la selección de canciones</p>
-					<div class="text-center">	
-		               <button data-t="canciones.boton" class="btn btn-small btn-outline-light mb-2 text-uppercase rounded-pill" data-fancybox="" data-src="#canciones" data-animation-duration="700">Sugerir canción</button>
-		        <!-- ══ CONFIG CANCIONES (todos los textos editables acá) ══════════════ -->
-
-					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
-			  	       <div data-componente="canciones"></div>
-                     <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-	          </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>
-			</div>
-			<div data-seccion="dresscode" class="col-md-8 ml-auto mr-auto p-3"><hr class="bg-light"></div>	   
-			
-			  <div class="text-center" data-aos="fade-in">
-                  <h2 class="mb-3 text-center euforia text-gold">Etiqueta tus Fotos</h2>
+          <div id="hashtag" data-seccion="instagram" class="text-center" data-aos="fade-in">
+                  <h2 data-t="hashtag.titulo" class="mb-3 text-center euforia text-gold">Etiqueta tus Fotos</h2>
             <h4 data-si="hashtag.texto" class="mb-4"><span data-campo="hashtag.texto" class="text-white border border-light p-2">#CumpleMarta2027</span></h4>
-			  <p class="text-center text-white">¡Prepárate para mi fiesta! Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
+			  <p data-t-html="hashtag.texto" class="text-center text-white">¡Prepárate para mi fiesta! Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
 		  <div data-si="hashtag.link" class="col-12 text-center">
 			  <a data-t="hashtag.boton" data-attr="href:c:hashtag.link" href="#" target="_blank" style="filter: drop-shadow(1px 1px 2px #203636);" class="btn btn-small btn-outline-light text-uppercase rounded-pill">
 			 VER FOTOS</a>
 		      </div>
-	          </div>
-	</div><div id="instagram" data-seccion="album" class="col-md-6 text-center ml-auto mr-auto rounded p-3" data-aos="fade-in">
+	          </div><div id="instagram" data-seccion="album" class="col-md-6 text-center ml-auto mr-auto rounded p-3" data-aos="fade-in">
 			  <h2 data-t="album.titulo" class="mb-3 text-center euforia text-gold">Comparte tus Fotos</h2>
 			  <p data-t-html="album.texto" class="text-center text-white">¡Prepárate para mi fiesta! Haz clic en el botón y sube todas las fotos y videos que tomes durante la fiesta a mi álbum colaborativo, al instante, sin descargar ninguna app.</p>
 		  <div class="col-12 text-center">
@@ -463,7 +437,7 @@
 			  <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="mb-0 text-center euforia text-gold">Marta</h2>
           </div>			  
 			  <div data-si="redes.hay" data-seccion="redes" class="col-md-8 ml-auto mr-auto text-center ai-redes">
-			   <div class="text-center mt-4 mb-5"><hr class="bg-gold"></div>
+			   <div class="text-center mt-4 mb-5 ai-sep-entre"><hr class="bg-gold"></div>
                 <div><small data-t="redes.titulo" class="text-black">Redes oficiales de la fiesta</small></div>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h2 text-black"></span></a>
                 <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h2 text-black"></span></a>
@@ -493,7 +467,7 @@
             <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
             <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
           </ul>
-				<div class="text-center mt-4 mb-0 pb-0 pr-5 pl-5"><hr class="bg-gold"></div>
+				<div class="text-center mt-4 mb-0 pb-0 pr-5 pl-5 ai-sep-entre"><hr class="bg-gold"></div>
 			</div>
 			  
        </div>
@@ -507,7 +481,7 @@
   <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
     <div class="container">
       <div class="col-md-6 ml-auto mr-auto p-0">
-        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
+        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0, 0, 0,0.15)">
           <div class="col-6 ml-auto text-right p-0">
             <a href="https://amoinvitar.com/"><img class="img-fluid mb-1 mr-1" width="90" src="../../comun/img/amoinvitar-line.svg" alt="Amo Invitar!"></a>
           </div>

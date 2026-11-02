@@ -48,7 +48,9 @@ function dibujar() {
     p.id === 'agradecimiento' || p.id === 'compromiso-web' ? el('div', { class: 'precio' }, precioDe(c.productos, p.id)) : null)));
 
   $('#paso-evento').hidden = !(esInv || S.producto === 'agradecimiento') || !!S.mejora;
-  $('#tipos').replaceChildren(...c.tipos.map((t) => radio('tipo', t.id, S.tipo === t.id, (v) => { S.tipo = v; if (S.modelo && !c.modelos.find((m) => m.id === S.modelo)?.eventos.includes(v)) S.modelo = null; actualizar(); }, t.nombre)));
+  // La tarjeta de agradecimiento suelta: solo boda y 15
+  const tiposVer = S.producto === 'agradecimiento' ? c.tipos.filter((t) => ['boda', '15'].includes(t.id)) : c.tipos;
+  $('#tipos').replaceChildren(...tiposVer.map((t) => radio('tipo', t.id, S.tipo === t.id, (v) => { S.tipo = v; if (S.modelo && !c.modelos.find((m) => m.id === S.modelo)?.eventos.includes(v)) S.modelo = null; actualizar(); }, t.nombre)));
 
   const modelos = c.modelos.filter((m) => !S.tipo || m.eventos.includes(S.tipo));
   $('#paso-modelo').hidden = !esInv || !S.tipo || !!S.mejora;

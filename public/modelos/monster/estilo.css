@@ -2739,6 +2739,10 @@ a.close.disabled {
     margin-bottom: 0 !important
 }
 
+.m-1 {
+    margin: 0.25rem !important
+}
+
 .mt-1 {
     margin-top: 0.25rem !important
 }
@@ -5078,4 +5082,10 @@ audio::-webkit-media-controls-play-button:hover {
 }
 @media (min-width: 768px) and (max-height: 680px) {
   #home-section > .container { transform: scale(.7); }
+}
+
+/* Computadoras medianas: el personaje y los regalos más chicos y hacia el costado, sin tapar el nombre (README ronda 22) */
+@media (min-width: 768px) and (max-width: 1500px) {
+  #personaje img { width: clamp(170px, 19vw, 300px); margin-left: 4%; }
+  #torta img { width: clamp(150px, 17vw, 300px); margin-right: 4%; }
 }

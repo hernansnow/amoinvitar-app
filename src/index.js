@@ -74,6 +74,15 @@ function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null) {
   for (const [k, caso] of Object.entries(modelo?.textosCaso || {})) if (caso === 'oracion' && d[k] && !(k in propios)) d[k] = aOracion(String(d[k]));
   // Un prefijo propio del diseño (Travel: "Tripulación – Testigos"); si el cliente escribe su título, va el suyo entero
   for (const [k, pre] of Object.entries(modelo?.textosPrefijo || {})) if (d[k] && !(k in propios)) d[k] = `${pre}${d[k]}`;
+  // Bautismo o Bautizo: la demo usa el del país; la invitación, el que eligió el cliente en la frase de la portada
+  // (así el botón Agendar, el pie y los demás textos dicen lo mismo)
+  if (tipo === 'bautismo' && propios['portada.subtitulo']) {
+    const z = /bautiz/i.test(propios['portada.subtitulo']), m = /bautism/i.test(propios['portada.subtitulo']);
+    if (z !== m) {
+      const cambiar = (t) => t.replace(/(bauti)(smo|zo)/gi, (x, a, b) => a + (z ? (b === b.toUpperCase() ? 'ZO' : 'zo') : (b === b.toUpperCase() ? 'SMO' : 'smo')));
+      for (const k of Object.keys(d)) if (typeof d[k] === 'string' && !(k in propios)) d[k] = cambiar(d[k]);
+    }
+  }
   return (k) => String(d[k] ?? '').replaceAll('{nombres}', nombres);
 }
 const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');

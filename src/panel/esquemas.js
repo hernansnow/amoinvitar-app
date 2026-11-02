@@ -436,7 +436,17 @@ export const DISENOS_FOTO = [
   { v: 'f4', etiqueta: 'Editorial' }, { v: 'f5', etiqueta: 'Minimal' }, { v: 'f6', etiqueta: 'Encaje' },
   { v: 'f7', etiqueta: 'Blanco y negro' }, { v: 'f8', etiqueta: 'Agenda la fecha' },
 ];
-const pasoTarjeta = (clase, modelo) => (clase === 'std' ? {
+// README (ronda 22): Save The Date con el diseño del modelo en boda, 15, cumpleaños, comunión y bautismo (incluida en
+// Premium y Deluxe); la tarjeta con foto y la de agradecimiento, solo en boda y 15. Infantiles, graduación, baby shower,
+// revelación y Navidad no tienen tarjetas.
+const STD_EVENTOS = new Set(['boda', '15', 'cumple', 'bautismo', 'comunion']);
+const CON_FOTO = new Set(['boda', '15']);
+export function tarjetasDe(clase, modelo, tipo) {
+  if (clase === 'agradecimiento') return CON_FOTO.has(tipo);
+  if (!STD_EVENTOS.has(tipo)) return false;
+  return CON_FOTO.has(tipo) || !!modelo?.tarjetas?.std;
+}
+const pasoTarjeta = (clase, modelo, tipo) => (clase === 'std' ? {
   id: 'std', seccion: 'std', complemento: true, titulo: 'Tarjeta Save The Date',
   // Con tarjeta propia del diseño: viene incluida en Premium y Deluxe (se prende sola con la primera sección de esos planes)
   incluidaPremium: !!modelo?.tarjetas?.std,
@@ -444,7 +454,9 @@ const pasoTarjeta = (clase, modelo) => (clase === 'std' ? {
     { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: modelo?.tarjetas?.std
       ? 'Una tarjeta para mandar antes de la invitación. La del mismo diseño viene incluida en Premium y Deluxe; la tarjeta con foto se suma en cualquier plan.'
       : 'Una tarjeta para mandar antes de la invitación, con una foto y el diseño que se elija. Se suma en cualquier plan.' },
-    ...(modelo?.tarjetas?.std ? [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
+    ...(modelo?.tarjetas?.std && !CON_FOTO.has(tipo) ? [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', oculto: true, valores: [
+      { v: 'tarjeta', etiqueta: 'Tarjeta', extra: 'std-tarjeta' }] }]
+      : modelo?.tarjetas?.std ? [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
       { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'std-foto' },
     ] }] : [{ id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'foto', oculto: true, valores: [{ v: 'foto', etiqueta: 'Tarjeta con foto', extra: 'std-foto' }] }]),
     // Diseños con foto: no dependen del modelo (public/comun/tarjetas/foto/catalogo.json)
@@ -759,10 +771,10 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     pasoPublicar(tipo),
     // Complementos: aparte, después de una línea y el título "Complementos" en el menú
     // Save The Date en todos los modelos (la del diseño, si el modelo la tiene; si no, las con foto)
-    ...(producto === 'invitacion' ? [{ ...pasoTarjeta('std', m), separado: true }] : []),
+    ...(producto === 'invitacion' && tarjetasDe('std', m, tipo) ? [{ ...pasoTarjeta('std', m, tipo), separado: true }] : []),
     { ...pasoDiseno(m), separado: producto !== 'invitacion' },
     pasoIdiomaAdicional(base, datos),
-    ...(producto === 'invitacion' ? [pasoTarjeta('agradecimiento', m)] : []),
+    ...(producto === 'invitacion' && tarjetasDe('agradecimiento', m, tipo) ? [pasoTarjeta('agradecimiento', m, tipo)] : []),
   ];
   const cerrada = publicada && edicionCerrada(datos);
   return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin }) };
