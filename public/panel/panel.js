@@ -1372,6 +1372,8 @@ function pasoActivo(p) {
   if (p.obligatoria) return true;
   if (p.interruptor) return !!leer(datos, p.interruptor) || !!(p.fijoSi && cumple(p.fijoSi));
   if (!p.seccion) return true;
+  // Las referencias de estilos dependen del dress code: con el dress code apagado, se ven apagadas
+  if (p.seccion === 'estilos' && leer(datos, 'secciones.dresscode') === false) return false;
   const v = leer(datos, `secciones.${p.seccion}`);
   return p.complemento ? v === true : v !== false;
 }
@@ -1526,8 +1528,15 @@ async function recargar() {
 function pintarModelo() {
   const actual = (S.modelos || []).find((m) => m.id === S.evento.modelo);
   const caja = $('#selector-modelo');
-  if (!actual) { caja.hidden = true; $('#btn-modelo-movil').hidden = true; return; }
-  caja.replaceChildren(el('button', { type: 'button', class: 'btn-modelo', onclick: elegirModelo }, el('strong', {}, actual.nombre), el('small', {}, 'cambiar ▾')));
+  const movil = $('#modelo-movil');
+  if (!actual) { caja.hidden = true; movil.hidden = true; return; }
+  const tipo = S.evento.tipoNombre || '';
+  // Escritorio: el modelo y, chico, el tipo de evento
+  caja.replaceChildren(el('button', { type: 'button', class: 'btn-modelo', onclick: elegirModelo },
+    el('span', { class: 'btn-modelo-txt' }, el('strong', {}, actual.nombre), tipo ? el('small', { class: 'btn-modelo-tipo' }, tipo) : null), el('small', {}, 'cambiar ▾')));
+  // Celular: debajo de "Paso 1 de 26" → "Rockabilly Boda - Cambiar"
+  movil.hidden = false;
+  movil.replaceChildren(`${actual.nombre}${tipo ? ` ${tipo}` : ''} - `, el('button', { type: 'button', class: 'btn-link', onclick: elegirModelo }, 'Cambiar'));
 }
 function elegirModelo() {
   // Toda la tarjeta (imagen, nombre y botón) elige el modelo
@@ -1537,13 +1546,13 @@ function elegirModelo() {
   };
   abrirModal('Cambiar de modelo', el('div', { class: 'modelos-grilla' }, (S.modelos || []).map((m) => el('div', { class: `modelo-opcion${m.id === S.evento.modelo ? ' actual' : ''}`, role: 'button', tabindex: '0',
       onclick: () => usar(m), onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); usar(m); } } },
-    el('img', { src: `/modelos/${m.id}/tienda-${S.evento.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { if (e.target.dataset.f) return; e.target.dataset.f = 1; e.target.src = `/modelos/${m.id}/miniatura.jpg`; } }), el('strong', {}, m.nombre), m.gratis ? el('small', {}, 'También en plan gratis') : null,
+    el('img', { src: `/modelos/${m.id}/tienda-${m.tipo || S.evento.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { if (e.target.dataset.f) return; e.target.dataset.f = 1; e.target.src = `/modelos/${m.id}/miniatura.jpg`; } }), el('strong', {}, m.nombre),
+    m.tipo && m.tipo !== S.evento.tipo ? el('small', {}, m.tipoNombre) : null, m.gratis ? el('small', {}, 'También en plan gratis') : null,
     m.id === S.evento.modelo ? el('span', { class: 'chip' }, 'En uso') : el('span', { class: 'btn btn-chico' }, 'Usar este')))),
   el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/tienda/', target: '_blank' }, 'la tienda'), '.'));
   // El foco en el modelo que está en uso, no al principio de la lista
   requestAnimationFrame(() => document.querySelector('.modelo-opcion.actual')?.scrollIntoView({ block: 'center' }));
 }
-$('#btn-modelo-movil').addEventListener('click', elegirModelo);
 
 // ── Ventanas (manual, resumen y pago, modelos) ────────────────────────
 function abrirModal(titulo, ...contenido) {

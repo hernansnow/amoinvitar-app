@@ -1011,3 +1011,10 @@ body.modo-admin #btn-ojo { display: none !important; }
 @media (max-width: 1023px) { .barra .txt-largo { display: none; } .barra .txt-corto { display: inline; } }
 @media (max-width: 400px) { .barra #btn-publicar { padding: 7px 10px; font-size: .88rem; } .barra .acciones { gap: 4px; } .barra .acciones .btn-redondo, .barra .btn-ayuda { width: 34px; height: 34px; } }
 .modelo-opcion:not(.actual) { cursor: pointer; }
+
+/* Botón de modelo (escritorio): el tipo de evento, chico, debajo del nombre */
+.btn-modelo-txt { display: grid; text-align: left; line-height: 1.15; }
+.btn-modelo .btn-modelo-tipo { font-size: .7rem; opacity: .8; }
+/* Celular: el modelo y el tipo debajo de "Paso 1 de 26" */
+.modelo-movil { margin: 2px 0 6px; font-size: .78rem; font-weight: 700; line-height: 1.2; }
+.modelo-movil .btn-link { font: inherit; padding: 0; border: 0; background: none; color: var(--acento, inherit); text-decoration: underline; cursor: pointer; }

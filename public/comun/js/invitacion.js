@@ -6,9 +6,11 @@
   if (!INV) return;
 
   // Videos de fondo del diseño (Disco): esperan al sobre o a la ventana de bienvenida; sin ninguno de los dos, cargan ya
-  if (!document.getElementById('sobre') && !document.getElementById('ai-bienvenida')) {
-    [].forEach.call(document.querySelectorAll('iframe[data-sobre-src]'), function (f) { f.src = f.getAttribute('data-sobre-src'); f.removeAttribute('data-sobre-src'); });
-  }
+  function cargarVideosFondo() { [].forEach.call(document.querySelectorAll('iframe[data-sobre-src]'), function (f) { f.src = f.getAttribute('data-sobre-src'); f.removeAttribute('data-sobre-src'); }); }
+  var bv = document.getElementById('ai-bienvenida');
+  if (!document.getElementById('sobre') && (!bv || bv.hidden || getComputedStyle(bv).display === 'none')) cargarVideosFondo();
+  // Nunca queda sin video: aunque el sobre o la bienvenida sigan cerrados, a los 4 s de cargar la página se pide igual
+  addEventListener('load', function () { setTimeout(cargarVideosFondo, 4000); });
 
   // Cuenta regresiva
   if (INV.cuenta && window.jQuery && jQuery.fn.countdown) {
@@ -140,7 +142,7 @@
   }
   function ajustarNombres() {
     document.querySelectorAll('[data-ajustar]').forEach(function (h) {
-      h.style.fontSize = ''; h.style.maxWidth = '';
+      h.style.fontSize = ''; h.style.maxWidth = ''; h.style.marginLeft = ''; h.style.marginRight = '';
       if (!h.offsetParent) return; // oculto (otra portada): se ajusta cuando se vea
       var propia = h.getAttribute('data-ajustar-en') && h.closest(h.getAttribute('data-ajustar-en'));
       var caja = propia || h.closest('.container, section') || h.parentElement;
@@ -150,11 +152,22 @@
       var fr = (innerWidth >= 768 && h.getAttribute('data-ajustar-pc')) || h.getAttribute('data-ajustar');
       var disponible = Math.floor(base * (parseFloat(fr) || 0.9));
       h.style.maxWidth = disponible + 'px';
-      // Respeta la alineación del diseño (Armonía y B&N a la izquierda, Beach a la derecha)
-      var al = getComputedStyle(h).textAlign;
-      h.style.marginLeft = /left|start/.test(al) ? '0' : 'auto';
-      h.style.marginRight = /right|end/.test(al) ? '0' : 'auto';
-      if (/right|end/.test(al)) h.style.marginLeft = 'auto';
+      // Respeta la alineación del diseño (Armonía y B&N a la izquierda, Beach a la derecha, el resto al centro).
+      // Se mide dónde queda el texto en el diseño (la primera vez, antes de tocar nada): el text-align solo no
+      // alcanza, en Aquarella o Amanecer el centrado viene de la caja
+      if (!h.dataset.alinear) {
+        var mx = h.style.maxWidth; h.style.maxWidth = '';
+        var rr = document.createRange(); rr.selectNodeContents(h); var t = rr.getBoundingClientRect();
+        var pr = (h.parentElement || h).getBoundingClientRect(), w = pr.width || 1;
+        var c = (t.left + t.right) / 2 - (pr.left + pr.right) / 2;
+        h.dataset.alinear = Math.abs(c) < w * 0.08 ? 'centro' : (t.left - pr.left < w * 0.12 ? 'izq' : (pr.right - t.right < w * 0.12 ? 'der' : 'centro'));
+        h.style.maxWidth = mx;
+      }
+      var al = h.dataset.alinear;
+      // con prioridad: clases como .m-0 (Aquarella) traen !important
+      h.style.setProperty('margin-left', al === 'izq' ? '0' : 'auto', 'important');
+      h.style.setProperty('margin-right', al === 'der' ? '0' : 'auto', 'important');
+      if (al === 'centro') h.style.textAlign = 'center';
       var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(13, fs0 * 0.3));
       for (var i = 0; i < 40; i++) {
         var m = medidas(h);
@@ -168,7 +181,10 @@
     document.querySelectorAll('.ai-cinta-texto').forEach(function (t) {
       t.style.fontSize = '';
       if (!t.offsetParent) return;
-      var fs = parseFloat(getComputedStyle(t).fontSize);
+      // La letra según el alto de la cinta (así no se sale por arriba ni por abajo), y más chica si no entra a lo ancho
+      var img = t.parentNode.querySelector('img'), alto = img && img.getBoundingClientRect().height;
+      var fs = alto ? Math.min(parseFloat(getComputedStyle(t).fontSize), alto * 0.5) : parseFloat(getComputedStyle(t).fontSize);
+      t.style.fontSize = fs.toFixed(1) + 'px';
       for (var i = 0; i < 30 && t.scrollWidth > t.clientWidth + 1 && fs > 9; i++) { fs *= 0.94; t.style.fontSize = fs.toFixed(1) + 'px'; }
     });
   }

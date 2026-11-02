@@ -1,3 +1,0 @@
-
-/* Nombres (portada y pie) y títulos siempre en mayúsculas, como el diseño; los textos respetan lo que escribe el cliente */
-#home-section h1, #home-section [data-ajustar], #cierre [data-ajustar], .site-wrap section h1, .site-wrap section h2 { text-transform: uppercase; }

@@ -174,7 +174,7 @@ function pasosInvitacion({ tipo, modelo }) {
     {
       id: 'portada', titulo: 'Portada', obligatoria: true,
       campos: [
-        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : ({ graduacion: 'Nombre (o institución, si es un egreso)', navidad: 'Familia o empresa', revelacion: 'Nombre o nombres (como se tienen que ver)' })[tipo] || 'Nombre',
+        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : ({ graduacion: 'Nombre (o institución, si es un egreso)', navidad: 'Familia o nombre', revelacion: 'Nombre o nombres (como se tienen que ver)' })[tipo] || 'Nombre',
           max: ['graduacion', 'navidad', 'revelacion'].includes(tipo) ? 30 : 15, requerido: true, ancho: plural ? 'mitad' : null, placeholder: plural ? 'Lau' : ({ graduacion: 'Cinthia', navidad: 'Familia Pérez' })[tipo] || 'Sofi' },
         ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2', max: 15, requerido: true, ancho: 'mitad', placeholder: 'Pablo' }] : []),
         { id: 'nota.nombres', tipo: 'nota', estilo: 'ayuda', texto: plural ? '¿Cómo se tienen que ver los nombres? (nombres, diminutivos, apodos…). Por ejemplo: Lau y Pablo.'
@@ -645,6 +645,7 @@ const usado = (c, v) => (c.tipo === 'switch' ? v === true : Array.isArray(v) ? v
 export function seccionActiva(paso, datos) {
   if (paso.interruptor) return !!leer(datos, paso.interruptor) || (paso.fijoSi ? cumple(paso.fijoSi, datos) : false);
   if (!paso.seccion) return true;
+  if (paso.seccion === 'estilos' && datos.secciones?.dresscode === false) return false;
   const v = datos.secciones?.[paso.seccion];
   return paso.complemento ? v === true : v !== false;
 }

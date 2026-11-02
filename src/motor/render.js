@@ -132,9 +132,13 @@ function separadores(doc) {
   // Una línea entre dos bloques va solo si hay algo antes y algo después (y no otra línea)
   const visible = (x) => x && !/^(SCRIPT|STYLE|LINK)$/.test(x.tagName) && !x.classList.contains('animated-modal') && !(x.getAttribute('style') || '').includes('display: none');
   const vecino = (x, dir) => { let y = x[dir]; while (y && !visible(y)) y = y[dir]; return y; };
+  // data-sep: lo que la línea tenía al lado en el diseño ("ant", "sig"); si falta eso, se va con la sección
   for (const sep of todos(doc, '.ai-sep-entre')) {
     const ant = vecino(sep, 'previousElementSibling'), sig = vecino(sep, 'nextElementSibling');
-    if (!ant || !sig || sig.classList.contains('ai-sep-entre') || ant.classList.contains('ai-sep-entre')) sep.remove();
+    const tenia = (sep.getAttribute('data-sep') ?? 'ant sig').split(' ');
+    const falta = (tenia.includes('ant') && !ant) || (tenia.includes('sig') && !sig);
+    if (falta || sig?.classList.contains('ai-sep-entre')) sep.remove();
+    else sep.removeAttribute('data-sep');
   }
 }
 

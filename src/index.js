@@ -23,7 +23,7 @@ import { puertaHTML } from './componentes/puerta.js';
 import { mesaHTML } from './componentes/mesa.js';
 import { checkinHTML } from './componentes/checkin.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
-import { MODELOS, nombreModelo, conEvento } from './modelos.js';
+import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento } from './modelos.js';
 import { MODELOS_GRATIS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
 import { sendEmail, mailNuevoAcceso } from './lib/email.js';
@@ -483,6 +483,15 @@ async function publicarEvento(env, request, ev) {
 
 // Modelos a los que se puede cambiar (los del mismo tipo de evento)
 const modelosPara = (tipo) => MODELOS.filter((m) => m.eventos.includes(tipo)).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)) }));
+const nombreTipo = (tipo) => TIPOS_EVENTO.find((t) => t.id === tipo)?.nombre || tipo;
+// Para cambiar de modelo en el panel: los del mismo tipo y los de su grupo (Cumpleaños con los infantiles,
+// Baby Shower con Revelación). Cada uno con el tipo de evento con el que queda.
+const GRUPO_TIPO = (tipo) => { const g = TIPOS_EVENTO.find((t) => t.id === tipo)?.grupo || tipo; return TIPOS_EVENTO.filter((t) => t.id === g || t.grupo === g).map((t) => t.id); };
+const modelosCambio = (tipo) => {
+  const tipos = [tipo, ...GRUPO_TIPO(tipo).filter((t) => t !== tipo)];
+  const vistos = new Set();
+  return tipos.flatMap((t) => modelosPara(t).filter((m) => !vistos.has(m.id) && vistos.add(m.id)).map((m) => ({ ...m, tipo: t, tipoNombre: nombreTipo(t) })));
+};
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const aSlug = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/&/g, 'y').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
@@ -548,12 +557,12 @@ async function apiPanel(env, request, url, partes) {
     const v = variante(ev.datos.variante);
     const dic = conTextosModelo(diccionario(ev.tipo, v), ev.modelo ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null, v);
     return json({
-      evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
+      evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, tipoNombre: nombreTipo(ev.tipo), modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
       esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
       // Textos de cada idioma adicional (para traducir en el panel)
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,
-      modelos: modelosPara(ev.tipo),
+      modelos: modelosCambio(ev.tipo),
       usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
@@ -594,7 +603,14 @@ async function apiPanel(env, request, url, partes) {
   // Cambiar de modelo (el mismo tipo de evento); lo cargado queda igual
   if (accion === 'modelo' && request.method === 'POST') {
     const { modelo } = await request.json();
-    if (!modelosPara(ev.tipo).some((m) => m.id === modelo)) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
+    const elegido = modelosCambio(ev.tipo).find((m) => m.id === modelo);
+    if (!elegido) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
+    // Otro tipo del mismo grupo (de Cumpleaños a infantil, de Baby Shower a Revelación): solo antes de publicar,
+    // porque el link lleva el tipo de evento
+    if (elegido.tipo !== ev.tipo) {
+      if (ev.estado === 'publicado' && !admin) return json({ error: 'La invitación ya está publicada: ese diseño es de otro tipo de evento. Escribinos por WhatsApp para cambiarlo.' }, 400);
+      ev.tipo = elegido.tipo;
+    }
     ev.modelo = modelo;
     await almacen.guardarEvento(ev);
     return json({ ok: true });

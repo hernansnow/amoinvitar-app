@@ -37,7 +37,7 @@
 .ai-cinta > img { display: block; margin: 0 auto; }
 .ai-cinta-texto { position: absolute; top: 0; bottom: 0; left: 17%; right: 17%; display: flex; align-items: center; justify-content: safe center; white-space: nowrap; overflow: hidden;
   font-family: 'Great Vibes', cursive; font-weight: 700; color: #6b6b6b; font-size: clamp(.95rem, 4.2vw, 1.35rem);
-  line-height: 1.25; padding-bottom: .05em; transform: rotate(-4.6deg); transform-origin: 50% 55%; }
+  line-height: 1; padding-bottom: .12em; transform: rotate(-4.6deg); transform-origin: 50% 55%; }
 .ai-cinta-larga .ai-cinta-texto { left: 14%; right: 14%; transform: rotate(-2.9deg); }
 
 /* Video de portada puesto por comun/js/video-portada.js: detrás de lo que tenga la caja de la foto */
@@ -86,3 +86,6 @@ img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-
 .ai-redes a { padding-left: .45rem !important; padding-right: .45rem !important; margin-left: 0 !important; margin-right: 0 !important; }
 .ai-redes a img { max-height: 1.6rem; }
 #galeria { width: 100%; }
+
+/* README (ronda 23): la frase de la portada ("¡Nos casamos!", "Mis 15 años"…) un poco más chica que en el diseño */
+.ai-frase { zoom: .88; }

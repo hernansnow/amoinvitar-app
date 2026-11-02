@@ -9,6 +9,7 @@ import { json, redirect, readJson, isEmail, str, randomId, getCookie, cookie, is
 import { usuarioActual, crearUsuario, cookieSesion, cerrarSesion, siguienteSeguro, crearTokenLogin, usarTokenLogin, urlGoogle, canjearGoogle } from '../lib/auth.js';
 import { sendEmail, mailAcceso } from '../lib/email.js';
 import { almacenD1 } from '../almacen.js';
+import { TIPOS_EVENTO, MODELOS, nombreModelo } from '../modelos.js';
 
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
 const pais = (request) => request.cf?.country || request.headers.get('cf-ipcountry') || null;
@@ -71,7 +72,8 @@ export async function cuenta(request, env) {
   return json({
     usuario: { email: u.email, nombre: u.nombre, admin: !!u.esAdmin },
     eventos: eventos.map((e) => ({
-      id: e.id, producto: e.producto, tipo: e.tipo, modelo: e.modelo, paquete: e.paquete, estado: e.estado, slug: e.slug,
+      id: e.id, producto: e.producto, tipo: e.tipo, tipoNombre: TIPOS_EVENTO.find((t) => t.id === e.tipo)?.nombre || null,
+      modeloNombre: (() => { const m = MODELOS.find((x) => x.id === e.modelo); return m ? nombreModelo(m, e.tipo) : null; })(), modelo: e.modelo, paquete: e.paquete, estado: e.estado, slug: e.slug,
       nombres: [e.datos.nombres?.a, e.datos.nombres?.b].filter(Boolean).join(' & '),
       fecha: (e.datos.celebracion?.inicio || e.datos.std?.fecha || '').slice(0, 10),
       pagoPendiente: pendientes.some((p) => p.evento_id === e.id),

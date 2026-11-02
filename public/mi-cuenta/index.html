@@ -41,7 +41,7 @@
         if (!c.eventos.length) { lista.append(el('div', { class: 'tarjeta vacio' }, 'Todavía no hay invitaciones en esta cuenta.')); return; }
         c.eventos.forEach(function (e) {
           var titulo = e.nombres || NOMBRES[e.producto] || 'Invitación';
-          var detalle = [NOMBRES[e.producto], e.paquete && e.producto === 'invitacion' ? e.paquete[0].toUpperCase() + e.paquete.slice(1) : null, e.fecha ? e.fecha.split('-').reverse().join('/') : null].filter(Boolean).join(' · ');
+          var detalle = [NOMBRES[e.producto], e.producto === 'invitacion' || e.producto === 'a-medida' ? e.tipoNombre : null, e.modeloNombre, e.paquete && e.producto === 'invitacion' ? e.paquete[0].toUpperCase() + e.paquete.slice(1) : null, e.fecha ? e.fecha.split('-').reverse().join('/') : null].filter(Boolean).join(' · ');
           var estado = e.pagoPendiente ? el('span', { class: 'estado pendiente' }, 'Pago pendiente') : el('span', { class: 'estado ' + e.estado }, ESTADOS[e.estado] || e.estado);
           var acciones = el('div', { class: 'acciones-evento' }, [
             e.estado === 'publicado' && e.slug ? el('a', { class: 'btn btn-sec', href: '/' + e.tipo + '/' + e.slug, target: '_blank', rel: 'noopener' }, 'Ver') : null,

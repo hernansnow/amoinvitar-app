@@ -4907,3 +4907,6 @@ audio::-webkit-media-controls-play-button:hover {
 
 
 
+/* Firma del texto inicial: la letra de "Felices Fiestas", más chica */
+.ai-firma { font-size: 2rem; line-height: 1.2; }
+@media (min-width: 768px) { .ai-firma { font-size: 2.4rem; } }

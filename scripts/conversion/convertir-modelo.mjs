@@ -451,6 +451,10 @@ function galeria(c) {
     fotos.slice(1).forEach(quitar);
     const w = envolver(d, car, '<div data-seccion="galeria" id="galeria"></div>');
     void w;
+    // README (ronda 23): el carrusel con las opciones del diseño (Minimal: sin puntos, 3 fotos en la compu). El script
+    // general lo arma con una foto y puntos (.slide-one-item): se rehace con las del diseño, que dejan las flechas
+    const op = c.id !== 'rockabilly' && (c.html.match(/\$\('\.presupuesto'\)\.owlCarousel\((\{[\s\S]*?\})\)\s*;?\s*<\/script>/) || [])[1];
+    if (op) car.insertAdjacentHTML('afterend', `<script>addEventListener('load', function () { var $ = window.jQuery; if (!$ || !$.fn.owlCarousel) return; var g = $('#galeria .presupuesto'); g.trigger('destroy.owl.carousel'); g.owlCarousel(${op.replace(/\s+/g, ' ')}); });</script>`);
     // Rockabilly: en la compu, tres fotos a la vez (una sola quedaba enorme); en el celular, una
     if (c.id === 'rockabilly') {
       car.classList.remove('slide-one-item', 'home-slider'); car.classList.add('ai-owl-3');
@@ -606,6 +610,8 @@ function agenda(c) {
       const n = src.replace(/icon-party(?:-2)?(-(?:b|bordo|g|lila|w|r|verde-oscuro))?\.png$/, (_, k) => `icon-party-3${k || ''}.png`);
       if (n !== src) i.setAttribute('src', n);
     }
+    // Rockabilly: sus copas ilustradas pasan a ser la bola de disco del mismo estilo (scripts/conversion/img)
+    for (const i of $$(d.body, 'img[src*="party-rockabilly.png"]')) { i.setAttribute('src', 'img/party-rockabilly-disco.png'); (c.propias ||= new Set()).add('party-rockabilly-disco.png'); }
     if (oculto) quitar(oculto);
     return;
   }
@@ -725,7 +731,14 @@ function dresscode(c) {
   sec.id = 'dresscode';
   // README (ronda 21): en Cinema, Lila y Travel, con las tres apagadas queda la franja (su fondo y su adorno)
   const cont = /^(cinema|lila|travel|sky|navidad)$/.test(c.id) && $$(sec, '.container').find((x) => x.parentElement === sec || x.parentElement?.parentElement === sec);
-  if (cont) { cont.setAttribute('data-si', 'grupos.dress'); sec.classList.add('ai-dress-franja'); }
+  if (cont) {
+    cont.setAttribute('data-si', 'grupos.dress'); sec.classList.add('ai-dress-franja');
+    // README (ronda 23): el adorno de la franja (flores de Cinema y Sky, muérdago de Navidad) queda aunque se apaguen las tres
+    for (const i of [...cont.children].filter((x) => x.tagName === 'IMG')) {
+      const caja = nodo(d, '<div class="container text-center ai-franja-adorno"></div>');
+      despues(cont, caja); caja.appendChild(i);
+    }
+  }
   else sec.setAttribute('data-si', 'grupos.dress');
   // Separadores sueltos entre columnas (una línea en el celular): van con la columna que sigue
   for (const s of $$(sec, '.row > div')) {
@@ -1612,11 +1625,22 @@ function componer(cs) {
     // Colores mal escritos en los fondos del diseño (White: "rgba(245, 2345, 245, …)" dejaba el degradado inválido)
     for (const x of $$(d.body, '[style*="rgba("]')) {
       const st = x.getAttribute('style');
-      const ok = st.replace(/rgba\((\s*\d+\s*),(\s*\d+\s*),(\s*\d+\s*),/g, (m, r, g, b) => `rgba(${[r, g, b].map((n) => Math.min(255, +n)).join(', ')},`);
+      const ok = st.replace(/rgba\((\s*\d+\s*),(\s*\d+\s*),(\s*\d+\s*),/g, (m, r, g, b) => `rgba(${[r, g, b].map((n) => { n = n.trim(); return +n <= 255 ? +n : (n.length === 4 && +(n[0] + n.slice(2)) <= 255 ? +(n[0] + n.slice(2)) : 255); }).join(', ')},`);
       if (ok !== st) x.setAttribute('style', ok);
     }
-    // Líneas sueltas entre bloques (un div que solo tiene un <hr>): el motor las saca si falta lo de un lado
-    for (const x of $$(d.body, 'div,p').filter((e) => !txt(e).trim() && e.children.length === 1 && e.firstElementChild.tagName === 'HR' && !e.closest('.animated-modal,#home-section'))) x.classList.add('ai-sep-entre');
+    // Líneas divisoras (un <hr> suelto o un div que solo tiene un <hr>), ancladas a lo que tienen al lado en el diseño:
+    // data-sep dice si tenían algo antes ("ant") y/o después ("sig"). El motor la saca solo si se fue lo que tenía
+    // al lado (la sección apagada se lleva su línea); si era la primera o la última de su caja, va con la caja.
+    // Las que ya van al principio de una columna (.ai-sep) tienen su propia regla.
+    const util = (y) => y && !/^(SCRIPT|STYLE|LINK)$/.test(y.tagName) && !y.classList.contains('animated-modal');
+    const lado = (x, dir) => { let y = x[dir]; while (y && !util(y)) y = y[dir]; return y; };
+    const lineas = $$(d.body, 'div,p,hr').filter((e) => !e.closest('.animated-modal,#home-section,.ai-sep')
+      && (e.tagName === 'HR' ? !(e.parentElement && !txt(e.parentElement).trim() && e.parentElement.children.length === 1 && /^(DIV|P)$/.test(e.parentElement.tagName))
+        : !txt(e).trim() && e.children.length === 1 && e.firstElementChild.tagName === 'HR'));
+    for (const x of lineas) {
+      x.classList.add('ai-sep-entre');
+      x.setAttribute('data-sep', [lado(x, 'previousElementSibling') && 'ant', lado(x, 'nextElementSibling') && 'sig'].filter(Boolean).join(' ') || 'sola');
+    }
     // Animaciones del diseño (Travel: mundo, aviones y órbita; Cinema y Love Story: íconos animados)
     if ($(d.body, 'lottie-player')) body.insertAdjacentHTML('beforeend', '\n<script src="../../comun/js/lottie-player.js" defer></script>\n');
   }
@@ -1745,6 +1769,8 @@ async function principal() {
     const args = modo === 'icono' ? [join(REPO, src), ref.startsWith('#') ? ref : join(REPO, ref), join(salida, 'img', out)] : [join(REPO, src), join(salida, 'img', out), ...(ref ? [ref] : [])];
     execFileSync('python3', ['-I', join(APP, 'scripts/conversion/recolorear.py'), modo, ...args], { stdio: 'ignore' });
   }
+  // Imágenes propias de la conversión (scripts/conversion/img)
+  for (const f of new Set(Object.values(cs).flatMap((c) => [...(c.propias || [])]))) await copyFile(join(APP, 'scripts/conversion/img', f), join(salida, 'img', f));
   // Escribir
   const nombre = (paq) => (evento === 'boda' ? (paq === 'deluxe' ? 'index.html' : `index-${paq}.html`) : (paq === 'deluxe' ? `index-${evento}.html` : `index-${evento}-${paq}.html`));
   const cabeza = `<!DOCTYPE html>
