@@ -1,0 +1,111 @@
+{
+  "id": "civil",
+  "nombre": "Civil",
+  "eventos": [
+    "boda"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#a78977",
+    "#a78977",
+    "#a78977",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/bg-civil2.jpg",
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "rsvp"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "rsvp"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "rsvp"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "sinFotoRsvp": true,
+  "textosDemo": {
+    "portada.subtitulo": "¡VAMOS A DAR EL SÍ!",
+    "ceremonia.religiosa": "Ceremonia civil",
+    "celebracion.titulo": "Banquete"
+  },
+  "proporciones": {
+    "portada": "1:1"
+  },
+  "nombresHTML": {
+    "portada": "{a} <span class=\"circle-singleline3\">&amp;</span> {b}",
+    "cierre": "{a} <span class=\"circle-singleline3\">&amp;</span> {b}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/civil/img/bg-civil2.jpg",
+    "colorFondo": "#a78977",
+    "colorTitulos": "#a78977",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#a78977"
+    }
+  },
+  "demo": {
+    "boda": {
+      "portadas": [
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
+      ]
+    }
+  },
+  "demoBorrosas": {
+    "boda": {
+      "portada": [],
+      "galeria": [],
+      "testigos": []
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/great-vibes+jost.css",
+      "/modelos/civil/tema.css"
+    ]
+  }
+}

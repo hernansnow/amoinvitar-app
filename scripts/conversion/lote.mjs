@@ -32,6 +32,13 @@ export const FAMILIAS = {
   sweet: ['Sweet', { 15: 'sweet15', cumple: 'cumple-sweet', bautismo: '../nuevos-bautismo/sweet', comunion: '../nuevos-comunion/sweet' }],
   natural: ['Natural', { 15: 'natural15', cumple: 'cumple-natural', bautismo: '../nuevos-bautismo/natural', comunion: '../nuevos-comunion/natural' }],
   party: ['Party', { 15: 'party15' }],
+  // Modelos simples de boda (una pantalla: foto, nombres, fecha, lugares y confirmación)
+  civil: ['Civil', { boda: 'civil' }],
+  compromiso: ['Compromiso', { boda: 'compromiso' }],
+  pedida: ['Pedida de mano', { boda: 'compromiso:pedida-de-mano' }],
+  // Save The Date web (se eligen dentro de la sección Save The Date del panel, no como modelo)
+  'std-classic': ['Web Classic', { boda: 'save-the-date-web-classic', 15: 'save-the-date-web15' }],
+  'std-soft': ['Web Soft', { boda: 'save-the-date-web-soft', 15: 'save-the-date-web-soft' }],
   elegance: ['Elegance', { boda: 'elegance' }],
   vintage: ['Vintage', { boda: 'vintage' }],
   oliva: ['Oliva', { boda: 'oliva' }],

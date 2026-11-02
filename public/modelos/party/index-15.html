@@ -46,10 +46,10 @@
 
 <!-- End Google Tag Manager (noscript) -->
 
-<div data-componente="sobre"></div><div class="site-wrap"><div data-componente="acceso"></div>
+<div class="site-wrap">
 
     <!-- HOME -->
-    <div id="rsvp" data-seccion="rsvp"><section class="site-blocks-cover overlay" id="home-section">
+    <section class="site-blocks-cover overlay" id="home-section">
 		
       <div class="container">
 		 <div class="row align-items-center justify-content-center pt-md-5 align-content-md-start">
@@ -61,16 +61,13 @@
                 <img data-si="portada.hayFoto" data-i-attr="src:url;style:estiloImg" data-repetir="fotos.portada" src="demo/15/globo.jpg" alt="foto" class="img-fluid rounded-circle mb-3 w-50 ai-foto-1x1" width="90px" style="outline: 4px solid #9c916b "><br>
 		     	</div>
 
-	       <h5 class="date-lineg text-gold mb-md-2 font-weight-bolder"> SAVE THE DATE </h5>
+	       <h5 data-t="std.titulo" class="date-lineg text-gold mb-md-2 font-weight-bolder"> SAVE THE DATE </h5>
 			 <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="euforia text-black"><i class="text-gold icon-star" aria-hidden="true"></i> Carla <i class="text-gold icon-star" aria-hidden="true"></i></h1>
             <h4 data-t="portada.subtitulo" class="text-gold mt-3 mb-3 font-weight-bolder show-desktop ai-frase"> ¡MIS 15 AÑOS! </h4>
-				<h5 class="text-gold mt-3 mb-3 font-weight-bolder show-mobile"> ¡MIS 15 AÑOS! </h5>
+				<h5 data-t="portada.subtitulo" class="text-gold mt-3 mb-3 font-weight-bolder show-mobile ai-frase"> ¡MIS 15 AÑOS! </h5>
 				 <div class="col-md-8 col-10 ml-auto mr-auto text-center mb-2">
-					  <h4 data-fecha-formato="{dd} • {mm} • {a} 
-						                        {hora}" data-fecha="principal" class="text-black m-0 font-weight-bolder show-desktop">12 • 09 • 2027&#160;
-						                      <i class="icon-heart-o h6 text-gold" aria-hidden="true"></i>&#160;&#160;21:00</h4>
-					  <h6 class="text-black m-0 font-weight-bolder show-mobile">12 • 09 • 2027&#160;
-						                      <i class="icon-heart-o h6 text-gold" aria-hidden="true"></i>&#160;&#160;21:00</h6>
+					  <h4 class="text-black m-0 font-weight-bolder show-desktop"><span data-fecha="principal" data-fecha-formato="{dd} • {mm} • {a}"></span><span data-si="fechas.principal.hora">&#160;&#160;<i class="icon-heart-o h6 text-gold" aria-hidden="true"></i>&#160;&#160;<span data-fecha="principal" data-fecha-formato="{hora}"></span></span></h4>
+					  <h6 class="text-black m-0 font-weight-bolder show-mobile"><span data-fecha="principal" data-fecha-formato="{dd} • {mm} • {a}"></span><span data-si="fechas.principal.hora">&#160;&#160;<i class="icon-heart-o h6 text-gold" aria-hidden="true"></i>&#160;&#160;<span data-fecha="principal" data-fecha-formato="{hora}"></span></span></h6>
 					   
 				 </div>
 			 <div class="col-md-7 p-4 ml-auto mr-auto text-center mt-2">
@@ -102,25 +99,18 @@
 		
 		  <div style="display: none;" id="map2" class="animated-modal">
 			<div class="text-center">
-			<h2 class="mb-2 text-center"><span class="text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</span></h2>
-			  <p class="text-center">12 de septiembre de 2027 a las 21.00</p>
+			<h2 class="mb-2 text-center"><span data-t="lugar.diaHorario" class="text-dark section-sub-title-h3 font-weight-bolder">DIA Y HORARIO</span></h2>
+			  <p data-campo="celebracion.fechaLarga" class="text-center">12 de septiembre de 2027 a las 21.00</p>
 			  
-			  <h2><button id="fiesta-button" class="btn mb-5 text-uppercase rounded button2 rounded-pill btn-small"><i class="icon-calendar" aria-hidden="true"></i>  Agendar</button></h2>
+			  <h2><button data-agendar="celebracion" class="btn mb-5 text-uppercase rounded button2 rounded-pill btn-small"><i class="icon-calendar" aria-hidden="true"></i> <span data-t="boton.agendar">Agendar</span></button></h2>
 
-			<h2 class="mb-2"><span class="text-dark section-sub-title-h3 font-weight-bolder">LUGAR</span></h2>
-			  <p class="text-center">"Puerto Cristal", Av. Alicia Moreau de Justo 1082</p>
+			<h2 class="mb-2"><span data-t="lugar.lugar" class="text-dark section-sub-title-h3 font-weight-bolder">LUGAR</span></h2>
+			  <p data-campo="celebracion.lugarTexto" class="text-center">"Puerto Cristal", Av. Alicia Moreau de Justo 1082</p>
 				
-				<h2><a target="_blank" href="https://goo.gl/maps/ZUg58XBQHhNNNvZ99" class="btn mb-3 text-uppercase rounded button2 rounded-pill btn-small"><i class="icon-map-marker" aria-hidden="true"></i>  ¿CÓMO LLEGAR?</a></h2>
+				<h2 data-si="celebracion.mapa.link"><a data-attr="href:c:celebracion.mapa.link" rel="noopener" target="_blank" href="#" class="btn mb-3 text-uppercase rounded button2 rounded-pill btn-small"><i class="icon-map-marker" aria-hidden="true"></i> <span data-t="boton.comoLlegar">¿Cómo llegar?</span></a></h2>
 				
-	<div style="width: 100%"><iframe width="100%" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" allowfullscreen loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13135.048506817995!2d-58.374840033950775!3d-34.610176120789134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95a3352a1c8e96e7%3A0x8011b5e692233839!2sPuerto%20Cristal!5e0!3m2!1ses-419!2sar!4v1686522249356!5m2!1ses-419!2sar"></iframe></div>
+	<div style="width: 100%"><iframe width="100%" height="320" style="border:0;" loading="lazy" title="Mapa" data-si="celebracion.mapa.embed" data-attr="data-src:c:celebracion.mapa.embed" src="about:blank"></iframe></div>
         </div></div>
-		
-		   <div style="display: none;max-width:850px;" id="confirmar" class="p-2 p-lg-5 pb-3">
-			      <button type="button" data-fancybox-close="" class="close btn" aria-label="Close">
-                    <span aria-hidden="true" class="h1 p-1">×</span>
-                  </button>
-                  <div class="text-center" style="width: 100%;"><iframe width="100%" height="400" frameborder="0" marginheight="0" marginwidth="0" src="https://docs.google.com/forms/d/e/1FAIpQLSe8YGNVpisVEbxa9zI96YM4phVmBoEP5UgZEXmIkMTg8HifiQ/viewform?embedded=true">Cargando…</iframe><a target="_blank" href="https://forms.gle/dPyXxFAYxNFd6jdw5" class="text-flor text-small-sm lead"><strong>Abrir en otra ventana</strong></a></div>
-           </div>
 
 	   <!-- VIDEO -->
        <div class="video-container show-desktop">
@@ -132,7 +122,7 @@
       </div>
       </div>
 
-</section></div>   	  
+</section>   	  
 
     <div data-componente="pie-marca"></div>
   <footer class="site-footer pt-4 pb-4 bg-gold" data-no="marca.blanca">

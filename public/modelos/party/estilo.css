@@ -745,17 +745,6 @@ h6 {
     font-size: 1rem;
 }
 
-.lead {
-    font-size: 1.20rem;
-    font-weight: 440
-}
-
-@media (max-width: 991.98px) {
-    .lead {
-        font-size: 1.16rem;
-    }
-}
-
 hr {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -2702,10 +2691,6 @@ a.close.disabled {
     padding: 0.25rem !important
 }
 
-.p-2 {
-    padding: 0.5rem !important
-}
-
 .pt-2,
 .py-2 {
     padding-top: 0.5rem !important
@@ -2766,12 +2751,6 @@ a.close.disabled {
     }
     .pt-md-5 {
         padding-top: 3rem !important
-    }
-}
-
-@media (min-width:992px) {
-    .p-lg-5 {
-        padding: 3rem !important
     }
 }
 
@@ -3652,9 +3631,6 @@ span.text {
 
 .text-gold {
   color: #9c916b !important; }
-
-.text-flor {
-  color: #deb1b1 !important; }
 
 .rsvp-cerrado {
     opacity: 0.6;

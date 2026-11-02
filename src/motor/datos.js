@@ -109,6 +109,13 @@ function aUTC(fh, zona) {
 }
 
 function calendario({ nombre, descripcion, inicio, fin, lugar, zona }) {
+  // Sin hora (Save The Date): un evento de todo el día
+  const p = partes(inicio);
+  if (p && p.hh == null) {
+    const sig = new Date(Date.UTC(+p.a, +p.m - 1, +p.d + 1));
+    return { titulo: nombre, descripcion, lugar, todoElDia: true, inicio: `${p.a}${p.m}${p.d}`,
+      fin: `${sig.getUTCFullYear()}${dos(sig.getUTCMonth() + 1)}${dos(sig.getUTCDate())}` };
+  }
   const desde = aUTC(inicio, zona);
   if (!desde) return null;
   return { titulo: nombre, descripcion, lugar, inicio: desde, fin: aUTC(fin || sumarHoras(inicio, 1), zona) };

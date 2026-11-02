@@ -1755,7 +1755,7 @@ async function principal() {
   const propio = join(APP, 'scripts/conversion', `${id}.mjs`);
   if (await existe(propio)) {
     const m = await import(pathToFileURL(propio).href);
-    for (const [paq, c] of Object.entries(cs)) if (m.ajustar) await m.ajustar(c.doc, { ...c, paquete: paq, evento, $, $$, nodo, txt, subir, quitar, antes, despues });
+    for (const [paq, c] of Object.entries(cs)) if (m.ajustar) await m.ajustar(c.doc, { ...c, paquete: paq, evento, $, $$, nodo, txt, subir, quitar, antes, despues, plantillaFecha });
   }
   // README (ronda 23): en graduación, el muro de Instagram con los colores del Álbum QR que tiene al lado
   // (Esmeralda: letras e ícono en blanco)

@@ -36,7 +36,7 @@ const BASE = {
     'cuenta.faltan': 'Faltan', 'cuenta.dia': 'DÍA', 'cuenta.dias': 'DÍAS', 'cuenta.horas': 'HORAS', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEG',
     'musica.boton': 'Música',
 
-    'lugar.diaHorario': 'DÍA Y HORARIO', 'lugar.lugar': 'LUGAR',
+    'lugar.diaHorario': 'DÍA Y HORARIO', 'lugar.lugar': 'LUGAR', 'lugar.dondeCuando': 'Dónde y cuándo', 'std.titulo': 'SAVE THE DATE',
     'ceremonia.religiosa': 'Ceremonia', 'ceremonia.civil': 'Ceremonia civil', 'ceremonia.simbolica': 'Ceremonia',
     'celebracion.titulo': 'Celebración', 'unificado.titulo': 'Ceremonia y Celebración', 'celebracion.sola': 'Celebración', 'bienvenida.texto': 'Quiero invitarte a compartir este día especial',
     'boton.agendar': 'Agendar', 'boton.comoLlegar': '¿CÓMO LLEGAR?', 'boton.cerrar': 'cerrar',
@@ -132,7 +132,7 @@ const BASE = {
     'meta.titulo': 'Invitation ❤ {evento} | {nombres}', 'meta.descripcion': 'We look forward to celebrating with you!',
     'cuenta.faltan': 'Countdown', 'cuenta.dia': 'DAY', 'cuenta.dias': 'DAYS', 'cuenta.horas': 'HOURS', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEC',
     'musica.boton': 'Music',
-    'lugar.diaHorario': 'DATE AND TIME', 'lugar.lugar': 'VENUE',
+    'lugar.diaHorario': 'DATE AND TIME', 'lugar.lugar': 'VENUE', 'lugar.dondeCuando': 'Where and when', 'std.titulo': 'SAVE THE DATE',
     'ceremonia.religiosa': 'Ceremony', 'ceremonia.civil': 'Civil ceremony', 'ceremonia.simbolica': 'Ceremony',
     'celebracion.titulo': 'Reception', 'unificado.titulo': 'Ceremony & Reception', 'celebracion.sola': 'Celebration', 'bienvenida.texto': 'I would love you to share this special day with me',
     'boton.agendar': 'Save the date', 'boton.comoLlegar': 'DIRECTIONS', 'boton.cerrar': 'close',
@@ -197,7 +197,7 @@ const EVENTOS = {
     plural: true,
     es: {
       'celebracion.sola': 'Boda', 'bienvenida.texto': '¡Queremos invitarte a nuestra boda!', 'evento.nombre': 'Boda', 'evento.descripcion': 'Te esperamos para nuestra boda',
-      'portada.subtitulo': '¡NOS CASAMOS!', 'historia.titulo': 'Nuestra Historia', 'playlist.titulo': 'Nuestra playlist',
+      'portada.subtitulo': '¡NOS CASAMOS!', 'std.mensaje': 'Te esperamos para celebrar nuestro casamiento.', 'historia.titulo': 'Nuestra Historia', 'playlist.titulo': 'Nuestra playlist',
       'historia.texto': 'Andábamos sin buscarnos, pero sabiendo que andábamos para encontrarnos.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial e inolvidable.',
       'bus.destinoTexto': '¡Nuestra Boda!', 'testigos.titulo': 'Los Testigos',
@@ -220,7 +220,7 @@ const EVENTOS = {
     },
     en: {
       'celebracion.sola': 'Wedding', 'bienvenida.texto': 'We would love to invite you to our wedding!', 'evento.nombre': 'Wedding', 'evento.descripcion': 'Join us for our wedding',
-      'portada.subtitulo': "WE'RE GETTING MARRIED!", 'historia.titulo': 'Our Story', 'playlist.titulo': 'Our playlist',
+      'portada.subtitulo': "WE'RE GETTING MARRIED!", 'std.mensaje': 'We look forward to celebrating with you.', 'historia.titulo': 'Our Story', 'playlist.titulo': 'Our playlist',
       'historia.texto': 'We were not looking for each other, but we were meant to meet.',
       'rsvp.texto': 'Your presence will make this day truly special and unforgettable.',
       'bus.destinoTexto': 'Our wedding!', 'testigos.titulo': 'Wedding Party',
@@ -239,7 +239,7 @@ const EVENTOS = {
     es: {
       'meta.descripcion': '¡Te espero para que celebremos juntos!',
       'celebracion.sola': 'Fiesta', 'bienvenida.texto': '¡Quiero invitarte a mi fiesta!', 'evento.nombre': 'Mis 15', 'evento.descripcion': 'Te espero para celebrar mis 15 años',
-      'portada.subtitulo': 'MIS 15 AÑOS', 'historia.titulo': 'Mi Historia',
+      'portada.subtitulo': 'MIS 15 AÑOS', 'std.mensaje': 'Espero que me acompañes en mi gran noche.', 'historia.titulo': 'Mi Historia',
       'historia.texto': 'Desde muy pequeña tengo dos grandes pasiones: patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial e inolvidable.',
       'ceremonia.religiosa': 'Misa',
@@ -263,7 +263,7 @@ const EVENTOS = {
     en: {
       'meta.descripcion': 'I look forward to celebrating with you!',
       'celebracion.sola': 'Party', 'bienvenida.texto': 'I would love to invite you to my party!', 'evento.nombre': 'My Sweet 15', 'evento.descripcion': 'Join me to celebrate my 15th birthday',
-      'portada.subtitulo': 'MY SWEET 15', 'historia.titulo': 'My Story', 'ceremonia.religiosa': 'Mass',
+      'portada.subtitulo': 'MY SWEET 15', 'std.mensaje': 'I hope you can join me on my big night.', 'historia.titulo': 'My Story', 'ceremonia.religiosa': 'Mass',
       'historia.texto': 'Since I was little I have had two big passions: skating and furry friends, and rolling along I reached my 15th birthday.',
       'rsvp.texto': 'Your presence will make this day truly special and unforgettable.',
       'bus.destinoTexto': 'My party!', 'testigos.titulo': 'My Godparents',

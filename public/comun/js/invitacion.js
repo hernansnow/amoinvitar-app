@@ -51,7 +51,7 @@
     return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Amo Invitar//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
       'UID:' + c.inicio + '-' + Math.random().toString(36).slice(2) + '@amoinvitar.com',
       'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''),
-      'DTSTART:' + c.inicio, 'DTEND:' + (c.fin || c.inicio),
+      c.todoElDia ? 'DTSTART;VALUE=DATE:' + c.inicio : 'DTSTART:' + c.inicio, c.todoElDia ? 'DTEND;VALUE=DATE:' + c.fin : 'DTEND:' + (c.fin || c.inicio),
       'SUMMARY:' + escICS(c.titulo), 'DESCRIPTION:' + escICS(c.descripcion + '\n' + location.href.split('#')[0]), 'LOCATION:' + escICS(c.lugar),
       'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', 'DESCRIPTION:' + escICS(c.titulo), 'END:VALARM',
       'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
@@ -62,7 +62,7 @@
     return [
       [tx2.google, 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + q(c.titulo) + '&dates=' + c.inicio + '/' + (c.fin || c.inicio) + '&details=' + q(det) + '&location=' + q(c.lugar), false],
       [tx2.apple, ics, true],
-      [tx2.outlook, 'https://outlook.live.com/calendar/0/action/compose?subject=' + q(c.titulo) + '&startdt=' + isoGuiones(c.inicio) + '&enddt=' + isoGuiones(c.fin || c.inicio) + '&location=' + q(c.lugar) + '&body=' + q(det), false],
+      [tx2.outlook, 'https://outlook.live.com/calendar/0/action/compose?subject=' + q(c.titulo) + (c.todoElDia ? '&allday=true&startdt=' + c.inicio.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') + '&enddt=' + c.fin.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') : '&startdt=' + isoGuiones(c.inicio) + '&enddt=' + isoGuiones(c.fin || c.inicio)) + '&location=' + q(c.lugar) + '&body=' + q(det), false],
       [tx2.otro, ics, true]
     ];
   }

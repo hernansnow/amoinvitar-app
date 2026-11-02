@@ -126,6 +126,14 @@ const textosDemo = (ev) => {
   if (i.textoPie && i.textoPie.length > 40) o['pie.texto'] = i.textoPie;
   // Infantiles desde el Baby Shower (Celeste, Rosa): los textos de los infantiles, no los del baby shower; la frase de la portada
   if (ev === 'infantil' && /^(celeste|rosa)$/.test(id)) return { 'portada.subtitulo': 'PRIMER AÑITO' };
+  // Modelos simples: su frase y su mensaje (en castellano; en otros idiomas, los del evento)
+  const SIMPLES = {
+    civil: { 'portada.subtitulo': '¡VAMOS A DAR EL SÍ!', 'ceremonia.religiosa': 'Ceremonia civil', 'celebracion.titulo': 'Banquete' },
+    compromiso: { 'portada.subtitulo': '¡NOS HEMOS COMPROMETIDO!' },
+    pedida: { 'portada.subtitulo': 'NUESTRA PEDIDA DE MANO', 'std.mensaje': 'Estamos listos para dar un paso más.<br>Acompáñanos en' },
+    'std-soft': ev === '15' ? { 'std.mensaje': 'Espero que me puedas acompañar.' } : { 'std.mensaje': 'Esperamos que nos puedas acompañar.' },
+  };
+  if (SIMPLES[id]) return SIMPLES[id];
   return Object.keys(o).length ? o : null;
 };
 const nombre = nombreArg || previo.nombre || id.charAt(0).toUpperCase() + id.slice(1);

@@ -1,0 +1,12 @@
+/* ════════════════════════════════════════════════════════════════
+   WEB SOFT · paleta y tipografías (armado por scripts/conversion/armar-modelo.mjs)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --color-principal: #a78977;
+  --color-secundario: #c6dad8;
+  --color-suave: #498080;
+  --color-texto: #212529;
+
+  --fuente-titulos: 'Great Vibes', cursive;
+  --fuente-texto: 'Jost', sans-serif;
+}

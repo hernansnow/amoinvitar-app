@@ -32,7 +32,14 @@ export const MODELOS = [
   { id: 'style', nombre: 'Style', eventos: ['15',  'cumple', 'bautismo', 'comunion'], gratis: false },
   { id: 'sweet', nombre: 'Sweet', eventos: ['15',  'cumple', 'bautismo', 'comunion'], gratis: false },
   { id: 'natural', nombre: 'Natural', eventos: ['15',  'cumple', 'bautismo', 'comunion'], gratis: false },
-  { id: 'party', nombre: 'Party', eventos: ['15'], gratis: false },
+  // Modelos simples (una pantalla, panel reducido, se bloquean al publicar): se eligen al cambiar de diseño
+  { id: 'party', nombre: 'Party', eventos: ['15'], gratis: false, simple: true },
+  { id: 'civil', nombre: 'Civil', eventos: ['boda'], gratis: false, simple: true },
+  { id: 'compromiso', nombre: 'Compromiso', eventos: ['boda'], gratis: false, simple: true },
+  { id: 'pedida', nombre: 'Pedida de mano', eventos: ['boda'], gratis: false, simple: true },
+  // Save The Date web: no son modelos de invitación; se eligen en la sección Save The Date del panel (15 €)
+  { id: 'std-classic', nombre: 'Web Classic', eventos: ['boda', '15'], gratis: false, std: true },
+  { id: 'std-soft', nombre: 'Web Soft', eventos: ['boda', '15'], gratis: false, std: true },
   { id: 'elegance', nombre: 'Elegance', eventos: ['boda'], gratis: false },
   { id: 'vintage', nombre: 'Vintage', eventos: ['boda'], gratis: false },
   { id: 'oliva', nombre: 'Oliva', eventos: ['boda'], gratis: false },

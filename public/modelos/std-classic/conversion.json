@@ -1,0 +1,88 @@
+{
+  "15": {
+    "carpeta": "save-the-date-web15",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-15.html",
+        "secciones": [],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "galería: no se encontró",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin \"LUGAR\"",
+          "celebracion: sin fecha y hora",
+          "confirmación: sin botón data-rsvp",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline",
+          "cierre: sin sección de cierre",
+          "perdiste: sin lugar",
+          "perdiste: se agregó (no había)",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Mariana",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaRedonda": true,
+          "portadaFotos": 1,
+          "idAgenda": "home-section",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      }
+    }
+  },
+  "boda": {
+    "carpeta": "save-the-date-web-classic",
+    "archivo": "index.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [],
+        "avisos": [
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "galería: no se encontró",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin \"LUGAR\"",
+          "celebracion: sin fecha y hora",
+          "confirmación: sin botón data-rsvp",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline",
+          "cierre: sin sección de cierre",
+          "perdiste: sin lugar",
+          "perdiste: se agregó (no había)",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Daniela<br class=\"d-md-none\">&#160;<span class=\"circle-singleline2\">&amp;</span>&#160;<br class=\"d-md-none\">Santiago",
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ],
+          "portadaRedonda": true,
+          "portadaFotos": 1,
+          "idAgenda": "home-section",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/abril-fatface+alex-brush+jost.css"
+          ]
+        }
+      }
+    }
+  }
+}
