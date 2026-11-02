@@ -89,3 +89,6 @@ img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-
 
 /* README (ronda 23): la frase de la portada ("¡Nos casamos!", "Mis 15 años"…) un poco más chica que en el diseño */
 .ai-frase { zoom: .88; }
+.ai-frase.ai-sin-linea:before, .ai-frase.ai-sin-linea:after { display: none !important; }
+/* Una date-line sin texto (Garden: la línea de abajo de la portada) es una sola línea entera, sin hueco al medio */
+[class*="date-line"]:empty:before, [class*="date-line"]:empty:after { margin-left: 0 !important; margin-right: 0 !important; }

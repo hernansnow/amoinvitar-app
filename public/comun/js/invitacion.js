@@ -177,6 +177,17 @@
         if (fs === minimo) break;
       }
     });
+    // La frase de la portada va en una sola línea: si no entra, primero se sacan las rayitas de los costados
+    // (date-line) y, si todavía no entra, se achica la letra (Hojas: "MI PRIMERA COMUNIÓN")
+    document.querySelectorAll('.ai-frase').forEach(function (f) {
+      f.classList.remove('ai-sin-linea'); f.style.fontSize = '';
+      if (!f.offsetParent) return;
+      var dosLineas = function () { return medidas(f).lineas > 1; };
+      if (!dosLineas()) return;
+      f.classList.add('ai-sin-linea');
+      var fs = parseFloat(getComputedStyle(f).fontSize);
+      for (var i = 0; i < 25 && dosLineas() && fs > 10; i++) { fs *= 0.95; f.style.fontSize = fs.toFixed(1) + 'px'; }
+    });
     // La frase sobre la cinta (Cinema y Luxury): si no entra (una traducción más larga), se achica
     document.querySelectorAll('.ai-cinta-texto').forEach(function (t) {
       t.style.fontSize = '';

@@ -4528,6 +4528,37 @@ font-size: 1.75rem;
 	
 }
 /* Flickering animation */
+.date-line {
+  width: 250px;
+  text-align: center;
+  margin: auto;
+  overflow: hidden;
+  font-size: 1.25rem;
+}
+
+@media screen and (max-width: 768px) {
+.date-line {
+	   width: 200px;
+	   font-size: 0.938rem;
+ }
+}
+.date-line:before {
+  margin-left: -100%;
+}
+.date-line:after {
+  margin-right: -100%;
+}
+.date-line:before, .date-line:after {
+  display: inline-block;
+  content: "";
+  background-color: #fff;
+  height: 1px;
+  width: 100%;
+  vertical-align: middle;
+  box-sizing: border-box;
+  border: solid #FFF;
+  border-width: 0 10px;
+}
 
 
 

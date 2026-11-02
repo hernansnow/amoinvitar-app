@@ -191,7 +191,7 @@ for (const ev of eventos) {
 // Cumpleaños con fotos de un hombre: la demo lleva nombre de hombre
 const HOMBRES = { byn: 'Martín', disco: 'Tomás', floral: 'Lucas', luxury: 'Joaquín', rockabilly: 'Nicolás', white: 'Mateo' };
 // Y los diseños con nombre propio en la demo (el bebé de Celeste es Mateo…)
-const NOMBRES_DEMO = { ...Object.fromEntries(Object.entries(HOMBRES).map(([k, v]) => [`${k}/cumple`, v])), 'celeste/bautismo': 'Mateo', 'rosa/bautismo': 'Juliana', 'celeste/babyshower': 'Mateo', 'rosa/babyshower': 'Juliana', 'celeste/infantil': 'Mateo', 'rosa/infantil': 'Juliana', 'disco/graduacion': 'Instituto Superior', 'esmeralda/graduacion': 'Instituto Superior', 'monster/infantil': 'Paula', 'peppa/infantil': 'Agustín' };
+const NOMBRES_DEMO = { ...Object.fromEntries(Object.entries(HOMBRES).map(([k, v]) => [`${k}/cumple`, v])), 'celeste/bautismo': 'Mateo', 'rosa/bautismo': 'Juliana', 'celeste/babyshower': 'Mateo', 'rosa/babyshower': 'Juliana', 'celeste/infantil': 'Mateo', 'rosa/infantil': 'Juliana', 'disco/graduacion': 'Instituto Superior', 'esmeralda/graduacion': 'Instituto Superior', 'monster/infantil': 'Paula', 'peppa/infantil': 'Agustín', 'navidad/navidad': 'Familia Pérez' };
 for (const ev of eventos) {
   const n = NOMBRES_DEMO[`${id}/${ev}`];
   if (!n) continue;

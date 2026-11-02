@@ -138,7 +138,7 @@
 	  		 <div data-seccion="galeria" id="galeria"><div class="presupuesto slide-one-item home-slider owl-carousel" style="clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);">
 				<img data-i-estilo="estilo" data-i-attr="src:url" data-repetir="fotos.galeria" src="demo/bautismo/foto1.jpg" alt="Imagen" class="img-fluid">
 
-            </div></div>
+            </div><script>addEventListener('load', function () { var $ = window.jQuery; if (!$ || !$.fn.owlCarousel) return; var g = $('#galeria .presupuesto'); g.trigger('destroy.owl.carousel'); g.owlCarousel({ center: true, margin:0, autoplay:true, loop:true, nav: true, dots: false, navText: ['<span class="icon-keyboard_arrow_left">', '<span class="icon-keyboard_arrow_right">'], responsiveClass:true, responsive:{ 0:{ items:1, pagination: false, }, 600:{ items:3, }, 1000:{ items:3, } } }); });</script></div>
           <div data-si="ceremonia.separada" class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" id="agenda">
 			 <h2 data-campo="ceremonia.titulo" class="mb-0 text-center euforia text-gold">Ceremonia</h2>
 			<h2 class="mb-2"><span data-t="lugar.diaHorario" class="text-black-50 p-1 section-sub-title-sm font-weight-bolder border border-dark bg-light">DIA Y HORARIO</span></h2>

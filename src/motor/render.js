@@ -137,7 +137,9 @@ function separadores(doc) {
     const ant = vecino(sep, 'previousElementSibling'), sig = vecino(sep, 'nextElementSibling');
     const tenia = (sep.getAttribute('data-sep') ?? 'ant sig').split(' ');
     const falta = (tenia.includes('ant') && !ant) || (tenia.includes('sig') && !sig);
-    if (falta || sig?.classList.contains('ai-sep-entre')) sep.remove();
+    // Tampoco dos líneas juntas: si lo que sigue ya empieza con su propia línea (.ai-sep), esta sobra
+    const sigEmpiezaConLinea = sig && (sig.classList.contains('ai-sep') || sig.firstElementChild?.classList.contains('ai-sep'));
+    if (falta || sig?.classList.contains('ai-sep-entre') || sigEmpiezaConLinea) sep.remove();
     else sep.removeAttribute('data-sep');
   }
 }

@@ -111,7 +111,10 @@
           "f": "hero-banner.jpg",
           "pos": "50% 25%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Familia Pérez"
+      }
     }
   },
   "demoBorrosas": {

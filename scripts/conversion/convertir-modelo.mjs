@@ -1757,6 +1757,18 @@ async function principal() {
     const m = await import(pathToFileURL(propio).href);
     for (const [paq, c] of Object.entries(cs)) if (m.ajustar) await m.ajustar(c.doc, { ...c, paquete: paq, evento, $, $$, nodo, txt, subir, quitar, antes, despues });
   }
+  // README (ronda 23): en graduación, el muro de Instagram con los colores del Álbum QR que tiene al lado
+  // (Esmeralda: letras e ícono en blanco)
+  if (evento === 'graduacion') for (const c of Object.values(cs)) {
+    const ig = $(c.doc, '#hashtag'), al = $(c.doc, '#instagram');
+    if (!ig || !al || ig.parentNode !== al.parentNode) continue;
+    const iI = $$(ig, 'img').find((i) => /icon-ig/.test(i.getAttribute('src') || '')), iA = $$(al, 'img').find((i) => /icon-ig/.test(i.getAttribute('src') || ''));
+    if (iI && iA) iI.setAttribute('src', iA.getAttribute('src'));
+    const hI = $(ig, 'h2'), hA = $(al, 'h2');
+    if (hI && hA) hI.setAttribute('class', hA.getAttribute('class'));
+    const pI = $(ig, 'p[data-t-html]'), pA = $(al, 'p[data-t-html]');
+    if (pI && pA) pI.setAttribute('class', pA.getAttribute('class'));
+  }
   // La fuente de Rouge (después de armar la cabecera)
   for (const c of Object.values(cs)) if (c.info.magnolia && !c.doc.querySelector('link[href*="magnolia-sky"]')) c.doc.head.insertAdjacentHTML('beforeend', '\n  <link rel="stylesheet" href="../../comun/fonts/magnolia-sky/magnolia-sky.css">');
   for (const c of Object.values(cs)) if (c.info.cinta && !c.doc.querySelector('link[href*="great-vibes"]')) c.doc.head.insertAdjacentHTML('beforeend', '\n  <link rel="stylesheet" href="../../comun/fonts/google/great-vibes+jost.css">');
