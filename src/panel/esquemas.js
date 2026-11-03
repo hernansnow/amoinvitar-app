@@ -413,7 +413,7 @@ const PALETA_DEFECTO = ['#a78977', '#86a388', '#9ab09c', '#ffffff'];
 const pasoDiseno = (modelo) => ({
   id: 'diseno', seccion: 'diseno', complemento: true, titulo: 'Cambios de diseño',
   campos: [
-    { id: 'nota.diseno', tipo: 'nota', texto: 'Los cambios los hace el equipo de diseño: el pedido se envía al publicar y desde ese momento ya no se puede modificar.' },
+    { id: 'nota.diseno', tipo: 'nota', texto: 'Costo: {precio:diseno} (colores y tipografía, uno o los dos). Los cambios los hace el equipo de diseño: el pedido se envía al publicar y desde ese momento ya no se puede modificar.' },
     { id: 'diseno.paleta.modo', tipo: 'opciones', etiqueta: 'Colores', defecto: 'original', valores: [
       { v: 'original', etiqueta: 'Los colores originales del diseño' }, { v: 'cambiar', etiqueta: 'Quiero otros colores' },
     ] },
@@ -474,12 +474,8 @@ const pasoTarjeta = (clase, modelo, tipo) => (clase === 'std' ? {
   id: 'agradecimiento', seccion: 'agradecimiento', complemento: true, titulo: 'Tarjeta de agradecimiento',
   campos: [
     { id: 'nota.agradecimiento', tipo: 'nota', estilo: 'ayuda', texto: 'Para agradecer a los invitados después del evento: un mensaje, los nombres y una foto.' },
-    // Con tarjeta propia en el modelo se elige entre esa y las con foto; si no, van las con foto
-    ...(modelo?.tarjetas?.agradecimiento ? [{ id: 'agradecimiento.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'foto', rearmar: true, valores: [
-      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'agradecimiento' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'agradecimiento' },
-    ] }] : []),
-    { id: 'agradecimiento.diseno', tipo: 'disenoFoto', carpeta: 'gracias', etiqueta: 'Diseño', defecto: DISENOS_GRACIAS[0].v, valores: DISENOS_GRACIAS, rearmar: true,
-      ...(modelo?.tarjetas?.agradecimiento ? { si: { campo: 'agradecimiento.tipo', no: 'tarjeta' } } : {}) },
+    // README (ronda 24): solo las 8 tarjetas con foto (nunca con el diseño de la Save The Date ni del modelo)
+    { id: 'agradecimiento.diseno', tipo: 'disenoFoto', carpeta: 'gracias', etiqueta: 'Diseño', defecto: DISENOS_GRACIAS[0].v, valores: DISENOS_GRACIAS, rearmar: true },
     { id: 'agradecimiento.tarjeta', tipo: 'tarjeta', clase: 'agradecimiento', etiqueta: 'Tarjeta', sinEtiqueta: true },
   ],
 });
@@ -502,7 +498,7 @@ function pasoIdiomaAdicional(base, datos) {
   return {
     id: 'idiomaAdicional', seccion: 'idiomas', complemento: true, titulo: 'Idioma adicional',
     campos: [
-      { id: 'nota.idiomas', tipo: 'nota', estilo: 'ayuda', texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' },
+      { id: 'nota.idiomas', tipo: 'nota', estilo: 'ayuda', texto: 'Cada idioma adicional: {precio:idioma}. Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' },
       ...[2, 3, 4].flatMap((n) => {
         const l = datos.idiomas?.[`l${n}`];
         const ok = l && l !== principal;
@@ -670,7 +666,9 @@ export function planNecesario(esquema, datos, { gratisPosible = false } = {}) {
       if (c.nivelCantidad && Array.isArray(v) && v.length >= c.nivelCantidad[0]) subir(c.nivelCantidad[1]);
     }
   }
-  return n === 1 && gratisPosible && datos.planElegido === 'gratis' ? 'gratis' : NIVELES[n];
+  // El plan gratis no trae galería (README ronda 24): con la galería prendida, Basic
+  const conGaleria = esquema.pasos.some((p) => p.seccion === 'galeria' && seccionActiva(p, datos));
+  return n === 1 && gratisPosible && datos.planElegido === 'gratis' && !conGaleria ? 'gratis' : NIVELES[n];
 }
 
 // Complementos elegidos: colores, tipografía y un idioma por cada adicional
@@ -678,8 +676,8 @@ export function complementos(esquema, datos) {
   const x = [];
   const paso = (id) => esquema.pasos.find((p) => p.id === id);
   if (paso('diseno') && seccionActiva(paso('diseno'), datos)) {
-    if (datos.diseno?.paleta?.modo === 'cambiar') x.push('paleta');
-    if (datos.diseno?.tipografia?.modo === 'cambiar') x.push('tipografia');
+    // Colores y tipografía: un solo cambio de diseño (uno o los dos)
+    if (datos.diseno?.paleta?.modo === 'cambiar' || datos.diseno?.tipografia?.modo === 'cambiar') x.push('diseno');
   }
   if (paso('std') && seccionActiva(paso('std'), datos)) { const t = datos.std?.tipo || (paso('std').incluidaPremium ? 'tarjeta' : 'foto'); x.push(t === 'web' ? 'std-web' : t === 'foto' ? 'std-foto' : 'std-tarjeta'); }
   if (paso('agradecimiento') && seccionActiva(paso('agradecimiento'), datos)) x.push('agradecimiento');

@@ -440,7 +440,7 @@ function vistaRespuestas() {
     ctx.el('div', { class: 'ad-exportar' },
       boton('Exportar Excel', () => exportar(soloVan.checked, 'csv'), 'btn btn-sec'), boton('Descargar PDF', () => exportar(soloVan.checked, 'pdf'), 'btn btn-sec'),
       ctx.el('label', { class: 'ad-check' }, soloVan, ' Solo confirmados')),
-    tarjeta('Confirmaciones', ctx.el('div', { class: 'ad-barra' }, chips, ctx.el('div', { class: 'ad-barra-der' }, buscar, ordenar)), tabla, tarjetas),
+    tarjeta('Confirmaciones', ctx.el('div', { class: 'ad-barra' }, chips, ctx.el('div', { class: 'ad-barra-der' }, buscar, ordenar)), tabla, tarjetas, avisosRespuestas()),
     conLista() ? tarjeta(`Recordatorios (${pendientes.length} sin confirmar)`,
       ctx.el('p', { class: 'ayuda' }, 'Un mensaje de WhatsApp para cada invitado que todavía no confirmó (se abre WhatsApp con el texto listo para enviar). Primero van los que ni abrieron su link.'),
       pendientes.length ? ctx.el('div', { class: 'ad-botones' },
@@ -454,6 +454,15 @@ function vistaRespuestas() {
   ];
 }
 const si = (x) => !!x;
+// Avisos por mail de respuestas nuevas: lo elige el cliente (si no, todo se ve acá, como siempre)
+function avisosRespuestas() {
+  const actual = admin().avisoRespuestas || 'no';
+  const s = ctx.el('select', { class: 'ad-select', 'aria-label': 'Avisos por mail de las respuestas' },
+    [['no', 'No, las veo acá en el panel'], ['cada', 'Sí, un mail por cada respuesta'], ['diario', 'Sí, un resumen por día']].map(([v, t]) => ctx.el('option', { value: v, selected: v === actual }, t)));
+  s.addEventListener('change', () => { guardarAdmin({ avisoRespuestas: s.value }); ctx.aviso(s.value === 'no' ? 'Listo: sin avisos por mail' : 'Listo: los avisos llegan al mail de la cuenta'); });
+  return ctx.el('div', { class: 'ad-avisos' }, ctx.el('label', { class: 'ad-avisos-et' }, 'Avisarme por mail las respuestas nuevas'), s,
+    ctx.el('p', { class: 'ayuda' }, 'Llegan al mail con el que se compró o se entra a la invitación. Con "un mail por cada respuesta", hasta 20 por día; las demás llegan juntas al día siguiente.'));
+}
 
 function vistaMensajes() {
   const canciones = (respuestas || []).filter((r) => r.tipo === 'cancion');
@@ -782,5 +791,12 @@ function dibujar(caja) {
     b.classList.toggle('activo', activo);
     if (activo) { b.setAttribute('aria-current', 'page'); b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); } else b.removeAttribute('aria-current');
   });
-  caja.querySelector('.ad-contenido').replaceChildren(...(VISTAS[seccion]() || []).filter(Boolean));
+  caja.querySelector('.ad-contenido').replaceChildren(...((SOLO_DELUXE[seccion] && !esDeluxe() ? vistaSoloDeluxe(seccion) : VISTAS[seccion]()) || []).filter(Boolean));
+}
+// README (ronda 24): el organizador de mesas (con "Buscá tu mesa") y el de llegadas con pase de entrada son de Deluxe
+const SOLO_DELUXE = { mesas: 'El organizador de mesas y la página "Buscá tu mesa"', llegadas: 'El organizador de llegadas con pase de entrada' };
+const esDeluxe = () => ctx.S.usuario?.admin || [ctx.S.evento.paquete, ctx.S.plan?.plan, ctx.S.plan?.pagado].includes('deluxe');
+function vistaSoloDeluxe(id) {
+  return [tarjeta(SOLO_DELUXE[id].replace(/^El organizador/, 'Organizador'), ctx.el('p', {}, `${SOLO_DELUXE[id]} vienen con el plan Deluxe.`),
+    ctx.el('p', { class: 'ayuda' }, 'Al sumar una sección Deluxe en "Editar invitación" (itinerario, padrinos, hospedaje…), la invitación pasa a Deluxe y esto se habilita.'))];
 }

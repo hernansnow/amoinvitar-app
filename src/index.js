@@ -22,6 +22,7 @@ import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin,
 import { puertaHTML } from './componentes/puerta.js';
 import { mesaHTML } from './componentes/mesa.js';
 import { checkinHTML } from './componentes/checkin.js';
+import { avisoRespuesta } from './avisos.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
 import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento } from './modelos.js';
 import { MODELOS_GRATIS } from './catalogo.js';
@@ -315,6 +316,7 @@ async function rsvp(env, request) {
   // Aforo completo: no entran más confirmaciones de asistencia (los "no voy" sí)
   if (accion === 'rsvp' && datos.asiste === 'Si' && await aforoLleno(almacen, ev)) return json({ result: 'error', lleno: true }, 409);
   await almacen.guardarRespuesta(eventoId, accion, datos);
+  if (accion === 'rsvp' && !datos.prueba && ev.datos.admin?.avisoRespuestas === 'cada') await avisoRespuesta(env, ev, datos).catch((e) => console.error('[aviso rsvp]', e));
   return json({ result: 'ok' });
 }
 
@@ -654,6 +656,7 @@ async function apiPanel(env, request, url, partes) {
       for (const p of esquema.pasos) if (p.interruptor && p.nivel !== 'basic') escribirRuta(ev.datos, p.interruptor, false);
       for (const p of esquema.pasos) for (const c of p.campos) if (c.paquete && c.paquete !== 'basic') escribirRuta(ev.datos, c.id, c.tipo === 'switch' ? false : undefined);
       if (Array.isArray(ev.datos.fotos?.portada)) ev.datos.fotos.portada = ev.datos.fotos.portada.slice(0, 1);
+      (ev.datos.secciones ??= {}).galeria = false; // la galería es de Basic en adelante
     }
     await almacen.guardarEvento(ev);
     return json({ ok: true });
@@ -794,8 +797,12 @@ async function apiPanel(env, request, url, partes) {
   if (accion === 'admin' && request.method === 'POST') {
     const b = await request.json().catch(() => ({}));
     const texto = (x) => (typeof x === 'string' ? x.slice(0, 1500) : undefined);
+    // Mesas ("Buscá tu mesa") y llegadas con pase: Deluxe (el pagado o el que piden las secciones elegidas)
+    const deluxe = admin || ev.paquete === 'deluxe' || planNecesario(esquema, ev.datos) === 'deluxe';
     ev.datos.admin = { textoWa: texto(b.textoWa), textoWaLista: texto(b.textoWaLista), textoRecordatorio: texto(b.textoRecordatorio),
-      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined, buscaMesa: b.buscaMesa === true, checkin: b.checkin === true, avisosMail: b.avisosMail !== false };
+      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined, buscaMesa: b.buscaMesa === true && deluxe, checkin: b.checkin === true && deluxe, avisosMail: b.avisosMail !== false,
+      // Aviso de respuestas nuevas por mail: no (solo en el panel) · cada (una por respuesta, hasta 20 por día) · diario (un resumen)
+      avisoRespuestas: ['cada', 'diario'].includes(b.avisoRespuestas) ? b.avisoRespuestas : 'no' };
     await almacen.guardarEvento(ev);
     return json({ ok: true });
   }

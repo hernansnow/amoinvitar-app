@@ -5,7 +5,7 @@
 //   GET  /api/admin/facturas?year=&q= listado, estado de VeriFactu y umbral OSS
 //   POST /api/admin/verifactu/enviar  reenvía ya lo pendiente a la AEAT
 import { json, HttpError, escapeHtml, now } from '../lib/util.js';
-import { avisosCierre } from '../avisos.js';
+import { avisosCierre, resumenRespuestas } from '../avisos.js';
 import { usuarioActual } from '../lib/auth.js';
 import { sendEmail } from '../lib/email.js';
 import { listInvoices, getInvoice, checkInvoiceKey, invoicesCsv, invoicesPage, periodOf, invoiceUrl, invoicesEnabled, ossStatus } from '../lib/facturas.js';
@@ -91,6 +91,7 @@ export async function tareas(controller, env) {
   await alertasOss(env);
   await borrarBorradoresViejos(env);
   await avisosCierre(env).catch((e) => console.error('[avisos]', e));
+  await resumenRespuestas(env).catch((e) => console.error('[resumen rsvp]', e));
 }
 
 // Invitaciones armadas sin pagar ni guardar en una cuenta: se borran a los 60 días sin cambios

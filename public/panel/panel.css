@@ -1023,4 +1023,15 @@ body.modo-admin #btn-ojo { display: none !important; }
 .link-std { display: grid; gap: 8px; }
 .link-std input { width: 100%; padding: 8px 10px; border: 1px solid var(--borde, #ccc); border-radius: 8px; font: inherit; background: #fff; }
 .link-std-botones { display: flex; flex-wrap: wrap; gap: 8px; }
-.sin-admin #modos { display: none !important; }
+.sin-admin #modos button { display: none !important; }
+
+/* Avisos por mail de las respuestas */
+.ad-avisos { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--borde, #e3e1da); display: grid; gap: 6px; }
+.ad-avisos-et { font-weight: 600; }
+.ad-avisos .ad-select { max-width: 360px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--borde, #ccc); font: inherit; background: #fff; }
+
+/* "Mis invitaciones": en el celular, en la barra de arriba (donde estaba "Cambiar de modelo"); en la compu, a la derecha de Editar / Administración */
+.barra .link-cuenta { color: var(--acento-texto); font-size: .8rem; text-decoration: underline; }
+.btn-mis-invitaciones { margin-left: auto; align-self: center; padding: 7px 14px; border-radius: 999px; font-weight: 600; color: var(--acento); text-decoration: none; border: 1px solid color-mix(in srgb, var(--acento) 35%, #fff); }
+.btn-mis-invitaciones:hover { background: color-mix(in srgb, var(--acento) 10%, #fff); }
+@media (min-width: 1024px) { .modos .btn-mis-invitaciones.solo-escritorio { display: inline-block !important; } }

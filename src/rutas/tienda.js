@@ -88,13 +88,13 @@ function aplicarCupon(precio, c, rates) {
 async function opciones(env, request, { eur, clave, moneda, cupon, sinIva = false }) {
   const rates = await getRates(env);
   const pais = paisReal(request);
-  const paisIva = sinIva ? null : pais; // empresa de la UE con IVA válido: sin IVA
+  // Empresa de la UE con IVA válido: sin IVA
   const medios = eur > 0 ? methodsFor(env, pais, moneda) : [];
   const conPrecio = medios.map((m) => {
-    const pr = aplicarCupon(priceIn(clave, eur, m.currency, rates, paisIva, env), cupon, rates);
+    const pr = aplicarCupon(priceIn(clave, eur, m.currency, rates, pais, env, { sinIva }), cupon, rates);
     return { id: m.id, moneda: m.currency, importe: pr.amount, texto: formatMoney(pr.amount, m.currency), iva: pr.vat, ivaTasa: pr.vatRate, antes: pr.before ? formatMoney(pr.before, m.currency) : null, minor: pr.minor };
   });
-  const lista = priceIn(clave, eur, moneda, rates, paisIva, env);
+  const lista = priceIn(clave, eur, moneda, rates, pais, env, { sinIva });
   return { pais, rates, medios: conPrecio, lista: { importe: lista.amount, texto: formatMoney(lista.amount, moneda) } };
 }
 
@@ -428,7 +428,8 @@ export async function estadoPlan(env, request, ev, esquema) {
   // Lo pagado no se pierde: si apaga secciones, el plan queda en el que ya pagó
   const plan = pagado && NIVELES.indexOf(pagado) > NIVELES.indexOf(necesario) ? pagado : necesario;
   const elegidos = complementos(esquema, ev.datos);
-  const yaPagados = [...(ev.datos.extras || [])];
+  // Antes colores y tipografía se pagaban aparte: cualquiera de los dos ya cubre el cambio de diseño
+  const yaPagados = (ev.datos.extras || []).map((x) => (x === 'paleta' || x === 'tipografia' ? 'diseno' : x));
   const extrasAPagar = elegidos.filter((x) => { const i = yaPagados.indexOf(x); if (i >= 0) { yaPagados.splice(i, 1); return false; } return true; });
   const eurPlan = Math.max(0, precioPaquete(plan) - (pagado ? precioPaquete(pagado) : 0));
   // Extras incluidos según el plan (la Save The Date en Premium y Deluxe)
@@ -445,7 +446,7 @@ export async function estadoPlan(env, request, ev, esquema) {
     aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,
     // Precio de cada tarjeta con este plan (para mostrarlo en los selectores del panel)
-    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'agradecimiento', 'video-portada'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
+    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'agradecimiento', 'video-portada', 'idioma', 'diseno'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
     // Primera vez: aunque sea gratis pasa por la "compra" (queda el mail de la cuenta y la factura si corresponde)
     activar: !pagado,
   };

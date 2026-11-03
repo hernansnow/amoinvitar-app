@@ -1132,12 +1132,15 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     case 'slug': return campoSlug(c, valor, alCambiar);
     case 'invitados': return campoInvitados();
     case 'ejemploAcceso': return ejemploAcceso();
-    case 'nota':
+    case 'nota': {
+      // {precio:idioma}, {precio:diseno}: el precio en la moneda del cliente (S.plan.preciosExtras)
+      if (c.texto && c.texto.includes('{precio:')) c = { ...c, texto: c.texto.replace(/\{precio:([\w-]+)\}/g, (m, k) => String(S.plan?.preciosExtras?.[k] || '').replace(/^\+/, '')).replace(/\s*\(\s*\)|Costo:\s*\./g, '') };
       if (c.estilo === 'linea') return el('hr', { class: 'separador' });
       if (c.estilo === 'etiqueta') return el('div', { class: 'etiqueta' }, c.texto);
       if (c.estilo === 'ayuda') return el('p', { class: 'ayuda' }, c.texto);
       if (c.estilo === 'boton') return el('div', { class: 'nota nota-boton' }, el('p', {}, c.texto), el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => irA(c.irA) }, c.boton));
       return el('p', { class: c.estilo === 'subtitulo' ? 'subtitulo-nota' : 'nota' }, c.texto);
+    }
     default: return el('span', {}, '');
   }
 }
@@ -1228,7 +1231,7 @@ const cargarCatalogo = (carpeta) => (catalogos[carpeta] ??= fetch(`/comun/tarjet
 async function disenoTarjeta(c) {
   const t = S.modelo?.tarjetas;
   // Con foto: la Save The Date si se eligió "Tarjeta con foto"; la de agradecimiento salvo que se elija la del modelo
-  const conFoto = c.clase === 'std' ? leer(datos, 'std.tipo') === 'foto' : leer(datos, 'agradecimiento.tipo') !== 'tarjeta' || !t?.agradecimiento;
+  const conFoto = c.clase === 'std' ? leer(datos, 'std.tipo') === 'foto' : true; // el agradecimiento va siempre con foto
   if (conFoto) {
     const carpeta = c.clase === 'std' ? 'foto' : 'gracias';
     const cat = await cargarCatalogo(carpeta);
@@ -1620,8 +1623,8 @@ $('#btn-manual').addEventListener('click', mostrarManual);
 function botonAyuda() {
   const wa = whatsapp(); const b = $('#btn-ayuda');
   if (!wa) return;
-  b.href = wa; b.hidden = false; b.innerHTML = `<span class="texto">Necesito ayuda</span>${ICONO_WA}`;
-  b.title = 'Necesito ayuda (WhatsApp)';
+  b.href = wa; b.hidden = false; b.innerHTML = `<span class="texto">Ayuda</span>${ICONO_WA}`;
+  b.title = 'Ayuda (WhatsApp)';
 }
 
 // Resumen: secciones elegidas, plan y complementos. Al publicar, también el pago.
@@ -1814,7 +1817,7 @@ function recordarBorrador() {
   }
   aplicarDefectos();
   // La Save The Date web no tiene administración (respuestas, envío, mesas)
-  if (S.esquema?.sinAdmin) { $('#modos').hidden = true; document.body.classList.add('sin-admin'); }
+  if (S.esquema?.sinAdmin) document.body.classList.add('sin-admin');
   if (S.modelo?.miniatura?.colorTitulos) document.documentElement.style.setProperty('--icono-fondo', S.modelo.miniatura.colorTitulos);
   aplicarMarca(S.marca);
   botonAyuda();

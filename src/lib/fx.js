@@ -17,9 +17,19 @@ export const CURRENCIES = ['EUR', 'USD', 'ARS', 'AUD', 'BOB', 'BRL', 'CAD', 'CHF
 const ZERO_DECIMAL = ['CLP', 'PYG', 'JPY'];
 export const isZeroDecimal = (c) => ZERO_DECIMAL.includes(c);
 
-// Precios fijos opcionales por moneda, en unidades (reemplazan la conversión).
-// Clave: la del precio en src/catalogo.js (paquete o producto). Ej.: ARS: { basic: 29900, premium: 69900 }
-export const PRICE_OVERRIDES = {};
+// Precios fijos por moneda, en unidades (reemplazan la conversión). Clave: la del precio en src/catalogo.js.
+// Argentina: los planes con su precio propio; el resto de los productos, con el descuento del país.
+export const PRICE_OVERRIDES = { ARS: { basic: 25000, premium: 45000, deluxe: 66000 } };
+
+// Descuento por país (después de sacar el IVA español). Puerto Rico, Estados Unidos y el resto del mundo: sin descuento.
+export const DESCUENTO_PAIS = {
+  AR: 30,
+  CL: 15, CR: 15, PA: 15, DO: 15, UY: 15,
+  BR: 20, CO: 20, SV: 20, EC: 20, GT: 20, MX: 20, PY: 20, PE: 20,
+  BO: 25, HN: 25, NI: 25,
+};
+// Europa fuera de la UE: el mismo precio que en la UE (en euros con IVA, o su equivalente)
+export const EUROPA_OTROS = ['GB', 'CH', 'NO', 'IS', 'LI', 'AD', 'MC', 'SM', 'VA', 'ME', 'AL', 'MK', 'RS', 'BA', 'MD', 'UA', 'XK'];
 
 export const currencyForCountry = (country) => COUNTRY_CURRENCY[country] || 'USD';
 
@@ -79,26 +89,26 @@ export function vatRateFor(country, env) {
 }
 
 /**
- * Precio de lista (en euros) en una moneda.
- * Como en Albunear: a los clientes de la UE se les suma el IVA al precio de lista y se muestra
- * redondo con la leyenda "IVA incluido" (25 € → 30 €). El resto del mundo paga el precio de lista.
- * Con IVA_INCLUIDO = "1" el precio de lista ya sería el final (el IVA va dentro).
+ * Precio de lista (en euros, CON el IVA español incluido) en la moneda y el país del visitante.
+ *  - Europa (UE y el resto): el precio de lista; en la UE el IVA va dentro (en euros, o su equivalente redondeado).
+ *  - Resto del mundo: sin el IVA español, con el descuento del país (DESCUENTO_PAIS), pasado a su moneda y redondeado.
+ *  - Argentina: los planes con precio fijo en pesos (PRICE_OVERRIDES).
+ * opciones.sinIva: empresa de la UE con IVA válido (se le saca el IVA).
  * Devuelve { currency, amount (para mostrar), minor (para la pasarela), vat, vatRate }
  */
-export function priceIn(clave, eur, currency, rates, country, env) {
+export function priceIn(clave, eur, currency, rates, country, env, opciones = {}) {
   currency = CURRENCIES.includes(currency) ? currency : 'USD';
   if (!eur) return { currency, amount: 0, minor: 0, vat: 0, vatRate: 0 };
   const r = (c) => rates[c] || FALLBACK[c];
-  let amount = PRICE_OVERRIDES[currency]?.[clave] ?? (currency === 'EUR' ? eur : nice((eur / r('EUR')) * r(currency)));
-  const vatRate = vatRateFor(country, env);
-  let vat = 0;
-  if (vatRate) {
-    if (env?.IVA_INCLUIDO !== '1') {
-      const gross = amount * (1 + vatRate / 100);
-      amount = isZeroDecimal(currency) || gross >= 100 ? nice(gross) : Math.round(gross);
-    }
-    vat = Math.round((amount - amount / (1 + vatRate / 100)) * 100) / 100;
-  }
+  const europa = isEU(country) || EUROPA_OTROS.includes(country);
+  const sinIva = !europa || opciones.sinIva;
+  const base = (sinIva ? eur / (1 + HOME_VAT / 100) : eur) * (1 - (DESCUENTO_PAIS[country] || 0) / 100);
+  const fijo = country === 'AR' ? PRICE_OVERRIDES[currency]?.[clave] : undefined;
+  const enMoneda = currency === 'EUR' ? base : (base / r('EUR')) * r(currency);
+  // En euros con IVA (Europa) el precio queda tal cual; si se convierte o se saca el IVA, se redondea
+  let amount = fijo ?? (currency === 'EUR' && !sinIva ? Math.round(enMoneda * 100) / 100 : nice(enMoneda));
+  const vatRate = isEU(country) && !opciones.sinIva ? vatRateFor(country, env) : 0;
+  const vat = vatRate ? Math.round((amount - amount / (1 + vatRate / 100)) * 100) / 100 : 0;
   const minor = isZeroDecimal(currency) ? Math.round(amount) : Math.round(amount * 100);
   return { currency, amount, minor, vat, vatRate };
 }

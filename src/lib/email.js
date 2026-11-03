@@ -110,6 +110,27 @@ export const mailAvisoCierre = (env, { nombres, dias, sinResponder, noAbrieron, 
   }),
 });
 
+// Respuestas nuevas de la confirmación (una sola o el resumen del día)
+export const mailRespuestas = (env, { nombres, respuestas, url, resumen = false, tope = false }) => {
+  const si = respuestas.filter((r) => r.asiste).length, no = respuestas.length - si;
+  const uno = respuestas.length === 1 && !resumen ? respuestas[0] : null;
+  const linea = (r) => `${r.asiste ? '✅' : '❌'} ${b(r.nombre)}${r.asiste && /^\d+$/.test(String(r.personas || '')) && Number(r.personas) > 1 ? ` (${escapeHtml(String(r.personas))} personas)` : ''}${r.mensaje ? ` <br><span style="color:#6b706c">“${escapeHtml(r.mensaje)}”</span>` : ''}`;
+  return {
+    subject: uno ? `${uno.asiste ? 'Confirmó' : 'No va'}: ${uno.nombre} · ${nombres}` : `${respuestas.length} respuestas nuevas · ${nombres}`,
+    ...plantilla(env, {
+      titulo: uno ? `Nueva respuesta en la invitación de ${nombres}` : `Respuestas de las últimas 24 horas`,
+      lineas: [
+        ...(uno ? [] : [`En la invitación de ${b(nombres)}: ${b(String(si))} ${si === 1 ? 'confirmó' : 'confirmaron'} y ${b(String(no))} no ${no === 1 ? 'va' : 'van'}.`]),
+        ...respuestas.slice(0, 40).map(linea),
+        ...(respuestas.length > 40 ? [`Y ${respuestas.length - 40} más en el panel.`] : []),
+        ...(tope ? ['Por hoy no llegan más avisos de a uno: las próximas respuestas llegan juntas mañana en un resumen.'] : []),
+      ],
+      boton: 'Ver todas las respuestas', url,
+      pie: 'Estos avisos se cambian o se apagan en Administración → Respuestas.',
+    }),
+  };
+};
+
 // Le dieron acceso a una invitación (la pareja o un administrador: wedding planner, organizador…)
 export const mailNuevoAcceso = (env, { nombres, rol, url, quien }) => ({
   subject: `Acceso a la invitación de ${nombres}`,
