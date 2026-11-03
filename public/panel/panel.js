@@ -1753,7 +1753,18 @@ $('#btn-volver').addEventListener('click', () => {
 // La división entre la invitación (arriba) y el panel (abajo) se mueve arrastrando la manija
 (function division() {
   const raiz = document.documentElement;
-  const poner = (px) => { const max = innerHeight * 0.8; raiz.style.setProperty('--alto-previa', `${Math.max(0, Math.min(max, px))}px`); requestAnimationFrame(escalarPrevia); };
+  // Tope de abajo: la línea de avance queda justo encima del menú inferior (con el precio); más abajo la taparía
+  // y no habría de dónde volver a agarrar el panel
+  const maximo = () => {
+    const previa = $('#previa').getBoundingClientRect(), cabeza = $('#hoja-cabeza').getBoundingClientRect();
+    const linea = $('#progreso-movil').getBoundingClientRect(), barra = $('#barra-inferior').getBoundingClientRect();
+    const hastaLinea = (linea.height ? linea.bottom : cabeza.bottom) - cabeza.top;
+    const piso = barra.height ? barra.top : innerHeight;
+    return Math.max(0, Math.min(innerHeight * 0.8, piso - previa.top - hastaLinea - 2));
+  };
+  const poner = (px) => { raiz.style.setProperty('--alto-previa', `${Math.max(0, Math.min(maximo(), px))}px`); requestAnimationFrame(escalarPrevia); };
+  // Si la pantalla cambia (girar el teléfono, aparece el teclado), que no quede tapada
+  addEventListener('resize', () => { const alto = $('#previa').getBoundingClientRect().height; if (alto > maximo()) poner(alto); });
   let inicio = null;
   const agarre = $('#hoja-cabeza');
   agarre.addEventListener('pointerdown', (e) => {

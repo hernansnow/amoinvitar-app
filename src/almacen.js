@@ -2,8 +2,18 @@
 // En Cloudflare: D1 (base) y R2 (fotos y MP3). Para probar en la compu,
 // servidor-local.mjs usa la misma base con el SQLite de Node (scripts/d1-local.mjs).
 
+import { MODELOS, TIPOS_EVENTO } from './modelos.js';
+
+// Un borrador que quedó con el tipo del grupo y un diseño de otro tipo (Cumpleaños con Cars, Baby Shower con
+// Revelación, de antes de que se guardara el cambio de tipo): el tipo propio del diseño
+function tipoReal(tipo, modelo) {
+  const m = MODELOS.find((x) => x.id === modelo);
+  if (!m || m.eventos.includes(tipo)) return tipo;
+  const grupo = TIPOS_EVENTO.find((t) => t.id === tipo)?.grupo || tipo;
+  return TIPOS_EVENTO.find((t) => (t.id === grupo || t.grupo === grupo) && m.eventos.includes(t.id))?.id || tipo;
+}
 const fila = (r) => r && {
-  id: r.id, producto: r.producto, tipo: r.tipo, slug: r.slug, modelo: r.modelo, paquete: r.paquete,
+  id: r.id, producto: r.producto, tipo: r.estado === 'publicado' ? r.tipo : tipoReal(r.tipo, r.modelo), slug: r.slug, modelo: r.modelo, paquete: r.paquete,
   aMedida: r.a_medida, estado: r.estado, clave: r.clave_panel, empresaId: r.empresa_id,
   datos: JSON.parse(r.datos || '{}'), vence: r.vence,
 };
@@ -20,7 +30,7 @@ export function almacenD1(env) {
       const ahora = new Date().toISOString();
       await db.prepare(`INSERT INTO eventos (id, producto, tipo, slug, modelo, paquete, a_medida, estado, clave_panel, empresa_id, datos, vence, creado, actualizado)
         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?13)
-        ON CONFLICT(id) DO UPDATE SET slug = ?4, modelo = ?5, paquete = ?6, estado = ?8, datos = ?11, vence = ?12, actualizado = ?13`)
+        ON CONFLICT(id) DO UPDATE SET tipo = ?3, slug = ?4, modelo = ?5, paquete = ?6, estado = ?8, datos = ?11, vence = ?12, actualizado = ?13`)
         .bind(e.id, e.producto, e.tipo, e.slug ?? null, e.modelo ?? null, e.paquete, e.aMedida ?? null, e.estado, e.clave, e.empresaId ?? null, JSON.stringify(e.datos), e.vence ?? null, ahora).run();
     },
     async invitados(id) {

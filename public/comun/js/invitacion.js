@@ -142,7 +142,7 @@
   }
   function ajustarNombres() {
     document.querySelectorAll('[data-ajustar]').forEach(function (h) {
-      h.style.fontSize = ''; h.style.maxWidth = ''; h.style.marginLeft = ''; h.style.marginRight = '';
+      h.style.fontSize = ''; h.style.maxWidth = ''; h.style.marginLeft = ''; h.style.marginRight = ''; h.classList.remove('ai-nombres-3');
       if (!h.offsetParent) return; // oculto (otra portada): se ajusta cuando se vea
       var propia = h.getAttribute('data-ajustar-en') && h.closest(h.getAttribute('data-ajustar-en'));
       var caja = propia || h.closest('.container, section') || h.parentElement;
@@ -155,19 +155,23 @@
       // Respeta la alineación del diseño (Armonía y B&N a la izquierda, Beach a la derecha, el resto al centro).
       // Se mide dónde queda el texto en el diseño (la primera vez, antes de tocar nada): el text-align solo no
       // alcanza, en Aquarella o Amanecer el centrado viene de la caja
+      // Se mide con un texto corto de prueba en lugar de los nombres: un nombre largo llena el ancho y parecía centrado
+      // (Beach a la derecha, Armonía y B&N a la izquierda quedaban al centro)
       if (!h.dataset.alinear) {
         var mx = h.style.maxWidth; h.style.maxWidth = '';
-        var rr = document.createRange(); rr.selectNodeContents(h); var t = rr.getBoundingClientRect();
-        var pr = (h.parentElement || h).getBoundingClientRect(), w = pr.width || 1;
+        var antes = document.createDocumentFragment(); while (h.firstChild) antes.appendChild(h.firstChild);
+        var prueba = document.createElement('span'); prueba.textContent = 'Ana'; h.appendChild(prueba);
+        var t = prueba.getBoundingClientRect(), pr = h.getBoundingClientRect(), w = pr.width || 1;
+        h.removeChild(prueba); h.appendChild(antes);
         var c = (t.left + t.right) / 2 - (pr.left + pr.right) / 2;
-        h.dataset.alinear = Math.abs(c) < w * 0.08 ? 'centro' : (t.left - pr.left < w * 0.12 ? 'izq' : (pr.right - t.right < w * 0.12 ? 'der' : 'centro'));
+        h.dataset.alinear = Math.abs(c) < w * 0.1 ? 'centro' : (t.left - pr.left < w * 0.2 ? 'izq' : (pr.right - t.right < w * 0.2 ? 'der' : 'centro'));
         h.style.maxWidth = mx;
       }
       var al = h.dataset.alinear;
       // con prioridad: clases como .m-0 (Aquarella) traen !important
       h.style.setProperty('margin-left', al === 'izq' ? '0' : 'auto', 'important');
       h.style.setProperty('margin-right', al === 'der' ? '0' : 'auto', 'important');
-      if (al === 'centro') h.style.textAlign = 'center';
+      h.style.textAlign = al === 'izq' ? 'left' : al === 'der' ? 'right' : 'center';
       var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(13, fs0 * 0.3));
       for (var i = 0; i < 40; i++) {
         var m = medidas(h);
@@ -175,6 +179,19 @@
         fs = Math.max(minimo, fs * 0.95);
         h.style.fontSize = fs.toFixed(1) + 'px';
         if (fs === minimo) break;
+      }
+      // README (ronda 26): si quedan en tres líneas (nombre / & / nombre), el "&", el "+" o el corazón van en su línea
+      // pegados a los nombres (sin el interlineado grande del diseño: Travel, Aquarella, Cinema…)
+      var ns = h.querySelectorAll(':scope > .ai-n');
+      if (ns.length === 2) {
+        var r1 = ns[0].getBoundingClientRect(), r2 = ns[1].getBoundingClientRect();
+        var sep = [].filter.call(h.children, function (x) { return !x.classList.contains('ai-n') && x.getBoundingClientRect().width; })[0];
+        var rs = sep && sep.getBoundingClientRect(), cs = rs && rs.top + rs.height / 2;
+        var solo = rs && cs > r1.bottom - r1.height * 0.25 && cs < r2.top + r2.height * 0.25;
+        // Centrados y cada nombre en su línea ("Maximiliano / & Guadalupe"): también en tres, así queda parejo
+        // (B&N, a la izquierda, lleva el "&" delante del segundo nombre a propósito)
+        var partidos = r2.top > r1.bottom - r1.height * 0.3 && h.dataset.alinear === 'centro';
+        if (rs && r2.top > r1.bottom - r1.height * 0.3 && (solo || partidos)) h.classList.add('ai-nombres-3');
       }
     });
     // La frase de la portada va en una sola línea: si no entra, primero se sacan las rayitas de los costados

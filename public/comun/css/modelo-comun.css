@@ -92,3 +92,10 @@ img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-
 .ai-frase.ai-sin-linea:before, .ai-frase.ai-sin-linea:after { display: none !important; }
 /* Una date-line sin texto (Garden: la línea de abajo de la portada) es una sola línea entera, sin hueco al medio */
 [class*="date-line"]:empty:before, [class*="date-line"]:empty:after { margin-left: 0 !important; margin-right: 0 !important; }
+
+/* README (ronda 26): nombres en tres líneas (nombre / & / nombre): el separador pegado a los nombres */
+[data-ajustar].ai-nombres-3 { line-height: 1.08 !important; }
+[data-ajustar].ai-nombres-3 > .ai-n { display: block; line-height: 1.08 !important; }
+[data-ajustar].ai-nombres-3 > :not(.ai-n) { display: table !important; margin: .02em auto !important; }
+[data-ajustar].ai-nombres-3[data-alinear="izq"] > :not(.ai-n) { margin-left: 0 !important; }
+[data-ajustar].ai-nombres-3[data-alinear="der"] > :not(.ai-n) { margin-right: 0 !important; }

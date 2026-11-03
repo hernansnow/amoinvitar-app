@@ -835,7 +835,12 @@ function dresscode(c) {
     const p = textoDe(hB, col);
     if (p) p.setAttribute('data-t', 'bus.texto');
     const bB = $(d, '[data-src="#bus"]');
-    if (bB) { const caja = subir(bB, (x) => x.tagName === 'DIV' && x.children.length === 1) || bB; caja.setAttribute('data-si', 'busConRecorrido'); bB.setAttribute('data-t', 'bus.boton'); }
+    if (bB) {
+      // La caja del botón, sin salir de la columna del traslado (en Esmeralda, Oro y Estilo subía hasta el .container
+      // con Dress code y Hospedaje, y los escondía cuando el bus no tenía recorrido)
+      let caja = subir(bB, (x) => x === col || !col.contains(x) || (x.tagName === 'DIV' && x.children.length === 1));
+      if (!caja || caja === col || !col.contains(caja)) caja = bB;
+      caja.setAttribute('data-si', 'busConRecorrido'); bB.setAttribute('data-t', 'bus.boton'); }
     const m = $(d, '#bus');
     if (m) {
       if (!col.contains(m)) col.appendChild(m);

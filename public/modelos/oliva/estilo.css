@@ -4892,3 +4892,6 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* README (ronda 26): con los nombres en tres líneas, el "&" bastante más chico que los nombres */
+[data-ajustar].ai-nombres-3 > :not(.ai-n) { font-size: .55em; margin: .04em auto .02em !important; }

@@ -5178,3 +5178,6 @@ audio::-webkit-media-controls-play-button:hover {
 
 /* Portada: los nombres van como en el diseño original; si son muy largos,
    invitacion.js achica la letra (data-ajustar) para que no lleguen al borde */
+/* Raya suelta (date-line vacía): una sola línea, aunque el texto de arriba sea más ancho */
+.date-line:empty:after { display: none; }
+.date-line:empty:before { margin: 0; }
