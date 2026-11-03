@@ -11,12 +11,17 @@ import { fileURLToPath } from 'node:url';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const APP = join(AQUI, '..', '..');
-const SOLO_QUINCE = /icono-15|adorno-15|corona/;
+// README (ronda 26): fuera de boda y 15 no van corazones, coronas, tiaras ni anillos (estrellas sí)
+const SOLO_QUINCE = /icono-15|adorno-15|corona|icono-boda|corazon|amp\.png/;
 
-// Un diseño de 15 para otro evento: fuera las capas de quince y el texto "15" pasa a {quince} (vacío fuera de 15)
-function adaptar(d) {
+// Un diseño de 15 para otro evento: fuera las capas de quince y el texto "15" pasa a {quince} (vacío fuera de 15).
+// Si el modelo tiene una versión "-otros" de una imagen (el fondo de Travel sin el sello con corona ni el corazón,
+// Romantic sin la tiara, Rockabilly sin el corazón, Graffiti sin la corona), va esa
+function adaptar(d, id) {
   const x = structuredClone(d);
-  x.capas = (x.capas || []).filter((c) => !SOLO_QUINCE.test(c.img) || c.img.includes('fondo'));
+  const otros = (img) => { const o = img.replace(/-15(?=\.)/, '').replace(/(\.\w+)$/, '-otros$1'); return existsSync(join(APP, 'public', 'modelos', id, o)) ? o : img; };
+  x.capas = (x.capas || []).filter((c) => !SOLO_QUINCE.test(c.img)).map((c) => ({ ...c, img: otros(c.img) }));
+  for (const t of x.textos) if (t.amp?.img) delete t.amp;
   for (const t of x.textos) {
     if (t.plantilla) t.texto = t.plantilla;
     if (t.texto === '15') t.texto = '{quince}';
@@ -33,7 +38,7 @@ export function armarTarjetas(id) {
   const { fuentes, eventos: dis } = JSON.parse(readFileSync(fTarj, 'utf8'));
   const m = JSON.parse(readFileSync(fModelo, 'utf8'));
   const eventos = m.eventos || [];
-  const disenoDe = (ev) => (dis[ev] ? limpiar(dis[ev]) : dis['15'] ? adaptar(dis['15']) : dis.base ? adaptar(dis.base) : dis.boda ? adaptar(dis.boda) : null);
+  const disenoDe = (ev) => (dis[ev] ? limpiar(dis[ev]) : dis['15'] ? adaptar(dis['15'], id) : dis.base ? adaptar(dis.base, id) : dis.boda ? adaptar(dis.boda, id) : null);
   const [base, ...otros] = eventos;
   m.tarjetas = { ...(m.tarjetas || {}), fuentes, std: { ...(m.tarjetas?.std || {}), tarjeta: disenoDe(base) } };
   m.porEvento ??= {};

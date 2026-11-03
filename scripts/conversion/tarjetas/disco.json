@@ -54,12 +54,12 @@
     {
      "id": "titulo",
      "texto": "Save The Date",
-     "x": 1063,
+     "x": 1059,
      "y": 781,
-     "tam": 169.6,
+     "tam": 169.4,
      "fuente": "script",
      "color": "#e6ccff",
-     "rotar": -7,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -69,12 +69,12 @@
     {
      "id": "nombreA",
      "texto": "{a}",
-     "x": 1087,
-     "y": 1249,
-     "tam": 260.4,
+     "x": 1075,
+     "y": 1247,
+     "tam": 264.4,
      "fuente": "titulos",
      "color": "#ffffff",
-     "rotar": -5,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -91,7 +91,7 @@
      "tam": 200,
      "fuente": "script",
      "color": "#e6ccff",
-     "rotar": -5,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -101,12 +101,12 @@
     {
      "id": "nombreB",
      "texto": "{b}",
-     "x": 1055,
-     "y": 1597,
-     "tam": 254.1,
+     "x": 1059,
+     "y": 1598,
+     "tam": 253.1,
      "fuente": "titulos",
      "color": "#ffffff",
-     "rotar": -5,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -118,12 +118,12 @@
     {
      "id": "evento",
      "texto": "Nuestra Boda",
-     "x": 1055,
-     "y": 2015,
-     "tam": 174.1,
+     "x": 1054,
+     "y": 2014,
+     "tam": 173.1,
      "fuente": "script",
      "color": "#e6ccff",
-     "rotar": -7,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -141,7 +141,7 @@
      "tam": 45,
      "fuente": "texto",
      "color": "#e6ccff",
-     "rotar": -8,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -157,7 +157,7 @@
      "tam": 118,
      "fuente": "titulos",
      "color": "#ffffff",
-     "rotar": -6,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -171,7 +171,7 @@
      "tam": 45,
      "fuente": "texto",
      "color": "#e6ccff",
-     "rotar": -8,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -187,7 +187,7 @@
      "tam": 45,
      "fuente": "texto",
      "color": "#e6ccff",
-     "rotar": -4,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -255,12 +255,12 @@
     {
      "id": "titulo",
      "texto": "Save The Date",
-     "x": 1062,
+     "x": 1059,
      "y": 873,
-     "tam": 169,
+     "tam": 169.4,
      "fuente": "script",
      "color": "#e6ccff",
-     "rotar": -7,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -270,12 +270,12 @@
     {
      "id": "nombres",
      "texto": "{nombres}",
-     "x": 1093,
-     "y": 1405,
-     "tam": 378.9,
+     "x": 1075,
+     "y": 1407,
+     "tam": 377.1,
      "fuente": "titulos",
      "color": "#ffffff",
-     "rotar": -5,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -287,12 +287,12 @@
     {
      "id": "evento",
      "texto": "Mis 15 Años",
-     "x": 1060,
-     "y": 1874,
-     "tam": 169.2,
+     "x": 1061,
+     "y": 1872,
+     "tam": 168.2,
      "fuente": "script",
      "color": "#e6ccff",
-     "rotar": -7,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -310,7 +310,7 @@
      "tam": 45,
      "fuente": "texto",
      "color": "#e6ccff",
-     "rotar": -8,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -326,7 +326,7 @@
      "tam": 118,
      "fuente": "titulos",
      "color": "#ffffff",
-     "rotar": -6,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -340,7 +340,7 @@
      "tam": 45,
      "fuente": "texto",
      "color": "#e6ccff",
-     "rotar": -8,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22
@@ -356,7 +356,7 @@
      "tam": 45,
      "fuente": "texto",
      "color": "#e6ccff",
-     "rotar": -4,
+     "sesgo": -7.56,
      "brillo": {
       "color": "#a35cff",
       "blur": 22

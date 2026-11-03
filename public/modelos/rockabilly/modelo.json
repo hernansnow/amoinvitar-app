@@ -555,7 +555,7 @@
             "fondo": "#ffffff",
             "capas": [
               {
-                "img": "img/std-fondo-15.jpg",
+                "img": "img/std-fondo-otros.jpg",
                 "x": 0,
                 "y": 0,
                 "w": 2160,

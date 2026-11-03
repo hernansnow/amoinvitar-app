@@ -16,9 +16,10 @@
 //   alinear "der" (x es el borde derecho), opacidad (0 a 1), sombra (true: sombra suave para texto sobre foto) }
 // · foto.filtro: filtro CSS para la foto (p. ej. "grayscale(1) sepia(.2)"), igual en el editor y en el JPG
 // · formas: rayas, rectángulos o círculos fijos del diseño ({ x, y, w, h, color, tipos, opacidad, circulo, borde: grosor del contorno, radio: esquinas redondeadas, soloArriba })
-// · En los textos, también: rotar (grados), brillo: { color, blur } (neón), marcas: { chars: "|", color } (esos
+// · En los textos, también: rotar (grados), sesgo (grados: inclina la línea con las letras derechas), brillo: { color, blur } (neón), marcas: { chars: "|", color } (esos
 //   caracteres de otro color, p. ej. las barras de "23 | 03 | 26") y amp: { img, tam, dy } (un dibujo en vez del "&")
 //   relieve: { color, dx, dy, contorno } (contorno y sombra corrida, letras de cartel)
+// · imagen: un dibujo en lugar de texto ({ id, imagen, x, y, tam: alto, proporcion: ancho/alto }), se mueve y se agranda igual
 // · Variables: ver varsTarjeta() en panel.js ({nombres} {a} {b} {fecha} {fechaCorta} {lugar} …)
 // El "&" no se escribe ni se borra: se mueve con los nombres (cada nombre se edita por separado).
 
@@ -43,7 +44,9 @@ const visible = (t, valor) => (t.mayus ? String(valor).toLocaleUpperCase('es') :
 // Posición horizontal según la alineación: centro (x es el medio), izquierda o derecha (x es el borde)
 const desplazX = (t, dx) => (t.alinear === 'izq' ? `${dx}px` : t.alinear === 'der' ? `calc(-100% + ${dx}px)` : `calc(-50% + ${dx}px)`);
 // La posición del texto en el editor (con su giro, si el diseño lo tiene inclinado)
-const mover = (t, dx, dy) => `translate(${desplazX(t, dx)}, calc(-50% + ${dy}px))${t.rotar ? ` rotate(${t.rotar}deg)` : ''}`;
+const mover = (t, dx, dy) => `translate(${desplazX(t, dx)}, calc(-50% + ${dy}px))${t.rotar ? ` rotate(${t.rotar}deg)` : ''}${t.sesgo ? ` skewY(${t.sesgo}deg)` : ''}`;
+// Con sesgo, el texto se inclina desde su punto de anclaje (el medio, o el borde si va alineado)
+const origen = (t) => (t.sesgo ? `;transform-origin:${t.alinear === 'izq' ? 'left' : t.alinear === 'der' ? 'right' : 'center'} center` : '');
 const formasDe = (diseno, tipo) => (diseno.formas || []).filter((c) => (!c.tipos || c.tipos.includes(tipo)) && !(c.excepto || []).includes(tipo));
 // El relieve en el editor: la sombra corrida en escalones y el contorno por detrás del relleno
 const relieveCss = (r) => {
@@ -129,7 +132,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
     barra.append(
       el('button', { type: 'button', class: 'tj-btn', title: 'Achicar', 'aria-label': 'Achicar', onclick: () => tam(-0.08) }, 'A−'),
       el('button', { type: 'button', class: 'tj-btn grande', title: 'Agrandar', 'aria-label': 'Agrandar', onclick: () => tam(0.08) }, 'A+'),
-      el('button', { type: 'button', class: 'tj-btn', onclick: () => editarTexto(elegido) }, '✎ Escribir'),
+      ...(diseno.textos.find((x) => x.id === elegido)?.imagen ? [] : [el('button', { type: 'button', class: 'tj-btn', onclick: () => editarTexto(elegido) }, '✎ Escribir')]),
       el('button', { type: 'button', class: 'tj-btn', title: 'Volver a su lugar horizontal', onclick: () => { p().dx = 0; dibujar(); emitir(); } }, '↔ Centrar'),
       el('button', { type: 'button', class: 'tj-btn', title: 'Como venía en el diseño', 'aria-label': 'Como venía en el diseño', onclick: () => { delete v.textos[elegido]; dibujar(); emitir(); } }, '↺'));
   };
@@ -168,6 +171,13 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
   }
 
   function nodoTexto(t) {
+    // Un dibujo que se mueve y se agranda como un texto (el avión entre los nombres de Travel)
+    if (t.imagen) {
+      const h = t.tamFinal, w = h * (t.proporcion || 1);
+      return el('div', { class: 'tj-texto', 'data-id': t.id, tabindex: '0', role: 'button', 'aria-label': 'Dibujo',
+        style: `left:${t.x}px;top:${t.y}px;transform:${mover(t, t.dx, t.dy)};line-height:0${t.opacidad != null ? `;opacity:${t.opacidad}` : ''}` },
+      el('span', { class: 'tj-valor', style: `display:block;width:${w}px;height:${h}px;background:url(${base}/${t.imagen}) center/contain no-repeat` }));
+    }
     const val = visible(t, t.valor || ' ');
     const partes = partirAmp(t, escribiendo === t.id ? String(t.valor) : val);
     const d = conAmp(t) ? t.tamFinal * (t.amp.tam || 0.62) : 0;
@@ -183,7 +193,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
     const raya = () => el('span', { class: 'tj-raya', style: `width:${t.lineas.largo * t.escala}px;height:${t.lineas.grosor || 2}px` });
     const izq = t.alinear === 'izq', der = t.alinear === 'der';
     return el('div', { class: `tj-texto${izq ? ' izq' : der ? ' der' : ''}`, 'data-id': t.id, tabindex: '0', role: 'button', 'aria-label': `Texto: ${t.valor || t.id}`,
-      style: [`left:${t.x}px`, `top:${t.y}px`, `transform:${mover(t, t.dx, t.dy)}`, `font-family:${familia(def, t)}`,
+      style: [`left:${t.x}px`, `top:${t.y}px`, `transform:${mover(t, t.dx, t.dy)}${origen(t)}`, `font-family:${familia(def, t)}`,
         t.opacidad != null ? `opacity:${t.opacidad}` : '', t.sombra ? 'text-shadow:0 2px 14px rgba(0,0,0,.45)' : '',
         t.brillo ? `text-shadow:0 0 ${t.brillo.blur}px ${t.brillo.color},0 0 ${t.brillo.blur * 2}px ${t.brillo.color}` : '',
         t.relieve ? relieveCss(t.relieve) : '',
@@ -383,9 +393,19 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
   await capas(true);
   await fuentesListas(def, diseno);
   const textos = textosDe(diseno, v, vars, def);
+  for (const t of textos) if (t.imagen) t.dibujo = await cargarImagen(`${base}/${t.imagen}`).catch(() => null);
   for (const t of textos) if (t.amp?.img) t.amp = { ...t.amp, imagen: await cargarImagen(`${base}/${t.amp.img}`) };
   g.textAlign = 'left'; g.textBaseline = 'middle';
   for (const t of textos) {
+    if (t.imagen) {
+      if (!t.dibujo) continue;
+      const h = t.tamFinal, w = h * (t.proporcion || 1), x0 = t.x + t.dx, y0 = t.y + t.dy;
+      const xi = t.alinear === 'izq' ? x0 : t.alinear === 'der' ? x0 - w : x0 - w / 2;
+      g.save(); if (t.opacidad != null) g.globalAlpha = t.opacidad;
+      if (t.rotar) { g.translate(x0, y0); g.rotate((t.rotar * Math.PI) / 180); g.translate(-x0, -y0); }
+      g.drawImage(t.dibujo, xi, y0 - h / 2, w, h); g.restore();
+      continue;
+    }
     if (!String(t.valor).trim()) continue;
     const tam = t.tamFinal;
     g.font = `${t.peso || 400} ${tam}px ${familia(def, t)}`;
@@ -403,6 +423,8 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
     if (t.sombra) { g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 14; g.shadowOffsetY = 2; }
     if (t.brillo) { g.shadowColor = t.brillo.color; g.shadowBlur = t.brillo.blur * 2; }
     if (t.rotar) { g.translate(x0, t.y + t.dy); g.rotate((t.rotar * Math.PI) / 180); g.translate(-x0, -(t.y + t.dy)); }
+    // Sesgo: la línea del texto sube o baja pero las letras siguen derechas (Disco, Vintage)
+    if (t.sesgo) { g.translate(x0, t.y + t.dy); g.transform(1, Math.tan((t.sesgo * Math.PI) / 180), 0, 1, 0, 0); g.translate(-x0, -(t.y + t.dy)); }
     // Relieve (letras con contorno y sombra corrida, estilo cartel): primero las capas de atrás
     const rl = t.relieve;
     if (rl) {

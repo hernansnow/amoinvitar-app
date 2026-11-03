@@ -135,7 +135,7 @@ const BASE = {
     'lugar.diaHorario': 'DATE AND TIME', 'lugar.lugar': 'VENUE', 'lugar.dondeCuando': 'Where and when', 'std.titulo': 'SAVE THE DATE',
     'ceremonia.religiosa': 'Ceremony', 'ceremonia.civil': 'Civil ceremony', 'ceremonia.simbolica': 'Ceremony',
     'celebracion.titulo': 'Reception', 'unificado.titulo': 'Ceremony & Reception', 'celebracion.sola': 'Celebration', 'bienvenida.texto': 'I would love you to share this special day with me',
-    'boton.agendar': 'Save the date', 'boton.comoLlegar': 'DIRECTIONS', 'boton.cerrar': 'close',
+    'boton.agendar': 'Add to calendar', 'boton.comoLlegar': 'DIRECTIONS', 'boton.cerrar': 'close',
     'mapa.titulo': 'Directions', 'mapa.abrir': 'Open in Google Maps',
     'rsvp.titulo': 'RSVP',
     'rsvp.botonHtml': "<i class='icon-send-o' aria-hidden='true'></i> RSVP",
