@@ -69,6 +69,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     }
     try {
       salida += run('scripts/conversion/armar-modelo.mjs', id, nombre); salida += run('scripts/convertir-estilos.mjs', id);
+      // Las tarjetas Save The Date del modelo (scripts/conversion/tarjetas/<id>.json)
+      salida += run('scripts/conversion/armar-tarjetas.mjs', id);
       // Fotos de muestra desenfocadas para la vista previa del panel (README: modelo.json → demoBorrosas)
       execFileSync('python3', ['scripts/fotos-borrosas.py', id], { cwd: APP, stdio: 'ignore' });
     } catch (e) { salida += `ERROR armar ${id}: ${e.stderr || e.message}\n`; }

@@ -142,5 +142,128 @@
       "/comun/fonts/google/chewy+jost.css",
       "/modelos/peppa/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Chewy",
+      "texto": "Jost",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1080,
+            "y": 690,
+            "tam": 110,
+            "fuente": "titulos",
+            "color": "#2f8fd0",
+            "mayus": true,
+            "espaciado": 8,
+            "relieve": {
+              "color": "#ffffff",
+              "dx": 0,
+              "dy": 0,
+              "contorno": 10
+            }
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1080,
+            "y": 1010,
+            "tam": 330,
+            "fuente": "titulos",
+            "color": "#e9779f",
+            "ancho": 1700,
+            "ajustar": true,
+            "relieve": {
+              "color": "#ffffff",
+              "dx": 8,
+              "dy": 10,
+              "contorno": 12
+            }
+          },
+          {
+            "id": "evento",
+            "texto": "{eventoExclama}",
+            "x": 1080,
+            "y": 1300,
+            "tam": 110,
+            "fuente": "titulos",
+            "color": "#2f8fd0",
+            "relieve": {
+              "color": "#ffffff",
+              "dx": 0,
+              "dy": 0,
+              "contorno": 10
+            }
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} de {mes}",
+            "x": 1080,
+            "y": 1470,
+            "tam": 96,
+            "fuente": "titulos",
+            "color": "#e9779f",
+            "relieve": {
+              "color": "#ffffff",
+              "dx": 0,
+              "dy": 0,
+              "contorno": 10
+            }
+          },
+          {
+            "id": "extra",
+            "texto": "{lugar}",
+            "x": 1080,
+            "y": 1600,
+            "tam": 60,
+            "fuente": "titulos",
+            "color": "#2f8fd0",
+            "ancho": 1600,
+            "extra": true,
+            "relieve": {
+              "color": "#ffffff",
+              "dx": 0,
+              "dy": 0,
+              "contorno": 7
+            }
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1080,
+            "y": 2930,
+            "tam": 38,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "mayus": true,
+            "espaciado": 8,
+            "opcional": "proximamente",
+            "peso": 600,
+            "sombra": true
+          }
+        ]
+      }
+    }
   }
 }

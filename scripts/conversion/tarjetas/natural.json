@@ -1,0 +1,196 @@
+{
+ "fuentes": {
+  "titulos": "Ruthie",
+  "texto": "Jost",
+  "css": [
+   "/comun/fonts/catalogo/catalogo.css"
+  ]
+ },
+ "eventos": {
+  "boda": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    }
+   ],
+   "formas": [],
+   "textos": [
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "x": 1078,
+     "y": 993,
+     "tam": 53,
+     "fuente": "texto",
+     "color": "#5a7f6e",
+     "espaciado": 9.3,
+     "mayus": true
+    },
+    {
+     "id": "nombreA",
+     "texto": "{a}",
+     "x": 1098,
+     "y": 1296,
+     "tam": 295.6,
+     "fuente": "titulos",
+     "color": "#9e926c",
+     "ancho": 1300,
+     "ajustar": true
+    },
+    {
+     "id": "amp",
+     "texto": "&",
+     "x": 1084,
+     "y": 1490,
+     "tam": 159.9,
+     "fuente": "titulos",
+     "color": "#9e926c"
+    },
+    {
+     "id": "nombreB",
+     "texto": "{b}",
+     "x": 1082,
+     "y": 1693,
+     "tam": 281.7,
+     "fuente": "titulos",
+     "color": "#9e926c",
+     "ancho": 1300,
+     "ajustar": true
+    },
+    {
+     "id": "evento",
+     "texto": "Nuestra boda",
+     "x": 1076,
+     "y": 1923,
+     "tam": 53.1,
+     "fuente": "texto",
+     "color": "#5a7f6e",
+     "espaciado": 13.3,
+     "mayus": true,
+     "plantilla": "{evento}",
+     "ancho": 644,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dia} | {mes} | {anio}",
+     "x": 1077,
+     "y": 2051,
+     "tam": 46.3,
+     "fuente": "texto",
+     "color": "#637f73",
+     "mayus": true,
+     "marcas": {
+      "chars": "|",
+      "color": "#9e926c"
+     }
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la invitación formal",
+     "x": 1079,
+     "y": 2528,
+     "tam": 35.7,
+     "fuente": "texto",
+     "color": "#9a9578",
+     "espaciado": 0,
+     "mayus": true,
+     "opcional": "proximamente"
+    }
+   ]
+  },
+  "15": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    },
+    {
+     "img": "img/std-icono-15.png",
+     "x": 957,
+     "y": 1053,
+     "w": 240,
+     "h": 97
+    }
+   ],
+   "formas": [],
+   "textos": [
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "x": 1076,
+     "y": 1215,
+     "tam": 53.3,
+     "fuente": "texto",
+     "color": "#5a7f6e",
+     "espaciado": 9,
+     "mayus": true
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 1072,
+     "y": 1507,
+     "tam": 342.1,
+     "fuente": "titulos",
+     "color": "#9e926c",
+     "ancho": 1300,
+     "ajustar": true
+    },
+    {
+     "id": "evento",
+     "texto": "Mis quince años",
+     "x": 1078,
+     "y": 1740,
+     "tam": 55.9,
+     "fuente": "texto",
+     "color": "#5a7f6e",
+     "espaciado": 11.4,
+     "mayus": true,
+     "plantilla": "{evento}",
+     "ancho": 763,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dia} | {mes} | {anio}",
+     "x": 1077,
+     "y": 1866,
+     "tam": 46.5,
+     "fuente": "texto",
+     "color": "#5d7d70",
+     "mayus": true,
+     "marcas": {
+      "chars": "|",
+      "color": "#9e926c"
+     }
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la invitación formal",
+     "x": 1079,
+     "y": 2528,
+     "tam": 35.7,
+     "fuente": "texto",
+     "color": "#9a9578",
+     "espaciado": 0,
+     "mayus": true,
+     "opcional": "proximamente"
+    }
+   ]
+  }
+ }
+}

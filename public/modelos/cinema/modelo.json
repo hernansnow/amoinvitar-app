@@ -318,6 +318,88 @@
             "hero-banner.jpg"
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1061,
+                "y": 1102,
+                "tam": 77,
+                "fuente": "serif",
+                "color": "#0b0b0b",
+                "espaciado": 28.2,
+                "mayus": true,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1106,
+                "y": 1483,
+                "tam": 214.3,
+                "fuente": "titulos",
+                "color": "#050505",
+                "ancho": 1950,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "Mis quince años",
+                "x": 1078,
+                "y": 1704,
+                "tam": 46.3,
+                "fuente": "serif",
+                "color": "#1c1c1c",
+                "espaciado": 26,
+                "mayus": true,
+                "peso": 500,
+                "ancho": 960,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1074,
+                "y": 1947,
+                "tam": 68.6,
+                "fuente": "serif",
+                "color": "#151515",
+                "espaciado": 20.4
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la\ninvitación formal",
+                "x": 1082,
+                "y": 2851,
+                "tam": 26.1,
+                "fuente": "serif",
+                "color": "#333333",
+                "mayus": true,
+                "espaciado": 14,
+                "opcional": "proximamente",
+                "peso": 500,
+                "altoLinea": 2.5
+              }
+            ]
+          }
+        }
       }
     },
     "cumple": {
@@ -413,6 +495,88 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1061,
+                "y": 1102,
+                "tam": 77,
+                "fuente": "serif",
+                "color": "#0b0b0b",
+                "espaciado": 28.2,
+                "mayus": true,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1106,
+                "y": 1483,
+                "tam": 214.3,
+                "fuente": "titulos",
+                "color": "#050505",
+                "ancho": 1950,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1078,
+                "y": 1704,
+                "tam": 46.3,
+                "fuente": "serif",
+                "color": "#1c1c1c",
+                "espaciado": 26,
+                "mayus": true,
+                "peso": 500,
+                "ancho": 960,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1074,
+                "y": 1947,
+                "tam": 68.6,
+                "fuente": "serif",
+                "color": "#151515",
+                "espaciado": 20.4
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la\ninvitación formal",
+                "x": 1082,
+                "y": 2851,
+                "tam": 26.1,
+                "fuente": "serif",
+                "color": "#333333",
+                "mayus": true,
+                "espaciado": 14,
+                "opcional": "proximamente",
+                "peso": 500,
+                "altoLinea": 2.5
+              }
+            ]
+          }
+        }
       }
     },
     "bautismo": {
@@ -504,6 +668,88 @@
           "portadas": [
             "hero-banner.jpg"
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1061,
+                "y": 1102,
+                "tam": 77,
+                "fuente": "serif",
+                "color": "#0b0b0b",
+                "espaciado": 28.2,
+                "mayus": true,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1106,
+                "y": 1483,
+                "tam": 214.3,
+                "fuente": "titulos",
+                "color": "#050505",
+                "ancho": 1950,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1078,
+                "y": 1704,
+                "tam": 46.3,
+                "fuente": "serif",
+                "color": "#1c1c1c",
+                "espaciado": 26,
+                "mayus": true,
+                "peso": 500,
+                "ancho": 960,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1074,
+                "y": 1947,
+                "tam": 68.6,
+                "fuente": "serif",
+                "color": "#151515",
+                "espaciado": 20.4
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la\ninvitación formal",
+                "x": 1082,
+                "y": 2851,
+                "tam": 26.1,
+                "fuente": "serif",
+                "color": "#333333",
+                "mayus": true,
+                "espaciado": 14,
+                "opcional": "proximamente",
+                "peso": 500,
+                "altoLinea": 2.5
+              }
+            ]
+          }
         }
       }
     },
@@ -597,6 +843,88 @@
             "hero-banner.jpg"
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1061,
+                "y": 1102,
+                "tam": 77,
+                "fuente": "serif",
+                "color": "#0b0b0b",
+                "espaciado": 28.2,
+                "mayus": true,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1106,
+                "y": 1483,
+                "tam": 214.3,
+                "fuente": "titulos",
+                "color": "#050505",
+                "ancho": 1950,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1078,
+                "y": 1704,
+                "tam": 46.3,
+                "fuente": "serif",
+                "color": "#1c1c1c",
+                "espaciado": 26,
+                "mayus": true,
+                "peso": 500,
+                "ancho": 960,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1074,
+                "y": 1947,
+                "tam": 68.6,
+                "fuente": "serif",
+                "color": "#151515",
+                "espaciado": 20.4
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la\ninvitación formal",
+                "x": 1082,
+                "y": 2851,
+                "tam": 26.1,
+                "fuente": "serif",
+                "color": "#333333",
+                "mayus": true,
+                "espaciado": 14,
+                "opcional": "proximamente",
+                "peso": 500,
+                "altoLinea": 2.5
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -606,5 +934,100 @@
       "/comun/fonts/css/amsterdam-four-font.css",
       "/modelos/cinema/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Dantina",
+      "serif": "Bodoni Moda",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1061,
+            "y": 1102,
+            "tam": 77,
+            "fuente": "serif",
+            "color": "#0b0b0b",
+            "espaciado": 28.2,
+            "mayus": true,
+            "peso": 500
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1143,
+            "y": 1473,
+            "tam": 134,
+            "fuente": "titulos",
+            "color": "#111111",
+            "ancho": 1950,
+            "ajustar": true,
+            "amp": {
+              "fondo": "#994052",
+              "color": "#f6eef0",
+              "tam": 0.62,
+              "fuente": "serif"
+            }
+          },
+          {
+            "id": "evento",
+            "texto": "Nuestra boda",
+            "x": 1080,
+            "y": 1707,
+            "tam": 56.4,
+            "fuente": "serif",
+            "color": "#1c1c1c",
+            "espaciado": 19,
+            "mayus": true,
+            "peso": 500,
+            "ancho": 808,
+            "ajustar": true
+          },
+          {
+            "id": "fecha",
+            "texto": "{dd} | {mesNum} | {anioCorto}",
+            "x": 1074,
+            "y": 1947,
+            "tam": 68.6,
+            "fuente": "serif",
+            "color": "#151515",
+            "espaciado": 20.4
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la\ninvitación formal",
+            "x": 1082,
+            "y": 2851,
+            "tam": 26.1,
+            "fuente": "serif",
+            "color": "#333333",
+            "mayus": true,
+            "espaciado": 14,
+            "opcional": "proximamente",
+            "peso": 500,
+            "altoLinea": 2.5
+          }
+        ]
+      }
+    }
   }
 }

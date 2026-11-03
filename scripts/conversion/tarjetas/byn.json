@@ -1,0 +1,299 @@
+{
+ "fuentes": {
+  "texto": "Montserrat",
+  "css": [
+   "/comun/fonts/catalogo/catalogo.css"
+  ]
+ },
+ "eventos": {
+  "boda": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    },
+    {
+     "img": "img/std-icono.png",
+     "x": 589,
+     "y": 750,
+     "w": 321,
+     "h": 245
+    }
+   ],
+   "formas": [
+    {
+     "x": 642,
+     "y": 1158,
+     "w": 438,
+     "h": 21,
+     "color": "#9f916c"
+    },
+    {
+     "x": 642,
+     "y": 1853,
+     "w": 438,
+     "h": 21,
+     "color": "#9f916c"
+    }
+   ],
+   "textos": [
+    {
+     "id": "save",
+     "texto": "SAVE",
+     "x": 639,
+     "y": 1039,
+     "tam": 126.8,
+     "fuente": "texto",
+     "color": "#fafafa",
+     "peso": 300,
+     "alinear": "izq"
+    },
+    {
+     "id": "the",
+     "texto": "THE",
+     "x": 1024,
+     "y": 1036,
+     "tam": 63,
+     "fuente": "texto",
+     "color": "#fafafa",
+     "peso": 300,
+     "alinear": "izq"
+    },
+    {
+     "id": "date",
+     "texto": "DATE",
+     "x": 1192,
+     "y": 1039,
+     "tam": 132.9,
+     "fuente": "texto",
+     "color": "#fcfcfc",
+     "peso": 300,
+     "alinear": "izq"
+    },
+    {
+     "id": "nombreA",
+     "texto": "{a}",
+     "x": 632,
+     "y": 1321,
+     "tam": 197.6,
+     "fuente": "texto",
+     "color": "#ffffff",
+     "peso": 800,
+     "mayus": true,
+     "alinear": "izq",
+     "ancho": 1500,
+     "ajustar": true
+    },
+    {
+     "id": "amp",
+     "texto": "&",
+     "x": 636,
+     "y": 1563,
+     "tam": 204.4,
+     "fuente": "texto",
+     "color": "#9f916c",
+     "peso": 800,
+     "alinear": "izq"
+    },
+    {
+     "id": "nombreB",
+     "texto": "{b}",
+     "x": 828,
+     "y": 1561,
+     "tam": 198.8,
+     "fuente": "texto",
+     "color": "#ffffff",
+     "peso": 800,
+     "mayus": true,
+     "alinear": "izq",
+     "ancho": 1300,
+     "ajustar": true
+    },
+    {
+     "id": "evento",
+     "texto": "¡Nos casamos!",
+     "x": 635,
+     "y": 1738,
+     "tam": 94.8,
+     "fuente": "texto",
+     "color": "#f7f7f7",
+     "peso": 300,
+     "mayus": true,
+     "alinear": "izq",
+     "plantilla": "{eventoExclama}",
+     "ancho": 910,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dia} • {mes} • {anio}",
+     "x": 642,
+     "y": 1975,
+     "tam": 78.6,
+     "fuente": "texto",
+     "color": "#f0f0f0",
+     "espaciado": 0,
+     "peso": 400,
+     "mayus": true,
+     "alinear": "izq",
+     "marcas": {
+      "chars": "•",
+      "color": "#9f916c"
+     }
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la invitación formal",
+     "x": 642,
+     "y": 2077,
+     "tam": 30.7,
+     "fuente": "texto",
+     "color": "#e0e0e0",
+     "espaciado": 5.9,
+     "mayus": true,
+     "opcional": "proximamente",
+     "peso": 500,
+     "alinear": "izq"
+    }
+   ]
+  },
+  "15": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    },
+    {
+     "img": "img/std-icono-15.png",
+     "x": 586,
+     "y": 734,
+     "w": 273,
+     "h": 289
+    }
+   ],
+   "formas": [
+    {
+     "x": 642,
+     "y": 1192,
+     "w": 438,
+     "h": 21,
+     "color": "#9f916c"
+    },
+    {
+     "x": 642,
+     "y": 1755,
+     "w": 438,
+     "h": 21,
+     "color": "#9f916c"
+    }
+   ],
+   "textos": [
+    {
+     "id": "save",
+     "texto": "SAVE",
+     "x": 639,
+     "y": 1073,
+     "tam": 126.8,
+     "fuente": "texto",
+     "color": "#fafafa",
+     "peso": 300,
+     "alinear": "izq"
+    },
+    {
+     "id": "the",
+     "texto": "THE",
+     "x": 1024,
+     "y": 1070,
+     "tam": 63,
+     "fuente": "texto",
+     "color": "#fafafa",
+     "peso": 300,
+     "alinear": "izq"
+    },
+    {
+     "id": "date",
+     "texto": "DATE",
+     "x": 1192,
+     "y": 1073,
+     "tam": 132.9,
+     "fuente": "texto",
+     "color": "#fcfcfc",
+     "peso": 300,
+     "alinear": "izq"
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 623,
+     "y": 1397,
+     "tam": 285.2,
+     "fuente": "texto",
+     "color": "#ffffff",
+     "peso": 800,
+     "mayus": true,
+     "alinear": "izq",
+     "ancho": 1500,
+     "ajustar": true
+    },
+    {
+     "id": "evento",
+     "texto": "Mis 15 años",
+     "x": 637,
+     "y": 1641,
+     "tam": 97.1,
+     "fuente": "texto",
+     "color": "#f7f7f7",
+     "peso": 300,
+     "mayus": true,
+     "alinear": "izq",
+     "plantilla": "{evento}",
+     "ancho": 698,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dia} • {mes} • {anio}",
+     "x": 642,
+     "y": 1873,
+     "tam": 73,
+     "fuente": "texto",
+     "color": "#f0f0f0",
+     "espaciado": 0.3,
+     "peso": 400,
+     "mayus": true,
+     "alinear": "izq",
+     "marcas": {
+      "chars": "•",
+      "color": "#9f916c"
+     }
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la invitación formal",
+     "x": 644,
+     "y": 1978,
+     "tam": 37.6,
+     "fuente": "texto",
+     "color": "#e0e0e0",
+     "espaciado": 1.3,
+     "mayus": true,
+     "opcional": "proximamente",
+     "peso": 500,
+     "alinear": "izq"
+    }
+   ]
+  }
+ }
+}

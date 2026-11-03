@@ -299,6 +299,146 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [
+              {
+                "x": 676,
+                "y": 1792,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 676,
+                "y": 1887,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1792,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1887,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              }
+            ],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1085,
+                "y": 933,
+                "tam": 51.9,
+                "fuente": "texto",
+                "color": "#fcfbf7",
+                "espaciado": 0,
+                "mayus": true,
+                "lineas": {
+                  "largo": 200,
+                  "separacion": 15,
+                  "grosor": 3
+                }
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1074,
+                "y": 1237,
+                "tam": 360.2,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "ancho": 1100,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1076,
+                "y": 1642,
+                "tam": 89,
+                "fuente": "texto",
+                "color": "#fbfdfa",
+                "mayus": true,
+                "ancho": 703,
+                "ajustar": true
+              },
+              {
+                "id": "dsem",
+                "texto": "{diaSemana}",
+                "x": 812,
+                "y": 1843,
+                "tam": 47.3,
+                "fuente": "texto",
+                "color": "#f9f4f0",
+                "mayus": true
+              },
+              {
+                "id": "dia",
+                "texto": "{dia}",
+                "x": 1087,
+                "y": 1845,
+                "tam": 123.8,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "peso": 500
+              },
+              {
+                "id": "mes",
+                "texto": "{mes}",
+                "x": 1331,
+                "y": 1844,
+                "tam": 44.5,
+                "fuente": "texto",
+                "color": "#fffbf8",
+                "mayus": true
+              },
+              {
+                "id": "anio",
+                "texto": "{anio}",
+                "x": 1081,
+                "y": 1974,
+                "tam": 48.9,
+                "fuente": "texto",
+                "color": "#f8ede9"
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1078,
+                "y": 2139,
+                "tam": 36.7,
+                "fuente": "texto",
+                "color": "#f0e4dc",
+                "espaciado": 0,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
+        }
       }
     },
     "bautismo": {
@@ -392,6 +532,146 @@
               "pos": "50% 20%"
             }
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [
+              {
+                "x": 676,
+                "y": 1792,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 676,
+                "y": 1887,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1792,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1887,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              }
+            ],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1085,
+                "y": 933,
+                "tam": 51.9,
+                "fuente": "texto",
+                "color": "#fcfbf7",
+                "espaciado": 0,
+                "mayus": true,
+                "lineas": {
+                  "largo": 200,
+                  "separacion": 15,
+                  "grosor": 3
+                }
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1074,
+                "y": 1237,
+                "tam": 360.2,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "ancho": 1100,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1076,
+                "y": 1642,
+                "tam": 89,
+                "fuente": "texto",
+                "color": "#fbfdfa",
+                "mayus": true,
+                "ancho": 703,
+                "ajustar": true
+              },
+              {
+                "id": "dsem",
+                "texto": "{diaSemana}",
+                "x": 812,
+                "y": 1843,
+                "tam": 47.3,
+                "fuente": "texto",
+                "color": "#f9f4f0",
+                "mayus": true
+              },
+              {
+                "id": "dia",
+                "texto": "{dia}",
+                "x": 1087,
+                "y": 1845,
+                "tam": 123.8,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "peso": 500
+              },
+              {
+                "id": "mes",
+                "texto": "{mes}",
+                "x": 1331,
+                "y": 1844,
+                "tam": 44.5,
+                "fuente": "texto",
+                "color": "#fffbf8",
+                "mayus": true
+              },
+              {
+                "id": "anio",
+                "texto": "{anio}",
+                "x": 1081,
+                "y": 1974,
+                "tam": 48.9,
+                "fuente": "texto",
+                "color": "#f8ede9"
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1078,
+                "y": 2139,
+                "tam": 36.7,
+                "fuente": "texto",
+                "color": "#f0e4dc",
+                "espaciado": 0,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
         }
       }
     },
@@ -487,6 +767,146 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [
+              {
+                "x": 676,
+                "y": 1792,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 676,
+                "y": 1887,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1792,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1887,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              }
+            ],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1085,
+                "y": 933,
+                "tam": 51.9,
+                "fuente": "texto",
+                "color": "#fcfbf7",
+                "espaciado": 0,
+                "mayus": true,
+                "lineas": {
+                  "largo": 200,
+                  "separacion": 15,
+                  "grosor": 3
+                }
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1074,
+                "y": 1237,
+                "tam": 360.2,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "ancho": 1100,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1076,
+                "y": 1642,
+                "tam": 89,
+                "fuente": "texto",
+                "color": "#fbfdfa",
+                "mayus": true,
+                "ancho": 703,
+                "ajustar": true
+              },
+              {
+                "id": "dsem",
+                "texto": "{diaSemana}",
+                "x": 812,
+                "y": 1843,
+                "tam": 47.3,
+                "fuente": "texto",
+                "color": "#f9f4f0",
+                "mayus": true
+              },
+              {
+                "id": "dia",
+                "texto": "{dia}",
+                "x": 1087,
+                "y": 1845,
+                "tam": 123.8,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "peso": 500
+              },
+              {
+                "id": "mes",
+                "texto": "{mes}",
+                "x": 1331,
+                "y": 1844,
+                "tam": 44.5,
+                "fuente": "texto",
+                "color": "#fffbf8",
+                "mayus": true
+              },
+              {
+                "id": "anio",
+                "texto": "{anio}",
+                "x": 1081,
+                "y": 1974,
+                "tam": 48.9,
+                "fuente": "texto",
+                "color": "#f8ede9"
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1078,
+                "y": 2139,
+                "tam": 36.7,
+                "fuente": "texto",
+                "color": "#f0e4dc",
+                "espaciado": 0,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -495,5 +915,152 @@
       "/comun/fonts/google/abril-fatface+alex-brush+jost.css",
       "/modelos/style/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Abril Fatface",
+      "texto": "Montserrat",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [
+          {
+            "x": 676,
+            "y": 1792,
+            "w": 286,
+            "h": 3,
+            "color": "#ffffff"
+          },
+          {
+            "x": 676,
+            "y": 1887,
+            "w": 286,
+            "h": 3,
+            "color": "#ffffff"
+          },
+          {
+            "x": 1190,
+            "y": 1792,
+            "w": 282,
+            "h": 3,
+            "color": "#ffffff"
+          },
+          {
+            "x": 1190,
+            "y": 1887,
+            "w": 282,
+            "h": 3,
+            "color": "#ffffff"
+          }
+        ],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1085,
+            "y": 933,
+            "tam": 51.9,
+            "fuente": "texto",
+            "color": "#fcfbf7",
+            "espaciado": 0,
+            "mayus": true,
+            "lineas": {
+              "largo": 200,
+              "separacion": 15,
+              "grosor": 3
+            }
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1074,
+            "y": 1237,
+            "tam": 360.2,
+            "fuente": "titulos",
+            "color": "#ffffff",
+            "ancho": 1100,
+            "ajustar": true
+          },
+          {
+            "id": "evento",
+            "texto": "Mis quince",
+            "x": 1076,
+            "y": 1642,
+            "tam": 89,
+            "fuente": "texto",
+            "color": "#fbfdfa",
+            "mayus": true,
+            "ancho": 703,
+            "ajustar": true
+          },
+          {
+            "id": "dsem",
+            "texto": "{diaSemana}",
+            "x": 812,
+            "y": 1843,
+            "tam": 47.3,
+            "fuente": "texto",
+            "color": "#f9f4f0",
+            "mayus": true
+          },
+          {
+            "id": "dia",
+            "texto": "{dia}",
+            "x": 1087,
+            "y": 1845,
+            "tam": 123.8,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "peso": 500
+          },
+          {
+            "id": "mes",
+            "texto": "{mes}",
+            "x": 1331,
+            "y": 1844,
+            "tam": 44.5,
+            "fuente": "texto",
+            "color": "#fffbf8",
+            "mayus": true
+          },
+          {
+            "id": "anio",
+            "texto": "{anio}",
+            "x": 1081,
+            "y": 1974,
+            "tam": 48.9,
+            "fuente": "texto",
+            "color": "#f8ede9"
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1078,
+            "y": 2139,
+            "tam": 36.7,
+            "fuente": "texto",
+            "color": "#f0e4dc",
+            "espaciado": 0,
+            "mayus": true,
+            "opcional": "proximamente"
+          }
+        ]
+      }
+    }
   }
 }

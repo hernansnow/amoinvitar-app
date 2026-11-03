@@ -260,6 +260,101 @@
             "a": "Mateo"
           }
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1080,
+                "y": 330,
+                "tam": 80,
+                "fuente": "texto",
+                "color": "#a5896e",
+                "mayus": true,
+                "espaciado": 22,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1080,
+                "y": 610,
+                "tam": 360,
+                "fuente": "titulos",
+                "color": "#339aba",
+                "ancho": 1450,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1080,
+                "y": 880,
+                "tam": 76,
+                "fuente": "abril",
+                "color": "#a5896e",
+                "mayus": true,
+                "espaciado": 10
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} • {mes} • {anio}",
+                "x": 1080,
+                "y": 2160,
+                "tam": 96,
+                "fuente": "abril",
+                "color": "#339aba",
+                "espaciado": 6,
+                "mayus": true,
+                "marcas": {
+                  "chars": "•",
+                  "color": "#a5896e"
+                }
+              },
+              {
+                "id": "extra",
+                "texto": "{lugar}",
+                "x": 1080,
+                "y": 2320,
+                "tam": 56,
+                "fuente": "texto",
+                "color": "#7d6a58",
+                "ancho": 1500,
+                "extra": true,
+                "peso": 500
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1080,
+                "y": 2820,
+                "tam": 40,
+                "fuente": "texto",
+                "color": "#7d6a58",
+                "mayus": true,
+                "espaciado": 8,
+                "opcional": "proximamente",
+                "peso": 500
+              }
+            ]
+          }
+        }
       }
     },
     "babyshower": {
@@ -357,6 +452,101 @@
             "a": "Mateo"
           }
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1080,
+                "y": 330,
+                "tam": 80,
+                "fuente": "texto",
+                "color": "#a5896e",
+                "mayus": true,
+                "espaciado": 22,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1080,
+                "y": 610,
+                "tam": 360,
+                "fuente": "titulos",
+                "color": "#339aba",
+                "ancho": 1450,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1080,
+                "y": 880,
+                "tam": 76,
+                "fuente": "abril",
+                "color": "#a5896e",
+                "mayus": true,
+                "espaciado": 10
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} • {mes} • {anio}",
+                "x": 1080,
+                "y": 2160,
+                "tam": 96,
+                "fuente": "abril",
+                "color": "#339aba",
+                "espaciado": 6,
+                "mayus": true,
+                "marcas": {
+                  "chars": "•",
+                  "color": "#a5896e"
+                }
+              },
+              {
+                "id": "extra",
+                "texto": "{lugar}",
+                "x": 1080,
+                "y": 2320,
+                "tam": 56,
+                "fuente": "texto",
+                "color": "#7d6a58",
+                "ancho": 1500,
+                "extra": true,
+                "peso": 500
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1080,
+                "y": 2820,
+                "tam": 40,
+                "fuente": "texto",
+                "color": "#7d6a58",
+                "mayus": true,
+                "espaciado": 8,
+                "opcional": "proximamente",
+                "peso": 500
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -365,5 +555,108 @@
       "/comun/fonts/google/abril-fatface+jost+montez.css",
       "/modelos/celeste/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Montez",
+      "texto": "Jost",
+      "abril": "Abril Fatface",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1080,
+            "y": 330,
+            "tam": 80,
+            "fuente": "texto",
+            "color": "#a5896e",
+            "mayus": true,
+            "espaciado": 22,
+            "peso": 500
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1080,
+            "y": 610,
+            "tam": 360,
+            "fuente": "titulos",
+            "color": "#339aba",
+            "ancho": 1450,
+            "ajustar": true
+          },
+          {
+            "id": "evento",
+            "texto": "{evento}",
+            "x": 1080,
+            "y": 880,
+            "tam": 76,
+            "fuente": "abril",
+            "color": "#a5896e",
+            "mayus": true,
+            "espaciado": 10
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} • {mes} • {anio}",
+            "x": 1080,
+            "y": 2160,
+            "tam": 96,
+            "fuente": "abril",
+            "color": "#339aba",
+            "espaciado": 6,
+            "mayus": true,
+            "marcas": {
+              "chars": "•",
+              "color": "#a5896e"
+            }
+          },
+          {
+            "id": "extra",
+            "texto": "{lugar}",
+            "x": 1080,
+            "y": 2320,
+            "tam": 56,
+            "fuente": "texto",
+            "color": "#7d6a58",
+            "ancho": 1500,
+            "extra": true,
+            "peso": 500
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1080,
+            "y": 2820,
+            "tam": 40,
+            "fuente": "texto",
+            "color": "#7d6a58",
+            "mayus": true,
+            "espaciado": 8,
+            "opcional": "proximamente",
+            "peso": 500
+          }
+        ]
+      }
+    }
   }
 }

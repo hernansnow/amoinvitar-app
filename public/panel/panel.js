@@ -1190,6 +1190,9 @@ const FRASES = {
   bautismo: { evento: 'Mi bautismo', exclama: '¡Mi bautismo!', invitamos: 'Te invito a celebrar mi bautismo' },
   comunion: { evento: 'Mi primera comunión', exclama: '¡Mi primera comunión!', invitamos: 'Te invito a celebrar mi primera comunión' },
   cumple: { evento: 'Mi cumpleaños', exclama: '¡Mi cumpleaños!', invitamos: 'Te invito a celebrar mi cumpleaños' },
+  infantil: { evento: 'Mi cumpleaños', exclama: '¡Mi cumple!', invitamos: 'Te invito a celebrar mi cumpleaños' },
+  babyshower: { evento: 'Baby shower', exclama: '¡Baby shower!', invitamos: 'Te invitamos a celebrar\nla llegada del bebé' },
+  revelacion: { evento: 'Revelación', exclama: '¿Niño o niña?', invitamos: 'Te invitamos a descubrir\nsi es niño o niña' },
 };
 function varsTarjeta() {
   const lugar = datos.celebracion?.nombre || datos.ceremonia?.nombre || '';
@@ -1207,6 +1210,8 @@ function varsTarjeta() {
     fechaLarga: iso ? `${Number(d)} ${may(mes)} ${a}` : '', fechaPuntos: iso ? `${Number(d)}·${may(mes)}·${a}` : '',
     dia: iso ? String(Number(d)) : '', mes: may(mes), mesCorto: may(mes.slice(0, 3)), mesNum: m || '', anio: a || '', anioCorto: a ? a.slice(2) : '',
     diaSemana: fecha ? may(DIAS[fecha.getDay()]) : '', hora: hora ? `${hora}hs` : '',
+    // Día con dos cifras ("05"), día de la semana corto ("Sáb") y la hora sin los minutos en punto ("21hs", "21:30hs")
+    dd: d || '', diaSemanaCorto: fecha ? may(DIAS[fecha.getDay()]).slice(0, 3) : '', horaCorta: hora ? `${hora.replace(/:00$/, '')}hs` : '',
     lugar, horaLugar: [hora ? `${hora}hs` : '', lugar.toUpperCase()].filter(Boolean).join(' - '),
     rsvpAntes: cierre ? `Responder RSVP antes del ${cierre}` : '',
     evento: f.evento, eventoExclama: f.exclama, invitamos: plural ? f.invitamos.replace('Te invito', 'Te invitamos') : f.invitamos,

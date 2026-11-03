@@ -145,5 +145,132 @@
       "/comun/fonts/google/jost+oswald.css",
       "/modelos/vintage/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Oswald",
+      "texto": "Montserrat",
+      "script": "Italianno",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "save",
+            "texto": "SAVE",
+            "x": 634,
+            "y": 1254,
+            "tam": 268.5,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 700,
+            "rotar": -10
+          },
+          {
+            "id": "the",
+            "texto": "THE",
+            "x": 1078,
+            "y": 1178,
+            "tam": 192,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 200,
+            "rotar": -10
+          },
+          {
+            "id": "date",
+            "texto": "DATE",
+            "x": 1528,
+            "y": 1058,
+            "tam": 251,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 700,
+            "rotar": -10
+          },
+          {
+            "id": "evento",
+            "texto": "nuestra boda",
+            "x": 1054,
+            "y": 1353,
+            "tam": 176.7,
+            "fuente": "script",
+            "color": "#0a0a0a",
+            "rotar": -10,
+            "ancho": 697,
+            "ajustar": true
+          },
+          {
+            "id": "nombreA",
+            "texto": "{a}",
+            "x": 951,
+            "y": 1616,
+            "tam": 208.3,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 700,
+            "mayus": true,
+            "rotar": -10,
+            "alinear": "der",
+            "ancho": 700,
+            "ajustar": true
+          },
+          {
+            "id": "nombreB",
+            "texto": "{b}",
+            "x": 1186,
+            "y": 1545,
+            "tam": 215.8,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 700,
+            "mayus": true,
+            "rotar": -10,
+            "alinear": "izq",
+            "ancho": 700,
+            "ajustar": true
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} · {mesNum} · {anio}",
+            "x": 1091,
+            "y": 1875,
+            "tam": 108.6,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 300,
+            "rotar": -10
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1104,
+            "y": 2294,
+            "tam": 38.2,
+            "fuente": "texto",
+            "color": "#c49a63",
+            "espaciado": 6,
+            "mayus": true,
+            "opcional": "proximamente"
+          }
+        ]
+      }
+    }
   }
 }

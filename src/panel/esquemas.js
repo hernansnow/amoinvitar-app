@@ -436,10 +436,10 @@ export const DISENOS_FOTO = [
   { v: 'f4', etiqueta: 'Editorial' }, { v: 'f5', etiqueta: 'Minimal' }, { v: 'f6', etiqueta: 'Encaje' },
   { v: 'f7', etiqueta: 'Blanco y negro' }, { v: 'f8', etiqueta: 'Agenda la fecha' },
 ];
-// README (ronda 22): Save The Date con el diseño del modelo en boda, 15, cumpleaños, comunión y bautismo (incluida en
-// Premium y Deluxe); la tarjeta con foto y la de agradecimiento, solo en boda y 15. Infantiles, graduación, baby shower,
-// revelación y Navidad no tienen tarjetas.
-const STD_EVENTOS = new Set(['boda', '15', 'cumple', 'bautismo', 'comunion']);
+// README (ronda 22/25): Save The Date con el diseño del modelo en boda, 15, cumpleaños, comunión, bautismo, infantiles,
+// baby shower y revelación (incluida en Premium y Deluxe); la tarjeta con foto y la de agradecimiento, solo en boda y 15.
+// Graduación y Navidad no tienen tarjetas.
+const STD_EVENTOS = new Set(['boda', '15', 'cumple', 'bautismo', 'comunion', 'infantil', 'babyshower', 'revelacion']);
 const CON_FOTO = new Set(['boda', '15']);
 export function tarjetasDe(clase, modelo, tipo) {
   if (clase === 'agradecimiento') return CON_FOTO.has(tipo);

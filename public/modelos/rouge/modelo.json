@@ -277,6 +277,84 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the Date",
+                "x": 1106,
+                "y": 960,
+                "tam": 108.7,
+                "fuente": "rouge",
+                "color": "#8b022c"
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1077,
+                "y": 1410,
+                "tam": 288.7,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "ancho": 1300,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "Mis Quince Años",
+                "x": 1087,
+                "y": 1839,
+                "tam": 108.7,
+                "fuente": "rouge",
+                "color": "#8b022c",
+                "ancho": 1100,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} | {mesNum} | {anio}",
+                "x": 1078,
+                "y": 2106,
+                "tam": 81.3,
+                "fuente": "texto",
+                "color": "#f8f6f9",
+                "marcas": {
+                  "chars": "|",
+                  "color": "#a3123f"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1079,
+                "y": 2853,
+                "tam": 44.4,
+                "fuente": "texto",
+                "color": "#6b1b38",
+                "espaciado": 0.6,
+                "mayus": true,
+                "opcional": "proximamente",
+                "peso": 500
+              }
+            ]
+          }
+        }
       }
     },
     "cumple": {
@@ -372,6 +450,84 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the Date",
+                "x": 1106,
+                "y": 960,
+                "tam": 108.7,
+                "fuente": "rouge",
+                "color": "#8b022c"
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1077,
+                "y": 1410,
+                "tam": 288.7,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "ancho": 1300,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1087,
+                "y": 1839,
+                "tam": 108.7,
+                "fuente": "rouge",
+                "color": "#8b022c",
+                "ancho": 1100,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} | {mesNum} | {anio}",
+                "x": 1078,
+                "y": 2106,
+                "tam": 81.3,
+                "fuente": "texto",
+                "color": "#f8f6f9",
+                "marcas": {
+                  "chars": "|",
+                  "color": "#a3123f"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1079,
+                "y": 2853,
+                "tam": 44.4,
+                "fuente": "texto",
+                "color": "#6b1b38",
+                "espaciado": 0.6,
+                "mayus": true,
+                "opcional": "proximamente",
+                "peso": 500
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -380,5 +536,113 @@
       "/comun/fonts/google/jost.css",
       "/modelos/rouge/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Dantina",
+      "rouge": "Magnolia Sky",
+      "texto": "Jost",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css",
+        "/comun/fonts/magnolia-sky/magnolia-sky.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the Date",
+            "x": 1076,
+            "y": 870,
+            "tam": 104.3,
+            "fuente": "rouge",
+            "color": "#8b022c"
+          },
+          {
+            "id": "nombreA",
+            "texto": "{a}",
+            "x": 1080,
+            "y": 1202,
+            "tam": 146.1,
+            "fuente": "titulos",
+            "color": "#ffffff",
+            "ancho": 1150,
+            "ajustar": true
+          },
+          {
+            "id": "amp",
+            "texto": "+",
+            "x": 1073,
+            "y": 1380,
+            "tam": 103.9,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "peso": 300
+          },
+          {
+            "id": "nombreB",
+            "texto": "{b}",
+            "x": 1078,
+            "y": 1636,
+            "tam": 161.5,
+            "fuente": "titulos",
+            "color": "#ffffff",
+            "ancho": 1150,
+            "ajustar": true
+          },
+          {
+            "id": "evento",
+            "texto": "Nuestra Boda",
+            "x": 1100,
+            "y": 1890,
+            "tam": 113.5,
+            "fuente": "rouge",
+            "color": "#8b022c",
+            "ancho": 1100,
+            "ajustar": true
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} | {mesNum} | {anio}",
+            "x": 1078,
+            "y": 2106,
+            "tam": 81.3,
+            "fuente": "texto",
+            "color": "#f8f6f9",
+            "marcas": {
+              "chars": "|",
+              "color": "#a3123f"
+            }
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1078,
+            "y": 2856,
+            "tam": 46.4,
+            "fuente": "texto",
+            "color": "#6b1b38",
+            "espaciado": 0,
+            "mayus": true,
+            "opcional": "proximamente",
+            "peso": 500
+          }
+        ]
+      }
+    }
   }
 }

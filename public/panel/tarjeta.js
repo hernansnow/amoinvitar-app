@@ -11,10 +11,14 @@
 //   fuentes), peso, color, degradado: [colores] (de arriba abajo), espaciado (px entre letras),
 //   ancho (corta en líneas), ajustar (una sola línea: si no entra en el ancho, se achica), tamSolo
 //   (tamaño cuando va un solo nombre), mayus, altoLinea, lineas: { largo, separacion, grosor }
-//   (rayitas a los costados), amp: { fondo, color, tam } ("&" en un círculo) o { tipo: "texto", color }
+//   (rayitas a los costados), amp: { fondo, color, tam, fuente } ("&" en un círculo) o { tipo: "texto", color }
 //   ("&" de otro color), extra (texto adicional), opcional: "clave" (se prende y apaga, p. ej. "proximamente"),
 //   alinear "der" (x es el borde derecho), opacidad (0 a 1), sombra (true: sombra suave para texto sobre foto) }
 // · foto.filtro: filtro CSS para la foto (p. ej. "grayscale(1) sepia(.2)"), igual en el editor y en el JPG
+// · formas: rayas, rectángulos o círculos fijos del diseño ({ x, y, w, h, color, tipos, opacidad, circulo, borde: grosor del contorno, radio: esquinas redondeadas, soloArriba })
+// · En los textos, también: rotar (grados), brillo: { color, blur } (neón), marcas: { chars: "|", color } (esos
+//   caracteres de otro color, p. ej. las barras de "23 | 03 | 26") y amp: { img, tam, dy } (un dibujo en vez del "&")
+//   relieve: { color, dx, dy, contorno } (contorno y sombra corrida, letras de cartel)
 // · Variables: ver varsTarjeta() en panel.js ({nombres} {a} {b} {fecha} {fechaCorta} {lugar} …)
 // El "&" no se escribe ni se borra: se mueve con los nombres (cada nombre se edita por separado).
 
@@ -38,8 +42,18 @@ const leerPos = (p) => String(p || '50% 50%').split(' ').map((x) => parseFloat(x
 const visible = (t, valor) => (t.mayus ? String(valor).toLocaleUpperCase('es') : String(valor));
 // Posición horizontal según la alineación: centro (x es el medio), izquierda o derecha (x es el borde)
 const desplazX = (t, dx) => (t.alinear === 'izq' ? `${dx}px` : t.alinear === 'der' ? `calc(-100% + ${dx}px)` : `calc(-50% + ${dx}px)`);
+// La posición del texto en el editor (con su giro, si el diseño lo tiene inclinado)
+const mover = (t, dx, dy) => `translate(${desplazX(t, dx)}, calc(-50% + ${dy}px))${t.rotar ? ` rotate(${t.rotar}deg)` : ''}`;
+const formasDe = (diseno, tipo) => (diseno.formas || []).filter((c) => (!c.tipos || c.tipos.includes(tipo)) && !(c.excepto || []).includes(tipo));
+// El relieve en el editor: la sombra corrida en escalones y el contorno por detrás del relleno
+const relieveCss = (r) => {
+  const n = Math.max(1, Math.round(Math.max(Math.abs(r.dx || 0), Math.abs(r.dy || 0)) / 2));
+  const capas = Array.from({ length: n }, (_, k) => `${((r.dx || 0) * (k + 1)) / n}px ${((r.dy || 0) * (k + 1)) / n}px 0 ${r.color}`);
+  return `text-shadow:${capas.join(',')}${r.contorno ? `;-webkit-text-stroke:${r.contorno * 2}px ${r.color};paint-order:stroke fill` : ''}`;
+};
 const OPCIONALES = { proximamente: 'Próximamente la invitación formal' };
 const conAmp = (t) => t.amp && t.amp.tipo !== 'texto';
+const esMarca = (t, c) => !!t.marcas && (t.marcas.chars || '|').includes(c);
 // "Lau & Pablo" → ["Lau", "Pablo"] cuando el diseño dibuja el "&" aparte
 const partirAmp = (t, valor) => {
   if (!t.amp) return null;
@@ -89,7 +103,7 @@ function cargarFuentes(def) {
     if (!document.querySelector(`link[href="${css}"]`)) document.head.append(el('link', { rel: 'stylesheet', href: css }));
   }
 }
-const fuentesListas = (def, diseno) => Promise.all(diseno.textos.flatMap((t) => [familia(def, t), familia(def, t, 'titulos')]
+const fuentesListas = (def, diseno) => Promise.all(diseno.textos.flatMap((t) => [familia(def, t), familia(def, t, t.amp?.fuente || 'titulos')]
   .map((fam) => document.fonts.load(`${t.peso || 400} ${t.tam}px ${fam}`).catch(() => null))));
 
 // ── Editor ───────────────────────────────────────────────────────────
@@ -157,16 +171,22 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
     const val = visible(t, t.valor || ' ');
     const partes = partirAmp(t, escribiendo === t.id ? String(t.valor) : val);
     const d = conAmp(t) ? t.tamFinal * (t.amp.tam || 0.62) : 0;
-    const amp = !partes ? null : conAmp(t)
-      ? el('span', { class: 'tj-amp', contenteditable: 'false', 'aria-hidden': 'true', style: `width:${d}px;height:${d}px;background:${t.amp.fondo};color:${t.amp.color || '#fff'};font-family:${familia(def, t, 'titulos')};font-size:${d * 0.78}px;margin:0 ${t.tamFinal * 0.12}px` }, '&')
+    const amp = !partes ? null : t.amp?.img
+      ? el('span', { class: 'tj-amp', contenteditable: 'false', 'aria-hidden': 'true', style: `width:${d}px;height:${d}px;margin:0 ${t.tamFinal * 0.12}px;background:url(${base}/${t.amp.img}) center/contain no-repeat;transform:translateY(${(t.amp.dy || 0) * d}px)` })
+      : conAmp(t)
+      ? el('span', { class: 'tj-amp', contenteditable: 'false', 'aria-hidden': 'true', style: `width:${d}px;height:${d}px;background:${t.amp.fondo};color:${t.amp.color || '#fff'};font-family:${familia(def, t, t.amp.fuente || 'titulos')};font-size:${d * 0.78}px;margin:0 ${t.tamFinal * 0.12}px` }, '&')
       : el('span', { class: 'tj-amp-texto', contenteditable: 'false', 'aria-hidden': 'true', style: t.amp.color ? `color:${t.amp.color};-webkit-text-fill-color:${t.amp.color}` : '' }, ' & ');
     const degradado = t.degradado ? `background-image:linear-gradient(180deg, ${t.degradado.join(', ')});-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent` : '';
-    const valor = el('span', { class: 'tj-valor', style: degradado }, ...(partes ? [el('span', { class: 'tj-parte' }, partes[0]), amp, el('span', { class: 'tj-parte' }, partes[1])] : [val]));
+    // Caracteres de otro color (las barras de la fecha): solo para ver; al escribir va el texto entero
+    const conMarcas = t.marcas && escribiendo !== t.id && !partes ? [...val].map((c) => (esMarca(t, c) ? el('span', { style: `color:${t.marcas.color};-webkit-text-fill-color:${t.marcas.color}` }, c) : c)) : null;
+    const valor = el('span', { class: 'tj-valor', style: degradado }, ...(partes ? [el('span', { class: 'tj-parte' }, partes[0]), amp, el('span', { class: 'tj-parte' }, partes[1])] : conMarcas || [val]));
     const raya = () => el('span', { class: 'tj-raya', style: `width:${t.lineas.largo * t.escala}px;height:${t.lineas.grosor || 2}px` });
     const izq = t.alinear === 'izq', der = t.alinear === 'der';
     return el('div', { class: `tj-texto${izq ? ' izq' : der ? ' der' : ''}`, 'data-id': t.id, tabindex: '0', role: 'button', 'aria-label': `Texto: ${t.valor || t.id}`,
-      style: [`left:${t.x}px`, `top:${t.y}px`, `transform:translate(${desplazX(t, t.dx)}, calc(-50% + ${t.dy}px))`, `font-family:${familia(def, t)}`,
+      style: [`left:${t.x}px`, `top:${t.y}px`, `transform:${mover(t, t.dx, t.dy)}`, `font-family:${familia(def, t)}`,
         t.opacidad != null ? `opacity:${t.opacidad}` : '', t.sombra ? 'text-shadow:0 2px 14px rgba(0,0,0,.45)' : '',
+        t.brillo ? `text-shadow:0 0 ${t.brillo.blur}px ${t.brillo.color},0 0 ${t.brillo.blur * 2}px ${t.brillo.color}` : '',
+        t.relieve ? relieveCss(t.relieve) : '',
         `font-size:${t.tamFinal}px`, `font-weight:${t.peso || 400}`, `color:${t.color || '#333'}`, `--esp:${t.espaciado || 0}px`,
         t.lineas ? `gap:${t.lineas.separacion * t.escala}px` : '', t.ancho && !t.ajustar ? `width:${t.ancho}px` : 'white-space:pre', `line-height:${t.altoLinea || ALTO_LINEA}`].join(';') },
     t.lineas ? raya() : null, valor, t.lineas ? raya() : null);
@@ -176,6 +196,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
     capa.replaceChildren();
     const adorno = (c) => el('img', { class: 'tj-adorno', src: `${base}/${c.img}`, alt: '', draggable: 'false', style: `left:${c.x}px;top:${c.y}px;width:${c.w}px;height:${c.h}px` });
     for (const c of capasDe(diseno, tipo).filter((x) => !x.sobreFoto)) capa.append(adorno(c));
+    for (const f of formasDe(diseno, tipo)) capa.append(el('div', { class: 'tj-adorno', style: `left:${f.x}px;top:${f.y}px;width:${f.w}px;height:${f.h}px;box-sizing:border-box;${f.borde ? `border:${f.borde}px solid ${f.color || '#333'}` : `background:${f.color || '#333'}`}${f.circulo ? ';border-radius:50%' : f.radio ? `;border-radius:${f.radio}px ${f.radio}px ${f.soloArriba ? 0 : f.radio}px ${f.soloArriba ? 0 : f.radio}px` : ''}${f.opacidad != null ? `;opacity:${f.opacidad}` : ''}` }));
     // Foto: círculo o rectángulo que se encuadra arrastrando
     if (diseno.foto) {
       const f = diseno.foto, circulo = f.r != null;
@@ -203,7 +224,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
       let ini;
       arrastrar(nodo, {
         alEmpezar: () => { const p = v.textos[t.id] || {}; ini = [p.dx || 0, p.dy || 0]; },
-        alMover: (dx, dy) => { const p = (v.textos[t.id] ??= {}); p.dx = Math.round(ini[0] + dx); p.dy = Math.round(ini[1] + dy); nodo.style.transform = `translate(${desplazX(t, p.dx)}, calc(-50% + ${p.dy}px))`; },
+        alMover: (dx, dy) => { const p = (v.textos[t.id] ??= {}); p.dx = Math.round(ini[0] + dx); p.dy = Math.round(ini[1] + dy); nodo.style.transform = mover(t, p.dx, p.dy); },
         alSoltar: (movio) => { if (movio) emitir(); else if (elegido === t.id) { editarTexto(t.id); return; } elegido = t.id; pintarBarra(); marcar(); },
       });
       nodo.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.target.isContentEditable) { e.preventDefault(); editarTexto(t.id); } });
@@ -275,10 +296,17 @@ function lineasDe(def, t, texto, tam) {
   return salida;
 }
 // Escribe desde la izquierda (x) y devuelve el ancho; con espaciado, letra por letra
-function escribir(g, s, x, y, esp) {
-  if (!esp) { g.fillText(s, x, y); return g.measureText(s).width; }
+// Con contorno (g.conTrazo), cada letra se repasa antes con el trazo
+const pintar = (g, s, x, y) => { if (g.conTrazo) g.strokeText(s, x, y); g.fillText(s, x, y); };
+function escribir(g, s, x, y, esp, t = null) {
+  if (!esp && !t?.marcas) { pintar(g, s, x, y); return g.measureText(s).width; }
   let cx = x;
-  for (const c of s) { g.fillText(c, cx, y); cx += g.measureText(c).width + esp; }
+  const relleno = g.fillStyle;
+  for (const c of s) {
+    if (t && esMarca(t, c)) g.fillStyle = t.marcas.color;
+    pintar(g, c, cx, y); g.fillStyle = relleno;
+    cx += g.measureText(c).width + esp;
+  }
   return cx - x;
 }
 function escribirLinea(g, def, t, s, x0, y, tam, relleno) {
@@ -288,7 +316,7 @@ function escribirLinea(g, def, t, s, x0, y, tam, relleno) {
   const fuente = `${t.peso || 400} ${tam}px ${familia(def, t)}`;
   g.font = fuente; g.fillStyle = relleno;
   const partes = partirAmp(t, s);
-  if (!partes) { escribir(g, s, x, y, esp); return total; }
+  if (!partes) { escribir(g, s, x, y, esp, t); return total; }
   if (!conAmp(t)) {
     x += escribir(g, `${partes[0]} `, x, y, esp);
     if (t.amp.color) g.fillStyle = t.amp.color;
@@ -299,9 +327,16 @@ function escribirLinea(g, def, t, s, x0, y, tam, relleno) {
   }
   x += escribir(g, partes[0], x, y, esp) + tam * 0.12;
   const d = tam * (t.amp.tam || 0.62);
-  g.fillStyle = t.amp.fondo; g.beginPath(); g.arc(x + d / 2, y, d / 2, 0, Math.PI * 2); g.fill();
-  g.fillStyle = t.amp.color || '#fff'; g.font = `400 ${d * 0.78}px ${familia(def, t, 'titulos')}`; g.textAlign = 'center';
-  g.fillText('&', x + d / 2, y + d * 0.04); g.textAlign = 'left';
+  if (t.amp.img && t.amp.imagen) {
+    // Contenido en el cuadrado d × d sin deformarse (igual que "contain" en el editor)
+    const im = t.amp.imagen, k = Math.min(d / im.width, d / im.height), w = im.width * k, h = im.height * k;
+    g.drawImage(im, x + (d - w) / 2, y - h / 2 + (t.amp.dy || 0) * d, w, h);
+  }
+  else {
+    g.fillStyle = t.amp.fondo; g.beginPath(); g.arc(x + d / 2, y, d / 2, 0, Math.PI * 2); g.fill();
+    g.fillStyle = t.amp.color || '#fff'; g.font = `400 ${d * 0.78}px ${familia(def, t, t.amp.fuente || 'titulos')}`; g.textAlign = 'center';
+    g.fillText('&', x + d / 2, y + d * 0.04); g.textAlign = 'left';
+  }
   x += d + tam * 0.12;
   g.font = fuente; g.fillStyle = relleno;
   escribir(g, partes[1], x, y, esp);
@@ -317,6 +352,17 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
   const v = valor || {};
   const capas = async (sobre) => { for (const c of capasDe(diseno, tipo).filter((x) => !!x.sobreFoto === sobre)) g.drawImage(await cargarImagen(`${base}/${c.img}`), c.x, c.y, c.w, c.h); };
   await capas(false);
+  for (const f of formasDe(diseno, tipo)) { g.save(); if (f.opacidad != null) g.globalAlpha = f.opacidad; g.fillStyle = g.strokeStyle = f.color || '#333';
+    if (f.circulo) {
+      // Círculo (relleno, o solo el contorno con "borde")
+      g.beginPath(); g.ellipse(f.x + f.w / 2, f.y + f.h / 2, f.w / 2 - (f.borde || 0) / 2, f.h / 2 - (f.borde || 0) / 2, 0, 0, Math.PI * 2);
+      if (f.borde) { g.lineWidth = f.borde; g.stroke(); } else g.fill();
+    } else if (f.radio) {
+      // Rectángulo con las esquinas redondeadas (soloArriba: solo las de arriba)
+      const r = f.radio, rb = f.soloArriba ? 0 : r;
+      g.beginPath(); g.roundRect(f.x, f.y, f.w, f.h, [r, r, rb, rb]); g.fill();
+    } else if (f.borde) { g.lineWidth = f.borde; g.strokeRect(f.x + f.borde / 2, f.y + f.borde / 2, f.w - f.borde, f.h - f.borde); } else g.fillRect(f.x, f.y, f.w, f.h);
+    g.restore(); }
   if (diseno.foto && v.foto) {
     const f = diseno.foto, img = await cargarImagen(v.foto);
     const circulo = f.r != null;
@@ -337,6 +383,7 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
   await capas(true);
   await fuentesListas(def, diseno);
   const textos = textosDe(diseno, v, vars, def);
+  for (const t of textos) if (t.amp?.img) t.amp = { ...t.amp, imagen: await cargarImagen(`${base}/${t.amp.img}`) };
   g.textAlign = 'left'; g.textBaseline = 'middle';
   for (const t of textos) {
     if (!String(t.valor).trim()) continue;
@@ -354,7 +401,18 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
     g.save();
     if (t.opacidad != null) g.globalAlpha = t.opacidad;
     if (t.sombra) { g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 14; g.shadowOffsetY = 2; }
+    if (t.brillo) { g.shadowColor = t.brillo.color; g.shadowBlur = t.brillo.blur * 2; }
+    if (t.rotar) { g.translate(x0, t.y + t.dy); g.rotate((t.rotar * Math.PI) / 180); g.translate(-x0, -(t.y + t.dy)); }
+    // Relieve (letras con contorno y sombra corrida, estilo cartel): primero las capas de atrás
+    const rl = t.relieve;
+    if (rl) {
+      g.lineJoin = 'round'; g.strokeStyle = rl.color; g.lineWidth = (rl.contorno || 0) * 2; g.conTrazo = !!rl.contorno;
+      const n = Math.max(1, Math.round(Math.max(Math.abs(rl.dx || 0), Math.abs(rl.dy || 0)) / 2));
+      for (let k = n; k >= 1; k--) lineas.forEach((l, i) => escribirLinea(g, def, t, l, x0 + ((rl.dx || 0) * k) / n, y0 + i * alto + ((rl.dy || 0) * k) / n, tam, rl.color));
+    }
     lineas.forEach((l, i) => {
+      // Con brillo (neón) se escribe dos veces: el resplandor más ancho y encima uno más cerrado
+      if (t.brillo) { g.save(); g.shadowBlur = t.brillo.blur; escribirLinea(g, def, t, l, x0, y0 + i * alto, tam, relleno); g.restore(); }
       const ancho = escribirLinea(g, def, t, l, x0, y0 + i * alto, tam, relleno);
       if (t.lineas && i === 0) {
         const largo = t.lineas.largo * t.escala, sep = t.lineas.separacion * t.escala, gr = t.lineas.grosor || 2;
@@ -363,6 +421,7 @@ export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
         g.fillRect(x0 + ancho / 2 + sep, y0 - gr / 2, largo, gr);
       }
     });
+    g.conTrazo = false;
     g.restore();
   }
   return new Promise((ok) => cv.toBlob(ok, 'image/jpeg', 0.9));

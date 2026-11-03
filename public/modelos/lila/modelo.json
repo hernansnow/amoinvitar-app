@@ -318,6 +318,89 @@
             "inicial.jpg"
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1081,
+                "y": 1184,
+                "tam": 50.2,
+                "fuente": "texto",
+                "color": "#a898bb",
+                "espaciado": 20,
+                "mayus": true
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1064,
+                "y": 1463,
+                "tam": 526,
+                "fuente": "titulos",
+                "color": "#745f98",
+                "ancho": 1700,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "Mis quince años",
+                "x": 1079,
+                "y": 1671,
+                "tam": 47.2,
+                "fuente": "texto",
+                "color": "#a89ec0",
+                "espaciado": 26.6,
+                "mayus": true,
+                "ancho": 931,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1075,
+                "y": 1837,
+                "tam": 75.6,
+                "fuente": "texto",
+                "color": "#78579e",
+                "espaciado": 9.3,
+                "peso": 500,
+                "marcas": {
+                  "chars": "|",
+                  "color": "#c4b4dc"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1084,
+                "y": 2928,
+                "tam": 31.5,
+                "fuente": "serif",
+                "color": "#8a7aa6",
+                "espaciado": 6.3,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
+        }
       }
     },
     "cumple": {
@@ -413,6 +496,89 @@
             "inicial.jpg"
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1081,
+                "y": 1184,
+                "tam": 50.2,
+                "fuente": "texto",
+                "color": "#a898bb",
+                "espaciado": 20,
+                "mayus": true
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1064,
+                "y": 1463,
+                "tam": 526,
+                "fuente": "titulos",
+                "color": "#745f98",
+                "ancho": 1700,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1079,
+                "y": 1671,
+                "tam": 47.2,
+                "fuente": "texto",
+                "color": "#a89ec0",
+                "espaciado": 26.6,
+                "mayus": true,
+                "ancho": 931,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1075,
+                "y": 1837,
+                "tam": 75.6,
+                "fuente": "texto",
+                "color": "#78579e",
+                "espaciado": 9.3,
+                "peso": 500,
+                "marcas": {
+                  "chars": "|",
+                  "color": "#c4b4dc"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1084,
+                "y": 2928,
+                "tam": 31.5,
+                "fuente": "serif",
+                "color": "#8a7aa6",
+                "espaciado": 6.3,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
+        }
       }
     },
     "bautismo": {
@@ -505,6 +671,89 @@
           "portadas": [
             "inicial.jpg"
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1081,
+                "y": 1184,
+                "tam": 50.2,
+                "fuente": "texto",
+                "color": "#a898bb",
+                "espaciado": 20,
+                "mayus": true
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1064,
+                "y": 1463,
+                "tam": 526,
+                "fuente": "titulos",
+                "color": "#745f98",
+                "ancho": 1700,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1079,
+                "y": 1671,
+                "tam": 47.2,
+                "fuente": "texto",
+                "color": "#a89ec0",
+                "espaciado": 26.6,
+                "mayus": true,
+                "ancho": 931,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1075,
+                "y": 1837,
+                "tam": 75.6,
+                "fuente": "texto",
+                "color": "#78579e",
+                "espaciado": 9.3,
+                "peso": 500,
+                "marcas": {
+                  "chars": "|",
+                  "color": "#c4b4dc"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1084,
+                "y": 2928,
+                "tam": 31.5,
+                "fuente": "serif",
+                "color": "#8a7aa6",
+                "espaciado": 6.3,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
         }
       }
     },
@@ -599,6 +848,89 @@
             "inicial.jpg"
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1081,
+                "y": 1184,
+                "tam": 50.2,
+                "fuente": "texto",
+                "color": "#a898bb",
+                "espaciado": 20,
+                "mayus": true
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1064,
+                "y": 1463,
+                "tam": 526,
+                "fuente": "titulos",
+                "color": "#745f98",
+                "ancho": 1700,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1079,
+                "y": 1671,
+                "tam": 47.2,
+                "fuente": "texto",
+                "color": "#a89ec0",
+                "espaciado": 26.6,
+                "mayus": true,
+                "ancho": 931,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1075,
+                "y": 1837,
+                "tam": 75.6,
+                "fuente": "texto",
+                "color": "#78579e",
+                "espaciado": 9.3,
+                "peso": 500,
+                "marcas": {
+                  "chars": "|",
+                  "color": "#c4b4dc"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1084,
+                "y": 2928,
+                "tam": 31.5,
+                "fuente": "serif",
+                "color": "#8a7aa6",
+                "espaciado": 6.3,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -607,5 +939,101 @@
       "/comun/fonts/google/jost+passions-conflict.css",
       "/modelos/lila/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Passions Conflict",
+      "texto": "Jost",
+      "serif": "Bodoni Moda",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1081,
+            "y": 1297,
+            "tam": 58.3,
+            "fuente": "texto",
+            "color": "#a898bb",
+            "espaciado": 25.7,
+            "mayus": true
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1099,
+            "y": 1485,
+            "tam": 261.9,
+            "fuente": "titulos",
+            "color": "#745f98",
+            "ancho": 1700,
+            "ajustar": true,
+            "amp": {
+              "img": "img/std-amp.png",
+              "tam": 0.42,
+              "dy": 0.12
+            }
+          },
+          {
+            "id": "evento",
+            "texto": "Nuestra boda",
+            "x": 1072,
+            "y": 1667,
+            "tam": 58.1,
+            "fuente": "texto",
+            "color": "#a89ec0",
+            "espaciado": 25.6,
+            "mayus": true,
+            "ancho": 851,
+            "ajustar": true
+          },
+          {
+            "id": "fecha",
+            "texto": "{dd} | {mesNum} | {anioCorto}",
+            "x": 1075,
+            "y": 1837,
+            "tam": 75.6,
+            "fuente": "texto",
+            "color": "#78579e",
+            "espaciado": 9.3,
+            "peso": 500,
+            "marcas": {
+              "chars": "|",
+              "color": "#c4b4dc"
+            }
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1084,
+            "y": 2928,
+            "tam": 31.5,
+            "fuente": "serif",
+            "color": "#8a7aa6",
+            "espaciado": 6.3,
+            "mayus": true,
+            "opcional": "proximamente"
+          }
+        ]
+      }
+    }
   }
 }

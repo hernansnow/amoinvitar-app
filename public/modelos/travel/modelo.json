@@ -329,6 +329,140 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo-15.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "banda",
+                "texto": "Tarjeta de embarque a la fiesta",
+                "x": 1073,
+                "y": 224,
+                "tam": 67.4,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "mayus": true,
+                "peso": 500
+              },
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1077,
+                "y": 417,
+                "tam": 83.8,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 47.5,
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1438,
+                "y": 1328,
+                "tam": 340,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "der",
+                "peso": 700,
+                "mayus": true,
+                "ancho": 1250,
+                "ajustar": true
+              },
+              {
+                "id": "edad",
+                "texto": "15",
+                "x": 1682,
+                "y": 1328,
+                "tam": 340,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700
+              },
+              {
+                "id": "lfecha",
+                "texto": "Fecha",
+                "x": 224,
+                "y": 1791,
+                "tam": 64.1,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 9,
+                "alinear": "izq",
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} {mesCorto} {anio}",
+                "x": 228,
+                "y": 1911,
+                "tam": 105.9,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700,
+                "mayus": true
+              },
+              {
+                "id": "ldestino",
+                "texto": "Destino",
+                "x": 227,
+                "y": 2119,
+                "tam": 68,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 7,
+                "alinear": "izq",
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "destino",
+                "texto": "Mi fiesta",
+                "x": 232,
+                "y": 2239,
+                "tam": 111.4,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700,
+                "mayus": true,
+                "ancho": 917,
+                "ajustar": true
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1106,
+                "y": 2501,
+                "tam": 40.2,
+                "fuente": "texto",
+                "color": "#3a5568",
+                "espaciado": 5.1,
+                "mayus": true,
+                "opcional": "proximamente",
+                "peso": 300
+              }
+            ]
+          }
+        }
       }
     },
     "cumple": {
@@ -423,6 +557,140 @@
               "pos": "50% 50%"
             }
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo-15.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "banda",
+                "texto": "Tarjeta de embarque a la fiesta",
+                "x": 1073,
+                "y": 224,
+                "tam": 67.4,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "mayus": true,
+                "peso": 500
+              },
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1077,
+                "y": 417,
+                "tam": 83.8,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 47.5,
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1438,
+                "y": 1328,
+                "tam": 340,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "der",
+                "peso": 700,
+                "mayus": true,
+                "ancho": 1250,
+                "ajustar": true
+              },
+              {
+                "id": "edad",
+                "texto": "{quince}",
+                "x": 1682,
+                "y": 1328,
+                "tam": 340,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700
+              },
+              {
+                "id": "lfecha",
+                "texto": "Fecha",
+                "x": 224,
+                "y": 1791,
+                "tam": 64.1,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 9,
+                "alinear": "izq",
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} {mesCorto} {anio}",
+                "x": 228,
+                "y": 1911,
+                "tam": 105.9,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700,
+                "mayus": true
+              },
+              {
+                "id": "ldestino",
+                "texto": "Destino",
+                "x": 227,
+                "y": 2119,
+                "tam": 68,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 7,
+                "alinear": "izq",
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "destino",
+                "texto": "Mi fiesta",
+                "x": 232,
+                "y": 2239,
+                "tam": 111.4,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700,
+                "mayus": true,
+                "ancho": 917,
+                "ajustar": true
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1106,
+                "y": 2501,
+                "tam": 40.2,
+                "fuente": "texto",
+                "color": "#3a5568",
+                "espaciado": 5.1,
+                "mayus": true,
+                "opcional": "proximamente",
+                "peso": 300
+              }
+            ]
+          }
         }
       }
     },
@@ -519,6 +787,140 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo-15.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "banda",
+                "texto": "Tarjeta de embarque a la fiesta",
+                "x": 1073,
+                "y": 224,
+                "tam": 67.4,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "mayus": true,
+                "peso": 500
+              },
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1077,
+                "y": 417,
+                "tam": 83.8,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 47.5,
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1438,
+                "y": 1328,
+                "tam": 340,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "der",
+                "peso": 700,
+                "mayus": true,
+                "ancho": 1250,
+                "ajustar": true
+              },
+              {
+                "id": "edad",
+                "texto": "{quince}",
+                "x": 1682,
+                "y": 1328,
+                "tam": 340,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700
+              },
+              {
+                "id": "lfecha",
+                "texto": "Fecha",
+                "x": 224,
+                "y": 1791,
+                "tam": 64.1,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 9,
+                "alinear": "izq",
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} {mesCorto} {anio}",
+                "x": 228,
+                "y": 1911,
+                "tam": 105.9,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700,
+                "mayus": true
+              },
+              {
+                "id": "ldestino",
+                "texto": "Destino",
+                "x": 227,
+                "y": 2119,
+                "tam": 68,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 7,
+                "alinear": "izq",
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "destino",
+                "texto": "Mi fiesta",
+                "x": 232,
+                "y": 2239,
+                "tam": 111.4,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700,
+                "mayus": true,
+                "ancho": 917,
+                "ajustar": true
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1106,
+                "y": 2501,
+                "tam": 40.2,
+                "fuente": "texto",
+                "color": "#3a5568",
+                "espaciado": 5.1,
+                "mayus": true,
+                "opcional": "proximamente",
+                "peso": 300
+              }
+            ]
+          }
+        }
       }
     },
     "comunion": {
@@ -614,6 +1016,140 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo-15.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "banda",
+                "texto": "Tarjeta de embarque a la fiesta",
+                "x": 1073,
+                "y": 224,
+                "tam": 67.4,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "mayus": true,
+                "peso": 500
+              },
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1077,
+                "y": 417,
+                "tam": 83.8,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 47.5,
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1438,
+                "y": 1328,
+                "tam": 340,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "der",
+                "peso": 700,
+                "mayus": true,
+                "ancho": 1250,
+                "ajustar": true
+              },
+              {
+                "id": "edad",
+                "texto": "{quince}",
+                "x": 1682,
+                "y": 1328,
+                "tam": 340,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700
+              },
+              {
+                "id": "lfecha",
+                "texto": "Fecha",
+                "x": 224,
+                "y": 1791,
+                "tam": 64.1,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 9,
+                "alinear": "izq",
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} {mesCorto} {anio}",
+                "x": 228,
+                "y": 1911,
+                "tam": 105.9,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700,
+                "mayus": true
+              },
+              {
+                "id": "ldestino",
+                "texto": "Destino",
+                "x": 227,
+                "y": 2119,
+                "tam": 68,
+                "fuente": "texto",
+                "color": "#1f4560",
+                "espaciado": 7,
+                "alinear": "izq",
+                "mayus": true,
+                "peso": 300
+              },
+              {
+                "id": "destino",
+                "texto": "Mi fiesta",
+                "x": 232,
+                "y": 2239,
+                "tam": 111.4,
+                "fuente": "texto",
+                "color": "#01405f",
+                "alinear": "izq",
+                "peso": 700,
+                "mayus": true,
+                "ancho": 917,
+                "ajustar": true
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1106,
+                "y": 2501,
+                "tam": 40.2,
+                "fuente": "texto",
+                "color": "#3a5568",
+                "espaciado": 5.1,
+                "mayus": true,
+                "opcional": "proximamente",
+                "peso": 300
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -623,5 +1159,159 @@
       "/comun/fonts/css/amsterdam-four-font.css",
       "/modelos/travel/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Roboto Condensed",
+      "texto": "Roboto Condensed",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [
+          {
+            "x": 162,
+            "y": 152,
+            "w": 1833,
+            "h": 127,
+            "color": "#01405f",
+            "radio": 40,
+            "soloArriba": true
+          }
+        ],
+        "textos": [
+          {
+            "id": "banda",
+            "texto": "Tarjeta de embarque a la boda",
+            "x": 1073,
+            "y": 223,
+            "tam": 70,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "mayus": true,
+            "peso": 500
+          },
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1077,
+            "y": 417,
+            "tam": 83.8,
+            "fuente": "texto",
+            "color": "#1f4560",
+            "espaciado": 47.5,
+            "mayus": true,
+            "peso": 300
+          },
+          {
+            "id": "nombreA",
+            "texto": "{a}",
+            "x": 907,
+            "y": 1347,
+            "tam": 359.1,
+            "fuente": "texto",
+            "color": "#01405f",
+            "alinear": "der",
+            "peso": 700,
+            "mayus": true,
+            "ancho": 900,
+            "ajustar": true
+          },
+          {
+            "id": "nombreB",
+            "texto": "{b}",
+            "x": 1275,
+            "y": 1349,
+            "tam": 353.7,
+            "fuente": "texto",
+            "color": "#01405f",
+            "alinear": "izq",
+            "peso": 700,
+            "mayus": true,
+            "ancho": 820,
+            "ajustar": true
+          },
+          {
+            "id": "lfecha",
+            "texto": "Fecha",
+            "x": 224,
+            "y": 1791,
+            "tam": 64.1,
+            "fuente": "texto",
+            "color": "#1f4560",
+            "espaciado": 9,
+            "alinear": "izq",
+            "mayus": true,
+            "peso": 300
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} {mesCorto} {anio}",
+            "x": 228,
+            "y": 1911,
+            "tam": 105.9,
+            "fuente": "texto",
+            "color": "#01405f",
+            "alinear": "izq",
+            "peso": 700,
+            "mayus": true
+          },
+          {
+            "id": "ldestino",
+            "texto": "Destino",
+            "x": 227,
+            "y": 2119,
+            "tam": 68,
+            "fuente": "texto",
+            "color": "#1f4560",
+            "espaciado": 7,
+            "alinear": "izq",
+            "mayus": true,
+            "peso": 300
+          },
+          {
+            "id": "destino",
+            "texto": "Nuestra boda",
+            "x": 232,
+            "y": 2239,
+            "tam": 111.4,
+            "fuente": "texto",
+            "color": "#01405f",
+            "alinear": "izq",
+            "peso": 700,
+            "mayus": true,
+            "ancho": 917,
+            "ajustar": true
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1106,
+            "y": 2501,
+            "tam": 40.2,
+            "fuente": "texto",
+            "color": "#3a5568",
+            "espaciado": 5.1,
+            "mayus": true,
+            "opcional": "proximamente",
+            "peso": 300
+          }
+        ]
+      }
+    }
   }
 }

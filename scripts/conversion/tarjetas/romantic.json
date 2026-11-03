@@ -1,0 +1,237 @@
+{
+ "fuentes": {
+  "titulos": "Cinzel Decorative",
+  "texto": "Cinzel Decorative",
+  "css": [
+   "/comun/fonts/catalogo/catalogo.css"
+  ]
+ },
+ "eventos": {
+  "boda": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    }
+   ],
+   "formas": [],
+   "textos": [
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "x": 1077,
+     "y": 312,
+     "tam": 49.4,
+     "fuente": "texto",
+     "color": "#0d0d0d",
+     "espaciado": 36.8,
+     "mayus": true,
+     "peso": 700
+    },
+    {
+     "id": "evento",
+     "texto": "Nuestra boda",
+     "x": 1081,
+     "y": 882,
+     "tam": 70.3,
+     "fuente": "texto",
+     "color": "#0d0d0d",
+     "mayus": true,
+     "peso": 700,
+     "plantilla": "{evento}",
+     "ancho": 738,
+     "ajustar": true
+    },
+    {
+     "id": "nombreA",
+     "texto": "{a}",
+     "x": 1082,
+     "y": 1188,
+     "tam": 245.6,
+     "fuente": "titulos",
+     "color": "#010101",
+     "mayus": true,
+     "ancho": 1400,
+     "ajustar": true
+    },
+    {
+     "id": "nombreB",
+     "texto": "{b}",
+     "x": 1082,
+     "y": 1693,
+     "tam": 258.5,
+     "fuente": "titulos",
+     "color": "#010101",
+     "mayus": true,
+     "ancho": 1400,
+     "ajustar": true
+    },
+    {
+     "id": "dsem",
+     "texto": "{diaSemana}",
+     "x": 697,
+     "y": 2147,
+     "tam": 70,
+     "fuente": "texto",
+     "color": "#0d0d0d",
+     "mayus": true,
+     "peso": 700
+    },
+    {
+     "id": "dia",
+     "texto": "{dia}",
+     "x": 1079,
+     "y": 2157,
+     "tam": 172.2,
+     "fuente": "texto",
+     "color": "#030303"
+    },
+    {
+     "id": "mes",
+     "texto": "{mes}",
+     "x": 1487,
+     "y": 2143,
+     "tam": 71.1,
+     "fuente": "texto",
+     "color": "#0d0d0d",
+     "mayus": true,
+     "peso": 700
+    },
+    {
+     "id": "anio",
+     "texto": "{anio}",
+     "x": 1083,
+     "y": 2301,
+     "tam": 84.9,
+     "fuente": "texto",
+     "color": "#0f0f0f",
+     "peso": 700
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la invitación formal",
+     "x": 1082,
+     "y": 2684,
+     "tam": 45,
+     "fuente": "texto",
+     "color": "#1a1a1a",
+     "peso": 700,
+     "opcional": "proximamente"
+    }
+   ]
+  },
+  "15": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo-15.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    }
+   ],
+   "formas": [],
+   "textos": [
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "x": 1077,
+     "y": 313,
+     "tam": 47.7,
+     "fuente": "texto",
+     "color": "#0d0d0d",
+     "espaciado": 38.3,
+     "mayus": true,
+     "peso": 700
+    },
+    {
+     "id": "evento",
+     "texto": "Mis quince años",
+     "x": 1085,
+     "y": 1168,
+     "tam": 75,
+     "fuente": "texto",
+     "color": "#0d0d0d",
+     "mayus": true,
+     "peso": 700,
+     "plantilla": "{evento}",
+     "ancho": 898,
+     "ajustar": true
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 1079,
+     "y": 1517,
+     "tam": 244.8,
+     "fuente": "titulos",
+     "color": "#010101",
+     "mayus": true,
+     "ancho": 1500,
+     "ajustar": true
+    },
+    {
+     "id": "dsem",
+     "texto": "{diaSemana}",
+     "x": 697,
+     "y": 2011,
+     "tam": 70,
+     "fuente": "texto",
+     "color": "#0d0d0d",
+     "mayus": true,
+     "peso": 700
+    },
+    {
+     "id": "dia",
+     "texto": "{dia}",
+     "x": 1079,
+     "y": 2024,
+     "tam": 175.2,
+     "fuente": "texto",
+     "color": "#030303"
+    },
+    {
+     "id": "mes",
+     "texto": "{mes}",
+     "x": 1487,
+     "y": 2008,
+     "tam": 71.1,
+     "fuente": "texto",
+     "color": "#0d0d0d",
+     "mayus": true,
+     "peso": 700
+    },
+    {
+     "id": "anio",
+     "texto": "{anio}",
+     "x": 1083,
+     "y": 2165,
+     "tam": 84.9,
+     "fuente": "texto",
+     "color": "#0f0f0f",
+     "peso": 700
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la invitación formal",
+     "x": 1082,
+     "y": 2684,
+     "tam": 45,
+     "fuente": "texto",
+     "color": "#1a1a1a",
+     "peso": 700,
+     "opcional": "proximamente"
+    }
+   ]
+  }
+ }
+}
