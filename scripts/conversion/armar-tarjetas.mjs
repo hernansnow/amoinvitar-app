@@ -1,5 +1,5 @@
 // Tarjetas Save The Date de cada modelo (ronda 25): los diseños están en scripts/conversion/tarjetas/<id>.json
-// ({ fuentes, eventos: { boda, 15, base } }) y este script los pone en modelo.json:
+// ({ fuentes, eventos: { boda, 15, base, otros } }; "otros": el diseño propio para los demás eventos, si lo hay) y este script los pone en modelo.json:
 //   · el del primer evento del modelo va en tarjetas.std.tarjeta
 //   · los demás en porEvento[evento].tarjetas.std.tarjeta (conEvento los mezcla)
 //   · los eventos sin diseño propio (cumple, bautismo, comunión, infantil, baby shower) usan el de 15 (o "base"),
@@ -38,7 +38,7 @@ export function armarTarjetas(id) {
   const { fuentes, eventos: dis } = JSON.parse(readFileSync(fTarj, 'utf8'));
   const m = JSON.parse(readFileSync(fModelo, 'utf8'));
   const eventos = m.eventos || [];
-  const disenoDe = (ev) => (dis[ev] ? limpiar(dis[ev]) : dis['15'] ? adaptar(dis['15'], id) : dis.base ? adaptar(dis.base, id) : dis.boda ? adaptar(dis.boda, id) : null);
+  const disenoDe = (ev) => (dis[ev] ? limpiar(dis[ev]) : dis.otros ? adaptar(dis.otros, id) : dis['15'] ? adaptar(dis['15'], id) : dis.base ? adaptar(dis.base, id) : dis.boda ? adaptar(dis.boda, id) : null);
   const [base, ...otros] = eventos;
   m.tarjetas = { ...(m.tarjetas || {}), fuentes, std: { ...(m.tarjetas?.std || {}), tarjeta: disenoDe(base) } };
   m.porEvento ??= {};

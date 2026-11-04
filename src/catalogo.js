@@ -22,12 +22,11 @@ export const RESUMEN_PAQUETES = {
   deluxe: ['Todo lo de Premium', 'Sugerencias de vestimenta', 'Itinerario, testigos/padrinos, traslado y hospedaje', 'Playlist de Spotify y redes oficiales', 'Organizador de mesas y "Buscá tu mesa"', 'Organizador de llegadas con pase de entrada', 'Álbum colaborativo QR'],
 };
 
-// Diseño a medida (también eventos empresariales) y personaje favorito (infantiles)
+// Diseño a medida para todo tipo de evento (también infantiles y empresas). README (ronda 27): ya no hay "personaje favorito"
 export const A_MEDIDA = {
   // Diseño personalizado e invitación para empresas: 140 € (con todo lo de Deluxe)
   personalizado: { premium: 140, deluxe: 140 },
   empresarial: { premium: 140, deluxe: 140 },
-  personaje: { premium: 130, deluxe: 180 },
 };
 
 // ── Otros productos ─────────────────────────────────────────────────────

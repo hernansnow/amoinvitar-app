@@ -140,9 +140,16 @@
     }
     return { ancho: der > izq ? der - izq : 0, lineas: tops.length };
   }
+  // El modelo de la página (por su hoja de estilos)
+  var MODELO = ((document.querySelector('link[href*="/modelos/"][href$="estilo.css"]') || {}).getAttribute || function () { return ''; }).call(document.querySelector('link[href*="/modelos/"][href$="estilo.css"]'), 'href') || '';
+  MODELO = (MODELO.match(/\/modelos\/([^/]+)\//) || [])[1] || '';
+  // Modelos con los dos nombres en una línea: hasta qué fracción de la letra del diseño se puede achicar
+  var UNA_LINEA = { travel: [0.4, 0.9], aquarella: [0.5, 0.88], minimal: [0.5, 0.88], sky: [0.5, 0.74], lovestory: [0.42, 0.86], black: [0.42, 0.8], white: [0.42, 0.8] };
+  // Modelos donde el "&" ya va en su propia línea con su espacio (Elegance: el círculo entre los nombres)
+  var SIN_TRES = { elegance: 1, style: 1 };
   function ajustarNombres() {
     document.querySelectorAll('[data-ajustar]').forEach(function (h) {
-      h.style.fontSize = ''; h.style.maxWidth = ''; h.style.marginLeft = ''; h.style.marginRight = ''; h.classList.remove('ai-nombres-3');
+      h.style.fontSize = ''; h.style.maxWidth = ''; h.style.marginLeft = ''; h.style.marginRight = ''; h.classList.remove('ai-nombres-3', 'ai-nombres-2'); h.style.whiteSpace = '';
       if (!h.offsetParent) return; // oculto (otra portada): se ajusta cuando se vea
       var propia = h.getAttribute('data-ajustar-en') && h.closest(h.getAttribute('data-ajustar-en'));
       var caja = propia || h.closest('.container, section') || h.parentElement;
@@ -173,6 +180,20 @@
       h.style.setProperty('margin-right', al === 'der' ? '0' : 'auto', 'important');
       h.style.textAlign = al === 'izq' ? 'left' : al === 'der' ? 'right' : 'center';
       var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(13, fs0 * 0.3));
+      // README (ronda 27): en estos modelos los dos nombres van en una sola línea, con la letra más chica; si así
+      // ya no se leería bien, recién ahí se parten (y con más aire entre las líneas)
+      var dosNombres = h.querySelectorAll(':scope > .ai-n').length === 2;
+      if (UNA_LINEA[MODELO] && dosNombres) {
+        h.style.whiteSpace = 'nowrap';
+        // en una línea puede usar casi todo el ancho de su caja (no solo la fracción pensada para dos líneas)
+        var ancho1 = Math.max(disponible, Math.floor(base * UNA_LINEA[MODELO][1]));
+        h.style.maxWidth = ancho1 + 'px';
+        var legible = Math.max(22, fs0 * UNA_LINEA[MODELO][0]);
+        for (var j = 0; j < 40 && medidas(h).ancho > ancho1 + 1 && fs > legible; j++) { fs = Math.max(legible, fs * 0.96); h.style.fontSize = fs.toFixed(1) + 'px'; }
+        if (medidas(h).ancho <= ancho1 + 1) return;
+        h.style.whiteSpace = ''; h.style.fontSize = ''; h.style.maxWidth = disponible + 'px'; fs = fs0;
+        h.classList.add('ai-nombres-2');
+      }
       for (var i = 0; i < 40; i++) {
         var m = medidas(h);
         if (m.ancho <= disponible + 1) break; // cada nombre va entero (nowrap): solo se achica si no entra a lo ancho
@@ -191,7 +212,7 @@
         // Centrados y cada nombre en su línea ("Maximiliano / & Guadalupe"): también en tres, así queda parejo
         // (B&N, a la izquierda, lleva el "&" delante del segundo nombre a propósito)
         var partidos = r2.top > r1.bottom - r1.height * 0.3 && h.dataset.alinear === 'centro';
-        if (rs && r2.top > r1.bottom - r1.height * 0.3 && (solo || partidos)) h.classList.add('ai-nombres-3');
+        if (!SIN_TRES[MODELO] && rs && r2.top > r1.bottom - r1.height * 0.3 && (solo || partidos)) h.classList.add('ai-nombres-3');
       }
     });
     // La frase de la portada va en una sola línea: si no entra, primero se sacan las rayitas de los costados

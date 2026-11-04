@@ -99,3 +99,16 @@ img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-
 [data-ajustar].ai-nombres-3 > :not(.ai-n) { display: table !important; margin: .02em auto !important; }
 [data-ajustar].ai-nombres-3[data-alinear="izq"] > :not(.ai-n) { margin-left: 0 !important; }
 [data-ajustar].ai-nombres-3[data-alinear="der"] > :not(.ai-n) { margin-right: 0 !important; }
+/* README (ronda 27): nombres que igual se parten en dos líneas (Lovestory, Black, White…): con aire, sin pisarse */
+[data-ajustar].ai-nombres-2, [data-ajustar].ai-nombres-2 > * { line-height: 1.45 !important; }
+[data-ajustar].ai-nombres-2 { margin-top: .35em !important; margin-bottom: .55em !important; }
+/* …y si además el corazón queda en su línea: cada nombre con su alto completo (las letras de firma suben y bajan mucho) */
+[data-ajustar].ai-nombres-2.ai-nombres-3 > .ai-n { line-height: 1.85 !important; }
+[data-ajustar].ai-nombres-2.ai-nombres-3 > :not(.ai-n) { margin: -.25em auto !important; }
+/* En tres líneas los saltos de línea del diseño sobran (Disco: dejaban un renglón vacío entre el "&" y el segundo nombre) */
+[data-ajustar].ai-nombres-3 > br:not(.ai-n) { display: none !important; }
+/* README (ronda 27): Elegance/Style en el celular con el círculo del "&" pegado a los nombres; Hojas con el "&" blanco;
+   Disco con el "&" sin aire de más arriba y abajo */
+@media (max-width: 767px) { h1.elegance2[data-ajustar] { line-height: 1.02 !important; } h1.elegance2[data-ajustar] .circle-singleline { margin: .06em 0 !important; } }
+h2.hojas[data-ajustar] > .text-bronce { color: #fff !important; }
+.texto-disco-inclinado.ai-nombres-3 > .disco-2 { line-height: .9 !important; padding: 0 !important; margin: -.1em auto -.2em !important; }

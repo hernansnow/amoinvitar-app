@@ -614,7 +614,7 @@
               {
                 "id": "avion",
                 "imagen": "img/std-avion.png",
-                "x": 1554,
+                "x": 1665,
                 "y": 1316,
                 "tam": 230,
                 "proporcion": 0.943
@@ -622,7 +622,7 @@
               {
                 "id": "nombres",
                 "texto": "{nombres}",
-                "x": 1438,
+                "x": 1530,
                 "y": 1328,
                 "tam": 340,
                 "fuente": "texto",
@@ -631,22 +631,7 @@
                 "peso": 700,
                 "mayus": true,
                 "ancho": 1250,
-                "ajustar": true,
-                "grupo": "nombres"
-              },
-              {
-                "id": "edad",
-                "texto": "{quince}",
-                "x": 1682,
-                "y": 1328,
-                "tam": 340,
-                "fuente": "texto",
-                "color": "#01405f",
-                "alinear": "izq",
-                "peso": 700,
-                "grupo": "nombres",
-                "ajustar": true,
-                "ancho": 400
+                "ajustar": true
               },
               {
                 "id": "lfecha",
@@ -855,7 +840,7 @@
               {
                 "id": "avion",
                 "imagen": "img/std-avion.png",
-                "x": 1554,
+                "x": 1665,
                 "y": 1316,
                 "tam": 230,
                 "proporcion": 0.943
@@ -863,7 +848,7 @@
               {
                 "id": "nombres",
                 "texto": "{nombres}",
-                "x": 1438,
+                "x": 1530,
                 "y": 1328,
                 "tam": 340,
                 "fuente": "texto",
@@ -872,22 +857,7 @@
                 "peso": 700,
                 "mayus": true,
                 "ancho": 1250,
-                "ajustar": true,
-                "grupo": "nombres"
-              },
-              {
-                "id": "edad",
-                "texto": "{quince}",
-                "x": 1682,
-                "y": 1328,
-                "tam": 340,
-                "fuente": "texto",
-                "color": "#01405f",
-                "alinear": "izq",
-                "peso": 700,
-                "grupo": "nombres",
-                "ajustar": true,
-                "ancho": 400
+                "ajustar": true
               },
               {
                 "id": "lfecha",
@@ -1096,7 +1066,7 @@
               {
                 "id": "avion",
                 "imagen": "img/std-avion.png",
-                "x": 1554,
+                "x": 1665,
                 "y": 1316,
                 "tam": 230,
                 "proporcion": 0.943
@@ -1104,7 +1074,7 @@
               {
                 "id": "nombres",
                 "texto": "{nombres}",
-                "x": 1438,
+                "x": 1530,
                 "y": 1328,
                 "tam": 340,
                 "fuente": "texto",
@@ -1113,22 +1083,7 @@
                 "peso": 700,
                 "mayus": true,
                 "ancho": 1250,
-                "ajustar": true,
-                "grupo": "nombres"
-              },
-              {
-                "id": "edad",
-                "texto": "{quince}",
-                "x": 1682,
-                "y": 1328,
-                "tam": 340,
-                "fuente": "texto",
-                "color": "#01405f",
-                "alinear": "izq",
-                "peso": 700,
-                "grupo": "nombres",
-                "ajustar": true,
-                "ancho": 400
+                "ajustar": true
               },
               {
                 "id": "lfecha",

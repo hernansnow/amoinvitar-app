@@ -299,6 +299,133 @@
      "peso": 300
     }
    ]
+  },
+  "otros": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo-15.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    }
+   ],
+   "formas": [],
+   "textos": [
+    {
+     "id": "banda",
+     "texto": "Tarjeta de embarque a la fiesta",
+     "x": 1073,
+     "y": 224,
+     "tam": 67.4,
+     "fuente": "texto",
+     "color": "#ffffff",
+     "mayus": true,
+     "peso": 500
+    },
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "x": 1077,
+     "y": 417,
+     "tam": 83.8,
+     "fuente": "texto",
+     "color": "#1f4560",
+     "espaciado": 47.5,
+     "mayus": true,
+     "peso": 300
+    },
+    {
+     "id": "avion",
+     "imagen": "img/std-avion.png",
+     "x": 1665,
+     "y": 1316,
+     "tam": 230,
+     "proporcion": 0.943
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 1530,
+     "y": 1328,
+     "tam": 340,
+     "fuente": "texto",
+     "color": "#01405f",
+     "alinear": "der",
+     "peso": 700,
+     "mayus": true,
+     "ancho": 1250,
+     "ajustar": true
+    },
+    {
+     "id": "lfecha",
+     "texto": "Fecha",
+     "x": 224,
+     "y": 1791,
+     "tam": 64.1,
+     "fuente": "texto",
+     "color": "#1f4560",
+     "espaciado": 9,
+     "alinear": "izq",
+     "mayus": true,
+     "peso": 300
+    },
+    {
+     "id": "fecha",
+     "texto": "{dia} {mesCorto} {anio}",
+     "x": 228,
+     "y": 1911,
+     "tam": 105.9,
+     "fuente": "texto",
+     "color": "#01405f",
+     "alinear": "izq",
+     "peso": 700,
+     "mayus": true
+    },
+    {
+     "id": "ldestino",
+     "texto": "Destino",
+     "x": 227,
+     "y": 2119,
+     "tam": 68,
+     "fuente": "texto",
+     "color": "#1f4560",
+     "espaciado": 7,
+     "alinear": "izq",
+     "mayus": true,
+     "peso": 300
+    },
+    {
+     "id": "destino",
+     "texto": "Mi fiesta",
+     "x": 232,
+     "y": 2239,
+     "tam": 111.4,
+     "fuente": "texto",
+     "color": "#01405f",
+     "alinear": "izq",
+     "peso": 700,
+     "mayus": true,
+     "ancho": 917,
+     "ajustar": true
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la invitación formal",
+     "x": 1106,
+     "y": 2501,
+     "tam": 40.2,
+     "fuente": "texto",
+     "color": "#3a5568",
+     "espaciado": 5.1,
+     "mayus": true,
+     "opcional": "proximamente",
+     "peso": 300
+    }
+   ]
   }
  }
 }

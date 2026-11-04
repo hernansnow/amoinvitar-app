@@ -604,14 +604,13 @@ const PRODUCTOS_STD = {
 };
 PRODUCTOS_STD['compromiso-web'] = PRODUCTOS_STD['std-web'];
 
-// ── Diseño a medida (personalizado, empresarial, personaje favorito) ──
+// ── Diseño a medida (personalizado, empresarial) ──
 function pasoBrief({ aMedida }) {
   return {
     id: 'brief', titulo: 'Ideas para el diseño',
     campos: [
-      ...(aMedida === 'personaje' ? [
-        { id: 'brief.personaje', tipo: 'texto', etiqueta: 'Personaje o temática', max: 80, requerido: true, placeholder: 'Bluey, Frozen, Minecraft…' },
-      ] : []),
+      // Infantiles a medida: la temática o el personaje se cuenta acá (ya no es un producto aparte)
+      { id: 'brief.personaje', tipo: 'texto', etiqueta: 'Temática o personaje (si es infantil)', max: 80, placeholder: 'Bluey, Frozen, Minecraft…' },
       ...(aMedida === 'empresarial' ? [
         { id: 'brief.empresa', tipo: 'texto', etiqueta: 'Empresa', max: 80 },
         { id: 'brief.logo', tipo: 'foto', etiqueta: 'Logo (PNG o SVG, mejor sin fondo)' },
