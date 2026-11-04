@@ -407,6 +407,12 @@ export async function marcarCobrado(request, env, id) {
 }
 
 
+// Un precio en euros, en la moneda del visitante (para mostrarlo en el panel)
+export async function precioATexto(env, request, clave, eur) {
+  const moneda = monedaPedida(request);
+  return formatMoney(priceIn(clave, eur, moneda, await getRates(env), paisReal(request), env).amount, moneda);
+}
+
 // ¿El evento tiene un pago pendiente? (no se publica hasta que llegue)
 export async function pagoPendiente(env, eventoId) {
   return !!(await env.DB.prepare("SELECT 1 FROM pedidos WHERE evento_id = ? AND tipo = 'nuevo' AND estado = 'pendiente'").bind(eventoId).first());
@@ -446,7 +452,7 @@ export async function estadoPlan(env, request, ev, esquema) {
     aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,
     // Precio de cada tarjeta con este plan (para mostrarlo en los selectores del panel)
-    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'agradecimiento', 'video-portada', 'idioma', 'diseno'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
+    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'agradecimiento', 'video-portada', 'idioma', 'diseno'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
     // Primera vez: aunque sea gratis pasa por la "compra" (queda el mail de la cuenta y la factura si corresponde)
     activar: !pagado,
   };
@@ -495,15 +501,20 @@ export async function empezar(request, env) {
   const basicas = new Set(modeloJson?.paquetes?.basic?.secciones || ['galeria', 'rsvp', 'dresscode', 'estilos']);
   const todas = new Set(Object.values(modeloJson?.paquetes || {}).flatMap((p) => p.secciones));
   const secciones = Object.fromEntries([...todas].map((x) => [x, basicas.has(x)]));
+  const gratisPosible = !!(m.gratis || MODELOS_GRATIS.includes(m.id));
   const ev = {
     id: `ev_${randomId(5)}`, producto: 'invitacion', tipo, modelo: m.id, paquete: 'borrador', aMedida: null,
     estado: 'borrador', clave: randomId(16), empresaId: null, slug: null,
     datos: {
       variante: varianteDePais(pais), zonaHoraria: zona, acceso: { modo: 'abierta' }, extras: [], secciones,
       nombres: bb ? { a, b: bb } : { a }, celebracion: fecha ? { fecha, inicio: fecha } : {},
-      planElegido: b.gratis && (m.gratis || MODELOS_GRATIS.includes(m.id)) ? 'gratis' : null,
+      planElegido: gratisPosible ? 'gratis' : null,
+      // README (ronda 28): los modelos con plan gratis arrancan gratis (sin galería ni cuenta regresiva); al prender
+      // algo de un plan pago, pasa a ese plan
+      ...(gratisPosible ? { portada: { cuenta: false } } : {}),
     },
   };
+  if (gratisPosible) ev.datos.secciones.galeria = false;
   const almacen = almacenD1(env);
   await almacen.guardarEvento(ev);
   const usuario = await usuarioActual(request, env);

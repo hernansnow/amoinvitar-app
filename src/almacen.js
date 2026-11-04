@@ -30,7 +30,7 @@ export function almacenD1(env) {
       const ahora = new Date().toISOString();
       await db.prepare(`INSERT INTO eventos (id, producto, tipo, slug, modelo, paquete, a_medida, estado, clave_panel, empresa_id, datos, vence, creado, actualizado)
         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?13)
-        ON CONFLICT(id) DO UPDATE SET tipo = ?3, slug = ?4, modelo = ?5, paquete = ?6, estado = ?8, datos = ?11, vence = ?12, actualizado = ?13`)
+        ON CONFLICT(id) DO UPDATE SET producto = ?2, tipo = ?3, a_medida = ?7, slug = ?4, modelo = ?5, paquete = ?6, estado = ?8, datos = ?11, vence = ?12, actualizado = ?13`)
         .bind(e.id, e.producto, e.tipo, e.slug ?? null, e.modelo ?? null, e.paquete, e.aMedida ?? null, e.estado, e.clave, e.empresaId ?? null, JSON.stringify(e.datos), e.vence ?? null, ahora).run();
     },
     async invitados(id) {

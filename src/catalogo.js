@@ -38,7 +38,6 @@ export const PRODUCTOS = {
   'std-tarjeta': { precio: 15, nombre: 'Save The Date · tarjeta' },
   'std-foto': { precio: 18, nombre: 'Save The Date · foto' },
   'std-tarjeta-medida': { precio: 50, nombre: 'Save The Date · tarjeta con diseño personalizado' },
-  'std-video': { desde: 50, manual: true, nombre: 'Save The Date · video' },
   agradecimiento: { precio: 18, nombre: 'Tarjeta de agradecimiento' },
 };
 
@@ -47,7 +46,6 @@ export const EXTRAS = {
   idioma: { precio: 10, nombre: 'Idioma adicional' },
   // Cambios de diseño: colores y tipografía juntos, un solo precio
   diseno: { precio: 18, nombre: 'Cambios de diseño (colores y tipografía)' },
-  'regalos-simbolicos': { precio: 25, nombre: 'Lista de regalos simbólica' },
   // Tarjetas (complementos de la invitación): la Save The Date del modelo va incluida en Premium y Deluxe;
   // las tarjetas con foto (Save The Date y agradecimiento) se pagan aparte en cualquier plan
   'std-tarjeta': { precio: 15, nombre: 'Tarjeta Save The Date', gratisDesde: 'premium' },
@@ -55,6 +53,9 @@ export const EXTRAS = {
   // Save The Date web (Classic o Soft) de la invitación de boda o 15, con su propio link
   'std-web': { precio: 20, nombre: 'Save The Date web' },
   agradecimiento: { precio: 18, nombre: 'Tarjeta de agradecimiento' },
+  // README (ronda 28): Save The Date con diseño a medida, como complemento de cualquier invitación
+  'std-tarjeta-medida': { precio: 50, nombre: 'Save The Date · tarjeta con diseño a medida' },
+  'std-web-medida': { precio: 70, nombre: 'Save The Date web · diseño a medida' },
   // Video propio en la portada: se paga aparte en todos los planes y modelos (Cinema incluido)
   'video-portada': { precio: 8, nombre: 'Video de portada' },
 };
@@ -66,8 +67,8 @@ export const SECCION_MINIMA = {
   hospedaje: 'deluxe', bus: 'deluxe', itinerario: 'deluxe', testigos: 'deluxe', redes: 'deluxe', 'dress-sugerencias': 'deluxe',
 };
 
-// Modelos disponibles en el plan gratis
-export const MODELOS_GRATIS = ['oliva', 'armonia', 'white', 'minimal', 'floral'];
+// Modelos disponibles en el plan gratis (README ronda 28: solo Floral, Euforia y Armonía)
+export const MODELOS_GRATIS = ['floral', 'euforia', 'armonia'];
 
 // Nombres de los modelos según el evento (el mismo diseño, otro nombre)
 export const EQUIVALENCIAS_15 = { lovestory: 'luxury', elegance: 'style', garden: 'eucalipto', civil: 'party' };

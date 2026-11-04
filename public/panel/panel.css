@@ -1047,3 +1047,5 @@ body.modo-admin #btn-ojo { display: none !important; }
 .tj-par > :only-child { grid-column: 1 / -1; }
 .tj-entrada { width: 100%; padding: 9px 10px; border: 1px solid var(--borde); border-radius: 8px; font: inherit; color: var(--texto); background: #fff; box-sizing: border-box; }
 textarea.tj-entrada { resize: vertical; }
+/* Diseño a medida en el cambio de modelo */
+.modelo-opcion.a-medida .a-medida-img { display: grid; place-items: center; aspect-ratio: 9 / 16; width: 100%; border-radius: 8px; background: linear-gradient(160deg, #e8f4f0, #d6e4dd); color: var(--acento); font-size: 2.6rem; }

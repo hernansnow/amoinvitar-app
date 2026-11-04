@@ -155,7 +155,8 @@ function respuestaPrevia(r) {
 export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false, invitado = null, marca = null }) {
   const plural = !!e.nombres?.b;
   const paquete = modelo.paquetes[e.paquete] || modelo.paquetes.basic;
-  const incluye = paquete.incluye;
+  // Basic trae la cuenta regresiva; el plan gratis no
+  const incluye = { ...paquete.incluye, ...(e.paquete === 'basic' ? { cuenta: !e.gratis } : {}) };
   const nA = e.nombres?.a || '', nB = e.nombres?.b || '';
   const nombresTexto = plural ? `${nA} & ${nB}` : nA;
   // Cada nombre en su caja (ai-n): un nombre compuesto no se parte entre el corazón y el otro nombre;

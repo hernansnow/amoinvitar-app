@@ -1291,6 +1291,7 @@ function armarTarjeta(c, valor, alCambiar, { def, diseno, base }) {
     generar.disabled = true; generar.lastChild.textContent = 'Generando…';
     try {
       clearTimeout(guardarTimer); await guardar();
+      await api('/tarjeta', { method: 'POST', body: JSON.stringify({ clase: c.clase, verificar: true }) });
       const blob = await dibujarTarjeta({ def, diseno, base, tipo, valor: actual, vars: varsTarjeta(actual.datos) });
       const url = await subirArchivo(new File([blob], nombreArchivo, { type: 'image/jpeg' }));
       await api('/tarjeta', { method: 'POST', body: JSON.stringify({ clase: c.clase, url }) });
@@ -1313,7 +1314,7 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   if (!visibleUi(c)) return null;
   const idHtml = `c-${prefijo}${c.id.replace(/\W/g, '-')}-${++contadorIds}`;
   // Funciones de un plan más alto: se pueden usar y suben el plan (el aviso lo indica)
-  const insignia = c.paquete && c.paquete !== 'basic' && pasoActual?.nivel !== c.paquete ? insigniaNivel(c.paquete) : null;
+  const insignia = c.insigniaGratis ? insigniaNivel(c.insigniaGratis) : c.paquete && c.paquete !== 'basic' && pasoActual?.nivel !== c.paquete ? insigniaNivel(c.paquete) : null;
   // Necesita algo de otra sección, o queda fijo por lo que se eligió en otra
   const desactivado = c.requiere && !cumple(c.requiere) && !leer(datos, c.id);
   const fijo = c.fijoSi && cumple(c.fijoSi);
@@ -1430,7 +1431,7 @@ function interruptorPaso(p) {
   // Las secciones obligatorias (y las que no se apagan) no llevan interruptor: siempre están
   if (p.sinInterruptor || p.obligatoria || (!p.seccion && !p.interruptor)) return el('span');
   const fijo = p.obligatoria || (p.fijoSi && cumple(p.fijoSi));
-  const sinComplementos = p.complemento && esGratis();
+  const sinComplementos = false; // README (ronda 28): los complementos se suman siempre (en gratis, pasa a Basic)
   const chk = el('input', { type: 'checkbox', role: 'switch', 'aria-label': `${pasoActivo(p) ? 'Apagar' : 'Prender'} ${p.titulo}`, disabled: fijo || sinComplementos,
     title: p.obligatoria ? 'Sección obligatoria' : sinComplementos ? 'No disponible en el plan gratis' : '' });
   chk.checked = pasoActivo(p);
@@ -1496,8 +1497,8 @@ function dibujarPaso() {
   const plegar = el('button', { type: 'button', class: 'btn-redondo chico solo-escritorio', id: 'btn-plegar', 'aria-label': 'Achicar el panel', title: 'Achicar el panel (vista previa más grande)', onclick: () => plegarEditor(true) },
     el('span', { html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' }));
   const ayudaSeccion = p.ayudaSeccion ? el('p', { class: 'ayuda ayuda-seccion' }, p.ayudaSeccion) : null;
-  const apagada = !activo ? el('div', { class: 'tarjeta nota apagada-aviso' }, p.complemento ? `${p.titulo} es un complemento: al prenderlo se suma al total.` : 'Esta sección está apagada: no se ve en la invitación.', ' ',
-    el('button', { type: 'button', class: 'btn btn-chico', disabled: p.complemento && esGratis(), onclick: () => prenderPaso(p, true), html: `${icono('prender', 15)}<span>Prender</span>` })) : null;
+  const apagada = !activo ? el('div', { class: 'tarjeta nota apagada-aviso' }, p.complemento ? `${p.titulo} es un complemento: al prenderlo se suma al total${esGratis() ? ' (en el plan gratis, pasa a Basic)' : ''}.` : 'Esta sección está apagada: no se ve en la invitación.', ' ',
+    el('button', { type: 'button', class: 'btn btn-chico', onclick: () => prenderPaso(p, true), html: `${icono('prender', 15)}<span>Prender</span>` })) : null;
   const motivo = p.fijoSi && cumple(p.fijoSi) ? el('p', { class: 'motivo' }, p.motivo) : null;
   // Campos "siempre": se editan aunque la sección esté apagada (p. ej. quién puede ver la invitación)
   const siempre = p.campos.filter((c) => c.siempre);
@@ -1546,7 +1547,7 @@ function pintarPlan() {
   $('#plan-mini').onclick = () => mostrarResumen(false);
 }
 async function pasarAGratis(gratis) {
-  if (gratis && !confirm('El plan gratis trae solo lo de Basic: se apagan las secciones Premium y Deluxe y los complementos. ¿Seguir?')) return;
+  if (gratis && !confirm('En el plan gratis se apagan la galería, la cuenta regresiva, las secciones Premium y Deluxe y los complementos. ¿Seguir?')) return;
   clearTimeout(guardarTimer); await guardar();
   try { await api('/gratis', { method: 'POST', body: JSON.stringify({ gratis }) }); await recargar(); aviso(gratis ? 'Listo: plan gratis' : 'Listo: se pueden sumar secciones'); } catch (e) { aviso(e.message, true); }
 }
@@ -1579,7 +1580,12 @@ function elegirModelo() {
       onclick: () => usar(m), onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); usar(m); } } },
     el('img', { src: `/modelos/${m.id}/tienda-${m.tipo || S.evento.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { if (e.target.dataset.f) return; e.target.dataset.f = 1; e.target.src = `/modelos/${m.id}/miniatura.jpg`; } }), el('strong', {}, m.nombre),
     m.tipo && m.tipo !== S.evento.tipo ? el('small', {}, m.tipoNombre) : null, m.gratis ? el('small', {}, 'También en plan gratis') : null,
-    m.id === S.evento.modelo ? el('span', { class: 'chip' }, 'En uso') : el('span', { class: 'btn btn-chico' }, 'Usar este')))),
+    m.id === S.evento.modelo ? el('span', { class: 'chip' }, 'En uso') : el('span', { class: 'btn btn-chico' }, 'Usar este'))),
+    // README (ronda 28): el diseño a medida, con su precio
+    S.aMedida ? el('div', { class: 'modelo-opcion a-medida', role: 'button', tabindex: '0', onclick: () => usar({ id: 'a-medida', nombre: 'Diseño a medida' }),
+      onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); usar({ id: 'a-medida', nombre: 'Diseño a medida' }); } } },
+    el('div', { class: 'a-medida-img', 'aria-hidden': 'true' }, '✎'), el('strong', {}, S.aMedida.empresarial ? 'Diseño para empresas' : 'Diseño a medida'),
+    el('small', {}, `Creado para ti · ${S.aMedida.precio}`), el('span', { class: 'btn btn-chico' }, 'Elegir')) : null),
   el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/tienda/', target: '_blank' }, 'la tienda'), '.'));
   // El foco en el modelo que está en uso, no al principio de la lista
   requestAnimationFrame(() => document.querySelector('.modelo-opcion.actual')?.scrollIntoView({ block: 'center' }));

@@ -4,9 +4,7 @@
 // se suma acá como un modelo más con un solo tipo de evento.
 
 export const MODELOS = [
-  // PROVISORIO: Garden con plan gratis para poder probarlo hasta convertir los modelos gratis
-  // (Oliva, Armonía, White, Minimal, Floral). Antes del lanzamiento: gratis: false.
-  { id: 'garden', nombre: 'Garden', nombres: { 15: 'Eucalipto', cumple: 'Eucalipto' }, eventos: ['boda', '15', 'bautismo', 'comunion', 'cumple'], gratis: true },
+  { id: 'garden', nombre: 'Garden', nombres: { 15: 'Eucalipto', cumple: 'Eucalipto' }, eventos: ['boda', '15', 'bautismo', 'comunion', 'cumple'], gratis: false },
   // Convertidos de la v2.0 con scripts/conversion/lote.mjs (boda, 15 y cumpleaños de cada familia)
   { id: 'aquarella', nombre: 'Aquarella', eventos: ['boda',  '15',  'cumple', 'bautismo', 'comunion'], gratis: false },
   { id: 'armonia', nombre: 'Armonía', eventos: ['boda',  '15',  'cumple', 'bautismo', 'comunion'], gratis: false },

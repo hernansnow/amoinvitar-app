@@ -25,7 +25,7 @@ import { checkinHTML } from './componentes/checkin.js';
 import { avisoRespuesta } from './avisos.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
 import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento } from './modelos.js';
-import { MODELOS_GRATIS } from './catalogo.js';
+import { MODELOS_GRATIS, A_MEDIDA } from './catalogo.js';
 import { HttpError } from './lib/util.js';
 import { sendEmail, mailNuevoAcceso } from './lib/email.js';
 import { usuarioActual, crearUsuario } from './lib/auth.js';
@@ -115,7 +115,7 @@ function aplanar(o, pre = '', salida = {}) {
 }
 
 // El evento guardado → lo que espera el motor
-const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, variante: ev.datos.variante });
+const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, gratis: ev.paquete === 'gratis', variante: ev.datos.variante });
 
 // Idiomas de la invitación: el principal y los adicionales contratados (el visitante
 // la ve en el suyo si está, y puede cambiarlo con ?lang=)
@@ -134,7 +134,10 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   const modelo = await modeloJSON(env, evento.modelo, url.origin, evento.tipo);
   // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html.
   // Los otros eventos: index-15.html, index-15-premium.html… (ver plantillaDe)
-  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, evento.paquete, url.origin);
+  // README (ronda 28): Basic trae cuenta regresiva (Gratis no): con la cuenta, la portada es la del diseño con su cuenta
+  if (evento.paquete === 'gratis') evento = { ...evento, paquete: 'basic', gratis: true };
+  const conCuenta = evento.paquete === 'basic' && !evento.gratis && evento.portada?.cuenta !== false;
+  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, conCuenta ? 'premium' : evento.paquete, url.origin);
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
   const idiomas = demo ? [variante(evento.variante)] : idiomasDe(evento);
   const v = demo ? variante(evento.variante) : idiomaPedido(url, evento);
@@ -467,15 +470,16 @@ async function eventoConClave(env, request, url, id) {
 async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {}) {
   const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
-    gratis: ev.paquete === 'gratis' || datos.planElegido === 'gratis', disenoEnviado: !!datos.diseno?.enviado,
+    gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: !!datos.diseno?.enviado,
     publicada: ev.estado === 'publicado', admin });
 }
 
 // Plan con el que se ve la invitación: el que ya pagó o, en el borrador, el que piden las secciones elegidas
 async function planVista(env, url, ev) {
-  if (ev.producto !== 'invitacion' || ev.estado === 'publicado') return ev.paquete === 'gratis' ? 'basic' : ev.paquete;
+  if (ev.producto !== 'invitacion' || ev.estado === 'publicado') return ev.paquete;
   const m = MODELOS.find((x) => x.id === ev.modelo);
   const plan = planNecesario(await esquemaDe(env, url, ev), ev.datos, { gratisPosible: !!(m && (m.gratis || MODELOS_GRATIS.includes(m.id))) });
+  if (plan === 'gratis' && !['premium', 'deluxe'].includes(ev.paquete)) return 'gratis';
   const pagado = ['basic', 'premium', 'deluxe'].indexOf(ev.paquete);
   const necesario = ['basic', 'premium', 'deluxe'].indexOf(plan === 'gratis' ? 'basic' : plan);
   return ['basic', 'premium', 'deluxe'][Math.max(pagado, necesario, 0)];
@@ -589,6 +593,8 @@ async function apiPanel(env, request, url, partes) {
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,
       modelos: modelosCambio(ev.tipo, ev.producto, ev.modelo),
+      // README (ronda 28): en el cambio de modelo también está el diseño a medida, con su precio
+      aMedida: ev.producto === 'invitacion' ? { precio: await tienda.precioATexto(env, request, 'personalizado', A_MEDIDA.personalizado.deluxe), empresarial: ev.tipo === 'empresarial' } : null,
       usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
@@ -629,6 +635,13 @@ async function apiPanel(env, request, url, partes) {
   // Cambiar de modelo (el mismo tipo de evento); lo cargado queda igual
   if (accion === 'modelo' && request.method === 'POST') {
     const { modelo } = await request.json();
+    // Pasar a diseño a medida: el equipo diseña con lo que el cliente cuente en "Ideas para el diseño"
+    if (modelo === 'a-medida' && ev.producto === 'invitacion') {
+      if (ev.estado === 'publicado' && !admin) return json({ error: 'La invitación ya está publicada. Escríbenos por WhatsApp para pasarla a un diseño a medida.' }, 400);
+      ev.producto = 'a-medida'; ev.aMedida = ev.tipo === 'empresarial' ? 'empresarial' : 'personalizado'; ev.datos.modeloAnterior = ev.modelo; ev.modelo = null; ev.datos.planElegido = null;
+      await almacen.guardarEvento(ev);
+      return json({ ok: true });
+    }
     const elegido = modelosCambio(ev.tipo, ev.producto, ev.modelo).find((m) => m.id === modelo);
     if (!elegido) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
     const antes = MODELOS.find((x) => x.id === ev.modelo);
@@ -646,6 +659,8 @@ async function apiPanel(env, request, url, partes) {
       ev.tipo = elegido.tipo;
     }
     ev.modelo = modelo;
+    // A un modelo sin plan gratis: deja de estar en gratis (el plan sale de lo que tenga prendido)
+    if (!(elegido.gratis) && ev.datos.planElegido === 'gratis') ev.datos.planElegido = null;
     await almacen.guardarEvento(ev);
     return json({ ok: true });
   }
@@ -660,6 +675,7 @@ async function apiPanel(env, request, url, partes) {
       for (const p of esquema.pasos) for (const c of p.campos) if (c.paquete && c.paquete !== 'basic') escribirRuta(ev.datos, c.id, c.tipo === 'switch' ? false : undefined);
       if (Array.isArray(ev.datos.fotos?.portada)) ev.datos.fotos.portada = ev.datos.fotos.portada.slice(0, 1);
       (ev.datos.secciones ??= {}).galeria = false; // la galería es de Basic en adelante
+      (ev.datos.portada ??= {}).cuenta = false; // la cuenta regresiva también (README ronda 28)
     }
     await almacen.guardarEvento(ev);
     return json({ ok: true });
@@ -667,7 +683,7 @@ async function apiPanel(env, request, url, partes) {
   // Generar una tarjeta (Save The Date o agradecimiento): el panel arma el JPG y lo sube;
   // acá queda guardada y fija. Hace falta tenerla pagada (la Save The Date viene con Premium y Deluxe).
   if (accion === 'tarjeta' && request.method === 'POST') {
-    const { clase, url: imagen, reabrir } = await request.json();
+    const { clase, url: imagen, reabrir, verificar } = await request.json();
     if (!['std', 'agradecimiento'].includes(clase)) return json({ error: 'Tarjeta desconocida' }, 400);
     // El superusuario puede volver a abrir una tarjeta ya generada
     if (reabrir && admin) {
@@ -675,15 +691,20 @@ async function apiPanel(env, request, url, partes) {
       await almacen.guardarEvento(ev);
       return json({ ok: true });
     }
-    if (!/^\/media\/[\w./-]+\.jpe?g$/i.test(String(imagen || '')) || !String(imagen).includes(ev.id)) return json({ error: 'Imagen no válida' }, 400);
     const actual = ev.datos[clase]?.tarjeta || {};
     if (actual.generada && !admin) return json({ error: 'La tarjeta ya se generó', url: actual.generada }, 409);
     const extras = ev.datos.extras || [];
-    // La Save The Date del modelo viene con Premium y Deluxe; la con foto se paga aparte en cualquier plan
-    const pagada = clase === 'std'
-      ? (ev.datos.std?.tipo === 'foto' ? extras.includes('std-foto') : ['premium', 'deluxe'].includes(ev.paquete) || extras.some((x) => x.startsWith('std-')))
-      : extras.includes('agradecimiento');
+    // La Save The Date del modelo viene con Premium y Deluxe; la con foto se paga aparte en cualquier plan.
+    // Comprada suelta (sin invitación): vale cuando ya se pagó ese producto
+    const suelta = ['std-tarjeta', 'std-foto', 'agradecimiento'].includes(ev.producto);
+    const pagada = suelta ? ev.paquete !== 'borrador' && !(await tienda.pagoPendiente(env, ev.id))
+      : clase === 'std'
+        ? (ev.datos.std?.tipo === 'foto' ? extras.includes('std-foto') : ['premium', 'deluxe'].includes(ev.paquete) || extras.some((x) => x.startsWith('std-')))
+        : extras.includes('agradecimiento');
     if (!pagada && !admin) return json({ error: 'pagar' }, 402);
+    // Antes de armar el JPG, el panel pregunta si ya se puede (sin pagar, la tarjeta no se genera ni se descarga)
+    if (verificar) return json({ ok: true });
+    if (!/^\/media\/[\w./-]+\.jpe?g$/i.test(String(imagen || '')) || !String(imagen).includes(ev.id)) return json({ error: 'Imagen no válida' }, 400);
     ev.datos[clase] = { ...(ev.datos[clase] || {}), tarjeta: { ...actual, generada: imagen, generadaEn: new Date().toISOString() } };
     await almacen.guardarEvento(ev);
     return json({ ok: true, url: imagen });
@@ -814,6 +835,9 @@ async function apiPanel(env, request, url, partes) {
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
     if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);
     if (await tienda.pagoPendiente(env, ev.id)) return json({ error: 'Se puede publicar cuando se acredite el pago. Mientras tanto, todo lo cargado queda guardado.' }, 402);
+    // README (ronda 28): nada se publica sin pagar. Los productos sueltos (Save The Date web, invitación simple)
+    // se arman antes de pagar: el link aparece recién con el pago
+    if (ev.producto !== 'invitacion' && ev.paquete === 'borrador' && !admin) return json({ error: 'pagar', plan: await tienda.estadoPlan(env, request, ev, esquema) }, 402);
     // Primero el resumen y el pago de lo que falte (plan y complementos)
     if (ev.producto === 'invitacion') {
       const plan = await tienda.estadoPlan(env, request, ev, esquema);

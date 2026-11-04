@@ -32,7 +32,7 @@ const PRODUCTOS_PRINCIPALES = [
   { id: 'agradecimiento', nombre: 'Tarjeta de agradecimiento', texto: 'Para después del evento.' },
   { id: 'compromiso-web', nombre: 'Invitación web simple', texto: 'Compromiso, pedida de mano, civil o party.' },
 ];
-const OPCIONES_STD = ['std-web', 'std-web-medida', 'std-tarjeta', 'std-foto', 'std-tarjeta-medida', 'std-video'];
+const OPCIONES_STD = ['std-web', 'std-web-medida', 'std-tarjeta', 'std-foto', 'std-tarjeta-medida'];
 
 function radio(grupo, valor, marcado, alElegir, ...contenido) {
   return el('label', { class: 'opcion' }, el('input', { type: 'radio', name: grupo, value: valor, checked: marcado, onchange: () => alElegir(valor) }), ...contenido);
