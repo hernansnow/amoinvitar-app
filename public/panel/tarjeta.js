@@ -90,13 +90,29 @@ export function textosDe(diseno, v, vars, def) {
     const p = v.textos?.[t.id] || {};
     const valor = p.texto ?? rellenar(t.texto, vars), escala = p.escala || 1;
     const base = (t.tamSolo && !String(valor).includes(' & ') ? t.tamSolo : t.tam) * escala;
-    const tamFinal = tamAjustado(def, t, valor, base);
+    let tamFinal = tamAjustado(def, t, valor, base);
+    // Un párrafo más largo que el del diseño (el mensaje del agradecimiento): se achica hasta ocupar las mismas líneas
+    if (t.ancho && !t.ajustar && !t.imagen && valor) {
+      const lim = Math.max(t.maxLineas || 0, lineasDe(def, t, visible(t, rellenar(t.texto, vars)), base).length);
+      for (let i = 0; i < 20 && lineasDe(def, t, visible(t, valor), tamFinal).length > lim && tamFinal > base * 0.55; i++) tamFinal *= 0.95;
+    }
     return { ...t, valor, dx: p.dx || 0, dy: p.dy || 0, escala, tamFinal, ajuste: base ? tamFinal / base : 1 };
   });
   const minimo = {};
   for (const t of lista) { const g = grupoDe(t); if (g) minimo[g] = Math.min(minimo[g] ?? 1, t.ajuste); }
   for (const t of lista) { const g = grupoDe(t); if (g) t.tamFinal = (t.tamFinal / t.ajuste) * minimo[g]; }
   return lista;
+}
+// README (ronda 28): todas las tarjetas tienen "Texto adicional"; si el diseño no lo trae, va arriba del "Próximamente…"
+// (o abajo de todo) con la misma letra
+export function conExtra(diseno) {
+  if (!diseno?.textos || diseno.textos.some((t) => t.extra)) return diseno;
+  const pie = diseno.textos.find((t) => t.opcional === 'proximamente') || [...diseno.textos].sort((a, b) => b.y - a.y)[0];
+  if (!pie) return diseno;
+  const tam = Math.max(28, pie.tam || 36);
+  const extra = { id: 'extra', texto: '', extra: true, x: pie.alinear ? pie.x : (pie.x || (diseno.ancho || 2160) / 2), y: Math.round(pie.y - tam * 1.9), tam, fuente: pie.fuente,
+    peso: pie.peso, color: pie.color, ancho: Math.round((diseno.ancho || 2160) * 0.7), ...(pie.alinear ? { alinear: pie.alinear } : {}) };
+  return { ...diseno, textos: [...diseno.textos, extra] };
 }
 const capasDe = (diseno, tipo) => (diseno.capas || []).filter((c) => (!c.tipos || c.tipos.includes(tipo)) && !(c.excepto || []).includes(tipo));
 
@@ -110,15 +126,29 @@ const fuentesListas = (def, diseno) => Promise.all(diseno.textos.flatMap((t) => 
   .map((fam) => document.fonts.load(`${t.peso || 400} ${t.tam}px ${fam}`).catch(() => null))));
 
 // ── Editor ───────────────────────────────────────────────────────────
-export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar, subirFoto }) {
+export function editorTarjeta({ def, diseno: d0, base, valor, vars, varsDe, tipo, alCambiar, subirFoto, clase = 'std' }) {
+  const diseno = conExtra(d0);
   cargarFuentes(def);
   const W = def.ancho, H = def.alto;
-  const v = structuredClone(valor || {}); v.textos ??= {};
-  let elegido = null, escribiendo = null;
-  const emitir = () => alCambiar(structuredClone(v));
+  let v = structuredClone(valor || {}); v.textos ??= {};
+  let elegido = null, escribiendo = null, editando = false;
+  // Los datos de los campos (nombres, fecha, hora) cambian las variables de la tarjeta
+  const varsAhora = () => (varsDe ? varsDe(v.datos || {}) : vars);
+  // Historial para deshacer y rehacer (cada cambio guardado es un paso)
+  const historia = [JSON.stringify(v)]; let paso = 0;
+  const emitir = () => {
+    const ahora = JSON.stringify(v);
+    if (ahora !== historia[paso]) { historia.splice(paso + 1); historia.push(ahora); if (historia.length > 60) historia.shift(); paso = historia.length - 1; }
+    alCambiar(structuredClone(v)); pintarArriba?.();
+  };
+  const irPaso = (d) => {
+    const n = paso + d; if (n < 0 || n >= historia.length) return;
+    paso = n; v = JSON.parse(historia[n]); v.textos ??= {}; elegido = null; escribiendo = null;
+    alCambiar(structuredClone(v)); dibujar(); pintarBarra(); pintarControles(); pintarCampos(); pintarArriba();
+  };
 
   const capa = el('div', { class: 'tj-capa', style: `width:${W}px;height:${H}px;background:${def.fondo || '#fff'}` });
-  const lienzo = el('div', { class: 'tj-lienzo', style: `aspect-ratio:${W} / ${H}` }, capa);
+  const lienzo = el('div', { class: 'tj-lienzo bloqueado', style: `aspect-ratio:${W} / ${H}` }, capa);
   const escalar = () => { const k = lienzo.clientWidth / W; capa.style.transform = `scale(${k})`; lienzo.dataset.k = k; };
   new ResizeObserver(escalar).observe(lienzo);
   const k = () => Number(lienzo.dataset.k) || 1;
@@ -126,6 +156,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
   const barra = el('div', { class: 'tj-barra' });
   const pintarBarra = () => {
     barra.replaceChildren();
+    if (!editando) return;
     if (!elegido) { barra.append(el('span', { class: 'tj-pista' }, 'Toca un texto para moverlo, cambiar su tamaño o escribir otro.')); return; }
     const p = () => (v.textos[elegido] ??= {});
     const tam = (d) => { p().escala = Math.min(3, Math.max(0.3, Math.round(((p().escala || 1) + d) * 100) / 100)); dibujar(); emitir(); };
@@ -133,8 +164,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
       el('button', { type: 'button', class: 'tj-btn', title: 'Achicar', 'aria-label': 'Achicar', onclick: () => tam(-0.08) }, 'A−'),
       el('button', { type: 'button', class: 'tj-btn grande', title: 'Agrandar', 'aria-label': 'Agrandar', onclick: () => tam(0.08) }, 'A+'),
       ...(diseno.textos.find((x) => x.id === elegido)?.imagen ? [] : [el('button', { type: 'button', class: 'tj-btn', onclick: () => editarTexto(elegido) }, '✎ Escribir')]),
-      el('button', { type: 'button', class: 'tj-btn', title: 'Volver a su lugar horizontal', onclick: () => { p().dx = 0; dibujar(); emitir(); } }, '↔ Centrar'),
-      el('button', { type: 'button', class: 'tj-btn', title: 'Como venía en el diseño', 'aria-label': 'Como venía en el diseño', onclick: () => { delete v.textos[elegido]; dibujar(); emitir(); } }, '↺'));
+      el('button', { type: 'button', class: 'tj-btn', title: 'Volver a su lugar horizontal', onclick: () => { p().dx = 0; dibujar(); emitir(); } }, '↔ Centrar'));
   };
 
   // Mover un texto o la foto (mouse o dedo sobre el elemento)
@@ -229,7 +259,7 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
       capa.append(hueco);
     }
     for (const c of capasDe(diseno, tipo).filter((x) => x.sobreFoto)) capa.append(adorno(c));
-    for (const t of textosDe(diseno, v, vars, def)) {
+    for (const t of textosDe(diseno, v, varsAhora(), def)) {
       const nodo = nodoTexto(t);
       let ini;
       arrastrar(nodo, {
@@ -264,29 +294,81 @@ export function editorTarjeta({ def, diseno, base, valor, vars, tipo, alCambiar,
           el('button', { type: 'button', class: 'tj-btn', 'aria-label': 'Acercar la foto', onclick: () => zoom(0.1) }, '+')));
       }
     }
-    const interruptor = (texto, prendido, alCambiar) => {
-      const chk = el('input', { type: 'checkbox', role: 'switch' }); chk.checked = prendido;
-      chk.addEventListener('change', () => alCambiar(chk.checked));
-      return el('label', { class: 'interruptor mini' }, chk, el('span', {}, texto));
-    };
-    for (const clave of new Set(diseno.textos.filter((t) => t.opcional).map((t) => t.opcional))) {
-      controles.append(interruptor(OPCIONALES[clave] || clave, v.opcionales?.[clave] !== false, (on) => { (v.opcionales ??= {})[clave] = on; dibujar(); emitir(); }));
-    }
-    if (diseno.textos.some((t) => t.extra)) {
-      controles.append(interruptor('Texto adicional', !!v.extra, (on) => {
-        v.extra = on; elegido = on ? diseno.textos.find((t) => t.extra).id : null; dibujar(); pintarBarra(); emitir();
-        if (on && !rellenar(diseno.textos.find((t) => t.extra).texto, vars) && !v.textos[elegido]?.texto) editarTexto(elegido);
-      }));
-    }
-    controles.append(el('button', { type: 'button', class: 'btn-link', onclick: () => {
-      if (!confirm('¿Volver la tarjeta a como viene en el diseño? Se pierden los cambios de textos y posiciones.')) return;
-      v.textos = {}; elegido = null; dibujar(); pintarBarra(); emitir();
-    } }, '↺ Restablecer'));
   };
 
-  dibujar(); pintarBarra(); pintarControles();
+  // Arriba: Editar / Listo, deshacer, rehacer y volver al original
+  const arriba = el('div', { class: 'tj-arriba' });
+  function pintarArriba() {
+    arriba.replaceChildren(
+      el('button', { type: 'button', class: `btn btn-chico${editando ? '' : ' btn-sec'}`, onclick: () => {
+        editando = !editando; elegido = null; escribiendo = null; lienzo.classList.toggle('bloqueado', !editando); dibujar(); pintarBarra(); pintarArriba();
+      } }, editando ? '✓ Listo' : '✎ Editar sobre la tarjeta'),
+      el('button', { type: 'button', class: 'tj-btn', title: 'Deshacer', 'aria-label': 'Deshacer', disabled: paso === 0, onclick: () => irPaso(-1) }, '↶'),
+      el('button', { type: 'button', class: 'tj-btn', title: 'Rehacer', 'aria-label': 'Rehacer', disabled: paso >= historia.length - 1, onclick: () => irPaso(1) }, '↷'),
+      el('button', { type: 'button', class: 'tj-btn', title: 'Volver al diseño original', onclick: () => {
+        if (!confirm('¿Volver la tarjeta a como viene en el diseño? (Con ↶ puedes deshacerlo.)')) return;
+        const foto = v.foto, pos = v.fotoPos, zoom = v.fotoZoom;
+        v = { textos: {}, ...(foto ? { foto, fotoPos: pos, fotoZoom: zoom } : {}) }; elegido = null; dibujar(); pintarBarra(); pintarControles(); pintarCampos(); emitir();
+      } }, '↺ Original'));
+  }
+
+  // Campos para cambiar los textos sin tocar la tarjeta
+  const campos = el('div', { class: 'tj-campos' });
+  const idsNombres = ['nombres', 'nombreA', 'nombreB', 'a', 'b'];
+  const textoDe = (id) => diseno.textos.find((t) => t.id === id);
+  function pintarCampos() {
+    campos.replaceChildren();
+    const vv = varsAhora(); v.datos ??= {};
+    const entrada = (etiqueta, valor, alCambiar, { tipo = 'text', max = 80, area = false, placeholder = '' } = {}) => {
+      // Un texto del diseño en varias líneas se edita en un cuadro de varias líneas (los saltos quedan);
+      // el mensaje del agradecimiento va siempre en un solo párrafo
+      const multi = !area && tipo === 'text' && String(valor || '').includes('\n');
+      const i = el(area || multi ? 'textarea' : 'input', { ...(area || multi ? { rows: area ? 4 : String(valor).split('\n').length } : { type: tipo }), maxlength: max, placeholder, class: 'tj-entrada' });
+      i.value = valor || '';
+      i.addEventListener('input', () => { alCambiar(area ? i.value.replace(/\s*\n+\s*/g, ' ') : i.value); dibujar(); clearTimeout(i._t); i._t = setTimeout(emitir, 400); });
+      return el('label', { class: 'tj-fila' }, el('span', {}, etiqueta), i);
+    };
+    const sinManual = (ids) => ids.forEach((id) => { if (v.textos[id]) delete v.textos[id].texto; });
+    const plural = diseno.textos.some((t) => /^nombre[AB]$/.test(t.id)) || String(vv.b || '').trim();
+    campos.append(el('div', { class: 'tj-par' },
+      entrada(plural ? 'Nombre 1' : 'Nombre', v.datos.a ?? vv.a, (x) => { v.datos.a = x; sinManual(idsNombres); }, { max: 20 }),
+      plural ? entrada('Nombre 2', v.datos.b ?? vv.b, (x) => { v.datos.b = x; sinManual(idsNombres); }, { max: 20 }) : null));
+    const fechaIds = diseno.textos.filter((t) => /\{(fecha\w*|dia|dd|mes\w*|anio\w*|diaSemana\w*)\}/.test(t.texto)).map((t) => t.id);
+    campos.append(el('div', { class: 'tj-par' },
+      entrada('Fecha del evento', v.datos.fecha ?? vv.iso, (x) => { v.datos.fecha = x; sinManual(fechaIds); }, { tipo: 'date' }),
+      entrada('Horario (opcional)', v.datos.hora ?? vv.horaIso, (x) => { v.datos.hora = x; }, { tipo: 'time' })));
+    const porTexto = (id, etiqueta, opciones) => {
+      const t = textoDe(id); if (!t) return;
+      campos.append(entrada(etiqueta, v.textos[id]?.texto ?? rellenar(t.texto, vv), (x) => { (v.textos[id] ??= {}).texto = x; }, opciones));
+    };
+    if (clase === 'agradecimiento') {
+      porTexto('titulo', 'Título');
+      porTexto('mensaje', 'Mensaje', { area: true, max: 400 });
+    } else {
+      porTexto('titulo', 'Título');
+      porTexto(['evento', 'eventoExclama', 'invitamos', 'teEsperamos'].find((id) => textoDe(id)), 'Subtítulo');
+      // Próximamente la invitación formal: se prende, se apaga y se puede cambiar el texto
+      const pie = diseno.textos.find((t) => t.opcional === 'proximamente');
+      if (pie) {
+        const chk = el('input', { type: 'checkbox', role: 'switch' }); chk.checked = v.opcionales?.proximamente !== false;
+        chk.addEventListener('change', () => { (v.opcionales ??= {}).proximamente = chk.checked; dibujar(); pintarCampos(); emitir(); });
+        campos.append(el('label', { class: 'interruptor mini' }, chk, el('span', {}, 'Mostrar "Próximamente la invitación formal"')));
+        if (v.opcionales?.proximamente !== false) campos.append(entrada('Texto', v.textos[pie.id]?.texto ?? rellenar(pie.texto, vv), (x) => { (v.textos[pie.id] ??= {}).texto = x; }, { max: 60 }));
+      }
+    }
+    // Texto adicional
+    const ex = diseno.textos.find((t) => t.extra);
+    if (ex) {
+      const chk = el('input', { type: 'checkbox', role: 'switch' }); chk.checked = !!v.extra;
+      chk.addEventListener('change', () => { v.extra = chk.checked; dibujar(); pintarCampos(); emitir(); });
+      campos.append(el('label', { class: 'interruptor mini' }, chk, el('span', {}, 'Texto adicional')));
+      if (v.extra) campos.append(entrada('Texto adicional', v.textos[ex.id]?.texto ?? rellenar(ex.texto, vv), (x) => { (v.textos[ex.id] ??= {}).texto = x; }, { max: 120, placeholder: 'Por ejemplo: el lugar o la ciudad' }));
+    }
+  }
+
+  dibujar(); pintarBarra(); pintarControles(); pintarArriba(); pintarCampos();
   fuentesListas(def, diseno).then(() => dibujar());
-  return el('div', { class: 'tj-editor' }, lienzo, barra, controles);
+  return el('div', { class: 'tj-editor' }, arriba, lienzo, barra, controles, campos);
 }
 
 // ── Dibujo final (JPG) ───────────────────────────────────────────────
@@ -353,7 +435,8 @@ function escribirLinea(g, def, t, s, x0, y, tam, relleno) {
   return total;
 }
 
-export async function dibujarTarjeta({ def, diseno, base, valor, vars, tipo }) {
+export async function dibujarTarjeta({ def, diseno: d0, base, valor, vars, tipo }) {
+  const diseno = conExtra(d0);
   cargarFuentes(def);
   const W = def.ancho, H = def.alto;
   const cv = Object.assign(document.createElement('canvas'), { width: W, height: H });

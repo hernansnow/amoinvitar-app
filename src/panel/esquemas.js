@@ -889,12 +889,16 @@ function limpiarValor(c, v) {
       if (typeof v !== 'object') return undefined;
       const num = (x, a, b) => (Number.isFinite(Number(x)) ? Math.min(b, Math.max(a, Number(x))) : undefined);
       const textos = {};
-      for (const [k, t] of Object.entries(v.textos || {}).slice(0, 12)) {
+      for (const [k, t] of Object.entries(v.textos || {}).slice(0, 24)) {
         if (!/^\w{1,20}$/.test(k) || typeof t !== 'object' || !t) continue;
-        textos[k] = { ...(typeof t.texto === 'string' ? { texto: t.texto.slice(0, 300) } : {}), dx: num(t.dx, -1200, 1200) || 0, dy: num(t.dy, -1500, 1500) || 0, escala: num(t.escala, 0.3, 3) || 1 };
+        textos[k] = { ...(typeof t.texto === 'string' ? { texto: t.texto.slice(0, 600) } : {}), dx: num(t.dx, -1200, 1200) || 0, dy: num(t.dy, -1500, 1500) || 0, escala: num(t.escala, 0.3, 3) || 1 };
       }
       const opcionales = Object.fromEntries(Object.entries(v.opcionales || {}).filter(([k]) => /^\w{1,20}$/.test(k)).slice(0, 6).map(([k, x]) => [k, !!x]));
-      return { textos, extra: !!v.extra, opcionales, ...(URL_OK.test(v.foto || '') ? { foto: String(v.foto).slice(0, 500) } : {}),
+      // Lo que se cambió en los campos de la tarjeta (nombres, fecha y hora)
+      const d = v.datos && typeof v.datos === 'object' ? v.datos : {};
+      const datosT = { ...(typeof d.a === 'string' ? { a: d.a.slice(0, 20) } : {}), ...(typeof d.b === 'string' ? { b: d.b.slice(0, 20) } : {}),
+        ...(/^\d{4}-\d{2}-\d{2}$/.test(d.fecha || '') ? { fecha: d.fecha } : {}), ...(/^(\d{2}:\d{2})?$/.test(d.hora ?? 'x') ? { hora: d.hora } : {}) };
+      return { textos, extra: !!v.extra, opcionales, datos: datosT, ...(URL_OK.test(v.foto || '') ? { foto: String(v.foto).slice(0, 500) } : {}),
         ...(POS_OK.test(v.fotoPos || '') ? { fotoPos: v.fotoPos } : {}), ...(num(v.fotoZoom, 1, 4) ? { fotoZoom: num(v.fotoZoom, 1, 4) } : {}) };
     }
     // Paleta: los 4 colores del diseño (vacío = ese color se quitó)

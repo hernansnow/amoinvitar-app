@@ -115,7 +115,7 @@
       "id": "rsvp",
       "texto": "{rsvpAntes}",
       "x": 874,
-      "y": 2342,
+      "y": 2290,
       "tam": 52,
       "fuente": "texto",
       "peso": 600,
@@ -127,12 +127,25 @@
       "id": "extra",
       "texto": "",
       "x": 874,
-      "y": 2430,
-      "tam": 36,
+      "y": 2420,
+      "tam": 34,
       "fuente": "texto",
       "color": "#b77f5f",
       "ancho": 1300,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 874,
+      "y": 2362,
+      "tam": 40,
+      "fuente": "texto",
+      "peso": 600,
+      "color": "#b77f5f",
+      "mayus": true,
+      "espaciado": 4,
+      "opcional": "proximamente"
      }
     ]
    },
@@ -219,7 +232,7 @@
       "id": "rsvp",
       "texto": "{rsvpAntes}",
       "x": 874,
-      "y": 2342,
+      "y": 2290,
       "tam": 52,
       "fuente": "texto",
       "peso": 600,
@@ -231,12 +244,25 @@
       "id": "extra",
       "texto": "",
       "x": 874,
-      "y": 2430,
-      "tam": 36,
+      "y": 2420,
+      "tam": 34,
       "fuente": "texto",
       "color": "#b77f5f",
       "ancho": 1300,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 874,
+      "y": 2362,
+      "tam": 40,
+      "fuente": "texto",
+      "peso": 600,
+      "color": "#b77f5f",
+      "mayus": true,
+      "espaciado": 4,
+      "opcional": "proximamente"
      }
     ]
    }
@@ -343,7 +369,7 @@
       "texto": "{teEsperamos}",
       "mayus": true,
       "x": 878,
-      "y": 2371,
+      "y": 2330,
       "tam": 54,
       "fuente": "serif",
       "peso": 700,
@@ -353,7 +379,7 @@
       "id": "rsvp",
       "texto": "{rsvpAntes}",
       "x": 880,
-      "y": 2429,
+      "y": 2385,
       "tam": 52,
       "fuente": "serif",
       "color": "#4b4b4b",
@@ -364,12 +390,25 @@
       "id": "extra",
       "texto": "",
       "x": 880,
-      "y": 2495,
-      "tam": 38,
+      "y": 2505,
+      "tam": 34,
       "fuente": "serif",
       "color": "#4b4b4b",
       "ancho": 1500,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 880,
+      "y": 2450,
+      "tam": 40,
+      "fuente": "serif",
+      "peso": 400,
+      "color": "#4b4b4b",
+      "mayus": true,
+      "espaciado": 4,
+      "opcional": "proximamente"
      }
     ]
    },
@@ -453,7 +492,7 @@
       "texto": "{teEsperamos}",
       "mayus": true,
       "x": 879,
-      "y": 2370,
+      "y": 2330,
       "tam": 54,
       "fuente": "serif",
       "peso": 700,
@@ -463,7 +502,7 @@
       "id": "rsvp",
       "texto": "{rsvpAntes}",
       "x": 879,
-      "y": 2429,
+      "y": 2385,
       "tam": 52,
       "fuente": "serif",
       "color": "#626262",
@@ -474,12 +513,25 @@
       "id": "extra",
       "texto": "",
       "x": 880,
-      "y": 2495,
-      "tam": 38,
+      "y": 2505,
+      "tam": 34,
       "fuente": "serif",
       "color": "#4b4b4b",
       "ancho": 1500,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 879,
+      "y": 2450,
+      "tam": 40,
+      "fuente": "serif",
+      "peso": 400,
+      "color": "#626262",
+      "mayus": true,
+      "espaciado": 4,
+      "opcional": "proximamente"
      }
     ]
    }
@@ -828,7 +880,7 @@
       "id": "rsvp",
       "texto": "{rsvpAntes}",
       "x": 910,
-      "y": 2404,
+      "y": 2370,
       "tam": 44,
       "fuente": "serif",
       "color": "#7d7979"
@@ -837,12 +889,25 @@
       "id": "extra",
       "texto": "",
       "x": 910,
-      "y": 2465,
-      "tam": 36,
+      "y": 2478,
+      "tam": 32,
       "fuente": "serif",
       "color": "#7d7979",
       "ancho": 1500,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 910,
+      "y": 2428,
+      "tam": 34,
+      "fuente": "serif",
+      "peso": 400,
+      "color": "#7d7979",
+      "mayus": true,
+      "espaciado": 4,
+      "opcional": "proximamente"
      }
     ]
    },
@@ -922,7 +987,7 @@
       "id": "rsvp",
       "texto": "{rsvpAntes}",
       "x": 910,
-      "y": 2404,
+      "y": 2370,
       "tam": 44,
       "fuente": "serif",
       "color": "#7d7979"
@@ -931,12 +996,25 @@
       "id": "extra",
       "texto": "",
       "x": 910,
-      "y": 2465,
-      "tam": 36,
+      "y": 2478,
+      "tam": 32,
       "fuente": "serif",
       "color": "#7d7979",
       "ancho": 1500,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 910,
+      "y": 2428,
+      "tam": 34,
+      "fuente": "serif",
+      "peso": 400,
+      "color": "#7d7979",
+      "mayus": true,
+      "espaciado": 4,
+      "opcional": "proximamente"
      }
     ]
    }
@@ -1098,13 +1176,27 @@
       "id": "extra",
       "texto": "",
       "x": 2390,
-      "y": 3530,
-      "tam": 44,
+      "y": 3562,
+      "tam": 40,
       "fuente": "myriad",
       "color": "#666666",
       "alinear": "der",
       "ancho": 1500,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 2390,
+      "y": 3500,
+      "tam": 38,
+      "fuente": "myriad",
+      "peso": 400,
+      "color": "#666666",
+      "mayus": true,
+      "espaciado": 7,
+      "opcional": "proximamente",
+      "alinear": "der"
      }
     ]
    },
@@ -1254,13 +1346,27 @@
       "id": "extra",
       "texto": "",
       "x": 2390,
-      "y": 3530,
-      "tam": 44,
+      "y": 3562,
+      "tam": 40,
       "fuente": "myriad",
       "color": "#666666",
       "alinear": "der",
       "ancho": 1500,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 2390,
+      "y": 3500,
+      "tam": 38,
+      "fuente": "myriad",
+      "peso": 400,
+      "color": "#666666",
+      "mayus": true,
+      "espaciado": 7,
+      "opcional": "proximamente",
+      "alinear": "der"
      }
     ]
    }
@@ -1352,12 +1458,25 @@
       "id": "extra",
       "texto": "",
       "x": 929,
-      "y": 2480,
-      "tam": 38,
+      "y": 2540,
+      "tam": 34,
       "fuente": "josefin",
       "color": "#929292",
       "ancho": 1600,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 929,
+      "y": 2468,
+      "tam": 36,
+      "fuente": "josefin",
+      "peso": 400,
+      "color": "#929292",
+      "mayus": true,
+      "espaciado": 6,
+      "opcional": "proximamente"
      }
     ]
    },
@@ -1442,12 +1561,25 @@
       "id": "extra",
       "texto": "",
       "x": 929,
-      "y": 2480,
-      "tam": 38,
+      "y": 2540,
+      "tam": 34,
       "fuente": "josefin",
       "color": "#929292",
       "ancho": 1600,
       "extra": true
+     },
+     {
+      "id": "pie",
+      "texto": "Próximamente la invitación formal",
+      "x": 929,
+      "y": 2468,
+      "tam": 36,
+      "fuente": "josefin",
+      "peso": 400,
+      "color": "#929292",
+      "mayus": true,
+      "espaciado": 6,
+      "opcional": "proximamente"
      }
     ]
    }
@@ -1574,7 +1706,7 @@
       "id": "extra",
       "texto": "",
       "x": 874,
-      "y": 2405,
+      "y": 2378,
       "tam": 36,
       "fuente": "montserrat",
       "color": "#ffffff",
@@ -1585,7 +1717,7 @@
       "id": "pie",
       "texto": "Próximamente la invitación formal",
       "x": 874,
-      "y": 2475,
+      "y": 2425,
       "tam": 34,
       "fuente": "montserrat",
       "color": "#ffffff",
@@ -1711,7 +1843,7 @@
       "id": "extra",
       "texto": "",
       "x": 874,
-      "y": 2405,
+      "y": 2378,
       "tam": 36,
       "fuente": "montserrat",
       "color": "#ffffff",
@@ -1722,7 +1854,7 @@
       "id": "pie",
       "texto": "Próximamente la invitación formal",
       "x": 874,
-      "y": 2475,
+      "y": 2425,
       "tam": 34,
       "fuente": "montserrat",
       "color": "#ffffff",

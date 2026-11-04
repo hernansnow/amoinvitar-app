@@ -1035,3 +1035,15 @@ body.modo-admin #btn-ojo { display: none !important; }
 .btn-mis-invitaciones { margin-left: auto; align-self: center; padding: 7px 14px; border-radius: 999px; font-weight: 600; color: var(--acento); text-decoration: none; border: 1px solid color-mix(in srgb, var(--acento) 35%, #fff); }
 .btn-mis-invitaciones:hover { background: color-mix(in srgb, var(--acento) 10%, #fff); }
 @media (min-width: 1024px) { .modos .btn-mis-invitaciones.solo-escritorio { display: inline-block !important; } }
+
+/* README (ronda 28): tarjeta en modo vista (no se mueve nada al tocar) hasta tocar "Editar sobre la tarjeta" */
+.tj-lienzo.bloqueado .tj-capa { pointer-events: none; }
+.tj-lienzo.bloqueado .tj-texto:hover { box-shadow: none; }
+.tj-arriba { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; width: min(100%, 420px); }
+.tj-arriba .tj-btn:disabled { opacity: .35; cursor: default; }
+.tj-campos { display: grid; gap: 10px; width: min(100%, 420px); text-align: left; }
+.tj-fila { display: grid; gap: 4px; font-size: .85rem; color: var(--suave); }
+.tj-par { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tj-par > :only-child { grid-column: 1 / -1; }
+.tj-entrada { width: 100%; padding: 9px 10px; border: 1px solid var(--borde); border-radius: 8px; font: inherit; color: var(--texto); background: #fff; box-sizing: border-box; }
+textarea.tj-entrada { resize: vertical; }

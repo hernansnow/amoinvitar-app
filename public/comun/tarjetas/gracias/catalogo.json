@@ -73,20 +73,9 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaMomentos}",
+      "texto": "{citaMomentos} {graciasAcomp}",
       "x": 1240,
-      "y": 2640,
-      "tam": 76,
-      "fuente": "texto",
-      "color": "#4a4d5c",
-      "ancho": 1900,
-      "altoLinea": 1.35
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 1240,
-      "y": 3080,
+      "y": 2860,
       "tam": 76,
       "fuente": "texto",
       "color": "#4a4d5c",
@@ -139,20 +128,9 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaMomentos}",
+      "texto": "{citaMomentos} {graciasAcomp}",
       "x": 1240,
-      "y": 2640,
-      "tam": 76,
-      "fuente": "texto",
-      "color": "#4a4d5c",
-      "ancho": 1900,
-      "altoLinea": 1.35
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 1240,
-      "y": 3080,
+      "y": 2860,
       "tam": 76,
       "fuente": "texto",
       "color": "#4a4d5c",
@@ -208,24 +186,13 @@
     "textos": [
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 1080,
-      "y": 1790,
+      "y": 1955,
       "tam": 72,
       "fuente": "texto",
       "color": "#2f3433",
       "ancho": 1640,
-      "altoLinea": 1.3
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 1080,
-      "y": 2120,
-      "tam": 72,
-      "fuente": "texto",
-      "color": "#2f3433",
-      "ancho": 1500,
       "altoLinea": 1.3
      },
      {
@@ -294,24 +261,13 @@
     "textos": [
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 1080,
-      "y": 1790,
+      "y": 1955,
       "tam": 72,
       "fuente": "texto",
       "color": "#2f3433",
       "ancho": 1640,
-      "altoLinea": 1.3
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 1080,
-      "y": 2120,
-      "tam": 72,
-      "fuente": "texto",
-      "color": "#2f3433",
-      "ancho": 1500,
       "altoLinea": 1.3
      },
      {
@@ -423,22 +379,9 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaMomentos}",
+      "texto": "{citaMomentos} {graciasAcomp}",
       "x": 1250,
-      "y": 2330,
-      "tam": 82,
-      "fuente": "poppins",
-      "color": "#8b7a72",
-      "alinear": "izq",
-      "ancho": 1120,
-      "altoLinea": 1.32,
-      "peso": 300
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 1250,
-      "y": 3020,
+      "y": 2675,
       "tam": 82,
       "fuente": "poppins",
       "color": "#8b7a72",
@@ -516,22 +459,9 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaMomentos}",
+      "texto": "{citaMomentos} {graciasAcomp}",
       "x": 1250,
-      "y": 2330,
-      "tam": 82,
-      "fuente": "poppins",
-      "color": "#8b7a72",
-      "alinear": "izq",
-      "ancho": 1120,
-      "altoLinea": 1.32,
-      "peso": 300
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 1250,
-      "y": 3020,
+      "y": 2675,
       "tam": 82,
       "fuente": "poppins",
       "color": "#8b7a72",
@@ -611,24 +541,13 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 874,
-      "y": 2112,
+      "y": 2224,
       "tam": 54,
       "fuente": "texto",
       "color": "#b07352",
       "ancho": 1380,
-      "altoLinea": 1.3
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 874,
-      "y": 2335,
-      "tam": 54,
-      "fuente": "texto",
-      "color": "#b07352",
-      "ancho": 1250,
       "altoLinea": 1.3
      },
      {
@@ -699,24 +618,13 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 874,
-      "y": 2112,
+      "y": 2224,
       "tam": 54,
       "fuente": "texto",
       "color": "#b07352",
       "ancho": 1380,
-      "altoLinea": 1.3
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 874,
-      "y": 2335,
-      "tam": 54,
-      "fuente": "texto",
-      "color": "#b07352",
-      "ancho": 1250,
       "altoLinea": 1.3
      },
      {
@@ -784,25 +692,13 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 907,
-      "y": 1940,
+      "y": 2090,
       "tam": 60,
       "fuente": "texto",
       "color": "#1f4d3a",
       "ancho": 1500,
-      "altoLinea": 1.3,
-      "peso": 500
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 907,
-      "y": 2240,
-      "tam": 60,
-      "fuente": "texto",
-      "color": "#1f4d3a",
-      "ancho": 1400,
       "altoLinea": 1.3,
       "peso": 500
      },
@@ -851,25 +747,13 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 907,
-      "y": 1940,
+      "y": 2090,
       "tam": 60,
       "fuente": "texto",
       "color": "#1f4d3a",
       "ancho": 1500,
-      "altoLinea": 1.3,
-      "peso": 500
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 907,
-      "y": 2240,
-      "tam": 60,
-      "fuente": "texto",
-      "color": "#1f4d3a",
-      "ancho": 1400,
       "altoLinea": 1.3,
       "peso": 500
      },
@@ -925,24 +809,13 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaMomentos}",
+      "texto": "{citaMomentos} {graciasAcomp}",
       "x": 933,
-      "y": 2150,
+      "y": 2270,
       "tam": 54,
       "fuente": "texto",
       "color": "#6b6b6b",
       "ancho": 1500,
-      "altoLinea": 1.32
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 933,
-      "y": 2390,
-      "tam": 54,
-      "fuente": "texto",
-      "color": "#6b6b6b",
-      "ancho": 1450,
       "altoLinea": 1.32
      },
      {
@@ -992,24 +865,13 @@
      },
      {
       "id": "mensaje",
-      "texto": "{citaMomentos}",
+      "texto": "{citaMomentos} {graciasAcomp}",
       "x": 933,
-      "y": 2150,
+      "y": 2270,
       "tam": 54,
       "fuente": "texto",
       "color": "#6b6b6b",
       "ancho": 1500,
-      "altoLinea": 1.32
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 933,
-      "y": 2390,
-      "tam": 54,
-      "fuente": "texto",
-      "color": "#6b6b6b",
-      "ancho": 1450,
       "altoLinea": 1.32
      },
      {
@@ -1069,25 +931,13 @@
     "textos": [
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 874,
-      "y": 1470,
+      "y": 1600,
       "tam": 60,
       "fuente": "texto",
       "color": "#ffffff",
       "ancho": 1350,
-      "altoLinea": 1.3,
-      "sombra": true
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 874,
-      "y": 1730,
-      "tam": 60,
-      "fuente": "texto",
-      "color": "#ffffff",
-      "ancho": 1250,
       "altoLinea": 1.3,
       "sombra": true
      },
@@ -1163,25 +1013,13 @@
     "textos": [
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 874,
-      "y": 1470,
+      "y": 1600,
       "tam": 60,
       "fuente": "texto",
       "color": "#ffffff",
       "ancho": 1350,
-      "altoLinea": 1.3,
-      "sombra": true
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 874,
-      "y": 1730,
-      "tam": 60,
-      "fuente": "texto",
-      "color": "#ffffff",
-      "ancho": 1250,
       "altoLinea": 1.3,
       "sombra": true
      },
@@ -1247,20 +1085,9 @@
     "textos": [
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 863,
-      "y": 1235,
-      "tam": 92,
-      "fuente": "pristina",
-      "color": "#7a3a55",
-      "ancho": 930,
-      "altoLinea": 1.12
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 863,
-      "y": 1700,
+      "y": 1468,
       "tam": 92,
       "fuente": "pristina",
       "color": "#7a3a55",
@@ -1311,20 +1138,9 @@
     "textos": [
      {
       "id": "mensaje",
-      "texto": "{citaFelices}",
+      "texto": "{citaFelices} {graciasAcomp}",
       "x": 863,
-      "y": 1235,
-      "tam": 92,
-      "fuente": "pristina",
-      "color": "#7a3a55",
-      "ancho": 930,
-      "altoLinea": 1.12
-     },
-     {
-      "id": "gracias",
-      "texto": "{graciasAcomp}",
-      "x": 863,
-      "y": 1700,
+      "y": 1468,
       "tam": 92,
       "fuente": "pristina",
       "color": "#7a3a55",

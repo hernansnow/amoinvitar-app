@@ -1194,18 +1194,20 @@ const FRASES = {
   babyshower: { evento: 'Baby shower', exclama: '¡Baby shower!', invitamos: 'Te invitamos a celebrar\nla llegada del bebé' },
   revelacion: { evento: 'Revelación', exclama: '¿Niño o niña?', invitamos: 'Te invitamos a descubrir\nsi es niño o niña' },
 };
-function varsTarjeta() {
+function varsTarjeta(o = {}) {
+  // o: lo que el cliente cambió en los campos de la tarjeta (nombres, fecha, hora); si no, lo de la invitación
+  const nA = o.a ?? datos.nombres?.a ?? '', nB = o.b ?? datos.nombres?.b ?? '';
   const lugar = datos.celebracion?.nombre || datos.ceremonia?.nombre || '';
-  const iso = datos.celebracion?.fecha || (datos.celebracion?.inicio || '').slice(0, 10) || datos.ceremonia?.fecha || '';
-  const hora = datos.celebracion?.hora || '';
+  const iso = o.fecha || datos.celebracion?.fecha || (datos.celebracion?.inicio || '').slice(0, 10) || datos.ceremonia?.fecha || datos.std?.fecha || '';
+  const hora = o.hora ?? datos.celebracion?.hora ?? '';
   const [a, m, d] = iso ? iso.split('-') : [];
   const fecha = iso ? new Date(`${iso}T12:00:00`) : null;
   const mes = fecha ? MESES[Number(m) - 1] : '';
-  const plural = !!datos.nombres?.b;
+  const plural = !!nB;
   const f = FRASES[S.evento.tipo] || FRASES[plural ? 'boda' : 'cumple'];
   const cierre = datos.rsvp?.cierre ? datos.rsvp.cierre.split('-').reverse().join('/') : '';
   return {
-    nombres: [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & '), a: datos.nombres?.a || '', b: datos.nombres?.b || '',
+    iso, horaIso: hora, nombres: [nA, nB].filter(Boolean).join(' & '), a: nA || '', b: nB || '',
     fecha: iso ? `${d} · ${m} · ${a}` : '', fechaCorta: iso ? `${d} ${mes.slice(0, 3).toUpperCase()} ${a}` : '',
     fechaLarga: iso ? `${Number(d)} ${may(mes)} ${a}` : '', fechaPuntos: iso ? `${Number(d)}·${may(mes)}·${a}` : '',
     dia: iso ? String(Number(d)) : '', mes: may(mes), mesCorto: may(mes.slice(0, 3)), mesNum: m || '', anio: a || '', anioCorto: a ? a.slice(2) : '',
@@ -1215,9 +1217,9 @@ function varsTarjeta() {
     lugar, horaLugar: [hora ? `${hora}hs` : '', lugar.toUpperCase()].filter(Boolean).join(' - '),
     rsvpAntes: cierre ? `Responder RSVP antes del ${cierre}` : '',
     evento: f.evento, eventoExclama: f.exclama, invitamos: plural ? f.invitamos.replace('Te invito', 'Te invitamos') : f.invitamos,
-    teEsperamos: plural ? 'Te esperamos' : 'Te espero', mensaje: MENSAJE_GRACIAS,
+    teEsperamos: plural ? 'Te esperamos' : 'Te espero', mensaje: MENSAJE_GRACIAS.replace(/\s*\n+\s*/g, ' '),
     // Iniciales (monograma), fechas en otros formatos y frases cortas de los diseños con foto
-    ia: (datos.nombres?.a || '').trim().charAt(0).toUpperCase(), ib: (datos.nombres?.b || '').trim().charAt(0).toUpperCase(),
+    ia: (nA || '').trim().charAt(0).toUpperCase(), ib: (nB || '').trim().charAt(0).toUpperCase(),
     fechaGuion: iso ? `${Number(d)} de ${mes} - ${a}` : '', fechaBullets: iso ? `${Number(d)} • ${may(mes)} • ${a}` : '',
     invitamosLinea: (plural ? f.invitamos.replace('Te invito', 'Te invitamos') : f.invitamos).replace(/\s*\n\s*/g, ' '),
     acompanar: plural ? 'Esperamos que nos puedas acompañar' : 'Espero que me puedas acompañar',
@@ -1281,7 +1283,7 @@ function armarTarjeta(c, valor, alCambiar, { def, diseno, base }) {
       } }, 'Volver a editar (administración)') : null);
   }
   let actual = valor || {};
-  const editor = editorTarjeta({ def, diseno, base, tipo, valor: actual, vars: varsTarjeta(), alCambiar: (v) => { actual = v; alCambiar(v); },
+  const editor = editorTarjeta({ def, diseno, base, tipo, clase: c.clase, valor: actual, vars: varsTarjeta(actual.datos), varsDe: (o) => varsTarjeta(o), alCambiar: (v) => { actual = v; alCambiar(v); },
     subirFoto: async (archivo) => subirArchivo(await achicarFoto(archivo, 1600)) });
   const generar = el('button', { type: 'button', class: 'btn btn-grande', onclick: async () => {
     if (diseno.foto && !actual.foto) { aviso('Falta subir la foto de la tarjeta.', true); return; }
@@ -1289,7 +1291,7 @@ function armarTarjeta(c, valor, alCambiar, { def, diseno, base }) {
     generar.disabled = true; generar.lastChild.textContent = 'Generando…';
     try {
       clearTimeout(guardarTimer); await guardar();
-      const blob = await dibujarTarjeta({ def, diseno, base, tipo, valor: actual, vars: varsTarjeta() });
+      const blob = await dibujarTarjeta({ def, diseno, base, tipo, valor: actual, vars: varsTarjeta(actual.datos) });
       const url = await subirArchivo(new File([blob], nombreArchivo, { type: 'image/jpeg' }));
       await api('/tarjeta', { method: 'POST', body: JSON.stringify({ clase: c.clase, url }) });
       escribir(datos, c.id, { ...actual, generada: url });
@@ -1302,7 +1304,7 @@ function armarTarjeta(c, valor, alCambiar, { def, diseno, base }) {
     } finally { generar.disabled = false; generar.lastChild.textContent = 'Generar tarjeta'; }
   }, html: `${icono('std', 18)}<span>Generar tarjeta</span>` });
   return el('div', { class: 'tj-campo' }, editor, generar,
-    el('p', { class: 'ayuda' }, 'Los textos salen de la invitación, pero acá se pueden cambiar sin tocar la invitación. Una vez generada, la tarjeta queda fija.'));
+    el('p', { class: 'ayuda' }, 'Los textos salen de la invitación, pero aquí se pueden cambiar sin tocar la invitación. Para mover o agrandar los textos, toca "Editar sobre la tarjeta". Una vez generada, la tarjeta queda fija.'));
 }
 
 let contadorIds = 0;
