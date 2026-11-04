@@ -143,13 +143,24 @@
   // El modelo de la página (por su hoja de estilos)
   var MODELO = ((document.querySelector('link[href*="/modelos/"][href$="estilo.css"]') || {}).getAttribute || function () { return ''; }).call(document.querySelector('link[href*="/modelos/"][href$="estilo.css"]'), 'href') || '';
   MODELO = (MODELO.match(/\/modelos\/([^/]+)\//) || [])[1] || '';
+  // Para los ajustes de cada modelo en la hoja común (README ronda 29: Rouge con más interlineado)
+  if (MODELO) document.documentElement.setAttribute('data-modelo', MODELO);
   // Modelos con los dos nombres en una línea: hasta qué fracción de la letra del diseño se puede achicar
-  var UNA_LINEA = { rockabilly: [0.45, 0.86], rouge: [0.27, 0.92], oliva: [0.45, 0.86], garden: [0.4, 0.66], hojas: [0.4, 0.66], travel: [0.4, 0.9], aquarella: [0.5, 0.88], minimal: [0.5, 0.88], sky: [0.5, 0.74], lovestory: [0.42, 0.86], black: [0.42, 0.8], white: [0.42, 0.8] };
+  var UNA_LINEA = { 'std-classic': [0.5, 0.95, 1], rockabilly: [0.45, 0.86], rouge: [0.27, 0.92], oliva: [0.45, 0.86], garden: [0.4, 0.66], hojas: [0.4, 0.66], travel: [0.4, 0.9], aquarella: [0.5, 0.88], minimal: [0.5, 0.88], sky: [0.5, 0.74], lovestory: [0.42, 0.86], black: [0.42, 0.8], white: [0.42, 0.8] };
   // Modelos donde el "&" ya va en su propia línea con su espacio (Elegance: el círculo entre los nombres)
   var SIN_TRES = { elegance: 1, style: 1 };
   function ajustarNombres() {
     document.querySelectorAll('[data-ajustar]').forEach(function (h) {
       h.style.fontSize = ''; h.style.maxWidth = ''; h.style.marginLeft = ''; h.style.marginRight = ''; h.classList.remove('ai-nombres-3', 'ai-nombres-2'); h.style.whiteSpace = '';
+      h.querySelectorAll('br').forEach(function (b) { b.style.display = ''; });
+      // Los espacios duros alrededor del "&" (Save The Date Classic) van en un span: en tres líneas se ocultan (si no,
+      // cada uno ocupa un renglón vacío)
+      [].slice.call(h.childNodes).forEach(function (n) {
+        if (n.nodeType === 3 && /\u00a0/.test(n.textContent) && !n.textContent.replace(/[\s\u00a0]/g, '')) {
+          var e = document.createElement('span'); e.className = 'ai-esp'; e.textContent = n.textContent; h.replaceChild(e, n);
+        }
+      });
+      h.querySelectorAll('span').forEach(function (x) { x.style.letterSpacing = ''; });
       if (!h.offsetParent) return; // oculto (otra portada): se ajusta cuando se vea
       var propia = h.getAttribute('data-ajustar-en') && h.closest(h.getAttribute('data-ajustar-en'));
       var caja = propia || h.closest('.container, section') || h.parentElement;
@@ -185,13 +196,18 @@
       var dosNombres = h.querySelectorAll('.ai-n').length === 2;
       if (UNA_LINEA[MODELO] && dosNombres) {
         h.style.whiteSpace = 'nowrap';
+        // los saltos del diseño (Save The Date Classic: un nombre por línea en el celular) no cuentan en una línea
+        var saltos = h.querySelectorAll('br'); saltos.forEach(function (b) { b.style.display = 'none'; });
         // en una línea puede usar casi todo el ancho de su caja (no solo la fracción pensada para dos líneas)
         var ancho1 = Math.max(disponible, Math.floor(base * UNA_LINEA[MODELO][1]));
+        // (tercer valor) sin pasarse de la columna del diseño (Save The Date Classic: la columna es más angosta)
+        if (UNA_LINEA[MODELO][2] && h.parentElement) ancho1 = Math.min(ancho1, h.parentElement.clientWidth);
         h.style.maxWidth = ancho1 + 'px';
         var legible = Math.max(22, fs0 * UNA_LINEA[MODELO][0]);
         for (var j = 0; j < 40 && medidas(h).ancho > ancho1 + 1 && fs > legible; j++) { fs = Math.max(legible, fs * 0.96); h.style.fontSize = fs.toFixed(1) + 'px'; }
         if (medidas(h).ancho <= ancho1 + 1) return;
         h.style.whiteSpace = ''; h.style.fontSize = ''; h.style.maxWidth = disponible + 'px'; fs = fs0;
+        saltos.forEach(function (b) { b.style.display = ''; });
         h.classList.add('ai-nombres-2');
       }
       for (var i = 0; i < 40; i++) {
@@ -201,12 +217,20 @@
         h.style.fontSize = fs.toFixed(1) + 'px';
         if (fs === minimo) break;
       }
+      // README (ronda 29): con la letra al mínimo y todavía sin entrar (Beach, con letras espaciadas), se achica el
+      // espaciado entre letras para que el nombre no se salga de la pantalla
+      if (medidas(h).ancho > disponible + 1) {
+        var esp = h.querySelectorAll('span');
+        for (var k = 0; k < 12 && medidas(h).ancho > disponible + 1; k++) {
+          esp.forEach(function (x) { var ls = parseFloat(getComputedStyle(x).letterSpacing) || 0; if (ls > 0.5) x.style.letterSpacing = (ls * 0.8).toFixed(2) + 'px'; });
+        }
+      }
       // README (ronda 26): si quedan en tres líneas (nombre / & / nombre), el "&", el "+" o el corazón van en su línea
       // pegados a los nombres (sin el interlineado grande del diseño: Travel, Aquarella, Cinema…)
       var ns = h.querySelectorAll(':scope > .ai-n');
       if (ns.length === 2) {
         var r1 = ns[0].getBoundingClientRect(), r2 = ns[1].getBoundingClientRect();
-        var sep = [].filter.call(h.children, function (x) { return !x.classList.contains('ai-n') && x.getBoundingClientRect().width; })[0];
+        var sep = [].filter.call(h.children, function (x) { return !x.classList.contains('ai-n') && !x.classList.contains('ai-esp') && x.getBoundingClientRect().width; })[0];
         var rs = sep && sep.getBoundingClientRect(), cs = rs && rs.top + rs.height / 2;
         var solo = rs && cs > r1.bottom - r1.height * 0.25 && cs < r2.top + r2.height * 0.25;
         // Centrados y cada nombre en su línea ("Maximiliano / & Guadalupe"): también en tres, así queda parejo
@@ -214,6 +238,13 @@
         var partidos = r2.top > r1.bottom - r1.height * 0.3 && h.dataset.alinear === 'centro';
         if (!SIN_TRES[MODELO] && rs && r2.top > r1.bottom - r1.height * 0.3 && (solo || partidos)) h.classList.add('ai-nombres-3');
       }
+    });
+    // README (ronda 29): nombres que van en títulos separados (Passion) cambian de tamaño parejo: todos con el más chico
+    var grupos = {};
+    document.querySelectorAll('[data-ajustar-grupo]').forEach(function (h) { if (h.offsetParent) var k = h.getAttribute('data-ajustar-grupo'); (grupos[k] = grupos[k] || []).push(h); });
+    Object.keys(grupos).forEach(function (g) {
+      var min = Math.min.apply(null, grupos[g].map(function (h) { return parseFloat(getComputedStyle(h).fontSize); }));
+      grupos[g].forEach(function (h) { h.style.fontSize = min.toFixed(1) + 'px'; });
     });
     // La frase de la portada va en una sola línea: si no entra, primero se sacan las rayitas de los costados
     // (date-line) y, si todavía no entra, se achica la letra (Hojas: "MI PRIMERA COMUNIÓN")

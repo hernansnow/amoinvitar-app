@@ -824,7 +824,7 @@ function portadaSimple(base, modelo, { std = false } = {}) {
   const i = campos.findIndex((c) => c.id === 'textos.portada.subtitulo');
   const extra = [
     { id: 'textos.std.titulo', tipo: 'texto', etiqueta: 'Título', max: 20, base: 'std.titulo', ancho: 'mitad', ayuda: 'Por ejemplo "Save the date".' },
-    ...(CON_MENSAJE.has(modelo?.id) ? [{ id: 'textos.std.mensaje', tipo: 'area', etiqueta: 'Mensaje breve', max: 110, base: 'std.mensaje', ayuda: 'Hasta 110 caracteres, para que no se rompa el diseño.' }] : []),
+    ...(CON_MENSAJE.has(modelo?.id) ? [{ id: 'textos.std.mensaje', tipo: 'area', etiqueta: 'Mensaje breve', max: 60, base: 'std.mensaje', ayuda: 'Hasta 60 caracteres, para que no se rompa el diseño.' }] : []),
   ];
   campos.splice(i < 0 ? campos.length : i + 1, 0, ...extra);
   // La Save The Date: la fecha va en la portada (sin lugares)
@@ -833,9 +833,10 @@ function portadaSimple(base, modelo, { std = false } = {}) {
     { id: 'celebracion.hora', tipo: 'hora', etiqueta: 'Horario (opcional)', ancho: 'mitad', ayuda: 'Sin hora, en el calendario se agenda como evento de todo el día.' },
     // README (ronda 28): "Próximamente la invitación formal", se prende, se apaga y se cambia el texto
     { id: 'std.proximamente', tipo: 'switch', etiqueta: 'Mostrar "Próximamente la invitación formal"', defecto: true },
-    { id: 'textos.std.proximamente', tipo: 'texto', etiqueta: 'Texto', max: 60, base: 'std.proximamente', si: { campo: 'std.proximamente', no: false } },
+    { id: 'textos.std.proximamente', tipo: 'texto', etiqueta: 'Texto', max: 40, base: 'std.proximamente', si: { campo: 'std.proximamente', no: false } },
   );
-  return { ...p, campos, obligatoria: true };
+  // README (ronda 29): uno por línea (salvo los nombres), así no se descuadra
+  return { ...p, campos: campos.map((c) => (c.ancho && !c.id.startsWith('nombres.') ? { ...c, ancho: undefined } : c)), obligatoria: true };
 }
 function pasosSimple({ tipo, modelo, datos }) {
   const base = pasosInvitacion({ tipo, modelo });
@@ -848,7 +849,9 @@ function pasosSimple({ tipo, modelo, datos }) {
   const rsvp = de('rsvp') && { ...de('rsvp'), obligatoria: true, campos: de('rsvp').campos.filter((c) => !/^(rsvp\.aforo|rsvp\.extras|rsvp\.preguntas\.traslado|rsvp\.preguntas\.mensaje)$/.test(c.id)) };
   const acceso = { id: 'seguridad', titulo: 'Acceso', obligatoria: true,
     campos: CAMPOS_ACCESO.map((c) => (c.id === 'acceso.tipo' ? { ...c, valores: c.valores.filter((o) => !o.v.startsWith('lista')) } : c)) };
-  return [portadaSimple(base, modelo), pasoIdioma, lug, rsvp, acceso, pasoPublicar(tipo), { ...pasoDiseno(modelo), separado: true }, pasoIdiomaAdicional([], datos)].filter(Boolean);
+  const pasos = [portadaSimple(base, modelo), pasoIdioma, lug, rsvp, acceso, pasoPublicar(tipo), { ...pasoDiseno(modelo), separado: true }].filter(Boolean);
+  // README (ronda 29): el idioma adicional con los textos propios de este panel (antes salía vacío)
+  return [...pasos, pasoIdiomaAdicional(pasos, datos)];
 }
 // El link de la Save The Date web, para copiarlo o mandarlo (lo arma el panel)
 const CAMPO_LINK_STD = { id: 'std.link', tipo: 'linkStd', etiqueta: 'Link de la Save The Date', ayuda: 'Cópialo o envíalo por WhatsApp. Se ve apenas se paga.' };
@@ -856,9 +859,10 @@ const CAMPO_LINK_STD = { id: 'std.link', tipo: 'linkStd', etiqueta: 'Link de la 
 export const DISENOS_STD_WEB = [{ v: 'std-classic', etiqueta: 'Web Classic' }, { v: 'std-soft', etiqueta: 'Web Soft' }];
 function pasosStdWeb({ tipo, modelo, datos }) {
   const base = pasosInvitacion({ tipo, modelo });
-  return [portadaSimple(base, modelo, { std: true }), pasoIdioma,
+  const pasos = [portadaSimple(base, modelo, { std: true }), pasoIdioma,
     { id: 'publicar', titulo: 'Link', obligatoria: true, campos: [CAMPO_LINK_STD] },
-    { ...pasoDiseno(modelo), separado: true }, pasoIdiomaAdicional([], datos)].filter(Boolean);
+    { ...pasoDiseno(modelo), separado: true }].filter(Boolean);
+  return [...pasos, pasoIdiomaAdicional(pasos, datos)];
 }
 
 // ── Entrada principal ─────────────────────────────────────────────────

@@ -4419,3 +4419,6 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* README (ronda 29): el texto de la sección con aire a los costados (no toca el marco) */
+[data-rsvp="texto"] { padding-left: 10%; padding-right: 10%; }

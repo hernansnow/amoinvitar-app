@@ -4333,3 +4333,7 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* README (ronda 29): más margen a los costados en los textos */
+#home-section .col-md-6 > p, #home-section .col-md-6 > h6, #home-section .col-md-6 .text-center > p, #home-section .col-md-6 .text-center > h6 { padding-left: 9%; padding-right: 9%; }
+#home-section .col-md-6 p.text-center.text-black { padding-left: 15%; padding-right: 15%; }

@@ -342,7 +342,7 @@ function inicialesPortada(c) {
   for (const e of $$(c.doc.body, 'div,span,p,h1,h2,h3,h4,h5').filter((x) => x.closest('#home-section') && !x.children.length)) {
     const m = /^\s*([A-ZÁÉÍÓÚÑ])(?:[\s\u00a0]+([A-ZÁÉÍÓÚÑ]))?\s*$/.exec(e.textContent);
     if (!m || e.closest('[data-campo],[data-campo-html],[data-t],[data-fecha],a,button')) continue;
-    e.innerHTML = m[2] ? '<span data-campo="nombres.inicialA">A</span>&#160;&#160;&#160;&#160;<span data-campo="nombres.inicialB">B</span>' : '<span data-campo="nombres.inicialA">A</span>';
+    e.innerHTML = m[2] ? '<span data-campo="nombres.inicialA">A</span><span data-campo="nombres.inicialB">B</span>' : '<span data-campo="nombres.inicialA">A</span>';
     e.classList.add('ai-iniciales');
   }
 }

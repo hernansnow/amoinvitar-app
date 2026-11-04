@@ -114,3 +114,16 @@ h2.hojas[data-ajustar] > .text-bronce { color: #fff !important; }
 .texto-disco-inclinado.ai-nombres-3 > .disco-2 { line-height: .9 !important; padding: 0 !important; margin: -.1em auto -.2em !important; }
 /* Nombres partidos con un envoltorio propio del diseño (Rouge): el aire también adentro */
 [data-ajustar].ai-nombres-2 > span:not(.ai-n) { display: inline-block; line-height: 1.45 !important; }
+
+/* README (ronda 29): Rouge (Dantina) en dos líneas, con interlineado para que los nombres no se encimen */
+html[data-modelo="rouge"] [data-ajustar].ai-nombres-2, html[data-modelo="rouge"] [data-ajustar].ai-nombres-2 span, html[data-modelo="rouge"] [data-ajustar].ai-nombres-2 > span:not(.ai-n) { line-height: 2.05 !important; }
+[data-modelo="rouge"] [data-ajustar].ai-nombres-2 { margin-top: .5em !important; margin-bottom: .7em !important; }
+/* Sky y Travel (Amsterdam Four): la mayúscula inicial tiene un trazo largo hacia la izquierda y el nombre parecía
+   corrido a la derecha; en dos o tres líneas, cada nombre se corre un poco para que se vea centrado */
+.amsterdam-four-font.ai-nombres-2 > .ai-n, .amsterdam-four-font.ai-nombres-3 > .ai-n { position: relative; left: -.14em; }
+/* README (ronda 29): Save The Date Classic con nombres largos (un nombre por línea): pegados al "&" */
+html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2, html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2 > .ai-n { line-height: 1.15 !important; }
+html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2 .circle-singleline2 { margin: .15em auto !important; }
+html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2 { margin-top: .2em !important; margin-bottom: .3em !important; }
+
+[data-ajustar].ai-nombres-3 > .ai-esp { display: none !important; }
