@@ -24,10 +24,10 @@ import { mesaHTML } from './componentes/mesa.js';
 import { checkinHTML } from './componentes/checkin.js';
 import { avisoRespuesta } from './avisos.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
-import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento } from './modelos.js';
-import { MODELOS_GRATIS, A_MEDIDA } from './catalogo.js';
+import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento, CON_TARJETA_STD } from './modelos.js';
+import { MODELOS_GRATIS, A_MEDIDA, PRODUCTOS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
-import { sendEmail, mailNuevoAcceso } from './lib/email.js';
+import { sendEmail, mailNuevoAcceso, mailMedidaAprobada, mailAvisoInterno } from './lib/email.js';
 import { usuarioActual, crearUsuario } from './lib/auth.js';
 import * as cuenta from './rutas/cuenta.js';
 import * as tienda from './rutas/tienda.js';
@@ -468,7 +468,7 @@ async function eventoConClave(env, request, url, id) {
 }
 
 async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {}) {
-  const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
+  const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web', 'std-tarjeta'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
     gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: !!datos.diseno?.enviado,
     publicada: ev.estado === 'publicado', admin });
@@ -513,7 +513,9 @@ const nombreTipo = (tipo) => TIPOS_EVENTO.find((t) => t.id === tipo)?.nombre || 
 const GRUPO_TIPO = (tipo) => { const g = TIPOS_EVENTO.find((t) => t.id === tipo)?.grupo || tipo; return TIPOS_EVENTO.filter((t) => t.id === g || t.grupo === g).map((t) => t.id); };
 const modelosCambio = (tipo, producto = 'invitacion', actual = null) => {
   if (producto === 'compromiso-web') return ['boda', '15'].flatMap((t) => modelosPara(t).filter((m) => m.simple).map((m) => ({ ...m, tipo: t, tipoNombre: nombreTipo(t) })));
-  if (producto === 'std-web') return ['boda', '15'].flatMap((t) => MODELOS.filter((m) => m.std && m.eventos.includes(t)).map((m) => ({ id: m.id, nombre: nombreModelo(m, t), gratis: false, tipo: t, tipoNombre: nombreTipo(t) })));
+  // README (ronda 28): las Save The Date sueltas cambian entre los diseños de su mismo evento (y el diseño a medida)
+  if (producto === 'std-web') return MODELOS.filter((m) => m.std && m.eventos.includes(tipo)).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: false, tipo, tipoNombre: nombreTipo(tipo) }));
+  if (producto === 'std-tarjeta') return MODELOS.filter((m) => CON_TARJETA_STD.has(m.id) && m.eventos.includes(tipo)).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: false, tipo, tipoNombre: nombreTipo(tipo) }));
   if (producto !== 'invitacion') return [];
   const tipos = [tipo, ...GRUPO_TIPO(tipo).filter((t) => t !== tipo)];
   const vistos = new Set();
@@ -591,10 +593,12 @@ async function apiPanel(env, request, url, partes) {
       esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
       // Textos de cada idioma adicional (para traducir en el panel)
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
-      plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,
+      plan: await tienda.estadoPlan(env, request, ev, esquema),
       modelos: modelosCambio(ev.tipo, ev.producto, ev.modelo),
       // README (ronda 28): en el cambio de modelo también está el diseño a medida, con su precio
-      aMedida: ev.producto === 'invitacion' ? { precio: await tienda.precioATexto(env, request, 'personalizado', A_MEDIDA.personalizado.deluxe), empresarial: ev.tipo === 'empresarial' } : null,
+      aMedida: ev.producto === 'invitacion' ? { precio: await tienda.precioATexto(env, request, 'personalizado', A_MEDIDA.personalizado.deluxe), empresarial: ev.tipo === 'empresarial' }
+        : ['std-tarjeta', 'std-foto'].includes(ev.producto) ? { precio: await tienda.precioATexto(env, request, 'std-tarjeta-medida', PRODUCTOS['std-tarjeta-medida'].precio), std: true }
+          : ev.producto === 'std-web' ? { precio: await tienda.precioATexto(env, request, 'std-web-medida', PRODUCTOS['std-web-medida'].precio), std: true } : null,
       usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
@@ -630,11 +634,18 @@ async function apiPanel(env, request, url, partes) {
     const nuevo = await esquemaDe(env, url, ev, ev.datos, { admin });
     return json({ ok: true, datos: limpio, faltan: faltantes(nuevo, limpio), esquema: nuevo,
       textosIdiomas: Object.fromEntries(idiomasDe(limpio).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
-      plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, nuevo) : null });
+      plan: await tienda.estadoPlan(env, request, ev, nuevo) });
   }
   // Cambiar de modelo (el mismo tipo de evento); lo cargado queda igual
   if (accion === 'modelo' && request.method === 'POST') {
     const { modelo } = await request.json();
+    // Save The Date suelta a diseño a medida (la tarjeta o la web)
+    if (modelo === 'a-medida' && ['std-tarjeta', 'std-foto', 'std-web'].includes(ev.producto)) {
+      if (ev.estado === 'publicado' && !admin) return json({ error: 'Ya está publicada. Escríbenos por WhatsApp.' }, 400);
+      ev.producto = ev.producto === 'std-web' ? 'std-web-medida' : 'std-tarjeta-medida'; ev.datos.modeloAnterior = ev.modelo; ev.modelo = null;
+      await almacen.guardarEvento(ev);
+      return json({ ok: true });
+    }
     // Pasar a diseño a medida: el equipo diseña con lo que el cliente cuente en "Ideas para el diseño"
     if (modelo === 'a-medida' && ev.producto === 'invitacion') {
       if (ev.estado === 'publicado' && !admin) return json({ error: 'La invitación ya está publicada. Escríbenos por WhatsApp para pasarla a un diseño a medida.' }, 400);
@@ -663,6 +674,26 @@ async function apiPanel(env, request, url, partes) {
     if (!(elegido.gratis) && ev.datos.planElegido === 'gratis') ev.datos.planElegido = null;
     await almacen.guardarEvento(ev);
     return json({ ok: true });
+  }
+  // README (ronda 28): diseño a medida. El cliente completa todo y lo manda al equipo; el equipo lo aprueba y recién
+  // ahí el cliente paga para que empiece el diseño
+  if (accion === 'enviarMedida' && request.method === 'POST') {
+    if (!['a-medida', 'std-tarjeta-medida', 'std-web-medida'].includes(ev.producto)) return json({ error: 'No es un diseño a medida' }, 400);
+    const faltan = faltantes(esquema, ev.datos);
+    if (faltan.length) return json({ error: 'faltan', faltan }, 422);
+    ev.datos.medida = { ...(ev.datos.medida || {}), enviado: new Date().toISOString() };
+    await almacen.guardarEvento(ev);
+    if (env.SUPPORT_EMAIL) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Diseño a medida para revisar · ${nombresDe(ev.datos.nombres)}`,
+      lineas: [`${ev.producto} · ${ev.tipo} · ${nombresDe(ev.datos.nombres)}`, `Panel: ${url.origin}/panel/${ev.id}?k=${ev.clave}`] }) }).catch(() => {});
+    return json({ ok: true });
+  }
+  if (accion === 'aprobarMedida' && request.method === 'POST') {
+    if (!admin) return json({ error: 'Solo el equipo de diseño' }, 403);
+    ev.datos.medida = { ...(ev.datos.medida || {}), aprobado: new Date().toISOString() };
+    await almacen.guardarEvento(ev);
+    const clientes = (await almacen.accesos(ev.id)).filter((x) => x.rol === 'cliente');
+    for (const c of clientes) await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { url: `${url.origin}/panel/${ev.id}?k=${ev.clave}`, nombres: nombresDe(ev.datos.nombres) }) }).catch(() => {});
+    return json({ ok: true, avisados: clientes.length });
   }
   // Pasar al plan gratis (modelos que lo tienen): se apaga lo que no es de Basic
   if (accion === 'gratis' && request.method === 'POST') {

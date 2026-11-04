@@ -56,6 +56,9 @@ export const MODELOS = [
   { id: 'navidad', nombre: 'Navidad', eventos: ['navidad'], gratis: false },
 ];
 
+// Modelos con su tarjeta Save The Date propia (scripts/conversion/tarjetas y Garden)
+export const CON_TARJETA_STD = new Set(['amanecer', 'aquarella', 'armonia', 'beach', 'black', 'byn', 'cars', 'celeste', 'cinema', 'disco', 'elegance', 'euforia', 'floral', 'garden', 'graffiti', 'hojas', 'lila', 'lovestory', 'luxury', 'minimal', 'monster', 'natural', 'oliva', 'passion', 'peppa', 'revelacion', 'rockabilly', 'romantic', 'rosa', 'rouge', 'sky', 'style', 'sweet', 'travel', 'vintage', 'white']);
+
 export const TIPOS_EVENTO = [
   { id: 'boda', nombre: 'Boda' },
   { id: '15', nombre: '15 años' },

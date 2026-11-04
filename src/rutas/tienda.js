@@ -20,7 +20,7 @@ import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { reverseChargeFor } from '../lib/vies.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
-import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, precioPedido, comprable } from '../catalogo.js';
+import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, precioPedido, comprable } from '../catalogo.js';
 import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
@@ -427,6 +427,7 @@ const precioPaquete = (p) => (p === 'gratis' ? 0 : PAQUETES[p]?.precio || 0);
 
 // Lo que pide el panel para mostrar el plan, los complementos y lo que falta pagar
 export async function estadoPlan(env, request, ev, esquema) {
+  if (ev.producto !== 'invitacion') return estadoProducto(env, request, ev, esquema);
   const m = buscarModelo(ev.modelo);
   const gratisPosible = !!(m && (m.gratis || MODELOS_GRATIS.includes(m.id)));
   const necesario = planNecesario(esquema, ev.datos, { gratisPosible });
@@ -459,6 +460,32 @@ export async function estadoPlan(env, request, ev, esquema) {
 }
 const seccionActivaDe = (p, d) => (p.complemento ? d.secciones?.[p.seccion] === true : d.secciones?.[p.seccion] !== false);
 
+// Productos sueltos (Save The Date, agradecimiento, web simple) y diseño a medida: el precio del producto y, en el
+// diseño a medida, sus complementos. Se paga al final (al generar la tarjeta u obtener el link)
+async function estadoProducto(env, request, ev, esquema) {
+  const medida = ev.producto === 'a-medida';
+  const clave = medida ? (ev.aMedida || 'personalizado') : ev.producto;
+  const base = medida ? (A_MEDIDA[clave]?.deluxe || 0) : (PRODUCTOS[ev.producto]?.precio || 0);
+  const pagado = ev.paquete !== 'borrador';
+  const elegidos = medida ? complementos(esquema, ev.datos).filter((x) => EXTRAS[x]) : [];
+  const ya = ev.datos.extras || [];
+  const extrasAPagar = elegidos.filter((x) => !ya.includes(x));
+  const eur = (pagado ? 0 : base) + extrasAPagar.reduce((t, x) => t + (EXTRAS[x]?.precio || 0), 0);
+  const moneda = monedaPedida(request), rates = await getRates(env), pais = paisReal(request);
+  const texto = (k, e) => (e ? formatMoney(priceIn(k, e, moneda, rates, pais, env).amount, moneda) : 'Gratis');
+  const nombre = medida ? (clave === 'empresarial' ? 'Invitación para empresas' : 'Invitación con diseño a medida') : (PRODUCTOS[ev.producto]?.nombre || ev.producto);
+  return {
+    producto: true, plan: medida ? 'deluxe' : 'basic', nombre, precio: texto(clave, base), pagado: pagado ? (medida ? 'deluxe' : 'basic') : null, gratisPosible: false,
+    complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: texto(x, EXTRAS[x]?.precio || 0), pagado: !extrasAPagar.includes(x) })),
+    aPagar: { eur, texto: texto(clave, eur), plan: pagado ? null : texto(clave, base), extras: extrasAPagar },
+    secciones: [],
+    preciosExtras: Object.fromEntries(['std-tarjeta-medida', 'std-web-medida', 'idioma'].map((x) => [x, `+${texto(x, EXTRAS[x]?.precio || 0)}`])),
+    activar: !pagado,
+    // Diseño a medida: primero lo aprueba el equipo; recién ahí se paga
+    ...(medida ? { medida: { enviado: !!ev.datos.medida?.enviado, aprobado: !!ev.datos.medida?.aprobado } } : {}),
+  };
+}
+
 // Pedido para el borrador: el plan y los complementos que faltan pagar
 export async function validarBorrador(env, request, b, { esquemaDe }) {
   const ev = await almacenD1(env).evento(str(b.evento, 40));
@@ -468,6 +495,8 @@ export async function validarBorrador(env, request, b, { esquemaDe }) {
   const permitido = (clave && clave === ev.clave) || (usuario && (usuario.esAdmin || await almacenD1(env).tieneAcceso(ev.id, usuario.id)));
   if (!permitido) throw new HttpError(403, 'Sin permiso para esta invitación');
   const est = await estadoPlan(env, request, ev, await esquemaDe(ev));
+  if (est.medida && !est.medida.aprobado) throw new HttpError(409, 'El equipo de diseño todavía no aprobó tu proyecto. Te avisaremos por mail.');
+  if (est.producto) return { evento: ev, eur: est.aPagar.eur, pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: est.plan, aMedida: ev.aMedida || null, extras: est.aPagar.extras, nombre: est.nombre } };
   const m = buscarModelo(ev.modelo);
   const tipoNombre = TIPOS_EVENTO.find((t) => t.id === ev.tipo)?.nombre || ev.tipo;
   const extras = est.aPagar.extras.map((x) => EXTRAS[x]?.nombre || x);
@@ -485,6 +514,9 @@ export async function empezar(request, env) {
     if (!success) throw new HttpError(429, 'Demasiados intentos. Probar en unos minutos.');
   }
   const b = await readJson(request);
+  // README (ronda 28): los productos sueltos y el diseño a medida también se arman antes de pagar
+  const producto = str(b.producto, 30) || 'invitacion';
+  if (producto !== 'invitacion') return empezarProducto(request, env, b, producto);
   const m = buscarModelo(b.modelo);
   let tipo = str(b.tipo, 20);
   // Elegido dentro de un grupo (Baby Shower → Revelación de género): el tipo propio del diseño
@@ -520,6 +552,45 @@ export async function empezar(request, env) {
   const usuario = await usuarioActual(request, env);
   if (usuario) await almacen.darAcceso(ev.id, usuario.id, 'cliente');
   // Sin cuenta: el navegador recuerda el borrador (al entrar con la cuenta se suma solo a "Mi cuenta")
+  const previos = (getCookie(request, 'ai_bor') || '').split(',').filter((x) => /^ev_[a-z0-9]+:[a-z0-9]+$/i.test(x));
+  const lista = [...new Set([`${ev.id}:${ev.clave}`, ...previos])].slice(0, 20).join(',');
+  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201,
+    usuario ? {} : { 'set-cookie': cookie('ai_bor', lista, { maxAge: 365 * 86400, secure: isSecureRequest(request) }) });
+}
+
+// Save The Date (tarjeta del modelo, con foto o web), agradecimiento y diseño a medida: el cliente elige el diseño,
+// lo arma en el panel y paga al final
+const SUELTOS = ['std-tarjeta', 'std-foto', 'agradecimiento', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'a-medida'];
+async function empezarProducto(request, env, b, producto) {
+  if (!SUELTOS.includes(producto)) throw new HttpError(400, 'Producto desconocido');
+  const tipo = TIPOS_EVENTO.some((t) => t.id === b.tipo) || b.tipo === 'empresarial' ? str(b.tipo, 20) : 'boda';
+  const a = str(b.nombres?.a, 20), bb = str(b.nombres?.b, 20);
+  if (!a) throw new HttpError(400, 'Falta el nombre');
+  const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';
+  let modelo = null;
+  const datos = { variante: varianteDePais(paisReal(request)), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
+    celebracion: fecha ? { fecha, inicio: fecha } : {}, std: { ...(fecha ? { fecha } : {}) } };
+  if (producto === 'std-tarjeta') {
+    const m = buscarModelo(b.modelo);
+    const mj = m && m.eventos.includes(tipo) ? await env.ASSETS.fetch(new URL(`/modelos/${m.id}/modelo.json`, request.url)).then((r) => (r.ok ? r.json() : null)).catch(() => null) : null;
+    if (!mj?.tarjetas?.std) throw new HttpError(400, 'Ese diseño no tiene tarjeta Save The Date para este evento');
+    modelo = m.id; datos.std.tipo = 'tarjeta';
+  } else if (producto === 'std-foto') {
+    datos.std.tipo = 'foto'; if (/^f[1-9]$/.test(b.diseno || '')) datos.std.diseno = b.diseno;
+  } else if (producto === 'agradecimiento') {
+    datos.agradecimiento = /^g[1-9]$/.test(b.diseno || '') ? { diseno: b.diseno } : {};
+  } else if (producto === 'std-web') {
+    const m = buscarModelo(b.modelo);
+    modelo = m?.std && m.eventos.includes(tipo) ? m.id : 'std-classic';
+  }
+  const ev = {
+    id: `ev_${randomId(5)}`, producto, tipo, modelo, paquete: 'borrador', aMedida: producto === 'a-medida' ? (tipo === 'empresarial' ? 'empresarial' : 'personalizado') : null,
+    estado: 'borrador', clave: randomId(16), empresaId: null, slug: null, datos,
+  };
+  const almacen = almacenD1(env);
+  await almacen.guardarEvento(ev);
+  const usuario = await usuarioActual(request, env);
+  if (usuario) await almacen.darAcceso(ev.id, usuario.id, 'cliente');
   const previos = (getCookie(request, 'ai_bor') || '').split(',').filter((x) => /^ev_[a-z0-9]+:[a-z0-9]+$/i.test(x));
   const lista = [...new Set([`${ev.id}:${ev.clave}`, ...previos])].slice(0, 20).join(',');
   return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201,

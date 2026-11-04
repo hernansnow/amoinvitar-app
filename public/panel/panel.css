@@ -1049,3 +1049,8 @@ body.modo-admin #btn-ojo { display: none !important; }
 textarea.tj-entrada { resize: vertical; }
 /* Diseño a medida en el cambio de modelo */
 .modelo-opcion.a-medida .a-medida-img { display: grid; place-items: center; aspect-ratio: 9 / 16; width: 100%; border-radius: 8px; background: linear-gradient(160deg, #e8f4f0, #d6e4dd); color: var(--acento); font-size: 2.6rem; }
+.aviso-medida { margin: 0 0 12px; padding: 12px 14px; border-radius: 12px; background: #e8f4f0; border-left: 4px solid var(--acento); font-size: .95rem; }
+.aviso-medida p { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+/* README (ronda 28): tarjetas sueltas (Save The Date y agradecimiento): sin la vista de una invitación al costado */
+@media (min-width: 1024px) { body.suelta .layout { grid-template-columns: 320px minmax(420px, 640px) 1fr; } }
+body.suelta .previa, body.suelta #btn-ojo, body.suelta .modo-vista, body.suelta #btn-completa { display: none !important; }

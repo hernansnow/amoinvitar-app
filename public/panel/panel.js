@@ -1542,9 +1542,36 @@ function pintarPlan() {
   const cambiarPlan = pl.gratisPosible && !pl.pagado
     ? el('button', { type: 'button', class: 'btn-link chico', onclick: () => pasarAGratis(pl.plan !== 'gratis') }, pl.plan === 'gratis' ? 'Ver planes pagos' : 'Pasar a plan gratis') : null;
   $('#caja-plan').replaceChildren(...[el('button', { type: 'button', class: 'plan-resumen', onclick: () => mostrarResumen(false) },
-    el('span', {}, 'Plan: ', el('strong', {}, pl.nombre), ` ${pl.plan === 'gratis' ? '' : pl.precio}`), extra ? el('small', {}, extra) : null), cambiarPlan].filter(Boolean));
-  $('#plan-mini').replaceChildren(...[el('span', {}, 'Plan: ', el('strong', {}, pl.nombre), ` ${pl.plan === 'gratis' ? '' : pl.precio}`), extra ? el('small', {}, extra) : null].filter(Boolean));
+    el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ` ${pl.plan === 'gratis' ? '' : pl.precio}`), extra ? el('small', {}, extra) : null), cambiarPlan].filter(Boolean));
+  $('#plan-mini').replaceChildren(...[el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ` ${pl.plan === 'gratis' ? '' : pl.precio}`), extra ? el('small', {}, extra) : null].filter(Boolean));
   $('#plan-mini').onclick = () => mostrarResumen(false);
+  document.body.classList.toggle('suelta', !!S.esquema?.suelta);
+  pintarMedida(); if (typeof pintarPublicar === "function" && S.evento) pintarPublicar();
+}
+// README (ronda 28): diseño a medida. Se completa, se envía al equipo, el equipo lo aprueba y recién ahí se paga
+function pintarMedida() {
+  const md = S.plan?.medida;
+  let caja = $('#aviso-medida');
+  if (!md) { caja?.remove(); return; }
+  if (!caja) { caja = el('div', { id: 'aviso-medida', class: 'aviso-medida' }); $('#formulario').before(caja); }
+  const pagado = !!S.plan.pagado;
+  const enviar = async (b) => {
+    b.disabled = true; clearTimeout(guardarTimer); await guardar();
+    try { await api('/enviarMedida', { method: 'POST', body: '{}' }); await recargar(); aviso('¡Enviado al equipo de diseño!'); }
+    catch (e) { b.disabled = false; aviso(e.datos?.faltan?.length ? 'Antes de enviarlo, completa lo que falta.' : e.message, true); }
+  };
+  const aprobar = async (b) => {
+    if (!confirm('¿Aprobar el proyecto? Al cliente le llega un mail para que complete el pago.')) return;
+    b.disabled = true; try { await api('/aprobarMedida', { method: 'POST', body: '{}' }); await recargar(); aviso('Proyecto aprobado: se avisó al cliente'); } catch (e) { b.disabled = false; aviso(e.message, true); }
+  };
+  const fila = pagado ? [el('strong', {}, '¡Pago recibido!'), ' El equipo de diseño ya está trabajando en tu invitación.']
+    : md.aprobado ? [el('strong', {}, 'Tu proyecto fue aprobado por el equipo de diseño.'), ' Completa el pago para que comencemos a crear tu invitación. ',
+      el('button', { type: 'button', class: 'btn btn-chico', onclick: () => mostrarResumen(true) }, 'Completar el pago')]
+      : md.enviado ? [el('strong', {}, 'Recibimos tu idea.'), ' Vamos a evaluarla y, si todo está bien, recibirás la confirmación pronto.',
+        S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
+        : ['Cuando completes todos los datos, las ideas y las fotos, envíalo al equipo de diseño. ',
+          el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño')];
+  caja.replaceChildren(el('p', {}, ...fila.filter(Boolean)));
 }
 async function pasarAGratis(gratis) {
   if (gratis && !confirm('En el plan gratis se apagan la galería, la cuenta regresiva, las secciones Premium y Deluxe y los complementos. ¿Seguir?')) return;
@@ -1644,17 +1671,17 @@ function botonAyuda() {
 async function mostrarResumen(paraPagar, plan = S.plan) {
   if (!plan) return;
   const lineas = [
-    el('li', {}, el('span', {}, 'Plan ', el('strong', {}, plan.nombre)), el('span', {}, plan.plan === 'gratis' ? 'Gratis' : plan.precio)),
+    el('li', {}, el('span', {}, plan.producto ? '' : 'Plan ', el('strong', {}, plan.nombre)), el('span', {}, plan.plan === 'gratis' ? 'Gratis' : plan.precio)),
     ...plan.complementos.map((x) => el('li', {}, el('span', {}, x.nombre, x.pagado ? ' (ya pagado)' : ''), el('span', {}, x.precio))),
   ];
   const secciones = el('ul', { class: 'lista-secciones' }, plan.secciones.map((x) => el('li', {}, x.titulo, insigniaNivel(x.nivel))));
   const partes = [
-    el('p', { class: 'ayuda' }, 'Secciones elegidas (además de portada, lugar y fecha, confirmación y cierre):'), secciones,
+    plan.producto ? null : el('p', { class: 'ayuda' }, 'Secciones elegidas (además de portada, lugar y fecha, confirmación y cierre):'), plan.producto ? null : secciones,
     el('ul', { class: 'lista-precios' }, lineas),
     plan.pagado ? el('p', { class: 'ayuda' }, `Ya pagado: plan ${NOMBRE_NIVEL[plan.pagado]}. Se paga solo la diferencia.`) : null,
     el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? plan.aPagar.texto : 'Gratis')),
   ];
-  if (!paraPagar) { abrirModal('Tu invitación', ...partes, el('p', { class: 'ayuda' }, 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
+  if (!paraPagar) { abrirModal(plan.producto ? plan.nombre : 'Tu invitación', ...partes.filter(Boolean), el('p', { class: 'ayuda' }, 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
   // Pago: mail (si no entró con su cuenta), cupón y medio de pago
   const mail = S.usuario ? null : el('input', { type: 'email', required: true, placeholder: 'tu@mail.com', autocomplete: 'email' });
   const cupon = el('input', { type: 'text', placeholder: 'Cupón (opcional)', maxlength: 30 });
@@ -1692,7 +1719,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
       location.href = r.url;
     } catch (err) { error.textContent = err.message; e.target.disabled = false; }
   } }, 'Obtener el link sin pagar (administración, prueba)') : null;
-  abrirModal('Obtener el link de la invitación', ...partes,
+  abrirModal(plan.producto ? plan.nombre : 'Obtener el link de la invitación', ...partes.filter(Boolean),
     mail ? el('label', { class: 'campo-modal' }, 'Mail para recibir el acceso y la factura', mail) : null,
     plan.aPagar.eur ? el('div', { class: 'campo-modal' }, 'Medio de pago', medios) : null,
     plan.aPagar.eur ? cupon : null, error, boton, sinPagar,
@@ -1707,16 +1734,29 @@ const esInvitacionWeb = () => ['invitacion', 'std-web', 'compromiso-web', 'std-w
 // "Obtener mi link" (y no "Publicar"): deja claro que no se envía nada a los invitados; el link lo comparte el cliente.
 // En el celular va la versión corta. Ya con link, los cambios se confirman con "Guardar cambios".
 function textoPublicar() {
+  const md = S.plan?.medida;
+  if (md) return md.aprobado && !S.plan.pagado ? ['Completar el pago', 'Pagar'] : ['Enviar al equipo de diseño', 'Enviar'];
   if (!esInvitacionWeb()) return ['Enviar al diseño', 'Enviar'];
   return S.evento.estado === 'publicado' ? ['Guardar cambios', 'Guardar'] : ['Obtener mi link', 'Obtener link'];
 }
 function pintarPublicar() {
   const [largo, corto] = textoPublicar();
+  // Tarjetas sueltas: se generan (y se pagan) desde su propio paso
+  ['#btn-publicar', '#btn-publicar-2'].forEach((x) => { const b = $(x); if (b) b.hidden = !!S.esquema?.suelta; });
   ['#btn-publicar', '#btn-publicar-2'].forEach((x) => { const b = $(x); if (b) { b.replaceChildren(el('span', { class: 'txt-largo' }, largo), el('span', { class: 'txt-corto' }, corto)); b.title = largo; } });
   if (pasoActual) dibujarPasos();
 }
 async function publicar() {
   clearTimeout(guardarTimer); await guardar();
+  // Diseño a medida: primero se envía al equipo; con el proyecto aprobado, se paga
+  const md = S.plan?.medida;
+  if (md) {
+    if (md.aprobado && !S.plan.pagado) { mostrarResumen(true); return; }
+    if (md.enviado) { aviso('Ya lo recibimos: vamos a evaluar tu idea y te avisaremos por mail.'); return; }
+    try { await api('/enviarMedida', { method: 'POST', body: '{}' }); await recargar(); aviso('¡Enviado! Vamos a evaluar tu idea y, si todo está bien, recibirás la confirmación pronto.'); }
+    catch (e) { if (e.datos?.faltan) { S.faltan = e.datos.faltan; dibujarPasos(); irA(e.datos.faltan[0].paso); aviso('Antes de enviarlo, completa lo que falta.', true); } else aviso(e.message, true); }
+    return;
+  }
   try {
     const yaEstaba = S.evento.estado === 'publicado';
     const r = await api('/publicar', { method: 'POST' });

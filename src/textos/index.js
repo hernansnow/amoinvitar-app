@@ -36,7 +36,7 @@ const BASE = {
     'cuenta.faltan': 'Faltan', 'cuenta.dia': 'DÍA', 'cuenta.dias': 'DÍAS', 'cuenta.horas': 'HORAS', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEG',
     'musica.boton': 'Música',
 
-    'lugar.diaHorario': 'DÍA Y HORARIO', 'lugar.lugar': 'LUGAR', 'lugar.dondeCuando': 'Dónde y cuándo', 'std.titulo': 'SAVE THE DATE',
+    'lugar.diaHorario': 'DÍA Y HORARIO', 'lugar.lugar': 'LUGAR', 'lugar.dondeCuando': 'Dónde y cuándo', 'std.titulo': 'SAVE THE DATE', 'std.proximamente': 'Próximamente la invitación formal',
     'ceremonia.religiosa': 'Ceremonia', 'ceremonia.civil': 'Ceremonia civil', 'ceremonia.simbolica': 'Ceremonia',
     'celebracion.titulo': 'Celebración', 'unificado.titulo': 'Ceremonia y Celebración', 'celebracion.sola': 'Celebración', 'bienvenida.texto': 'Quiero invitarte a compartir este día especial',
     'boton.agendar': 'Agendar', 'boton.comoLlegar': '¿CÓMO LLEGAR?', 'boton.cerrar': 'cerrar',
@@ -132,7 +132,7 @@ const BASE = {
     'meta.titulo': 'Invitation ❤ {evento} | {nombres}', 'meta.descripcion': 'We look forward to celebrating with you!',
     'cuenta.faltan': 'Countdown', 'cuenta.dia': 'DAY', 'cuenta.dias': 'DAYS', 'cuenta.horas': 'HOURS', 'cuenta.min': 'MIN', 'cuenta.seg': 'SEC',
     'musica.boton': 'Music',
-    'lugar.diaHorario': 'DATE AND TIME', 'lugar.lugar': 'VENUE', 'lugar.dondeCuando': 'Where and when', 'std.titulo': 'SAVE THE DATE',
+    'lugar.diaHorario': 'DATE AND TIME', 'lugar.lugar': 'VENUE', 'lugar.dondeCuando': 'Where and when', 'std.titulo': 'SAVE THE DATE', 'std.proximamente': 'Formal invitation to follow',
     'ceremonia.religiosa': 'Ceremony', 'ceremonia.civil': 'Civil ceremony', 'ceremonia.simbolica': 'Ceremony',
     'celebracion.titulo': 'Reception', 'unificado.titulo': 'Ceremony & Reception', 'celebracion.sola': 'Celebration', 'bienvenida.texto': 'I would love you to share this special day with me',
     'boton.agendar': 'Add to calendar', 'boton.comoLlegar': 'DIRECTIONS', 'boton.cerrar': 'close',

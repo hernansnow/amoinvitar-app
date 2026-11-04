@@ -322,6 +322,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       fecha: principal ? `${principal.a}/${principal.m}/${principal.d} ${principal.hh ?? '00'}:${principal.mm ?? '00'}:00` : '',
     },
     // La sección "Música de fondo" se puede apagar (sin la marca, prendida como antes)
+    // Save The Date web: "Próximamente la invitación formal" (se prende y apaga)
+    stdWeb: { proximamente: e.std?.proximamente !== false },
     grupos: {
       dress: !!(secciones.dresscode || secciones.estilos || secciones.hospedaje || secciones.bus),
       dressCol: !!(secciones.dresscode || secciones.estilos),

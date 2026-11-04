@@ -143,3 +143,13 @@ export const mailNuevoAcceso = (env, { nombres, rol, url, quien }) => ({
     boton: 'Entrar a la invitación', url,
   }),
 });
+
+// README (ronda 28): diseño a medida. El equipo lo aprueba y el cliente paga para que empiece el diseño
+export const mailMedidaAprobada = (env, { url, nombres }) => ({
+  subject: 'Tu proyecto fue aprobado',
+  ...plantilla(env, {
+    titulo: '¡Tu proyecto fue aprobado!',
+    lineas: [`El equipo de diseño revisó la idea${nombres ? ` de ${b(nombres)}` : ''} y la aprobó.`, 'Completa el pago para que comencemos a crear tu invitación.'],
+    boton: 'Completar el pago', url,
+  }),
+});

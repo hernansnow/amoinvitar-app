@@ -793,14 +793,17 @@ function portadaSimple(base, modelo, { std = false } = {}) {
   const campos = p.campos.filter((c) => !fuera.has(c.id)).map((c) => (c.id === 'fotos.portada' ? { ...c, max: 1, nivelCantidad: null, etiqueta: 'Foto', sinEtiqueta: false } : c));
   const i = campos.findIndex((c) => c.id === 'textos.portada.subtitulo');
   const extra = [
-    { id: 'textos.std.titulo', tipo: 'texto', etiqueta: 'Texto de arriba', max: 20, base: 'std.titulo', ancho: 'mitad', ayuda: 'Por ejemplo "Save the date".' },
-    ...(CON_MENSAJE.has(modelo?.id) ? [{ id: 'textos.std.mensaje', tipo: 'area', etiqueta: 'Mensaje', max: 140, base: 'std.mensaje' }] : []),
+    { id: 'textos.std.titulo', tipo: 'texto', etiqueta: 'Título', max: 20, base: 'std.titulo', ancho: 'mitad', ayuda: 'Por ejemplo "Save the date".' },
+    ...(CON_MENSAJE.has(modelo?.id) ? [{ id: 'textos.std.mensaje', tipo: 'area', etiqueta: 'Mensaje breve', max: 110, base: 'std.mensaje', ayuda: 'Hasta 110 caracteres, para que no se rompa el diseño.' }] : []),
   ];
   campos.splice(i < 0 ? campos.length : i + 1, 0, ...extra);
   // La Save The Date: la fecha va en la portada (sin lugares)
   if (std) campos.push(
-    { id: 'celebracion.fecha', tipo: 'fecha', etiqueta: 'Fecha', requerido: true, ancho: 'mitad' },
-    { id: 'celebracion.hora', tipo: 'hora', etiqueta: 'Hora (opcional)', ancho: 'mitad', ayuda: 'Sin hora, en el calendario se agenda como evento de todo el día.' },
+    { id: 'celebracion.fecha', tipo: 'fecha', etiqueta: 'Fecha del evento', requerido: true, ancho: 'mitad' },
+    { id: 'celebracion.hora', tipo: 'hora', etiqueta: 'Horario (opcional)', ancho: 'mitad', ayuda: 'Sin hora, en el calendario se agenda como evento de todo el día.' },
+    // README (ronda 28): "Próximamente la invitación formal", se prende, se apaga y se cambia el texto
+    { id: 'std.proximamente', tipo: 'switch', etiqueta: 'Mostrar "Próximamente la invitación formal"', defecto: true },
+    { id: 'textos.std.proximamente', tipo: 'texto', etiqueta: 'Texto', max: 60, base: 'std.proximamente', si: { campo: 'std.proximamente', no: false } },
   );
   return { ...p, campos, obligatoria: true };
 }
@@ -831,6 +834,22 @@ function pasosStdWeb({ tipo, modelo, datos }) {
 // ── Entrada principal ─────────────────────────────────────────────────
 // producto: 'invitacion' | 'a-medida' | 'std-web' | 'std-tarjeta' | …
 export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false }) {
+  // README (ronda 28): Save The Date (tarjeta o foto) y agradecimiento comprados sueltos: el mismo editor que en la
+  // invitación, con el diseño elegido; se paga al generar la tarjeta
+  if (['std-tarjeta', 'std-foto', 'agradecimiento'].includes(producto)) {
+    const gracias = producto === 'agradecimiento';
+    const pasos = [gracias ? {
+      id: 'agradecimiento', titulo: 'Tarjeta de agradecimiento', obligatoria: true, campos: [
+        { id: 'agradecimiento.diseno', tipo: 'disenoFoto', carpeta: 'gracias', etiqueta: 'Diseño', defecto: DISENOS_GRACIAS[0].v, valores: DISENOS_GRACIAS, rearmar: true },
+        { id: 'agradecimiento.tarjeta', tipo: 'tarjeta', clase: 'agradecimiento', etiqueta: 'Tarjeta', sinEtiqueta: true },
+      ] } : {
+      id: 'std', titulo: producto === 'std-foto' ? 'Save The Date con foto' : 'Tarjeta Save The Date', obligatoria: true, campos: [
+        { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo', oculto: true, defecto: producto === 'std-foto' ? 'foto' : 'tarjeta', valores: [{ v: producto === 'std-foto' ? 'foto' : 'tarjeta', etiqueta: 'Tarjeta' }] },
+        ...(producto === 'std-foto' ? [{ id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseño', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true }] : []),
+        { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true },
+      ] }];
+    return { producto, tipo, paquete, suelta: true, pasos: anotar(pasos, { modelo, gratis: false, publicada, admin }) };
+  }
   if (PRODUCTOS_STD[producto] && !(modelo?.simple || modelo?.std)) {
     return { producto, pasos: PRODUCTOS_STD[producto]() };
   }
