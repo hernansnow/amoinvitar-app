@@ -21,7 +21,7 @@ import { reverseChargeFor } from '../lib/vies.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
 import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, precioPedido, comprable } from '../catalogo.js';
-import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
+import { MODELOS, TIPOS_EVENTO, CON_TARJETA_STD, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
 import { ZONAS } from '../datos/zonas.js';
@@ -111,11 +111,22 @@ export async function catalogo(request, env) {
     // Los modelos simples y las Save The Date web se compran como producto (Invitación web simple, Save The Date web)
     modelos: MODELOS.filter((m) => !m.simple && !m.std).map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {},
       eventos: [...new Set([...m.eventos, ...TIPOS_EVENTO.filter((t) => t.grupo && m.eventos.includes(t.id)).map((t) => t.grupo)])],
-      gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), dosNombres: m.eventos.includes('revelacion') })),
+      gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), dosNombres: m.eventos.includes('revelacion'), propios: m.eventos })),
     paquetes: ORDEN.map((id) => ({ id, nombre: NOMBRES_PAQUETE[id], incluye: RESUMEN_PAQUETES[id], precio: precio(id, PAQUETES[id].precio) })),
     extras: Object.entries(EXTRAS).map(([id, e]) => ({ id, nombre: e.nombre, precio: precio(id, e.precio) })),
     productos: Object.entries(PRODUCTOS).map(([id, p]) => ({ id, nombre: p.nombre, manual: !!p.manual, precio: p.manual ? { texto: `desde ${formatMoney(priceIn(id, p.desde, moneda, rates, pais, env).amount, moneda)}` } : precio(id, p.precio) })),
-  });
+    // README (ronda 28): la página "crear invitación" del sitio arma sus pestañas con esto (Adicional y Save The Date)
+    simples: MODELOS.filter((m) => m.simple).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
+    stdWeb: MODELOS.filter((m) => m.std).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
+    tarjetaStd: [...CON_TARJETA_STD],
+    aMedida: precio('a-medida', A_MEDIDA.personalizado.premium),
+  }, 200, origenSitio(request));
+}
+
+// El sitio (amoinvitar.com y sus copias de prueba) lee el catálogo público desde el navegador
+function origenSitio(request) {
+  const o = request.headers.get('origin') || '';
+  return /^https:\/\/([a-z0-9-]+\.)*amoinvitar\.com$/.test(o) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o) ? { 'access-control-allow-origin': o, vary: 'origin' } : {};
 }
 
 export async function cotizar(request, env) {
@@ -560,7 +571,7 @@ export async function empezar(request, env) {
 
 // Save The Date (tarjeta del modelo, con foto o web), agradecimiento y diseño a medida: el cliente elige el diseño,
 // lo arma en el panel y paga al final
-const SUELTOS = ['std-tarjeta', 'std-foto', 'agradecimiento', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'a-medida'];
+const SUELTOS = ['std-tarjeta', 'std-foto', 'agradecimiento', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'a-medida', 'compromiso-web'];
 async function empezarProducto(request, env, b, producto) {
   if (!SUELTOS.includes(producto)) throw new HttpError(400, 'Producto desconocido');
   const tipo = TIPOS_EVENTO.some((t) => t.id === b.tipo) || b.tipo === 'empresarial' ? str(b.tipo, 20) : 'boda';
@@ -579,6 +590,10 @@ async function empezarProducto(request, env, b, producto) {
     datos.std.tipo = 'foto'; if (/^f[1-9]$/.test(b.diseno || '')) datos.std.diseno = b.diseno;
   } else if (producto === 'agradecimiento') {
     datos.agradecimiento = /^g[1-9]$/.test(b.diseno || '') ? { diseno: b.diseno } : {};
+  } else if (producto === 'compromiso-web') {
+    // Invitación web simple (Civil, Compromiso, Pedida de mano, Party): su diseño o el primero del evento
+    const m = buscarModelo(b.modelo);
+    modelo = m?.simple && m.eventos.includes(tipo) ? m.id : (MODELOS.find((x) => x.simple && x.eventos.includes(tipo))?.id || 'compromiso');
   } else if (producto === 'std-web') {
     const m = buscarModelo(b.modelo);
     modelo = m?.std && m.eventos.includes(tipo) ? m.id : 'std-classic';

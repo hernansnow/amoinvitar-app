@@ -19,3 +19,6 @@
 .btn-link { border: 0; background: none; color: #4e7a59; text-decoration: underline; cursor: pointer; font: inherit; justify-self: center; }
 .tarjeta.seguir { margin: 12px 0 18px; }
 .tarjeta.seguir ul { margin: 6px 0 0; padding-left: 18px; }
+/* Llegando desde la página "crear invitación" del sitio: solo un aviso mientras se arma el borrador */
+body.empezando main > * { display: none; }
+body.empezando main::before { content: 'Preparando tu invitación…'; display: block; text-align: center; padding: 30vh 16px; font-size: 1.2rem; color: #4e7a59; }

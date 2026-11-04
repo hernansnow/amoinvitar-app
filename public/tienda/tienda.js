@@ -197,7 +197,27 @@ async function cargar() {
   }
   actualizar();
 }
-cargar();
+// README (ronda 28): desde la página "crear invitación" del sitio llega con ?empezar=1 y lo elegido (modelo o
+// producto, evento, nombres y fecha): se arma el borrador acá (mismo dominio que el panel) y se abre el panel
+async function empezarDesdeLink() {
+  document.body.classList.add('empezando');
+  const d = { producto: q.get('producto') || 'invitacion', tipo: q.get('evento') || 'boda', modelo: q.get('modelo') || undefined, diseno: q.get('diseno') || undefined,
+    nombres: { a: (q.get('a') || '').slice(0, 20), b: (q.get('b') || '').slice(0, 20) }, fecha: q.get('fecha') || '' };
+  try {
+    const r = await post('/api/tienda/empezar', d);
+    try {
+      const lista = JSON.parse(localStorage.getItem('ai-borradores') || '[]');
+      lista.unshift({ id: r.id, clave: r.clave, nombres: [d.nombres.a, d.nombres.b].filter(Boolean).join(' & '), modelo: d.modelo || d.producto, tipo: d.tipo, t: Date.now() });
+      localStorage.setItem('ai-borradores', JSON.stringify(lista.slice(0, 10)));
+    } catch { /* sin almacenamiento */ }
+    location.replace(r.panel);
+  } catch (e) {
+    document.body.classList.remove('empezando');
+    mensaje(`${e.message}. Puedes elegir de nuevo aquí abajo.`);
+    cargar();
+  }
+}
+if (q.get('empezar')) empezarDesdeLink(); else cargar();
 
 
 // ── Vista previa en un celular y "Personalizar" ───────────────────────
@@ -234,11 +254,3 @@ $('#form-empezar').addEventListener('submit', async (e) => {
 document.querySelectorAll('dialog [data-cerrar]').forEach((x) => x.addEventListener('click', () => x.closest('dialog').close()));
 document.querySelectorAll('dialog.modal-tienda').forEach((d) => d.addEventListener('click', (e) => { if (e.target === d) d.close(); }));
 
-// Invitaciones empezadas en este navegador: para seguir donde quedó
-(function borradores() {
-  let lista = [];
-  try { lista = JSON.parse(localStorage.getItem('ai-borradores') || '[]'); } catch { /* sin almacenamiento */ }
-  if (!lista.length || S.mejora) return;
-  $('#borradores').replaceChildren(el('div', { class: 'tarjeta seguir' }, el('strong', {}, 'Seguir con tu invitación'),
-    el('ul', {}, lista.slice(0, 3).map((x) => el('li', {}, el('a', { href: `/panel/${x.id}?k=${x.clave}` }, x.nombres || 'Mi invitación'), el('small', {}, ` · ${x.modelo || ''} · ${new Date(x.t).toLocaleDateString()}`))))));
-})();

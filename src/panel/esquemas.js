@@ -821,7 +821,7 @@ function pasosSimple({ tipo, modelo, datos }) {
   return [portadaSimple(base, modelo), pasoIdioma, lug, rsvp, acceso, pasoPublicar(tipo), { ...pasoDiseno(modelo), separado: true }, pasoIdiomaAdicional([], datos)].filter(Boolean);
 }
 // El link de la Save The Date web, para copiarlo o mandarlo (lo arma el panel)
-const CAMPO_LINK_STD = { id: 'std.link', tipo: 'linkStd', etiqueta: 'Link de la Save The Date', ayuda: 'CÃ³pialo o envÃ­alo por WhatsApp. Se ve apenas se paga.' };
+const CAMPO_LINK_STD = { id: 'std.link', tipo: 'linkStd', etiqueta: 'Link de la Save The Date', ayuda: 'Cópialo o envíalo por WhatsApp. Se ve apenas se paga.' };
 // Las dos Save The Date web (el diseño se elige; la de 15 años es la "Web Classic" de 15)
 export const DISENOS_STD_WEB = [{ v: 'std-classic', etiqueta: 'Web Classic' }, { v: 'std-soft', etiqueta: 'Web Soft' }];
 function pasosStdWeb({ tipo, modelo, datos }) {
