@@ -57,8 +57,11 @@ function validarPedido(p) {
   // Invitación web simple y Save The Date web: arrancan con un diseño (Compromiso, Web Classic); en el panel se cambia
   // por otro (Civil, Pedida, Party de 15; Web Soft, o la de 15)
   const simple = { 'compromiso-web': 'compromiso', 'std-web': 'std-classic' }[producto];
-  const tipo = producto === 'agradecimiento' ? (str(p.tipo, 20) || 'boda') : simple ? (['boda', '15'].includes(p.tipo) ? p.tipo : 'boda') : 'save-the-date';
-  const modelo = simple && producto === 'compromiso-web' && tipo === '15' ? 'party' : simple || null;
+  const tipoValido = TIPOS_EVENTO.some((t) => t.id === p.tipo) ? p.tipo : 'boda';
+  const tipo = producto === 'agradecimiento' || producto === 'std-tarjeta' ? tipoValido : simple ? (['boda', '15'].includes(p.tipo) ? p.tipo : 'boda') : 'save-the-date';
+  // La tarjeta Save The Date es la de un modelo: arranca con el primero que la tiene para ese evento
+  const modelo = producto === 'std-tarjeta' ? (MODELOS.find((m) => CON_TARJETA_STD.has(m.id) && m.eventos.includes(tipo))?.id || 'garden')
+    : simple && producto === 'compromiso-web' && tipo === '15' ? 'party' : simple || null;
   return { producto, tipo, modelo, paquete: 'basic', extras: extras.filter((e) => e === 'idioma'), nombre: PRODUCTOS[producto].nombre };
 }
 
@@ -475,6 +478,8 @@ const seccionActivaDe = (p, d) => (p.complemento ? d.secciones?.[p.seccion] === 
 // diseño a medida, sus complementos. Se paga al final (al generar la tarjeta u obtener el link)
 async function estadoProducto(env, request, ev, esquema) {
   const medida = ev.producto === 'a-medida';
+  // README (ronda 29): las Save The Date a medida también pasan por el equipo de diseño antes del pago
+  const enviable = medida || ['std-tarjeta-medida', 'std-web-medida'].includes(ev.producto);
   const clave = medida ? (ev.aMedida || 'personalizado') : ev.producto;
   const base = medida ? (A_MEDIDA[clave]?.deluxe || 0) : (PRODUCTOS[ev.producto]?.precio || 0);
   const pagado = ev.paquete !== 'borrador';
@@ -484,7 +489,7 @@ async function estadoProducto(env, request, ev, esquema) {
   const eur = (pagado ? 0 : base) + extrasAPagar.reduce((t, x) => t + (EXTRAS[x]?.precio || 0), 0);
   const moneda = monedaPedida(request), rates = await getRates(env), pais = paisReal(request);
   const texto = (k, e) => (e ? formatMoney(priceIn(k, e, moneda, rates, pais, env).amount, moneda) : 'Gratis');
-  const nombre = medida ? (clave === 'empresarial' ? 'Invitación para empresas' : 'Invitación con diseño a medida') : (PRODUCTOS[ev.producto]?.nombre || ev.producto);
+  const nombre = medida ? (clave === 'empresarial' ? 'Invitación para empresas' : 'Invitación con diseño a medida') : ev.producto === 'compromiso-web' ? 'Plan simple' : (PRODUCTOS[ev.producto]?.nombre || ev.producto);
   return {
     producto: true, plan: medida ? 'deluxe' : 'basic', nombre, precio: texto(clave, base), pagado: pagado ? (medida ? 'deluxe' : 'basic') : null, gratisPosible: false,
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: texto(x, EXTRAS[x]?.precio || 0), pagado: !extrasAPagar.includes(x) })),
@@ -493,7 +498,7 @@ async function estadoProducto(env, request, ev, esquema) {
     preciosExtras: Object.fromEntries(['std-tarjeta-medida', 'std-web-medida', 'idioma'].map((x) => [x, `+${texto(x, EXTRAS[x]?.precio || 0)}`])),
     activar: !pagado,
     // Diseño a medida: primero lo aprueba el equipo; recién ahí se paga
-    ...(medida ? { medida: { enviado: !!ev.datos.medida?.enviado, aprobado: !!ev.datos.medida?.aprobado } } : {}),
+    ...(enviable ? { medida: { enviado: !!ev.datos.medida?.enviado, aprobado: !!ev.datos.medida?.aprobado, listo: !!ev.datos.medida?.listo } } : {}),
   };
 }
 
@@ -582,7 +587,8 @@ async function empezarProducto(request, env, b, producto) {
   const datos = { variante: varianteDePais(paisReal(request)), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
     celebracion: fecha ? { fecha, inicio: fecha } : {}, std: { ...(fecha ? { fecha } : {}) } };
   if (producto === 'std-tarjeta') {
-    const m = buscarModelo(b.modelo);
+    // Sin diseño elegido (desde la tienda): el primero con tarjeta para ese evento
+    const m = buscarModelo(b.modelo) || MODELOS.find((x) => CON_TARJETA_STD.has(x.id) && x.eventos.includes(tipo));
     const mj = m && m.eventos.includes(tipo) ? await env.ASSETS.fetch(new URL(`/modelos/${m.id}/modelo.json`, request.url)).then((r) => (r.ok ? r.json() : null)).catch(() => null) : null;
     if (!mj?.tarjetas?.std) throw new HttpError(400, 'Ese diseño no tiene tarjeta Save The Date para este evento');
     modelo = m.id; datos.std.tipo = 'tarjeta';

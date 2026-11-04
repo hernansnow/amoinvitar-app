@@ -47,9 +47,9 @@ function dibujar() {
   $('#productos').replaceChildren(...PRODUCTOS_PRINCIPALES.map((p) => radio('producto', p.id, S.producto === p.id, (v) => { S.producto = v; S.std = null; actualizar(); }, el('strong', {}, p.nombre), el('small', {}, p.texto),
     p.id === 'agradecimiento' || p.id === 'compromiso-web' ? el('div', { class: 'precio' }, precioDe(c.productos, p.id)) : null)));
 
-  $('#paso-evento').hidden = !(esInv || S.producto === 'agradecimiento') || !!S.mejora;
+  $('#paso-evento').hidden = !(esInv || S.producto === 'agradecimiento' || S.producto === 'std') || !!S.mejora;
   // La tarjeta de agradecimiento suelta: solo boda y 15
-  const tiposVer = S.producto === 'agradecimiento' ? c.tipos.filter((t) => ['boda', '15'].includes(t.id)) : c.tipos;
+  const tiposVer = c.tipos;
   $('#tipos').replaceChildren(...tiposVer.map((t) => radio('tipo', t.id, S.tipo === t.id, (v) => { S.tipo = v; if (S.modelo && !c.modelos.find((m) => m.id === S.modelo)?.eventos.includes(v)) S.modelo = null; actualizar(); }, t.nombre)));
 
   const modelos = c.modelos.filter((m) => !S.tipo || m.eventos.includes(S.tipo));
@@ -87,18 +87,20 @@ function dibujar() {
 
 function pedido() {
   if (S.producto === 'invitacion') return { producto: 'invitacion', tipo: S.tipo, modelo: S.modelo, paquete: S.paquete, extras: [...S.extras] };
-  if (S.producto === 'std') return S.std ? { producto: S.std, extras: [...S.extras] } : null;
+  if (S.producto === 'std') return S.std ? { producto: S.std, tipo: S.tipo || 'boda', extras: [...S.extras] } : null;
   if (S.producto) return { producto: S.producto, tipo: S.tipo, extras: [...S.extras] };
   return null;
 }
-const listo = () => S.mejora ? !!S.mejora.paquete : S.producto === 'invitacion' ? false : S.producto === 'std' ? !!S.std : S.producto === 'agradecimiento' ? !!S.tipo : !!S.producto;
+const listo = () => S.mejora ? !!S.mejora.paquete : S.producto === 'invitacion' ? false : S.producto === 'std' ? !!S.std && !!S.tipo : S.producto === 'agradecimiento' ? !!S.tipo : !!S.producto;
+// README (ronda 29): los productos sueltos también se arman primero en el panel y se pagan al final
+const suelto = () => !S.mejora && S.producto && S.producto !== 'invitacion';
 
 let t = null;
 function actualizar() { dibujar(); cotizar(); }
 function cotizar() {
   clearTimeout(t);
   $('#resumen').hidden = !listo();
-  $('#paso-pago').hidden = !listo();
+  $('#paso-pago').hidden = !listo() || suelto();
   if (!listo()) return;
   t = setTimeout(async () => {
     try {
@@ -139,11 +141,12 @@ function dibujarPago() {
   $('#detalle').textContent = r.pedido.nombre;
   const p = $('#pagar');
   p.disabled = false;
-  p.textContent = r.gratis ? 'Crear la invitación' : S.medio === 'transfer' ? 'Ver datos para transferir' : 'Pagar';
-  $('#sin-pagar').hidden = !S.usuario?.admin || r.gratis;
+  p.textContent = suelto() ? 'Personalizar' : r.gratis ? 'Crear la invitación' : S.medio === 'transfer' ? 'Ver datos para transferir' : 'Pagar';
+  $('#sin-pagar').hidden = !S.usuario?.admin || r.gratis || suelto();
 }
 
 $('#pagar').addEventListener('click', async () => {
+  if (suelto()) { const p = pedido(); empezar({ producto: p.producto, nombre: S.cotizacion?.pedido?.nombre || 'tu producto', nombres: {} }); return; }
   const email = $('#email').value.trim();
   if (!S.usuario && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { mensaje('Falta el mail para mandar el acceso.'); $('#email').focus(); return; }
   const b = $('#pagar');
@@ -230,7 +233,7 @@ function verDemo(m) {
 $('#btn-personalizar-este').addEventListener('click', () => { $('#modal-vista').close(); empezar(elegido); });
 function empezar(m) {
   elegido = m;
-  const dos = S.tipo === 'boda'; // Revelación de género: un solo campo ("Dani & Marce")
+  const dos = (S.tipo || 'boda') === 'boda'; // Revelación de género: un solo campo ("Dani & Marce")
   $('#empezar-modelo').textContent = m.nombres[S.tipo] || m.nombre;
   const campo = (id, etiqueta, ph) => el('div', { class: 'campo' }, el('label', { for: id }, etiqueta), el('input', { type: 'text', id, maxlength: 15, required: true, placeholder: ph }));
   $('#campos-nombres').replaceChildren(...(dos ? [campo('emp-a', 'Nombre 1', 'Lau'), campo('emp-b', 'Nombre 2', 'Pablo')] : [campo('emp-a', 'Nombre', 'Sofi')]));
@@ -242,7 +245,7 @@ $('#form-empezar').addEventListener('submit', async (e) => {
   e.preventDefault();
   const b = $('#btn-empezar'); b.disabled = true; b.textContent = 'Un momento…';
   try {
-    const r = await post('/api/tienda/empezar', { tipo: S.tipo, modelo: elegido.id, nombres: { a: $('#emp-a').value.trim(), b: $('#emp-b')?.value.trim() || '' }, fecha: $('#emp-fecha').value });
+    const r = await post('/api/tienda/empezar', { producto: elegido.producto || 'invitacion', tipo: S.tipo || 'boda', modelo: elegido.id, nombres: { a: $('#emp-a').value.trim(), b: $('#emp-b')?.value.trim() || '' }, fecha: $('#emp-fecha').value });
     try {
       const lista = JSON.parse(localStorage.getItem('ai-borradores') || '[]');
       lista.unshift({ id: r.id, clave: r.clave, nombres: [$('#emp-a').value, $('#emp-b')?.value].filter(Boolean).join(' & '), modelo: elegido.id, tipo: S.tipo, t: Date.now() });

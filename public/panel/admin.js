@@ -244,10 +244,11 @@ function vistaResumen() {
   return [
     tarjeta(inicio ? `Faltan para ${plural() ? 'la boda' : 'el evento'}` : 'Cuenta regresiva', cuenta, ...avisos.map((a) => ctx.el('p', { class: 'ad-aviso' }, a))),
     numerosConteo(st),
-    ctx.el('div', { class: 'ad-numeros ad-extras' },
-      numero((respuestas || []).filter((r) => r.tipo === 'cancion').length, 'Canciones sugeridas', 'canciones', '', ICONO_NOTA),
-      numero(ultimas().filter((x) => x.datos.mensaje).length, 'Mensajes', 'mensajes', '', ICONO_MSG)),
-    !publicada() ? tarjeta(null, ctx.el('p', { class: 'ayuda' }, 'La invitación todavía no está publicada. Cuando se publique, aquí se ven las confirmaciones, los mensajes y las canciones que manden los invitados.')) : null,
+    // README (ronda 29): el resumen muestra solo lo que incluye el plan (sin canciones en Basic, etc.)
+    disponible('canciones') || disponible('mensajes') ? ctx.el('div', { class: 'ad-numeros ad-extras' },
+      disponible('canciones') ? numero((respuestas || []).filter((r) => r.tipo === 'cancion').length, 'Canciones sugeridas', 'canciones', '', ICONO_NOTA) : null,
+      disponible('mensajes') ? numero(ultimas().filter((x) => x.datos.mensaje).length, 'Mensajes', 'mensajes', '', ICONO_MSG) : null) : null,
+    !publicada() ? tarjeta(null, ctx.el('p', { class: 'ayuda' }, `La invitación todavía no está publicada. Cuando se publique, aquí se ven las confirmaciones${disponible('mensajes') ? ', los mensajes' : ''}${disponible('canciones') ? ' y las canciones' : ''} que manden los invitados.`)) : null,
   ];
 }
 // Conteo en personas (pases): invitados = todos los pases de la lista; asisten = los que confirmaron;
@@ -776,8 +777,10 @@ function dibujar(caja) {
     // Álbum: siempre, salvo que la sección use un link propio (ahí no hay nada que administrar)
     const verAlbum = !(albumActivo() && albumPropio());
     if (!verAlbum && seccion === 'album') seccion = 'resumen';
-    menu = ctx.el('nav', { class: 'ad-menu', 'aria-label': 'Administración' }, SECCIONES.filter(([id]) => id !== 'album' || verAlbum).map(([id, t]) => ctx.el('button', { type: 'button', class: 'ad-tab', 'data-id': id,
-      onclick: () => { seccion = id; dibujar(caja); } }, t)));
+    const tabs = SECCIONES.filter(([id]) => (id !== 'album' || verAlbum) && visible(id));
+    if (!tabs.some(([id]) => id === seccion)) seccion = 'resumen';
+    menu = ctx.el('nav', { class: 'ad-menu', 'aria-label': 'Administración' }, tabs.map(([id, t]) => ctx.el('button', { type: 'button', class: `ad-tab${bloqueo(id) ? ' bloqueada' : ''}`, 'data-id': id,
+      title: bloqueo(id) ? `Incluido en ${NOMBRE_NIVEL[bloqueo(id).nivel]}` : null, onclick: () => { seccion = id; dibujar(caja); } }, t)));
     const mas = ctx.el('button', { type: 'button', class: 'ad-menu-mas', 'aria-label': 'Ver más opciones', html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
       onclick: () => menu.scrollBy({ left: menu.clientWidth * 0.6, behavior: 'smooth' }) });
     const flecha = () => mas.hidden = menu.scrollLeft + menu.clientWidth >= menu.scrollWidth - 4;
@@ -791,12 +794,56 @@ function dibujar(caja) {
     b.classList.toggle('activo', activo);
     if (activo) { b.setAttribute('aria-current', 'page'); b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); } else b.removeAttribute('aria-current');
   });
-  caja.querySelector('.ad-contenido').replaceChildren(...((SOLO_DELUXE[seccion] && !esDeluxe() ? vistaSoloDeluxe(seccion) : VISTAS[seccion]()) || []).filter(Boolean));
+  caja.querySelector('.ad-contenido').replaceChildren(...((bloqueo(seccion) ? vistaBloqueada(seccion) : VISTAS[seccion]()) || []).filter(Boolean));
 }
-// README (ronda 24): el organizador de mesas (con "Buscá tu mesa") y el de llegadas con pase de entrada son de Deluxe
-const SOLO_DELUXE = { mesas: 'El organizador de mesas y la página "Buscá tu mesa"', llegadas: 'El organizador de llegadas con pase de entrada' };
-const esDeluxe = () => ctx.S.usuario?.admin || [ctx.S.evento.paquete, ctx.S.plan?.plan, ctx.S.plan?.pagado].includes('deluxe');
-function vistaSoloDeluxe(id) {
-  return [tarjeta(SOLO_DELUXE[id].replace(/^El organizador/, 'Organizador'), ctx.el('p', {}, `${SOLO_DELUXE[id]} vienen con el plan Deluxe.`),
-    ctx.el('p', { class: 'ayuda' }, 'Al sumar una sección Deluxe en "Editar invitación" (itinerario, padrinos, hospedaje…), la invitación pasa a Deluxe y esto se habilita.'))];
+// ── README (ronda 29): lo que incluye cada plan ──
+// Las funciones de un plan superior se ven con candado y una explicación (como la pestaña del álbum), con un botón
+// para sumarlas. La invitación simple (Civil, Compromiso, Pedida, Party) solo trae lo suyo: envío y respuestas.
+const NIVELES = ['gratis', 'basic', 'premium', 'deluxe'];
+const NOMBRE_NIVEL = { gratis: 'Gratis', basic: 'Basic', premium: 'Premium', deluxe: 'Deluxe' };
+const nivelPlan = () => {
+  const p = ctx.S.plan || {};
+  if (ctx.S.evento.producto === 'a-medida') return 'deluxe';
+  return [p.plan, p.pagado, ctx.S.evento.paquete].filter((x) => NIVELES.includes(x)).sort((a, b) => NIVELES.indexOf(b) - NIVELES.indexOf(a))[0] || 'basic';
+};
+const alcanza = (n) => NIVELES.indexOf(nivelPlan()) >= NIVELES.indexOf(n);
+const esSimple = () => !!ctx.S.esquema?.simple;
+const FUNCIONES = {
+  canciones: { nivel: 'premium', seccion: 'canciones', titulo: 'Canciones sugeridas', activar: 'Activar "Sugerir canciones"',
+    texto: 'Tus invitados te sugieren desde la invitación las canciones que no pueden faltar en la fiesta.',
+    puntos: ['Un formulario en la invitación para que cada invitado proponga sus temas.', 'Aquí ves todas las sugerencias juntas y quién pidió cada una.', 'Las pasas a una playlist de Spotify o se las compartes al DJ en un clic.'] },
+  mesas: { nivel: 'deluxe', titulo: 'Organizador de mesas', activar: 'Ver secciones Deluxe',
+    texto: 'Arma la distribución de mesas en minutos, sin planillas ni papeles.',
+    puntos: ['Arrastras a los invitados confirmados a cada mesa, desde la computadora o el celular.', 'Croquis del salón para imprimir o compartir con el lugar del evento.', 'La página "Busca tu mesa": en la entrada, cada invitado escanea un QR y ve en qué mesa está. Sin filas ni carteles.'] },
+  llegadas: { nivel: 'deluxe', titulo: 'Control de llegadas', activar: 'Ver secciones Deluxe',
+    texto: 'El día del evento, sabes en vivo quién llegó y quién falta.',
+    puntos: ['Cada invitado tiene su pase de entrada con QR en la invitación.', 'En la recepción se escanea con el celular o se busca por nombre.', 'Ideal para listas cerradas, eventos con control de acceso o salones con aforo.'] },
+};
+// Qué pestañas existen: la invitación simple, solo envío y respuestas
+const visible = (id) => !esSimple() || ['resumen', 'enviar', 'respuestas', 'accesos'].includes(id);
+const disponible = (id) => {
+  if (id === 'mensajes') return !esSimple() && ctx.datos.rsvp?.preguntas?.mensaje !== false;
+  if (id === 'canciones') return !esSimple() && alcanza('premium') && ctx.datos.secciones?.canciones !== false;
+  return visible(id) && !bloqueo(id);
+};
+// La función que no incluye el plan (o la sección que está apagada)
+const bloqueo = (id) => {
+  const f = FUNCIONES[id];
+  if (!f || esSimple()) return null;
+  if (!alcanza(f.nivel)) return f;
+  if (f.seccion && ctx.datos.secciones?.[f.seccion] === false) return { ...f, apagada: true };
+  return null;
+};
+function vistaBloqueada(id) {
+  const f = bloqueo(id);
+  const accion = f.seccion ? () => ctx.activarSeccion?.(f.seccion) : () => ctx.verDeluxe?.();
+  return [tarjeta(f.titulo,
+    ctx.el('div', { class: `ad-bloqueo nivel-${f.nivel}` },
+      ctx.el('p', { class: 'ad-bloqueo-cinta' }, f.apagada ? `Prende la sección "Sugerir canciones" para usar esta función` : `Activa ${NOMBRE_NIVEL[f.nivel]} para tener esta función`),
+      ctx.el('p', { class: 'ad-bloqueo-texto' }, f.texto),
+      ctx.el('ul', { class: 'ad-bloqueo-lista' }, f.puntos.map((x) => ctx.el('li', {}, x))),
+      f.apagada ? null : ctx.el('p', { class: 'ayuda' }, f.seccion
+        ? `Al activarla, tu invitación pasa a ${NOMBRE_NIVEL[f.nivel]} (pagas solo la diferencia al publicar).`
+        : `Al sumar cualquier sección ${NOMBRE_NIVEL[f.nivel]} (itinerario, padrinos, hospedaje…), la invitación pasa a ${NOMBRE_NIVEL[f.nivel]} y esto se habilita.`),
+      ctx.el('div', { class: 'ad-botones' }, boton(f.apagada ? 'Prender la sección' : f.activar, accion))))];
 }

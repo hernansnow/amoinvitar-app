@@ -1052,6 +1052,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
             el('span', { class: 'oa-texto' }, el('strong', {}, o.etiqueta, ' ', insigniaNivel(o.nivel)), el('small', {}, o.ayuda)));
         }));
       }
+      c = { ...c, valores: c.valores.filter((o) => !o.oculta) };
       if (c.valores.length <= 4) {
         const nombre = `r-${idHtml}`;
         return el('div', { class: 'opciones', role: 'radiogroup' }, c.valores.map((o) => {
@@ -1079,7 +1080,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
         const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: o.v, checked: o.v === actual, disabled: dis });
         i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
         return el('label', { class: 'diseno-foto' }, i, el('img', { src: `/comun/tarjetas/${c.carpeta || 'foto'}/${o.v}/muestra-${plural ? 'boda' : '15'}.jpg`, alt: '', loading: 'lazy' }), el('span', {}, o.etiqueta));
-      }));
+      }), opcionMedida(c, idHtml, dis));
     }
     // Diseño de la Save The Date web (Classic o Soft)
     case 'disenoStd': {
@@ -1087,9 +1088,19 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
       return el('div', { class: 'disenos-foto', role: 'radiogroup' }, c.valores.map((o) => {
         const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: o.v, checked: o.v === actual, disabled: dis });
         i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
-        return el('label', { class: 'diseno-foto' }, i, el('img', { src: `/modelos/${o.v}/tienda-${S.evento.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { e.target.remove(); } }), el('span', {}, o.etiqueta));
-      }));
+        // README (ronda 29): las dos en versión celular, como la opción a medida
+        const img = o.v === 'std-soft' ? 'std-web-soft.jpg' : S.evento.tipo === '15' ? 'std-web15.jpg' : 'std-web-classic.jpg';
+        return el('label', { class: 'diseno-foto celular' }, i, el('img', { src: `/comun/img/${img}`, alt: '', loading: 'lazy' }), el('span', {}, o.etiqueta));
+      }), opcionMedida(c, idHtml, dis, true));
     }
+    // README (ronda 29): debajo de la tarjeta, "¿Quieres un diseño a medida?" con su precio
+    case 'activarMedida': {
+      const precio = c.convertir ? S.aMedida?.precio : S.plan?.preciosExtras?.[c.extra];
+      return el('div', { class: 'activar-medida' }, el('p', {}, c.texto), el('div', { class: 'activar-medida-fila' },
+        el('button', { type: 'button', class: 'btn', disabled: dis, onclick: () => pasarAMedida(c) }, c.boton.toUpperCase()),
+        precio ? el('span', { class: 'precio-opcion' }, precio) : null));
+    }
+    case 'medidaStd': return avisoMedidaStd();
     // El link de la Save The Date web: copiar, mandar por WhatsApp y verla
     case 'linkStd': {
       const link = `${location.origin}/std/${S.evento.id}`;
@@ -1250,6 +1261,47 @@ async function disenoTarjeta(c) {
   if (!diseno) return null;
   return { def: { ...t, ancho: diseno.ancho || t.ancho, alto: diseno.alto || t.alto, fondo: diseno.fondo || t.fondo }, diseno, base: `/modelos/${S.evento.modelo}` };
 }
+// README (ronda 29): Save The Date a medida dentro de la invitación. Se elige como un diseño más (foto y web) o con el
+// botón debajo de la tarjeta; el paso muestra el brief y se envía al equipo, que lo aprueba antes de cobrarlo
+async function pasarAMedida(c) {
+  // Save The Date comprada sola: pasa al producto a medida (su propio panel, con el envío al equipo)
+  if (c.convertir) {
+    if (!confirm('¿Pasar a una Save The Date con diseño a medida? Nos cuentas tu idea y la diseñamos para ti.')) { dibujarPaso(); return; }
+    try { clearTimeout(guardarTimer); await guardar(); await api('/modelo', { method: 'POST', body: JSON.stringify({ modelo: 'a-medida' }) }); await recargar(); irA('brief'); aviso('Cuéntanos tu idea y envíala al equipo de diseño'); }
+    catch (e) { aviso(e.message, true); }
+    return;
+  }
+  const antes = leer(datos, c.campo);
+  if (antes && !/-medida$/.test(antes)) cambio('std.tipoAntes', antes);
+  cambio(c.campo, c.v, { rearmar: true });
+  aviso('Cuéntanos tu idea y envíala al equipo de diseño');
+}
+function opcionMedida(c, idHtml, dis, celular = false) {
+  if (!c.medida) return null;
+  const precio = S.plan?.preciosExtras?.[c.medida.extra] || (c.medida.convertir ? S.aMedida?.precio : null);
+  const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: c.medida.v, checked: false, disabled: dis });
+  i.addEventListener('change', () => pasarAMedida(c.medida));
+  return el('label', { class: `diseno-foto a-medida${celular ? ' celular' : ''}` }, i, precio ? el('span', { class: 'cinta-precio' }, precio.replace(/^\+/, '')) : null,
+    el('img', { src: c.medida.img, alt: '', loading: 'lazy' }), el('span', {}, 'Diseño a medida'));
+}
+function avisoMedidaStd() {
+  const md = datos.std?.medida || {};
+  const volver = () => { cambio('std.tipo', datos.std?.tipoAntes || (S.modelo?.tarjetas?.std ? 'tarjeta' : 'foto'), { rearmar: true }); };
+  const enviar = async (b) => {
+    b.disabled = true; clearTimeout(guardarTimer); await guardar();
+    try { await api('/enviarMedida', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('¡Enviado al equipo de diseño!'); }
+    catch (e) { b.disabled = false; aviso(e.datos?.faltan?.length ? `Antes de enviarlo, completa: ${e.datos.faltan.map((x) => x.etiqueta).join(', ')}` : e.message, true); }
+  };
+  const aprobar = async (b) => { b.disabled = true; try { await api('/aprobarMedida', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('Aprobado: se suma al pago de la invitación'); } catch (e) { b.disabled = false; aviso(e.message, true); } };
+  const precio = S.plan?.preciosExtras?.[datos.std?.tipo === 'web-medida' ? 'std-web-medida' : 'std-tarjeta-medida'];
+  const fila = md.aprobado ? [el('strong', {}, 'Tu proyecto fue aprobado por el equipo de diseño.'), ' Se suma al pago de tu invitación para que comencemos a crearlo.']
+    : md.enviado ? [el('strong', {}, 'Recibimos tu idea.'), ' Vamos a evaluarla y, si todo está bien, recibirás la confirmación pronto.',
+      S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
+      : [`Completa tu idea y envíala al equipo de diseño${precio ? ` (${precio.replace(/^\+/, '')})` : ''}. Pagas solo cuando el proyecto esté aprobado. `,
+        el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño'),
+        el('button', { type: 'button', class: 'btn-link', onclick: volver }, '← Volver a los diseños')];
+  return el('div', { class: 'aviso-medida en-paso' }, el('p', {}, ...fila.filter(Boolean)));
+}
 function campoTarjeta(c, valor, alCambiar) {
   const caja = el('div', { class: 'tj-campo' }, el('p', { class: 'ayuda' }, 'Cargando la tarjeta…'));
   disenoTarjeta(c).then((x) => caja.replaceWith(x ? armarTarjeta(c, valor, alCambiar, x)
@@ -1314,7 +1366,7 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   if (!visibleUi(c)) return null;
   const idHtml = `c-${prefijo}${c.id.replace(/\W/g, '-')}-${++contadorIds}`;
   // Funciones de un plan más alto: se pueden usar y suben el plan (el aviso lo indica)
-  const insignia = c.insigniaGratis ? insigniaNivel(c.insigniaGratis) : c.paquete && c.paquete !== 'basic' && pasoActual?.nivel !== c.paquete ? insigniaNivel(c.paquete) : null;
+  const insignia = S.esquema?.sinNiveles ? null : c.insigniaGratis ? insigniaNivel(c.insigniaGratis) : c.paquete && c.paquete !== 'basic' && pasoActual?.nivel !== c.paquete ? insigniaNivel(c.paquete) : null;
   // Necesita algo de otra sección, o queda fijo por lo que se eligió en otra
   const desactivado = c.requiere && !cumple(c.requiere) && !leer(datos, c.id);
   const fijo = c.fijoSi && cumple(c.fijoSi);
@@ -1331,7 +1383,7 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
       : el('div', { class: `etiqueta${c.requerido ? ' requerido' : ''}` }, c.etiqueta, insignia);
   const clases = ['campo', c.ancho === 'mitad' ? (c.id.startsWith('nombres.') ? 'mitad nombre-par' : 'mitad') : '', c.tipo === 'nota' && c.estilo ? `nota-${c.estilo}` : '', c.cerrado || desactivado ? 'bloqueado' : ''].filter(Boolean).join(' ');
   const nodo = el('div', { class: clases, 'data-si': c.si ? JSON.stringify(c.si) : null },
-    etiqueta, control(c, valor, alCambiar, idHtml, extra), sinEtiqueta && insignia, motivo, aviso, c.ayuda ? el('p', { class: 'ayuda' }, c.ayuda) : null);
+    etiqueta, c.subtitulo ? el('p', { class: 'subtitulo-campo' }, c.subtitulo) : null, control(c, valor, alCambiar, idHtml, extra), sinEtiqueta && insignia, motivo, aviso, c.ayuda ? el('p', { class: 'ayuda' }, c.ayuda) : null);
   if (c.si) nodo.hidden = !visible(c);
   return nodo;
 }
@@ -1397,7 +1449,8 @@ const esGratis = () => S.plan?.plan === 'gratis';
 const nivelDe = (n) => (n === 'basic' && esGratis() ? 'gratis' : n);
 // Invitados y acceso tiene opciones de Basic y de Premium: lleva las dos insignias
 const insigniasPaso = (p) => (p.niveles ? el('span', { class: 'insignias' }, p.niveles.map(insigniaNivel)) : insigniaNivel(p.nivel));
-const insigniaNivel = (n) => (n && n !== 'complemento' ? el('span', { class: `insignia-nivel nivel-${nivelDe(n)}` }, NOMBRE_NIVEL[nivelDe(n)]) : null);
+// Productos sueltos, invitación simple y diseño a medida: sin insignias de plan (no hay nada para ampliar)
+const insigniaNivel = (n) => (n && n !== 'complemento' && !S.esquema?.sinNiveles ? el('span', { class: `insignia-nivel nivel-${nivelDe(n)}` }, NOMBRE_NIVEL[nivelDe(n)]) : null);
 
 // Si un paso está prendido en la invitación (las obligatorias siempre)
 function pasoActivo(p) {
@@ -1430,7 +1483,7 @@ function prenderPaso(p, on) {
 function interruptorPaso(p) {
   // Las secciones obligatorias (y las que no se apagan) no llevan interruptor: siempre están
   if (p.sinInterruptor || p.obligatoria || (!p.seccion && !p.interruptor)) return el('span');
-  const fijo = p.obligatoria || (p.fijoSi && cumple(p.fijoSi));
+  const fijo = p.obligatoria || (p.fijoSi && cumple(p.fijoSi)) || !!S.esquema?.cerrada;
   const sinComplementos = false; // README (ronda 28): los complementos se suman siempre (en gratis, pasa a Basic)
   const chk = el('input', { type: 'checkbox', role: 'switch', 'aria-label': `${pasoActivo(p) ? 'Apagar' : 'Prender'} ${p.titulo}`, disabled: fijo || sinComplementos,
     title: p.obligatoria ? 'Sección obligatoria' : sinComplementos ? 'No disponible en el plan gratis' : '' });
@@ -1558,18 +1611,26 @@ function pintarMedida() {
   const enviar = async (b) => {
     b.disabled = true; clearTimeout(guardarTimer); await guardar();
     try { await api('/enviarMedida', { method: 'POST', body: '{}' }); await recargar(); aviso('¡Enviado al equipo de diseño!'); }
-    catch (e) { b.disabled = false; aviso(e.datos?.faltan?.length ? 'Antes de enviarlo, completa lo que falta.' : e.message, true); }
+    catch (e) {
+      b.disabled = false;
+      const f = e.datos?.faltan || [];
+      aviso(f.length ? `Antes de enviarlo, completa: ${f.map((x) => x.etiqueta).join(', ')}` : e.message, true);
+      if (f[0]?.paso) irA(f[0].paso);
+    }
   };
+  const listo = async (b) => { b.disabled = true; try { await api('/medidaLista', { method: 'POST', body: '{}' }); await recargar(); aviso('Listo: el cliente puede volver a editar'); } catch (e) { b.disabled = false; aviso(e.message, true); } };
   const aprobar = async (b) => {
     if (!confirm('¿Aprobar el proyecto? Al cliente le llega un mail para que complete el pago.')) return;
     b.disabled = true; try { await api('/aprobarMedida', { method: 'POST', body: '{}' }); await recargar(); aviso('Proyecto aprobado: se avisó al cliente'); } catch (e) { b.disabled = false; aviso(e.message, true); }
   };
-  const fila = pagado ? [el('strong', {}, '¡Pago recibido!'), ' El equipo de diseño ya está trabajando en tu invitación.']
+  const fila = pagado && md.listo ? [el('strong', {}, '¡Tu diseño está listo!'), ' Ya puedes revisar y completar el contenido.']
+    : pagado ? [el('strong', {}, '¡Pago recibido!'), ' El equipo de diseño ya está trabajando en tu diseño. Mientras tanto, el contenido queda como lo enviaste.',
+      S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => listo(e.currentTarget) }, 'Diseño listo (administración)') : null]
     : md.aprobado ? [el('strong', {}, 'Tu proyecto fue aprobado por el equipo de diseño.'), ' Completa el pago para que comencemos a crear tu invitación. ',
       el('button', { type: 'button', class: 'btn btn-chico', onclick: () => mostrarResumen(true) }, 'Completar el pago')]
-      : md.enviado ? [el('strong', {}, 'Recibimos tu idea.'), ' Vamos a evaluarla y, si todo está bien, recibirás la confirmación pronto.',
+      : md.enviado ? [el('strong', {}, 'Recibimos tu idea.'), ' Vamos a evaluarla y, si todo está bien, recibirás la confirmación pronto. Hasta que el diseño esté listo, el panel no se puede modificar.',
         S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
-        : ['Cuando completes todos los datos, las ideas y las fotos, envíalo al equipo de diseño. ',
+        : ['Cuando completes lo obligatorio (*) de "Ideas para el diseño", envíalo al equipo de diseño. ',
           el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño')];
   caja.replaceChildren(el('p', {}, ...fila.filter(Boolean)));
 }
@@ -1601,7 +1662,11 @@ function elegirModelo() {
   // Toda la tarjeta (imagen, nombre y botón) elige el modelo
   const usar = async (m) => {
     if (m.id === S.evento.modelo) return;
-    try { clearTimeout(guardarTimer); await guardar(); await api('/modelo', { method: 'POST', body: JSON.stringify({ modelo: m.id }) }); cerrarModal(); await recargar(); aviso(`Ahora con ${m.nombre}`); } catch (e) { aviso(e.message, true); }
+    try {
+      clearTimeout(guardarTimer); await guardar(); await api('/modelo', { method: 'POST', body: JSON.stringify({ modelo: m.id }) }); cerrarModal(); await recargar(); aviso(`Ahora con ${m.nombre}`);
+      // README (ronda 29): al pasar a diseño a medida, directo a "Ideas para el diseño" (así no se lo pierde)
+      if (m.id === 'a-medida' && S.esquema.pasos.some((p) => p.id === 'brief')) irA('brief');
+    } catch (e) { aviso(e.message, true); }
   };
   abrirModal('Cambiar de modelo', el('div', { class: 'modelos-grilla' }, (S.modelos || []).map((m) => el('div', { class: `modelo-opcion${m.id === S.evento.modelo ? ' actual' : ''}`, role: 'button', tabindex: '0',
       onclick: () => usar(m), onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); usar(m); } } },
@@ -1611,7 +1676,8 @@ function elegirModelo() {
     // README (ronda 28): el diseño a medida, con su precio
     S.aMedida ? el('div', { class: 'modelo-opcion a-medida', role: 'button', tabindex: '0', onclick: () => usar({ id: 'a-medida', nombre: 'Diseño a medida' }),
       onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); usar({ id: 'a-medida', nombre: 'Diseño a medida' }); } } },
-    el('div', { class: 'a-medida-img', 'aria-hidden': 'true' }, '✎'), el('strong', {}, S.aMedida.empresarial ? 'Diseño para empresas' : 'Diseño a medida'),
+    // README (ronda 29): con la imagen del diseño a medida (la de la Save The Date en las tarjetas y la web)
+    el('img', { class: 'a-medida-img', alt: '', loading: 'lazy', src: !S.aMedida.std ? '/comun/img/modelo-a-medida.webp' : S.evento.producto === 'std-web' ? '/comun/img/std-medida-web.webp' : '/comun/img/std-medida-tarjeta.jpg' }), el('strong', {}, S.aMedida.empresarial ? 'Diseño para empresas' : 'Diseño a medida'),
     el('small', {}, `Creado para ti · ${S.aMedida.precio}`), el('span', { class: 'btn btn-chico' }, 'Elegir')) : null),
   el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/tienda/', target: '_blank' }, 'la tienda'), '.'));
   // El foco en el modelo que está en uso, no al principio de la lista
@@ -1881,7 +1947,7 @@ function recordarBorrador() {
   }
   aplicarDefectos();
   // La Save The Date web no tiene administración (respuestas, envío, mesas)
-  if (S.esquema?.sinAdmin) document.body.classList.add('sin-admin');
+  document.body.classList.toggle('sin-admin', !!S.esquema?.sinAdmin);
   if (S.modelo?.miniatura?.colorTitulos) document.documentElement.style.setProperty('--icono-fondo', S.modelo.miniatura.colorTitulos);
   aplicarMarca(S.marca);
   botonAyuda();
@@ -1929,6 +1995,9 @@ function ponerModo(m) {
     history.replaceState(null, '', '#admin');
     montarAdmin($('#admin'), { S, datos, api, el, aviso, abrirModal,
       clave, editarLista: modalLista, cambiarAjuste: modalAjusteAcceso, redibujarAdmin: () => ponerModo('admin'),
+      // README (ronda 29): desde una función con candado, se prende su sección (y el plan sube) o se ven las de Deluxe
+      activarSeccion: (sec) => { const p = S.esquema.pasos.find((x) => x.seccion === sec); if (!p) return; prenderPaso(p, true); ponerModo('editar'); irA(p.id); aviso(`Listo: se sumó "${p.titulo}"`); },
+      verDeluxe: () => { ponerModo('editar'); const p = S.esquema.pasos.find((x) => x.nivel === 'deluxe' && x.seccion && !pasoActivo(x)); if (p) irA(p.id); aviso('Prende cualquier sección Deluxe y la invitación pasa a Deluxe'); },
       guardarInvitados: async () => { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: S.invitados }) }); S.invitados = r.invitados; } });
   } else if (pasoActual) { history.replaceState(null, '', `#${pasoActual.id}`); requestAnimationFrame(escalarPrevia); }
 }

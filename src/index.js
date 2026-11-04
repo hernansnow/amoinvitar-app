@@ -583,6 +583,14 @@ async function apiPanel(env, request, url, partes) {
   // Superusuario (administrador de Amo Invitar): edita todo, sin las restricciones de publicada
   const usuario = await usuarioActual(request, env);
   const admin = !!usuario?.esAdmin;
+  // README (ronda 29): una tarjeta Save The Date comprada sin modelo (desde la tienda) toma el tipo de evento y el
+  // primer diseño con tarjeta; en el panel se cambia por otro
+  if (ev.producto === 'std-tarjeta' && (!ev.modelo || !TIPOS_EVENTO.some((t) => t.id === ev.tipo))) {
+    if (!TIPOS_EVENTO.some((t) => t.id === ev.tipo)) ev.tipo = 'boda';
+    ev.modelo = MODELOS.find((m) => CON_TARJETA_STD.has(m.id) && m.eventos.includes(ev.tipo))?.id || 'garden';
+    ev.datos.std = { ...(ev.datos.std || {}), tipo: 'tarjeta' };
+    await almacenDe(env).guardarEvento(ev);
+  }
   const esquema = await esquemaDe(env, url, ev, ev.datos, { admin });
 
   if (!accion && request.method === 'GET') {
@@ -678,10 +686,14 @@ async function apiPanel(env, request, url, partes) {
   // README (ronda 28): diseño a medida. El cliente completa todo y lo manda al equipo; el equipo lo aprueba y recién
   // ahí el cliente paga para que empiece el diseño
   if (accion === 'enviarMedida' && request.method === 'POST') {
-    if (!['a-medida', 'std-tarjeta-medida', 'std-web-medida'].includes(ev.producto)) return json({ error: 'No es un diseño a medida' }, 400);
-    const faltan = faltantes(esquema, ev.datos);
+    // README (ronda 29): parte "std" = la Save The Date a medida que se sumó a una invitación (solo su brief)
+    const { parte } = await request.json().catch(() => ({}));
+    const std = parte === 'std';
+    if (std ? !['tarjeta-medida', 'web-medida'].includes(ev.datos.std?.tipo) : !['a-medida', 'std-tarjeta-medida', 'std-web-medida'].includes(ev.producto)) return json({ error: 'No es un diseño a medida' }, 400);
+    const faltan = faltantes(esquema, ev.datos).filter((x) => !std || x.paso === 'std');
     if (faltan.length) return json({ error: 'faltan', faltan }, 422);
-    ev.datos.medida = { ...(ev.datos.medida || {}), enviado: new Date().toISOString() };
+    if (std) ev.datos.std.medida = { ...(ev.datos.std.medida || {}), enviado: new Date().toISOString() };
+    else ev.datos.medida = { ...(ev.datos.medida || {}), enviado: new Date().toISOString() };
     await almacen.guardarEvento(ev);
     if (env.SUPPORT_EMAIL) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Diseño a medida para revisar · ${nombresDe(ev.datos.nombres)}`,
       lineas: [`${ev.producto} · ${ev.tipo} · ${nombresDe(ev.datos.nombres)}`, `Panel: ${url.origin}/panel/${ev.id}?k=${ev.clave}`] }) }).catch(() => {});
@@ -689,11 +701,20 @@ async function apiPanel(env, request, url, partes) {
   }
   if (accion === 'aprobarMedida' && request.method === 'POST') {
     if (!admin) return json({ error: 'Solo el equipo de diseño' }, 403);
-    ev.datos.medida = { ...(ev.datos.medida || {}), aprobado: new Date().toISOString() };
+    const { parte } = await request.json().catch(() => ({}));
+    if (parte === 'std') { ev.datos.std = { ...(ev.datos.std || {}) }; ev.datos.std.medida = { ...(ev.datos.std.medida || {}), aprobado: new Date().toISOString() }; }
+    else ev.datos.medida = { ...(ev.datos.medida || {}), aprobado: new Date().toISOString() };
     await almacen.guardarEvento(ev);
     const clientes = (await almacen.accesos(ev.id)).filter((x) => x.rol === 'cliente');
     for (const c of clientes) await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { url: `${url.origin}/panel/${ev.id}?k=${ev.clave}`, nombres: nombresDe(ev.datos.nombres) }) }).catch(() => {});
     return json({ ok: true, avisados: clientes.length });
+  }
+  // README (ronda 29): el equipo marca el diseño a medida como listo: el cliente vuelve a poder editar el contenido
+  if (accion === 'medidaLista' && request.method === 'POST') {
+    if (!admin) return json({ error: 'Solo el equipo de diseño' }, 403);
+    ev.datos.medida = { ...(ev.datos.medida || {}), listo: new Date().toISOString() };
+    await almacen.guardarEvento(ev);
+    return json({ ok: true });
   }
   // Pasar al plan gratis (modelos que lo tienen): se apaga lo que no es de Basic
   if (accion === 'gratis' && request.method === 'POST') {

@@ -1048,9 +1048,33 @@ body.modo-admin #btn-ojo { display: none !important; }
 .tj-entrada { width: 100%; padding: 9px 10px; border: 1px solid var(--borde); border-radius: 8px; font: inherit; color: var(--texto); background: #fff; box-sizing: border-box; }
 textarea.tj-entrada { resize: vertical; }
 /* Diseño a medida en el cambio de modelo */
-.modelo-opcion.a-medida .a-medida-img { display: grid; place-items: center; aspect-ratio: 9 / 16; width: 100%; border-radius: 8px; background: linear-gradient(160deg, #e8f4f0, #d6e4dd); color: var(--acento); font-size: 2.6rem; }
+.modelo-opcion.a-medida .a-medida-img { display: block; aspect-ratio: 3 / 2; width: 100%; height: auto; object-fit: cover; border-radius: 8px; background: #4e9c87; }
+.modelo-opcion.a-medida .a-medida-img[src*="std-medida"] { object-fit: contain; }
 .aviso-medida { margin: 0 0 12px; padding: 12px 14px; border-radius: 12px; background: #e8f4f0; border-left: 4px solid var(--acento); font-size: .95rem; }
 .aviso-medida p { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
 /* README (ronda 28): tarjetas sueltas (Save The Date y agradecimiento): sin la vista de una invitación al costado */
 @media (min-width: 1024px) { body.suelta .layout { grid-template-columns: 320px minmax(420px, 640px) 1fr; } }
 body.suelta .previa, body.suelta #btn-ojo, body.suelta .modo-vista, body.suelta #btn-completa { display: none !important; }
+
+/* README (ronda 29): funciones de un plan superior en la administración */
+.ad-tab.bloqueada::after { content: ''; display: inline-block; width: 11px; height: 11px; margin-left: 5px; vertical-align: -1px; opacity: .55;
+  background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1h1Zm2 0h6V7a3 3 0 0 0-6 0v3Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1h1Zm2 0h6V7a3 3 0 0 0-6 0v3Z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.ad-bloqueo { display: grid; gap: 10px; color: var(--texto, #3a3f3c); }
+.ad-bloqueo p, .ad-bloqueo li { color: inherit; }
+.ad-bloqueo-cinta { margin: 0; padding: 10px 14px; border-radius: 10px; font-weight: 600; color: #fff; background: linear-gradient(90deg, #4e9c87, #7cb8a6); }
+.ad-bloqueo.nivel-deluxe .ad-bloqueo-cinta { background: linear-gradient(90deg, #8a6d3b, #c9a96a); }
+.ad-bloqueo-texto { margin: 2px 0 0; font-size: 1.05rem; }
+.ad-bloqueo-lista { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.subtitulo-campo { margin: -2px 0 8px; font-size: .88rem; color: var(--suave, #6b706c); line-height: 1.4; }
+
+/* README (ronda 29): Save The Date a medida dentro de la invitación */
+.activar-medida { margin-top: 10px; padding: 14px 16px; border: 1px dashed var(--acento, #4e9c87); border-radius: 12px; background: #f4faf8; }
+.activar-medida p { margin: 0 0 10px; }
+.activar-medida-fila { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.diseno-foto { position: relative; }
+.diseno-foto.a-medida img { background: #4e9c87; }
+.diseno-foto.celular img { aspect-ratio: 9 / 16; object-fit: contain; background: transparent; }
+.cinta-precio { position: absolute; top: 6px; right: 6px; z-index: 1; background: #e07a5f; color: #fff; font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.aviso-medida.en-paso { margin: 0 0 14px; }
+.aviso-medida.en-paso .btn-link { margin-left: 6px; }
