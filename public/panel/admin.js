@@ -1,6 +1,6 @@
 // Administración de la invitación: resumen, envío, respuestas, mensajes, canciones, mesas y álbum.
 // Antes de publicar se ve como una vista previa (explica qué va a aparecer); una vez publicada,
-// el panel abre acá primero. Los textos de los mensajes de WhatsApp y los asientos por mesa se
+// el panel abre aquí primero. Los textos de los mensajes de WhatsApp y los asientos por mesa se
 // guardan en el evento (datos.admin) con POST /admin.
 
 let ctx = null;           // { S, datos, api, el, aviso, guardarInvitados }
@@ -44,7 +44,7 @@ const TEXTO_WA = () => (plural()
   ? `¡Nos casamos y queremos celebrar contigo! 💍\nTe invitamos a nuestra boda. Ingresa a nuestra invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te esperamos!\n{nombres}`
   : `¡Quiero celebrar contigo! 🎉\nIngresa a mi invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te espero!\n{nombres}`);
 const TEXTO_WA_LISTA = () => `¡Hola {invitado}! ${plural() ? '¡Nos casamos y queremos celebrar contigo! 💍\nTe invitamos cordialmente a nuestra boda.' : '¡Quiero celebrar contigo! 🎉'}\nEn tu invitación personal están todos los detalles y puedes confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Saludos!\n{nombres}`;
-const TEXTO_RECORDATORIO = () => `¡Hola {invitado}! 😊 Te recordamos que todavía no confirmaste tu asistencia${cierre() ? ' (la fecha límite es el {cierre})' : ''}. Puedes hacerlo acá:\n{link}{pin}\n¡Gracias!\n{nombres}`;
+const TEXTO_RECORDATORIO = () => `¡Hola {invitado}! 😊 Te recordamos que todavía no confirmaste tu asistencia${cierre() ? ' (la fecha límite es el {cierre})' : ''}. Puedes hacerlo aquí:\n{link}{pin}\n¡Gracias!\n{nombres}`;
 // Si hay PIN y el texto (cambiado a mano) no tiene {pin}, el PIN va igual, después del link
 const armarTexto = (plantilla, i = null) => (/\{pin\}/.test(plantilla) ? plantilla : plantilla.replace('{link}', '{link}{pin}'))
   .replace(/\{link\}/g, i ? linkDe(i) : link()).replace(/\{nombres\}/g, nombres()).replace(/\{cierre\}/g, fechaTexto(cierre()))
@@ -210,7 +210,7 @@ function enviarEnTanda(lista, { tipo = 'invitacion', texto, titulo }) {
       ctx.el('p', { class: 'ad-tanda-nombre' }, i.nombre),
       ctx.el('p', { class: 'ayuda ad-centro' }, i.telefono ? `📱 ${i.telefono}` : 'Sin teléfono: en WhatsApp se elige el contacto.'),
       ir,
-      ctx.el('p', { class: 'ayuda ad-centro' }, 'Tocar "Enviar" en WhatsApp y volver acá para continuar con el siguiente. Se puede terminar y seguir después (se guardan los enviados).'),
+      ctx.el('p', { class: 'ayuda ad-centro' }, 'Tocar "Enviar" en WhatsApp y volver aquí para continuar con el siguiente. Se puede terminar y seguir después (se guardan los enviados).'),
       ctx.el('div', { class: 'ad-botones ad-centro' },
         boton('Saltar', () => { n++; pintar(); }, 'btn btn-sec btn-chico'),
         boton('Terminar', () => { document.getElementById('modal')?.close(); ctx.redibujar(); }, 'btn btn-sec btn-chico')));
@@ -247,7 +247,7 @@ function vistaResumen() {
     ctx.el('div', { class: 'ad-numeros ad-extras' },
       numero((respuestas || []).filter((r) => r.tipo === 'cancion').length, 'Canciones sugeridas', 'canciones', '', ICONO_NOTA),
       numero(ultimas().filter((x) => x.datos.mensaje).length, 'Mensajes', 'mensajes', '', ICONO_MSG)),
-    !publicada() ? tarjeta(null, ctx.el('p', { class: 'ayuda' }, 'La invitación todavía no está publicada. Cuando se publique, acá se ven las confirmaciones, los mensajes y las canciones que manden los invitados.')) : null,
+    !publicada() ? tarjeta(null, ctx.el('p', { class: 'ayuda' }, 'La invitación todavía no está publicada. Cuando se publique, aquí se ven las confirmaciones, los mensajes y las canciones que manden los invitados.')) : null,
   ];
 }
 // Conteo en personas (pases): invitados = todos los pases de la lista; asisten = los que confirmaron;
@@ -283,7 +283,7 @@ function editorTexto(clave, base, titulo, ayuda) {
     ctx.el('button', { type: 'button', class: 'btn-link', onclick: () => { area.value = base(); guardarAdmin({ [clave]: '' }); } }, 'Volver al texto original'));
 }
 function vistaEnviar() {
-  if (!publicada()) return [tarjeta('Enviar la invitación', ctx.el('p', { class: 'ayuda' }, 'Cuando la invitación esté publicada, desde acá se envía por WhatsApp, se copia el link o se descarga el código QR.'))];
+  if (!publicada()) return [tarjeta('Enviar la invitación', ctx.el('p', { class: 'ayuda' }, 'Cuando la invitación esté publicada, desde aquí se envía por WhatsApp, se copia el link o se descarga el código QR.'))];
   if (conLista()) return vistaEnviarLista();
   // Celular: un botón por línea, de ancho a ancho (Copiar link y QR, lado a lado)
   const texto = () => armarTexto(admin().textoWa || TEXTO_WA());
@@ -454,11 +454,11 @@ function vistaRespuestas() {
   ];
 }
 const si = (x) => !!x;
-// Avisos por mail de respuestas nuevas: lo elige el cliente (si no, todo se ve acá, como siempre)
+// Avisos por mail de respuestas nuevas: lo elige el cliente (si no, todo se ve aquí, como siempre)
 function avisosRespuestas() {
   const actual = admin().avisoRespuestas || 'no';
   const s = ctx.el('select', { class: 'ad-select', 'aria-label': 'Avisos por mail de las respuestas' },
-    [['no', 'No, las veo acá en el panel'], ['cada', 'Sí, un mail por cada respuesta'], ['diario', 'Sí, un resumen por día']].map(([v, t]) => ctx.el('option', { value: v, selected: v === actual }, t)));
+    [['no', 'No, las veo aquí en el panel'], ['cada', 'Sí, un mail por cada respuesta'], ['diario', 'Sí, un resumen por día']].map(([v, t]) => ctx.el('option', { value: v, selected: v === actual }, t)));
   s.addEventListener('change', () => { guardarAdmin({ avisoRespuestas: s.value }); ctx.aviso(s.value === 'no' ? 'Listo: sin avisos por mail' : 'Listo: los avisos llegan al mail de la cuenta'); });
   return ctx.el('div', { class: 'ad-avisos' }, ctx.el('label', { class: 'ad-avisos-et' }, 'Avisarme por mail las respuestas nuevas'), s,
     ctx.el('p', { class: 'ayuda' }, 'Llegan al mail con el que se compró o se entra a la invitación. Con "un mail por cada respuesta", hasta 20 por día; las demás llegan juntas al día siguiente.'));
@@ -469,7 +469,7 @@ function vistaMensajes() {
   const norm = (x) => String(x || '').trim().toLowerCase();
   const cancionDe = (d) => canciones.filter((c) => (d.inv && c.datos.inv === d.inv) || (c.datos.nombre && norm(c.datos.nombre) === norm(d.nombre))).map((c) => c.datos.cancion).filter(Boolean);
   const msgs = ultimas().filter((x) => x.datos.mensaje).map((x) => ({ nombre: x.datos.nombre || '—', texto: x.datos.mensaje, fecha: x.creado, asiste: x.datos.asiste === 'Si', personas: cuantos(x.datos), canciones: cancionDe(x.datos) }));
-  if (!msgs.length) return [tarjeta('Mensajes', ctx.el('p', { class: 'ayuda' }, publicada() ? 'Todavía no hay mensajes. Al confirmar, cada invitado puede dejarles unas palabras.' : 'Cuando la invitación esté publicada, acá aparecen los mensajes que dejen los invitados al confirmar.'))];
+  if (!msgs.length) return [tarjeta('Mensajes', ctx.el('p', { class: 'ayuda' }, publicada() ? 'Todavía no hay mensajes. Al confirmar, cada invitado puede dejarles unas palabras.' : 'Cuando la invitación esté publicada, aquí aparecen los mensajes que dejen los invitados al confirmar.'))];
   // El destacado va rotando, como una conversación
   const destacado = ctx.el('div', { class: 'ad-destacado', 'aria-live': 'polite' });
   let i = 0;
@@ -532,7 +532,7 @@ function vistaCanciones() {
 // Mesas: los invitados de la lista con su número de mesa; croquis con un asiento por persona
 function vistaMesas() {
   const st = estadisticas();
-  if (!st.lista.length) return [tarjeta('Mesas', ctx.el('p', { class: 'ayuda' }, 'Con la lista de invitados (y la mesa de cada uno) acá se arma la distribución de las mesas y un croquis para ver e imprimir.'))];
+  if (!st.lista.length) return [tarjeta('Mesas', ctx.el('p', { class: 'ayuda' }, 'Con la lista de invitados (y la mesa de cada uno) aquí se arma la distribución de las mesas y un croquis para ver e imprimir.'))];
   const respuestaDe = new Map(st.filas.map((x) => [x.datos.inv, x.datos]));
   const personasDe = (i) => {
     const d = respuestaDe.get(i.codigo);
@@ -563,7 +563,7 @@ function vistaMesas() {
         arrastrable(li, li.firstChild, (mesa) => cambiarMesa(i, mesa === '+' ? siguienteMesa() : mesa));
         return li;
       })));
-  }), ctx.el('div', { class: 'ad-mesa ad-mesa-nueva', 'data-mesa': '+' }, ctx.el('h3', {}, '+ Mesa nueva'), ctx.el('p', { class: 'ayuda' }, 'Soltar acá para abrir otra mesa')));
+  }), ctx.el('div', { class: 'ad-mesa ad-mesa-nueva', 'data-mesa': '+' }, ctx.el('h3', {}, '+ Mesa nueva'), ctx.el('p', { class: 'ayuda' }, 'Soltar aquí para abrir otra mesa')));
   const siguienteMesa = () => String(Math.max(0, ...claves.map(Number).filter(Number.isFinite)) + 1);
   // En el celular, 2 mesas por fila (entra en el ancho); al imprimir, 3
   const croquis = (porFila = innerWidth < 700 ? 2 : 4) => {
@@ -660,7 +660,7 @@ function vistaAlbum() {
 }
 
 // Llegadas: el pase de entrada de cada invitado (QR de su link) y la recepción en la puerta.
-// La persona que recibe usa el link de la puerta (sin acceso al panel); acá se ve en vivo.
+// La persona que recibe usa el link de la puerta (sin acceso al panel); aquí se ve en vivo.
 let relojLlegadas = null;
 function vistaLlegadas() {
   if (!conLista()) return [tarjeta('Llegadas', ctx.el('p', { class: 'ayuda' }, 'Con la lista de invitados, el día del evento se registra quién llega: escaneando el QR de cada invitado o buscándolo por nombre.'),

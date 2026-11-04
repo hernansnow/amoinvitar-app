@@ -288,7 +288,7 @@ function pasosInvitacion({ tipo, modelo }) {
           { id: 'pregunta', tipo: 'texto', etiqueta: 'Pregunta', max: 80, placeholder: '¿Cuál es tu trago favorito?' },
           { id: 'opciones', tipo: 'texto', etiqueta: 'Opciones (separadas con coma)', max: 160, placeholder: 'Vacío = respuesta libre · Ej.: Fernet, Gin tonic' },
         ] },
-        // Los modelos con la galería dentro de la confirmación no llevan foto acá
+        // Los modelos con la galería dentro de la confirmación no llevan foto aquí
         ...(g.enRsvp || modelo.sinFotoRsvp ? [] : [
           { ...conFotos('rsvp'), defecto: false },
           { id: 'fotos.rsvp', tipo: 'foto', etiqueta: 'Foto', sinRecorte: true, paquete: 'premium', si: { campo: 'fotosOn.rsvp' } },
@@ -366,7 +366,7 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'nota.albumAlbunear', tipo: 'nota', estilo: 'ayuda', texto: 'Luego podrás configurar el álbum en la pestaña Administración.', si: { campo: 'album.origen', no: 'propio' } },
       { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', si: { campo: 'album.origen', es: 'propio' } },
       conFotos('album'),
-      // La misma foto que Instagram Wall (van una u otra): si ya la cargó allá, acá aparece cargada
+      // La misma foto que Instagram Wall (van una u otra): si ya la cargó allá, aquí aparece cargada
       { id: 'fotos.instagram', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album'), ayuda: 'Es la misma foto de Instagram Wall.' },
     ] },
     { id: 'canciones', seccion: 'canciones', titulo: 'Sugerir canciones', campos: [
@@ -623,7 +623,7 @@ function pasoBrief({ aMedida }) {
   return {
     id: 'brief', titulo: 'Ideas para el diseño',
     campos: [
-      // Infantiles a medida: la temática o el personaje se cuenta acá (ya no es un producto aparte)
+      // Infantiles a medida: la temática o el personaje se cuenta aquí (ya no es un producto aparte)
       { id: 'brief.personaje', tipo: 'texto', etiqueta: 'Temática o personaje (si es infantil)', max: 80, placeholder: 'Bluey, Frozen, Minecraft…' },
       ...(aMedida === 'empresarial' ? [
         { id: 'brief.empresa', tipo: 'texto', etiqueta: 'Empresa', max: 80 },
@@ -821,7 +821,7 @@ function pasosSimple({ tipo, modelo, datos }) {
   return [portadaSimple(base, modelo), pasoIdioma, lug, rsvp, acceso, pasoPublicar(tipo), { ...pasoDiseno(modelo), separado: true }, pasoIdiomaAdicional([], datos)].filter(Boolean);
 }
 // El link de la Save The Date web, para copiarlo o mandarlo (lo arma el panel)
-const CAMPO_LINK_STD = { id: 'std.link', tipo: 'linkStd', etiqueta: 'Link de la Save The Date', ayuda: 'Copialo o mandalo por WhatsApp. Se ve apenas se paga.' };
+const CAMPO_LINK_STD = { id: 'std.link', tipo: 'linkStd', etiqueta: 'Link de la Save The Date', ayuda: 'CÃ³pialo o envÃ­alo por WhatsApp. Se ve apenas se paga.' };
 // Las dos Save The Date web (el diseño se elige; la de 15 años es la "Web Classic" de 15)
 export const DISENOS_STD_WEB = [{ v: 'std-classic', etiqueta: 'Web Classic' }, { v: 'std-soft', etiqueta: 'Web Soft' }];
 function pasosStdWeb({ tipo, modelo, datos }) {

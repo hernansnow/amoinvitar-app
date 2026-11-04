@@ -343,6 +343,7 @@ function inicialesPortada(c) {
     const m = /^\s*([A-ZÁÉÍÓÚÑ])(?:[\s\u00a0]+([A-ZÁÉÍÓÚÑ]))?\s*$/.exec(e.textContent);
     if (!m || e.closest('[data-campo],[data-campo-html],[data-t],[data-fecha],a,button')) continue;
     e.innerHTML = m[2] ? '<span data-campo="nombres.inicialA">A</span>&#160;&#160;&#160;&#160;<span data-campo="nombres.inicialB">B</span>' : '<span data-campo="nombres.inicialA">A</span>';
+    e.classList.add('ai-iniciales');
   }
 }
 

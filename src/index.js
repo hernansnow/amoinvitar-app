@@ -89,7 +89,7 @@ function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null) {
 const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');
 
 // Títulos y textos que el cliente reescribió en el panel ({ historia: { titulo } } → 'historia.titulo').
-// Los que la plantilla pone como HTML (con saltos de línea) se escapan acá.
+// Los que la plantilla pone como HTML (con saltos de línea) se escapan aquí.
 // Invitaciones viejas con un link de álbum cargado: quedan como "link propio"
 function origenAlbum(d) {
   if (d.album?.url && !d.album.origen && !/albunear\.com/i.test(d.album.url)) d.album.origen = 'propio';
@@ -608,7 +608,7 @@ async function apiPanel(env, request, url, partes) {
   }
   if (!accion && request.method === 'PUT') {
     const { datos } = await request.json();
-    if (esquema.cerrada) return json({ error: esquema.simple || esquema.std ? 'Ya está publicada: no se puede modificar. Para un cambio, escribinos por WhatsApp.' : 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escribinos por WhatsApp.' }, 403);
+    if (esquema.cerrada) return json({ error: esquema.simple || esquema.std ? 'Ya está publicada: no se puede modificar. Para un cambio, escrÃ­benos por WhatsApp.' : 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escrÃ­benos por WhatsApp.' }, 403);
     // Publicada: los nombres y la fecha quedan como estaban (evita reciclar la invitación para otro evento)
     if (ev.estado === 'publicado' && !admin && datos) for (const ruta of FIJOS_PUBLICADA) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
     // Los campos de cada idioma (bandera, traducciones) dependen de los idiomas que llegan ahora
@@ -656,7 +656,7 @@ async function apiPanel(env, request, url, partes) {
     const elegido = modelosCambio(ev.tipo, ev.producto, ev.modelo).find((m) => m.id === modelo);
     if (!elegido) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
     const antes = MODELOS.find((x) => x.id === ev.modelo);
-    if (ev.estado === 'publicado' && antes?.simple && !admin) return json({ error: 'La invitación ya está publicada y no se puede cambiar. Escribinos por WhatsApp.' }, 400);
+    if (ev.estado === 'publicado' && antes?.simple && !admin) return json({ error: 'La invitación ya está publicada y no se puede cambiar. EscrÃ­benos por WhatsApp.' }, 400);
     // README (ronda 22): entre un modelo simple y uno completo el panel arranca de nuevo; quedan los nombres y la fecha
     if (!!antes?.simple !== !!elegido.simple) {
       const d = ev.datos, quedan = { nombres: d.nombres, variante: d.variante, zonaHoraria: d.zonaHoraria, idiomas: d.idiomas, extras: d.extras, acceso: d.acceso,
@@ -666,7 +666,7 @@ async function apiPanel(env, request, url, partes) {
     // Otro tipo del mismo grupo (de Cumpleaños a infantil, de Baby Shower a Revelación): solo antes de publicar,
     // porque el link lleva el tipo de evento
     if (elegido.tipo !== ev.tipo) {
-      if (ev.estado === 'publicado' && !admin) return json({ error: 'La invitación ya está publicada: ese diseño es de otro tipo de evento. Escribinos por WhatsApp para cambiarlo.' }, 400);
+      if (ev.estado === 'publicado' && !admin) return json({ error: 'La invitación ya está publicada: ese diseño es de otro tipo de evento. EscrÃ­benos por WhatsApp para cambiarlo.' }, 400);
       ev.tipo = elegido.tipo;
     }
     ev.modelo = modelo;
@@ -712,7 +712,7 @@ async function apiPanel(env, request, url, partes) {
     return json({ ok: true });
   }
   // Generar una tarjeta (Save The Date o agradecimiento): el panel arma el JPG y lo sube;
-  // acá queda guardada y fija. Hace falta tenerla pagada (la Save The Date viene con Premium y Deluxe).
+  // aquí queda guardada y fija. Hace falta tenerla pagada (la Save The Date viene con Premium y Deluxe).
   if (accion === 'tarjeta' && request.method === 'POST') {
     const { clase, url: imagen, reabrir, verificar } = await request.json();
     if (!['std', 'agradecimiento'].includes(clase)) return json({ error: 'Tarjeta desconocida' }, 400);

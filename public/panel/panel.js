@@ -909,7 +909,7 @@ function campoInvitados() {
         hayAgenda ? el('button', { type: 'button', class: 'btn btn-chico', onclick: desdeAgenda }, '👥 Elegir de mis contactos') : null,
         el('a', { class: 'btn btn-sec btn-chico', href: '/panel/plantilla-invitados.xlsx', download: 'invitados.xlsx' }, 'Descargar planilla modelo')),
       el('p', { class: 'ayuda' }, 'Columnas: nombre, pases extra y mesa (y, si se quiere, integrantes y teléfono). Si la planilla tiene títulos ("Nombre", "Pases", "Mesa", "Integrantes", "Teléfono"…) se reconocen solos, en cualquier orden.'),
-      el('p', { class: 'ayuda' }, hayAgenda ? 'Con "Elegir de mis contactos" se suman nombre y teléfono desde la agenda del celular.' : 'Contactos del iPhone: en la app Contactos, mantener apretada una lista (o un contacto) → Exportar → guardar el archivo .vcf y subirlo acá.'),
+      el('p', { class: 'ayuda' }, hayAgenda ? 'Con "Elegir de mis contactos" se suman nombre y teléfono desde la agenda del celular.' : 'Contactos del iPhone: en la app Contactos, mantener apretada una lista (o un contacto) → Exportar → guardar el archivo .vcf y subirlo aquí.'),
       verTel ? el('p', { class: 'ayuda' }, `Teléfono con código de país${prefijoEvento() ? ` (${prefijoEvento().cod} es el de ${ZONA_NOMBRE()})` : ''}. Si se escribe sin código, se completa solo con el del país del evento.`) : null,
       el('p', { class: 'ayuda total-lista' }, resumenLista()));
   };
@@ -1368,7 +1368,7 @@ function panelRespuestas() {
       const a = el('a', { href: URL.createObjectURL(blob), download: 'confirmaciones.csv' }); document.body.append(a); a.click(); a.remove();
     };
     caja.replaceChildren(...[
-      publicada ? null : el('div', { class: 'tarjeta nota' }, 'La invitación todavía no está publicada: cuando se publique, acá van llegando las confirmaciones y las canciones que sugieran los invitados.'),
+      publicada ? null : el('div', { class: 'tarjeta nota' }, 'La invitación todavía no está publicada: cuando se publique, aquí van llegando las confirmaciones y las canciones que sugieran los invitados.'),
       el('div', { class: 'resumen' },
         el('div', { class: 'dato' }, el('strong', {}, String(total)), el('span', {}, 'personas confirmadas')),
         el('div', { class: 'dato' }, el('strong', {}, String(si.length)), el('span', {}, 'respuestas "sí"')),

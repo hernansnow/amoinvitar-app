@@ -112,3 +112,5 @@ img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-
 @media (max-width: 767px) { h1.elegance2[data-ajustar] { line-height: 1.02 !important; } h1.elegance2[data-ajustar] .circle-singleline { margin: .06em 0 !important; } }
 h2.hojas[data-ajustar] > .text-bronce { color: #fff !important; }
 .texto-disco-inclinado.ai-nombres-3 > .disco-2 { line-height: .9 !important; padding: 0 !important; margin: -.1em auto -.2em !important; }
+/* Nombres partidos con un envoltorio propio del diseño (Rouge): el aire también adentro */
+[data-ajustar].ai-nombres-2 > span:not(.ai-n) { display: inline-block; line-height: 1.45 !important; }

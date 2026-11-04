@@ -144,7 +144,7 @@
   var MODELO = ((document.querySelector('link[href*="/modelos/"][href$="estilo.css"]') || {}).getAttribute || function () { return ''; }).call(document.querySelector('link[href*="/modelos/"][href$="estilo.css"]'), 'href') || '';
   MODELO = (MODELO.match(/\/modelos\/([^/]+)\//) || [])[1] || '';
   // Modelos con los dos nombres en una línea: hasta qué fracción de la letra del diseño se puede achicar
-  var UNA_LINEA = { travel: [0.4, 0.9], aquarella: [0.5, 0.88], minimal: [0.5, 0.88], sky: [0.5, 0.74], lovestory: [0.42, 0.86], black: [0.42, 0.8], white: [0.42, 0.8] };
+  var UNA_LINEA = { rockabilly: [0.45, 0.86], rouge: [0.27, 0.92], oliva: [0.45, 0.86], garden: [0.4, 0.66], hojas: [0.4, 0.66], travel: [0.4, 0.9], aquarella: [0.5, 0.88], minimal: [0.5, 0.88], sky: [0.5, 0.74], lovestory: [0.42, 0.86], black: [0.42, 0.8], white: [0.42, 0.8] };
   // Modelos donde el "&" ya va en su propia línea con su espacio (Elegance: el círculo entre los nombres)
   var SIN_TRES = { elegance: 1, style: 1 };
   function ajustarNombres() {
@@ -182,7 +182,7 @@
       var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(13, fs0 * 0.3));
       // README (ronda 27): en estos modelos los dos nombres van en una sola línea, con la letra más chica; si así
       // ya no se leería bien, recién ahí se parten (y con más aire entre las líneas)
-      var dosNombres = h.querySelectorAll(':scope > .ai-n').length === 2;
+      var dosNombres = h.querySelectorAll('.ai-n').length === 2;
       if (UNA_LINEA[MODELO] && dosNombres) {
         h.style.whiteSpace = 'nowrap';
         // en una línea puede usar casi todo el ancho de su caja (no solo la fracción pensada para dos líneas)
