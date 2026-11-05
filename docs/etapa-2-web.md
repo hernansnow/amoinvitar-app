@@ -129,3 +129,13 @@ Mis invitaciones muestra "Online hasta el …". Una extensión a mano: poner `ve
    PayPal, Google (login) y Resend. Borrar `ORIGEN_ANTIGUO` cuando ya no haga falta el hosting.
 8. **Tienda vieja** (`/store`, WordPress): `/store` y `/tienda` ya redirigen a `/crear-invitacion`; los
    `/store/producto/…` que queden enlazados, redirigirlos a la página del evento.
+
+## 9. Las páginas se generan (ronda 32)
+
+Las páginas de `public/sitio/*.html` (portada, eventos, precios, contacto, crear-invitación) **se generan**: no editarlas a mano.
+- Textos, funciones, planes, tabla comparativa y preguntas frecuentes: `scripts/sitio/contenido.mjs` (opiniones: `opiniones.json`).
+- Estructura de cada página y piezas comunes (menú, planes, FAQ, testimonios, llamada final, contacto, pie): `scripts/sitio/construir.mjs`.
+- Después de cambiar algo: `npm run sitio` y subir también los `.html` generados.
+- Estilos: `public/sitio/web/css/sitio.css` (sin Bootstrap ni jQuery). Scripts: `web/js/sitio.js` (menú, moneda, precios, FAQ, opiniones).
+- Precios, país, moneda y medios de pago se piden a `/api/tienda/catalogo`; el texto de abajo de los planes sale de la misma lógica de Albunear.
+- `/infantiles` redirige a `/cumple` (src/sitio/nuevo.js). `/album` todavía usa el diseño viejo.

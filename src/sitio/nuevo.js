@@ -31,11 +31,16 @@ function acceso(env, request, url) {
   return { ve: getCookie(request, 'ai_sitio') === env.SITIO_CLAVE };
 }
 
+// README (ronda 32): páginas que se unificaron en la web nueva (Infantiles pasó a Cumpleaños)
+const REDIRECCIONES = { '/infantiles': '/cumple', '/infantiles.html': '/cumple', '/crear-invitacion-para-infantil': '/crear-invitacion-para-cumpleanos' };
+
 export async function sitioNuevo(env, request, url) {
   if (!['GET', 'HEAD'].includes(request.method) || RESERVADAS.test(url.pathname) || PROTEGIDAS.test(url.pathname)) return null;
   const a = acceso(env, request, url);
   if (a.respuesta) return a.respuesta;
   if (!a.ve) return null;
+  const aca = REDIRECCIONES[url.pathname.replace(/\/$/, '')];
+  if (aca) return Response.redirect(new URL(aca + url.search, url.origin).href, 301);
   // /crear-invitacion-para-<evento> es la misma página que /crear-invitacion
   const ruta = /^\/crear-invitacion-para-[a-z0-9-]+\/?$/i.test(url.pathname) ? '/crear-invitacion' : url.pathname;
   // Cloudflare resuelve solo "/sitio/bodas" → bodas.html; igual se prueban las variantes (en la compu no lo hace)

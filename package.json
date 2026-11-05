@@ -5,6 +5,7 @@
   "scripts": {
     "local": "node scripts/servidor-local.mjs",
     "estilos": "node scripts/convertir-estilos.mjs",
+    "sitio": "node scripts/sitio/construir.mjs",
     "dev": "wrangler dev",
     "deploy": "wrangler d1 migrations apply amoinvitar --remote && wrangler deploy",
     "db:local": "wrangler d1 migrations apply amoinvitar --local"
