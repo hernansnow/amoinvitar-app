@@ -2,6 +2,7 @@
 // y ve su número de mesa. Se activa desde Administración → Mesas; los nombres se
 // buscan en el servidor (GET /api/mesa) y nunca se manda la lista entera.
 
+import { pieChico } from './bloques.js';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 
@@ -15,7 +16,7 @@ const ICONO_MESA = `<svg class="icono" viewBox="0 0 200 120" width="200" height=
   ${SILLAS}<circle cx="100" cy="60" r="30" fill="#fff"/><circle cx="100" cy="60" r="24" stroke-width="1.2"/>
   <path d="M100 68c-7-5-11-8-11-12a5 5 0 0 1 11-1 5 5 0 0 1 11 1c0 4-4 7-11 12z" fill="#2b2b2b" stroke="none"/></svg>`;
 
-export function mesaHTML({ t, id, nombres, lang = 'es', activa = true, estilos = [] }) {
+export function mesaHTML({ t, id, nombres, lang = 'es', activa = true, estilos = [], marca = null }) {
   const tx = { mesa: t('mesa.mesa'), ninguno: t('mesa.ninguno'), sinMesa: t('mesa.sinMesa'), ayuda: t('mesa.ayuda') };
   return `<!DOCTYPE html>
 <html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,7 +51,7 @@ ${estilos.map((h) => `<link rel="stylesheet" href="${esc(h)}">`).join('\n')}
   <input id="q" type="search" autocomplete="off" placeholder="${esc(t('mesa.placeholder'))}" autofocus>
   <p class="ayuda" id="ayuda">${esc(tx.ayuda)}</p>
   <ul id="res" aria-live="polite"></ul>` : `<p>${esc(t('mesa.cerrada'))}</p>`}
-  <footer><img src="/comun/img/amoinvitar-line.svg" alt="Amo Invitar!" width="110" style="filter:invert(1);opacity:.45"></footer>
+  <footer>${pieChico(marca, '<img src="/comun/img/amoinvitar-line.svg" alt="Amo Invitar!" width="110" style="filter:invert(1);opacity:.45">')}</footer>
 </main>
 ${activa ? `<script>
 (function () {

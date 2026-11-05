@@ -25,7 +25,7 @@ import { checkinHTML } from './componentes/checkin.js';
 import { avisoRespuesta } from './avisos.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
 import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento, CON_TARJETA_STD } from './modelos.js';
-import { MODELOS_GRATIS, A_MEDIDA, PRODUCTOS } from './catalogo.js';
+import { MODELOS_GRATIS, A_MEDIDA, PRODUCTOS, LIMITE_INVITADOS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
 import { sendEmail, mailNuevoAcceso, mailMedidaAprobada, mailAvisoInterno } from './lib/email.js';
 import { usuarioActual, crearUsuario } from './lib/auth.js';
@@ -375,7 +375,8 @@ async function paginaMesa(env, url, id) {
   if (!ev) return html('No encontrado', 404);
   const v = variante(ev.datos.variante);
   const t = traductor(ev.tipo, v, ev.datos.textos);
-  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), estilos: await estilosModelo(env, ev, url) }), 200,
+  const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
+  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), estilos: await estilosModelo(env, ev, url), marca: empresa?.marca?.blanca ? empresa.marca : null }), 200,
     { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
 }
 async function buscarMesa(env, request, url) {
@@ -827,6 +828,10 @@ async function apiPanel(env, request, url, partes) {
         abierto: viejo?.abierto ?? null, ultima: viejo?.ultima ?? null, visitas: viejo?.visitas || 0, llego: viejo?.llego ?? null, llegaron: viejo?.llegaron ?? null, enviado: viejo?.enviado ?? null, recordado: viejo?.recordado ?? null,
       };
     });
+    // README (ronda 32): el plan Gratis admite hasta 35 invitados
+    const esGratis = ev.paquete === 'gratis' || (ev.datos.planElegido === 'gratis' && !['basic', 'premium', 'deluxe'].includes(ev.paquete));
+    const tope = esGratis ? LIMITE_INVITADOS.gratis : 0;
+    if (tope && lista.length > tope) return json({ error: `El plan Gratis admite hasta ${tope} invitados. Mejora tu plan para sumar más.`, tope }, 400);
     await almacen.guardarInvitados(ev.id, lista);
     return json({ ok: true, invitados: lista });
   }

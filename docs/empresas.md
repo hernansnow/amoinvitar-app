@@ -1,50 +1,74 @@
-# Amo Invitar para empresas
+# Amo Invitar para profesionales (wedding planners, salones, fotógrafos, agencias)
 
-Para **wedding planners, salones, fotógrafos y agencias**: un panel multi-evento,
-con marca blanca (su logo y sus colores) y precios mayoristas.
+> Estado: **diseño para aprobar** (ronda 32). Ya funciona: las reglas del pie de marca blanca y las tablas base
+> (`empresas`, `miembros`, `accesos_evento`). Falta: el tablero `/empresa`, la carga de logo, los administradores,
+> los créditos y el cobro. El orden para armarlo está en la sección 7.
 
-> Estado: **propuesta**. Las tablas ya están en `migrations/0001_inicial.sql`. La marca blanca
-> ya funciona en la invitación (pie con su logo), en el panel del cliente
-> (logo y colores) y en la pantalla de PIN. El tablero `/empresa`, los
-> créditos y los dominios propios están pendientes.
+## 1. Qué resuelve
 
-## Cómo se usa
+Un profesional organiza muchos eventos al año. Hoy tendría que comprar, entrar y administrar cada invitación por
+separado y todas salen con la marca de Amo Invitar. Con el panel Pro:
+
+- ve **todos sus eventos en un solo tablero** (estado, confirmaciones, vencimientos);
+- suma **usuarios administradores** (su equipo) con permisos distintos;
+- carga **un logo (o un texto) una sola vez** y se aplica a todas sus invitaciones;
+- paga **precio mayorista** por invitación.
+
+## 2. Cómo se usa
 
 ```mermaid
 flowchart LR
-  E[Empresa<br/>planner · salón · fotógrafo · agencia] -->|compra créditos o plan| T[Tablero /empresa]
-  T -->|crea evento con 1 crédito| EV[Evento]
-  T -->|invita| EQ[Equipo<br/>dueño · editor · lectura]
-  EV -->|link de panel| C[Cliente final<br/>los novios, la quinceañera…]
+  P[Profesional<br/>dueño] -->|compra Pase Pro| T[Tablero /empresa]
+  T -->|crea evento: tipo, modelo, plan| EV[Evento]
+  T -->|invita por mail| EQ[Equipo<br/>administradores]
+  EQ -->|crean y editan eventos| EV
+  EV -->|link del panel| C[Cliente final<br/>los novios, la quinceañera…]
   C -->|carga fotos, textos, invitados| EV
-  EV -->|publica| I[Invitación con la marca<br/>de la empresa]
-  I -->|RSVP, canciones| R[Respuestas]
+  EV -->|se publica| I[Invitación con el pie<br/>de la marca del profesional]
+  I -->|RSVP, canciones, llegadas| R[Respuestas]
   R --> T
 ```
 
-1. La empresa se registra y elige plan (o compra un pack de créditos).
-2. Desde su tablero crea eventos: tipo, modelo, paquete. Cada evento usa un crédito.
-3. Puede cargar todo ella misma o mandarle al cliente el link del panel.
-   El cliente ve el panel **con el logo y los colores de la empresa**, sin
-   ninguna mención a Amo Invitar.
-4. La invitación sale con el pie de la empresa (logo, nombre y su web), o sin
-   pie si el plan lo permite.
-5. En el tablero ve todos los eventos: estado, confirmaciones, canciones,
-   vencimientos, y puede exportar.
+1. El profesional entra con su mail (Google o link) y crea su **empresa** (nombre, rubro).
+2. Compra el **Pase Pro** (ver sección 6) y, si quiere, un pack de créditos.
+3. Desde el tablero crea eventos. Cada evento publicado usa un **crédito** del plan elegido.
+4. Puede cargarlo todo él o mandarle al cliente el link del panel del evento.
+5. En el tablero ve todos los eventos y exporta.
 
-## Qué ve cada uno
+## 3. Usuarios y permisos
 
-| | Empresa (dueño) | Equipo (editor) | Cliente final |
-|---|---|---|---|
-| Ver todos los eventos | ✓ | ✓ | solo el suyo |
-| Crear eventos (usa créditos) | ✓ | ✓ | – |
-| Cambiar modelo o paquete | ✓ | ✓ | – |
-| Cargar textos, fotos, invitados | ✓ | ✓ | ✓ |
-| Publicar | ✓ | ✓ | según lo que elija la empresa |
-| Ver confirmaciones | ✓ | ✓ | ✓ (las suyas) |
-| Marca, colores, dominio, facturación | ✓ | – | – |
+| | Dueño | Administrador | Solo lectura | Cliente final |
+|---|---|---|---|---|
+| Ver todos los eventos de la empresa | ✓ | ✓ | ✓ | solo el suyo |
+| Crear y editar eventos | ✓ | ✓ | – | el suyo |
+| Publicar (usa un crédito) | ✓ | ✓ | – | según lo que permita la empresa |
+| Ver confirmaciones y exportar | ✓ | ✓ | ✓ | las suyas |
+| Agregar o quitar administradores | ✓ | – | – | – |
+| Logo, texto y pie de marca blanca | ✓ | – | – | – |
+| Comprar créditos y ver facturas | ✓ | – | – | – |
 
-## Marca blanca
+- Los administradores se invitan **por mail** (entran con ese mail; sin contraseñas, como el resto del sistema).
+- Cantidad de administradores incluidos según el Pase (sección 6); se pueden sumar.
+- Ya existe `miembros(empresa_id, usuario_id, rol)` con `duenio | editor | lectura`: se usan esos roles
+  (en pantalla: Dueño · Administrador · Solo lectura).
+
+## 4. Marca blanca (reglas cerradas)
+
+Se configura **una vez, en la empresa**, y se aplica a todos sus eventos (publicados y futuros).
+
+| Opción en el panel | Qué pasa en el pie de la invitación |
+|---|---|
+| **Logo propio** (PNG/SVG/WEBP, fondo transparente) | Se muestra su logo en lugar del de Amo Invitar |
+| **Texto** (si no tiene logo o no quiere cargarlo) | Se muestra su texto, p. ej. «Salón La Esperanza · Eventos desde 1998» |
+| Logo **y** texto | Se muestran los dos |
+| **Sin pie** (interruptor «No mostrar pie») | La invitación no lleva ningún pie |
+
+Reglas que ya aplica el código (`src/componentes/bloques.js`):
+
+- **Nunca hay links** en el pie con marca blanca: ni a amoinvitar.com ni uno propio del profesional.
+- El logo de Amo Invitar **no aparece** en el pie, en la pantalla del PIN ni en «Busca tu mesa».
+- Con la marca blanca activa y sin logo, sin texto o con «No mostrar pie», no se dibuja el pie.
+- Los mails que salen para esos eventos llevan el nombre de la empresa como remitente (a definir).
 
 Se guarda en `empresas.marca` (JSON):
 
@@ -53,76 +77,90 @@ Se guarda en `empresas.marca` (JSON):
   "blanca": true,
   "nombre": "Salón La Esperanza",
   "logo": "/media/empresas/em_x7k2/logo.png",
-  "colores": { "principal": "#1d3557", "texto": "#ffffff" },
-  "web": "https://salonlaesperanza.com",
   "pie": "Salón La Esperanza · Eventos desde 1998",
-  "remitente": "Salón La Esperanza <invitaciones@amoinvitar.com>"
+  "sinPie": false
 }
 ```
 
-| Dónde aparece | Qué cambia |
-|---|---|
-| Panel del cliente | logo arriba, color de botones y acentos |
-| Invitación | el pie de Amo Invitar se reemplaza por el de la empresa |
-| Pantalla de PIN | logo y color de la empresa |
-| Mails (link del panel, recordatorios) | nombre del remitente y logo |
-| Demos para mostrar a sus clientes | `/demo/garden?empresa=em_x7k2` con su pie |
-| Dominio propio (opcional) | `invitaciones.salonlaesperanza.com/boda/sofi-y-ale` |
+(`web` ya no se usa: el pie no lleva links.)
 
-El dominio propio se hace con **Cloudflare for SaaS** (custom hostnames): la
-empresa apunta un CNAME a nuestro dominio y el Worker reconoce la empresa por
-el host. Cloudflare emite el certificado solo.
+## 5. Pantallas del tablero `/empresa`
 
-## Planes (borrador para decidir)
-
-| Plan | Para quién | Qué incluye | Precio orientativo |
-|---|---|---|---|
-| **Por evento** | quien hace pocos eventos | precio de lista −20 %, tablero, marca en el panel | sin cuota |
-| **Pro** | planners y fotógrafos | 5 créditos Premium por mes, marca blanca completa | 79 €/mes |
-| **Salón / Agencia** | muchos eventos | 15 créditos, equipo de hasta 10 personas, dominio propio | 179 €/mes |
-| Créditos extra | todos | Basic 15 € · Premium 40 € · Deluxe 70 € | – |
-
-Los créditos que no se usan se acumulan hasta 3 meses. Cambiar un evento a un
-paquete mayor descuenta la diferencia.
-
-## Datos (ya en `migrations/0001_inicial.sql`)
-
-```mermaid
-erDiagram
-  empresas ||--o{ miembros : tiene
-  usuarios ||--o{ miembros : es
-  empresas ||--o{ eventos : crea
-  eventos ||--o{ accesos_evento : comparte
-  usuarios ||--o{ accesos_evento : edita
-  eventos ||--o{ invitados : tiene
-  eventos ||--o{ respuestas : recibe
+```
+┌──────────────────────────────────────────────────────────────┐
+│ [logo]  Salón La Esperanza            Créditos: 12   [Equipo] │
+├──────────────────────────────────────────────────────────────┤
+│ [+ Nuevo evento]   Buscar…            Estado ▾  Tipo ▾        │
+│ ┌────────────────────────────────────────────────────────┐   │
+│ │ Sofi & Ale · Boda · Deluxe     38/52 confirmaron  ●Activa │   │
+│ │ Camila · 15 años · Premium     12/80 confirmaron  ●Borrador│  │
+│ │ Bautismo Mateo · Basic         vence en 9 días    ●Activa │   │
+│ └────────────────────────────────────────────────────────┘   │
+├──────────────────────────────────────────────────────────────┤
+│ Pestañas: Eventos · Equipo · Marca · Créditos y facturas      │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-- `empresas`: nombre, rubro, plan, créditos, marca (JSON), dominio.
-- `miembros`: quién del equipo entra y con qué rol.
-- `eventos.empresa_id`: el evento es de una empresa (marca blanca).
-- `accesos_evento`: el cliente final, con su mail, puede editar solo su evento.
+- **Eventos**: lista con estado, plan, confirmaciones y vencimiento; «Abrir panel» lleva al panel normal del evento.
+- **Equipo**: lista de administradores, «Invitar por mail», cambiar rol, quitar.
+- **Marca**: subir logo, texto del pie, interruptor «No mostrar pie» y **vista previa del pie** sobre un modelo.
+- **Créditos y facturas**: saldo, comprar packs, historial de compras.
 
-## Lo que falta construir
+## 6. Cómo cobrarlo (propuesta para decidir)
 
-1. Login (Google y link mágico por mail, como en Albunear) para usuarios y equipos.
-2. Tablero `/empresa`: lista de eventos con filtros, crear evento, ver respuestas, exportar.
-3. Créditos y planes en la tienda (Stripe con suscripción mensual).
-4. Editor de marca (subir logo, elegir colores, vista previa del pie y del panel).
-5. Dominios propios con Cloudflare for SaaS.
-6. Demos con la marca de la empresa para que las muestre a sus clientes.
+Principios: el cliente final sigue pagando **una vez, sin suscripciones**; el profesional paga una **cuota anual
+simple** (no mensual) y luego **precio mayorista por invitación**. Tu costo por evento es casi cero (Cloudflare),
+así que el descuento por volumen es margen que podés dar sin miedo; lo que hay que proteger es el valor de la
+marca blanca (por eso va solo en planes Pro).
 
-## Nota (pedido de Hernán, ronda 14): un panel para muchos eventos
+### Opción recomendada: Pase Pro anual + créditos con descuento por volumen
 
-Pensado para wedding planners, organizadores y fotógrafos que compren el paquete con **marca blanca**:
-desde **su propio panel** administran **varios eventos a la vez**, sin entrar evento por evento.
+| | **Pro** | **Studio** |
+|---|---|---|
+| Para quién | Planner o fotógrafo independiente | Salón, agencia o equipo |
+| Cuota anual (pago único al año) | a definir | a definir |
+| Administradores incluidos | 2 | 10 |
+| Marca blanca (logo, texto, sin pie) | ✓ | ✓ |
+| Tablero con todos los eventos | ✓ | ✓ |
+| Soporte | normal | prioritario |
 
-- Hoy ya existe la base: cada evento tiene **Accesos** (titular, pareja y hasta 3 administradores) y
-  "Mi cuenta" lista los eventos a los que tiene acceso cada mail. Falta el tablero de empresa.
-- El tablero (`/empresa`) muestra todos sus eventos juntos: próximos, confirmaciones de cada uno,
-  quién falta responder, mensajes nuevos y llegadas el día del evento; filtros por fecha y estado.
-- Acciones en lote: abrir la administración de cualquier evento, "Enviar a todos" / "Recordar a todos",
-  descargar Excel/PDF de varios eventos, duplicar un evento como base del siguiente.
-- La empresa queda como dueña de sus eventos (no hace falta sumarla a mano en Accesos de cada uno), y
-  sus clientes (los novios) siguen entrando a su evento con su mail, viendo el logo y los colores de la empresa.
-- Equipos: varios usuarios de la misma empresa (`miembros`), con permisos por evento si hace falta.
+Créditos (1 crédito = 1 invitación publicada del plan elegido), con descuento sobre el precio de lista:
+
+| Compra | Descuento sugerido |
+|---|---|
+| Pack 10 | 25 % |
+| Pack 25 | 35 % |
+| Pack 50 | 40 % |
+| Pack 100 o más | 45 % o a medida |
+
+Notas:
+- Los porcentajes y las cuotas son **hipótesis para probar**, no cifras definitivas. Con los precios actuales
+  (Basic 29 €, Premium 45 €, Deluxe 70 €) un pack 25 de Premium saldría ~29 € cada uno: sigue siendo competitivo
+  frente a las plataformas de invitaciones y deja margen.
+- Los créditos **no vencen** mientras el Pase esté vigente; si el Pase vence, el saldo se conserva 12 meses.
+- Diseño a medida: se cotiza aparte (hoy 140 €); con descuento Studio si trae volumen.
+- Cobro: como el resto del sistema (Stripe, PayPal, Mercado Pago, transferencia). El Pase anual y los packs son
+  **productos de pago único** (no hace falta Stripe Billing ni débitos automáticos), y se factura igual que hoy.
+  Renovación: aviso por mail 30 días antes.
+- Lo que **no** conviene: dar marca blanca gratis o con créditos sueltos (se pierde el incentivo del Pase), ni una
+  mensualidad (choca con el mensaje «sin suscripciones»).
+
+Alternativa más simple para empezar: **sin cuota**, solo packs con descuento y marca blanca desde 25 créditos.
+Es más fácil de vender al comienzo, pero deja menos ingreso recurrente.
+
+## 7. Orden para armarlo
+
+1. **Hecho:** reglas del pie (sin links, logo o texto, sin pie), límite de 35 invitados en Gratis.
+2. Tabla `empresas` ya existe; agregar migración con `marca`, `sinPie`, pase (`plan`, `vence`) y créditos
+   (`creditos` ya existe) + tabla de movimientos de créditos.
+3. Pantalla **Marca** (subir logo a R2, texto, interruptor, vista previa).
+4. Tablero **Eventos** (lista, crear evento, abrir panel).
+5. **Equipo** (invitar administradores por mail, roles).
+6. **Créditos y cobro** (packs, Pase Pro, facturas).
+7. Página pública para profesionales en la web (`/profesionales`) con el formulario de contacto actual.
+
+## 8. Otros detalles
+
+- **Dominio propio** (`invitaciones.salon.com`) queda para una etapa posterior (`empresas.dominio` ya existe).
+- **Cliente final del profesional**: no ve ninguna mención de Amo Invitar en su panel (logo y colores de la empresa).
+- Los eventos de una empresa **no se mezclan** con los de otra: toda consulta del tablero filtra por `empresa_id`.

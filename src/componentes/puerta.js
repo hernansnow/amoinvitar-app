@@ -1,6 +1,7 @@
 // Pantalla de acceso que ve quien abre una invitación protegida sin permiso.
 // No lleva nada del evento salvo los nombres (para saber que es el link correcto).
 
+import { pieChico } from './bloques.js';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Diseño de la pantalla de acceso de Amo Invitar (el de las invitaciones con lista):
@@ -9,9 +10,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 // estilos: la tipografía y los colores del modelo (sus fuentes y su tema.css), así la
 // pantalla de acceso se ve como la invitación. Ver estilosModelo() en index.js.
 export function puertaHTML({ t, pantalla, nombres, accion, inv, error, lang = 'es', marca, estilos = [] }) {
-  const logo = marca?.logo
-    ? `<img src="${esc(marca.logo)}" alt="${esc(marca.nombre || '')}" style="max-height:48px">`
-    : '<img src="/comun/img/amoinvitar-line.svg" alt="Amo Invitar!" width="110" style="filter:invert(1);opacity:.45">';
+  const logo = pieChico(marca, '<img src="/comun/img/amoinvitar-line.svg" alt="Amo Invitar!" width="110" style="filter:invert(1);opacity:.45">');
   const cuerpo = pantalla === 'pin'
     ? `<form method="post" action="${esc(accion)}">
         <input type="hidden" name="inv" value="${esc(inv)}">

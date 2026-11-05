@@ -6,17 +6,20 @@ export const MONEDA = 'EUR';
 
 // ── Invitaciones web ────────────────────────────────────────────────────
 export const PAQUETES = {
-  gratis: { precio: 0, base: 'basic', invitados: 50, diasOnlineTrasEvento: 15, permite: { paleta: false, tipografia: false } },
+  gratis: { precio: 0, base: 'basic', invitados: 35, diasOnlineTrasEvento: 15, permite: { paleta: false, tipografia: false } },
   basic: { precio: 29 },
   premium: { precio: 45 },
   deluxe: { precio: 70, incluye: ['albunear'] },
 };
 
+// README (ronda 32): el plan Gratis admite hasta 35 invitados en la lista (el servidor y el panel lo aplican)
+export const LIMITE_INVITADOS = { gratis: PAQUETES.gratis.invitados };
+
 // Lo que se muestra en la tienda para cada paquete
 export const NOMBRES_PAQUETE = { gratis: 'Gratis', basic: 'Basic', premium: 'Premium', deluxe: 'Deluxe' };
 // (el cuadro de contenido de cada plan: ronda 24)
 export const RESUMEN_PAQUETES = {
-  gratis: ['Portada personalizada, idioma y acceso con PIN', 'Agenda multiplataforma y ubicación con mapa', 'Confirmación de asistencia, libro de mensajes y recordatorios', 'Dress code', 'Panel de administración y cambios ilimitados', 'Hasta 50 invitados · online hasta 15 días después del evento'],
+  gratis: ['Portada personalizada, idioma y acceso con PIN', 'Agenda multiplataforma y ubicación con mapa', 'Confirmación de asistencia, libro de mensajes y recordatorios', 'Dress code', 'Panel de administración y cambios ilimitados', 'Hasta 35 invitados · online hasta 15 días después del evento'],
   basic: ['Todo lo de Gratis', 'Galería de fotos', 'Invitados ilimitados', 'Online hasta 3 meses después del evento'],
   premium: ['Todo lo de Basic', 'Apertura animada, música de fondo y cuenta regresiva', 'Historia', 'Regalos, datos bancarios y lista de regalos', 'Instagram Wall y hashtag', 'Lista de invitados con nombre, link personal, pases y grupo familiar', 'Tarjeta Save The Date', 'Soporte prioritario', 'Online hasta 6 meses después del evento'],
   deluxe: ['Todo lo de Premium', 'Sugerencias de vestimenta', 'Itinerario, testigos/padrinos, traslado y hospedaje', 'Playlist de Spotify y redes oficiales', 'Organizador de mesas y "Buscá tu mesa"', 'Organizador de llegadas con pase de entrada', 'Álbum colaborativo QR', 'Online hasta 12 meses después del evento'],

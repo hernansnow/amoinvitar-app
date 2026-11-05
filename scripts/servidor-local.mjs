@@ -50,6 +50,7 @@ http.createServer(async (req, res) => {
     method: 'POST', headers: { 'x-admin': 'local', 'content-type': 'application/json' },
     body: JSON.stringify({ producto: 'invitacion', tipo: process.env.TIPO || 'boda', modelo: 'garden', paquete: process.env.PAQUETE || 'deluxe', pais: 'AR', zonaHoraria: 'America/Argentina/Buenos_Aires' }),
   }), env).then((r) => r.json());
+  console.log(`Web    → http://localhost:${puerto}/   (portada nueva; también /bodas, /precios, /album…)`);
   console.log(`Demo   → http://localhost:${puerto}/demo/garden`);
   console.log(`Tienda → http://localhost:${puerto}/tienda/`);
   console.log(`Panel  → ${alta.panel}`);

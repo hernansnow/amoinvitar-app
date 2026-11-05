@@ -105,13 +105,25 @@ function flotante(v, t) {
 }
 
 // ── Pie con la marca de la empresa (marca blanca) ─────────────────────
+// README (ronda 32): el pie de Amo Invitar se reemplaza por el logo de la empresa y/o un texto suyo. Nunca lleva
+// links (ni el de amoinvitar.com ni uno propio). Sin logo ni texto, o con «sinPie», la invitación no lleva pie.
 export function pieMarca({ v }) {
   const m = v.marca;
-  if (!m?.blanca) return '';
+  if (!m?.blanca || m.sinPie) return '';
+  const texto = String(m.pie || m.nombre || '').trim();
+  if (!m.logo && !texto) return '';
   const logo = m.logo ? `<img class="img-fluid mb-1" style="max-height:40px" src="${esc(m.logo)}" alt="${esc(m.nombre || '')}">` : '';
-  const texto = m.pie || m.nombre || '';
-  const contenido = `${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}`;
-  return `<footer class="site-footer pt-4 pb-4"><div class="container text-center">${m.web ? `<a href="${esc(m.web)}" target="_blank" rel="noopener">${contenido}</a>` : contenido}</div></footer>`;
+  return `<footer class="site-footer pt-4 pb-4"><div class="container text-center">${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}</div></footer>`;
+}
+
+// Pie chico de las pantallas sueltas (acceso con PIN y «Busca tu mesa»): el logo de Amo Invitar, o con marca blanca el
+// de la empresa o su texto (sin links), o nada si lo apagó.
+export function pieChico(marca, defecto) {
+  if (!marca?.blanca) return defecto;
+  if (marca.sinPie) return '';
+  const texto = String(marca.pie || marca.nombre || '').trim();
+  if (marca.logo) return `<img src="${esc(marca.logo)}" alt="${esc(marca.nombre || '')}" style="max-height:48px">`;
+  return texto ? `<span style="opacity:.55;font-size:.85rem">${esc(texto)}</span>` : '';
 }
 
 // ── Formulario de confirmación (modal) ────────────────────────────────

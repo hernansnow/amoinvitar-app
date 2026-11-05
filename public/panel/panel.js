@@ -843,6 +843,8 @@ function telInternacional(t) {
 function campoInvitados() {
   const caja = el('div');
   let lista = S.invitados.map((i) => ({ ...i }));
+  // README (ronda 32): el plan Gratis admite hasta 35 invitados (el servidor también lo controla)
+  const TOPE = (S.evento?.paquete === 'gratis' || (S.evento?.planElegido === 'gratis' && !['basic', 'premium', 'deluxe'].includes(S.evento?.paquete)) || datos.planElegido === 'gratis' && !['basic', 'premium', 'deluxe'].includes(S.evento?.paquete)) ? 35 : 0;
   let t = null;
   const guardarLista = () => { clearTimeout(t); t = setTimeout(async () => {
     try {
@@ -855,13 +857,15 @@ function campoInvitados() {
       caja.querySelectorAll('td.pin').forEach((td) => { const i = lista[Number(td.dataset.n)]; if (i) td.textContent = i.pin || '…'; });
       const total = caja.querySelector('.total-lista'); if (total) total.textContent = resumenLista();
       estado('Guardado ✓');
-    } catch { aviso('No se pudo guardar la lista', true); }
+    } catch (e) { aviso(e?.message && /Gratis/.test(e.message) ? e.message : 'No se pudo guardar la lista', true); }
   }, 800); };
   const sumar = (filas) => {
-    const nuevas = filas.filter((x) => x.nombre);
+    let nuevas = filas.filter((x) => x.nombre);
+    let cortado = false;
+    if (TOPE && lista.length + nuevas.length > TOPE) { nuevas = nuevas.slice(0, Math.max(0, TOPE - lista.length)); cortado = true; }
     lista.push(...nuevas);
     dibujar(); guardarLista();
-    aviso(nuevas.length ? `${nuevas.length} invitados sumados` : 'No se encontraron nombres en el archivo', !nuevas.length);
+    aviso(cortado ? `El plan Gratis admite hasta ${TOPE} invitados: se sumaron ${nuevas.length}. Mejora tu plan para sumar más.` : nuevas.length ? `${nuevas.length} invitados sumados` : 'No se encontraron nombres en el archivo', cortado || !nuevas.length);
   };
   const archivo = el('input', { type: 'file', accept: '.xlsx,.csv,.txt,.vcf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/vcard,text/x-vcard' });
   // Contactos del celular: en Android (Chrome) se eligen directo de la agenda; en el iPhone, con el archivo .vcf
@@ -898,7 +902,7 @@ function campoInvitados() {
       el('div', { class: 'envolver-tabla' }, el('table', { class: 'tabla-invitados' },
         el('thead', {}, el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Pases extra'), el('th', {}, 'Mesa'), verFamilias ? el('th', {}, 'Integrantes (familia)') : null, verTel ? el('th', {}, 'WhatsApp') : null, pinVisible ? el('th', {}, 'PIN') : null, el('th', {}, ''))),
         el('tbody', {}, filas))),
-      el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { lista.push({ nombre: '', pases: 0 }); dibujar(); caja.querySelector('tbody tr:last-child input')?.focus(); } }, '＋ Agregar invitado')),
+      el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { if (TOPE && lista.length >= TOPE) { aviso(`El plan Gratis admite hasta ${TOPE} invitados. Mejora tu plan para sumar más.`, true); return; } lista.push({ nombre: '', pases: 0 }); dibujar(); caja.querySelector('tbody tr:last-child input')?.focus(); } }, '＋ Agregar invitado')),
       el('div', { class: 'casillas-lista' },
         el('label', { class: 'casilla' }, el('input', { type: 'checkbox', checked: verFamilias, onchange: (e) => { verFamilias = e.target.checked; dibujar(); } }),
           el('span', {}, 'Familias', el('small', {}, ' · un link para toda la familia; cada integrante confirma por separado'))),
@@ -913,7 +917,7 @@ function campoInvitados() {
       verTel ? el('p', { class: 'ayuda' }, `Teléfono con código de país${prefijoEvento() ? ` (${prefijoEvento().cod} es el de ${ZONA_NOMBRE()})` : ''}. Si se escribe sin código, se completa solo con el del país del evento.`) : null,
       el('p', { class: 'ayuda total-lista' }, resumenLista()));
   };
-  const resumenLista = () => `${lista.length} invitados · ${lista.reduce((s, i) => s + Math.max(1, String(i.integrantes || '').split(',').filter((x) => x.trim()).length) + (parseInt(i.pases, 10) || 0), 0)} personas`;
+  const resumenLista = () => `${lista.length}${TOPE ? ` de ${TOPE}` : ''} invitados · ${lista.reduce((s, i) => s + Math.max(1, String(i.integrantes || '').split(',').filter((x) => x.trim()).length) + (parseInt(i.pases, 10) || 0), 0)} personas`;
   dibujar();
   return caja;
 }

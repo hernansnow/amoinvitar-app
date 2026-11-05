@@ -192,11 +192,11 @@ function planes(E) {
 }
 
 function empresas() {
-  return `<div class="pros rev" id="profesionales"><div><span class="sobre">Para profesionales</span><h3>¿Organizas eventos todas las semanas?</h3><p>Para wedding planners, salones, fotógrafos, videógrafos y agencias: un panel para gestionar varios eventos a la vez, invitaciones con tu marca (tu logo y tus colores) y precios especiales por volumen.</p>${checks(['Panel multi-evento para tus clientes.', 'Marca blanca: tu logo y tus colores.', 'Propuesta a medida, según tu cantidad de eventos.'])}</div>
+  return `<div class="pros rev" id="profesionales"><div><span class="sobre">Para profesionales</span><h3>¿Organizas eventos todas las semanas?</h3><p>Para wedding planners, salones, fotógrafos, videógrafos y agencias: un panel para administrar varios eventos a la vez, sumar usuarios administradores, y precios especiales por volumen. Con marca blanca: tu logo (o tu nombre) en el pie de cada invitación, sin la marca de Amo Invitar.</p>${checks(['Un tablero con todos tus eventos y usuarios administradores.', 'Marca blanca: tu logo o tu texto, sin la marca de Amo Invitar.', 'Precio mayorista según tu cantidad de eventos.'])}</div>
   <form class="formu" data-contacto><input type="hidden" name="evento" value="Profesionales"><input type="hidden" name="pais" value=""><label>Tu nombre<input name="nombre" required autocomplete="name"></label><label>Empresa o estudio<input name="empresa" autocomplete="organization"></label><label>Email<input name="email" type="email" required autocomplete="email"></label><label>¿Cuántos eventos haces al mes?<textarea name="mensaje" rows="3" required></textarea></label><label class="acepto"><input type="checkbox" name="privacidad" value="si" required><span>Acepto la <a href="/info/politica-de-privacidad">política de privacidad</a>.</span></label><button class="btn btn-verde" type="submit">Quiero una propuesta</button><p class="contacto-estado" data-contacto-estado></p></form></div>`;
 }
 
-function juntos() {
+function juntos(enAlbum = false) {
   return `<section class="seccion juntos" id="mejor-juntos"><div class="caja">
   <div class="titulo rev"><h2>Mejor <em>juntos</em></h2><div class="juntos-logos"><img class="l-ai" src="/web/img/amoinvitar-line.svg" alt="Amo Invitar!" width="3682" height="792"><span aria-hidden="true">+</span><img class="l-alb" src="/web/img/albunear-dark.svg" alt="Albunear" width="3246" height="1016"></div><p><strong>Invitación + álbum colaborativo QR</strong></p><p>Nuestras invitaciones web se integran con el álbum digital QR de Albunear: un mismo estilo y diseño para la web e invitación del evento, el álbum digital QR y el paquete de recursos gráficos: invitación en papel, número de mesa, menú, recuerdos, mural y mucho más.</p><p class="promo">Por tiempo limitado, con nuestro paquete <strong>Deluxe</strong> te regalamos el <strong>Álbum colaborativo QR Classic</strong> de Albunear.</p></div>
   <div class="juntos-escena">
@@ -212,7 +212,7 @@ function juntos() {
       <div class="imp imp-sou"><img src="/web/img/juntos/suvenir.webp" alt="" width="420" height="419" loading="lazy"><p class="t1">¡Gracias por venir!</p></div>
     </div>
   </div>
-  <div class="fila-btn" style="justify-content:center;margin-top:36px"><a class="btn btn-verde" href="/precios">Ver paquetes</a><a class="btn btn-borde" href="/album">Conocer el álbum QR</a></div>
+  <div class="fila-btn" style="justify-content:center;margin-top:36px"><a class="btn btn-verde" href="/precios">Ver paquetes</a>${enAlbum ? '<a class="btn btn-borde" href="https://albunear.com/invitaciones" target="_blank" rel="noopener">Ver en Albunear</a>' : '<a class="btn btn-borde" href="/album">Conocer el álbum QR</a>'}</div>
 </div></section>`;
 }
 
@@ -230,8 +230,8 @@ function testimonios() {
   <p class="op-nota">Opiniones de clientes en Google, casamientos.com.ar y nuestras redes.</p></section>`;
 }
 
-function faq(E, P) {
-  P.faq = C.preguntas(E);
+function faq(E, P, lista) {
+  P.faq = lista || C.preguntas(E);
   return `<section class="seccion alt" id="faq"><div class="caja">${titulo('Dudas', 'Preguntas <em>frecuentes</em>', 'Todo lo que necesitas saber antes de empezar.')}
 <div class="faq" data-faq>${P.faq.map(([q, a], i) => `<details id="p${i + 1}"><summary>${esc(q)}</summary><div>${a}</div></details>`).join('')}</div>
 <button type="button" class="btn btn-borde faq-mas" hidden>Más preguntas</button></div></section>`;
@@ -377,5 +377,60 @@ for (const E0 of C.EVENTOS) {
     contacto(E), faq(E, P),
   ].join('\n'));
 }
+
+// ── Álbum QR (Albunear) ─────────────────────────────────────────────────
+const ALB_FUNC = [
+  ['phone', 'Sin app, sin descargas', 'Tus invitados escanean el QR con la cámara del celular y suben desde el navegador. Cero instalaciones, cero registros.'],
+  ['globe', 'Funciona en cualquier dispositivo', 'Android, iPhone, Windows, tableta… cualquier dispositivo con cámara y navegador alcanza.'],
+  ['lock', 'Álbum privado', 'Solo entran quienes tienen el QR. No aparece en buscadores ni hay links públicos. Tú entras con un enlace seguro a tu email, sin contraseñas.'],
+  ['image', 'Calidad HD original', 'El plan Platinum guarda las fotos sin comprimir, con sus metadatos, y descargas todo en un ZIP listo para archivar.'],
+  ['video', 'Videos cortos', 'Los invitados también pueden subir los videos que graben durante el evento.'],
+  ['shield', 'Moderación con un clic', 'Si alguna foto no debe estar en el álbum, la borras desde el panel. Tú decides qué queda.'],
+  ['users', 'Co-administración', 'En una boda, los dos tienen acceso al panel, y también pueden invitar a organizadores o wedding planners.'],
+  ['mensaje', 'Libro de firmas digital', 'Cada invitado puede dejar un mensaje al subir sus fotos. Todos se guardan juntos en tu panel.'],
+  ['play', 'Slideshow en vivo', 'Proyecta las fotos en tiempo real en una pantalla durante la fiesta: así todos pueden verse.'],
+];
+const ALB_PASOS = [
+  ['Crea tu álbum', 'Elige el estilo, pon los nombres y la fecha. Al instante tienes tu link, tu QR y las tarjetas para imprimir.'],
+  ['Tus invitados suben', 'Escanean el QR de la mesa o tocan el botón de tu invitación, y suben fotos y videos desde el celular.'],
+  ['Slideshow en vivo', 'Proyecta las fotos en una pantalla o TV mientras llegan, con transiciones elegantes.'],
+  ['Descarga todo', 'Desde tu panel privado ves las fotos en tiempo real y te llevas todo en un ZIP.'],
+];
+const ALB_COMP = [
+  ['Todas las fotos en un solo lugar', 'y', 'y', 'n', 'y', 'n'],
+  ['Sin app para invitados', 'y', 'p', 'n', 'n', 'y'],
+  ['Fotos en resolución original 4K', 'y', 'p', 'n', 'y', 'y'],
+  ['Videos', 'y', 'p', 'n', 'y', 'n'],
+  ['Pago único (sin suscripción)', 'y', 'n', 'y', 'n', 'y'],
+  ['Plantillas QR', 'y', 'p', 'n', 'n', 'p'],
+  ['Co-administración', 'y', 'n', 'n', 'n', 'n'],
+  ['Libro de firmas digital', 'y', 'n', 'n', 'n', 'n'],
+];
+const MARCA = { y: `<span class="si">${ic('check')}<span class="sr">Incluido</span></span>`, n: '<span class="no" aria-label="No disponible">—</span>', p: '<span class="parcial" aria-label="Parcial o limitado">parcial</span>' };
+
+function paginaAlbum() {
+  const E = { ...GENERICO, id: 'otros', tuEvento: 'tu evento' };
+  const P = { titulo: 'Álbum colaborativo QR para bodas y eventos | Amo Invitar! + Albunear', descripcion: 'Álbum de fotos por QR para bodas y eventos: tus invitados escanean un QR y suben fotos y videos sin apps. Slideshow en vivo y descarga en alta calidad. Se integra con tu invitación digital de Amo Invitar!.' };
+  const ticks = ['Sin apps', 'Listo en 60 segundos', 'Pago único', 'Prueba gratis'];
+  const por = (n) => `<span class="sobre">${n}</span>`;
+  const hero = `<section class="portada solida" id="inicio"><div class="caja portada-grid">
+    <div class="portada-texto"><span class="etiqueta">Álbum colaborativo QR</span><h1>Todas las fotos de tu evento, en un solo lugar.</h1>
+      <p class="lead">Tus invitados escanean un QR o tocan el botón de tu invitación y suben sus fotos y videos al instante, sin descargar ninguna app. Proyéctalas en vivo durante la fiesta y descárgalas todas al final.</p>
+      <div class="fila-btn"><a class="btn btn-claro btn-grande" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="enlace-video" style="color:#fff" href="https://albunear.com/demo" target="_blank" rel="noopener">${ic('play')} Ver demo</a></div>
+      <ul class="puntos">${ticks.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul></div>
+    <div class="escena escena-album" aria-hidden="true">
+      <div class="esc-tablet mosaico"><img src="/web/img/fiestas/fiesta2.webp" alt=""><img src="/web/img/fiestas/fiesta4.webp" alt=""><img src="/web/img/fiestas/fiesta6.webp" alt=""><img src="/web/img/fiestas/fiesta10.webp" alt=""><img src="/web/img/fiestas/fiesta11.webp" alt=""><img src="/web/img/fiestas/fiesta8.webp" alt=""></div>
+      <div class="esc-cel qr-cel"><div class="qr-tarjeta"><p class="q0">¡Comparte tus fotos!</p><p class="q1">Sofi &amp; Ale</p><img src="/web/img/qr-demo.svg" alt="" width="33" height="33"><p class="q2">Escanea el código y sube tus fotos</p><p class="q3">Subir fotos</p></div></div>
+      <div class="ficha f1">${ic('image')}<span>Nueva foto de Lucía<small>Hace un instante</small></span></div>
+      <div class="ficha f2">${ic('users')}<span>126 fotos<small>38 invitados</small></span></div>
+    </div></div></section>`;
+  const pasos = `<section class="seccion" id="como-funciona"><div class="caja">${titulo('Así de simple', '¿Cómo <em>funciona</em>?', 'Para bodas, 15 años, cumpleaños, bautismos, comuniones, graduaciones y eventos corporativos.')}<ol class="alb-pasos">${ALB_PASOS.map(([h, p], i) => `<li class="rev"><span class="paso-num">${i + 1}</span><h3>${h}</h3><p>${p}</p></li>`).join('')}</ol></div></section>`;
+  const comp = `<section class="seccion alt" id="comparativa"><div class="caja">${titulo('Compara', 'Albunear <em>vs</em> otras opciones', '')}<div class="comparar-caja"><table class="comparar"><thead><tr><th scope="col"><span class="sr">Función</span></th><th scope="col" class="col-d">Albunear</th><th scope="col">Otros servicios QR</th><th scope="col">WhatsApp</th><th scope="col">Google Fotos</th><th scope="col">Cabina clásica</th></tr></thead><tbody>${ALB_COMP.map((r) => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map((v, i) => `<td${i === 0 ? ' class="col-d"' : ''}>${MARCA[v]}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="planes-nota" style="margin-top:14px"><small>Parcial: depende del servicio o está limitado.</small></p></div></section>`;
+  const func = `<section class="seccion" id="funciones-album"><div class="caja">${titulo('Todo incluido', 'Funciones <em>destacadas</em>', '')}<div class="funciones tres">${ALB_FUNC.map(([i, t, p]) => `<article class="funcion rev"><div class="ic">${ic(i)}</div><h3>${t}</h3><p>${p}</p></article>`).join('')}</div></div></section>`;
+  const cta = `<section class="seccion" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¡Deja de perseguir a los invitados para que te envíen las fotos!</h2><p>Si quieres tener las fotos de tus invitados sin apps que solo complican las cosas a quien no se lleva bien con la tecnología, ni tener que crear grupos de WhatsApp, tu mejor opción es el álbum privado de Albunear.</p><div class="fila-btn"><a class="btn btn-claro btn-grande" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/demo" target="_blank" rel="noopener">Ver demo</a></div></div></div></section>`;
+  const albumFaq = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'album-faq.json'), 'utf8'));
+  escribe('album', P, [hero, pasos, juntos(true), comp, func, faq(E, P, albumFaq), cta, contacto({ ...E, id: 'index' })].join('\n'));
+}
+paginaAlbum();
 
 console.log('Páginas generadas:', PAGINAS.join(', '));

@@ -461,3 +461,26 @@ body.cajon-abierto { overflow: hidden; }
 /* Elegir diseño (widget de crear-invitacion) dentro de la web nueva */
 .disenos .ci-widget { max-width: 1120px; }
 .disenos .ci-tab { letter-spacing: .14em; font-size: 1rem; }
+
+/* ---------- Álbum QR ---------- */
+.escena-album .esc-tablet { top: 8%; width: 82%; }
+.mosaico { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: .6cqw; background: #14181a; }
+.mosaico img { position: static !important; width: 100%; height: 100%; object-fit: cover; }
+.qr-cel { background: url(/web/img/garden.webp) center / cover, #eef3ef; display: grid; place-items: center; }
+.qr-tarjeta { background: rgba(255, 255, 255, .88); border-radius: 3cqw; padding: 3cqw 2.4cqw; text-align: center; width: 78%; }
+.qr-tarjeta p { margin: 0; line-height: 1.25; color: #3a3a36; }
+.qr-tarjeta .q0 { font-size: 1.9cqw; letter-spacing: .12em; text-transform: uppercase; color: var(--verde-2); font-weight: 600; }
+.qr-tarjeta .q1 { font: 500 4.2cqw/1.15 var(--sans); color: var(--tinta); margin: 1cqw 0 2cqw; }
+.qr-tarjeta img { position: static; inset: auto; width: 20cqw; height: 20cqw; display: block; margin: 0 auto; object-fit: contain; }
+.qr-tarjeta .q2 { font-size: 1.9cqw; color: #6f6a60; margin: 1.6cqw 0 2cqw; }
+.qr-tarjeta .q3 { background: var(--verde); color: #fff; border-radius: 99px; padding: 1.6cqw; font-size: 2.2cqw; font-weight: 600; }
+.alb-pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; counter-reset: x; }
+@media (min-width: 700px) { .alb-pasos { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .alb-pasos { grid-template-columns: repeat(4, 1fr); } }
+.alb-pasos li { background: #fff; border: 1px solid var(--linea); border-radius: var(--radio); padding: 26px 22px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.alb-pasos h3 { font: 600 22px/1.2 var(--sans); color: var(--verde); margin: 14px 0 8px; }
+.alb-pasos p { margin: 0; color: var(--suave); font-size: 16px; }
+.parcial { font-size: 13px; color: #b08a3c; font-weight: 600; }
+.comparar thead th.col-d { color: #fff; background: var(--verde); }
+@media (min-width: 1000px) { .funciones.tres { grid-template-columns: repeat(3, 1fr); } }
+.escena-album .ficha.f2 { bottom: -2%; right: -2%; }
