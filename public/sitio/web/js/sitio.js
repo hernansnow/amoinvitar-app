@@ -111,22 +111,19 @@
   var ICO = function (id) { return '<svg class="icono" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; };
   var LOGOS = { visa: 'Visa', mastercard: 'Mastercard', amex: 'American Express', applepay: 'Apple Pay', googlepay: 'Google Pay', paypal: 'PayPal', bizum: 'Bizum', 'mercadopago-icon': 'Mercado Pago' };
   function logo(id) { return '<img src="/web/img/pay/' + id + '.svg" alt="' + LOGOS[id] + '" title="' + LOGOS[id] + '" width="40" height="26">'; }
-  function medios(pais, moneda) {
-    var ar = pais === 'AR' || moneda === 'ARS', n = [], l = [];
-    if (ar) { n.push('Mercado Pago', 'tarjeta de crédito o débito'); l.push('mercadopago-icon', 'visa', 'mastercard', 'amex'); }
-    else {
-      n.push('tarjeta de crédito o débito'); l.push('visa', 'mastercard', 'amex');
-      if (pais === 'ES' && moneda === 'EUR') { n.push('Bizum'); l.push('bizum'); }
-      n.push('Apple Pay', 'Google Pay', 'PayPal'); l.push('applepay', 'googlepay', 'paypal');
-    }
-    var extra = '';
-    if (CON_TRANSFER.indexOf(pais) >= 0 || ar) { n.push('transferencia bancaria'); extra = '<span class="pi">' + ICO('banco') + 'Transferencia</span>'; }
+  // Medios de pago: los que informa la tienda para este país y esta moneda (/api/tienda/catalogo → medios)
+  function medios(c) {
+    var n = [], l = [], extra = '', ids = (c.medios || []).map(function (m) { return m.id; });
+    if (ids.indexOf('mercadopago') >= 0) { n.push('Mercado Pago', 'tarjeta de crédito o débito'); l.push('mercadopago-icon', 'visa', 'mastercard', 'amex'); }
+    if (ids.indexOf('stripe') >= 0) { n.push('tarjeta de crédito o débito', 'Apple Pay', 'Google Pay'); l.push('visa', 'mastercard', 'amex', 'applepay', 'googlepay'); }
+    if (ids.indexOf('paypal') >= 0) { n.push('PayPal'); l.push('paypal'); }
+    if (ids.indexOf('transfer') >= 0) { n.push('transferencia bancaria'); extra = '<span class="pi">' + ICO('banco') + 'Transferencia</span>'; }
     return { nombres: n, logos: l, extra: extra };
   }
   function lista(a) { return a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : a.join(''); }
 
   function pintaPrecios(c) {
-    var ar = c.pais === 'AR' || c.moneda === 'ARS', m = medios(c.pais, c.moneda), nombre = PAISES[c.pais];
+    var ar = c.pais === 'AR' || c.moneda === 'ARS', m = medios(c), nombre = PAISES[c.pais];
     // País en el título de la portada
     $$('[data-pais]').forEach(function (e) { if (nombre) e.textContent = (e.getAttribute('data-pais') || 'en') + ' ' + nombre; });
     // Precios
@@ -137,8 +134,8 @@
     // Texto de abajo, con la lógica de Albunear: moneda y medios del país
     $$('[data-nota-precios]').forEach(function (e) {
       e.innerHTML = ar
-        ? 'Precios en <strong>pesos argentinos</strong>. Podés pagar con ' + lista(m.nombres) + '. Podés cambiar la moneda en el menú. No esperes más, diseñá tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>'
-        : 'Precios en <strong>' + nombreMoneda(c.moneda) + '</strong>. Puedes cambiar la moneda en el menú. Puedes pagar con ' + lista(m.nombres) + '. No esperes más, diseña tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>';
+        ? 'Precios en <strong>pesos argentinos</strong>.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + ' Podés cambiar la moneda en el menú. No esperes más, diseñá tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>'
+        : 'Precios en <strong>' + nombreMoneda(c.moneda) + '</strong>. Puedes cambiar la moneda en el menú.' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>';
     });
     $$('[data-pago-iconos]').forEach(function (e) { e.innerHTML = m.logos.map(logo).join('') + m.extra; });
     $$('[data-iva]').forEach(function (e) { e.textContent = c.moneda === 'EUR' ? 'IVA incluido' : 'pago único'; });

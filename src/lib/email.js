@@ -153,3 +153,29 @@ export const mailMedidaAprobada = (env, { url, nombres }) => ({
     boton: 'Completar el pago', url,
   }),
 });
+
+// README (ronda 33) · Cuentas profesionales
+export const mailSolicitudProRecibida = (env, { nombre }) => ({
+  subject: 'Recibimos tu solicitud de cuenta profesional',
+  ...plantilla(env, {
+    titulo: 'Recibimos tu solicitud',
+    lineas: [`Gracias${nombre ? `, ${b(nombre)}` : ''}, por interesarte en las cuentas para profesionales de Amo Invitar!.`, 'El equipo revisa cada solicitud (por eso se pide la web o la red social y una descripción del trabajo) y responde por este mismo medio.'],
+  }),
+});
+
+export const mailProAprobada = (env, { nombre, nivel, url }) => ({
+  subject: 'Tu cuenta profesional fue aprobada',
+  ...plantilla(env, {
+    titulo: '¡Tu cuenta profesional fue aprobada!',
+    lineas: [`${nombre ? `${b(nombre)}: ` : ''}la cuenta quedó activa en el nivel ${b(nivel)}.`, 'Se entra con este mismo mail (sin contraseñas). Desde ahí se manejan los eventos, los créditos y el equipo.'],
+    boton: 'Entrar', url,
+  }),
+});
+
+export const mailProRechazada = (env, { nombre, motivo }) => ({
+  subject: 'Sobre tu solicitud de cuenta profesional',
+  ...plantilla(env, {
+    titulo: 'Sobre tu solicitud',
+    lineas: [`Gracias${nombre ? `, ${b(nombre)}` : ''}, por escribir. Por ahora no se pudo aprobar la cuenta profesional.`, ...(motivo ? [escapeHtml(motivo)] : []), 'Si hay más información para compartir (web, trabajos, referencias), se puede responder este mail y se vuelve a revisar.'],
+  }),
+});

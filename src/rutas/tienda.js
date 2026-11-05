@@ -110,6 +110,8 @@ export async function catalogo(request, env) {
   const precio = (clave, eur) => { const p = priceIn(clave, eur, moneda, rates, pais, env); return { eur, importe: p.amount, texto: p.amount ? formatMoney(p.amount, moneda) : 'Gratis' }; };
   return json({
     pais, moneda, monedas: CURRENCIES,
+    // README (ronda 33): los medios de pago reales para este país y esta moneda (la web los usa para su texto y sus logos)
+    medios: methodsFor(env, pais, moneda).map((m) => ({ id: m.id, moneda: m.currency })),
     // Los tipos con grupo (revelación de género) se eligen dentro de su grupo (Baby Shower)
     tipos: TIPOS_EVENTO.filter((t) => !t.grupo),
     // Los modelos simples y las Save The Date web se compran como producto (Invitación web simple, Save The Date web)

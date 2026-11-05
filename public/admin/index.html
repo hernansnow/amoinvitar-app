@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Administración · Amo Invitar!</title>
+<link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
+<link rel="stylesheet" href="/comun/fonts/google/jost.css">
+<style>
+  :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 Jost, system-ui, sans-serif; color: var(--tinta); background: #f6f9f8; }
+  header { background: #fff; border-bottom: 1px solid var(--linea); padding: 14px 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 5; }
+  header h1 { font-size: 20px; margin: 0; font-weight: 500; }
+  header nav { margin-left: auto; display: flex; gap: 14px; font-size: 15px; }
+  a { color: var(--verde-2); }
+  main { max-width: 1180px; margin: 0 auto; padding: 22px 16px 60px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .tabs button { font: 500 15px/1 Jost, sans-serif; background: #fff; border: 1px solid var(--linea); border-radius: 999px; padding: 11px 18px; cursor: pointer; color: var(--tinta); }
+  .tabs button[aria-selected="true"] { background: var(--verde); border-color: var(--verde); color: #fff; }
+  .tabs b { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 99px; background: #ffb3a7; color: #5a1a10; font-size: 12px; margin-left: 6px; }
+  .tabs button[aria-selected="true"] b { background: #fff; color: var(--verde-2); }
+  .tarjeta { background: #fff; border: 1px solid var(--linea); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; }
+  .tarjeta h3 { margin: 0 0 2px; font-size: 18px; }
+  .meta { color: var(--suave); font-size: 14.5px; }
+  .desc { white-space: pre-wrap; background: #f6f9f8; border-radius: 10px; padding: 10px 12px; margin: 10px 0; font-size: 15px; }
+  .fila { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  button.b, a.b { font: 600 14px/1 Jost, sans-serif; border-radius: 999px; padding: 10px 16px; border: 1px solid var(--verde); background: var(--verde); color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+  button.b.sec, a.b.sec { background: #fff; color: var(--verde-2); }
+  button.b.mal { background: #fff; border-color: var(--rojo); color: var(--rojo); }
+  button.b:disabled { opacity: .5; cursor: wait; }
+  select, input, textarea { font: 15px Jost, sans-serif; padding: 9px 11px; border: 1px solid #c9dcd4; border-radius: 10px; background: #fff; }
+  label { font-size: 14px; color: var(--suave); display: grid; gap: 4px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--linea); border-radius: 14px; overflow: hidden; font-size: 15px; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid #eef4f1; text-align: left; vertical-align: top; }
+  th { background: #f3f9f6; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); }
+  .envuelve { overflow-x: auto; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; border-radius: 99px; padding: 3px 9px; background: var(--claro); color: var(--verde-2); }
+  .tag.aviso { background: #fff1d6; color: #8a5a00; } .tag.mal { background: #fde3df; color: var(--rojo); }
+  .vacio { color: var(--suave); padding: 24px; text-align: center; background: #fff; border: 1px dashed var(--linea); border-radius: 14px; }
+  #aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--tinta); color: #fff; padding: 12px 18px; border-radius: 12px; z-index: 30; max-width: 90vw; }
+  #aviso.error { background: var(--rojo); }
+  dialog { border: 0; border-radius: 16px; padding: 22px; max-width: 460px; width: calc(100vw - 32px); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  dialog::backdrop { background: rgba(30, 42, 38, .5); }
+  dialog h2 { margin: 0 0 12px; font-size: 20px; font-weight: 500; }
+  dialog form { display: grid; gap: 12px; }
+  #entrada { max-width: 420px; margin: 60px auto; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Administración · Amo Invitar!</h1>
+  <nav><a href="/admin/facturas">Facturas</a><a href="/mi-cuenta">Mi cuenta</a><a href="/">Sitio</a></nav>
+</header>
+<main>
+  <div id="entrada" hidden>
+    <h2>Acceso de administración</h2>
+    <p class="meta">Entra con una cuenta de administrador, o escribe la clave de administración.</p>
+    <p><a class="b" href="/entrar?siguiente=/admin/">Entrar con mi cuenta</a></p>
+    <form id="f-clave" class="fila" style="justify-content:center"><input type="password" id="clave" placeholder="Clave de administración" autocomplete="off"><button class="b sec" type="submit">Usar clave</button></form>
+  </div>
+  <div id="consola" hidden>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <section id="vista"></section>
+  </div>
+</main>
+<div id="aviso" hidden></div>
+<dialog id="dlg"><h2 id="dlg-t"></h2><form method="dialog" id="dlg-f"><div id="dlg-c" style="display:grid;gap:12px"></div><div class="fila" style="justify-content:flex-end"><button class="b sec" type="button" id="dlg-no">Cancelar</button><button class="b" type="submit" id="dlg-si">Aceptar</button></div></form></dialog>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var D = null, TAB = 'pro';
+  var clave = ''; try { clave = sessionStorage.getItem('ai_admin') || ''; } catch (e) { /* sin almacenamiento */ }
+  function el(t, a, h) { var e = document.createElement(t); Object.keys(a || {}).forEach(function (k) { if (k === 'class') e.className = a[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), a[k]); else if (a[k] != null && a[k] !== false) e.setAttribute(k, a[k] === true ? '' : a[k]); }); [].concat(h == null ? [] : h).forEach(function (x) { if (x != null) e.append(x); }); return e; }
+  function aviso(t, mal) { var a = $('#aviso'); a.textContent = t; a.className = mal ? 'error' : ''; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 3800); }
+  function api(ruta, cuerpo) {
+    var o = { headers: Object.assign({ 'content-type': 'application/json' }, clave ? { 'x-admin': clave } : {}) };
+    if (cuerpo !== undefined) { o.method = 'POST'; o.body = JSON.stringify(cuerpo); }
+    return fetch(ruta, o).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'Error'); e.status = r.status; throw e; } return j; }); });
+  }
+  var fecha = function (iso) { return iso ? String(iso).slice(0, 10).split('-').reverse().join('/') : '—'; };
+  var fechaSeg = function (s) { return s ? new Date(s * 1000).toISOString().slice(0, 10).split('-').reverse().join('/') : '—'; };
+  var hoy = function () { return new Date().toISOString(); };
+
+  // Ventanita para pedir datos
+  function pedir(titulo, campos) {
+    return new Promise(function (ok) {
+      var d = $('#dlg'), c = $('#dlg-c'); $('#dlg-t').textContent = titulo; c.replaceChildren();
+      var ins = campos.map(function (f) {
+        var i = f.tipo === 'select' ? el('select', { name: f.n }, f.op.map(function (o) { return el('option', { value: o[0] }, o[1]); })) : f.tipo === 'texto' ? el('textarea', { name: f.n, rows: 3 }) : el('input', { name: f.n, type: f.tipo || 'text' });
+        if (f.v != null) i.value = f.v; c.append(el('label', {}, [f.l, i])); return i;
+      });
+      var fin = function (v) { d.close(); ok(v); };
+      $('#dlg-no').onclick = function () { fin(null); };
+      $('#dlg-f').onsubmit = function (e) { e.preventDefault(); var r = {}; ins.forEach(function (i) { r[i.name] = i.value; }); fin(r); };
+      d.showModal();
+    });
+  }
+  function accion(btn, ruta, cuerpo, msg) {
+    btn.disabled = true;
+    return api(ruta, cuerpo).then(function (r) { aviso(msg || 'Listo ✓'); return cargar(); }).catch(function (e) { aviso(e.message, true); }).then(function () { btn.disabled = false; });
+  }
+
+  // ── Profesionales ──
+  function vistaPro() {
+    var v = el('div'), pend = D.solicitudes.filter(function (s) { return s.estado === 'pendiente'; }), resto = D.solicitudes.filter(function (s) { return s.estado !== 'pendiente'; });
+    v.append(el('h2', {}, 'Solicitudes de cuenta profesional'));
+    if (!pend.length) v.append(el('p', { class: 'vacio' }, 'No hay solicitudes pendientes.'));
+    pend.forEach(function (s) {
+      var b1 = el('button', { class: 'b', type: 'button' }, 'Aprobar…'), b2 = el('button', { class: 'b mal', type: 'button' }, 'Rechazar…');
+      b1.onclick = function () {
+        pedir('Aprobar a ' + (s.empresa || s.nombre), [
+          { n: 'nivel', l: 'Nivel', tipo: 'select', v: s.nivel, op: [['pro', 'Pro (sin pase anual)'], ['studio', 'Studio (pase anual)']] },
+          { n: 'paseMeses', l: 'Pase anual ya pagado (solo Studio): meses', tipo: 'number', v: 0 },
+          { n: 'creditos', l: 'Créditos iniciales (opcional)', tipo: 'number', v: 0 },
+          { n: 'nota', l: 'Nota interna', tipo: 'text' }]).then(function (r) { if (r) accion(b1, '/api/admin/pro/solicitudes/' + s.id + '/aprobar', r, 'Cuenta aprobada: se avisó por mail'); });
+      };
+      b2.onclick = function () { pedir('Rechazar la solicitud', [{ n: 'motivo', l: 'Motivo (se manda por mail; puede quedar vacío)', tipo: 'texto' }]).then(function (r) { if (r) accion(b2, '/api/admin/pro/solicitudes/' + s.id + '/rechazar', r, 'Solicitud rechazada'); }); };
+      v.append(el('div', { class: 'tarjeta' }, [
+        el('h3', {}, [s.empresa || s.nombre, ' ', el('span', { class: 'tag' }, 'Pide ' + (s.nivel === 'studio' ? 'Studio' : 'Pro'))]),
+        el('div', { class: 'meta' }, [s.nombre + ' · ', el('a', { href: 'mailto:' + s.email }, s.email), s.telefono ? ' · ' + s.telefono : '', s.pais ? ' · ' + s.pais : '', ' · ' + fecha(s.creado)]),
+        el('div', { class: 'meta' }, [s.rubro + (s.profesion ? ' · ' + s.profesion : '') + ' · ', el('a', { href: /^https?:/i.test(s.web) ? s.web : (s.web[0] === '@' ? 'https://instagram.com/' + s.web.slice(1) : 'https://' + s.web), target: '_blank', rel: 'noopener noreferrer' }, s.web)]),
+        el('div', { class: 'desc' }, s.descripcion),
+        el('div', { class: 'fila' }, [b1, b2])]));
+    });
+    if (resto.length) { v.append(el('h3', {}, 'Resueltas')); v.append(tabla(['Fecha', 'Quién', 'Pidió', 'Estado', 'Nota'], resto.map(function (s) { return [fecha(s.resuelto || s.creado), (s.empresa || s.nombre) + ' · ' + s.email, s.nivel, el('span', { class: 'tag' + (s.estado === 'rechazada' ? ' mal' : '') }, s.estado), s.nota || '']; }))); }
+    v.append(el('h2', { style: 'margin-top:30px' }, 'Empresas'));
+    if (!D.empresas.length) v.append(el('p', { class: 'vacio' }, 'Todavía no hay cuentas profesionales.'));
+    else v.append(tabla(['Empresa', 'Nivel', 'Pase hasta', 'Créditos', 'Eventos', 'Estado', ''], D.empresas.map(function (e) {
+      var vencido = e.nivel === 'studio' && (!e.pase_vence || e.pase_vence < hoy());
+      var bc = el('button', { class: 'b sec', type: 'button' }, '＋ Créditos'), bp = el('button', { class: 'b sec', type: 'button' }, 'Renovar pase'), be = el('button', { class: 'b ' + (e.estado === 'activa' ? 'mal' : 'sec'), type: 'button' }, e.estado === 'activa' ? 'Suspender' : 'Activar');
+      bc.onclick = function () {
+        pedir('Agregar créditos a ' + e.nombre, [{ n: 'cantidad', l: 'Cantidad', tipo: 'number', v: 5 },
+          { n: 'origen', l: 'Origen', tipo: 'select', v: e.nivel === 'studio' ? 'studio-25' : 'pro-5', op: [['pro-5', 'Pack Pro 5'], ['pro-10', 'Pack Pro 10'], ['studio-10', 'Pack Studio 10'], ['studio-25', 'Pack Studio 25'], ['studio-50', 'Pack Studio 50'], ['studio-100', 'Pack Studio 100'], ['suelto', 'Crédito suelto'], ['manual', 'Regalo / ajuste']] },
+          { n: 'nota', l: 'Nota (pago, transferencia…)', tipo: 'text' }]).then(function (r) { if (r) accion(bc, '/api/admin/pro/empresas/' + e.id + '/creditos', r, 'Créditos agregados (vencen a los 12 meses)'); });
+      };
+      bp.onclick = function () { pedir('Renovar el pase de ' + e.nombre, [{ n: 'meses', l: 'Meses', tipo: 'number', v: 12 }]).then(function (r) { if (r) accion(bp, '/api/admin/pro/empresas/' + e.id + '/pase', r, 'Pase renovado: los créditos sin usar pasan al año siguiente'); }); };
+      be.onclick = function () { accion(be, '/api/admin/pro/empresas/' + e.id + '/estado', { estado: e.estado === 'activa' ? 'suspendida' : 'activa' }, 'Estado actualizado'); };
+      return [el('div', {}, [el('strong', {}, e.nombre), el('div', { class: 'meta' }, e.duenio || '')]), el('span', { class: 'tag' }, e.nivel),
+        e.nivel === 'studio' ? el('span', { class: vencido ? 'tag mal' : '' }, fecha(e.pase_vence)) : '—',
+        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'meta' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos),
+        el('span', { class: 'tag' + (e.estado === 'activa' ? '' : ' mal') }, e.estado), el('div', { class: 'fila', style: 'margin:0' }, [bc, e.nivel === 'studio' ? bp : null, be])];
+    })));
+    return v;
+  }
+
+  // ── Diseños a medida ──
+  function vistaMedidas() {
+    var v = el('div', {}, [el('h2', {}, 'Diseños a medida')]);
+    if (!D.medidas.length) { v.append(el('p', { class: 'vacio' }, 'No hay proyectos enviados.')); return v; }
+    var orden = { 0: 0, 1: 1, 2: 2 }, est = function (m) { return m.listo ? 2 : m.aprobado ? 1 : 0; };
+    v.append(tabla(['Proyecto', 'Enviado', 'Estado', ''], D.medidas.slice().sort(function (a, b) { return orden[est(a)] - orden[est(b)]; }).map(function (m) {
+      var ba = el('button', { class: 'b', type: 'button' }, 'Aprobar proyecto'), bl = el('button', { class: 'b sec', type: 'button' }, 'Marcar listo');
+      ba.onclick = function () { accion(ba, '/api/admin/medidas/' + m.id + '/aprobar', { parte: m.parte }, 'Aprobado: se avisó al cliente'); };
+      bl.onclick = function () { accion(bl, '/api/admin/medidas/' + m.id + '/lista', { parte: m.parte }, 'Marcado como listo'); };
+      return [el('div', {}, [el('strong', {}, m.nombres || m.id), el('div', { class: 'meta' }, m.producto + ' · ' + m.tipo + (m.parte === 'std' ? ' · Save The Date' : ''))]), fecha(m.enviado),
+        el('span', { class: 'tag' + (m.listo ? '' : m.aprobado ? '' : ' aviso') }, m.listo ? 'Listo' : m.aprobado ? 'Aprobado · en diseño' : 'Por aprobar'),
+        el('div', { class: 'fila', style: 'margin:0' }, [el('a', { class: 'b sec', href: '/panel/' + m.id, target: '_blank', rel: 'noopener' }, 'Abrir panel'), !m.aprobado ? ba : null, m.aprobado && !m.listo ? bl : null])];
+    })));
+    return v;
+  }
+
+  // ── Transferencias ──
+  function vistaTransf() {
+    var v = el('div', {}, [el('h2', {}, 'Transferencias pendientes')]);
+    if (!D.transferencias.length) { v.append(el('p', { class: 'vacio' }, 'No hay transferencias por cobrar.')); return v; }
+    v.append(tabla(['Pedido', 'Quién', 'Importe', 'Fecha', ''], D.transferencias.map(function (p) {
+      var b = el('button', { class: 'b', type: 'button' }, 'Marcar cobrada');
+      b.onclick = function () { if (confirm('¿Ya llegó la transferencia #' + p.numero + '? Se activa la invitación y se emite la factura.')) accion(b, '/api/admin/pedidos/' + p.id + '/cobrado', {}, 'Cobrada: se activó el pedido'); };
+      return ['#' + p.numero + ' · ' + p.producto, p.email, p.importe + ' ' + p.moneda, fechaSeg(p.creado), b];
+    })));
+    return v;
+  }
+
+  function tabla(cab, filas) {
+    return el('div', { class: 'envuelve' }, el('table', {}, [el('thead', {}, el('tr', {}, cab.map(function (c) { return el('th', {}, c); }))), el('tbody', {}, filas.map(function (f) { return el('tr', {}, f.map(function (c) { return el('td', {}, c); })); }))]));
+  }
+
+  function pinta() {
+    var pend = { pro: D.solicitudes.filter(function (s) { return s.estado === 'pendiente'; }).length, medidas: D.medidas.filter(function (m) { return !m.aprobado; }).length, transf: D.transferencias.length };
+    var tabs = $('#tabs'); tabs.replaceChildren();
+    [['pro', 'Profesionales', pend.pro], ['medidas', 'Diseños a medida', pend.medidas], ['transf', 'Transferencias', pend.transf]].forEach(function (t) {
+      tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], onclick: function () { TAB = t[0]; pinta(); } }, [t[1], t[2] ? el('b', {}, String(t[2])) : null]));
+    });
+    $('#vista').replaceChildren(TAB === 'pro' ? vistaPro() : TAB === 'medidas' ? vistaMedidas() : vistaTransf());
+  }
+
+  function cargar() {
+    return api('/api/admin/resumen').then(function (d) { D = d; $('#entrada').hidden = true; $('#consola').hidden = false; pinta(); })
+      .catch(function (e) { if (e.status === 403) { $('#consola').hidden = true; $('#entrada').hidden = false; } else aviso(e.message, true); });
+  }
+  $('#f-clave').addEventListener('submit', function (e) { e.preventDefault(); clave = $('#clave').value.trim(); try { sessionStorage.setItem('ai_admin', clave); } catch (x) { /* sin almacenamiento */ } cargar(); });
+  cargar();
+})();
+</script>
+</body>
+</html>

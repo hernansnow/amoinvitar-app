@@ -1,7 +1,7 @@
 # Amo Invitar para profesionales (planners, fotógrafos, salones, agencias)
 
-> Estado (ronda 33): **modelo comercial definido**; el tablero `/empresa`, el cobro de créditos y los permisos están
-> **por armar**. Ya funciona: pie de marca blanca sin links, límite de 35 invitados en Gratis, tablas base
+> Estado (ronda 34): **modelo comercial definido** y **alta/aprobación de cuentas funcionando** (formulario + consola
+> `/admin/`). El tablero `/empresa`, el uso y cobro de créditos y los permisos están **por armar**. Ya funciona: pie de marca blanca sin links, límite de 35 invitados en Gratis, tablas base
 > (`empresas`, `miembros`, `accesos_evento`). Precios y niveles viven en `src/catalogo.js` (`PROFESIONALES`) y
 > alimentan la página `/profesionales` de la web (se genera con `npm run sitio`).
 
@@ -88,7 +88,7 @@ Pestañas: **Eventos** (lista con estado, plan, confirmaciones y vencimiento; ab
 
 ## 7. Orden para armarlo
 
-1. **Hecho:** pie sin links y con opción de apagarlo, límite de 35 invitados en Gratis, definición de precios y página `/profesionales`.
+1. **Hecho:** pie sin links y con opción de apagarlo, límite de 35 invitados en Gratis, definición de precios, página `/profesionales`, formulario de solicitud y consola de aprobación.
 2. Migración: pase (`plan`, `vence`), créditos y su historial, dominio, rol cliente-admin.
 3. Pantalla **Marca** (logo a R2, texto, interruptor, vista previa; Pro suma logo, Studio quita el pie).
 4. Tablero **Eventos** y creación de eventos con crédito.
@@ -97,10 +97,32 @@ Pestañas: **Eventos** (lista con estado, plan, confirmaciones y vencimiento; ab
 7. **Cobro**: créditos, packs, pase anual, dominio (con los medios de pago de siempre).
 8. Dominio propio por empresa (Cloudflare for SaaS o rutas por host).
 
-## 8. Puntos a decidir
+## 8. Reglas definidas (ronda 34)
 
-- **Alta de cuentas Pro:** con 0 € de pase y crédito suelto de 25 € (menos que un Basic de 29 €), cualquiera podría
-  hacerse «Pro» para comprar una invitación Deluxe (70 €) por 25 €. Recomendación: **cuentas Pro con aprobación** y
-  que el crédito suelto/packs sean solo para cuentas aprobadas.
-- **IVA:** ¿los precios son sin IVA para empresas (con IVA válido en la UE el sistema ya factura sin IVA)?
-- **Vencimiento** de créditos y del pase: sin definir.
+- **Alta con aprobación a mano.** Quien quiere una cuenta completa el formulario de `/profesionales` (link a su web o red
+  social, rubro, profesión y descripción de su trabajo). La solicitud llega a `solicitudes_pro` y por mail al administrador;
+  se aprueba o rechaza desde `/admin/`. Aprobar crea la empresa, el nivel (Pro o Studio), el dueño (por su mail) y, si
+  se quiere, créditos iniciales y el pase pagado. Solo las cuentas aprobadas compran créditos.
+- **Precios sin IVA.** En España y la UE se suma el IVA que corresponda (25 € + IVA). Una empresa de la UE con IVA
+  válido (VIES) se factura sin IVA, como ya hace la tienda.
+- **Pase Studio anual:** se renueva cada año. Los packs Studio solo se cargan con el pase vigente.
+- **Créditos:** cada compra es un **lote que vence a los 12 meses**. Si el pase Studio se renueva **antes** de que venzan,
+  los créditos que sobraron se extienden 12 meses (se acumulan para el año siguiente). Sin renovar, se pierden al vencer.
+- **Panel del profesional (Pro):** conserva logos, links y publicidad de Amo Invitar. Solo la versión del **cliente final**
+  al que el profesional da acceso queda limpia (sin logos, links ni contacto con Amo Invitar). En Studio también se quita
+  la marca de Amo Invitar del panel del equipo.
+- **Cliente final con acceso de administrador:** puede publicar; no ve datos de la empresa, no compra ni cambia la cuenta.
+
+## 9. Consola de administración (`/admin/`)
+
+Para administradores (`ADMINS`) con su sesión, o con la clave `ADMIN_CLAVE`. Pestañas:
+**Profesionales** (solicitudes: aprobar/rechazar; empresas: sumar créditos, renovar pase, suspender),
+**Diseños a medida** (proyectos enviados: aprobar —avisa al cliente por mail— y marcar listo) y
+**Transferencias** (marcar cobrada: activa el pedido y emite la factura). Código: `src/rutas/consola.js`,
+`public/admin/index.html`. Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes` (`migrations/0005_profesionales.sql`;
+también se crean solas al primer uso).
+
+## 10. Pendiente
+
+Tablero `/empresa` del profesional, uso de créditos al publicar, compra de packs y del pase desde la web,
+panel limpio para el cliente final, dominio propio. (Ver el orden en la sección 7.)
