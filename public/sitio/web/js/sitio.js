@@ -5,10 +5,27 @@
   var d = document, $ = function (s, r) { return (r || d).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || d).querySelectorAll(s)); };
   d.documentElement.classList.remove('sin-js');
 
+  /* ---------- Encabezado: transparente arriba, blanco al bajar ---------- */
+  var cab = $('.cab');
+  function pintaCab() { if (cab) cab.classList.toggle('solida', window.scrollY > 30 || d.body.classList.contains('cajon-abierto')); }
+  addEventListener('scroll', pintaCab, { passive: true });
+
+  /* ---------- Submenú «Invitaciones»: se abre con el puntero o el teclado y no se cierra al ir hacia la lista ---------- */
+  var menuEv = $('.menu-ev');
+  if (menuEv) {
+    var btnEv = $('button', menuEv), tCierre = null;
+    var abre = function (v) { clearTimeout(tCierre); menuEv.classList.toggle('abierto', v); btnEv.setAttribute('aria-expanded', v); };
+    menuEv.addEventListener('mouseenter', function () { abre(true); });
+    menuEv.addEventListener('mouseleave', function () { tCierre = setTimeout(function () { abre(false); }, 220); });
+    btnEv.addEventListener('click', function (e) { e.stopPropagation(); abre(!menuEv.classList.contains('abierto')); });
+    d.addEventListener('click', function (e) { if (!menuEv.contains(e.target)) abre(false); });
+  }
+
   /* ---------- Menú del celular ---------- */
   var cajon = $('#cajon'), abrir = $('[data-abrir-menu]');
-  function menu(v) { if (!cajon) return; cajon.classList.toggle('abierto', v); d.body.classList.toggle('cajon-abierto', v); if (abrir) abrir.setAttribute('aria-expanded', v); }
-  if (abrir) abrir.addEventListener('click', function () { menu(true); });
+  function menu(v) { if (!cajon) return; cajon.classList.toggle('abierto', v); d.body.classList.toggle('cajon-abierto', v); if (abrir) abrir.setAttribute('aria-expanded', v); pintaCab(); }
+  pintaCab();
+  if (abrir) abrir.addEventListener('click', function () { menu(!cajon.classList.contains('abierto')); });
   $$('[data-cerrar-menu]').forEach(function (b) { b.addEventListener('click', function () { menu(false); }); });
   d.addEventListener('keydown', function (e) { if (e.key === 'Escape') { menu(false); cerrarMoneda(); } });
 

@@ -62,7 +62,7 @@ function cabecera(P) {
   return `<a class="skip" href="#principal">Saltar al contenido</a>
 <header class="cab">
   <div class="caja cab-fila">
-    <a class="logo" href="/" aria-label="Amo Invitar! · Inicio"><img src="/web/img/logo-linea-blanco.svg" alt="Amo Invitar!" width="174" height="37"></a>
+    <a class="logo" href="/" aria-label="Amo Invitar! · Inicio"><img class="l-b" src="/web/img/logo-linea-blanco.svg" alt="Amo Invitar!" width="174" height="37"><img class="l-v" src="/web/img/logo-linea-verde.svg" alt="" width="174" height="37"></a>
     <nav class="nav-principal" aria-label="Principal">
       <div class="menu-ev${enEvento ? ' en' : ''}"><button type="button" aria-expanded="false" aria-haspopup="true">Invitaciones ${ic('chevron')}</button><div class="menu-ev-lista">${items}</div></div>
       <a href="/album"${actual('album')}>Álbum QR</a>
@@ -80,7 +80,6 @@ function cabecera(P) {
   </div>
 </header>
 <div class="cajon" id="cajon" role="dialog" aria-label="Menú">
-  <div class="cajon-cab"><a class="logo" href="/"><img src="/web/img/logo-linea-blanco.svg" alt="Amo Invitar!" width="174" height="37"></a><button class="hamb" type="button" data-cerrar-menu aria-label="Cerrar el menú">${ic('x')}</button></div>
   <div class="cajon-cuerpo">
     <p class="cajon-titulo">Invitaciones ${ic('chevron')}</p>
     <div class="cajon-eventos">${items}</div>
@@ -98,7 +97,7 @@ const checks = (arr) => `<ul class="checks">${arr.map((t) => `<li>${ic('check')}
 
 function portada(o) {
   const ticks = ['Paquetes gratis y desde <span data-precio="basic">29 €</span>', 'Pago único (solo si te gusta)', 'Sin apps', 'Lista en minutos', 'Prueba gratis'];
-  return `<section class="portada${o.solida ? ' solida' : ''}${o.evento ? ' evento' : ''}" id="inicio">
+  return `<section class="portada${o.evento ? ' evento' : ''}" id="inicio"${o.fondo ? ` style="${o.fondo}"` : ''}>
   <div class="caja portada-grid">
     <div class="portada-texto">
       <span class="etiqueta">${o.etiqueta}</span>
@@ -325,12 +324,27 @@ const escribe = (slug, P, cuerpo) => { P.slug = slug; writeFileSync(join(RAIZ, s
   const P = { titulo: 'Invitaciones digitales con RSVP, mesas y álbum QR | Amo Invitar!', descripcion: 'Invitaciones digitales interactivas para bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower y eventos. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista. Prueba gratis.' };
   const E = { ...GENERICO };
   escribe('index', P, [
-    portada({ etiqueta: 'Interactiva y original', h1: 'Invitaciones digitales <span data-pais="en">en Iberoamérica</span>', lead: 'Todo tu evento en un link. La invitación, RSVP, álbum QR, administración de invitados, organización de mesas y entradas al evento… vaya, tu <strong>Planner digital</strong>. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista final.' }),
+    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: 'Interactiva y original', h1: 'Invitaciones digitales <span data-pais="en">en Iberoamérica</span>', lead: 'Todo tu evento en un link. La invitación, RSVP, álbum QR, administración de invitados, organización de mesas y entradas al evento… vaya, tu <strong>Planner digital</strong>. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista final.' }),
     comoFunciona(E, true), eventos(), funciones(E), planes(E), faq(E, P), testimonios(), nosotros(), llamada(E), contacto(E),
   ].join('\n'));
 }
 
 // Páginas de cada evento
+// Imagen de portada de cada página y su degradado, como en la web original
+const IMG_EV = (f) => `url(/web/img/eventos/${f})`;
+const fondoDe = (img, g, { m = img, gm = g } = {}) => `--hero-d:${img};--hero-m:${m};--hero-gd:${g};--hero-g:${gm}`;
+const G = (a, b) => `linear-gradient(rgba(${a}),rgba(${b}))`;
+const HEROES = {
+  boda: fondoDe(IMG_EV('hero-bodas-desk.jpg'), G('0,0,0,.2', '0,0,0,.8')),
+  15: fondoDe(IMG_EV('hero-15-desk.jpg'), G('0,0,0,.2', '0,0,0,.8'), { m: IMG_EV('hero-15.jpg') }),
+  bautismo: fondoDe(IMG_EV('hero-bautismo.jpg'), G('0,0,0,.2', '175,141,80,.6')),
+  comunion: fondoDe(IMG_EV('hero-comunion.jpg'), G('0,0,0,.4', '187,143,107,.6')),
+  cumple: fondoDe(IMG_EV('hero-cumple.jpg'), G('0,0,0,.4', '55,176,191,.6')),
+  babyshower: fondoDe(IMG_EV('hero-infantiles.jpg'), G('0,0,0,.2', '244,67,54,.2')),
+  graduacion: fondoDe(IMG_EV('hero-graduacion.jpg'), G('0,0,0,.4', '154,121,53,.6')),
+  empresarial: fondoDe(IMG_EV('hero-empresarial.jpg'), G('0,0,0,.6', '187,143,107,.8')),
+  otros: fondoDe(IMG_EV('hero-eventos.jpg'), G('0,0,0,.4', '126,114,91,.6')),
+};
 const PORTADAS = {
   boda: { etiqueta: 'Invitación + web', h1: 'Toda tu boda en un link', lead: 'Compartes por WhatsApp, tus invitados confirman asistencia con un clic, tú gestionas y descargas la lista. Además van a agendar la fecha, ver el mapa para llegar, elegir su menú, conocer el código de vestimenta, regalos, cuenta regresiva, sugerir canciones, álbum QR, mesas y mucho más. Con diseños de catálogo o a medida 100% personalizada.', t: 'Invitaciones de boda digitales con RSVP, mesas y álbum QR', d: 'Invitación de boda digital + web: tus invitados confirman asistencia con un clic, ven el mapa, el menú y el dress code, y tú gestionas mesas y lista. Diseños de catálogo o a medida. Prueba gratis.' },
   15: { etiqueta: 'Invitación + web', h1: 'Tus 15, en un solo link', lead: 'Compartes por WhatsApp, tus invitados confirman con un clic y tú gestionas todo desde tu panel. Con cuenta regresiva, ubicación, dress code, canciones para la pista, regalos, álbum QR, mesas y mucho más. Con diseños de catálogo o a medida 100% personalizada.', t: 'Invitaciones de 15 años digitales con RSVP y álbum QR', d: 'Invitación digital de 15 años: confirmación con un clic, cuenta regresiva, canciones sugeridas, mesas y álbum QR. Diseños de catálogo o a medida. Prueba gratis.' },
@@ -348,7 +362,7 @@ for (const E0 of C.EVENTOS) {
   const pt = PORTADAS[E.id];
   const P = { titulo: `${pt.t} | Amo Invitar!`, descripcion: pt.d, widget: true };
   escribe(E.pagina, P, [
-    portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, solida: true, evento: true }),
+    portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES[E.id] }),
     disenos(E), funciones(E), comoFunciona(E, false), planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -358,7 +372,7 @@ for (const E0 of C.EVENTOS) {
   const E = { ...GENERICO, widget: '', tituloDisenos: 'Elige tu <em>diseño</em>' };
   const P = { titulo: 'Crear invitación digital | Amo Invitar!', descripcion: 'Crea tu invitación digital: elige el modelo, personalízala gratis y obtén tu link. Pago único solo al publicar. Bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower, graduaciones y eventos corporativos.', widget: true };
   escribe('crear-invitacion', P, [
-    `<section class="portada solida evento"><div class="caja" style="padding-block:clamp(40px,6vw,70px) clamp(70px,9vw,120px);text-align:center"><span class="etiqueta">Crear invitación</span><h1>Elige el diseño que más te guste</h1><p class="lead" style="margin-inline:auto">Míralo, personalízalo con tus datos y mira tu invitación terminada. Solo pagas cuando decides publicarla.</p></div></section>`,
+    `<section class="portada"><div class="caja portada-centro"><span class="etiqueta">Crear invitación</span><h1>Elige el diseño que más te guste</h1><p class="lead" style="margin-inline:auto">Míralo, personalízalo con tus datos y mira tu invitación terminada. Solo pagas cuando decides publicarla.</p></div></section>`,
     disenos(E), comoFunciona(E, false), planes(E), faq(E, P), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -368,7 +382,7 @@ for (const E0 of C.EVENTOS) {
   const E = { ...GENERICO };
   const P = { titulo: 'Planes y precios de invitaciones digitales | Amo Invitar!', descripcion: 'Un pago, cero complicaciones: planes Gratis, Basic, Premium y Deluxe para tu invitación digital. Sin suscripciones. Diséñala, míralas terminada y paga solo al publicar.' };
   escribe('precios', P, [
-    `<section class="portada solida evento"><div class="caja" style="padding-block:clamp(40px,6vw,70px) clamp(70px,9vw,120px);text-align:center"><span class="etiqueta">Planes y precios</span><h1>Un pago, cero complicaciones</h1><p class="lead" style="margin-inline:auto">Sin suscripciones. Sin sorpresas. Diseña tu invitación, míralas terminada y paga solo cuando decidas publicarla.</p></div></section>`,
+    `<section class="portada"><div class="caja portada-centro"><span class="etiqueta">Planes y precios</span><h1>Un pago, cero complicaciones</h1><p class="lead" style="margin-inline:auto">Sin suscripciones. Sin sorpresas. Diseña tu invitación, míralas terminada y paga solo cuando decidas publicarla.</p></div></section>`,
     planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -378,7 +392,7 @@ for (const E0 of C.EVENTOS) {
   const E = { ...GENERICO };
   const P = { titulo: 'Contacto | Amo Invitar!', descripcion: 'Escríbenos por WhatsApp o desde el formulario: te ayudamos a elegir el diseño, pedir una invitación a medida o resolver cualquier duda.' };
   escribe('contacto', P, [
-    `<section class="portada solida evento"><div class="caja" style="padding-block:clamp(40px,6vw,70px) clamp(70px,9vw,120px);text-align:center"><span class="etiqueta">Contacto</span><h1>¿Hablamos?</h1><p class="lead" style="margin-inline:auto">Cuéntanos qué necesitas y te respondemos en el día.</p></div></section>`,
+    `<section class="portada"><div class="caja portada-centro"><span class="etiqueta">Contacto</span><h1>¿Hablamos?</h1><p class="lead" style="margin-inline:auto">Cuéntanos qué necesitas y te respondemos en el día.</p></div></section>`,
     contacto(E), faq(E, P),
   ].join('\n'));
 }
@@ -418,7 +432,7 @@ function paginaAlbum() {
   const P = { titulo: 'Álbum colaborativo QR para bodas y eventos | Amo Invitar! + Albunear', descripcion: 'Álbum de fotos por QR para bodas y eventos: tus invitados escanean un QR y suben fotos y videos sin apps. Slideshow en vivo y descarga en alta calidad. Se integra con tu invitación digital de Amo Invitar!.' };
   const ticks = ['Sin apps', 'Listo en 60 segundos', 'Pago único', 'Prueba gratis'];
   const por = (n) => `<span class="sobre">${n}</span>`;
-  const hero = `<section class="portada solida" id="inicio"><div class="caja portada-grid">
+  const hero = `<section class="portada" id="inicio"><div class="caja portada-grid">
     <div class="portada-texto"><span class="etiqueta">Álbum colaborativo QR</span><h1>Todas las fotos de tu evento, en un solo lugar.</h1>
       <p class="lead">Tus invitados escanean un QR o tocan el botón de tu invitación y suben sus fotos y videos al instante, sin descargar ninguna app. Proyéctalas en vivo durante la fiesta y descárgalas todas al final.</p>
       <div class="fila-btn"><a class="btn btn-claro btn-grande" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="enlace-video" style="color:#fff" href="https://albunear.com/demo" target="_blank" rel="noopener">${ic('play')} Ver demo</a></div>
@@ -442,7 +456,7 @@ paginaAlbum();
 function paginaProfesionales() {
   const E = { ...GENERICO, id: 'index' };
   const P = { titulo: 'Invitaciones digitales para wedding planners, fotógrafos y salones | Amo Invitar!', descripcion: 'Planes Pro y Studio para profesionales: panel con todos tus eventos, usuarios administradores, créditos a precio mayorista, marca blanca y dominio propio para tus invitaciones digitales.' };
-  const hero = `<section class="portada solida evento" id="inicio"><div class="caja" style="padding-block:clamp(40px,6vw,80px) clamp(80px,10vw,140px);text-align:center"><span class="etiqueta">Para profesionales</span><h1>Invitaciones digitales para tus clientes, con tu marca</h1><p class="lead" style="margin-inline:auto">Wedding planners, fotógrafos, salones y agencias: administra todos tus eventos en un solo panel, suma a tu equipo y entrega invitaciones que se sienten tuyas.</p><div class="fila-btn" style="justify-content:center"><a class="btn btn-claro btn-grande" href="#contacto">Quiero mi cuenta</a><a class="btn btn-borde-claro btn-grande" href="#niveles">Ver los niveles</a></div></div></section>`;
+  const hero = `<section class="portada" id="inicio"><div class="caja portada-centro"><span class="etiqueta">Para profesionales</span><h1>Invitaciones digitales para tus clientes, con tu marca</h1><p class="lead" style="margin-inline:auto">Wedding planners, fotógrafos, salones y agencias: administra todos tus eventos en un solo panel, suma a tu equipo y entrega invitaciones que se sienten tuyas.</p><div class="fila-btn" style="justify-content:center"><a class="btn btn-claro btn-grande" href="#contacto">Quiero mi cuenta</a><a class="btn btn-borde-claro btn-grande" href="#niveles">Ver los niveles</a></div></div></section>`;
   const nivel = (n, o) => `<article class="plan-card rev${o.destacado ? ' destacado' : ''}">${o.destacado ? '<span class="cinta">Marca blanca</span>' : ''}<h3>${PRO[n].nombre}</h3><p class="precio">${PRO[n].pase ? `${eur(PRO[n].pase)} <small style="font-size:.4em;color:var(--suave)">/ año</small>` : '0 €'}</p><p class="precio-s">${o.ideal}</p><ul>${o.items.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul><a class="btn ${o.destacado ? 'btn-verde' : 'btn-borde'}" href="#contacto" data-nivel="${PRO[n].nombre}">${o.boton}</a></article>`;
   const niveles = `<section class="seccion" id="niveles"><div class="caja">${titulo('Niveles', 'Elige cómo <em>trabajar</em>', 'Empieza sin costo fijo y pasa a Studio cuando tu volumen lo pida.')}
   <div class="planes dos">${nivel('pro', { ideal: 'Ideal para fotógrafos y organizadores independientes. Sin costo fijo.', boton: 'Empezar con Pro', items: [`Hasta ${PRO.pro.administradores} usuarios administradores`, 'Panel con todos tus eventos', `Créditos sueltos (${eur(PRO.credito)}) o packs chicos`, 'Tu logo junto al pie de Amo Invitar', 'Tus invitaciones en amoinvitar.com/…', 'Tus clientes pueden publicar si les das acceso de administrador'] })}${nivel('studio', { destacado: true, ideal: 'Ideal para salones de eventos medianos y agencias.', boton: 'Hablar con nosotros', items: [`Hasta ${PRO.studio.administradores} usuarios administradores`, '<strong>Marca blanca:</strong> sin el pie de Amo Invitar; tu logo, tu texto o sin pie', 'Panel sin la marca de Amo Invitar ni links a otros productos', 'Dominio propio: invitaciones.tusalon.com (*)', `Packs exclusivos: hasta ${dto(PRO.studio.packs[3].precio, PRO.studio.packs[3].creditos)} % de descuento`, 'Tus clientes pueden publicar si les das acceso de administrador'] })}</div>
