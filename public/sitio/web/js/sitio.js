@@ -60,6 +60,9 @@
   var qe = new URLSearchParams(location.search).get('evento');
   if (qe) $$('select[name=evento]').forEach(function (sel) { [].some.call(sel.options, function (o) { if (o.text.toLowerCase() === qe.toLowerCase()) { sel.value = o.value; return true; } return false; }); });
 
+  /* ---------- Profesionales: el botón del nivel elige la opción del formulario ---------- */
+  $$('[data-nivel]').forEach(function (b) { b.addEventListener('click', function () { var s = $('#nivel-form'); if (s) [].some.call(s.options, function (o) { if (o.text.indexOf(b.getAttribute('data-nivel')) >= 0) { s.value = o.value; return true; } return false; }); }); });
+
   /* ---------- Barra "Crear invitación" en el celular ---------- */
   var barra = $('.barra-movil'), portada = $('.portada');
   if (barra && portada && 'IntersectionObserver' in window) {

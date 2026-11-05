@@ -484,3 +484,20 @@ body.cajon-abierto { overflow: hidden; }
 .comparar thead th.col-d { color: #fff; background: var(--verde); }
 @media (min-width: 1000px) { .funciones.tres { grid-template-columns: repeat(3, 1fr); } }
 .escena-album .ficha.f2 { bottom: -2%; right: -2%; }
+
+/* ---------- Profesionales ---------- */
+.planes.dos { grid-template-columns: 1fr; max-width: 900px; margin-inline: auto; }
+@media (min-width: 760px) { .planes.dos { grid-template-columns: repeat(2, 1fr); } }
+.pro-mini { display: grid; gap: 14px; align-content: center; }
+.pro-mini div { background: var(--verde-palido); border: 1px solid var(--linea); border-radius: 16px; padding: 18px 20px; }
+.pro-mini b { display: block; font: 500 34px/1.1 var(--sans); color: var(--verde-osc); }
+.pro-mini span { color: var(--suave); font-size: 15px; }
+.packs-dos { display: grid; gap: 30px; }
+@media (min-width: 900px) { .packs-dos { grid-template-columns: 1fr 1fr; gap: 36px; } }
+.aparte { display: flex; gap: 18px; align-items: flex-start; background: #fff; border: 1px solid var(--linea); border-radius: 20px; padding: 24px; margin-top: 34px; }
+.aparte > .icono { width: 34px; height: 34px; color: var(--verde); margin-top: 4px; }
+.aparte h3 { font-size: 21px; margin: 0 0 6px; }
+.aparte p { color: var(--suave); }
+.pasar-studio { display: flex; gap: 14px; align-items: flex-start; margin-top: 26px; background: var(--verde-claro); border-radius: 16px; padding: 18px 20px; }
+.pasar-studio .icono { color: var(--verde-2); width: 28px; height: 28px; margin-top: 2px; }
+.pasar-studio p { margin: 0; }

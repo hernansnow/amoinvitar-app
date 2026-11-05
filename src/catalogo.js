@@ -93,3 +93,20 @@ export function precioInvitacion({ paquete, aMedida = null, extras = [] }) {
   if (base == null) throw new Error(`Paquete desconocido: ${paquete}`);
   return extras.reduce((total, e) => total + (EXTRAS[e]?.precio ?? 0), base);
 }
+
+// ── Profesionales (planners, fotógrafos, salones, agencias) ─────────────
+// README (ronda 33): precios de lista en euros. Solo es la definición: el tablero /empresa y el cobro están por armarse
+// (docs/empresas.md). Un crédito = una invitación publicada de cualquier paquete (hasta Deluxe) y cualquier modelo.
+// No cubre: diseño a medida, cambio de diseño, idioma adicional ni complementos (se contratan aparte).
+export const PROFESIONALES = {
+  credito: 25,
+  pro: {
+    nombre: 'Pro', pase: 0, administradores: 2, marcaBlanca: false, dominioPropio: false,
+    packs: [{ creditos: 5, precio: 115 }, { creditos: 10, precio: 200 }],
+  },
+  studio: {
+    nombre: 'Studio', pase: 99, administradores: 10, marcaBlanca: true, dominioPropio: true,
+    configuracionDominio: 49, dominioSinCargoDesdePack: 100, // el dominio propio es gratis con el pack de 100 créditos
+    packs: [{ creditos: 10, precio: 170 }, { creditos: 25, precio: 375 }, { creditos: 50, precio: 650 }, { creditos: 100, precio: 1100 }],
+  },
+};
