@@ -31,7 +31,14 @@ import { sendEmail, mailNuevoAcceso, mailMedidaAprobada, mailAvisoInterno } from
 import { usuarioActual, crearUsuario } from './lib/auth.js';
 import * as cuenta from './rutas/cuenta.js';
 import { servirLegado } from './sitio/legado.js';
+import { vencido, venceEvento } from './vencimiento.js';
+// La invitación ya cumplió su plazo
+const paginaVencida = (nombres) => `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invitación finalizada</title>
+<body style="margin:0;min-height:100vh;display:grid;place-content:center;text-align:center;font:17px/1.5 Jost,system-ui,sans-serif;background:#f6f5f1;color:#3a3f3c;padding:20px">
+<p style="font-size:2rem;margin:0">💌</p><h1 style="font-weight:500;margin:.3em 0">${String(nombres || '').replace(/[<>&"]/g, '')}</h1>
+<p>Esta invitación ya finalizó.<br>¡Gracias por ser parte!</p><p style="margin-top:2em"><a href="https://amoinvitar.com/" style="color:#4e9c87">Amo Invitar!</a></p>`;
 import { sitioNuevo } from './sitio/nuevo.js';
+import { contacto } from './rutas/contacto.js';
 import * as tienda from './rutas/tienda.js';
 import * as admin from './rutas/admin.js';
 import { getCookie } from './lib/util.js';
@@ -216,6 +223,7 @@ async function saveTheDate(env, url, request, id) {
   const m = MODELOS.find((x) => x.id === modelo);
   const lista = suelta ? ev.estado === 'publicado' : ev.datos.std?.tipo === 'web' && (ev.datos.extras || []).includes('std-web');
   if (!m?.std || !m.eventos.includes(ev.tipo) || (!lista && !dueno)) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Esta Save The Date todavía no está disponible.</p>', 404);
+  if (!dueno && vencido(ev)) return html(paginaVencida(nombresDe(ev.datos.nombres)), 410, { 'x-robots-tag': 'noindex' });
   const evento = { ...paraMotor(ev), modelo, paquete: 'basic' };
   return pagina(env, url, evento, { sinSobre: true, prueba: dueno && !lista });
 }
@@ -224,7 +232,9 @@ async function saveTheDate(env, url, request, id) {
 async function publicada(env, url, request, tipo, slug) {
   const almacen = almacenDe(env);
   const ev = await almacen.eventoPorSlug(tipo, slug);
-  if (!ev || ev.estado !== 'publicado' || (ev.vence && ev.vence < new Date().toISOString())) return null;
+  if (!ev || ev.estado !== 'publicado') return null;
+  // README (ronda 31): pasado su plazo (según el plan, desde la fecha del evento) deja de verse
+  if (vencido(ev)) return html(paginaVencida(nombresDe(ev.datos.nombres)), 410, { 'x-robots-tag': 'noindex' });
   const empresa = ev.empresaId ? await almacen.empresa(ev.empresaId) : null;
   const marca = empresa?.marca?.blanca ? empresa.marca : null;
   const acc = await revisarAcceso({ ev, request, url, almacen, secreto: secretoDe(env) });
@@ -496,11 +506,7 @@ async function publicarEvento(env, request, ev) {
   if (esquema.std && !faltan.length) { ev.estado = 'publicado'; await almacenDe(env).guardarEvento(ev); return { ok: true, estado: ev.estado, link: `${url.origin}/std/${ev.id}` }; }
   if (faltan.length || !ev.slug) return { faltan };
   if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return { error: 'Falta el PIN' };
-  // Plan gratis: online hasta 15 días después del evento
-  if (ev.paquete === 'gratis') {
-    const fecha = (ev.datos.celebracion?.inicio || '').slice(0, 10);
-    if (fecha) ev.vence = new Date(Date.parse(fecha) + 16 * 86400000).toISOString();
-  }
+  // README (ronda 31): el vencimiento lo da el plan (src/vencimiento.js) y se recalcula siempre; aquí ya no se fija
   ev.estado = ['invitacion', 'std-web', 'compromiso-web'].includes(ev.producto) ? 'publicado' : 'en-diseno';
   await avisarDiseno(env, url, ev);
   await almacenDe(env).guardarEvento(ev);
@@ -530,7 +536,27 @@ const modelosCambio = (tipo, producto = 'invitacion', actual = null) => {
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const aSlug = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/&/g, 'y').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
 
-async function sugerirSlug(almacen, ev, pedido) {
+// README (ronda 31): un link nuevo no puede ser el de una invitación vieja de un cliente (las carpetas del sistema
+// anterior, como /boda/sofi-y-ale/): se mira en el bucket del sitio viejo o, si todavía no está, en el hosting
+const legadoVisto = new Map();
+async function slugDelLegado(env, tipo, slug) {
+  const k = `${tipo}/${slug}`;
+  if (legadoVisto.has(k)) return legadoVisto.get(k);
+  let ocupado = false;
+  try {
+    if (env.LEGADO) ocupado = !!((await env.LEGADO.head(`${k}/index.html`)) || (await env.LEGADO.head(`${k}.html`)));
+    else if (env.ORIGEN_ANTIGUO && !env.MODO_LOCAL) {
+      const pedir = (p) => fetch(new URL(p, env.ORIGEN_ANTIGUO), { method: 'HEAD', redirect: 'manual', signal: AbortSignal.timeout(2500) }).then((r) => r.status);
+      // Si el hosting contesta 200 también a una carpeta inventada (página de error "blanda"), la prueba no sirve
+      if (!legadoVisto.has('_control')) legadoVisto.set('_control', (await pedir(`/${tipo}/no-existe-${Date.now()}/`)) === 200);
+      ocupado = !legadoVisto.get('_control') && (await pedir(`/${k}/`)) === 200;
+    }
+  } catch { /* sin respuesta: no se bloquea */ }
+  legadoVisto.set(k, ocupado);
+  return ocupado;
+}
+const slugTomado = async (env, almacen, tipo, slug, id) => (await almacen.slugOcupado(tipo, slug, id)) || slugDelLegado(env, tipo, slug);
+async function sugerirSlug(env, almacen, ev, pedido) {
   const s = aSlug(pedido);
   const n = ev.datos.nombres || {};
   const fecha = (ev.datos.celebracion?.inicio || ev.datos.std?.fecha || '').slice(0, 10);
@@ -543,7 +569,7 @@ async function sugerirSlug(almacen, ev, pedido) {
   ].filter((x) => x && x.length >= 3);
   const libres = [];
   for (const x of [...new Set(ideas)]) {
-    if (!(await almacen.slugOcupado(ev.tipo, x, ev.id))) libres.push(x);
+    if (!(await slugTomado(env, almacen, ev.tipo, x, ev.id))) libres.push(x);
     if (libres.length >= 5) break;
   }
   return { pedido: s, disponible: libres[0] === s, alternativas: libres.filter((x) => x !== s).slice(0, 4) };
@@ -635,7 +661,7 @@ async function apiPanel(env, request, url, partes) {
     await leerMapas(limpio);
     await leerSpotify(limpio);
     if (limpio.slug && limpio.slug !== ev.slug) {
-      if (await almacen.slugOcupado(ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(almacen, ev, limpio.slug)) }, 409);
+      if (await slugTomado(env, almacen, ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(env, almacen, ev, limpio.slug)) }, 409);
       ev.slug = limpio.slug;
     }
     ev.datos = limpio;
@@ -771,7 +797,7 @@ async function apiPanel(env, request, url, partes) {
     await almacen.darAcceso(ev.id, u.id, 'cliente');
     return json({ ok: true, email: u.email });
   }
-  if (accion === 'slug') return json(await sugerirSlug(almacen, ev, url.searchParams.get('s')));
+  if (accion === 'slug') return json(await sugerirSlug(env, almacen, ev, url.searchParams.get('s')));
   if (accion === 'archivo' && request.method === 'POST') {
     const f = await request.formData();
     const archivoSubido = f.get('archivo');
@@ -1046,6 +1072,12 @@ export default {
     tienda.opcionesTienda.publicar = publicarEvento;
     const cerrado = proximamente(request, env, url);
     if (cerrado) return cerrado;
+    // README (ronda 31): los paneles viejos de los clientes (en Hostinger, la carpeta /panel/ servida en
+    // panel.amoinvitar.com) siguen en su subdominio, desde la carpeta "panel/" del bucket del sitio viejo. El panel
+    // nuevo queda en amoinvitar.com/panel: no se pisan. (docs/etapa-2-web.md)
+    if (env.LEGADO && url.hostname === (env.PANEL_VIEJO_HOST || 'panel.amoinvitar.com')) {
+      return (await servirLegado(request, env, url, { prefijo: 'panel' })) || html('No encontrado', 404);
+    }
     try {
       const M = request.method;
       if (p0 === 'auth') {
@@ -1057,6 +1089,7 @@ export default {
       }
       if (p0 === 'api') {
         if (p1 === 'cuenta' && partes[2] === 'eliminar' && M === 'POST') return await cuenta.eliminar(request, env);
+        if (p1 === 'contacto' && M === 'POST') return await contacto(request, env);
         if (p1 === 'cuenta') return await cuenta.cuenta(request, env);
         if (p1 === 'tienda') {
           const a = partes[2];
@@ -1113,11 +1146,11 @@ export default {
     if (archivo.status !== 404) return archivo;
     // README (ronda 30) · Etapa 2: la web nueva (public/sitio/…) y, lo que todavía no se rehízo, el sitio viejo desde
     // el bucket LEGADO (con sus css y scripts, para las invitaciones activas del sistema anterior)
-    if (env.SITIO_PROPIO === '1') {
-      const nuevo = await sitioNuevo(env, request, url);
-      if (nuevo) return nuevo;
-      try { const v = await servirLegado(request, env, url); if (v) return v; } catch (e) { console.error('legado', e); }
-    }
+    // (README ronda 31) La web nueva siempre (oculta fuera del dominio principal: src/sitio/nuevo.js); el sitio viejo,
+    // cuando está su bucket (LEGADO)
+    const nuevo = await sitioNuevo(env, request, url);
+    if (nuevo) return nuevo;
+    if (env.LEGADO) { try { const v = await servirLegado(request, env, url); if (v) return v; } catch (e) { console.error('legado', e); } }
     // Lo demás es del sitio de siempre: en otro dominio (app.amoinvitar.com) se manda allá;
     // en el mismo dominio se pide al hosting actual sin que el visitante lo note
     if (env.ORIGEN_ANTIGUO) {

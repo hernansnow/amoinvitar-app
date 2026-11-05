@@ -69,7 +69,9 @@
         c.eventos.forEach(function (e) {
           var titulo = e.nombres || NOMBRES[e.producto] || 'Invitación';
           var detalle = [NOMBRES[e.producto], e.producto === 'invitacion' || e.producto === 'a-medida' ? e.tipoNombre : null, e.modeloNombre, e.paquete && e.producto === 'invitacion' ? e.paquete[0].toUpperCase() + e.paquete.slice(1) : null, e.fecha ? e.fecha.split('-').reverse().join('/') : null].filter(Boolean).join(' · ');
-          var estado = e.pagoPendiente ? el('span', { class: 'estado pendiente' }, 'Pago pendiente') : el('span', { class: 'estado ' + e.estado }, ESTADOS[e.estado] || e.estado);
+          var yaVencio = e.vence && e.vence < new Date().toISOString();
+          var estado = e.pagoPendiente ? el('span', { class: 'estado pendiente' }, 'Pago pendiente') : yaVencio ? el('span', { class: 'estado vencido' }, 'Finalizada') : el('span', { class: 'estado ' + e.estado }, ESTADOS[e.estado] || e.estado);
+          if (e.vence && !yaVencio) detalle += ' · Online hasta el ' + e.vence.slice(0, 10).split('-').reverse().join('/');
           var acciones = el('div', { class: 'acciones-evento' }, [
             e.estado === 'publicado' && e.slug ? el('a', { class: 'btn btn-sec', href: '/' + e.tipo + '/' + e.slug, target: '_blank', rel: 'noopener', title: 'Ver la invitación publicada' }, 'Ver') : null,
             el('a', { class: 'btn', href: '/panel/' + e.id, title: 'Abrir el panel para editar' }, 'Editar'),

@@ -311,3 +311,8 @@ invitado: campo `ejemploAcceso`.
 - **Fondos de 100vh**: el convertidor y `npm run estilos` agregan `100svh` después de cada `100vh`.
 - **Rouge**: falta la fuente Magnolia Sky (`public/comun/fonts/magnolia-sky/MagnoliaSky.woff2`) para cambiar las imágenes
   "Nuestra Boda" / "Mis 15" por texto (`scripts/conversion/rouge.mjs` ya lo hace cuando la fuente está).
+
+## Etapa 2: la web completa en este Worker
+
+La web nueva se arma en `public/sitio/` (oculta en `app.amoinvitar.com` hasta mudar el dominio) y convive con el sitio
+viejo y las invitaciones de los clientes. Todo está en `docs/etapa-2-web.md` (y las reglas cortas en `CLAUDE.md`).

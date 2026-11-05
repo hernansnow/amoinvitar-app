@@ -17,9 +17,9 @@ export const NOMBRES_PAQUETE = { gratis: 'Gratis', basic: 'Basic', premium: 'Pre
 // (el cuadro de contenido de cada plan: ronda 24)
 export const RESUMEN_PAQUETES = {
   gratis: ['Portada personalizada, idioma y acceso con PIN', 'Agenda multiplataforma y ubicación con mapa', 'Confirmación de asistencia, libro de mensajes y recordatorios', 'Dress code', 'Panel de administración y cambios ilimitados', 'Hasta 50 invitados · online hasta 15 días después del evento'],
-  basic: ['Todo lo de Gratis', 'Galería de fotos', 'Invitados ilimitados'],
-  premium: ['Todo lo de Basic', 'Apertura animada, música de fondo y cuenta regresiva', 'Historia', 'Regalos, datos bancarios y lista de regalos', 'Instagram Wall y hashtag', 'Lista de invitados con nombre, link personal, pases y grupo familiar', 'Tarjeta Save The Date', 'Soporte prioritario'],
-  deluxe: ['Todo lo de Premium', 'Sugerencias de vestimenta', 'Itinerario, testigos/padrinos, traslado y hospedaje', 'Playlist de Spotify y redes oficiales', 'Organizador de mesas y "Buscá tu mesa"', 'Organizador de llegadas con pase de entrada', 'Álbum colaborativo QR'],
+  basic: ['Todo lo de Gratis', 'Galería de fotos', 'Invitados ilimitados', 'Online hasta 3 meses después del evento'],
+  premium: ['Todo lo de Basic', 'Apertura animada, música de fondo y cuenta regresiva', 'Historia', 'Regalos, datos bancarios y lista de regalos', 'Instagram Wall y hashtag', 'Lista de invitados con nombre, link personal, pases y grupo familiar', 'Tarjeta Save The Date', 'Soporte prioritario', 'Online hasta 6 meses después del evento'],
+  deluxe: ['Todo lo de Premium', 'Sugerencias de vestimenta', 'Itinerario, testigos/padrinos, traslado y hospedaje', 'Playlist de Spotify y redes oficiales', 'Organizador de mesas y "Buscá tu mesa"', 'Organizador de llegadas con pase de entrada', 'Álbum colaborativo QR', 'Online hasta 12 meses después del evento'],
 };
 
 // Diseño a medida para todo tipo de evento (también infantiles y empresas). README (ronda 27): ya no hay "personaje favorito"

@@ -13,7 +13,7 @@
 // de a una, sin apuro, y lo que todavía no se rehízo sigue saliendo del bucket.
 // Sin el bucket configurado (env.LEGADO), no hace nada: sigue la redirección/proxy al hosting actual (ORIGEN_ANTIGUO).
 
-import { sendEmail, mailAvisoInterno } from '../lib/email.js';
+import { leerContacto, procesarContacto } from '../rutas/contacto.js';
 
 const TIPOS = {
   html: 'text/html; charset=utf-8', htm: 'text/html; charset=utf-8', css: 'text/css; charset=utf-8', js: 'text/javascript; charset=utf-8',
@@ -105,36 +105,33 @@ async function listaCanciones(env, carpeta) {
 <title>Canciones sugeridas</title><style>body{font:16px/1.5 system-ui,sans-serif;max-width:640px;margin:30px auto;padding:0 16px;color:#333}li{padding:6px 0;border-bottom:1px solid #eee}</style>
 <h1>Canciones sugeridas (${todas.length})</h1><ol>${todas.map((t) => `<li>${esc(t)}</li>`).join('')}</ol>`, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
-// Formulario de contacto (email/mailer2.php, {pais}/email/mailer*.php): mismas validaciones (Turnstile, trampa, tiempo
-// mínimo, aceptación de privacidad) y el aviso por mail a SUPPORT_EMAIL; vuelve a la página del formulario
+// Formulario de contacto de las páginas viejas (email/mailer2.php, {pais}/email/mailer*.php): usa el mismo de la web
+// nueva (src/rutas/contacto.js) y responde como el PHP: una página que vuelve sola a donde estaba
 async function contacto(env, request) {
-  const f = await request.formData().catch(() => null);
   const ref = request.headers.get('referer') || '';
   const volver = /^https:\/\/(?:[a-z0-9-]+\.)*amoinvitar\.com\//.test(ref) ? ref.split('#')[0] : 'https://amoinvitar.com/';
   const pagina = (texto, ok) => new Response(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <meta http-equiv="refresh" content="5;URL=${volver}${ok ? '' : '#contacto'}"><title>Amo Invitar! | Formulario de contacto</title>
 <body style="padding:100px 20px;color:#fff;font:18px/1.5 Arial,sans-serif;text-align:center;background:#4e9c87"><p>${texto}</p><p><a style="color:#fff" href="${volver}">Volver</a></p>`,
     { status: ok ? 200 : 400, headers: { 'content-type': 'text/html; charset=utf-8' } });
-  if (!f) return pagina('No se pudo leer el formulario.', false);
-  if (f.get('contact_code') || f.get('wf_b3')) return pagina('¡Gracias! Recibimos tu mensaje.', true); // trampa para robots
-  if (env.TURNSTILE_SECRET) {
-    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST',
-      body: new URLSearchParams({ secret: env.TURNSTILE_SECRET, response: String(f.get('cf-turnstile-response') || ''), remoteip: request.headers.get('cf-connecting-ip') || '' }) })
-      .then((x) => x.json()).catch(() => ({ success: false }));
-    if (!r.success) return pagina('No pudimos verificar que no eres un robot. Vuelve a intentarlo.', false);
-  }
-  if (f.get('acepto_privacidad') !== 'si') return pagina('Para enviar el mensaje hay que aceptar la política de privacidad.', false);
-  const campo = (k, max = 200) => String(f.get(k) || '').replace(/[\r\n\t]+/g, ' ').trim().slice(0, max);
-  const lineas = [`Nombre: ${campo('nombre', 100)}`, `Mail: ${campo('user_email', 150)}`, `Teléfono: ${campo('phone', 40)}`, `Evento: ${campo('evento', 60)}`,
-    `País: ${campo('country', 60)}`, `Página: ${volver}`, '', String(f.get('mensaje') || '').trim().slice(0, 5000)];
-  if (!campo('nombre') || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(campo('user_email'))) return pagina('Faltan el nombre o un mail válido.', false);
-  await sendEmail(env, { to: env.SUPPORT_EMAIL || 'hola@amoinvitar.com', replyTo: campo('user_email', 150), ...mailAvisoInterno(env, { asunto: `Contacto web · ${campo('nombre', 100)}`, lineas }) });
-  return pagina('¡Gracias! Recibimos tu mensaje y te responderemos pronto.', true);
+  try {
+    await procesarContacto(env, request, { ...(await leerContacto(request)), pagina: volver });
+    return pagina('¡Gracias! Recibimos tu mensaje y te responderemos pronto.', true);
+  } catch (e) { return pagina(e.message || 'No se pudo enviar el mensaje.', false); }
 }
 
 // Entrada: devuelve la respuesta del sitio viejo o null (si no hay bucket o no existe la ruta)
-export async function servirLegado(request, env, url) {
+// prefijo: carpeta del bucket para un subdominio (panel.amoinvitar.com → "panel": los paneles viejos de los clientes,
+// que en Hostinger eran la carpeta /panel/ servida en ese subdominio)
+export async function servirLegado(request, env, url, { prefijo = '' } = {}) {
   if (!env.LEGADO) return null;
+  if (prefijo) {
+    if (!['GET', 'HEAD'].includes(request.method)) return null;
+    const e = await buscar(env, `/${prefijo}${url.pathname}`);
+    if (!e) return null;
+    if (e.carpeta && !url.pathname.endsWith('/')) return Response.redirect(new URL(`${url.pathname}/${url.search}`, url.origin).href, 301);
+    return entregar(env, request, e);
+  }
   const r = redireccionLegado(url);
   if (r) return r;
   const p = url.pathname;

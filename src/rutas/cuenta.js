@@ -11,6 +11,7 @@ import { usuarioActual, crearUsuario, cookieSesion, cerrarSesion, siguienteSegur
 import { sendEmail, mailAcceso } from '../lib/email.js';
 import { almacenD1 } from '../almacen.js';
 import { TIPOS_EVENTO, MODELOS, nombreModelo } from '../modelos.js';
+import { venceEvento } from '../vencimiento.js';
 
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
 const pais = (request) => request.cf?.country || request.headers.get('cf-ipcountry') || null;
@@ -80,6 +81,8 @@ export async function cuenta(request, env) {
       fecha: (e.datos.celebracion?.inicio || e.datos.std?.fecha || '').slice(0, 10),
       pagoPendiente: pendientes.some((p) => p.evento_id === e.id),
       puedeEliminar: roles[e.id] === 'cliente' || !!u.esAdmin,
+      // README (ronda 31): hasta cuándo se ve (según el plan, desde la fecha del evento)
+      vence: e.estado === 'publicado' ? venceEvento(e) : null,
     })),
   }, 200, recordados.length ? { 'set-cookie': cookie('ai_bor', '', { maxAge: 0, secure: isSecureRequest(request) }) } : {});
 }
