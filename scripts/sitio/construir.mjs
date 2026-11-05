@@ -244,7 +244,7 @@ function nosotros() {
   <p>Somos <strong>Snow Producciones®</strong> y desde 2005 hacemos fotografía y video para bodas y eventos. Nos impulsan los sueños, nos mueve lo hermoso de las pequeñas cosas y nos estremece el amor: es un privilegio conocer un poco de la historia de cada pareja y de cada familia que nos elige.</p>
   <p>Escuchando lo que necesitaba cada evento, nació <strong>Amo Invitar!</strong>: invitaciones digitales, sostenibles e interactivas, que reducen los costos y cuidan el ambiente, con el diseño y el impacto visual de quien lleva años detrás de una cámara.</p>
   <p>Creemos que una invitación no solo informa: emociona y sorprende a cada invitado.</p>
-  <div class="cifras"><div><b>+20</b><span>años en bodas y eventos</span></div><div><b>5×</b><span>Wedding Awards</span></div><div><b>16</b><span>países con clientes</span></div></div></div>
+  <div class="cifras"><div><b>+20</b><span>años en bodas y eventos</span></div><div><b>5 años</b><span>seguidos en los Wedding Awards</span></div><div><b>1 link</b><span>para todo tu evento</span></div></div></div>
 </div></section>`;
 }
 
