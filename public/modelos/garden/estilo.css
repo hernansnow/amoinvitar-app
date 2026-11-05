@@ -2693,6 +2693,10 @@ a.close.disabled {
     border-radius: 50rem !important
 }
 
+.d-none {
+    display: none !important
+}
+
 .d-block {
     display: block !important
 }
@@ -2759,12 +2763,20 @@ a.close.disabled {
     width: 75% !important
 }
 
+.m-0 {
+    margin: 0 !important
+}
+
 .mt-0 {
     margin-top: 0 !important
 }
 
 .mb-0 {
     margin-bottom: 0 !important
+}
+
+.m-1 {
+    margin: 0.25rem !important
 }
 
 .mt-1 {
@@ -2866,7 +2878,8 @@ a.close.disabled {
     padding-top: 0.5rem !important
 }
 
-.pr-2 {
+.pr-2,
+.px-2 {
     padding-right: 0.5rem !important
 }
 
@@ -2875,7 +2888,8 @@ a.close.disabled {
     padding-bottom: 0.5rem !important
 }
 
-.pl-2 {
+.pl-2,
+.px-2 {
     padding-left: 0.5rem !important
 }
 
@@ -5164,3 +5178,6 @@ audio::-webkit-media-controls-play-button:hover {
 
 /* Portada: los nombres van como en el diseño original; si son muy largos,
    invitacion.js achica la letra (data-ajustar) para que no lleguen al borde */
+/* Raya suelta (date-line vacía): una sola línea, aunque el texto de arriba sea más ancho */
+.date-line:empty:after { display: none; }
+.date-line:empty:before { margin: 0; }

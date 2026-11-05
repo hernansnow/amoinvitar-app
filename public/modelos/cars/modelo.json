@@ -35,6 +35,7 @@
     "premium": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -53,10 +54,13 @@
     "deluxe": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
         "estilos",
+        "hospedaje",
+        "bus",
         "itinerario",
         "instagram",
         "album",
@@ -74,6 +78,13 @@
         "sugerenciasDress": true
       }
     }
+  },
+  "textosDemo": {
+    "historia.texto": "Un año más para jugar, aprender y sonreír. Parece increíble lo rápido que pasa el tiempo, pero ya llegó el momento de apagar otras velitas. Han sido tiempos maravillosos llenos de amor y momentos inolvidables en familia. Para celebrar este día tan especial, queremos invitarte a la fiesta para compartir juntos una tarde mágica. ¡No faltes!",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos."
+  },
+  "proporciones": {
+    "portada": "1:1"
   },
   "nombresHTML": {
     "portada": "{a}",
@@ -127,5 +138,116 @@
       "/comun/fonts/css/magneto-font.css",
       "/modelos/cars/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Magneto",
+      "texto": "Jost",
+      "chewy": "Chewy",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1080,
+            "y": 610,
+            "tam": 104,
+            "fuente": "chewy",
+            "color": "#ffffff",
+            "mayus": true,
+            "espaciado": 10,
+            "relieve": {
+              "color": "#2a1608",
+              "dx": 6,
+              "dy": 7,
+              "contorno": 5
+            }
+          },
+          {
+            "id": "evento",
+            "texto": "{evento}",
+            "x": 1080,
+            "y": 770,
+            "tam": 86,
+            "fuente": "chewy",
+            "color": "#ffd23f",
+            "mayus": true,
+            "espaciado": 6,
+            "relieve": {
+              "color": "#2a1608",
+              "dx": 6,
+              "dy": 7,
+              "contorno": 5
+            }
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1080,
+            "y": 1160,
+            "tam": 210,
+            "fuente": "titulos",
+            "color": "#ffffff",
+            "ancho": 1150,
+            "ajustar": true,
+            "relieve": {
+              "color": "#5c0a0a",
+              "dx": 5,
+              "dy": 6,
+              "contorno": 4
+            }
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} · {mes} · {anio}",
+            "x": 1080,
+            "y": 1960,
+            "tam": 92,
+            "fuente": "chewy",
+            "color": "#ffffff",
+            "mayus": true,
+            "espaciado": 6,
+            "relieve": {
+              "color": "#2a1608",
+              "dx": 6,
+              "dy": 7,
+              "contorno": 5
+            }
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1080,
+            "y": 2930,
+            "tam": 38,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "mayus": true,
+            "espaciado": 8,
+            "opcional": "proximamente",
+            "peso": 600,
+            "sombra": true
+          }
+        ]
+      }
+    }
   }
 }

@@ -8,6 +8,18 @@ import { COMPONENTES } from '../componentes/bloques.js';
 const valor = (obj, ruta) => ruta.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
 const lleno = (x) => (Array.isArray(x) ? x.length > 0 : x != null && x !== '' && x !== false);
 const todos = (raiz, sel) => [...raiz.querySelectorAll(sel)];
+// El estilo que pone el motor (encuadre, proporción de una foto) se suma al del diseño (bordes, tamaños): solo pisa
+// las propiedades que repite. Vacío, queda el del diseño.
+function sumarEstilo(original, nuevo) {
+  if (!nuevo) return original || '';
+  const props = (st) => String(st || '').split(';').map((d) => d.trim()).filter(Boolean);
+  const pisa = new Set(props(nuevo).map((d) => d.split(':')[0].trim().toLowerCase()));
+  return [...props(original).filter((d) => !pisa.has(d.split(':')[0].trim().toLowerCase())), ...props(nuevo)].join('; ');
+}
+const ponerAttr = (el, a, val) => {
+  if (a === 'style') { const st = sumarEstilo(el.getAttribute('style'), lleno(val) ? String(val) : ''); if (st) el.setAttribute('style', st); else el.removeAttribute('style'); return; }
+  if (lleno(val)) el.setAttribute(a, val); else el.removeAttribute(a);
+};
 
 // Reemplaza la última url(...) de un style (la foto; el degradé queda igual)
 function cambiarFondo(style, url) {
@@ -25,9 +37,20 @@ function cambiarPosicion(style, pos) {
 // ── data-seccion: fuera lo que el paquete no trae o el cliente apagó ─────
 function secciones(doc, v) {
   for (const el of todos(doc, '[data-seccion]')) {
-    if (!v.secciones[el.getAttribute('data-seccion')]) el.remove();
-    else el.removeAttribute('data-seccion');
+    if (!el.parentNode) continue;
+    if (v.secciones[el.getAttribute('data-seccion')]) { el.removeAttribute('data-seccion'); continue; }
+    // Apagada, pero con una sección prendida adentro (la playlist dentro de Música):
+    // queda la caja (su fondo) solo con el camino hasta la sección prendida.
+    const dentro = todos(el, '[data-seccion]').filter((x) => v.secciones[x.getAttribute('data-seccion')]);
+    if (!dentro.length) { el.remove(); continue; }
+    const camino = new Set();
+    for (let x of dentro) for (; x && x !== el; x = x.parentNode) camino.add(x);
+    // data-mantener: lo que acompaña a la sección prendida (el encabezado "ENTRETENIMIENTO A BORDO" de Travel)
+    const podar = (n) => { for (const h of [...n.children]) { if (!camino.has(h)) { if (!h.hasAttribute('data-mantener')) h.remove(); } else if (!dentro.includes(h)) podar(h); } };
+    podar(el);
+    el.removeAttribute('data-seccion');
   }
+  for (const el of todos(doc, '[data-mantener]')) el.removeAttribute('data-mantener');
 }
 
 // ── data-repetir: un ítem por elemento de la lista ───────────────────────
@@ -51,7 +74,8 @@ function llenarItem(el, item, n) {
     if (x.hasAttribute('data-i-attr')) {
       for (const par of x.getAttribute('data-i-attr').split(';')) {
         const [a, campo] = par.split(':').map((s) => s.trim());
-        if (a) x.setAttribute(a, item[campo] ?? '');
+        if (a === 'style') ponerAttr(x, a, item[campo] ?? '');
+        else if (a) x.setAttribute(a, item[campo] ?? '');
       }
       x.removeAttribute('data-i-attr');
     }
@@ -97,6 +121,29 @@ function repetir(doc, v) {
   }
 }
 
+// ── Separadores entre columnas (Dress code / Hospedaje / Traslado): si la columna quedó primera, su línea no va ──
+function separadores(doc) {
+  for (const sep of todos(doc, '.ai-sep')) {
+    const col = sep.parentElement;
+    let ant = col && col.previousElementSibling;
+    while (ant && (/^(SCRIPT|STYLE|LINK)$/.test(ant.tagName) || ant.classList.contains('animated-modal'))) ant = ant.previousElementSibling;
+    if (!ant) sep.remove();
+  }
+  // Una línea entre dos bloques va solo si hay algo antes y algo después (y no otra línea)
+  const visible = (x) => x && !/^(SCRIPT|STYLE|LINK)$/.test(x.tagName) && !x.classList.contains('animated-modal') && !(x.getAttribute('style') || '').includes('display: none');
+  const vecino = (x, dir) => { let y = x[dir]; while (y && !visible(y)) y = y[dir]; return y; };
+  // data-sep: lo que la línea tenía al lado en el diseño ("ant", "sig"); si falta eso, se va con la sección
+  for (const sep of todos(doc, '.ai-sep-entre')) {
+    const ant = vecino(sep, 'previousElementSibling'), sig = vecino(sep, 'nextElementSibling');
+    const tenia = (sep.getAttribute('data-sep') ?? 'ant sig').split(' ');
+    const falta = (tenia.includes('ant') && !ant) || (tenia.includes('sig') && !sig);
+    // Tampoco dos líneas juntas: si lo que sigue ya empieza con su propia línea (.ai-sep), esta sobra
+    const sigEmpiezaConLinea = sig && (sig.classList.contains('ai-sep') || sig.firstElementChild?.classList.contains('ai-sep'));
+    if (falta || sig?.classList.contains('ai-sep-entre') || sigEmpiezaConLinea) sep.remove();
+    else sep.removeAttribute('data-sep');
+  }
+}
+
 // ── data-si / data-no globales ───────────────────────────────────────────
 function condiciones(doc, v) {
   for (const el of todos(doc, '[data-si],[data-no]')) {
@@ -116,27 +163,34 @@ function textos(doc, v, t) {
   // data-caso: el texto como lo escribe el diseño ("titulo": ¡Nos Casamos! · "oracion": ¡Nos casamos!)
   for (const el of todos(doc, '[data-caso]')) {
     const caso = el.getAttribute('data-caso'), x = el.textContent.toLocaleLowerCase();
-    el.textContent = caso === 'titulo' ? x.replace(/(^|[\s¡¿"(])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase())
+    el.textContent = caso === 'minus' ? x : caso === 'titulo' ? x.replace(/(^|[\s¡¿"(])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase())
       : x.replace(/^([¡¿"(\s]*)(\p{L})/u, (m, a, b) => a + b.toLocaleUpperCase());
     el.removeAttribute('data-caso');
   }
   for (const el of todos(doc, '[data-t-html]')) { el.innerHTML = t(el.getAttribute('data-t-html')); el.removeAttribute('data-t-html'); }
+  // (antes de data-attr) data-fecha="principal|ceremonia|celebracion" + data-fecha-formato="{dd} • {mm} • {a}": la fecha como la escribe el diseño
+  for (const el of todos(doc, '[data-fecha]')) {
+    if (!/^(principal|ceremonia|celebracion)$/.test(el.getAttribute('data-fecha'))) continue; // el botón de confirmar usa data-fecha para la fecha límite
+    const f = v.fechas?.[el.getAttribute('data-fecha')];
+    const formato = el.getAttribute('data-fecha-formato') || '{dd} • {mm} • {a}';
+    el.textContent = f ? formato.replace(/\{(\w+)\}/g, (m, k) => f[k] ?? '') : '';
+    el.removeAttribute('data-fecha'); el.removeAttribute('data-fecha-formato');
+  }
   for (const el of todos(doc, '[data-attr]')) {
     for (const par of el.getAttribute('data-attr').split(';')) {
       const [a, tipo, ...resto] = par.split(':').map((s) => s.trim());
       if (!a) continue;
       const ruta = resto.join(':');
       const val = tipo === 't' ? t(ruta) : valor(v, ruta);
-      if (lleno(val)) el.setAttribute(a, val); else el.removeAttribute(a);
+      ponerAttr(el, a, val);
     }
     el.removeAttribute('data-attr');
   }
-  // data-fecha="principal|ceremonia|celebracion" + data-fecha-formato="{dd} • {mm} • {a}": la fecha como la escribe el diseño
-  for (const el of todos(doc, '[data-fecha]')) {
-    const f = v.fechas?.[el.getAttribute('data-fecha')];
-    const formato = el.getAttribute('data-fecha-formato') || '{dd} • {mm} • {a}';
-    el.textContent = f ? formato.replace(/\{(\w+)\}/g, (m, k) => f[k] ?? '') : '';
-    el.removeAttribute('data-fecha'); el.removeAttribute('data-fecha-formato');
+  // data-estilo: estilo que se suma al del diseño (proporción y encuadre de una foto)
+  for (const el of todos(doc, '[data-estilo]')) {
+    const x = valor(v, el.getAttribute('data-estilo'));
+    if (x) el.setAttribute('style', `${el.getAttribute('style') || ''};${x}`);
+    el.removeAttribute('data-estilo');
   }
   for (const el of todos(doc, '[data-bg]')) {
     const url = valor(v, el.getAttribute('data-bg'));
@@ -179,6 +233,8 @@ function cabecera(doc, v, origen) {
   meta('meta[property="og:image"]', img);
   doc.querySelector('link[rel="image_src"]')?.setAttribute('href', img);
   const inv = {
+    // Video de portada de los modelos sin video propio en el diseño (lo pone comun/js/video-portada.js)
+    videoPortada: v.portada?.video && !doc.querySelector('.ai-video-portada') && doc.querySelector('[data-video-portada]') ? { url: v.portada.video, poster: v.portada.poster || '' } : null,
     cuenta: v.cuenta.activa ? v.cuenta.fecha : '',
     calendarios: v.calendarios,
     textos: {
@@ -187,6 +243,11 @@ function cabecera(doc, v, origen) {
     },
   };
   doc.head.insertAdjacentHTML('beforeend', `<script>window.INV = ${JSON.stringify(inv).replace(/</g, '\\u003c')};</script>`);
+  if (inv.videoPortada) doc.body.insertAdjacentHTML('beforeend', `<script src="${v.rutas.comun}/js/video-portada.js" defer></script>`);
+  // Byn / Romantic: "mostrar en color" vale para todas las fotos de la invitación
+  if (v.galeria?.color) doc.body.classList.add('ai-fotos-color');
+  // Minimal: la portada en color (sin el sepia del diseño)
+  if (v.portada?.color) doc.body.classList.add('ai-portada-color');
 }
 
 // Comentarios del modelo (guías para quien edita) fuera del HTML final
@@ -203,6 +264,7 @@ export function renderizar(html, v, t, { origen = 'https://amoinvitar.com' } = {
   secciones(doc, v);
   repetir(doc, v);
   condiciones(doc, v);
+  separadores(doc);
   textos(doc, v, t);
   rutas(doc, v.rutas.modelo);
   componentes(doc, v, t); // después de rutas: los bloques ya traen rutas absolutas

@@ -23,9 +23,18 @@
       <a class="btn btn-sec" href="/tienda/?producto=invitacion&amp;paquete=gratis">Crear una invitación gratis</a>
     </p>
   </main>
+  <dialog id="dlg-eliminar" class="dlg-eliminar" aria-labelledby="del-titulo">
+    <h2 id="del-titulo">Eliminar «<span id="del-nombre"></span>»</h2>
+    <p>Se borra <strong>todo</strong>: los datos y las fotos cargadas, la lista de invitados, las confirmaciones, los mensajes y las canciones. <strong>No se puede recuperar.</strong></p>
+    <p id="del-publicada" hidden>Esta invitación está publicada: <strong>el link deja de funcionar</strong> para todos tus invitados.</p>
+    <p class="nota">Lo que ya pagaste no se reintegra al eliminarla (los comprobantes y facturas quedan en tu mail).</p>
+    <label class="del-check"><input type="checkbox" id="del-ok"> Entiendo que se borra todo y que no se puede recuperar</label>
+    <p class="mensaje error" id="del-error" hidden></p>
+    <div class="del-botones"><button type="button" class="btn btn-sec" id="del-no">Cancelar</button><button type="button" class="btn btn-borrar" id="del-si" disabled>Eliminar definitivamente</button></div>
+  </dialog>
   <script>
     (function () {
-      var NOMBRES = { invitacion: 'Invitación web', 'std-web': 'Save The Date web', 'std-tarjeta': 'Save The Date tarjeta', 'std-foto': 'Save The Date foto', 'std-tarjeta-medida': 'Save The Date a medida', 'std-web-medida': 'Save The Date web a medida', agradecimiento: 'Tarjeta de agradecimiento', 'compromiso-web': 'Invitación web simple', 'a-medida': 'Diseño a medida' };
+      var NOMBRES = { invitacion: 'Invitación web', 'std-web': 'STD Web', 'std-tarjeta': 'Save The Date tarjeta', 'std-foto': 'Save The Date foto', 'std-tarjeta-medida': 'Save The Date a medida', 'std-web-medida': 'Save The Date web a medida', agradecimiento: 'Tarjeta de agradecimiento', 'compromiso-web': 'Invitación simple', 'a-medida': 'Diseño a medida' };
       var ESTADOS = { borrador: 'Borrador', publicado: 'Publicada', 'en-diseno': 'En diseño', vencido: 'Vencida' };
       function el(tag, attrs, hijos) {
         var e = document.createElement(tag);
@@ -33,6 +42,24 @@
         [].concat(hijos || []).forEach(function (h) { if (h != null) e.append(h); });
         return e;
       }
+      // README (ronda 30): eliminar una invitación o un borrador, con una casilla de confirmación
+      var dlg = document.getElementById('dlg-eliminar');
+      function pedirEliminar(e, titulo) {
+        var chk = document.getElementById('del-ok'), btn = document.getElementById('del-si'), err = document.getElementById('del-error');
+        document.getElementById('del-nombre').textContent = titulo;
+        document.getElementById('del-publicada').hidden = e.estado !== 'publicado';
+        chk.checked = false; btn.disabled = true; err.hidden = true; btn.textContent = 'Eliminar definitivamente';
+        chk.onchange = function () { btn.disabled = !chk.checked; };
+        btn.onclick = function () {
+          btn.disabled = true; btn.textContent = 'Eliminando…';
+          fetch('/api/cuenta/eliminar', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: e.id, confirmo: true }) })
+            .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'No se pudo eliminar'); }); })
+            .then(function () { dlg.close(); location.reload(); })
+            .catch(function (x) { err.textContent = x.message; err.hidden = false; btn.disabled = false; btn.textContent = 'Eliminar definitivamente'; });
+        };
+        dlg.showModal();
+      }
+      document.getElementById('del-no').addEventListener('click', function () { dlg.close(); });
       fetch('/api/cuenta').then(function (r) { return r.json(); }).then(function (c) {
         if (!c.usuario) { location.href = '/entrar?siguiente=/mi-cuenta'; return; }
         document.getElementById('quien').textContent = c.usuario.email;
@@ -41,11 +68,14 @@
         if (!c.eventos.length) { lista.append(el('div', { class: 'tarjeta vacio' }, 'Todavía no hay invitaciones en esta cuenta.')); return; }
         c.eventos.forEach(function (e) {
           var titulo = e.nombres || NOMBRES[e.producto] || 'Invitación';
-          var detalle = [NOMBRES[e.producto], e.paquete && e.producto === 'invitacion' ? e.paquete[0].toUpperCase() + e.paquete.slice(1) : null, e.fecha ? e.fecha.split('-').reverse().join('/') : null].filter(Boolean).join(' · ');
-          var estado = e.pagoPendiente ? el('span', { class: 'estado pendiente' }, 'Pago pendiente') : el('span', { class: 'estado ' + e.estado }, ESTADOS[e.estado] || e.estado);
+          var detalle = [NOMBRES[e.producto], e.producto === 'invitacion' || e.producto === 'a-medida' ? e.tipoNombre : null, e.modeloNombre, e.paquete && e.producto === 'invitacion' ? e.paquete[0].toUpperCase() + e.paquete.slice(1) : null, e.fecha ? e.fecha.split('-').reverse().join('/') : null].filter(Boolean).join(' · ');
+          var yaVencio = e.vence && e.vence < new Date().toISOString();
+          var estado = e.pagoPendiente ? el('span', { class: 'estado pendiente' }, 'Pago pendiente') : yaVencio ? el('span', { class: 'estado vencido' }, 'Finalizada') : el('span', { class: 'estado ' + e.estado }, ESTADOS[e.estado] || e.estado);
+          if (e.vence && !yaVencio) detalle += ' · Online hasta el ' + e.vence.slice(0, 10).split('-').reverse().join('/');
           var acciones = el('div', { class: 'acciones-evento' }, [
-            e.estado === 'publicado' && e.slug ? el('a', { class: 'btn btn-sec', href: '/' + e.tipo + '/' + e.slug, target: '_blank', rel: 'noopener' }, 'Ver') : null,
-            el('a', { class: 'btn', href: '/panel/' + e.id }, 'Editar'),
+            e.estado === 'publicado' && e.slug ? el('a', { class: 'btn btn-sec', href: '/' + e.tipo + '/' + e.slug, target: '_blank', rel: 'noopener', title: 'Ver la invitación publicada' }, 'Ver') : null,
+            el('a', { class: 'btn', href: '/panel/' + e.id, title: 'Abrir el panel para editar' }, 'Editar'),
+            e.puedeEliminar ? (function () { var b = el('button', { type: 'button', class: 'btn btn-borrar', title: 'Eliminar definitivamente esta invitación' }, 'Eliminar'); b.addEventListener('click', function () { pedirEliminar(e, titulo); }); return b; })() : null,
           ]);
           lista.append(el('div', { class: 'tarjeta evento' }, [el('div', { class: 'datos' }, [el('strong', {}, [titulo, estado]), el('span', {}, detalle)]), acciones]));
         });

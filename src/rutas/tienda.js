@@ -20,8 +20,8 @@ import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { reverseChargeFor } from '../lib/vies.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
-import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, precioPedido, comprable } from '../catalogo.js';
-import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
+import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, precioPedido, comprable } from '../catalogo.js';
+import { MODELOS, TIPOS_EVENTO, CON_TARJETA_STD, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
 import { ZONAS } from '../datos/zonas.js';
@@ -54,8 +54,16 @@ function validarPedido(p) {
     const tipoNombre = TIPOS_EVENTO.find((t) => t.id === tipo)?.nombre || tipo;
     return { producto, tipo, modelo: m.id, paquete, extras: paquete === 'gratis' ? [] : extras, nombre: `Invitación ${tipoNombre} · ${nombreModelo(m, tipo)} ${NOMBRES_PAQUETE[paquete]}` };
   }
-  const tipo = producto === 'agradecimiento' ? (str(p.tipo, 20) || 'boda') : producto === 'compromiso-web' ? 'compromiso' : 'save-the-date';
-  return { producto, tipo, modelo: null, paquete: 'basic', extras: extras.filter((e) => e === 'idioma'), nombre: PRODUCTOS[producto].nombre };
+  // Invitación web simple y Save The Date web: arrancan con un diseño (Compromiso, Web Classic); en el panel se cambia
+  // por otro (Civil, Pedida, Party de 15; Web Soft, o la de 15)
+  const simple = { 'compromiso-web': 'compromiso', 'std-web': 'std-classic' }[producto];
+  const tipoValido = TIPOS_EVENTO.some((t) => t.id === p.tipo) ? p.tipo : 'boda';
+  if (!disponibleSuelto(producto, tipoValido)) throw new HttpError(400, 'Esta opción no está disponible para ese tipo de evento');
+  const tipo = producto === 'agradecimiento' || producto === 'std-tarjeta' ? tipoValido : simple ? (['boda', '15'].includes(p.tipo) ? p.tipo : 'boda') : 'save-the-date';
+  // La tarjeta Save The Date es la de un modelo: arranca con el primero que la tiene para ese evento
+  const modelo = producto === 'std-tarjeta' ? (MODELOS.find((m) => CON_TARJETA_STD.has(m.id) && m.eventos.includes(tipo))?.id || 'garden')
+    : simple && producto === 'compromiso-web' && tipo === '15' ? 'party' : simple || null;
+  return { producto, tipo, modelo, paquete: 'basic', extras: extras.filter((e) => e === 'idioma'), nombre: PRODUCTOS[producto].nombre };
 }
 
 // ── Cupones ──────────────────────────────────────────────────────────
@@ -84,13 +92,13 @@ function aplicarCupon(precio, c, rates) {
 async function opciones(env, request, { eur, clave, moneda, cupon, sinIva = false }) {
   const rates = await getRates(env);
   const pais = paisReal(request);
-  const paisIva = sinIva ? null : pais; // empresa de la UE con IVA válido: sin IVA
+  // Empresa de la UE con IVA válido: sin IVA
   const medios = eur > 0 ? methodsFor(env, pais, moneda) : [];
   const conPrecio = medios.map((m) => {
-    const pr = aplicarCupon(priceIn(clave, eur, m.currency, rates, paisIva, env), cupon, rates);
+    const pr = aplicarCupon(priceIn(clave, eur, m.currency, rates, pais, env, { sinIva }), cupon, rates);
     return { id: m.id, moneda: m.currency, importe: pr.amount, texto: formatMoney(pr.amount, m.currency), iva: pr.vat, ivaTasa: pr.vatRate, antes: pr.before ? formatMoney(pr.before, m.currency) : null, minor: pr.minor };
   });
-  const lista = priceIn(clave, eur, moneda, rates, paisIva, env);
+  const lista = priceIn(clave, eur, moneda, rates, pais, env, { sinIva });
   return { pais, rates, medios: conPrecio, lista: { importe: lista.amount, texto: formatMoney(lista.amount, moneda) } };
 }
 
@@ -102,12 +110,27 @@ export async function catalogo(request, env) {
   const precio = (clave, eur) => { const p = priceIn(clave, eur, moneda, rates, pais, env); return { eur, importe: p.amount, texto: p.amount ? formatMoney(p.amount, moneda) : 'Gratis' }; };
   return json({
     pais, moneda, monedas: CURRENCIES,
-    tipos: TIPOS_EVENTO,
-    modelos: MODELOS.map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {}, eventos: m.eventos, gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)) })),
+    // Los tipos con grupo (revelación de género) se eligen dentro de su grupo (Baby Shower)
+    tipos: TIPOS_EVENTO.filter((t) => !t.grupo),
+    // Los modelos simples y las Save The Date web se compran como producto (Invitación web simple, Save The Date web)
+    modelos: MODELOS.filter((m) => !m.simple && !m.std).map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {},
+      eventos: [...new Set([...m.eventos, ...TIPOS_EVENTO.filter((t) => t.grupo && m.eventos.includes(t.id)).map((t) => t.grupo)])],
+      gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), dosNombres: m.eventos.includes('revelacion'), propios: m.eventos })),
     paquetes: ORDEN.map((id) => ({ id, nombre: NOMBRES_PAQUETE[id], incluye: RESUMEN_PAQUETES[id], precio: precio(id, PAQUETES[id].precio) })),
     extras: Object.entries(EXTRAS).map(([id, e]) => ({ id, nombre: e.nombre, precio: precio(id, e.precio) })),
     productos: Object.entries(PRODUCTOS).map(([id, p]) => ({ id, nombre: p.nombre, manual: !!p.manual, precio: p.manual ? { texto: `desde ${formatMoney(priceIn(id, p.desde, moneda, rates, pais, env).amount, moneda)}` } : precio(id, p.precio) })),
-  });
+    // README (ronda 28): la página "crear invitación" del sitio arma sus pestañas con esto (Adicional y Save The Date)
+    simples: MODELOS.filter((m) => m.simple).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
+    stdWeb: MODELOS.filter((m) => m.std).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
+    tarjetaStd: [...CON_TARJETA_STD],
+    aMedida: precio('a-medida', A_MEDIDA.personalizado.premium),
+  }, 200, origenSitio(request));
+}
+
+// El sitio (amoinvitar.com y sus copias de prueba) lee el catálogo público desde el navegador
+function origenSitio(request) {
+  const o = request.headers.get('origin') || '';
+  return /^https:\/\/([a-z0-9-]+\.)*amoinvitar\.com$/.test(o) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o) ? { 'access-control-allow-origin': o, vary: 'origin' } : {};
 }
 
 export async function cotizar(request, env) {
@@ -399,6 +422,12 @@ export async function marcarCobrado(request, env, id) {
 }
 
 
+// Un precio en euros, en la moneda del visitante (para mostrarlo en el panel)
+export async function precioATexto(env, request, clave, eur) {
+  const moneda = monedaPedida(request);
+  return formatMoney(priceIn(clave, eur, moneda, await getRates(env), paisReal(request), env).amount, moneda);
+}
+
 // ¿El evento tiene un pago pendiente? (no se publica hasta que llegue)
 export async function pagoPendiente(env, eventoId) {
   return !!(await env.DB.prepare("SELECT 1 FROM pedidos WHERE evento_id = ? AND tipo = 'nuevo' AND estado = 'pendiente'").bind(eventoId).first());
@@ -413,6 +442,7 @@ const precioPaquete = (p) => (p === 'gratis' ? 0 : PAQUETES[p]?.precio || 0);
 
 // Lo que pide el panel para mostrar el plan, los complementos y lo que falta pagar
 export async function estadoPlan(env, request, ev, esquema) {
+  if (ev.producto !== 'invitacion') return estadoProducto(env, request, ev, esquema);
   const m = buscarModelo(ev.modelo);
   const gratisPosible = !!(m && (m.gratis || MODELOS_GRATIS.includes(m.id)));
   const necesario = planNecesario(esquema, ev.datos, { gratisPosible });
@@ -420,7 +450,8 @@ export async function estadoPlan(env, request, ev, esquema) {
   // Lo pagado no se pierde: si apaga secciones, el plan queda en el que ya pagó
   const plan = pagado && NIVELES.indexOf(pagado) > NIVELES.indexOf(necesario) ? pagado : necesario;
   const elegidos = complementos(esquema, ev.datos);
-  const yaPagados = [...(ev.datos.extras || [])];
+  // Antes colores y tipografía se pagaban aparte: cualquiera de los dos ya cubre el cambio de diseño
+  const yaPagados = (ev.datos.extras || []).map((x) => (x === 'paleta' || x === 'tipografia' ? 'diseno' : x));
   const extrasAPagar = elegidos.filter((x) => { const i = yaPagados.indexOf(x); if (i >= 0) { yaPagados.splice(i, 1); return false; } return true; });
   const eurPlan = Math.max(0, precioPaquete(plan) - (pagado ? precioPaquete(pagado) : 0));
   // Extras incluidos según el plan (la Save The Date en Premium y Deluxe)
@@ -437,12 +468,40 @@ export async function estadoPlan(env, request, ev, esquema) {
     aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,
     // Precio de cada tarjeta con este plan (para mostrarlo en los selectores del panel)
-    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'agradecimiento'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
+    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'agradecimiento', 'video-portada', 'idioma', 'diseno'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
     // Primera vez: aunque sea gratis pasa por la "compra" (queda el mail de la cuenta y la factura si corresponde)
     activar: !pagado,
   };
 }
 const seccionActivaDe = (p, d) => (p.complemento ? d.secciones?.[p.seccion] === true : d.secciones?.[p.seccion] !== false);
+
+// Productos sueltos (Save The Date, agradecimiento, web simple) y diseño a medida: el precio del producto y, en el
+// diseño a medida, sus complementos. Se paga al final (al generar la tarjeta u obtener el link)
+async function estadoProducto(env, request, ev, esquema) {
+  const medida = ev.producto === 'a-medida';
+  // README (ronda 29): las Save The Date a medida también pasan por el equipo de diseño antes del pago
+  const enviable = medida || ['std-tarjeta-medida', 'std-web-medida'].includes(ev.producto);
+  const clave = medida ? (ev.aMedida || 'personalizado') : ev.producto;
+  const base = medida ? (A_MEDIDA[clave]?.deluxe || 0) : (PRODUCTOS[ev.producto]?.precio || 0);
+  const pagado = ev.paquete !== 'borrador';
+  const elegidos = medida ? complementos(esquema, ev.datos).filter((x) => EXTRAS[x]) : [];
+  const ya = ev.datos.extras || [];
+  const extrasAPagar = elegidos.filter((x) => !ya.includes(x));
+  const eur = (pagado ? 0 : base) + extrasAPagar.reduce((t, x) => t + (EXTRAS[x]?.precio || 0), 0);
+  const moneda = monedaPedida(request), rates = await getRates(env), pais = paisReal(request);
+  const texto = (k, e) => (e ? formatMoney(priceIn(k, e, moneda, rates, pais, env).amount, moneda) : 'Gratis');
+  const nombre = medida ? (clave === 'empresarial' ? 'Invitación para empresas' : 'Invitación con diseño a medida') : ev.producto === 'compromiso-web' ? 'Plan simple' : (PRODUCTOS[ev.producto]?.nombre || ev.producto);
+  return {
+    producto: true, plan: medida ? 'deluxe' : 'basic', nombre, precio: texto(clave, base), pagado: pagado ? (medida ? 'deluxe' : 'basic') : null, gratisPosible: false,
+    complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: texto(x, EXTRAS[x]?.precio || 0), pagado: !extrasAPagar.includes(x) })),
+    aPagar: { eur, texto: texto(clave, eur), plan: pagado ? null : texto(clave, base), extras: extrasAPagar },
+    secciones: [],
+    preciosExtras: Object.fromEntries(['std-tarjeta-medida', 'std-web-medida', 'idioma'].map((x) => [x, `+${texto(x, EXTRAS[x]?.precio || 0)}`])),
+    activar: !pagado,
+    // Diseño a medida: primero lo aprueba el equipo; recién ahí se paga
+    ...(enviable ? { medida: { enviado: !!ev.datos.medida?.enviado, aprobado: !!ev.datos.medida?.aprobado, listo: !!ev.datos.medida?.listo } } : {}),
+  };
+}
 
 // Pedido para el borrador: el plan y los complementos que faltan pagar
 export async function validarBorrador(env, request, b, { esquemaDe }) {
@@ -453,6 +512,8 @@ export async function validarBorrador(env, request, b, { esquemaDe }) {
   const permitido = (clave && clave === ev.clave) || (usuario && (usuario.esAdmin || await almacenD1(env).tieneAcceso(ev.id, usuario.id)));
   if (!permitido) throw new HttpError(403, 'Sin permiso para esta invitación');
   const est = await estadoPlan(env, request, ev, await esquemaDe(ev));
+  if (est.medida && !est.medida.aprobado) throw new HttpError(409, 'El equipo de diseño todavía no aprobó tu proyecto. Te avisaremos por mail.');
+  if (est.producto) return { evento: ev, eur: est.aPagar.eur, pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: est.plan, aMedida: ev.aMedida || null, extras: est.aPagar.extras, nombre: est.nombre } };
   const m = buscarModelo(ev.modelo);
   const tipoNombre = TIPOS_EVENTO.find((t) => t.id === ev.tipo)?.nombre || ev.tipo;
   const extras = est.aPagar.extras.map((x) => EXTRAS[x]?.nombre || x);
@@ -470,8 +531,13 @@ export async function empezar(request, env) {
     if (!success) throw new HttpError(429, 'Demasiados intentos. Probar en unos minutos.');
   }
   const b = await readJson(request);
+  // README (ronda 28): los productos sueltos y el diseño a medida también se arman antes de pagar
+  const producto = str(b.producto, 30) || 'invitacion';
+  if (producto !== 'invitacion') return empezarProducto(request, env, b, producto);
   const m = buscarModelo(b.modelo);
-  const tipo = str(b.tipo, 20);
+  let tipo = str(b.tipo, 20);
+  // Elegido dentro de un grupo (Baby Shower → Revelación de género): el tipo propio del diseño
+  if (m && !m.eventos.includes(tipo)) tipo = TIPOS_EVENTO.find((t) => t.grupo === tipo && m.eventos.includes(t.id))?.id || tipo;
   if (!m || !m.eventos.includes(tipo)) throw new HttpError(400, 'Elegir un diseño disponible para ese evento');
   const a = str(b.nombres?.a, 15), bb = str(b.nombres?.b, 15);
   if (!a) throw new HttpError(400, 'Falta el nombre');
@@ -484,18 +550,81 @@ export async function empezar(request, env) {
   const basicas = new Set(modeloJson?.paquetes?.basic?.secciones || ['galeria', 'rsvp', 'dresscode', 'estilos']);
   const todas = new Set(Object.values(modeloJson?.paquetes || {}).flatMap((p) => p.secciones));
   const secciones = Object.fromEntries([...todas].map((x) => [x, basicas.has(x)]));
+  const gratisPosible = !!(m.gratis || MODELOS_GRATIS.includes(m.id));
   const ev = {
     id: `ev_${randomId(5)}`, producto: 'invitacion', tipo, modelo: m.id, paquete: 'borrador', aMedida: null,
     estado: 'borrador', clave: randomId(16), empresaId: null, slug: null,
     datos: {
       variante: varianteDePais(pais), zonaHoraria: zona, acceso: { modo: 'abierta' }, extras: [], secciones,
       nombres: bb ? { a, b: bb } : { a }, celebracion: fecha ? { fecha, inicio: fecha } : {},
-      planElegido: b.gratis && (m.gratis || MODELOS_GRATIS.includes(m.id)) ? 'gratis' : null,
+      planElegido: gratisPosible ? 'gratis' : null,
+      // README (ronda 28): los modelos con plan gratis arrancan gratis (sin galería ni cuenta regresiva); al prender
+      // algo de un plan pago, pasa a ese plan
+      ...(gratisPosible ? { portada: { cuenta: false } } : {}),
     },
+  };
+  if (gratisPosible) ev.datos.secciones.galeria = false;
+  const almacen = almacenD1(env);
+  await almacen.guardarEvento(ev);
+  const usuario = await usuarioActual(request, env);
+  if (usuario) await almacen.darAcceso(ev.id, usuario.id, 'cliente');
+  // Sin cuenta: el navegador recuerda el borrador (al entrar con la cuenta se suma solo a "Mi cuenta")
+  const previos = (getCookie(request, 'ai_bor') || '').split(',').filter((x) => /^ev_[a-z0-9]+:[a-z0-9]+$/i.test(x));
+  const lista = [...new Set([`${ev.id}:${ev.clave}`, ...previos])].slice(0, 20).join(',');
+  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201,
+    usuario ? {} : { 'set-cookie': cookie('ai_bor', lista, { maxAge: 365 * 86400, secure: isSecureRequest(request) }) });
+}
+
+// Save The Date (tarjeta del modelo, con foto o web), agradecimiento y diseño a medida: el cliente elige el diseño,
+// lo arma en el panel y paga al final
+const SUELTOS = ['std-tarjeta', 'std-foto', 'agradecimiento', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'a-medida', 'compromiso-web'];
+// Qué Save The Date se vende suelta en cada evento (las a medida, en todos)
+export const STD_SOLO_BODA_15 = new Set(['std-web', 'std-foto']);
+export const EVENTOS_TARJETA_STD = new Set(['boda', '15', 'cumple', 'infantil', 'bautismo', 'comunion', 'babyshower', 'revelacion']);
+export function disponibleSuelto(producto, tipo) {
+  if (STD_SOLO_BODA_15.has(producto)) return tipo === 'boda' || tipo === '15';
+  if (producto === 'std-tarjeta') return EVENTOS_TARJETA_STD.has(tipo);
+  return true;
+}
+async function empezarProducto(request, env, b, producto) {
+  if (!SUELTOS.includes(producto)) throw new HttpError(400, 'Producto desconocido');
+  const tipo = TIPOS_EVENTO.some((t) => t.id === b.tipo) || b.tipo === 'empresarial' ? str(b.tipo, 20) : 'boda';
+  // README (ronda 30): la web y la foto, solo boda y 15; la tarjeta del diseño, en los eventos que la tienen
+  if (!disponibleSuelto(producto, tipo)) throw new HttpError(400, 'Esta opción no está disponible para ese tipo de evento');
+  const a = str(b.nombres?.a, 20), bb = str(b.nombres?.b, 20);
+  if (!a) throw new HttpError(400, 'Falta el nombre');
+  const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';
+  let modelo = null;
+  const datos = { variante: varianteDePais(paisReal(request)), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
+    celebracion: fecha ? { fecha, inicio: fecha } : {}, std: { ...(fecha ? { fecha } : {}) } };
+  if (producto === 'std-tarjeta') {
+    // Sin diseño elegido (desde la tienda): el primero con tarjeta para ese evento
+    const m = buscarModelo(b.modelo) || MODELOS.find((x) => CON_TARJETA_STD.has(x.id) && x.eventos.includes(tipo));
+    const mj = m && m.eventos.includes(tipo) ? await env.ASSETS.fetch(new URL(`/modelos/${m.id}/modelo.json`, request.url)).then((r) => (r.ok ? r.json() : null)).catch(() => null) : null;
+    if (!mj?.tarjetas?.std) throw new HttpError(400, 'Ese diseño no tiene tarjeta Save The Date para este evento');
+    modelo = m.id; datos.std.tipo = 'tarjeta';
+  } else if (producto === 'std-foto') {
+    datos.std.tipo = 'foto'; if (/^f[1-9]$/.test(b.diseno || '')) datos.std.diseno = b.diseno;
+  } else if (producto === 'agradecimiento') {
+    datos.agradecimiento = /^g[1-9]$/.test(b.diseno || '') ? { diseno: b.diseno } : {};
+  } else if (producto === 'compromiso-web') {
+    // Invitación web simple (Civil, Compromiso, Pedida de mano, Party): su diseño o el primero del evento
+    const m = buscarModelo(b.modelo);
+    modelo = m?.simple && m.eventos.includes(tipo) ? m.id : (MODELOS.find((x) => x.simple && x.eventos.includes(tipo))?.id || 'compromiso');
+  } else if (producto === 'std-web') {
+    const m = buscarModelo(b.modelo);
+    modelo = m?.std && m.eventos.includes(tipo) ? m.id : 'std-classic';
+  }
+  const ev = {
+    id: `ev_${randomId(5)}`, producto, tipo, modelo, paquete: 'borrador', aMedida: producto === 'a-medida' ? (tipo === 'empresarial' ? 'empresarial' : 'personalizado') : null,
+    estado: 'borrador', clave: randomId(16), empresaId: null, slug: null, datos,
   };
   const almacen = almacenD1(env);
   await almacen.guardarEvento(ev);
   const usuario = await usuarioActual(request, env);
   if (usuario) await almacen.darAcceso(ev.id, usuario.id, 'cliente');
-  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201);
+  const previos = (getCookie(request, 'ai_bor') || '').split(',').filter((x) => /^ev_[a-z0-9]+:[a-z0-9]+$/i.test(x));
+  const lista = [...new Set([`${ev.id}:${ev.clave}`, ...previos])].slice(0, 20).join(',');
+  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201,
+    usuario ? {} : { 'set-cookie': cookie('ai_bor', lista, { maxAge: 365 * 86400, secure: isSecureRequest(request) }) });
 }

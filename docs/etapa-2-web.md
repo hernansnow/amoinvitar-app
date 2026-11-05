@@ -1,0 +1,131 @@
+# Etapa 2 · La web completa en Cloudflare (sin Hostinger)
+
+> Guía para quien arme las páginas nuevas (personas o IA). Leer entera antes de tocar `public/sitio/`.
+
+Objetivo: que `amoinvitar.com` lo sirva este mismo Worker. La web nueva se arma de a poco **oculta en
+`app.amoinvitar.com`**; cuando esté lista se pasa al dominio principal. Durante todo el proceso, lo viejo (páginas, css,
+scripts, imágenes, **las invitaciones activas de los clientes** y **sus paneles viejos**) sigue online con las mismas
+direcciones y no se pisa.
+
+---
+
+## 1. Cómo resuelve el Worker cada dirección (en este orden; el primero que responde, gana)
+
+| # | Qué | Dónde está | Código |
+|---|---|---|---|
+| 0 | **Paneles viejos** (solo en el subdominio `panel.amoinvitar.com`) | carpeta `panel/` del bucket `LEGADO` | `src/index.js` (inicio de `fetch`) |
+| 1 | **La app**: `/panel`, `/tienda`, `/mi-cuenta`, `/entrar`, `/api/*`, `/modelos/*`, `/comun/*`, `/demo/<modelo>`, `/std/*`, `/vista/*`, invitaciones nuevas publicadas (`/boda/sofi-y-ale`) | `src/`, `public/` | `src/index.js` |
+| 2 | **La web nueva**: `public/sitio/bodas.html` se ve en `/bodas`, `public/sitio/index.html` en `/` | `public/sitio/` | `src/sitio/nuevo.js` |
+| 3 | **El sitio viejo** (copia exacta del hosting, mismas rutas) | bucket R2 `LEGADO` | `src/sitio/legado.js` |
+| 4 | Si nada respondió: el hosting actual (`ORIGEN_ANTIGUO`), mientras siga contratado | Hostinger | `src/index.js` |
+
+Consecuencias:
+- Una página vieja se reemplaza poniendo la nueva en `public/sitio/` **con la misma ruta**. No se borra nada.
+- Lo que todavía no se rehízo sigue saliendo del sitio viejo (paso 3 o 4).
+- Mientras no exista el bucket, en `app.amoinvitar.com` lo que la web nueva pida del sitio viejo (`/css/…`, `/img/…`)
+  se redirige a `amoinvitar.com` y carga igual: se puede probar sin subir nada.
+
+## 2. Reglas para la web nueva (`public/sitio/`)
+
+1. **Rutas propias en `/web/`**: los css, js e imágenes nuevos van en `public/sitio/web/…` (se ven en `/web/…`).
+   **Nunca** usar el mismo nombre que un archivo del sitio viejo (`/css/snow_v3.6.css`, `/js/snow_2.7.1.js`, `/img/…`):
+   las invitaciones viejas los siguen usando y la web nueva los pisaría.
+2. **No crear nada en las carpetas de clientes**: `/boda/`, `/15/`, `/evento/`, `/nuevos-bautismo/`, `/nuevos-comunion/`,
+   `/nuevos-cumple/`, `/mi-bauti/`, `/mi-comuion/`, `/mi-cumple/`, `/mi-graduacion/`, `/save-the-date/`, `/birthday/`.
+   El Worker ya las protege (`PROTEGIDAS` en `src/sitio/nuevo.js`): aunque haya un archivo ahí, no se sirve.
+3. **No usar las rutas de la app** (`/panel`, `/tienda`, `/api`, `/modelos`, `/comun`, `/mi-cuenta`, `/entrar`,
+   `/ayuda`, `/demo`…): la app va primero.
+4. **Rutas absolutas** (`/web/css/…`, `/img/…`), no relativas: las páginas por país (`/ar/bodas`) están un nivel más abajo.
+5. **Elegir modelo y "Personalizar"**: ya está hecho en `/web/js/crear-invitacion.js` (+ `/web/css/crear-invitacion.css`).
+   Uso: `<div class="ci-widget"></div>` (con selector de evento), `data-evento="boda"` (uno fijo) o
+   `data-eventos="infantil,baby-shower"` (algunos). El `<script>` lleva `data-app=""` (la app está en el mismo dominio),
+   `data-img="/img/"` (miniaturas de los celulares del sitio viejo) y `data-raiz="/"`. Ejemplo armado:
+   `public/sitio/crear-invitacion.html` (también responde `/crear-invitacion-para-<evento>`).
+   El catálogo (modelos, precios por país, qué Save The Date hay en cada evento) viene de `GET /api/tienda/catalogo`.
+6. **Formulario de contacto**: uno solo para todas las páginas, hecho de cero → sección 4.
+7. **Textos** en español neutro (tú/ustedes, celular, computadora).
+8. Para crear o empezar algo desde una página: link a `/tienda/?empezar=1&producto=…&evento=…&modelo=…&a=…&b=…&fecha=…`
+   (lo arma el widget; ver `empezarDesdeLink` en `public/tienda/tienda.js`).
+
+## 3. Ver la web oculta en `app.amoinvitar.com`
+
+- Fuera de `amoinvitar.com` la web nueva **no se ve**, salvo con la clave de vista previa:
+  1. Una vez: `npx wrangler secret put SITIO_CLAVE` (una palabra cualquiera, larga).
+  2. Entrar a `https://app.amoinvitar.com/?vista=<la clave>`: queda una cookie por 30 días y ya se ven todas las
+     páginas de `public/sitio/` (`/crear-invitacion`, `/bodas`, …). `?vista=salir` la borra.
+- Sin la cookie todo sigue como antes (la portada de `app.amoinvitar.com` lleva a la tienda).
+- Fuera del dominio principal las páginas van con `noindex` (Google no las indexa).
+- En la compu (`npm run local`) se ven siempre, sin clave.
+
+## 4. Formulario de contacto (nuevo, de cero)
+
+- Servidor: `POST /api/contacto` (`src/rutas/contacto.js`), JSON o formulario.
+  Campos: `nombre`*, `email`*, `telefono`, `evento`, `pais`, `mensaje`*, `privacidad`* (`"si"` o `true`).
+  Antispam: Turnstile (si está el secreto `TURNSTILE_SECRET`), campo trampa `sitio_web`, 3 s mínimos desde que se abrió
+  la página, y 5 envíos cada 10 minutos por IP. El mail llega a `SUPPORT_EMAIL` con "responder a" el del cliente.
+- Página: `<form data-contacto data-turnstile="CLAVE_PUBLICA">` con esos nombres +
+  `<script src="/comun/js/contacto.js" defer></script>` (ejemplo completo en ese archivo). Muestra el resultado en el
+  mismo formulario, sin recargar.
+- Las páginas viejas (que mandan a `email/mailer2.php` y `{país}/email/mailer*.php`) usan el mismo código por detrás
+  (`src/sitio/legado.js`) y responden como el PHP (una página que vuelve sola).
+- ⚠️ **Turnstile**: el secreto viejo está escrito en `email/mailer2.php` del repo de la web vieja. Generar uno nuevo en
+  Cloudflare → Turnstile (clave pública para el `data-turnstile`, secreta con `npx wrangler secret put TURNSTILE_SECRET`).
+
+## 5. Paneles viejos (`/panel/` del sitio viejo, en `panel.amoinvitar.com`)
+
+En Hostinger, la carpeta `/panel/` (los paneles de los clientes del sistema anterior) se ve en el subdominio
+`panel.amoinvitar.com`. El panel nuevo vive en `amoinvitar.com/panel` (y los mails, links y la web ya lo usan así).
+
+**Decisión: no se mueve el panel nuevo.** Se separan por subdominio:
+- `panel.amoinvitar.com/<lo que sea>` → el Worker lo sirve desde la carpeta `panel/` del bucket del sitio viejo
+  (exactamente lo mismo que hoy en Hostinger). No pasa por la app ni por la web nueva.
+- `amoinvitar.com/panel/…` → el panel nuevo.
+- Los paneles viejos cargan sus scripts con dirección absoluta (`https://amoinvitar.com/js/panel_v1.9.js`…): salen del
+  sitio viejo (paso 3) porque la app no tiene esos archivos. **No crear en la web nueva ni en la app archivos con esos
+  nombres.**
+- Al mudar: agregar `panel.amoinvitar.com` en `routes` de `wrangler.jsonc` (y `PANEL_VIEJO_HOST` si fuera otro).
+- Detalle: algunos paneles viejos tienen `<?=time();?>` dentro del HTML (Hostinger lo procesaba como PHP). Ahora sale tal
+  cual: solo queda escrito en el `?v=` de un script (no rompe nada; es para que el navegador no use la copia vieja).
+
+## 6. Lo que hace el Worker en lugar de Apache/PHP
+
+| Antes (Hostinger) | Ahora (Worker) |
+|---|---|
+| `.htaccess`: https y sin www | Cloudflare: *Always Use HTTPS* y una regla `www` → sin `www` |
+| `.htaccess`: sin `.html`, carpetas con `/` | `legado.js` (prueba `ruta.html`, `ruta/index.html`; carpeta sin barra → 301 con barra) |
+| `.htaccess`: opciones→precios, classic→basic, bautizo, birthday, store/tienda, crear-invitacion-para-… | `legado.js` |
+| `a-musica.php` (41 invitaciones viejas: canciones sugeridas a `canciones.txt`) | D1, tabla `legado_canciones` (migración `0004_legado.sql`) |
+| `lista-canciones.php` | Las del `canciones.txt` del bucket + las nuevas de D1 |
+| `email/mailer2.php`, `{país}/email/mailer*.php` | `src/rutas/contacto.js` (sección 4) |
+| `email/correo.php`, `email/email.php`, `evento/hernan/save-image.php`, `google-forms-css-cors.php` | **Sin reemplazo**: revisar si se usan |
+
+Además, un link nuevo de invitación no puede ser el de una carpeta vieja de cliente (`/boda/<nombre>/`): el panel lo
+rechaza y sugiere otro (`slugDelLegado` en `src/index.js`; mira el bucket o, si no está, el hosting).
+
+## 7. Caducidad de las invitaciones (desde la fecha del evento)
+
+Gratis 15 días · Basic 3 meses · Premium 6 meses · Deluxe 12 meses (diseño a medida = Deluxe; Save The Date web e
+invitación simple = Basic). `src/vencimiento.js`; pasado el plazo la invitación muestra "Esta invitación ya finalizó".
+Mis invitaciones muestra "Online hasta el …". Una extensión a mano: poner `vence` más lejano en la tabla `eventos`.
+
+## 8. Pasos para mudar el dominio (cuando la web esté lista)
+
+1. **Inventario** (no sube nada): `node scripts/sitio/inventario-legado.mjs ../amoinvitar-v2.0`
+   (hoy: 14.562 archivos, 1,1 GB; no se suben PHP, PSD ni ocultos).
+2. **Bucket**: `npx wrangler r2 bucket create amoinvitar-legado`.
+3. **Subir el sitio viejo completo** (lo que está en Hostinger, con las invitaciones y paneles de clientes que no están
+   en el repositorio). Con `rclone` y la API S3 de R2 (token en Cloudflare → R2 → *Manage API tokens*):
+   ```
+   rclone sync ./sitio-viejo r2:amoinvitar-legado --exclude ".git/**" --exclude "*.php" --exclude "*.psd" --exclude "apps-script/**" --exclude ".*" --progress
+   ```
+   Se puede repetir: sube solo lo distinto. La carpeta `panel/` también (sección 5).
+4. **Secretos**: `TURNSTILE_SECRET` (nuevo, sección 4).
+5. **Activar el bucket**: descomentar `LEGADO` en `wrangler.jsonc`, aplicar la migración
+   (`npx wrangler d1 migrations apply amoinvitar --remote`) y publicar.
+6. **Probar en `app.amoinvitar.com`** (con la cookie de vista): `/bodas`, `/boda/<invitación vieja>/`,
+   `/css/snow_v3.6.css`, el formulario de contacto, sugerir una canción en una invitación vieja.
+7. **Mover el dominio**: `routes` → `amoinvitar.com`, `www.amoinvitar.com` (redirección) y `panel.amoinvitar.com`;
+   `SITE_URL` → `https://amoinvitar.com`. Actualizar el mismo día las direcciones de vuelta en Stripe, Mercado Pago,
+   PayPal, Google (login) y Resend. Borrar `ORIGEN_ANTIGUO` cuando ya no haga falta el hosting.
+8. **Tienda vieja** (`/store`, WordPress): `/store` y `/tienda` ya redirigen a `/crear-invitacion`; los
+   `/store/producto/…` que queden enlazados, redirigirlos a la página del evento.

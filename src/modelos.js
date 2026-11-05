@@ -4,9 +4,7 @@
 // se suma acá como un modelo más con un solo tipo de evento.
 
 export const MODELOS = [
-  // PROVISORIO: Garden con plan gratis para poder probarlo hasta convertir los modelos gratis
-  // (Oliva, Armonía, White, Minimal, Floral). Antes del lanzamiento: gratis: false.
-  { id: 'garden', nombre: 'Garden', nombres: { 15: 'Eucalipto', cumple: 'Eucalipto' }, eventos: ['boda', '15', 'bautismo', 'comunion', 'cumple'], gratis: true },
+  { id: 'garden', nombre: 'Garden', nombres: { 15: 'Eucalipto', cumple: 'Eucalipto' }, eventos: ['boda', '15', 'bautismo', 'comunion', 'cumple'], gratis: false },
   // Convertidos de la v2.0 con scripts/conversion/lote.mjs (boda, 15 y cumpleaños de cada familia)
   { id: 'aquarella', nombre: 'Aquarella', eventos: ['boda',  '15',  'cumple', 'bautismo', 'comunion'], gratis: false },
   { id: 'armonia', nombre: 'Armonía', eventos: ['boda',  '15',  'cumple', 'bautismo', 'comunion'], gratis: false },
@@ -32,14 +30,21 @@ export const MODELOS = [
   { id: 'style', nombre: 'Style', eventos: ['15',  'cumple', 'bautismo', 'comunion'], gratis: false },
   { id: 'sweet', nombre: 'Sweet', eventos: ['15',  'cumple', 'bautismo', 'comunion'], gratis: false },
   { id: 'natural', nombre: 'Natural', eventos: ['15',  'cumple', 'bautismo', 'comunion'], gratis: false },
-  { id: 'party', nombre: 'Party', eventos: ['15'], gratis: false },
+  // Modelos simples (una pantalla, panel reducido, se bloquean al publicar): se eligen al cambiar de diseño
+  { id: 'party', nombre: 'Party', eventos: ['15'], gratis: false, simple: true },
+  { id: 'civil', nombre: 'Civil', eventos: ['boda'], gratis: false, simple: true },
+  { id: 'compromiso', nombre: 'Compromiso', eventos: ['boda'], gratis: false, simple: true },
+  { id: 'pedida', nombre: 'Pedida de mano', eventos: ['boda'], gratis: false, simple: true },
+  // Save The Date web: no son modelos de invitación; se eligen en la sección Save The Date del panel (15 €)
+  { id: 'std-classic', nombre: 'Web Classic', eventos: ['boda', '15'], gratis: false, std: true },
+  { id: 'std-soft', nombre: 'Web Soft', eventos: ['boda', '15'], gratis: false, std: true },
   { id: 'elegance', nombre: 'Elegance', eventos: ['boda'], gratis: false },
   { id: 'vintage', nombre: 'Vintage', eventos: ['boda'], gratis: false },
   { id: 'oliva', nombre: 'Oliva', eventos: ['boda'], gratis: false },
   { id: 'lovestory', nombre: 'Love Story', eventos: ['boda'], gratis: false },
   { id: 'amanecer', nombre: 'Amanecer', eventos: ['bautismo', 'comunion'], gratis: false },
-  { id: 'celeste', nombre: 'Celeste', eventos: ['bautismo', 'babyshower'], gratis: false },
-  { id: 'rosa', nombre: 'Rosa', eventos: ['bautismo', 'babyshower'], gratis: false },
+  { id: 'celeste', nombre: 'Celeste', eventos: ['bautismo', 'babyshower', 'infantil'], gratis: false },
+  { id: 'rosa', nombre: 'Rosa', eventos: ['bautismo', 'babyshower', 'infantil'], gratis: false },
   { id: 'revelacion', nombre: 'Revelación', eventos: ['revelacion'], gratis: false },
   { id: 'esmeralda', nombre: 'Esmeralda', eventos: ['graduacion'], gratis: false },
   { id: 'estilo', nombre: 'Estilo', eventos: ['graduacion'], gratis: false },
@@ -51,16 +56,20 @@ export const MODELOS = [
   { id: 'navidad', nombre: 'Navidad', eventos: ['navidad'], gratis: false },
 ];
 
+// Modelos con su tarjeta Save The Date propia (scripts/conversion/tarjetas y Garden)
+export const CON_TARJETA_STD = new Set(['amanecer', 'aquarella', 'armonia', 'beach', 'black', 'byn', 'cars', 'celeste', 'cinema', 'disco', 'elegance', 'euforia', 'floral', 'garden', 'graffiti', 'hojas', 'lila', 'lovestory', 'luxury', 'minimal', 'monster', 'natural', 'oliva', 'passion', 'peppa', 'revelacion', 'rockabilly', 'romantic', 'rosa', 'rouge', 'sky', 'style', 'sweet', 'travel', 'vintage', 'white']);
+
 export const TIPOS_EVENTO = [
   { id: 'boda', nombre: 'Boda' },
   { id: '15', nombre: '15 años' },
   { id: 'bautismo', nombre: 'Bautismo' },
   { id: 'comunion', nombre: 'Comunión' },
   { id: 'cumple', nombre: 'Cumpleaños' },
-  { id: 'infantil', nombre: 'Cumpleaños infantil' },
+  { id: 'infantil', nombre: 'Cumpleaños infantil', grupo: 'cumple' },
   { id: 'graduacion', nombre: 'Egreso / Graduación' },
   { id: 'babyshower', nombre: 'Baby shower' },
-  { id: 'revelacion', nombre: 'Revelación de género' },
+  // Se elige dentro de Baby Shower (es un diseño de baby shower con dos nombres)
+  { id: 'revelacion', nombre: 'Revelación de género', grupo: 'babyshower' },
   { id: 'navidad', nombre: 'Navidad' },
 ];
 

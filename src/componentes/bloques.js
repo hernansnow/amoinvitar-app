@@ -212,7 +212,7 @@ export function rsvpForm({ t, v, el }) {
 
 // ── Galería: carrusel, mosaico, grilla o polaroids (igual en todos los modelos) ──
 // Al tocar una foto se abre entera, sin recorte, y se puede ampliar (fancybox).
-export function galeria({ v, t }) {
+export function galeria({ v, t, el }) {
   const g = v.galeria || {};
   const fotos = v.fotos.galeria || [];
   if (!fotos.length) return '';
@@ -222,7 +222,7 @@ export function galeria({ v, t }) {
   if (g.carrusel) {
     const varias = fotos.length > 1;
     return `${css}
-<div class="ai-carrusel${varias ? '' : ' ai-una'}${g.color ? ' ai-color' : ''}" style="--prop:${esc(g.proporcion)}" data-aos="fade-up">
+<div class="ai-carrusel${varias ? '' : ' ai-una'}${g.color ? ' ai-color' : ''}${el?.hasAttribute('data-rsvp') ? ' ai-c-rsvp' : ''}" style="--prop:${esc(g.proporcion)}" data-aos="fade-up">
   <div class="ai-c-pista" tabindex="0">${items('ai-c-item')}
   </div>${varias ? `
   <button type="button" class="ai-c-flecha ai-c-ant" aria-label="${esc(t('galeria.anterior') || 'Anterior')}"><span class="icon-keyboard_arrow_left"></span></button>
@@ -244,7 +244,6 @@ export function galeria({ v, t }) {
 export function playlist({ t, v, el }) {
   const pl = v.playlist;
   if (!pl) return '';
-  const claseTitulo = el.getAttribute('data-clase-titulo') || 'euforia';
   const lista = pl.pistas.length ? `
     <p class="ai-pl-resumen">${esc(t('playlist.resumen').replace('{n}', pl.cantidad || pl.pistas.length).replace('{min}', pl.minutos || ''))}</p>
     <ol class="ai-pl-lista">${pl.pistas.map((x, i) => `
@@ -254,7 +253,8 @@ export function playlist({ t, v, el }) {
   return `<link rel="stylesheet" href="${v.rutas.comun}/css/playlist.css">
 <section class="ai-playlist">
   <div class="ai-pl-tarjeta" data-aos="fade-up">
-    <h2 class="ai-pl-titulo ${esc(claseTitulo)}">${esc(t('playlist.titulo'))}</h2>
+    <svg class="ai-pl-spotify" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path fill="currentColor" d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm5.5 17.3a.75.75 0 0 1-1 .25c-2.8-1.7-6.4-2.1-10.6-1.2a.75.75 0 1 1-.3-1.5c4.6-1 8.6-.6 11.7 1.4.4.2.5.7.2 1.05zm1.5-3.3a.94.94 0 0 1-1.3.3c-3.2-2-8.1-2.6-11.9-1.4a.94.94 0 1 1-.55-1.8c4.3-1.3 9.7-.7 13.4 1.6.45.3.6.85.35 1.3zm.1-3.4C15.3 8.3 9 8.1 5.4 9.2a1.13 1.13 0 1 1-.66-2.16c4.2-1.27 11.1-1 15.5 1.6a1.13 1.13 0 0 1-1.15 1.96z"/></svg>
+    <h2 class="ai-pl-titulo">${esc(t('playlist.titulo'))}</h2>
     <p class="ai-pl-texto">${esc(t('playlist.texto'))}</p>
     <div class="ai-vinilo${v.marca.blanca ? ' sin-logo' : ''}">
       <div class="ai-v-disco"><div class="ai-v-etiqueta"></div></div>

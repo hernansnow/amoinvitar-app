@@ -15,7 +15,7 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "portadaSinFoto": "img/wave-mid-brush.png",
   "paquetes": {
     "basic": {
@@ -80,12 +80,16 @@
       }
     }
   },
+  "textosDemo": {
+    "historia.texto": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos."
+  },
   "proporciones": {
     "lugar": "1/1"
   },
   "nombresHTML": {
-    "portada": "{a} &amp; {b}",
-    "cierre": "{a} &amp; {b}",
+    "portada": "{a} <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> {b}",
+    "cierre": "{a} <i class=\"icon-heart text-gold\" aria-hidden=\"true\"></i> {b}",
     "solo": "{a}"
   },
   "miniatura": {
@@ -157,5 +161,139 @@
       "/comun/fonts/google/jost.css",
       "/modelos/lovestory/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Dantina",
+      "texto": "Montserrat",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [
+          {
+            "x": 970,
+            "y": 2005,
+            "w": 212,
+            "h": 212,
+            "color": "#ffffff",
+            "circulo": true,
+            "borde": 5
+          }
+        ],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1077,
+            "y": 596,
+            "tam": 56.1,
+            "fuente": "texto",
+            "color": "#a0946e",
+            "espaciado": 4.7,
+            "mayus": true
+          },
+          {
+            "id": "evento",
+            "texto": "¡Nos casamos!",
+            "x": 1073,
+            "y": 986,
+            "tam": 72.9,
+            "fuente": "texto",
+            "color": "#a0946e",
+            "espaciado": 9.5,
+            "mayus": true,
+            "ancho": 860,
+            "ajustar": true
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1058,
+            "y": 1441,
+            "tam": 147.2,
+            "fuente": "titulos",
+            "color": "#a0946e",
+            "ancho": 1750,
+            "ajustar": true,
+            "amp": {
+              "img": "img/std-amp.png",
+              "tam": 1.4,
+              "dy": 0
+            }
+          },
+          {
+            "id": "dsem",
+            "texto": "{diaSemana}",
+            "x": 748,
+            "y": 2113,
+            "tam": 44.8,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "peso": 600,
+            "mayus": true,
+            "espaciado": 6
+          },
+          {
+            "id": "dia",
+            "texto": "{dia}",
+            "x": 1071,
+            "y": 2109,
+            "tam": 110.8,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "peso": 600
+          },
+          {
+            "id": "mes",
+            "texto": "{mes}",
+            "x": 1461,
+            "y": 2109,
+            "tam": 56.5,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "peso": 600,
+            "mayus": true,
+            "espaciado": 6
+          },
+          {
+            "id": "anio",
+            "texto": "{anio}",
+            "x": 1073,
+            "y": 2324,
+            "tam": 91.3,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "peso": 600
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1080,
+            "y": 2877,
+            "tam": 36.3,
+            "fuente": "texto",
+            "color": "#f4f1e4",
+            "espaciado": 0.2,
+            "mayus": true,
+            "opcional": "proximamente"
+          }
+        ]
+      }
+    }
   }
 }

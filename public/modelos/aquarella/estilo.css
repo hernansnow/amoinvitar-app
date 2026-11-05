@@ -2803,6 +2803,10 @@ button.bg-light:hover {
     margin-bottom: 0 !important
 }
 
+.m-1 {
+    margin: 0.25rem !important
+}
+
 .mt-1 {
     margin-top: 0.25rem !important
 }
@@ -2875,10 +2879,6 @@ button.bg-light:hover {
 
 .p-0 {
     padding: 0 !important
-}
-
-.pt-0 {
-    padding-top: 0 !important
 }
 
 .pb-0 {

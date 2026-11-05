@@ -10,8 +10,11 @@
       "deluxe": {
         "archivo": "index-navidad.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
+          "hospedaje",
+          "bus",
           "dresscode",
           "estilos",
           "itinerario",
@@ -21,9 +24,7 @@
           "instagram"
         ],
         "avisos": [
-          "portada: sin título de nombres",
-          "historia: no se encontró el texto ni el saludo",
-          "perdiste: se agregó (no había)"
+          "portada: sin título de nombres"
         ],
         "info": {
           "portadas": [
@@ -32,10 +33,14 @@
               "pos": "50% 25%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "tragos",
             "fuegos",
@@ -44,6 +49,7 @@
             "regalo",
             "brindis2"
           ],
+          "textoPie": "Esperamos que nos acompañes para celebrar en familia y con amigos. ¡No te lo pierdas!",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -54,6 +60,7 @@
       "premium": {
         "archivo": "index-navidad-premium.html",
         "secciones": [
+          "historia",
           "galeria",
           "rsvp",
           "dresscode",
@@ -63,9 +70,7 @@
         ],
         "avisos": [
           "portada: sin título de nombres",
-          "historia: no se encontró el texto ni el saludo",
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
           "portadas": [
@@ -74,10 +79,15 @@
               "pos": "50% 25%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "textoHistoria": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Esperamos que nos acompañes para celebrar en familia y con amigos. ¡No te lo pierdas!",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",
@@ -105,9 +115,13 @@
               "pos": "50% 25%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 1,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Esperamos que nos acompañes para celebrar en familia y con amigos. ¡No te lo pierdas!",
           "claseTitulos": "amsterdam-four-font",
           "fuentes": [
             "../../comun/fonts/google/jost.css",

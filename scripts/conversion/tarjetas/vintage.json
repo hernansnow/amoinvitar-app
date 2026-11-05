@@ -1,0 +1,129 @@
+{
+ "fuentes": {
+  "titulos": "Oswald",
+  "texto": "Montserrat",
+  "script": "Italianno",
+  "css": [
+   "/comun/fonts/google/jost+oswald.css",
+   "/comun/fonts/catalogo/catalogo.css"
+  ]
+ },
+ "eventos": {
+  "boda": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    }
+   ],
+   "formas": [],
+   "textos": [
+    {
+     "id": "save",
+     "texto": "SAVE",
+     "x": 633,
+     "y": 1256,
+     "tam": 280,
+     "fuente": "titulos",
+     "color": "#0a0a0a",
+     "peso": 700,
+     "sesgo": -11.6
+    },
+    {
+     "id": "the",
+     "texto": "THE",
+     "x": 1075,
+     "y": 1182,
+     "tam": 215.2,
+     "fuente": "titulos",
+     "color": "#0a0a0a",
+     "peso": 200,
+     "sesgo": -11.6
+    },
+    {
+     "id": "date",
+     "texto": "DATE",
+     "x": 1524,
+     "y": 1060,
+     "tam": 268.9,
+     "fuente": "titulos",
+     "color": "#0a0a0a",
+     "peso": 700,
+     "sesgo": -11.6
+    },
+    {
+     "id": "evento",
+     "texto": "nuestra boda",
+     "x": 1055,
+     "y": 1352,
+     "tam": 174.5,
+     "fuente": "script",
+     "color": "#0a0a0a",
+     "sesgo": -11.6,
+     "plantilla": "{eventoMin}",
+     "ancho": 697,
+     "ajustar": true
+    },
+    {
+     "id": "nombreA",
+     "texto": "{a}",
+     "x": 963,
+     "y": 1611,
+     "tam": 214.3,
+     "fuente": "titulos",
+     "color": "#0a0a0a",
+     "peso": 700,
+     "mayus": true,
+     "sesgo": -11.6,
+     "alinear": "der",
+     "ancho": 700,
+     "ajustar": true
+    },
+    {
+     "id": "nombreB",
+     "texto": "{b}",
+     "x": 1166,
+     "y": 1555,
+     "tam": 222.3,
+     "fuente": "titulos",
+     "color": "#0a0a0a",
+     "peso": 700,
+     "mayus": true,
+     "sesgo": -11.6,
+     "alinear": "izq",
+     "ancho": 700,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dia} · {mesNum} · {anio}",
+     "x": 1088,
+     "y": 1876,
+     "tam": 114.9,
+     "fuente": "titulos",
+     "color": "#0a0a0a",
+     "peso": 300,
+     "sesgo": -11.6
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la invitación formal",
+     "x": 1104,
+     "y": 2294,
+     "tam": 38.2,
+     "fuente": "texto",
+     "color": "#c49a63",
+     "espaciado": 6,
+     "mayus": true,
+     "opcional": "proximamente"
+    }
+   ]
+  }
+ }
+}

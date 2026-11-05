@@ -2702,6 +2702,10 @@ button.bg-light:hover {
     border-radius: 50rem !important
 }
 
+.d-none {
+    display: none !important
+}
+
 .d-block {
     display: block !important
 }
@@ -2768,12 +2772,20 @@ button.bg-light:hover {
     width: 75% !important
 }
 
+.m-0 {
+    margin: 0 !important
+}
+
 .mt-0 {
     margin-top: 0 !important
 }
 
 .mb-0 {
     margin-bottom: 0 !important
+}
+
+.m-1 {
+    margin: 0.25rem !important
 }
 
 .mt-1 {
@@ -2961,6 +2973,9 @@ button.bg-light:hover {
     }
     .p-md-3 {
         padding: 1rem !important
+    }
+    .p-md-4 {
+        padding: 1.5rem !important
     }
 }
 
@@ -4076,82 +4091,6 @@ span.text {
 
 /* Decorations */
 
-.euforia {
-  font-family: 'Great Vibes', cursive;
-	margin-top: 10px; 
-}
-
-h1.euforia {
-  font-size: 5rem; 
-}
-
-h2.euforia {
-  font-size: 3.75rem;
-}
-@media screen and (max-width: 768px) {
-h1.euforia {
-  font-size: 3.125rem;
- }
-}
-
-@media screen and (max-width: 768px) {
-h2.euforia {
-  font-size: 2.5rem;
- }
-}
-
-h1.euforia i {
-  font-size: 2.5rem;
-}
-
-@media screen and (max-width: 768px) {
-h1.euforia i {
-  font-size: 1.25rem;
- }
-}
-
-h3.euforia {
-  font-size: 2.375rem;
-  margin-bottom: 5px;  
-  position: relative;
-}
-@media screen and (max-width: 768px) {
-h3.euforia {
-  font-size: 2rem;
- }
-}
-
-h3.euforia:before, h3.euforia:after {
-  content: " ";
-  position: absolute;
-  width: 100px;
-  height: 8px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:before, h3.euforia:after {
-  width: 35px;
-  height: 5px;
- }
-}
-
-h3.euforia:before {
-  margin: 5px 0 0 -110px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:before, h3.euforia:after {
-  margin: 5px 0 0 -40px;
- }
-}
-
-h3.euforia:after {
-  margin: 5px 0 0 10px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:after {
-  margin: 5px 0 0 10px;
- }
-}
-
 .jost {
   font-family: "Jost", sans-serif !important;
   font-optical-sizing: auto;
@@ -5200,4 +5139,8 @@ audio::-webkit-media-controls-play-button:hover {
 
 /* ALL animation types called */
 .invert { filter: invert(100%); }
+
+
+/* Portada: un poco de aire entre los nombres y la frase (las mayúsculas de la letra script se superponían) */
+#home-section [data-ajustar] { margin-bottom: .5rem !important; }
 

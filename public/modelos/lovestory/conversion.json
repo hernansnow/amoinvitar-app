@@ -24,11 +24,9 @@
           "redes",
           "instagram"
         ],
-        "avisos": [
-          "perdiste: se agregó (no había)"
-        ],
+        "avisos": [],
         "info": {
-          "nombresPortada": "&#160;",
+          "nombresPortada": "Fanny <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> Rei",
           "portadas": [
             {
               "f": "hero-banner1.jpg",
@@ -47,10 +45,14 @@
               "pos": "45% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+          "galeriaEnHistoria": true,
           "galeria": 12,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
           "iconosItinerario": [
             "ceremonia",
             "recepcion",
@@ -60,6 +62,8 @@
             "disco",
             "brindis"
           ],
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Fanny <i class=\"icon-heart text-gold\" aria-hidden=\"true\"></i> Rei",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -79,11 +83,10 @@
           "regalos"
         ],
         "avisos": [
-          "itinerario: sin #timeline",
-          "perdiste: se agregó (no había)"
+          "itinerario: sin #timeline"
         ],
         "info": {
-          "nombresPortada": "&#160;",
+          "nombresPortada": "Fanny <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> Rei",
           "portadas": [
             {
               "f": "hero-banner1.jpg",
@@ -102,10 +105,16 @@
               "pos": "45% 50%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "textoHistoria": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+          "galeriaEnHistoria": true,
           "galeria": 8,
           "idAgenda": "agenda",
           "propLugar": "1/1",
+          "rsvpConFoto": true,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
+          "nombresCierre": "Fanny <i class=\"icon-heart text-gold\" aria-hidden=\"true\"></i> Rei",
           "claseTitulos": "lovestory",
           "fuentes": [
             "../../comun/fonts/google/jost.css"
@@ -124,16 +133,20 @@
           "itinerario: sin #timeline"
         ],
         "info": {
-          "nombresPortada": "&#160;",
+          "nombresPortada": "Fanny <i class=\"icon-heart text-small-sm text-white\" aria-hidden=\"true\"></i> Rei",
           "portadas": [
             {
               "f": "hero-banner1.jpg",
               "pos": "70% 90%"
             }
           ],
+          "fondoCompleto": true,
           "portadaFotos": 4,
+          "galeriaEnHistoria": true,
           "galeria": 4,
           "idAgenda": "agenda",
+          "rsvpConFoto": false,
+          "textoPie": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos.",
           "nombresCierre": "Fanny <i class=\"icon-heart\" aria-hidden=\"true\"></i> Rei",
           "claseTitulos": "lovestory",
           "fuentes": [

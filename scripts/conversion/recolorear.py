@@ -4,8 +4,9 @@
   recolorear.py icono <icono.png> <referencia.png|#hex> <salida.png>
       El ícono exclusivo (pila bautismal, cáliz…) pintado con el color de la imagen que reemplaza
       (el promedio de sus píxeles visibles, por ejemplo la corona dorada del diseño).
-  recolorear.py cinta <cinta.png> <salida.png>
-      La cinta "Mis 15" de Cinema y Luxury sin el texto del medio (el texto lo pone la invitación).
+  recolorear.py cinta <cinta.png> <salida.png> [ancho]
+      La cinta "Mis 15" de Cinema y Luxury sin el texto del medio (el texto lo pone la invitación);
+      con ancho, más larga (el tramo del medio estirado).
 """
 import sys
 from PIL import Image
@@ -27,7 +28,7 @@ def icono(origen, ref, salida):
     pintado.putalpha(alfa)
     pintado.save(salida, optimize=True)
 
-def cinta(origen, salida):
+def cinta(origen, salida, ancho=None):
     im = Image.open(origen).convert('RGBA')
     w, h = im.size
     px = im.load()
@@ -49,6 +50,15 @@ def cinta(origen, salida):
         for y in range(h):
             if not afuera[x][y] and px[x, y][3] < 250:
                 px[x, y] = (*fondo, 255)
+    if ancho and int(ancho) > w:
+        # Cinta más larga: se estira solo el tramo del medio (las puntas quedan iguales)
+        a, b = int(w * .24), int(w * .76)
+        medio = im.crop((a, 0, b, h)).resize((b - a + int(ancho) - w, h), Image.LANCZOS)
+        nueva = Image.new('RGBA', (int(ancho), h), (0, 0, 0, 0))
+        nueva.paste(im.crop((0, 0, a, h)), (0, 0))
+        nueva.paste(medio, (a, 0))
+        nueva.paste(im.crop((b, 0, w, h)), (a + medio.width, 0))
+        im = nueva
     im.save(salida, optimize=True)
 
 if __name__ == '__main__':

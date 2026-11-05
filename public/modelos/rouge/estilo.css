@@ -2765,16 +2765,12 @@ button.bg-light:hover {
     margin-top: 0 !important
 }
 
-.mr-0 {
-    margin-right: 0 !important
-}
-
 .mb-0 {
     margin-bottom: 0 !important
 }
 
-.ml-0 {
-    margin-left: 0 !important
+.m-1 {
+    margin: 0.25rem !important
 }
 
 .mt-1 {
@@ -4149,82 +4145,6 @@ span.text {
 
 
 /* Decorations */
-
-.euforia {
-  font-family: 'Great Vibes', cursive;
-	margin-top: 10px; 
-}
-
-h1.euforia {
-  font-size: 5rem; 
-}
-
-h2.euforia {
-  font-size: 3.75rem;
-}
-@media screen and (max-width: 768px) {
-h1.euforia {
-  font-size: 3.125rem;
- }
-}
-
-@media screen and (max-width: 768px) {
-h2.euforia {
-  font-size: 2.5rem;
- }
-}
-
-h1.euforia i {
-  font-size: 2.5rem;
-}
-
-@media screen and (max-width: 768px) {
-h1.euforia i {
-  font-size: 1.25rem;
- }
-}
-
-h3.euforia {
-  font-size: 2.375rem;
-  margin-bottom: 5px;  
-  position: relative;
-}
-@media screen and (max-width: 768px) {
-h3.euforia {
-  font-size: 2rem;
- }
-}
-
-h3.euforia:before, h3.euforia:after {
-  content: " ";
-  position: absolute;
-  width: 100px;
-  height: 8px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:before, h3.euforia:after {
-  width: 35px;
-  height: 5px;
- }
-}
-
-h3.euforia:before {
-  margin: 5px 0 0 -110px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:before, h3.euforia:after {
-  margin: 5px 0 0 -40px;
- }
-}
-
-h3.euforia:after {
-  margin: 5px 0 0 10px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:after {
-  margin: 5px 0 0 10px;
- }
-}
 .lovestory {
   font-family: "Dantina", cursive;
 	line-height: 3.00 
@@ -4608,6 +4528,37 @@ font-size: 1.75rem;
 	
 }
 /* Flickering animation */
+.date-line {
+  width: 250px;
+  text-align: center;
+  margin: auto;
+  overflow: hidden;
+  font-size: 1.25rem;
+}
+
+@media screen and (max-width: 768px) {
+.date-line {
+	   width: 200px;
+	   font-size: 0.938rem;
+ }
+}
+.date-line:before {
+  margin-left: -100%;
+}
+.date-line:after {
+  margin-right: -100%;
+}
+.date-line:before, .date-line:after {
+  display: inline-block;
+  content: "";
+  background-color: #fff;
+  height: 1px;
+  width: 100%;
+  vertical-align: middle;
+  box-sizing: border-box;
+  border: solid #FFF;
+  border-width: 0 10px;
+}
 
 
 
@@ -5125,3 +5076,8 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* Portada: aire debajo de los nombres (no tocan la línea) y la frase con la fuente del diseño, más grande y en bordó */
+#home-section [data-ajustar] { margin-bottom: .9rem !important; padding-bottom: .2rem !important; }
+#home-section .rouge-titulo { font-size: 3.2rem !important; color: #890029 !important; }
+@media (max-width: 767px) { #home-section .rouge-titulo { font-size: 2.6rem !important; } }

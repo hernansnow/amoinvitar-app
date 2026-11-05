@@ -32,31 +32,32 @@
     },
     "premium": {
       "secciones": [
-        "musica",
         "rsvp"
       ],
       "incluye": {
-        "sobre": true,
-        "musica": true,
-        "cuenta": true,
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
         "fotosPortada": 1,
         "fotosGaleria": 20
       }
     },
     "deluxe": {
       "secciones": [
-        "musica",
         "rsvp"
       ],
       "incluye": {
-        "sobre": true,
-        "musica": true,
-        "cuenta": true,
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
         "fotosPortada": 1,
-        "fotosGaleria": 20,
-        "sugerenciasDress": true
+        "fotosGaleria": 20
       }
     }
+  },
+  "sinFotoRsvp": true,
+  "proporciones": {
+    "portada": "1:1"
   },
   "nombresHTML": {
     "portada": "{a}",
@@ -85,6 +86,15 @@
       ]
     }
   },
+  "demoBorrosas": {
+    "15": {
+      "portada": [
+        "globo.jpg"
+      ],
+      "galeria": [],
+      "testigos": []
+    }
+  },
   "porEvento": {},
   "acceso": {
     "css": [
@@ -92,11 +102,6 @@
       "/modelos/party/tema.css"
     ]
   },
-  "demoBorrosas": {
-    "15": {
-      "portada": [],
-      "galeria": [],
-      "testigos": []
-    }
-  }
+  "simple": true,
+  "std": false
 }

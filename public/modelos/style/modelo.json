@@ -18,7 +18,7 @@
     "byn": false,
     "enRsvp": true
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "portadaSinFoto": "img/wave-mid-bronce.png",
   "paquetes": {
     "basic": {
@@ -83,6 +83,13 @@
       }
     }
   },
+  "sinFotoRsvp": true,
+  "textosDemo": {
+    "historia.texto": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos."
+  },
+  "fotoHistoria": "3:2",
+  "proporciones": {},
   "nombresHTML": {
     "portada": "{a}",
     "cierre": "{a}",
@@ -263,6 +270,14 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos."
+      },
+      "sinFotoRsvp": true,
+      "fotoHistoria": "4:5",
+      "proporciones": {},
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#a78977"
@@ -283,6 +298,146 @@
               "posPc": "50% 38%"
             }
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [
+              {
+                "x": 676,
+                "y": 1792,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 676,
+                "y": 1887,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1792,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1887,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              }
+            ],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1085,
+                "y": 933,
+                "tam": 51.9,
+                "fuente": "texto",
+                "color": "#fcfbf7",
+                "espaciado": 0,
+                "mayus": true,
+                "lineas": {
+                  "largo": 200,
+                  "separacion": 15,
+                  "grosor": 3
+                }
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1074,
+                "y": 1237,
+                "tam": 360.2,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "ancho": 1100,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1076,
+                "y": 1642,
+                "tam": 89,
+                "fuente": "texto",
+                "color": "#fbfdfa",
+                "mayus": true,
+                "ancho": 703,
+                "ajustar": true
+              },
+              {
+                "id": "dsem",
+                "texto": "{diaSemana}",
+                "x": 812,
+                "y": 1843,
+                "tam": 47.3,
+                "fuente": "texto",
+                "color": "#f9f4f0",
+                "mayus": true
+              },
+              {
+                "id": "dia",
+                "texto": "{dia}",
+                "x": 1087,
+                "y": 1845,
+                "tam": 123.8,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "peso": 500
+              },
+              {
+                "id": "mes",
+                "texto": "{mes}",
+                "x": 1331,
+                "y": 1844,
+                "tam": 44.5,
+                "fuente": "texto",
+                "color": "#fffbf8",
+                "mayus": true
+              },
+              {
+                "id": "anio",
+                "texto": "{anio}",
+                "x": 1081,
+                "y": 1974,
+                "tam": 48.9,
+                "fuente": "texto",
+                "color": "#f8ede9"
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1078,
+                "y": 2139,
+                "tam": 36.7,
+                "fuente": "texto",
+                "color": "#f0e4dc",
+                "espaciado": 0,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
         }
       }
     },
@@ -305,6 +460,7 @@
         "premium": {
           "secciones": [
             "musica",
+            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -323,6 +479,7 @@
         "deluxe": {
           "secciones": [
             "musica",
+            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -348,6 +505,14 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos."
+      },
+      "sinFotoRsvp": true,
+      "fotoHistoria": "3:2",
+      "proporciones": {},
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#a78977"
@@ -367,6 +532,146 @@
               "pos": "50% 20%"
             }
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [
+              {
+                "x": 676,
+                "y": 1792,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 676,
+                "y": 1887,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1792,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1887,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              }
+            ],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1085,
+                "y": 933,
+                "tam": 51.9,
+                "fuente": "texto",
+                "color": "#fcfbf7",
+                "espaciado": 0,
+                "mayus": true,
+                "lineas": {
+                  "largo": 200,
+                  "separacion": 15,
+                  "grosor": 3
+                }
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1074,
+                "y": 1237,
+                "tam": 360.2,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "ancho": 1100,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1076,
+                "y": 1642,
+                "tam": 89,
+                "fuente": "texto",
+                "color": "#fbfdfa",
+                "mayus": true,
+                "ancho": 703,
+                "ajustar": true
+              },
+              {
+                "id": "dsem",
+                "texto": "{diaSemana}",
+                "x": 812,
+                "y": 1843,
+                "tam": 47.3,
+                "fuente": "texto",
+                "color": "#f9f4f0",
+                "mayus": true
+              },
+              {
+                "id": "dia",
+                "texto": "{dia}",
+                "x": 1087,
+                "y": 1845,
+                "tam": 123.8,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "peso": 500
+              },
+              {
+                "id": "mes",
+                "texto": "{mes}",
+                "x": 1331,
+                "y": 1844,
+                "tam": 44.5,
+                "fuente": "texto",
+                "color": "#fffbf8",
+                "mayus": true
+              },
+              {
+                "id": "anio",
+                "texto": "{anio}",
+                "x": 1081,
+                "y": 1974,
+                "tam": 48.9,
+                "fuente": "texto",
+                "color": "#f8ede9"
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1078,
+                "y": 2139,
+                "tam": 36.7,
+                "fuente": "texto",
+                "color": "#f0e4dc",
+                "espaciado": 0,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
         }
       }
     },
@@ -389,6 +694,7 @@
         "premium": {
           "secciones": [
             "musica",
+            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -407,6 +713,7 @@
         "deluxe": {
           "secciones": [
             "musica",
+            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -432,6 +739,14 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos."
+      },
+      "sinFotoRsvp": true,
+      "fotoHistoria": "3:2",
+      "proporciones": {},
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#a78977"
@@ -452,6 +767,146 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [
+              {
+                "x": 676,
+                "y": 1792,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 676,
+                "y": 1887,
+                "w": 286,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1792,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              },
+              {
+                "x": 1190,
+                "y": 1887,
+                "w": 282,
+                "h": 3,
+                "color": "#ffffff"
+              }
+            ],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1085,
+                "y": 933,
+                "tam": 51.9,
+                "fuente": "texto",
+                "color": "#fcfbf7",
+                "espaciado": 0,
+                "mayus": true,
+                "lineas": {
+                  "largo": 200,
+                  "separacion": 15,
+                  "grosor": 3
+                }
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1074,
+                "y": 1237,
+                "tam": 360.2,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "ancho": 1100,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1076,
+                "y": 1642,
+                "tam": 89,
+                "fuente": "texto",
+                "color": "#fbfdfa",
+                "mayus": true,
+                "ancho": 703,
+                "ajustar": true
+              },
+              {
+                "id": "dsem",
+                "texto": "{diaSemana}",
+                "x": 812,
+                "y": 1843,
+                "tam": 47.3,
+                "fuente": "texto",
+                "color": "#f9f4f0",
+                "mayus": true
+              },
+              {
+                "id": "dia",
+                "texto": "{dia}",
+                "x": 1087,
+                "y": 1845,
+                "tam": 123.8,
+                "fuente": "texto",
+                "color": "#ffffff",
+                "peso": 500
+              },
+              {
+                "id": "mes",
+                "texto": "{mes}",
+                "x": 1331,
+                "y": 1844,
+                "tam": 44.5,
+                "fuente": "texto",
+                "color": "#fffbf8",
+                "mayus": true
+              },
+              {
+                "id": "anio",
+                "texto": "{anio}",
+                "x": 1081,
+                "y": 1974,
+                "tam": 48.9,
+                "fuente": "texto",
+                "color": "#f8ede9"
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1078,
+                "y": 2139,
+                "tam": 36.7,
+                "fuente": "texto",
+                "color": "#f0e4dc",
+                "espaciado": 0,
+                "mayus": true,
+                "opcional": "proximamente"
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -460,5 +915,152 @@
       "/comun/fonts/google/abril-fatface+alex-brush+jost.css",
       "/modelos/style/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Abril Fatface",
+      "texto": "Montserrat",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [
+          {
+            "x": 676,
+            "y": 1792,
+            "w": 286,
+            "h": 3,
+            "color": "#ffffff"
+          },
+          {
+            "x": 676,
+            "y": 1887,
+            "w": 286,
+            "h": 3,
+            "color": "#ffffff"
+          },
+          {
+            "x": 1190,
+            "y": 1792,
+            "w": 282,
+            "h": 3,
+            "color": "#ffffff"
+          },
+          {
+            "x": 1190,
+            "y": 1887,
+            "w": 282,
+            "h": 3,
+            "color": "#ffffff"
+          }
+        ],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1085,
+            "y": 933,
+            "tam": 51.9,
+            "fuente": "texto",
+            "color": "#fcfbf7",
+            "espaciado": 0,
+            "mayus": true,
+            "lineas": {
+              "largo": 200,
+              "separacion": 15,
+              "grosor": 3
+            }
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1074,
+            "y": 1237,
+            "tam": 360.2,
+            "fuente": "titulos",
+            "color": "#ffffff",
+            "ancho": 1100,
+            "ajustar": true
+          },
+          {
+            "id": "evento",
+            "texto": "Mis quince",
+            "x": 1076,
+            "y": 1642,
+            "tam": 89,
+            "fuente": "texto",
+            "color": "#fbfdfa",
+            "mayus": true,
+            "ancho": 703,
+            "ajustar": true
+          },
+          {
+            "id": "dsem",
+            "texto": "{diaSemana}",
+            "x": 812,
+            "y": 1843,
+            "tam": 47.3,
+            "fuente": "texto",
+            "color": "#f9f4f0",
+            "mayus": true
+          },
+          {
+            "id": "dia",
+            "texto": "{dia}",
+            "x": 1087,
+            "y": 1845,
+            "tam": 123.8,
+            "fuente": "texto",
+            "color": "#ffffff",
+            "peso": 500
+          },
+          {
+            "id": "mes",
+            "texto": "{mes}",
+            "x": 1331,
+            "y": 1844,
+            "tam": 44.5,
+            "fuente": "texto",
+            "color": "#fffbf8",
+            "mayus": true
+          },
+          {
+            "id": "anio",
+            "texto": "{anio}",
+            "x": 1081,
+            "y": 1974,
+            "tam": 48.9,
+            "fuente": "texto",
+            "color": "#f8ede9"
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1078,
+            "y": 2139,
+            "tam": 36.7,
+            "fuente": "texto",
+            "color": "#f0e4dc",
+            "espaciado": 0,
+            "mayus": true,
+            "opcional": "proximamente"
+          }
+        ]
+      }
+    }
   }
 }

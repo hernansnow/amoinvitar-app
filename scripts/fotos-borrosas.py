@@ -36,7 +36,8 @@ for modelo in sys.argv[1:]:
         for f in fotos:
             borrosa(f, tipo / 'borrosas' / f.name)
         nombres = {f.name for f in fotos}
-        portada = sorted(n for n in nombres if n.startswith('hero-banner')) or (['foto1.jpg'] if 'foto1.jpg' in nombres else [])
+        # La foto de portada: hero-banner…, si no la del globo (modelos simples), si no foto1
+        portada = sorted(n for n in nombres if n.startswith('hero-banner')) or (['globo.jpg'] if 'globo.jpg' in nombres else ['foto1.jpg'] if 'foto1.jpg' in nombres else [])
         galeria = sorted((n for n in nombres if re.match(r'foto\d+\.jpg$', n)), key=lambda n: int(n[4:-4]))
         manifiesto[tipo.name] = {'portada': portada, 'galeria': galeria,
                                  **{k: f'{k}.jpg' for k in ('rsvp', 'instagram') if f'{k}.jpg' in nombres},

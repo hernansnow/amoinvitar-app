@@ -80,6 +80,14 @@
       }
     }
   },
+  "sinFotoRsvp": true,
+  "textosDemo": {
+    "historia.texto": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos."
+  },
+  "proporciones": {
+    "portada": "1:1"
+  },
   "nombresHTML": {
     "portada": "<span class=\"fontawesome-star star\"></span><span>{a} <i class=\"icon-heart text-vintage\" aria-hidden=\"true\"></i> {b}</span><span class=\"fontawesome-star star\"></span>",
     "cierre": "<span class=\"text-retro display-4\">{a} <i class=\"icon-heart text-danger\" aria-hidden=\"true\"></i> {b}</span>",
@@ -137,5 +145,133 @@
       "/comun/fonts/google/jost+oswald.css",
       "/modelos/vintage/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Oswald",
+      "texto": "Montserrat",
+      "script": "Italianno",
+      "css": [
+        "/comun/fonts/google/jost+oswald.css",
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "save",
+            "texto": "SAVE",
+            "x": 633,
+            "y": 1256,
+            "tam": 280,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 700,
+            "sesgo": -11.6
+          },
+          {
+            "id": "the",
+            "texto": "THE",
+            "x": 1075,
+            "y": 1182,
+            "tam": 215.2,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 200,
+            "sesgo": -11.6
+          },
+          {
+            "id": "date",
+            "texto": "DATE",
+            "x": 1524,
+            "y": 1060,
+            "tam": 268.9,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 700,
+            "sesgo": -11.6
+          },
+          {
+            "id": "evento",
+            "texto": "nuestra boda",
+            "x": 1055,
+            "y": 1352,
+            "tam": 174.5,
+            "fuente": "script",
+            "color": "#0a0a0a",
+            "sesgo": -11.6,
+            "ancho": 697,
+            "ajustar": true
+          },
+          {
+            "id": "nombreA",
+            "texto": "{a}",
+            "x": 963,
+            "y": 1611,
+            "tam": 214.3,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 700,
+            "mayus": true,
+            "sesgo": -11.6,
+            "alinear": "der",
+            "ancho": 700,
+            "ajustar": true
+          },
+          {
+            "id": "nombreB",
+            "texto": "{b}",
+            "x": 1166,
+            "y": 1555,
+            "tam": 222.3,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 700,
+            "mayus": true,
+            "sesgo": -11.6,
+            "alinear": "izq",
+            "ancho": 700,
+            "ajustar": true
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} · {mesNum} · {anio}",
+            "x": 1088,
+            "y": 1876,
+            "tam": 114.9,
+            "fuente": "titulos",
+            "color": "#0a0a0a",
+            "peso": 300,
+            "sesgo": -11.6
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1104,
+            "y": 2294,
+            "tam": 38.2,
+            "fuente": "texto",
+            "color": "#c49a63",
+            "espaciado": 6,
+            "mayus": true,
+            "opcional": "proximamente"
+          }
+        ]
+      }
+    }
   }
 }

@@ -5,6 +5,13 @@
   var INV = window.INV;
   if (!INV) return;
 
+  // Videos de fondo del diseño (Disco): esperan al sobre o a la ventana de bienvenida; sin ninguno de los dos, cargan ya
+  function cargarVideosFondo() { [].forEach.call(document.querySelectorAll('iframe[data-sobre-src]'), function (f) { f.src = f.getAttribute('data-sobre-src'); f.removeAttribute('data-sobre-src'); }); }
+  var bv = document.getElementById('ai-bienvenida');
+  if (!document.getElementById('sobre') && (!bv || bv.hidden || getComputedStyle(bv).display === 'none')) cargarVideosFondo();
+  // Nunca queda sin video: aunque el sobre o la bienvenida sigan cerrados, a los 4 s de cargar la página se pide igual
+  addEventListener('load', function () { setTimeout(cargarVideosFondo, 4000); });
+
   // Cuenta regresiva
   if (INV.cuenta && window.jQuery && jQuery.fn.countdown) {
     var tx = INV.textos;
@@ -44,7 +51,7 @@
     return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Amo Invitar//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
       'UID:' + c.inicio + '-' + Math.random().toString(36).slice(2) + '@amoinvitar.com',
       'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''),
-      'DTSTART:' + c.inicio, 'DTEND:' + (c.fin || c.inicio),
+      c.todoElDia ? 'DTSTART;VALUE=DATE:' + c.inicio : 'DTSTART:' + c.inicio, c.todoElDia ? 'DTEND;VALUE=DATE:' + c.fin : 'DTEND:' + (c.fin || c.inicio),
       'SUMMARY:' + escICS(c.titulo), 'DESCRIPTION:' + escICS(c.descripcion + '\n' + location.href.split('#')[0]), 'LOCATION:' + escICS(c.lugar),
       'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', 'DESCRIPTION:' + escICS(c.titulo), 'END:VALARM',
       'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
@@ -55,7 +62,7 @@
     return [
       [tx2.google, 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + q(c.titulo) + '&dates=' + c.inicio + '/' + (c.fin || c.inicio) + '&details=' + q(det) + '&location=' + q(c.lugar), false],
       [tx2.apple, ics, true],
-      [tx2.outlook, 'https://outlook.live.com/calendar/0/action/compose?subject=' + q(c.titulo) + '&startdt=' + isoGuiones(c.inicio) + '&enddt=' + isoGuiones(c.fin || c.inicio) + '&location=' + q(c.lugar) + '&body=' + q(det), false],
+      [tx2.outlook, 'https://outlook.live.com/calendar/0/action/compose?subject=' + q(c.titulo) + (c.todoElDia ? '&allday=true&startdt=' + c.inicio.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') + '&enddt=' + c.fin.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') : '&startdt=' + isoGuiones(c.inicio) + '&enddt=' + isoGuiones(c.fin || c.inicio)) + '&location=' + q(c.lugar) + '&body=' + q(det), false],
       [tx2.otro, ics, true]
     ];
   }
@@ -133,27 +140,140 @@
     }
     return { ancho: der > izq ? der - izq : 0, lineas: tops.length };
   }
+  // El modelo de la página (por su hoja de estilos)
+  var MODELO = ((document.querySelector('link[href*="/modelos/"][href$="estilo.css"]') || {}).getAttribute || function () { return ''; }).call(document.querySelector('link[href*="/modelos/"][href$="estilo.css"]'), 'href') || '';
+  MODELO = (MODELO.match(/\/modelos\/([^/]+)\//) || [])[1] || '';
+  // Para los ajustes de cada modelo en la hoja común (README ronda 29: Rouge con más interlineado)
+  if (MODELO) document.documentElement.setAttribute('data-modelo', MODELO);
+  // Modelos con los dos nombres en una línea: hasta qué fracción de la letra del diseño se puede achicar
+  var UNA_LINEA = { 'std-classic': [0.5, 0.95, 1], rockabilly: [0.45, 0.86], rouge: [0.27, 0.92], oliva: [0.45, 0.86], garden: [0.4, 0.66], hojas: [0.4, 0.66], travel: [0.4, 0.9], aquarella: [0.5, 0.88], minimal: [0.5, 0.88], sky: [0.5, 0.74], lovestory: [0.42, 0.86], black: [0.42, 0.8], white: [0.42, 0.8] };
+  // Modelos donde el "&" ya va en su propia línea con su espacio (Elegance: el círculo entre los nombres)
+  var SIN_TRES = { elegance: 1, style: 1 };
   function ajustarNombres() {
     document.querySelectorAll('[data-ajustar]').forEach(function (h) {
-      h.style.fontSize = ''; h.style.maxWidth = '';
+      h.style.fontSize = ''; h.style.maxWidth = ''; h.style.marginLeft = ''; h.style.marginRight = ''; h.classList.remove('ai-nombres-3', 'ai-nombres-2'); h.style.whiteSpace = '';
+      h.querySelectorAll('br').forEach(function (b) { b.style.display = ''; });
+      // Los espacios duros alrededor del "&" (Save The Date Classic) van en un span: en tres líneas se ocultan (si no,
+      // cada uno ocupa un renglón vacío)
+      [].slice.call(h.childNodes).forEach(function (n) {
+        if (n.nodeType === 3 && /\u00a0/.test(n.textContent) && !n.textContent.replace(/[\s\u00a0]/g, '')) {
+          var e = document.createElement('span'); e.className = 'ai-esp'; e.textContent = n.textContent; h.replaceChild(e, n);
+        }
+      });
+      h.querySelectorAll('span').forEach(function (x) { x.style.letterSpacing = ''; });
       if (!h.offsetParent) return; // oculto (otra portada): se ajusta cuando se vea
       var propia = h.getAttribute('data-ajustar-en') && h.closest(h.getAttribute('data-ajustar-en'));
       var caja = propia || h.closest('.container, section') || h.parentElement;
       // Una caja propia (un círculo, un marco) cuenta por su lado más corto
       var base = propia ? Math.min(caja.clientWidth, caja.clientHeight || caja.clientWidth) : caja.clientWidth;
-      var disponible = Math.floor(base * (parseFloat(h.getAttribute('data-ajustar')) || 0.9));
-      h.style.maxWidth = disponible + 'px'; h.style.marginLeft = h.style.marginRight = 'auto';
-      var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(26, fs0 * 0.45));
+      // En la computadora, la fracción propia del diseño (data-ajustar-pc: el marco es más angosto que la sección)
+      var fr = (innerWidth >= 768 && h.getAttribute('data-ajustar-pc')) || h.getAttribute('data-ajustar');
+      var disponible = Math.floor(base * (parseFloat(fr) || 0.9));
+      h.style.maxWidth = disponible + 'px';
+      // Respeta la alineación del diseño (Armonía y B&N a la izquierda, Beach a la derecha, el resto al centro).
+      // Se mide dónde queda el texto en el diseño (la primera vez, antes de tocar nada): el text-align solo no
+      // alcanza, en Aquarella o Amanecer el centrado viene de la caja
+      // Se mide con un texto corto de prueba en lugar de los nombres: un nombre largo llena el ancho y parecía centrado
+      // (Beach a la derecha, Armonía y B&N a la izquierda quedaban al centro)
+      if (!h.dataset.alinear) {
+        var mx = h.style.maxWidth; h.style.maxWidth = '';
+        var antes = document.createDocumentFragment(); while (h.firstChild) antes.appendChild(h.firstChild);
+        var prueba = document.createElement('span'); prueba.textContent = 'Ana'; h.appendChild(prueba);
+        var t = prueba.getBoundingClientRect(), pr = h.getBoundingClientRect(), w = pr.width || 1;
+        h.removeChild(prueba); h.appendChild(antes);
+        var c = (t.left + t.right) / 2 - (pr.left + pr.right) / 2;
+        h.dataset.alinear = Math.abs(c) < w * 0.1 ? 'centro' : (t.left - pr.left < w * 0.2 ? 'izq' : (pr.right - t.right < w * 0.2 ? 'der' : 'centro'));
+        h.style.maxWidth = mx;
+      }
+      var al = h.dataset.alinear;
+      // con prioridad: clases como .m-0 (Aquarella) traen !important
+      h.style.setProperty('margin-left', al === 'izq' ? '0' : 'auto', 'important');
+      h.style.setProperty('margin-right', al === 'der' ? '0' : 'auto', 'important');
+      h.style.textAlign = al === 'izq' ? 'left' : al === 'der' ? 'right' : 'center';
+      var fs0 = parseFloat(getComputedStyle(h).fontSize), fs = fs0, minimo = Math.min(fs0, Math.max(13, fs0 * 0.3));
+      // README (ronda 27): en estos modelos los dos nombres van en una sola línea, con la letra más chica; si así
+      // ya no se leería bien, recién ahí se parten (y con más aire entre las líneas)
+      var dosNombres = h.querySelectorAll('.ai-n').length === 2;
+      if (UNA_LINEA[MODELO] && dosNombres) {
+        h.style.whiteSpace = 'nowrap';
+        // los saltos del diseño (Save The Date Classic: un nombre por línea en el celular) no cuentan en una línea
+        var saltos = h.querySelectorAll('br'); saltos.forEach(function (b) { b.style.display = 'none'; });
+        // en una línea puede usar casi todo el ancho de su caja (no solo la fracción pensada para dos líneas)
+        var ancho1 = Math.max(disponible, Math.floor(base * UNA_LINEA[MODELO][1]));
+        // (tercer valor) sin pasarse de la columna del diseño (Save The Date Classic: la columna es más angosta)
+        if (UNA_LINEA[MODELO][2] && h.parentElement) ancho1 = Math.min(ancho1, h.parentElement.clientWidth);
+        h.style.maxWidth = ancho1 + 'px';
+        var legible = Math.max(22, fs0 * UNA_LINEA[MODELO][0]);
+        for (var j = 0; j < 40 && medidas(h).ancho > ancho1 + 1 && fs > legible; j++) { fs = Math.max(legible, fs * 0.96); h.style.fontSize = fs.toFixed(1) + 'px'; }
+        if (medidas(h).ancho <= ancho1 + 1) return;
+        h.style.whiteSpace = ''; h.style.fontSize = ''; h.style.maxWidth = disponible + 'px'; fs = fs0;
+        saltos.forEach(function (b) { b.style.display = ''; });
+        h.classList.add('ai-nombres-2');
+      }
       for (var i = 0; i < 40; i++) {
         var m = medidas(h);
-        if (m.ancho <= disponible + 1 && m.lineas <= 2) break;
+        if (m.ancho <= disponible + 1) break; // cada nombre va entero (nowrap): solo se achica si no entra a lo ancho
         fs = Math.max(minimo, fs * 0.95);
         h.style.fontSize = fs.toFixed(1) + 'px';
         if (fs === minimo) break;
       }
+      // README (ronda 29): con la letra al mínimo y todavía sin entrar (Beach, con letras espaciadas), se achica el
+      // espaciado entre letras para que el nombre no se salga de la pantalla
+      if (medidas(h).ancho > disponible + 1) {
+        var esp = h.querySelectorAll('span');
+        for (var k = 0; k < 12 && medidas(h).ancho > disponible + 1; k++) {
+          esp.forEach(function (x) { var ls = parseFloat(getComputedStyle(x).letterSpacing) || 0; if (ls > 0.5) x.style.letterSpacing = (ls * 0.8).toFixed(2) + 'px'; });
+        }
+      }
+      // README (ronda 26): si quedan en tres líneas (nombre / & / nombre), el "&", el "+" o el corazón van en su línea
+      // pegados a los nombres (sin el interlineado grande del diseño: Travel, Aquarella, Cinema…)
+      var ns = h.querySelectorAll(':scope > .ai-n');
+      if (ns.length === 2) {
+        var r1 = ns[0].getBoundingClientRect(), r2 = ns[1].getBoundingClientRect();
+        var sep = [].filter.call(h.children, function (x) { return !x.classList.contains('ai-n') && !x.classList.contains('ai-esp') && x.getBoundingClientRect().width; })[0];
+        var rs = sep && sep.getBoundingClientRect(), cs = rs && rs.top + rs.height / 2;
+        var solo = rs && cs > r1.bottom - r1.height * 0.25 && cs < r2.top + r2.height * 0.25;
+        // Centrados y cada nombre en su línea ("Maximiliano / & Guadalupe"): también en tres, así queda parejo
+        // (B&N, a la izquierda, lleva el "&" delante del segundo nombre a propósito)
+        var partidos = r2.top > r1.bottom - r1.height * 0.3 && h.dataset.alinear === 'centro';
+        if (!SIN_TRES[MODELO] && rs && r2.top > r1.bottom - r1.height * 0.3 && (solo || partidos)) h.classList.add('ai-nombres-3');
+      }
+    });
+    // README (ronda 29): nombres que van en títulos separados (Passion) cambian de tamaño parejo: todos con el más chico
+    var grupos = {};
+    document.querySelectorAll('[data-ajustar-grupo]').forEach(function (h) { if (h.offsetParent) var k = h.getAttribute('data-ajustar-grupo'); (grupos[k] = grupos[k] || []).push(h); });
+    Object.keys(grupos).forEach(function (g) {
+      var min = Math.min.apply(null, grupos[g].map(function (h) { return parseFloat(getComputedStyle(h).fontSize); }));
+      grupos[g].forEach(function (h) { h.style.fontSize = min.toFixed(1) + 'px'; });
+    });
+    // La frase de la portada va en una sola línea: si no entra, primero se sacan las rayitas de los costados
+    // (date-line) y, si todavía no entra, se achica la letra (Hojas: "MI PRIMERA COMUNIÓN")
+    document.querySelectorAll('.ai-frase').forEach(function (f) {
+      f.classList.remove('ai-sin-linea'); f.style.fontSize = '';
+      if (!f.offsetParent) return;
+      var dosLineas = function () { return medidas(f).lineas > 1; };
+      if (!dosLineas()) return;
+      f.classList.add('ai-sin-linea');
+      var fs = parseFloat(getComputedStyle(f).fontSize);
+      for (var i = 0; i < 25 && dosLineas() && fs > 10; i++) { fs *= 0.95; f.style.fontSize = fs.toFixed(1) + 'px'; }
+    });
+    // La frase sobre la cinta (Cinema y Luxury): si no entra (una traducción más larga), se achica
+    document.querySelectorAll('.ai-cinta-texto').forEach(function (t) {
+      t.style.fontSize = '';
+      if (!t.offsetParent) return;
+      // La letra según el alto de la cinta (así no se sale por arriba ni por abajo), y más chica si no entra a lo ancho
+      var img = t.parentNode.querySelector('img'), alto = img && img.getBoundingClientRect().height;
+      var fs = alto ? Math.min(parseFloat(getComputedStyle(t).fontSize), alto * 0.5) : parseFloat(getComputedStyle(t).fontSize);
+      t.style.fontSize = fs.toFixed(1) + 'px';
+      for (var i = 0; i < 30 && t.scrollWidth > t.clientWidth + 1 && fs > 9; i++) { fs *= 0.94; t.style.fontSize = fs.toFixed(1) + 'px'; }
     });
   }
   ajustarNombres();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustarNombres);
   var tAjuste; addEventListener('resize', function () { clearTimeout(tAjuste); tAjuste = setTimeout(ajustarNombres, 150); });
+  // Al cambiar de tamaño (girar el celular, pasar a la compu) las galerías cambian de alto: las animaciones de entrada
+  // se recalculan, si no las secciones de abajo quedan sin aparecer
+  var tAos; function refrescarAos() { clearTimeout(tAos); tAos = setTimeout(function () { if (window.AOS) { try { AOS.refreshHard(); } catch (e) { AOS.refresh(); } } }, 300); }
+  addEventListener('resize', refrescarAos);
+  if (window.jQuery) jQuery(document).on('refreshed.owl.carousel initialized.owl.carousel', refrescarAos);
 })();

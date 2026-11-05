@@ -2727,12 +2727,20 @@ a.close.disabled {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important
 }
 
+.m-0 {
+    margin: 0 !important
+}
+
 .mt-0 {
     margin-top: 0 !important
 }
 
 .mb-0 {
     margin-bottom: 0 !important
+}
+
+.m-1 {
+    margin: 0.25rem !important
 }
 
 .mt-1 {
@@ -2819,10 +2827,6 @@ a.close.disabled {
 
 .p-1 {
     padding: 0.25rem !important
-}
-
-.pt-1 {
-    padding-top: 0.25rem !important
 }
 
 .p-2 {
@@ -3927,82 +3931,6 @@ span.text {
 
 
 /* Decorations */
-
-.euforia {
-  font-family: 'Great Vibes', cursive;
-	margin-top: 10px; 
-}
-
-h1.euforia {
-  font-size: 5rem; 
-}
-
-h2.euforia {
-  font-size: 3.75rem;
-}
-@media screen and (max-width: 768px) {
-h1.euforia {
-  font-size: 3.125rem;
- }
-}
-
-@media screen and (max-width: 768px) {
-h2.euforia {
-  font-size: 2.5rem;
- }
-}
-
-h1.euforia i {
-  font-size: 2.5rem;
-}
-
-@media screen and (max-width: 768px) {
-h1.euforia i {
-  font-size: 1.25rem;
- }
-}
-
-h3.euforia {
-  font-size: 2.375rem;
-  margin-bottom: 5px;  
-  position: relative;
-}
-@media screen and (max-width: 768px) {
-h3.euforia {
-  font-size: 2rem;
- }
-}
-
-h3.euforia:before, h3.euforia:after {
-  content: " ";
-  position: absolute;
-  width: 100px;
-  height: 8px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:before, h3.euforia:after {
-  width: 35px;
-  height: 5px;
- }
-}
-
-h3.euforia:before {
-  margin: 5px 0 0 -110px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:before, h3.euforia:after {
-  margin: 5px 0 0 -40px;
- }
-}
-
-h3.euforia:after {
-  margin: 5px 0 0 10px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:after {
-  margin: 5px 0 0 10px;
- }
-}
 .lovestory {
   font-family: "Dantina", cursive;
 	line-height: 3.00 

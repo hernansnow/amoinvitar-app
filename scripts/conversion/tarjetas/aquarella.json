@@ -1,0 +1,200 @@
+{
+ "fuentes": {
+  "titulos": "Montez",
+  "texto": "Jost",
+  "serif": "Bodoni Moda",
+  "css": [
+   "/comun/fonts/catalogo/catalogo.css"
+  ]
+ },
+ "eventos": {
+  "boda": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    }
+   ],
+   "formas": [
+    {
+     "x": 797,
+     "y": 1916,
+     "w": 553,
+     "h": 3,
+     "color": "#222222"
+    }
+   ],
+   "textos": [
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "mayus": true,
+     "x": 1068,
+     "y": 1164,
+     "tam": 78.3,
+     "fuente": "texto",
+     "peso": 500,
+     "color": "#9b916e",
+     "espaciado": 29.9
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 1086,
+     "y": 1480,
+     "tam": 314.8,
+     "fuente": "titulos",
+     "color": "#9f916c",
+     "ancho": 1900,
+     "ajustar": true,
+     "amp": {
+      "fondo": "#9f916c",
+      "color": "#e4eae8",
+      "tam": 0.62
+     }
+    },
+    {
+     "id": "evento",
+     "texto": "Nuestra boda",
+     "mayus": true,
+     "x": 1077,
+     "y": 1807,
+     "tam": 57.3,
+     "fuente": "texto",
+     "peso": 500,
+     "color": "#a09366",
+     "espaciado": 26.1,
+     "plantilla": "{evento}"
+    },
+    {
+     "id": "fecha",
+     "texto": "{dd}  |  {mesNum}  |  {anioCorto}",
+     "x": 1080,
+     "y": 2046,
+     "tam": 76.2,
+     "fuente": "texto",
+     "peso": 500,
+     "color": "#9f916c",
+     "espaciado": 11.2,
+     "marcas": {
+      "chars": "|",
+      "color": "#222222"
+     }
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente\nla invitación\nformal",
+     "mayus": true,
+     "x": 1074,
+     "y": 2309,
+     "tam": 33.3,
+     "fuente": "serif",
+     "color": "#2e3133",
+     "espaciado": 12,
+     "altoLinea": 2.28,
+     "opcional": "proximamente"
+    }
+   ]
+  },
+  "15": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    }
+   ],
+   "formas": [
+    {
+     "x": 797,
+     "y": 1916,
+     "w": 553,
+     "h": 3,
+     "color": "#222222"
+    }
+   ],
+   "textos": [
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "mayus": true,
+     "x": 1068,
+     "y": 1164,
+     "tam": 78.3,
+     "fuente": "texto",
+     "peso": 500,
+     "color": "#9b916e",
+     "espaciado": 29.9
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 1091,
+     "y": 1484,
+     "tam": 473.3,
+     "fuente": "titulos",
+     "color": "#9f916c",
+     "ancho": 1900,
+     "ajustar": true,
+     "amp": {
+      "fondo": "#9f916c",
+      "color": "#e4eae8",
+      "tam": 0.62
+     }
+    },
+    {
+     "id": "evento",
+     "texto": "Mis 15 años",
+     "mayus": true,
+     "x": 1078,
+     "y": 1808,
+     "tam": 60,
+     "fuente": "texto",
+     "peso": 500,
+     "color": "#a09366",
+     "espaciado": 24.2,
+     "plantilla": "{evento}"
+    },
+    {
+     "id": "fecha",
+     "texto": "{dd}  |  {mesNum}  |  {anioCorto}",
+     "x": 1080,
+     "y": 2046,
+     "tam": 76.2,
+     "fuente": "texto",
+     "peso": 500,
+     "color": "#9f916c",
+     "espaciado": 11.2,
+     "marcas": {
+      "chars": "|",
+      "color": "#222222"
+     }
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente\nla invitación\nformal",
+     "mayus": true,
+     "x": 1074,
+     "y": 2309,
+     "tam": 33.3,
+     "fuente": "serif",
+     "color": "#2e3133",
+     "espaciado": 12,
+     "altoLinea": 2.28,
+     "opcional": "proximamente"
+    }
+   ]
+  }
+ }
+}

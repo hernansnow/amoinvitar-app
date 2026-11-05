@@ -153,8 +153,8 @@ h4.square-peg-regular {
         <div class="row align-items-center justify-content-center">
          <div class="text-center mb-1 ml-auto mr-auto" style="z-index: 99">
 			 <div class="text-center mb-0" style="z-index: 99">
-				 <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="elegance2 p-0 text-marron-baby text-uppercase font-weight-light" style="letter-spacing: 5px; line-height: 0;"><span class="text-azul-baby">él</span>/<span class="text-rosa-baby">ella</span></h1>
-		       <h2 data-caso="titulo" data-t="portada.subtitulo" class="square-peg-regular text-marron-baby p-0 show-desktop" style="line-height: 1.3">Baby Shower</h2>
+				 <h1 class="elegance2 p-0 text-marron-baby text-uppercase font-weight-light" style="letter-spacing: 5px; line-height: 0;"><span class="text-azul-baby">él</span>/<span class="text-rosa-baby">ella</span></h1>
+		       <h2 class="square-peg-regular text-marron-baby p-0 show-desktop ai-frase" style="line-height: 1.3">Baby Shower</h2>
 				 <h2 class="square-peg-regular text-marron-baby p-0 show-mobile" style="line-height: 1;">Baby Shower</h2>
 			
 				</div> 
@@ -166,7 +166,7 @@ h4.square-peg-regular {
 			 </div>
 			 <div class="col-md-6 ml-auto mr-auto text-center">
 				 <h5 data-caso="oracion" data-t="portada.detalle" class="elegance2 p-0 text-marron-baby">Acompáñanos en la celebración de revelación de género</h5>
-			   <h1 class="square-peg-regular text-black-50 p-0 mb-0">Dani &amp; Marce</h1>
+			   <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="square-peg-regular text-black-50 p-0 mb-0">Dani &amp; Marce</h1>
 
 			 <h4 data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="mb-0 p-0 elegance2 text-marron-baby font-weight-bolder" hidden> 12 • 09 • 2027 </h4>
 				 <!-- Countdown 1-->
@@ -208,12 +208,11 @@ h4.square-peg-regular {
 		  <div class="row pt-0">
             <div class="col-md-8 ml-auto mr-auto pt-0 text-center" data-aos="fade-up">
                <img loading="lazy" class="img-fluid mb-0" src="demo/revelacion/gender-reveal-2.png" width="90px" alt="Imagen">
-			 <h4 class="text-black square-peg-regular mb-0">Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!</h4>
+			 <h4 data-t="bienvenida.texto" data-si="historia.bienvenida" class="font-weight-bolder mb-0 pb-2">¡Queremos invitarte a nuestra boda!</h4><h2 data-si="historia.activa" data-t="historia.titulo" class="d-none">Nuestra Historia</h2><h4 data-si="historia.activa" class="text-black square-peg-regular mb-0 g-historia"><span data-campo-html="historia.texto">Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!</span></h4>
           </div>
         </div>
 	   </div> 
-    </section>
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
    <section class="site-section p-0 text-center" style="background: linear-gradient(335deg,rgba(84, 110, 135, 0.2) 0%, rgba(87, 199, 133, 0) 50%, rgba(173, 118, 129, 0.2) 100%);" id="agenda">
 	    <div class="col-md-4 ml-auto mr-auto">
@@ -259,7 +258,7 @@ h4.square-peg-regular {
 			<div data-si="fotos.rsvp" class="col-lg-6 mt-auto mb-auto">
 			<div class="text-center">
 				
-				<img data-attr="src:c:fotos.rsvp;style:c:fotos.rsvpEstilo" loading="lazy" src="demo/revelacion/rsvp.jpg" alt="foto" class="img-fluid rounded rockabilly-filtered">
+				<img data-attr="src:c:fotos.rsvp;style:c:fotos.rsvpEstilo" loading="lazy" src="demo/revelacion/rsvp.jpg" alt="foto" class="img-fluid rounded rockabilly-filtered ai-foto-rsvp">
                 
               </div>
 			</div>
@@ -302,7 +301,7 @@ h4.square-peg-regular {
 			  </div>
 			  <h2 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center square-peg-regular text-azul-baby">Dress Code</h2>
 			  <h4 data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center mb-3 square-peg-regular">Formal y elegante.</h4><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
-            <p class="text-center mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <p class="text-center mb-2 g-evitar-titulo"><span data-t="dress.evitar">Colores a evitar</span></p>
             <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
           </div>
      				   <div data-si="dresscode.sugerencias" data-seccion="estilos" class="text-center">	
@@ -377,7 +376,7 @@ h4.square-peg-regular {
       </div>
     </section>
 		
-	<section data-seccion="itinerario" class="site-section" style="background-image: linear-gradient(rgba(173, 118, 129, 0.0), rgba(245, 245,245, 0.0)); background-color:transparent;" id="itinerario">
+	<section data-seccion="itinerario" class="site-section" style="background-image: linear-gradient(rgba(173, 118, 129, 0.0), rgba(245, 245, 245, 0.0)); background-color:transparent;" id="itinerario">
       <div class="container">
 		  <div class="col-12 text-center" data-aos="fade-up">
 			  <img loading="lazy" class="img-fluid mb-2" src="demo/revelacion/gender-reveal-10.png" width="100" alt="Imagen">
@@ -443,14 +442,25 @@ h4.square-peg-regular {
 		    </div>
     </section>
 	  
-    <div id="hashtag" data-seccion="instagram" class="col-md-8 text-center mb-5 ml-auto mr-auto" data-aos="fade-in">
+    <section data-seccion="instagram" class="site-section pb-0" id="instagram">
+      <div class="container">
+          <div id="hashtag" class="col-md-8 text-center mb-5 ml-auto mr-auto" data-aos="fade-in">
 			   <div class="text-center mt-2">
 				  <img loading="lazy" class="img-fluid mb-2" src="demo/revelacion/gender-reveal-4.png" width="80" alt="Imagen">
 			  </div>
 			  <h2 data-t="hashtag.titulo" class="mb-3 text-center square-peg-regular text-azul-baby">Etiqueta tus Fotos</h2>
             <h5 class="mb-4"><span data-si="hashtag.texto" data-campo="hashtag.texto" class="text-white p-1" style="background: linear-gradient(90deg,rgba(173, 118, 129, 1) 0%, rgba(84, 110, 135, 1) 100%);">#BabyShowerDaniyMarce2027</span></h5>
 			  <h4 class="text-center">Comparte tus fotos y videos durante el baby shower en Instagram con el hashtag.</h4>
-          </div><section data-seccion="album" class="site-section pb-0" id="instagram">
+          </div>
+		  <div class="col-12 text-center">
+			  <a href="https://www.instagram.com/explore/tags/BabyShowerDaniyMarce2027/" target="_blank" class="btn button-azul-baby mb-2 text-uppercase rounded-pill font-weight-bolder p-2">
+			 &#160;VER FOTOS&#160;</a>
+		      </div>
+      </div>
+			 <div class="col-md-4 ml-auto mr-auto">
+		  <img loading="lazy" class="img-fluid mb-0 mt-0 p-0" src="demo/revelacion/gender-reveal-1.png" alt="Imagen">
+		 </div>
+    </section><section data-seccion="album" class="site-section pb-0" id="instagram">
       <div class="container">
           <div class="col-md-8 text-center mb-5 ml-auto mr-auto" data-aos="fade-in">
 			   <div class="text-center mt-2">
@@ -472,10 +482,10 @@ h4.square-peg-regular {
 		 </div>
     </section>
 		
-<div class="site-section" id="musica">
+<div data-seccion="canciones" class="site-section ai-sec-musica" id="musica">
       <div class="container">
         <div class="row">
-                   <div id="musica" data-seccion="canciones" class="col-md-6 text-center ml-auto mr-auto" data-aos="fade-in">
+                   <div id="musica" class="col-md-6 text-center ml-auto mr-auto" data-aos="fade-in">
                      <img loading="lazy" class="img-fluid mb-2" src="demo/revelacion/gender-reveal-12.png" width="100" alt="Imagen">
 			  <h2 data-t="canciones.titulo" class="mb-3 text-center square-peg-regular text-rosa-baby">Música</h2>
              	<h4 class="text-center mb-4 square-peg-regular">Ayúdame con la selección de canciones</h4>
@@ -487,9 +497,9 @@ h4.square-peg-regular {
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	  
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	  
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="square-peg-regular"></div></div>
+	</div>
   </div>
 </div>
 </div>
@@ -549,13 +559,13 @@ h4.square-peg-regular {
 			  <img loading="lazy" class="img-fluid mb-3" src="demo/revelacion/gender-reveal-6.png" width="150px" alt="Imagen">
 			  </div>
 		    <div class="text-center mb-5">
-				 <h2 data-campo-html="nombres.cierre" class="elegance2 p-0 text-marron-baby text-uppercase font-weight-light" style="letter-spacing: 5px; line-height: 0;"><span class="text-azul-baby">él</span>/<span class="text-rosa-baby">ella</span></h2>
-		       <p data-caso="titulo" data-t="portada.subtitulo" class="square-peg-regular text-marron-baby p-0" style="font-size: 3rem; line-height: 1.2;">Baby Shower</p>
+				 <h2 class="elegance2 p-0 text-marron-baby text-uppercase font-weight-light" style="letter-spacing: 5px; line-height: 0;"><span class="text-azul-baby">él</span>/<span class="text-rosa-baby">ella</span></h2>
+		       <p class="square-peg-regular text-marron-baby p-0" style="font-size: 3rem; line-height: 1.2;">Baby Shower</p>
 			  <h4 data-campo-html="pie.texto" data-si="pie.mostrar" class="text-center square-peg-regular">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos.</h4>
           </div>
-			   <div data-si="redes.hay" data-seccion="redes" class="col-12 text-center border-top mb-5">
+			   <div data-si="redes.hay" data-seccion="redes" class="col-12 text-center border-top mb-5 ai-redes">
 			     <h6 class="mb-3 mt-5">Redes oficiales del evento</h6>
-			     <a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h3 text-black"></span></a> <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h3 text-black"></span></a> <a data-attr="href:c:redes.tiktok" data-si="redes.tiktok" rel="noopener" href="#" target="_blank" class="pl-0 pr-3 text-black"><img alt="TikTok" loading="lazy" src="img/tiktok.svg" width="26" class="pt-0 pb-3"></a>
+			     <a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h3 text-black"></span></a> <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h3 text-black"></span></a> <a aria-label="TikTok" data-attr="href:c:redes.tiktok" data-si="redes.tiktok" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><i class="icon-tiktok h3 text-black" aria-hidden="true"></i></a>
 			  </div>
            <div class="col-12 text-center">
 			 <h3 data-t="perdiste.titulo" class="mb-2 text-center square-peg-regular text-black">¿Te perdiste algo?</h3>
@@ -581,7 +591,7 @@ h4.square-peg-regular {
   <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
     <div class="container">
       <div class="col-md-6 ml-auto mr-auto p-0">
-        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
+        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0, 0, 0,0.15)">
           <div class="col-6 ml-auto text-right p-0">
             <a href="https://amoinvitar.com/"><img class="img-fluid mb-1 mr-1" width="90" src="../../comun/img/amoinvitar-line.svg" alt="Amo Invitar!"></a>
           </div>

@@ -1,0 +1,226 @@
+{
+ "fuentes": {
+  "titulos": "Fleur De Leah",
+  "texto": "Jost",
+  "css": [
+   "/comun/fonts/catalogo/catalogo.css"
+  ]
+ },
+ "eventos": {
+  "boda": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    }
+   ],
+   "formas": [],
+   "textos": [
+    {
+     "id": "save",
+     "texto": "SAVE",
+     "x": 799,
+     "y": 494,
+     "tam": 99.2,
+     "fuente": "texto",
+     "color": "#9a7e6c"
+    },
+    {
+     "id": "the",
+     "texto": "THE",
+     "x": 1083,
+     "y": 501,
+     "tam": 65.2,
+     "fuente": "texto",
+     "color": "#9a7e6c"
+    },
+    {
+     "id": "date",
+     "texto": "DATE",
+     "x": 1347,
+     "y": 496,
+     "tam": 99,
+     "fuente": "texto",
+     "color": "#9a7e6c"
+    },
+    {
+     "id": "nombreA",
+     "texto": "{a}",
+     "x": 1058,
+     "y": 1265,
+     "tam": 338.4,
+     "fuente": "titulos",
+     "color": "#9a7e6c",
+     "ancho": 1250,
+     "ajustar": true
+    },
+    {
+     "id": "amp",
+     "texto": "&",
+     "x": 1062,
+     "y": 1547,
+     "tam": 205.6,
+     "fuente": "titulos",
+     "color": "#9a7e6c"
+    },
+    {
+     "id": "nombreB",
+     "texto": "{b}",
+     "x": 1058,
+     "y": 1808,
+     "tam": 337.8,
+     "fuente": "titulos",
+     "color": "#9a7e6c",
+     "ancho": 1250,
+     "ajustar": true
+    },
+    {
+     "id": "evento",
+     "texto": "Nuestra boda",
+     "x": 1089,
+     "y": 2527,
+     "tam": 96.3,
+     "fuente": "texto",
+     "color": "#9a7e6c",
+     "espaciado": 36.9,
+     "mayus": true,
+     "plantilla": "{evento}",
+     "ancho": 1324,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dia} • {mes} • {anio}",
+     "x": 1079,
+     "y": 2011,
+     "tam": 67.4,
+     "fuente": "texto",
+     "color": "#9a8478",
+     "espaciado": 6,
+     "mayus": true,
+     "peso": 500
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la\ninvitación formal",
+     "x": 1077,
+     "y": 2713,
+     "tam": 34.9,
+     "fuente": "texto",
+     "color": "#a89890",
+     "mayus": true,
+     "espaciado": 4,
+     "opcional": "proximamente",
+     "altoLinea": 0.88
+    }
+   ]
+  },
+  "15": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    },
+    {
+     "img": "img/std-icono-15.png",
+     "x": 771,
+     "y": 978,
+     "w": 600,
+     "h": 243
+    }
+   ],
+   "formas": [],
+   "textos": [
+    {
+     "id": "save",
+     "texto": "SAVE",
+     "x": 799,
+     "y": 494,
+     "tam": 99.2,
+     "fuente": "texto",
+     "color": "#9a7e6c"
+    },
+    {
+     "id": "the",
+     "texto": "THE",
+     "x": 1083,
+     "y": 501,
+     "tam": 65.2,
+     "fuente": "texto",
+     "color": "#9a7e6c"
+    },
+    {
+     "id": "date",
+     "texto": "DATE",
+     "x": 1347,
+     "y": 496,
+     "tam": 99,
+     "fuente": "texto",
+     "color": "#9a7e6c"
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 1042,
+     "y": 1531,
+     "tam": 423.4,
+     "fuente": "titulos",
+     "color": "#9a7e6c",
+     "ancho": 1300,
+     "ajustar": true
+    },
+    {
+     "id": "evento",
+     "texto": "Mis quince",
+     "x": 1095,
+     "y": 2536,
+     "tam": 113.8,
+     "fuente": "texto",
+     "color": "#9a7e6c",
+     "espaciado": 21.7,
+     "mayus": true,
+     "plantilla": "{evento}",
+     "ancho": 1015,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dia} • {mes} • {anio}",
+     "x": 1079,
+     "y": 2011,
+     "tam": 67.4,
+     "fuente": "texto",
+     "color": "#9a8478",
+     "espaciado": 6,
+     "mayus": true,
+     "peso": 500
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente la\ninvitación formal",
+     "x": 1077,
+     "y": 2713,
+     "tam": 34.9,
+     "fuente": "texto",
+     "color": "#a89890",
+     "mayus": true,
+     "espaciado": 4,
+     "opcional": "proximamente",
+     "altoLinea": 0.88
+    }
+   ]
+  }
+ }
+}

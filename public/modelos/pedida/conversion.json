@@ -1,0 +1,40 @@
+{
+  "boda": {
+    "carpeta": "compromiso",
+    "archivo": "pedida-de-mano.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index.html",
+        "secciones": [
+          "rsvp"
+        ],
+        "avisos": [
+          "portada: sin foto de la demo (el fondo queda fijo)",
+          "música: sin <audio id=\"audio\">",
+          "historia: no se encontró el texto ni el saludo",
+          "galería: no se encontró",
+          "celebracion: sin \"DÍA Y HORARIO\"",
+          "celebracion: sin \"LUGAR\"",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline",
+          "cierre: sin sección de cierre",
+          "perdiste: sin lugar",
+          "perdiste: se agregó (no había)",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "nombresPortada": "Andrea <i class=\"icon-heart text-small-sm text-gold\" aria-hidden=\"true\"></i> Cristian",
+          "portadaFotos": 0,
+          "idAgenda": "home-section",
+          "rsvpConFoto": false,
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montez-2bf25c.css"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -31,8 +31,99 @@
 .ai-video-portada { object-fit: cover; }
 .ai-slides-fondo .ai-slide { position: absolute; inset: 0; }
 
-/* Cinta con texto (Cinema y Luxury en bautismo y comunión): la cinta del diseño en blanco y la frase encima */
+/* Cinta con texto (Cinema y Luxury): la cinta del diseño en blanco y la frase encima, inclinada como la cinta;
+   si no entra, comun/js/invitacion.js la achica */
 .ai-cinta { position: relative; display: inline-block; max-width: 100%; }
 .ai-cinta > img { display: block; margin: 0 auto; }
-.ai-cinta-texto { position: absolute; inset: 0 14%; display: flex; align-items: center; justify-content: center; white-space: nowrap;
-  font-family: 'Great Vibes', cursive; font-weight: 700; color: #6b6b6b; font-size: clamp(.95rem, 4.2vw, 1.35rem); line-height: 1; padding-bottom: .12em; }
+.ai-cinta-texto { position: absolute; top: 0; bottom: 0; left: 17%; right: 17%; display: flex; align-items: center; justify-content: safe center; white-space: nowrap; overflow: hidden;
+  font-family: 'Great Vibes', cursive; font-weight: 700; color: #6b6b6b; font-size: clamp(.95rem, 4.2vw, 1.35rem);
+  line-height: 1; padding-bottom: .12em; transform: rotate(-4.6deg); transform-origin: 50% 55%; }
+.ai-cinta-larga .ai-cinta-texto { left: 14%; right: 14%; transform: rotate(-2.9deg); }
+
+/* Video de portada puesto por comun/js/video-portada.js: detrás de lo que tenga la caja de la foto */
+.ai-video-fondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
+
+/* Foto de portada redonda (globo): siempre 1:1, con el recorte que eligió el cliente */
+img.ai-foto-1x1 { aspect-ratio: 1 / 1; object-fit: cover; height: auto; }
+
+/* Subtítulo con líneas a los costados (date-line y variantes): el ancho del diseño; solo un poco de aire entre las líneas y el texto */
+[class*="date-line"]:before { margin-right: .6em !important; }
+[class*="date-line"]:after { margin-left: .6em !important; }
+
+/* Íconos de redes: todos del mismo tamaño y más chicos */
+.ai-redes a, [data-seccion="redes"] a, .ai-redes-iconos a { font-size: 1.35rem !important; line-height: 1 !important; }
+.ai-redes a [class^="icon-"], [data-seccion="redes"] a [class^="icon-"], [data-seccion="redes"] a[class^="icon-"] { font-size: 1.35rem !important; width: auto !important; height: auto !important; }
+[data-seccion="redes"] img { max-width: 34px !important; max-height: 34px !important; }
+
+/* Byn y Romantic: "mostrar en color" pone en color todas las fotos (no solo la galería) */
+body.ai-fotos-color img, body.ai-fotos-color [style*="background-image"] { filter: none !important; -webkit-filter: none !important; }
+.ai-redes-iconos { display: flex; justify-content: center; align-items: center; gap: .8rem; }
+
+/* Nombres: cada uno en su caja; el segundo baja entero a la línea siguiente si no entran */
+.ai-n { display: inline-block; white-space: nowrap; font-size: inherit !important; font-style: inherit !important; font-weight: inherit !important; color: inherit !important; letter-spacing: inherit !important; text-transform: inherit !important; }
+
+/* Fotos de los lugares en círculo: un tamaño medido (el encuadre del cliente pisa el ancho del diseño) */
+img.ai-lugar-redondo { width: 200px !important; max-width: 62% !important; height: auto !important; aspect-ratio: 1 / 1; object-fit: cover; }
+@media (min-width: 768px) { img.ai-lugar-redondo { width: 210px !important; } }
+
+/* Separadores entre Dress code, Hospedaje y Traslado: van al principio de la columna que sigue;
+   si esa columna queda primera (la de antes se apagó), el separador no va */
+.row > :first-child > .ai-sep { display: none !important; }
+/* Cinema / Lila / Travel con Dress, Hospedaje y Traslado apagados: la franja queda con un poco de aire */
+.ai-dress-franja { min-height: 120px; }
+
+/* Minimal: portada en color (el cliente apagó el sepia) */
+.ai-portada-color #home-section .site-blocks-cover, .ai-portada-color #home-section img { -webkit-filter: none !important; filter: none !important; }
+
+/* ¿Te perdiste algo? más chico (Passion: el título; Armonía: los links) */
+.ai-perdiste-chico { font-size: 1.7rem !important; }
+.ai-perdiste-links ul a { font-size: .85rem !important; }
+/* Foto del álbum / Instagram más chica y cuadrada (Armonía, Oliva) */
+img.ai-album-chica { width: 240px !important; max-width: 70% !important; margin-left: auto; margin-right: auto; display: block; }
+.ai-nowrap { white-space: nowrap; }
+
+/* Redes: el mismo aire a los dos lados de cada ícono (con una sola red no se corre del centro) */
+.ai-redes a { padding-left: .45rem !important; padding-right: .45rem !important; margin-left: 0 !important; margin-right: 0 !important; }
+.ai-redes a img { max-height: 1.6rem; }
+#galeria { width: 100%; }
+
+/* README (ronda 23): la frase de la portada ("¡Nos casamos!", "Mis 15 años"…) un poco más chica que en el diseño */
+.ai-frase { zoom: .88; }
+.ai-frase.ai-sin-linea:before, .ai-frase.ai-sin-linea:after { display: none !important; }
+/* Una date-line sin texto (Garden: la línea de abajo de la portada) es una sola línea entera, sin hueco al medio */
+[class*="date-line"]:empty:before, [class*="date-line"]:empty:after { margin-left: 0 !important; margin-right: 0 !important; }
+
+/* README (ronda 26): nombres en tres líneas (nombre / & / nombre): el separador pegado a los nombres */
+[data-ajustar].ai-nombres-3 { line-height: 1.08 !important; }
+[data-ajustar].ai-nombres-3 > .ai-n { display: block; line-height: 1.08 !important; }
+[data-ajustar].ai-nombres-3 > :not(.ai-n) { display: table !important; margin: .02em auto !important; }
+[data-ajustar].ai-nombres-3[data-alinear="izq"] > :not(.ai-n) { margin-left: 0 !important; }
+[data-ajustar].ai-nombres-3[data-alinear="der"] > :not(.ai-n) { margin-right: 0 !important; }
+/* README (ronda 27): nombres que igual se parten en dos líneas (Lovestory, Black, White…): con aire, sin pisarse */
+[data-ajustar].ai-nombres-2, [data-ajustar].ai-nombres-2 > * { line-height: 1.45 !important; }
+[data-ajustar].ai-nombres-2 { margin-top: .35em !important; margin-bottom: .55em !important; }
+/* …y si además el corazón queda en su línea: cada nombre con su alto completo (las letras de firma suben y bajan mucho) */
+[data-ajustar].ai-nombres-2.ai-nombres-3 > .ai-n { line-height: 1.85 !important; }
+[data-ajustar].ai-nombres-2.ai-nombres-3 > :not(.ai-n) { margin: -.25em auto !important; }
+/* En tres líneas los saltos de línea del diseño sobran (Disco: dejaban un renglón vacío entre el "&" y el segundo nombre) */
+[data-ajustar].ai-nombres-3 > br:not(.ai-n) { display: none !important; }
+/* README (ronda 27): Elegance/Style en el celular con el círculo del "&" pegado a los nombres; Hojas con el "&" blanco;
+   Disco con el "&" sin aire de más arriba y abajo */
+@media (max-width: 767px) { h1.elegance2[data-ajustar] { line-height: 1.02 !important; } h1.elegance2[data-ajustar] .circle-singleline { margin: .06em 0 !important; } }
+h2.hojas[data-ajustar] > .text-bronce { color: #fff !important; }
+.texto-disco-inclinado.ai-nombres-3 > .disco-2 { line-height: .9 !important; padding: 0 !important; margin: -.1em auto -.2em !important; }
+/* Nombres partidos con un envoltorio propio del diseño (Rouge): el aire también adentro */
+[data-ajustar].ai-nombres-2 > span:not(.ai-n) { display: inline-block; line-height: 1.45 !important; }
+
+/* README (ronda 29): Rouge (Dantina) en dos líneas, con interlineado para que los nombres no se encimen */
+html[data-modelo="rouge"] [data-ajustar].ai-nombres-2, html[data-modelo="rouge"] [data-ajustar].ai-nombres-2 span, html[data-modelo="rouge"] [data-ajustar].ai-nombres-2 > span:not(.ai-n) { line-height: 2.05 !important; }
+[data-modelo="rouge"] [data-ajustar].ai-nombres-2 { margin-top: .5em !important; margin-bottom: .7em !important; }
+/* Sky y Travel (Amsterdam Four): la mayúscula inicial tiene un trazo largo hacia la izquierda y el nombre parecía
+   corrido a la derecha; en dos o tres líneas, cada nombre se corre un poco para que se vea centrado */
+.amsterdam-four-font.ai-nombres-2 > .ai-n, .amsterdam-four-font.ai-nombres-3 > .ai-n { position: relative; left: -.14em; }
+/* README (ronda 29): Save The Date Classic con nombres largos (un nombre por línea): pegados al "&" */
+html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2, html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2 > .ai-n { line-height: 1.15 !important; }
+html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2 .circle-singleline2 { margin: .15em auto !important; }
+html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2 { margin-top: .2em !important; margin-bottom: .3em !important; }
+
+[data-ajustar].ai-nombres-3 > .ai-esp { display: none !important; }

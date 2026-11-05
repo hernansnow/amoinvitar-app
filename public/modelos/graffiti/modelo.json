@@ -17,12 +17,13 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "paquetes": {
     "basic": {
       "secciones": [
         "galeria",
-        "rsvp"
+        "rsvp",
+        "dresscode"
       ],
       "incluye": {
         "sobre": false,
@@ -38,6 +39,7 @@
         "historia",
         "galeria",
         "rsvp",
+        "dresscode",
         "instagram",
         "canciones",
         "regalos"
@@ -58,6 +60,8 @@
         "rsvp",
         "dresscode",
         "estilos",
+        "hospedaje",
+        "bus",
         "itinerario",
         "testigos",
         "instagram",
@@ -77,9 +81,14 @@
       }
     }
   },
+  "textosDemo": {
+    "historia.texto": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos."
+  },
+  "proporciones": {},
   "nombresHTML": {
     "portada": "<span>{a} &amp; {b}</span>",
-    "cierre": "<span>{a} &amp; {b}</span>",
+    "cierre": "{a} &amp; {b}",
     "solo": "{a}"
   },
   "miniatura": {
@@ -179,7 +188,8 @@
         "basic": {
           "secciones": [
             "galeria",
-            "rsvp"
+            "rsvp",
+            "dresscode"
           ],
           "incluye": {
             "sobre": false,
@@ -195,6 +205,7 @@
             "historia",
             "galeria",
             "rsvp",
+            "dresscode",
             "instagram",
             "canciones",
             "regalos"
@@ -215,6 +226,8 @@
             "rsvp",
             "dresscode",
             "estilos",
+            "hospedaje",
+            "bus",
             "itinerario",
             "testigos",
             "instagram",
@@ -234,6 +247,13 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {},
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#4e9c87"
@@ -254,6 +274,90 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              },
+              {
+                "img": "img/std-capa-15.png",
+                "x": 459,
+                "y": 620,
+                "w": 1302,
+                "h": 1212
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1109,
+                "y": 1097,
+                "tam": 131.1,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "mayus": true
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1094,
+                "y": 1540,
+                "tam": 345.5,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "mayus": true,
+                "ancho": 1950,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "Mis 15",
+                "x": 1073,
+                "y": 1965,
+                "tam": 194.1,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "mayus": true,
+                "ancho": 680,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd}-{mesNum}-{anio}",
+                "x": 1101,
+                "y": 2322,
+                "tam": 132.1,
+                "fuente": "titulos",
+                "color": "#fdfdfd"
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1076,
+                "y": 2677,
+                "tam": 76.7,
+                "fuente": "titulos",
+                "color": "#fff6f2",
+                "espaciado": 2.5,
+                "mayus": true,
+                "opcional": "proximamente",
+                "opacidad": 0.8
+              }
+            ]
+          }
+        }
       }
     },
     "cumple": {
@@ -261,7 +365,8 @@
         "basic": {
           "secciones": [
             "galeria",
-            "rsvp"
+            "rsvp",
+            "dresscode"
           ],
           "incluye": {
             "sobre": false,
@@ -277,6 +382,7 @@
             "historia",
             "galeria",
             "rsvp",
+            "dresscode",
             "instagram",
             "canciones",
             "regalos"
@@ -297,6 +403,8 @@
             "rsvp",
             "dresscode",
             "estilos",
+            "hospedaje",
+            "bus",
             "itinerario",
             "testigos",
             "instagram",
@@ -316,6 +424,13 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la famila y amigos más queridos. Tu estás entre ellos, por eso te espero para festejar mi cumple."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {},
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#4e9c87"
@@ -337,6 +452,90 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              },
+              {
+                "img": "img/std-capa-otros.png",
+                "x": 459,
+                "y": 620,
+                "w": 1302,
+                "h": 1212
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1109,
+                "y": 1097,
+                "tam": 131.1,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "mayus": true
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1094,
+                "y": 1540,
+                "tam": 345.5,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "mayus": true,
+                "ancho": 1950,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1073,
+                "y": 1965,
+                "tam": 194.1,
+                "fuente": "titulos",
+                "color": "#ffffff",
+                "mayus": true,
+                "ancho": 680,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd}-{mesNum}-{anio}",
+                "x": 1101,
+                "y": 2322,
+                "tam": 132.1,
+                "fuente": "titulos",
+                "color": "#fdfdfd"
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1076,
+                "y": 2677,
+                "tam": 76.7,
+                "fuente": "titulos",
+                "color": "#fff6f2",
+                "espaciado": 2.5,
+                "mayus": true,
+                "opcional": "proximamente",
+                "opacidad": 0.8
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -345,5 +544,96 @@
       "/comun/fonts/google/jost+oswald+sedgwick-ave-display.css",
       "/modelos/graffiti/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Sedgwick Ave Display",
+      "texto": "Sedgwick Ave Display",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          },
+          {
+            "img": "img/std-capa.png",
+            "x": 441,
+            "y": 604,
+            "w": 1302,
+            "h": 1220
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1108,
+            "y": 1125,
+            "tam": 131.1,
+            "fuente": "titulos",
+            "color": "#ffffff",
+            "mayus": true
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1069,
+            "y": 1512,
+            "tam": 250.6,
+            "fuente": "titulos",
+            "color": "#ffffff",
+            "mayus": true,
+            "ancho": 1950,
+            "ajustar": true
+          },
+          {
+            "id": "evento",
+            "texto": "Nuestra boda",
+            "x": 1076,
+            "y": 1970,
+            "tam": 162.2,
+            "fuente": "titulos",
+            "color": "#ffffff",
+            "mayus": true,
+            "ancho": 1308,
+            "ajustar": true
+          },
+          {
+            "id": "fecha",
+            "texto": "{dd}-{mesNum}-{anio}",
+            "x": 1099,
+            "y": 2323,
+            "tam": 131.4,
+            "fuente": "titulos",
+            "color": "#fdfdfd"
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1076,
+            "y": 2674,
+            "tam": 74.6,
+            "fuente": "titulos",
+            "color": "#fff6f2",
+            "espaciado": 3.5,
+            "mayus": true,
+            "opcional": "proximamente",
+            "opacidad": 0.8
+          }
+        ]
+      }
+    }
   }
 }

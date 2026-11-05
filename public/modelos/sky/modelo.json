@@ -19,7 +19,7 @@
     "byn": false,
     "enRsvp": false
   },
-  "videoPortada": false,
+  "videoPortada": true,
   "paquetes": {
     "basic": {
       "secciones": [
@@ -82,6 +82,10 @@
         "sugerenciasDress": true
       }
     }
+  },
+  "textosDemo": {
+    "historia.texto": "Todo comenzó hace 3 años en la facultad. Una cosa llevó a la otra y nuestra primera cita fue a un restaurante con muchos nervios y miedos. Vivimos momentos increíbles y otros que nos pusieron a prueba y ahora, luego de caminar juntos durante este tiempo, hemos decidido dar este paso tan importante en nuestras vidas, donde escribiremos un nuevo capítulo de esta historia, el cual comienza aquí y queremos que seas parte.",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te esperamos para festejar y compartir nuestra felicidad juntos."
   },
   "proporciones": {
     "lugar": "1/1"
@@ -293,6 +297,15 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "Desde muy pequeña tengo dos grandes pasiones... patinar y los peluditos de cuatro patas, y andando sobre ruedas llegué a mis 15 años. Si hay algo que aprendí, es que es importante celebrar cada momento rodeados de las personas que nos llenan el corazón...",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {
+        "lugar": "1/1"
+      },
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#264c72",
@@ -315,6 +328,93 @@
               "posPc": "50% 6%"
             }
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1067,
+                "y": 1010,
+                "tam": 60.9,
+                "fuente": "serif",
+                "color": "#050505",
+                "espaciado": 29,
+                "mayus": true,
+                "peso": 600
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1048,
+                "y": 1514,
+                "tam": 301.8,
+                "fuente": "titulos",
+                "color": "#4a7ea6",
+                "ancho": 1500,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "Mis quince años",
+                "x": 1074,
+                "y": 1779,
+                "tam": 46.5,
+                "fuente": "serif",
+                "color": "#0a0a0a",
+                "espaciado": 25.7,
+                "mayus": true,
+                "peso": 600,
+                "ancho": 962,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1075,
+                "y": 2019,
+                "tam": 66.6,
+                "fuente": "serif",
+                "color": "#0a0a0a",
+                "espaciado": 21.3,
+                "peso": 600,
+                "marcas": {
+                  "chars": "|",
+                  "color": "#416683"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la\ninvitación formal",
+                "x": 1081,
+                "y": 2853,
+                "tam": 31.6,
+                "fuente": "serif",
+                "color": "#404040",
+                "mayus": true,
+                "espaciado": 10,
+                "opcional": "proximamente",
+                "peso": 500,
+                "altoLinea": 1.99
+              }
+            ]
+          }
         }
       }
     },
@@ -382,6 +482,15 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "La vida se mide en momentos, en risas compartidas y en la gente buena con la que se cruza el camino. Hoy me toca celebrar un año más de historias, aprendizajes y motivos para brindar por todo lo que vendrá. Llegar hasta acá rodeado de las personas que hacen mi mundo más especial es el mejor regalo de todos. ¡Gracias por estar siempre y por acompañarme a festejar este día tan importante!",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {
+        "lugar": "1/1"
+      },
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#264c72",
@@ -404,6 +513,93 @@
               "posPc": "50% 4%"
             }
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1067,
+                "y": 1010,
+                "tam": 60.9,
+                "fuente": "serif",
+                "color": "#050505",
+                "espaciado": 29,
+                "mayus": true,
+                "peso": 600
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1048,
+                "y": 1514,
+                "tam": 301.8,
+                "fuente": "titulos",
+                "color": "#4a7ea6",
+                "ancho": 1500,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1074,
+                "y": 1779,
+                "tam": 46.5,
+                "fuente": "serif",
+                "color": "#0a0a0a",
+                "espaciado": 25.7,
+                "mayus": true,
+                "peso": 600,
+                "ancho": 962,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1075,
+                "y": 2019,
+                "tam": 66.6,
+                "fuente": "serif",
+                "color": "#0a0a0a",
+                "espaciado": 21.3,
+                "peso": 600,
+                "marcas": {
+                  "chars": "|",
+                  "color": "#416683"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la\ninvitación formal",
+                "x": 1081,
+                "y": 2853,
+                "tam": 31.6,
+                "fuente": "serif",
+                "color": "#404040",
+                "mayus": true,
+                "espaciado": 10,
+                "opcional": "proximamente",
+                "peso": 500,
+                "altoLinea": 1.99
+              }
+            ]
+          }
         }
       }
     },
@@ -471,6 +667,15 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz.",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {
+        "lugar": "1/1"
+      },
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#264c72",
@@ -492,6 +697,93 @@
               "pos": "50% 20%"
             }
           ]
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1067,
+                "y": 1010,
+                "tam": 60.9,
+                "fuente": "serif",
+                "color": "#050505",
+                "espaciado": 29,
+                "mayus": true,
+                "peso": 600
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1048,
+                "y": 1514,
+                "tam": 301.8,
+                "fuente": "titulos",
+                "color": "#4a7ea6",
+                "ancho": 1500,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1074,
+                "y": 1779,
+                "tam": 46.5,
+                "fuente": "serif",
+                "color": "#0a0a0a",
+                "espaciado": 25.7,
+                "mayus": true,
+                "peso": 600,
+                "ancho": 962,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1075,
+                "y": 2019,
+                "tam": 66.6,
+                "fuente": "serif",
+                "color": "#0a0a0a",
+                "espaciado": 21.3,
+                "peso": 600,
+                "marcas": {
+                  "chars": "|",
+                  "color": "#416683"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la\ninvitación formal",
+                "x": 1081,
+                "y": 2853,
+                "tam": 31.6,
+                "fuente": "serif",
+                "color": "#404040",
+                "mayus": true,
+                "espaciado": 10,
+                "opcional": "proximamente",
+                "peso": 500,
+                "altoLinea": 1.99
+              }
+            ]
+          }
         }
       }
     },
@@ -559,6 +851,15 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "Hoy recibo a Jesús en mi corazón y quiero compartir esta alegría con las personas que más quiero.",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {
+        "lugar": "1/1"
+      },
+      "videoPortada": true,
       "sobre": {
         "colores": {
           "lacre": "#264c72",
@@ -581,6 +882,93 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1067,
+                "y": 1010,
+                "tam": 60.9,
+                "fuente": "serif",
+                "color": "#050505",
+                "espaciado": 29,
+                "mayus": true,
+                "peso": 600
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1048,
+                "y": 1514,
+                "tam": 301.8,
+                "fuente": "titulos",
+                "color": "#4a7ea6",
+                "ancho": 1500,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1074,
+                "y": 1779,
+                "tam": 46.5,
+                "fuente": "serif",
+                "color": "#0a0a0a",
+                "espaciado": 25.7,
+                "mayus": true,
+                "peso": 600,
+                "ancho": 962,
+                "ajustar": true
+              },
+              {
+                "id": "fecha",
+                "texto": "{dd} | {mesNum} | {anioCorto}",
+                "x": 1075,
+                "y": 2019,
+                "tam": 66.6,
+                "fuente": "serif",
+                "color": "#0a0a0a",
+                "espaciado": 21.3,
+                "peso": 600,
+                "marcas": {
+                  "chars": "|",
+                  "color": "#416683"
+                }
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la\ninvitación formal",
+                "x": 1081,
+                "y": 2853,
+                "tam": 31.6,
+                "fuente": "serif",
+                "color": "#404040",
+                "mayus": true,
+                "espaciado": 10,
+                "opcional": "proximamente",
+                "peso": 500,
+                "altoLinea": 1.99
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -590,5 +978,105 @@
       "/comun/fonts/css/amsterdam-four-font.css",
       "/modelos/sky/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Amsterdam Four",
+      "serif": "Bodoni Moda",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1071,
+            "y": 1117,
+            "tam": 68.6,
+            "fuente": "serif",
+            "color": "#060606",
+            "espaciado": 31.9,
+            "mayus": true,
+            "peso": 600
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1077,
+            "y": 1517,
+            "tam": 200.7,
+            "fuente": "titulos",
+            "color": "#34435a",
+            "ancho": 1700,
+            "ajustar": true,
+            "amp": {
+              "fondo": "#3d6a9a",
+              "color": "#ffffff",
+              "tam": 0.45,
+              "fuente": "serif"
+            }
+          },
+          {
+            "id": "evento",
+            "texto": "Nuestra boda",
+            "x": 1080,
+            "y": 1704,
+            "tam": 48.4,
+            "fuente": "serif",
+            "color": "#070707",
+            "espaciado": 24.9,
+            "mayus": true,
+            "peso": 600,
+            "ancho": 809,
+            "ajustar": true
+          },
+          {
+            "id": "fecha",
+            "texto": "{dd} | {mesNum} | {anioCorto}",
+            "x": 1075,
+            "y": 1947,
+            "tam": 66.6,
+            "fuente": "serif",
+            "color": "#0a0a0a",
+            "espaciado": 21.3,
+            "peso": 600,
+            "marcas": {
+              "chars": "|",
+              "color": "#3e6793"
+            }
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la\ninvitación formal",
+            "x": 1081,
+            "y": 2851,
+            "tam": 31.6,
+            "fuente": "serif",
+            "color": "#404040",
+            "mayus": true,
+            "espaciado": 10,
+            "opcional": "proximamente",
+            "peso": 500,
+            "altoLinea": 2.11
+          }
+        ]
+      }
+    }
   }
 }

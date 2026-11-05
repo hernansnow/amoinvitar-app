@@ -2673,6 +2673,10 @@ button.bg-warning:hover {
     background-color: #d39e00 !important
 }
 
+.bg-white {
+    background-color: #fff !important
+}
+
 .border {
     border: 1px solid #dee2e6 !important
 }
@@ -2695,6 +2699,10 @@ button.bg-warning:hover {
 
 .rounded-circle {
     border-radius: 50% !important
+}
+
+.d-none {
+    display: none !important
 }
 
 .d-block {
@@ -4016,82 +4024,6 @@ span.text {
 
 /* Decorations */
 
-.euforia {
-  font-family: 'Great Vibes', cursive;
-	margin-top: 10px; 
-}
-
-h1.euforia {
-  font-size: 5rem; 
-}
-
-h2.euforia {
-  font-size: 3.75rem;
-}
-@media screen and (max-width: 768px) {
-h1.euforia {
-  font-size: 3.125rem;
- }
-}
-
-@media screen and (max-width: 768px) {
-h2.euforia {
-  font-size: 2.5rem;
- }
-}
-
-h1.euforia i {
-  font-size: 2.5rem;
-}
-
-@media screen and (max-width: 768px) {
-h1.euforia i {
-  font-size: 1.25rem;
- }
-}
-
-h3.euforia {
-  font-size: 2.375rem;
-  margin-bottom: 5px;  
-  position: relative;
-}
-@media screen and (max-width: 768px) {
-h3.euforia {
-  font-size: 2rem;
- }
-}
-
-h3.euforia:before, h3.euforia:after {
-  content: " ";
-  position: absolute;
-  width: 100px;
-  height: 8px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:before, h3.euforia:after {
-  width: 35px;
-  height: 5px;
- }
-}
-
-h3.euforia:before {
-  margin: 5px 0 0 -110px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:before, h3.euforia:after {
-  margin: 5px 0 0 -40px;
- }
-}
-
-h3.euforia:after {
-  margin: 5px 0 0 10px;
-}
-@media screen and (max-width: 768px) {
-h3.euforia:after {
-  margin: 5px 0 0 10px;
- }
-}
-
 .jost {
   font-family: "Jost", sans-serif !important;
   font-optical-sizing: auto;
@@ -4422,6 +4354,37 @@ font-size: 1.75rem;
 	
 }
 /* Flickering animation */
+.date-line {
+  width: 250px;
+  text-align: center;
+  margin: auto;
+  overflow: hidden;
+  font-size: 1.25rem;
+}
+
+@media screen and (max-width: 768px) {
+.date-line {
+	   width: 200px;
+	   font-size: 0.938rem;
+ }
+}
+.date-line:before {
+  margin-left: -100%;
+}
+.date-line:after {
+  margin-right: -100%;
+}
+.date-line:before, .date-line:after {
+  display: inline-block;
+  content: "";
+  background-color: #fff;
+  height: 1px;
+  width: 100%;
+  vertical-align: middle;
+  box-sizing: border-box;
+  border: solid #FFF;
+  border-width: 0 10px;
+}
 
 @keyframes move_wave {
     0% {
@@ -5015,6 +4978,12 @@ audio::-webkit-media-controls-play-button:hover {
   border:dashed 5px rgba(158, 28, 40, 1);
 }
 
+.rockabilly-div3b img{
+  border-radius: 93% 7% 92% 8% / 12% 91% 9% 88%    ;
+  background:rgba(245, 246, 230 , 0.0);
+  border:dashed 5px #4da497;
+}
+
 .rockabilly-lunares {
   background: rgba(158,28,40,0.95);
   background-image: radial-gradient(wheat 20%, transparent 0),
@@ -5475,3 +5444,19 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* Confirmación: el título sobre la foto en dos líneas dentro del marco, como el diseño (el texto del idioma no trae el salto) */
+.rockabilly-frame h2 { white-space: normal; max-width: 7.5em !important; line-height: 1.05; }
+@media (max-width: 767px) { .rockabilly-frame h2 { font-size: 1.7rem; } }
+
+/* Galería: las flechas del diseño (las del carrusel .slide-one-item.home-slider de la v2.0, ahora con 3 fotos en la compu) */
+.ai-owl-3 { position: relative; z-index: 1; }
+.ai-owl-3 .owl-nav { position: absolute !important; top: 50% !important; bottom: auto !important; left: 0; width: 100%; margin: 0; transform: none; }
+.ai-owl-3 .owl-nav .owl-prev, .ai-owl-3 .owl-nav .owl-next {
+  color: rgba(255, 255, 255, .7) !important; position: absolute !important; top: 50%; padding: 0 !important; margin: 0; height: 40px; width: 40px;
+  border: 2px solid rgba(255, 255, 255, .7); border-radius: 50%; transform: translateY(-50%); background: rgba(94, 94, 94, .2) !important;
+  transition: .3s all ease-in-out; line-height: 0; text-align: center; font-size: 1.563rem; display: inline-block; }
+.ai-owl-3 .owl-nav .owl-prev { left: 10px !important; }
+.ai-owl-3 .owl-nav .owl-next { right: 10px !important; }
+.ai-owl-3 .owl-nav .owl-prev:hover, .ai-owl-3 .owl-nav .owl-next:hover { background: rgba(94, 94, 94, .45) !important; }
+.ai-owl-3 .owl-nav .owl-prev > span, .ai-owl-3 .owl-nav .owl-next > span { position: absolute; line-height: 0; top: 50%; left: 50%; transform: translate(-50%, -50%); }

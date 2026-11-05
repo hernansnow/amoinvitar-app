@@ -22,13 +22,23 @@ import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin,
 import { puertaHTML } from './componentes/puerta.js';
 import { mesaHTML } from './componentes/mesa.js';
 import { checkinHTML } from './componentes/checkin.js';
+import { avisoRespuesta } from './avisos.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
-import { MODELOS, nombreModelo, conEvento } from './modelos.js';
-import { MODELOS_GRATIS } from './catalogo.js';
+import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento, CON_TARJETA_STD } from './modelos.js';
+import { MODELOS_GRATIS, A_MEDIDA, PRODUCTOS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
-import { sendEmail, mailNuevoAcceso } from './lib/email.js';
+import { sendEmail, mailNuevoAcceso, mailMedidaAprobada, mailAvisoInterno } from './lib/email.js';
 import { usuarioActual, crearUsuario } from './lib/auth.js';
 import * as cuenta from './rutas/cuenta.js';
+import { servirLegado } from './sitio/legado.js';
+import { vencido, venceEvento } from './vencimiento.js';
+// La invitación ya cumplió su plazo
+const paginaVencida = (nombres) => `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invitación finalizada</title>
+<body style="margin:0;min-height:100vh;display:grid;place-content:center;text-align:center;font:17px/1.5 Jost,system-ui,sans-serif;background:#f6f5f1;color:#3a3f3c;padding:20px">
+<p style="font-size:2rem;margin:0">💌</p><h1 style="font-weight:500;margin:.3em 0">${String(nombres || '').replace(/[<>&"]/g, '')}</h1>
+<p>Esta invitación ya finalizó.<br>¡Gracias por ser parte!</p><p style="margin-top:2em"><a href="https://amoinvitar.com/" style="color:#4e9c87">Amo Invitar!</a></p>`;
+import { sitioNuevo } from './sitio/nuevo.js';
+import { contacto } from './rutas/contacto.js';
 import * as tienda from './rutas/tienda.js';
 import * as admin from './rutas/admin.js';
 import { getCookie } from './lib/util.js';
@@ -65,14 +75,30 @@ const almacenDe = (env) => env.almacen || almacenD1(env);
 const secretoDe = (env) => env.SECRETO_ACCESO || 'solo-para-pruebas-locales';
 const variante = (v) => (VARIANTES.includes(v) ? v : 'es');
 
-function traductor(tipo, varnt, propios = {}, nombres = '') {
-  const d = { ...diccionario(tipo, varnt), ...propios };
+// Los textos de muestra del diseño (historia y despedida) pisan los generales, solo en castellano
+const conTextosModelo = (dic, modelo, varnt) => (modelo?.textosDemo && String(varnt).startsWith('es') ? { ...dic, ...modelo.textosDemo } : dic);
+// "Confirmar asistencia" en vez de "CONFIRMAR ASISTENCIA" (modelo.textosCaso: { clave: 'oracion' }), sin tocar las etiquetas
+const aOracion = (html) => { let primera = true; return html.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, tx) => { if (tag) return tag; const t = tx.toLocaleLowerCase(); if (!primera || !t.trim()) return t; primera = false; return t.replace(/\p{L}/u, (l) => l.toLocaleUpperCase()); }); };
+function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null) {
+  const d = { ...conTextosModelo(diccionario(tipo, varnt), modelo, varnt), ...propios };
+  for (const [k, caso] of Object.entries(modelo?.textosCaso || {})) if (caso === 'oracion' && d[k] && !(k in propios)) d[k] = aOracion(String(d[k]));
+  // Un prefijo propio del diseño (Travel: "Tripulación – Testigos"); si el cliente escribe su título, va el suyo entero
+  for (const [k, pre] of Object.entries(modelo?.textosPrefijo || {})) if (d[k] && !(k in propios)) d[k] = `${pre}${d[k]}`;
+  // Bautismo o Bautizo: la demo usa el del país; la invitación, el que eligió el cliente en la frase de la portada
+  // (así el botón Agendar, el pie y los demás textos dicen lo mismo)
+  if (tipo === 'bautismo' && propios['portada.subtitulo']) {
+    const z = /bautiz/i.test(propios['portada.subtitulo']), m = /bautism/i.test(propios['portada.subtitulo']);
+    if (z !== m) {
+      const cambiar = (t) => t.replace(/(bauti)(smo|zo)/gi, (x, a, b) => a + (z ? (b === b.toUpperCase() ? 'ZO' : 'zo') : (b === b.toUpperCase() ? 'SMO' : 'smo')));
+      for (const k of Object.keys(d)) if (typeof d[k] === 'string' && !(k in propios)) d[k] = cambiar(d[k]);
+    }
+  }
   return (k) => String(d[k] ?? '').replaceAll('{nombres}', nombres);
 }
 const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');
 
 // Títulos y textos que el cliente reescribió en el panel ({ historia: { titulo } } → 'historia.titulo').
-// Los que la plantilla pone como HTML (con saltos de línea) se escapan acá.
+// Los que la plantilla pone como HTML (con saltos de línea) se escapan aquí.
 // Invitaciones viejas con un link de álbum cargado: quedan como "link propio"
 function origenAlbum(d) {
   if (d.album?.url && !d.album.origen && !/albunear\.com/i.test(d.album.url)) d.album.origen = 'propio';
@@ -98,7 +124,7 @@ function aplanar(o, pre = '', salida = {}) {
 }
 
 // El evento guardado → lo que espera el motor
-const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, variante: ev.datos.variante });
+const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, gratis: ev.paquete === 'gratis', variante: ev.datos.variante });
 
 // Idiomas de la invitación: el principal y los adicionales contratados (el visitante
 // la ve en el suyo si está, y puede cambiarlo con ?lang=)
@@ -117,7 +143,10 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   const modelo = await modeloJSON(env, evento.modelo, url.origin, evento.tipo);
   // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html.
   // Los otros eventos: index-15.html, index-15-premium.html… (ver plantillaDe)
-  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, evento.paquete, url.origin);
+  // README (ronda 28): Basic trae cuenta regresiva (Gratis no): con la cuenta, la portada es la del diseño con su cuenta
+  if (evento.paquete === 'gratis') evento = { ...evento, paquete: 'basic', gratis: true };
+  const conCuenta = evento.paquete === 'basic' && !evento.gratis && evento.portada?.cuenta !== false;
+  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, conCuenta ? 'premium' : evento.paquete, url.origin);
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
   const idiomas = demo ? [variante(evento.variante)] : idiomasDe(evento);
   const v = demo ? variante(evento.variante) : idiomaPedido(url, evento);
@@ -126,7 +155,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     evento = structuredClone(evento);
     for (const [ruta, val] of Object.entries(aplanar(evento.traducciones?.[v.slice(0, 2)] || {}))) if (typeof val === 'string' && val.trim()) escribirRuta(evento, ruta, val);
   }
-  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres));
+  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres), modelo);
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
   vista.idiomas = { lista: idiomas, actual: v, banderas: Object.fromEntries(idiomas.map((x) => [x.slice(0, 2), banderaDe(x.slice(0, 2), evento)])) };
@@ -135,11 +164,30 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false };
     vista.sobre = { activo: false }; vista.bienvenidaModal = { activa: false };
   }
-  return html(renderizar(plantilla, vista, t, { origen: url.origin }), 200, {
+  return html(await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
     'x-robots-tag': 'noindex',
     ...(demo ? { vary: 'cf-ipcountry' } : {}),
   });
+}
+
+// Armar la página cuesta procesador (en el plan gratis de Workers el límite es 10 ms por pedido): la página armada se
+// guarda en la caché de Cloudflare con una clave que sale del diseño y de todos los datos que la arman. Si el cliente
+// cambia algo en el panel, cambia la clave y se arma de nuevo; nunca se sirve una versión vieja.
+async function renderGuardado(plantilla, vista, t, origen, extra) {
+  const cache = globalThis.caches?.default;
+  if (!cache) return renderizar(plantilla, vista, t, { origen });
+  let clave;
+  try {
+    const datos = new TextEncoder().encode(plantilla + '\u0000' + JSON.stringify([vista, extra, origen]));
+    const h = await crypto.subtle.digest('SHA-256', datos);
+    clave = new Request(`https://render.amoinvitar.internal/v1/${[...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, '0')).join('')}`);
+    const hit = await cache.match(clave);
+    if (hit) return hit.text();
+  } catch { /* sin caché: se arma igual */ }
+  const out = renderizar(plantilla, vista, t, { origen });
+  if (clave) try { await cache.put(clave, new Response(out, { headers: { 'cache-control': 'public, max-age=604800', 'content-type': 'text/html; charset=utf-8' } })); } catch { /* nada */ }
+  return out;
 }
 
 // ── Demo ──────────────────────────────────────────────────────────────
@@ -155,14 +203,38 @@ async function demo(env, url, request, idModelo) {
   const rutas = { comun: '/comun', modelo: `/modelos/${idModelo}` };
   const ev = eventoDemo({ tipo, variante: v, paquete, modelo, rutas });
   if (q.get('sobre') === 'no') ev.portada = { ...(ev.portada || {}), sobre: false }; // &sobre=no: la ventana de bienvenida
+  // Solo en la compu (npm run local): &prueba={json} pisa datos de la demo para revisar casos (nombres largos, secciones apagadas…)
+  if (env.MODO_LOCAL && q.get('prueba')) {
+    const mezclar = (a, b) => { for (const [k, x] of Object.entries(b)) a[k] = x && typeof x === 'object' && !Array.isArray(x) && a[k] && typeof a[k] === 'object' ? mezclar(a[k], x) : x; return a; };
+    mezclar(ev, JSON.parse(q.get('prueba')));
+  }
   return pagina(env, url, ev, { demo: true });
+}
+
+// ── Save The Date web ─────────────────────────────────────────────────
+// /std/<id>: la de la invitación (sección Save The Date, opción web, paga) o la comprada suelta (publicada).
+// El dueño la ve siempre desde el panel (?k=clave).
+async function saveTheDate(env, url, request, id) {
+  const ev = await almacenDe(env).evento(id);
+  if (!ev) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Save The Date no encontrada.</p>', 404);
+  const dueno = !!(await eventoConClave(env, request, url, id));
+  const suelta = MODELOS.find((m) => m.id === ev.modelo)?.std;
+  const modelo = suelta ? ev.modelo : (ev.datos.std?.web || 'std-classic');
+  const m = MODELOS.find((x) => x.id === modelo);
+  const lista = suelta ? ev.estado === 'publicado' : ev.datos.std?.tipo === 'web' && (ev.datos.extras || []).includes('std-web');
+  if (!m?.std || !m.eventos.includes(ev.tipo) || (!lista && !dueno)) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Esta Save The Date todavía no está disponible.</p>', 404);
+  if (!dueno && vencido(ev)) return html(paginaVencida(nombresDe(ev.datos.nombres)), 410, { 'x-robots-tag': 'noindex' });
+  const evento = { ...paraMotor(ev), modelo, paquete: 'basic' };
+  return pagina(env, url, evento, { sinSobre: true, prueba: dueno && !lista });
 }
 
 // ── Invitación publicada (con su seguridad) ───────────────────────────
 async function publicada(env, url, request, tipo, slug) {
   const almacen = almacenDe(env);
   const ev = await almacen.eventoPorSlug(tipo, slug);
-  if (!ev || ev.estado !== 'publicado' || (ev.vence && ev.vence < new Date().toISOString())) return null;
+  if (!ev || ev.estado !== 'publicado') return null;
+  // README (ronda 31): pasado su plazo (según el plan, desde la fecha del evento) deja de verse
+  if (vencido(ev)) return html(paginaVencida(nombresDe(ev.datos.nombres)), 410, { 'x-robots-tag': 'noindex' });
   const empresa = ev.empresaId ? await almacen.empresa(ev.empresaId) : null;
   const marca = empresa?.marca?.blanca ? empresa.marca : null;
   const acc = await revisarAcceso({ ev, request, url, almacen, secreto: secretoDe(env) });
@@ -259,6 +331,7 @@ async function rsvp(env, request) {
   // Aforo completo: no entran más confirmaciones de asistencia (los "no voy" sí)
   if (accion === 'rsvp' && datos.asiste === 'Si' && await aforoLleno(almacen, ev)) return json({ result: 'error', lleno: true }, 409);
   await almacen.guardarRespuesta(eventoId, accion, datos);
+  if (accion === 'rsvp' && !datos.prueba && ev.datos.admin?.avisoRespuestas === 'cada') await avisoRespuesta(env, ev, datos).catch((e) => console.error('[aviso rsvp]', e));
   return json({ result: 'ok' });
 }
 
@@ -393,23 +466,32 @@ async function eventoConClave(env, request, url, id) {
   const ev = await almacenDe(env).evento(id);
   if (!ev) return null;
   const clave = request.headers.get('x-clave') || url.searchParams.get('k') || '';
-  if (clave && igual(clave, ev.clave)) return ev;
+  if (clave && igual(clave, ev.clave)) {
+    // Abierto con la sesión iniciada: el borrador queda guardado en "Mi cuenta" (si todavía no tiene dueño)
+    if (ev.estado === 'borrador' && request.method === 'GET') {
+      const u = await usuarioActual(request, env).catch(() => null);
+      const alm = almacenDe(env);
+      if (u && alm.sinCliente && await alm.sinCliente(ev.id)) await alm.darAcceso(ev.id, u.id, 'cliente').catch(() => {});
+    }
+    return ev;
+  }
   const u = await usuarioActual(request, env);
   return u && (u.esAdmin || await almacenDe(env).tieneAcceso(ev.id, u.id)) ? ev : null;
 }
 
 async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {}) {
-  const modelo = ev.producto === 'invitacion' ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
+  const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web', 'std-tarjeta'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
-    gratis: ev.paquete === 'gratis' || datos.planElegido === 'gratis', disenoEnviado: !!datos.diseno?.enviado,
+    gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: !!datos.diseno?.enviado,
     publicada: ev.estado === 'publicado', admin });
 }
 
 // Plan con el que se ve la invitación: el que ya pagó o, en el borrador, el que piden las secciones elegidas
 async function planVista(env, url, ev) {
-  if (ev.producto !== 'invitacion' || ev.estado === 'publicado') return ev.paquete === 'gratis' ? 'basic' : ev.paquete;
+  if (ev.producto !== 'invitacion' || ev.estado === 'publicado') return ev.paquete;
   const m = MODELOS.find((x) => x.id === ev.modelo);
   const plan = planNecesario(await esquemaDe(env, url, ev), ev.datos, { gratisPosible: !!(m && (m.gratis || MODELOS_GRATIS.includes(m.id))) });
+  if (plan === 'gratis' && !['premium', 'deluxe'].includes(ev.paquete)) return 'gratis';
   const pagado = ['basic', 'premium', 'deluxe'].indexOf(ev.paquete);
   const necesario = ['basic', 'premium', 'deluxe'].indexOf(plan === 'gratis' ? 'basic' : plan);
   return ['basic', 'premium', 'deluxe'][Math.max(pagado, necesario, 0)];
@@ -420,26 +502,61 @@ async function publicarEvento(env, request, ev) {
   const url = new URL(request.url);
   const esquema = await esquemaDe(env, url, ev);
   const faltan = faltantes(esquema, ev.datos);
+  // La Save The Date web no lleva link propio: queda en /std/<id>
+  if (esquema.std && !faltan.length) { ev.estado = 'publicado'; await almacenDe(env).guardarEvento(ev); return { ok: true, estado: ev.estado, link: `${url.origin}/std/${ev.id}` }; }
   if (faltan.length || !ev.slug) return { faltan };
   if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return { error: 'Falta el PIN' };
-  // Plan gratis: online hasta 15 días después del evento
-  if (ev.paquete === 'gratis') {
-    const fecha = (ev.datos.celebracion?.inicio || '').slice(0, 10);
-    if (fecha) ev.vence = new Date(Date.parse(fecha) + 16 * 86400000).toISOString();
-  }
-  ev.estado = ev.producto === 'invitacion' || ev.producto === 'std-web' ? 'publicado' : 'en-diseno';
+  // README (ronda 31): el vencimiento lo da el plan (src/vencimiento.js) y se recalcula siempre; aquí ya no se fija
+  ev.estado = ['invitacion', 'std-web', 'compromiso-web'].includes(ev.producto) ? 'publicado' : 'en-diseno';
   await avisarDiseno(env, url, ev);
   await almacenDe(env).guardarEvento(ev);
   return { ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null };
 }
 
 // Modelos a los que se puede cambiar (los del mismo tipo de evento)
-const modelosPara = (tipo) => MODELOS.filter((m) => m.eventos.includes(tipo)).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)) }));
+const modelosPara = (tipo) => MODELOS.filter((m) => m.eventos.includes(tipo) && !m.std).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), simple: !!m.simple }));
+const nombreTipo = (tipo) => TIPOS_EVENTO.find((t) => t.id === tipo)?.nombre || tipo;
+// Para cambiar de modelo en el panel: los del mismo tipo y los de su grupo (Cumpleaños con los infantiles,
+// Baby Shower con Revelación). Cada uno con el tipo de evento con el que queda.
+const GRUPO_TIPO = (tipo) => { const g = TIPOS_EVENTO.find((t) => t.id === tipo)?.grupo || tipo; return TIPOS_EVENTO.filter((t) => t.id === g || t.grupo === g).map((t) => t.id); };
+const modelosCambio = (tipo, producto = 'invitacion', actual = null) => {
+  if (producto === 'compromiso-web') return ['boda', '15'].flatMap((t) => modelosPara(t).filter((m) => m.simple).map((m) => ({ ...m, tipo: t, tipoNombre: nombreTipo(t) })));
+  // README (ronda 28): las Save The Date sueltas cambian entre los diseños de su mismo evento (y el diseño a medida)
+  if (producto === 'std-web') return MODELOS.filter((m) => m.std && m.eventos.includes(tipo)).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: false, tipo, tipoNombre: nombreTipo(tipo) }));
+  if (producto === 'std-tarjeta') return MODELOS.filter((m) => CON_TARJETA_STD.has(m.id) && m.eventos.includes(tipo)).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: false, tipo, tipoNombre: nombreTipo(tipo) }));
+  if (producto !== 'invitacion') return [];
+  const tipos = [tipo, ...GRUPO_TIPO(tipo).filter((t) => t !== tipo)];
+  const vistos = new Set();
+  // README (ronda 26): las invitaciones completas no se mezclan con las simples (Civil, Party, Pedida, Compromiso),
+  // que son otro producto; una invitación vieja que ya tiene un modelo simple ve todos
+  const simple = !!MODELOS.find((m) => m.id === actual)?.simple;
+  return tipos.flatMap((t) => modelosPara(t).filter((m) => (simple || !m.simple) && !vistos.has(m.id) && vistos.add(m.id)).map((m) => ({ ...m, tipo: t, tipoNombre: nombreTipo(t) })));
+};
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const aSlug = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/&/g, 'y').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
 
-async function sugerirSlug(almacen, ev, pedido) {
+// README (ronda 31): un link nuevo no puede ser el de una invitación vieja de un cliente (las carpetas del sistema
+// anterior, como /boda/sofi-y-ale/): se mira en el bucket del sitio viejo o, si todavía no está, en el hosting
+const legadoVisto = new Map();
+async function slugDelLegado(env, tipo, slug) {
+  const k = `${tipo}/${slug}`;
+  if (legadoVisto.has(k)) return legadoVisto.get(k);
+  let ocupado = false;
+  try {
+    if (env.LEGADO) ocupado = !!((await env.LEGADO.head(`${k}/index.html`)) || (await env.LEGADO.head(`${k}.html`)));
+    else if (env.ORIGEN_ANTIGUO && !env.MODO_LOCAL) {
+      const pedir = (p) => fetch(new URL(p, env.ORIGEN_ANTIGUO), { method: 'HEAD', redirect: 'manual', signal: AbortSignal.timeout(2500) }).then((r) => r.status);
+      // Si el hosting contesta 200 también a una carpeta inventada (página de error "blanda"), la prueba no sirve
+      if (!legadoVisto.has('_control')) legadoVisto.set('_control', (await pedir(`/${tipo}/no-existe-${Date.now()}/`)) === 200);
+      ocupado = !legadoVisto.get('_control') && (await pedir(`/${k}/`)) === 200;
+    }
+  } catch { /* sin respuesta: no se bloquea */ }
+  legadoVisto.set(k, ocupado);
+  return ocupado;
+}
+const slugTomado = async (env, almacen, tipo, slug, id) => (await almacen.slugOcupado(tipo, slug, id)) || slugDelLegado(env, tipo, slug);
+async function sugerirSlug(env, almacen, ev, pedido) {
   const s = aSlug(pedido);
   const n = ev.datos.nombres || {};
   const fecha = (ev.datos.celebracion?.inicio || ev.datos.std?.fecha || '').slice(0, 10);
@@ -452,7 +569,7 @@ async function sugerirSlug(almacen, ev, pedido) {
   ].filter((x) => x && x.length >= 3);
   const libres = [];
   for (const x of [...new Set(ideas)]) {
-    if (!(await almacen.slugOcupado(ev.tipo, x, ev.id))) libres.push(x);
+    if (!(await slugTomado(env, almacen, ev.tipo, x, ev.id))) libres.push(x);
     if (libres.length >= 5) break;
   }
   return { pedido: s, disponible: libres[0] === s, alternativas: libres.filter((x) => x !== s).slice(0, 4) };
@@ -494,28 +611,40 @@ async function apiPanel(env, request, url, partes) {
   // Superusuario (administrador de Amo Invitar): edita todo, sin las restricciones de publicada
   const usuario = await usuarioActual(request, env);
   const admin = !!usuario?.esAdmin;
+  // README (ronda 29): una tarjeta Save The Date comprada sin modelo (desde la tienda) toma el tipo de evento y el
+  // primer diseño con tarjeta; en el panel se cambia por otro
+  if (ev.producto === 'std-tarjeta' && (!ev.modelo || !TIPOS_EVENTO.some((t) => t.id === ev.tipo))) {
+    if (!TIPOS_EVENTO.some((t) => t.id === ev.tipo)) ev.tipo = 'boda';
+    ev.modelo = MODELOS.find((m) => CON_TARJETA_STD.has(m.id) && m.eventos.includes(ev.tipo))?.id || 'garden';
+    ev.datos.std = { ...(ev.datos.std || {}), tipo: 'tarjeta' };
+    await almacenDe(env).guardarEvento(ev);
+  }
   const esquema = await esquemaDe(env, url, ev, ev.datos, { admin });
 
   if (!accion && request.method === 'GET') {
     const v = variante(ev.datos.variante);
-    const dic = diccionario(ev.tipo, v);
+    const dic = conTextosModelo(diccionario(ev.tipo, v), ev.modelo ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null, v);
     return json({
-      evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
+      evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, tipoNombre: nombreTipo(ev.tipo), modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
       esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
       // Textos de cada idioma adicional (para traducir en el panel)
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
-      plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, esquema) : null,
-      modelos: modelosPara(ev.tipo),
+      plan: await tienda.estadoPlan(env, request, ev, esquema),
+      modelos: modelosCambio(ev.tipo, ev.producto, ev.modelo),
+      // README (ronda 28): en el cambio de modelo también está el diseño a medida, con su precio
+      aMedida: ev.producto === 'invitacion' ? { precio: await tienda.precioATexto(env, request, 'personalizado', A_MEDIDA.personalizado.deluxe), empresarial: ev.tipo === 'empresarial' }
+        : ['std-tarjeta', 'std-foto'].includes(ev.producto) ? { precio: await tienda.precioATexto(env, request, 'std-tarjeta-medida', PRODUCTOS['std-tarjeta-medida'].precio), std: true }
+          : ev.producto === 'std-web' ? { precio: await tienda.precioATexto(env, request, 'std-web-medida', PRODUCTOS['std-web-medida'].precio), std: true } : null,
       usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
-      modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null }; })() : null,
+      modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
       marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
   }
   if (!accion && request.method === 'PUT') {
     const { datos } = await request.json();
-    if (esquema.cerrada) return json({ error: 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escribinos por WhatsApp.' }, 403);
+    if (esquema.cerrada) return json({ error: esquema.simple || esquema.std ? 'Ya está publicada: no se puede modificar. Para un cambio, escríbenos por WhatsApp.' : 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escríbenos por WhatsApp.' }, 403);
     // Publicada: los nombres y la fecha quedan como estaban (evita reciclar la invitación para otro evento)
     if (ev.estado === 'publicado' && !admin && datos) for (const ruta of FIJOS_PUBLICADA) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
     // Los campos de cada idioma (bandera, traducciones) dependen de los idiomas que llegan ahora
@@ -532,7 +661,7 @@ async function apiPanel(env, request, url, partes) {
     await leerMapas(limpio);
     await leerSpotify(limpio);
     if (limpio.slug && limpio.slug !== ev.slug) {
-      if (await almacen.slugOcupado(ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(almacen, ev, limpio.slug)) }, 409);
+      if (await slugTomado(env, almacen, ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(env, almacen, ev, limpio.slug)) }, 409);
       ev.slug = limpio.slug;
     }
     ev.datos = limpio;
@@ -541,13 +670,78 @@ async function apiPanel(env, request, url, partes) {
     const nuevo = await esquemaDe(env, url, ev, ev.datos, { admin });
     return json({ ok: true, datos: limpio, faltan: faltantes(nuevo, limpio), esquema: nuevo,
       textosIdiomas: Object.fromEntries(idiomasDe(limpio).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
-      plan: ev.producto === 'invitacion' ? await tienda.estadoPlan(env, request, ev, nuevo) : null });
+      plan: await tienda.estadoPlan(env, request, ev, nuevo) });
   }
   // Cambiar de modelo (el mismo tipo de evento); lo cargado queda igual
   if (accion === 'modelo' && request.method === 'POST') {
     const { modelo } = await request.json();
-    if (!modelosPara(ev.tipo).some((m) => m.id === modelo)) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
+    // Save The Date suelta a diseño a medida (la tarjeta o la web)
+    if (modelo === 'a-medida' && ['std-tarjeta', 'std-foto', 'std-web'].includes(ev.producto)) {
+      if (ev.estado === 'publicado' && !admin) return json({ error: 'Ya está publicada. Escríbenos por WhatsApp.' }, 400);
+      ev.producto = ev.producto === 'std-web' ? 'std-web-medida' : 'std-tarjeta-medida'; ev.datos.modeloAnterior = ev.modelo; ev.modelo = null;
+      await almacen.guardarEvento(ev);
+      return json({ ok: true });
+    }
+    // Pasar a diseño a medida: el equipo diseña con lo que el cliente cuente en "Ideas para el diseño"
+    if (modelo === 'a-medida' && ev.producto === 'invitacion') {
+      if (ev.estado === 'publicado' && !admin) return json({ error: 'La invitación ya está publicada. Escríbenos por WhatsApp para pasarla a un diseño a medida.' }, 400);
+      ev.producto = 'a-medida'; ev.aMedida = ev.tipo === 'empresarial' ? 'empresarial' : 'personalizado'; ev.datos.modeloAnterior = ev.modelo; ev.modelo = null; ev.datos.planElegido = null;
+      await almacen.guardarEvento(ev);
+      return json({ ok: true });
+    }
+    const elegido = modelosCambio(ev.tipo, ev.producto, ev.modelo).find((m) => m.id === modelo);
+    if (!elegido) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
+    const antes = MODELOS.find((x) => x.id === ev.modelo);
+    if (ev.estado === 'publicado' && antes?.simple && !admin) return json({ error: 'La invitación ya está publicada y no se puede cambiar. Escríbenos por WhatsApp.' }, 400);
+    // README (ronda 22): entre un modelo simple y uno completo el panel arranca de nuevo; quedan los nombres y la fecha
+    if (!!antes?.simple !== !!elegido.simple) {
+      const d = ev.datos, quedan = { nombres: d.nombres, variante: d.variante, zonaHoraria: d.zonaHoraria, idiomas: d.idiomas, extras: d.extras, acceso: d.acceso,
+        celebracion: d.celebracion && { fecha: d.celebracion.fecha, hora: d.celebracion.hora }, ceremonia: d.ceremonia && { fecha: d.ceremonia.fecha, hora: d.ceremonia.hora } };
+      ev.datos = JSON.parse(JSON.stringify(quedan));
+    }
+    // Otro tipo del mismo grupo (de Cumpleaños a infantil, de Baby Shower a Revelación): solo antes de publicar,
+    // porque el link lleva el tipo de evento
+    if (elegido.tipo !== ev.tipo) {
+      if (ev.estado === 'publicado' && !admin) return json({ error: 'La invitación ya está publicada: ese diseño es de otro tipo de evento. Escríbenos por WhatsApp para cambiarlo.' }, 400);
+      ev.tipo = elegido.tipo;
+    }
     ev.modelo = modelo;
+    // A un modelo sin plan gratis: deja de estar en gratis (el plan sale de lo que tenga prendido)
+    if (!(elegido.gratis) && ev.datos.planElegido === 'gratis') ev.datos.planElegido = null;
+    await almacen.guardarEvento(ev);
+    return json({ ok: true });
+  }
+  // README (ronda 28): diseño a medida. El cliente completa todo y lo manda al equipo; el equipo lo aprueba y recién
+  // ahí el cliente paga para que empiece el diseño
+  if (accion === 'enviarMedida' && request.method === 'POST') {
+    // README (ronda 29): parte "std" = la Save The Date a medida que se sumó a una invitación (solo su brief)
+    const { parte } = await request.json().catch(() => ({}));
+    const std = parte === 'std';
+    const tipoStd = ev.datos.std?.tipo || esquema.pasos.find((p) => p.id === 'std')?.campos.find((c) => c.id === 'std.tipo')?.defecto;
+    if (std ? !['tarjeta-medida', 'web-medida'].includes(tipoStd) : !['a-medida', 'std-tarjeta-medida', 'std-web-medida'].includes(ev.producto)) return json({ error: 'No es un diseño a medida' }, 400);
+    const faltan = faltantes(esquema, ev.datos).filter((x) => !std || x.paso === 'std');
+    if (faltan.length) return json({ error: 'faltan', faltan }, 422);
+    if (std) { ev.datos.std = { tipo: tipoStd, ...(ev.datos.std || {}) }; ev.datos.std.medida = { ...(ev.datos.std.medida || {}), enviado: new Date().toISOString() }; }
+    else ev.datos.medida = { ...(ev.datos.medida || {}), enviado: new Date().toISOString() };
+    await almacen.guardarEvento(ev);
+    if (env.SUPPORT_EMAIL) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Diseño a medida para revisar · ${nombresDe(ev.datos.nombres)}`,
+      lineas: [`${ev.producto} · ${ev.tipo} · ${nombresDe(ev.datos.nombres)}`, `Panel: ${url.origin}/panel/${ev.id}?k=${ev.clave}`] }) }).catch(() => {});
+    return json({ ok: true });
+  }
+  if (accion === 'aprobarMedida' && request.method === 'POST') {
+    if (!admin) return json({ error: 'Solo el equipo de diseño' }, 403);
+    const { parte } = await request.json().catch(() => ({}));
+    if (parte === 'std') { ev.datos.std = { ...(ev.datos.std || {}) }; ev.datos.std.medida = { ...(ev.datos.std.medida || {}), aprobado: new Date().toISOString() }; }
+    else ev.datos.medida = { ...(ev.datos.medida || {}), aprobado: new Date().toISOString() };
+    await almacen.guardarEvento(ev);
+    const clientes = (await almacen.accesos(ev.id)).filter((x) => x.rol === 'cliente');
+    for (const c of clientes) await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { url: `${url.origin}/panel/${ev.id}?k=${ev.clave}`, nombres: nombresDe(ev.datos.nombres) }) }).catch(() => {});
+    return json({ ok: true, avisados: clientes.length });
+  }
+  // README (ronda 29): el equipo marca el diseño a medida como listo: el cliente vuelve a poder editar el contenido
+  if (accion === 'medidaLista' && request.method === 'POST') {
+    if (!admin) return json({ error: 'Solo el equipo de diseño' }, 403);
+    ev.datos.medida = { ...(ev.datos.medida || {}), listo: new Date().toISOString() };
     await almacen.guardarEvento(ev);
     return json({ ok: true });
   }
@@ -561,14 +755,16 @@ async function apiPanel(env, request, url, partes) {
       for (const p of esquema.pasos) if (p.interruptor && p.nivel !== 'basic') escribirRuta(ev.datos, p.interruptor, false);
       for (const p of esquema.pasos) for (const c of p.campos) if (c.paquete && c.paquete !== 'basic') escribirRuta(ev.datos, c.id, c.tipo === 'switch' ? false : undefined);
       if (Array.isArray(ev.datos.fotos?.portada)) ev.datos.fotos.portada = ev.datos.fotos.portada.slice(0, 1);
+      (ev.datos.secciones ??= {}).galeria = false; // la galería es de Basic en adelante
+      (ev.datos.portada ??= {}).cuenta = false; // la cuenta regresiva también (README ronda 28)
     }
     await almacen.guardarEvento(ev);
     return json({ ok: true });
   }
   // Generar una tarjeta (Save The Date o agradecimiento): el panel arma el JPG y lo sube;
-  // acá queda guardada y fija. Hace falta tenerla pagada (la Save The Date viene con Premium y Deluxe).
+  // aquí queda guardada y fija. Hace falta tenerla pagada (la Save The Date viene con Premium y Deluxe).
   if (accion === 'tarjeta' && request.method === 'POST') {
-    const { clase, url: imagen, reabrir } = await request.json();
+    const { clase, url: imagen, reabrir, verificar } = await request.json();
     if (!['std', 'agradecimiento'].includes(clase)) return json({ error: 'Tarjeta desconocida' }, 400);
     // El superusuario puede volver a abrir una tarjeta ya generada
     if (reabrir && admin) {
@@ -576,15 +772,20 @@ async function apiPanel(env, request, url, partes) {
       await almacen.guardarEvento(ev);
       return json({ ok: true });
     }
-    if (!/^\/media\/[\w./-]+\.jpe?g$/i.test(String(imagen || '')) || !String(imagen).includes(ev.id)) return json({ error: 'Imagen no válida' }, 400);
     const actual = ev.datos[clase]?.tarjeta || {};
     if (actual.generada && !admin) return json({ error: 'La tarjeta ya se generó', url: actual.generada }, 409);
     const extras = ev.datos.extras || [];
-    // La Save The Date del modelo viene con Premium y Deluxe; la con foto se paga aparte en cualquier plan
-    const pagada = clase === 'std'
-      ? (ev.datos.std?.tipo === 'foto' ? extras.includes('std-foto') : ['premium', 'deluxe'].includes(ev.paquete) || extras.some((x) => x.startsWith('std-')))
-      : extras.includes('agradecimiento');
+    // La Save The Date del modelo viene con Premium y Deluxe; la con foto se paga aparte en cualquier plan.
+    // Comprada suelta (sin invitación): vale cuando ya se pagó ese producto
+    const suelta = ['std-tarjeta', 'std-foto', 'agradecimiento'].includes(ev.producto);
+    const pagada = suelta ? ev.paquete !== 'borrador' && !(await tienda.pagoPendiente(env, ev.id))
+      : clase === 'std'
+        ? (ev.datos.std?.tipo === 'foto' ? extras.includes('std-foto') : ['premium', 'deluxe'].includes(ev.paquete) || extras.some((x) => x.startsWith('std-')))
+        : extras.includes('agradecimiento');
     if (!pagada && !admin) return json({ error: 'pagar' }, 402);
+    // Antes de armar el JPG, el panel pregunta si ya se puede (sin pagar, la tarjeta no se genera ni se descarga)
+    if (verificar) return json({ ok: true });
+    if (!/^\/media\/[\w./-]+\.jpe?g$/i.test(String(imagen || '')) || !String(imagen).includes(ev.id)) return json({ error: 'Imagen no válida' }, 400);
     ev.datos[clase] = { ...(ev.datos[clase] || {}), tarjeta: { ...actual, generada: imagen, generadaEn: new Date().toISOString() } };
     await almacen.guardarEvento(ev);
     return json({ ok: true, url: imagen });
@@ -596,7 +797,7 @@ async function apiPanel(env, request, url, partes) {
     await almacen.darAcceso(ev.id, u.id, 'cliente');
     return json({ ok: true, email: u.email });
   }
-  if (accion === 'slug') return json(await sugerirSlug(almacen, ev, url.searchParams.get('s')));
+  if (accion === 'slug') return json(await sugerirSlug(env, almacen, ev, url.searchParams.get('s')));
   if (accion === 'archivo' && request.method === 'POST') {
     const f = await request.formData();
     const archivoSubido = f.get('archivo');
@@ -701,8 +902,12 @@ async function apiPanel(env, request, url, partes) {
   if (accion === 'admin' && request.method === 'POST') {
     const b = await request.json().catch(() => ({}));
     const texto = (x) => (typeof x === 'string' ? x.slice(0, 1500) : undefined);
+    // Mesas ("Buscá tu mesa") y llegadas con pase: Deluxe (el pagado o el que piden las secciones elegidas)
+    const deluxe = admin || ev.paquete === 'deluxe' || planNecesario(esquema, ev.datos) === 'deluxe';
     ev.datos.admin = { textoWa: texto(b.textoWa), textoWaLista: texto(b.textoWaLista), textoRecordatorio: texto(b.textoRecordatorio),
-      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined, buscaMesa: b.buscaMesa === true, checkin: b.checkin === true, avisosMail: b.avisosMail !== false };
+      asientos: Number.isFinite(Number(b.asientos)) ? Math.min(30, Math.max(2, Number(b.asientos))) : undefined, buscaMesa: b.buscaMesa === true && deluxe, checkin: b.checkin === true && deluxe, avisosMail: b.avisosMail !== false,
+      // Aviso de respuestas nuevas por mail: no (solo en el panel) · cada (una por respuesta, hasta 20 por día) · diario (un resumen)
+      avisoRespuestas: ['cada', 'diario'].includes(b.avisoRespuestas) ? b.avisoRespuestas : 'no' };
     await almacen.guardarEvento(ev);
     return json({ ok: true });
   }
@@ -711,6 +916,9 @@ async function apiPanel(env, request, url, partes) {
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
     if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);
     if (await tienda.pagoPendiente(env, ev.id)) return json({ error: 'Se puede publicar cuando se acredite el pago. Mientras tanto, todo lo cargado queda guardado.' }, 402);
+    // README (ronda 28): nada se publica sin pagar. Los productos sueltos (Save The Date web, invitación simple)
+    // se arman antes de pagar: el link aparece recién con el pago
+    if (ev.producto !== 'invitacion' && ev.paquete === 'borrador' && !admin) return json({ error: 'pagar', plan: await tienda.estadoPlan(env, request, ev, esquema) }, 402);
     // Primero el resumen y el pago de lo que falte (plan y complementos)
     if (ev.producto === 'invitacion') {
       const plan = await tienda.estadoPlan(env, request, ev, esquema);
@@ -808,6 +1016,7 @@ function conFotosDeMuestra(ev, modelo) {
   if (on('portada') && vacio(f.portada)) f.portada = muestra.portada.map((url) => ({ url, pos: '50% 30%' }));
   if (vacio(f.galeria)) f.galeria = muestra.galeria.map((url) => ({ url }));
   if (ev.fotosOn?.rsvp === true && !f.rsvp) f.rsvp = muestra.rsvp;
+  if (on('historia') && !f.historia && modelo?.fotoHistoria) f.historia = borrosas ? `${dir}/inicial.jpg` : `${BASE}/rsvp.jpg`;
   if (on('instagram') && !f.instagram) f.instagram = muestra.instagram;
   if (on('album') && !f.album) f.album = muestra.instagram;
   const lugar = (l, foto) => ({ ...(l || {}), foto: l?.foto || (on('lugares') ? foto : '') });
@@ -863,6 +1072,12 @@ export default {
     tienda.opcionesTienda.publicar = publicarEvento;
     const cerrado = proximamente(request, env, url);
     if (cerrado) return cerrado;
+    // README (ronda 31): los paneles viejos de los clientes (en Hostinger, la carpeta /panel/ servida en
+    // panel.amoinvitar.com) siguen en su subdominio, desde la carpeta "panel/" del bucket del sitio viejo. El panel
+    // nuevo queda en amoinvitar.com/panel: no se pisan. (docs/etapa-2-web.md)
+    if (env.LEGADO && url.hostname === (env.PANEL_VIEJO_HOST || 'panel.amoinvitar.com')) {
+      return (await servirLegado(request, env, url, { prefijo: 'panel' })) || html('No encontrado', 404);
+    }
     try {
       const M = request.method;
       if (p0 === 'auth') {
@@ -873,6 +1088,8 @@ export default {
         if (p1 === 'salir') return await cuenta.salir(request, env);
       }
       if (p0 === 'api') {
+        if (p1 === 'cuenta' && partes[2] === 'eliminar' && M === 'POST') return await cuenta.eliminar(request, env);
+        if (p1 === 'contacto' && M === 'POST') return await contacto(request, env);
         if (p1 === 'cuenta') return await cuenta.cuenta(request, env);
         if (p1 === 'tienda') {
           const a = partes[2];
@@ -900,7 +1117,13 @@ export default {
       if (p0 === 'factura' && p1) return await admin.facturaCliente(request, env, p1);
       if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);
-      if (p0 === 'demo' && partes.length === 2) return await demo(env, url, request, p1);
+      if (p0 === 'demo' && partes.length === 2) {
+        const r = await demo(env, url, request, p1);
+        // Demo del sitio viejo (otro nombre de carpeta): del bucket del sitio viejo
+        if (r.status === 404) { const v = await servirLegado(request, env, url); if (v) return v; }
+        return r;
+      }
+      if (p0 === 'std' && partes.length === 2 && p1.startsWith('ev_')) return await saveTheDate(env, url, request, p1);
       if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return env.ASSETS.fetch(new URL('/panel/', url.origin));
       if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, url, p1);
       if (p0 === 'puerta' && partes.length === 2) return await paginaPuerta(env, url, p1);
@@ -921,6 +1144,13 @@ export default {
     // Archivos de public/ (páginas, estilos, imágenes)
     const archivo = await env.ASSETS.fetch(request);
     if (archivo.status !== 404) return archivo;
+    // README (ronda 30) · Etapa 2: la web nueva (public/sitio/…) y, lo que todavía no se rehízo, el sitio viejo desde
+    // el bucket LEGADO (con sus css y scripts, para las invitaciones activas del sistema anterior)
+    // (README ronda 31) La web nueva siempre (oculta fuera del dominio principal: src/sitio/nuevo.js); el sitio viejo,
+    // cuando está su bucket (LEGADO)
+    const nuevo = await sitioNuevo(env, request, url);
+    if (nuevo) return nuevo;
+    if (env.LEGADO) { try { const v = await servirLegado(request, env, url); if (v) return v; } catch (e) { console.error('legado', e); } }
     // Lo demás es del sitio de siempre: en otro dominio (app.amoinvitar.com) se manda allá;
     // en el mismo dominio se pide al hosting actual sin que el visitante lo note
     if (env.ORIGEN_ANTIGUO) {

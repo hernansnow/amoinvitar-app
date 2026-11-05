@@ -103,10 +103,10 @@
 			 <p class="mb-3"><span data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-dark section-sub-title p-1 border border-dark roboto-condensed-font">&#160;12 • 09 • 2027&#160;</span></p>
 			<div class="col-lg-3 col-md-4 col-10 ml-auto mr-auto mb-2">
 				<lottie-player src="img/travel_orbita.json" background="transparent" speed="1" class="img-fluid pb-5" style="position: absolute; top:-35px; left:-8px; right:0px" loop autoplay></lottie-player>
-                <img data-i-attr="src:url;style:estiloImg" data-repetir="fotos.portada" src="demo/cumple/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle p-1" style="width: 74%; border: 3px solid #9c916b;">
+                <img data-i-attr="src:url;style:estiloImg" data-repetir="fotos.portada" src="demo/cumple/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle p-1 ai-foto-1x1" style="width: 74%; border: 3px solid #9c916b;">
               </div>
-			 <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="amsterdam-four-font text-gold">Natalia</h1>
-			  <p data-si="cuenta.activa" class="mb-2"><span class="text-dark section-sub-title-sm p-1 border border-dark roboto-condensed-font">&#160;DESPEGAMOS EN&#160;</span></p>
+			 <h1 data-ajustar-pc="0.34" data-ajustar="0.55" data-campo-html="nombres.portada" class="amsterdam-four-font text-gold">Natalia</h1>
+			  <p data-si="cuenta.activa" class="mb-2"><span class="text-dark section-sub-title-sm p-1 border border-dark roboto-condensed-font ai-frase">&#160;DESPEGAMOS EN&#160;</span></p>
    			 <!-- Countdown 1-->
                  <div data-si="cuenta.activa" class="flip-countdown"></div>
 			 <div class="text-center vert-move mt-1 mb-5 pb-md-5">
@@ -144,9 +144,9 @@
          <div class="col-12 text-center mb-2 ml-auto mr-auto">
 			<div class="col-lg-3 col-md-4 col-10 ml-auto mr-auto mb-2">
 				<lottie-player src="img/travel_orbita.json" background="transparent" speed="1" class="img-fluid pb-5" style="position: absolute; top:-35px; left:-8px; right:0px" loop autoplay></lottie-player>
-                <img data-i-attr="src:url;style:estiloImg" data-repetir="fotos.portada" src="demo/cumple/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle p-1" style="width: 74%; border: 3px solid #9c916b;">
+                <img data-i-attr="src:url;style:estiloImg" data-repetir="fotos.portada" src="demo/cumple/globo.jpg" loading="lazy" alt="foto" class="img-fluid rounded-circle p-1 ai-foto-1x1" style="width: 74%; border: 3px solid #9c916b;">
               </div>
-			 <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="amsterdam-four-font text-gold">Natalia</h1>
+			 <h1 data-ajustar-pc="0.34" data-ajustar="0.55" data-campo-html="nombres.portada" class="amsterdam-four-font text-gold">Natalia</h1>
 			   <p class="mb-5"><span data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-dark section-sub-title p-1 border border-dark roboto-condensed-font">&#160;12 • 09 • 2027&#160;</span></p>
    			 <!-- Countdown 1-->
 			 <div class="text-center vert-move mt-1 mb-5 pb-md-5">
@@ -185,9 +185,7 @@
           </div>
         </div>
 	   </div> 
-    </section>
-	
-		     <div data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div>
+    <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
 
    <section class="site-section bg-white" style="background-size:cover; position:relative;" id="agenda">
 	       <lottie-player src="img/travel_avion3-m.json" background="transparent" speed="1" class="img-fluid show-mobile" style="width:1000%; margin: 0 auto; position: absolute; bottom: -50px; left: 0; z-index:99" loop autoplay></lottie-player>
@@ -221,17 +219,11 @@
 			</div>
 			<!-- locations -->
 			<div class="locations">
-				<div class="loc-depart">
-					<span>Salida</span>
-					<h1 class="text-random">MIS</h1>
-				</div>
+				<div class="loc-depart"><div style="display:contents" data-si="ceremonia.separada"><span>Ceremonia</span><h1>CER</h1></div><div style="display:contents" data-no="ceremonia.separada"><span>Salida</span><h1 class="text-random">OSL</h1></div></div>
 				<div class="loc-direction">
 					<div class="arrow"></div>
 				</div>
-				<div class="loc-arrive">
-					<span>Fiesta</span>
-					<h1>FIE</h1>
-				</div>
+				<div class="loc-arrive"><div style="display:contents" data-si="ceremonia.separada"><span>Fiesta</span><h1>FIE</h1></div><div style="display:contents" data-no="ceremonia.separada"><span>Fiesta</span><h1>FIE</h1></div></div>
 			</div>
 			<!-- /locations -->
 			<div class="body-info">
@@ -295,7 +287,7 @@
 		   <div class="row">
 			<div data-si="fotos.rsvp" class="col-lg-6 mt-auto mb-auto">
 			  <div class="text-center">
-				<img data-attr="src:c:fotos.rsvp;style:c:fotos.rsvpEstilo" loading="lazy" src="demo/cumple/rsvp.jpg" alt="foto" class="img-fluid rounded">
+				<img data-attr="src:c:fotos.rsvp;style:c:fotos.rsvpEstilo" loading="lazy" src="demo/cumple/rsvp.jpg" alt="foto" class="img-fluid rounded ai-foto-rsvp">
               </div>
 			</div>
 		    <div class="col-lg-6 mt-2" style="height: 100%; width: 100%">
@@ -379,9 +371,9 @@
   </div>	
 	
  </section></div></div>
-	 <section data-si="grupos.dress" class="bg-azul site-section pt-md-0 pb-5" style="background-size:cover; position:relative;" id="dresscode">
+	 <section class="bg-azul site-section pt-md-0 pb-5 ai-dress-franja" style="background-size:cover; position:relative;" id="dresscode">
 		 <img loading="lazy" class="img-fluid" src="img/travel-separador-3.png" width="100%" alt="Imagen" style="position: absolute; bottom: 0px; right: auto; left: auto;">
-      <div class="container mb-md-5 pb-md-5">
+      <div class="text-center pt-5 pb-5 ai-valija" data-no="grupos.dress"><img loading="lazy" class="img-fluid" src="img/travel-icono-5.png" width="90" alt=""></div><div data-si="grupos.dress" class="container mb-md-5 pb-md-5">
         <div class="row ml-auto mr-auto">
            <div data-si="grupos.dressCol" class="col-md-4 ml-auto mr-auto pb-5" data-aos="fade-in">
 				<div data-seccion="dresscode" class="text-center">
@@ -389,7 +381,7 @@
 				</div>
                <h2 data-t="dress.titulo" data-seccion="dresscode" class="mb-3 text-center amsterdam-four-font text-white">Dress Code</h2>
                 <p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-white roboto-condensed-font font-weight-bolder">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
-            <p class="text-center text-white mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <p class="text-center text-white mb-2 g-evitar-titulo"><span data-t="dress.evitar">Colores a evitar</span></p>
             <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
           </div>
 				   <div data-si="dresscode.sugerencias" data-seccion="estilos" class="col-12 text-center">	
@@ -506,7 +498,7 @@
 </div>
 	</section>
 	
-	<section data-seccion="testigos" class="site-section" style="background-color: #F5F2EF" id="testigos">
+	<section data-seccion="testigos" class="site-section travel-testigos" id="testigos">
       <div class="container">
         <div class="row mb-3">
           <div class="col-12 text-center" data-aos="fade-up">
@@ -537,13 +529,13 @@
 		</div>
     </section>
 	  
-<section class="site-section bg-white" style="background-size:cover; position:relative;" id="musica">
+<div id="musica" data-seccion="canciones"><div><section class="site-section bg-white ai-sec-musica" style="background-size:cover; position:relative;">
 			<lottie-player src="img/travel_avion1.json" background="transparent" speed="0.9" class="img-fluid show-desktop" style="width: 50%; margin: 0 auto; position: absolute; top: 0px; left: 0;" loop autoplay></lottie-player>
       <div class="container">
           <div class="col-lg-6 text-center ml-auto mr-auto border rounded-top p-0 shadow" data-aos="fade-in">
 			  <lottie-player src="img/travel_avion1.json" background="transparent" speed="1" class="img-fluid show-mobile" style="width: 100%; margin: 0 auto; position: absolute; top: 0px; left: 0;" loop autoplay></lottie-player>
 			  <span class="text-white section-sub-title p-1 btn-block rounded-top bg-azul-fuerte roboto-condensed-font">&#160;ENTRETENIMIENTO A BORDO&#160;</span>
-			   <div id="musica" data-seccion="canciones" class="p-3">
+			   <div id="musica" class="p-3">
 				<div class="text-center">
                      <img loading="lazy" class="img-fluid mt-2 mb-0" src="img/travel-icono-10.png" width="90" alt="Imagen">
 				</div>
@@ -563,14 +555,11 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	  
-	 </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="amsterdam-four-font"></div></div>
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	  
+	 </div>
 	</div>
   </div>
-</section>
-	
-<img loading="lazy" class="img-fluid show-mobile" src="img/travel-separador-4-m.png" width="100%" alt="Imagen">
-<img loading="lazy" class="img-fluid show-desktop" src="img/travel-separador-4.png" width="100%" alt="Imagen">
+</section><img loading="lazy" class="img-fluid show-mobile" src="img/travel-separador-4-m.png" width="100%" alt="Imagen"></div><img loading="lazy" class="img-fluid show-desktop" src="img/travel-separador-4.png" width="100%" alt="Imagen"></div>
 
     <section class="site-section bg-white" style="background-size:cover; position:relative;" id="instagram">
 		<lottie-player src="img/travel_avion4.json" background="transparent" speed="1" class="img-fluid show-mobile" style="width: 100%; margin: 0 auto; position: absolute; top: 55px; left: 0;" loop autoplay></lottie-player>
@@ -694,46 +683,35 @@
         <div class="row">
           <div class="col-md-8 ml-auto mr-auto text-center">
 			 <h4 data-si="pie.mostrar" class="text-azul-fuerte roboto-condensed-font font-weight-bolder mb-5"><strong data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</strong></h4>
-			  <h2 data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto amsterdam-four-font text-azul">Natalia</h2>
-			 <div data-si="redes.hay" data-seccion="redes" class="col-12 text-center border-top mt-5 mb-5">
+			  <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center mt-auto ml-auto amsterdam-four-font text-azul">Natalia</h2>
+			 <div data-si="redes.hay" data-seccion="redes" class="col-12 text-center border-top mt-5 mb-5 ai-redes">
                 <h4 data-t="redes.titulo" class="mb-3 mt-5 roboto-condensed-font text-azul-fuerte font-weight-bolder">Redes oficiales de la fiesta</h4>
 				<a data-attr="href:c:redes.instagram" data-si="redes.instagram" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-instagram h1 text-black"></span></a>
                 <a data-attr="href:c:redes.facebook" data-si="redes.facebook" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><span class="icon-facebook h1 text-black"></span></a>
-				<a data-attr="href:c:redes.tiktok" data-si="redes.tiktok" rel="noopener" href="#" target="_blank" class="pl-0 pr-3 text-black"><img alt="TikTok" loading="lazy" src="img/tiktok.svg" class="pt-0 pb-4"></a>
+				<a aria-label="TikTok" data-attr="href:c:redes.tiktok" data-si="redes.tiktok" rel="noopener" href="#" target="_blank" class="pl-0 pr-3"><i class="icon-tiktok h1 text-black" aria-hidden="true"></i></a>
               </div> 
           </div>
 		  </div>
       </div>
-    </section><section class="site-section bg-light pt-4 pb-4 ai-perdiste">
-      <div class="container"><div class="row"><div class="col-12 text-center">
-        <h3 class="mb-3 text-center amsterdam-four-font text-black" data-t="perdiste.titulo">¿Te perdiste algo?</h3>
-        <ul class="list-unstyled">
-            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-black" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
-            <li><a href="#agenda" class="smoothscroll btn-link text-black" data-t="perdiste.agendar">Agendar evento</a></li>
-            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-black" data-t="perdiste.dress">Dress code</a></li>
-            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-black" data-t="perdiste.hospedaje">Hospedaje</a></li>
-            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-black" data-t="perdiste.bus">Traslado</a></li>
-            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-black" data-t="perdiste.itinerario">Itinerario</a></li>
-            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-black" data-t="perdiste.album">Álbum de fotos</a></li>
-            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-black" data-t="perdiste.canciones">Sugerir canción</a></li>
-            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-black" data-t="perdiste.regalos">Regalos</a></li>
-            <li><a href="#home-section" class="smoothscroll btn-link text-black" data-t="perdiste.inicio">Inicio</a></li>
-        </ul>
-      </div></div></div>
     </section>
 
 	  <div class="bg-diferido pt-4" style="background-image: linear-gradient(rgba(3, 102, 142, 0.6), rgba(150, 143, 137, 0.7)), url(img/bg-travel-3.jpg); background-color:rgb(150, 143, 137); background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;">
       <div class="container">
         <div class="row">
                <div class="col-12 text-center">
-				   <h4 class="mb-3 text-center amsterdam-four-font text-white">¿&#160;&#160;Te perdiste algo?</h4>
+				   <h4 data-t="perdiste.titulo" class="mb-3 text-center amsterdam-four-font text-white">¿&#160;&#160;Te perdiste algo?</h4>
 				   <ul class="list-unstyled roboto-condensed-font font-weight-bolder">
-				  <li><a href="#rsvp" class="smoothscroll btn-link text-white">Confirmar asistencia</a></li>
-				  <li><a href="#inicio" class="smoothscroll btn-link text-white">Agendar evento</a></li>
-				  <li><a href="#dresscode" class="smoothscroll btn-link text-white">Dress code</a></li>
- 				  <li><a href="#musica" class="smoothscroll btn-link text-white">Sugerir canción</a></li>
-				  <li><a href="#home-section" class="smoothscroll btn-link text-white">Inicio</a></li>
-			 </ul>
+            <li data-seccion="rsvp"><a href="#rsvp" class="smoothscroll btn-link text-white" data-t="perdiste.rsvp">Confirmar asistencia</a></li>
+            <li><a href="#agenda" class="smoothscroll btn-link text-white" data-t="perdiste.agendar">Agendar evento</a></li>
+            <li data-seccion="dresscode"><a href="#dresscode" class="smoothscroll btn-link text-white" data-t="perdiste.dress">Dress code</a></li>
+            <li data-seccion="hospedaje"><a href="#hospedaje-bus" class="smoothscroll btn-link text-white" data-t="perdiste.hospedaje">Hospedaje</a></li>
+            <li data-seccion="bus"><a href="#traslado" class="smoothscroll btn-link text-white" data-t="perdiste.bus">Traslado</a></li>
+            <li data-seccion="itinerario"><a href="#itinerario" class="smoothscroll btn-link text-white" data-t="perdiste.itinerario">Itinerario</a></li>
+            <li data-seccion="album"><a href="#instagram" class="smoothscroll btn-link text-white" data-t="perdiste.album">Álbum de fotos</a></li>
+            <li data-seccion="canciones"><a href="#musica" class="smoothscroll btn-link text-white" data-t="perdiste.canciones">Sugerir canción</a></li>
+            <li data-seccion="regalos"><a href="#regalos" class="smoothscroll btn-link text-white" data-t="perdiste.regalos">Regalos</a></li>
+            <li><a href="#home-section" class="smoothscroll btn-link text-white" data-t="perdiste.inicio">Inicio</a></li>
+          </ul>
 		</div>
   </div>
 </div>
@@ -742,7 +720,7 @@
   <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
     <div class="container">
       <div class="col-md-6 ml-auto mr-auto p-0">
-        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
+        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0, 0, 0,0.15)">
           <div class="col-6 ml-auto text-right p-0">
             <a href="https://amoinvitar.com/"><img class="img-fluid mb-1 mr-1" width="90" src="../../comun/img/amoinvitar-line.svg" alt="Amo Invitar!"></a>
           </div>
@@ -771,6 +749,8 @@
 <script src="../../comun/js/invitacion.js" defer></script>
 <script src="../../comun/js/slides.js" defer></script>
 <script src="../../comun/js/diferido.js" defer></script>
+
+<script src="../../comun/js/lottie-player.js" defer></script>
 
 <script>	
 // ——————————————————————————————————————————————————

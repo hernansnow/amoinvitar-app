@@ -32,6 +32,13 @@ export const FAMILIAS = {
   sweet: ['Sweet', { 15: 'sweet15', cumple: 'cumple-sweet', bautismo: '../nuevos-bautismo/sweet', comunion: '../nuevos-comunion/sweet' }],
   natural: ['Natural', { 15: 'natural15', cumple: 'cumple-natural', bautismo: '../nuevos-bautismo/natural', comunion: '../nuevos-comunion/natural' }],
   party: ['Party', { 15: 'party15' }],
+  // Modelos simples de boda (una pantalla: foto, nombres, fecha, lugares y confirmación)
+  civil: ['Civil', { boda: 'civil' }],
+  compromiso: ['Compromiso', { boda: 'compromiso' }],
+  pedida: ['Pedida de mano', { boda: 'compromiso:pedida-de-mano' }],
+  // Save The Date web (se eligen dentro de la sección Save The Date del panel, no como modelo)
+  'std-classic': ['Web Classic', { boda: 'save-the-date-web-classic', 15: 'save-the-date-web15' }],
+  'std-soft': ['Web Soft', { boda: 'save-the-date-web-soft', 15: 'save-the-date-web-soft' }],
   elegance: ['Elegance', { boda: 'elegance' }],
   vintage: ['Vintage', { boda: 'vintage' }],
   oliva: ['Oliva', { boda: 'oliva' }],
@@ -39,8 +46,8 @@ export const FAMILIAS = {
   // Carpetas con varios diseños: "carpeta:patrón" (ver convertir-modelo.mjs)
   garden: ['Garden', { 15: 'eucalipto15', cumple: 'cumple-eucalipto', bautismo: 'bautismo-nuevo:garden', comunion: 'comunion-nuevo:garden_proyecto-{p}---NUEVO' }],
   amanecer: ['Amanecer', { bautismo: 'bautismo-nuevo:amanecer', comunion: 'comunion-nuevo:amanecer_proyecto-{p}---NUEVO' }],
-  celeste: ['Celeste', { bautismo: 'bautismo-nuevo:celeste', babyshower: 'baby-shower-nuevo:celeste_proyecto-{p}---NUEVO' }],
-  rosa: ['Rosa', { bautismo: 'bautismo-nuevo:rosa', babyshower: 'baby-shower-nuevo:rosa_proyecto-{p}---NUEVO' }],
+  celeste: ['Celeste', { bautismo: 'bautismo-nuevo:celeste', babyshower: 'baby-shower-nuevo:celeste_proyecto-{p}---NUEVO', infantil: 'baby-shower-nuevo:celeste_proyecto-{p}---NUEVO' }],
+  rosa: ['Rosa', { bautismo: 'bautismo-nuevo:rosa', babyshower: 'baby-shower-nuevo:rosa_proyecto-{p}---NUEVO', infantil: 'baby-shower-nuevo:rosa_proyecto-{p}---NUEVO' }],
   revelacion: ['Revelación', { revelacion: 'baby-shower-nuevo:revelacion_proyecto-{p}---NUEVO' }],
   esmeralda: ['Esmeralda', { graduacion: 'graduacion-nuevo:egreso-esmeralda_proyecto-{p}---NUEVO' }],
   estilo: ['Estilo', { graduacion: 'graduacion-nuevo:estilo_proyecto-{p}---NUEVO' }],
@@ -62,6 +69,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     }
     try {
       salida += run('scripts/conversion/armar-modelo.mjs', id, nombre); salida += run('scripts/convertir-estilos.mjs', id);
+      // Las tarjetas Save The Date del modelo (scripts/conversion/tarjetas/<id>.json)
+      salida += run('scripts/conversion/armar-tarjetas.mjs', id);
       // Fotos de muestra desenfocadas para la vista previa del panel (README: modelo.json → demoBorrosas)
       execFileSync('python3', ['scripts/fotos-borrosas.py', id], { cwd: APP, stdio: 'ignore' });
     } catch (e) { salida += `ERROR armar ${id}: ${e.stderr || e.message}\n`; }

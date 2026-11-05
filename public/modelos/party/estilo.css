@@ -745,17 +745,6 @@ h6 {
     font-size: 1rem;
 }
 
-.lead {
-    font-size: 1.20rem;
-    font-weight: 440
-}
-
-@media (max-width: 991.98px) {
-    .lead {
-        font-size: 1.16rem;
-    }
-}
-
 hr {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -2626,6 +2615,10 @@ a.close.disabled {
     margin-bottom: 0 !important
 }
 
+.m-1 {
+    margin: 0.25rem !important
+}
+
 .mt-1 {
     margin-top: 0.25rem !important
 }
@@ -2698,10 +2691,6 @@ a.close.disabled {
     padding: 0.25rem !important
 }
 
-.p-2 {
-    padding: 0.5rem !important
-}
-
 .pt-2,
 .py-2 {
     padding-top: 0.5rem !important
@@ -2762,12 +2751,6 @@ a.close.disabled {
     }
     .pt-md-5 {
         padding-top: 3rem !important
-    }
-}
-
-@media (min-width:992px) {
-    .p-lg-5 {
-        padding: 3rem !important
     }
 }
 
@@ -3649,9 +3632,6 @@ span.text {
 .text-gold {
   color: #9c916b !important; }
 
-.text-flor {
-  color: #deb1b1 !important; }
-
 .rsvp-cerrado {
     opacity: 0.6;
     cursor: not-allowed;
@@ -4108,6 +4088,37 @@ font-size: 1.75rem;
 	
 }
 /* Flickering animation */
+.date-line {
+  width: 250px;
+  text-align: center;
+  margin: auto;
+  overflow: hidden;
+  font-size: 1.25rem;
+}
+
+@media screen and (max-width: 768px) {
+.date-line {
+	   width: 200px;
+	   font-size: 0.938rem;
+ }
+}
+.date-line:before {
+  margin-left: -100%;
+}
+.date-line:after {
+  margin-right: -100%;
+}
+.date-line:before, .date-line:after {
+  display: inline-block;
+  content: "";
+  background-color: #fff;
+  height: 1px;
+  width: 100%;
+  vertical-align: middle;
+  box-sizing: border-box;
+  border: solid #FFF;
+  border-width: 0 10px;
+}
 
 .date-lineg {
   width: 250px;

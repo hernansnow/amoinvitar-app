@@ -1,0 +1,214 @@
+{
+ "fuentes": {
+  "titulos": "Great Vibes",
+  "serif": "Bodoni Moda",
+  "css": [
+   "/comun/fonts/catalogo/catalogo.css"
+  ]
+ },
+ "eventos": {
+  "boda": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    },
+    {
+     "img": "img/std-icono.png",
+     "x": 890,
+     "y": 788,
+     "w": 375,
+     "h": 300
+    }
+   ],
+   "formas": [
+    {
+     "x": 797,
+     "y": 1917,
+     "w": 553,
+     "h": 3,
+     "color": "#8a6b74"
+    }
+   ],
+   "textos": [
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "x": 1079,
+     "y": 1205,
+     "tam": 63.4,
+     "fuente": "serif",
+     "color": "#fff8f6",
+     "espaciado": 28.4,
+     "mayus": true,
+     "peso": 500
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 1034,
+     "y": 1511,
+     "tam": 256.3,
+     "fuente": "titulos",
+     "color": "#ffffff",
+     "ancho": 1700,
+     "ajustar": true,
+     "amp": {
+      "fondo": "#7d5f67",
+      "color": "#ffffff",
+      "tam": 0.68
+     }
+    },
+    {
+     "id": "evento",
+     "texto": "Nuestra boda",
+     "x": 1082,
+     "y": 1796,
+     "tam": 54.3,
+     "fuente": "serif",
+     "color": "#fff5f5",
+     "espaciado": 25.1,
+     "mayus": true,
+     "peso": 500,
+     "plantilla": "{evento}",
+     "ancho": 868,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dd} | {mesNum} | {anio}",
+     "x": 1057,
+     "y": 2049,
+     "tam": 65,
+     "fuente": "serif",
+     "color": "#fff7f7",
+     "espaciado": 25,
+     "peso": 500,
+     "marcas": {
+      "chars": "|",
+      "color": "#8a6b74"
+     }
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente\nla invitación\nformal",
+     "x": 1081,
+     "y": 2310,
+     "tam": 35.7,
+     "fuente": "serif",
+     "color": "#2e2427",
+     "mayus": true,
+     "espaciado": 10,
+     "opcional": "proximamente",
+     "peso": 500,
+     "altoLinea": 1.98
+    }
+   ]
+  },
+  "15": {
+   "ancho": 2160,
+   "alto": 2989,
+   "fondo": "#ffffff",
+   "capas": [
+    {
+     "img": "img/std-fondo.jpg",
+     "x": 0,
+     "y": 0,
+     "w": 2160,
+     "h": 2989
+    },
+    {
+     "img": "img/std-icono.png",
+     "x": 890,
+     "y": 788,
+     "w": 375,
+     "h": 300
+    }
+   ],
+   "formas": [
+    {
+     "x": 797,
+     "y": 1917,
+     "w": 553,
+     "h": 3,
+     "color": "#8a6b74"
+    }
+   ],
+   "textos": [
+    {
+     "id": "titulo",
+     "texto": "Save the date",
+     "x": 1079,
+     "y": 1205,
+     "tam": 63.4,
+     "fuente": "serif",
+     "color": "#fff8f6",
+     "espaciado": 28.4,
+     "mayus": true,
+     "peso": 500
+    },
+    {
+     "id": "nombres",
+     "texto": "{nombres}",
+     "x": 1060,
+     "y": 1527,
+     "tam": 339.2,
+     "fuente": "titulos",
+     "color": "#ffffff",
+     "ancho": 1700,
+     "ajustar": true
+    },
+    {
+     "id": "evento",
+     "texto": "Mis quince",
+     "x": 1083,
+     "y": 1797,
+     "tam": 53.6,
+     "fuente": "serif",
+     "color": "#fcf4f2",
+     "espaciado": 27.7,
+     "mayus": true,
+     "peso": 500,
+     "plantilla": "{evento}",
+     "ancho": 688,
+     "ajustar": true
+    },
+    {
+     "id": "fecha",
+     "texto": "{dd} | {mesNum} | {anio}",
+     "x": 1057,
+     "y": 2049,
+     "tam": 65,
+     "fuente": "serif",
+     "color": "#fff7f7",
+     "espaciado": 25,
+     "peso": 500,
+     "marcas": {
+      "chars": "|",
+      "color": "#8a6b74"
+     }
+    },
+    {
+     "id": "pie",
+     "texto": "Próximamente\nla invitación\nformal",
+     "x": 1081,
+     "y": 2310,
+     "tam": 35.7,
+     "fuente": "serif",
+     "color": "#2e2427",
+     "mayus": true,
+     "espaciado": 10,
+     "opcional": "proximamente",
+     "peso": 500,
+     "altoLinea": 1.98
+    }
+   ]
+  }
+ }
+}

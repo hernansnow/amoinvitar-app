@@ -21,7 +21,8 @@ import { ZONAS } from '../datos/zonas.js';
 import { FUENTES } from '../datos/fuentes.js';
 
 const ORDEN_PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
-const PLURAL = new Set(['boda', 'revelacion']);
+// Revelación de género: un solo campo de nombre libre (uno o dos nombres, como lo escriba el cliente)
+const PLURAL = new Set(['boda']);
 
 // ── Campos reutilizables ──────────────────────────────────────────────
 
@@ -164,7 +165,8 @@ function pasosInvitacion({ tipo, modelo }) {
   const unificada = { campo: 'ceremonia.modo', es: 'mismo-lugar' };
   const nCer = misa ? 'misa' : 'ceremonia';
   const g = modelo.galeria || {};
-  const maxPortada = incluye.fotosPortada || 1;
+  // 0: el diseño no lleva foto de portada (Armonía, Beach, Black…) y no se muestra la opción
+  const maxPortada = incluye.fotosPortada ?? 1;
   // Los modelos con slideshow lo traen también en Basic (fotosPortada > 1 en basic)
   const maxPortadaBasic = modelo.paquetes.basic?.incluye?.fotosPortada || 1;
 
@@ -172,47 +174,58 @@ function pasosInvitacion({ tipo, modelo }) {
     {
       id: 'portada', titulo: 'Portada', obligatoria: true,
       campos: [
-        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : ({ graduacion: 'Nombre (o institución, si es un egreso)', navidad: 'Familia o empresa' })[tipo] || 'Nombre',
-          max: ['graduacion', 'navidad'].includes(tipo) ? 30 : 15, requerido: true, ancho: plural ? 'mitad' : null, placeholder: plural ? 'Lau' : ({ graduacion: 'Cinthia', navidad: 'Familia Pérez' })[tipo] || 'Sofi' },
+        { id: 'nombres.a', tipo: 'texto', etiqueta: plural ? 'Nombre 1' : ({ graduacion: 'Nombre (o institución, si es un egreso)', navidad: 'Familia o nombre', revelacion: 'Nombre o nombres (como se tienen que ver)' })[tipo] || 'Nombre',
+          max: ['graduacion', 'navidad', 'revelacion'].includes(tipo) ? 30 : 15, requerido: true, ancho: plural ? 'mitad' : null, placeholder: plural ? 'Lau' : ({ graduacion: 'Cinthia', navidad: 'Familia Pérez' })[tipo] || 'Sofi' },
         ...(plural ? [{ id: 'nombres.b', tipo: 'texto', etiqueta: 'Nombre 2', max: 15, requerido: true, ancho: 'mitad', placeholder: 'Pablo' }] : []),
         { id: 'nota.nombres', tipo: 'nota', estilo: 'ayuda', texto: plural ? '¿Cómo se tienen que ver los nombres? (nombres, diminutivos, apodos…). Por ejemplo: Lau y Pablo.'
           : '¿Cómo se tiene que ver el nombre? (nombre, diminutivo, apodo…). Por ejemplo: Sofi.' },
+        ...(maxPortada ? [
         { id: 'nota.portada', tipo: 'nota', texto: maxPortada > 1 ? 'Fotos de portada' : 'Foto de portada', estilo: 'etiqueta' },
         conFotos('portada', maxPortada > 1 ? 'Incluir fotos en la portada' : 'Incluir foto en la portada'),
         // Modelos con video de portada: se elige foto o video
         ...(modelo.videoPortada ? [{ id: 'portada.tipo', tipo: 'opciones', etiqueta: 'En la portada va', defecto: 'fotos', rearmar: true, si: siFotos('portada'),
-          valores: [{ v: 'fotos', etiqueta: 'Fotos' }, { v: 'video', etiqueta: 'Un video (hasta 30 segundos)' }] },
+          valores: [{ v: 'fotos', etiqueta: 'Fotos' }, { v: 'video', etiqueta: 'Un video (hasta 30 segundos)', extra: 'video-portada' }] },
         { id: 'portada.video', tipo: 'video', etiqueta: 'Video de portada', maxSeg: 30, maxMB: 40, si: [siFotos('portada'), { campo: 'portada.tipo', es: 'video' }],
           ayuda: 'MP4 de hasta 30 segundos. En pantallas horizontales un video vertical se ve al centro, con una copia desenfocada de fondo.' }] : []),
         // Más de una foto de portada es de Premium
         { id: 'fotos.portada', tipo: 'fotos', etiqueta: maxPortada > 1 ? 'Fotos de portada' : 'Foto de portada', sinEtiqueta: true, max: maxPortada, portada: true, nivelCantidad: maxPortada > maxPortadaBasic ? [maxPortadaBasic + 1, 'premium'] : null,
           si: modelo.videoPortada ? [siFotos('portada'), { campo: 'portada.tipo', no: 'video' }] : siFotos('portada') },
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
-        { id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Frase debajo de los nombres', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' },
+        ] : []),
+        ...(tipo === 'navidad' ? [
+          { id: 'textos.portada.antetitulo', tipo: 'texto', etiqueta: 'Título (primera línea)', max: 20, base: 'portada.antetitulo', ancho: 'mitad' },
+          { id: 'textos.portada.titulo', tipo: 'texto', etiqueta: 'Título (en grande)', max: 16, base: 'portada.titulo', ancho: 'mitad' },
+        // README (ronda 30): "Subtítulo"; en baby shower y revelación no se cambia (revelación tiene su "Frase de la portada")
+        ] : ['babyshower', 'revelacion'].includes(tipo) ? [] : [{ id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Subtítulo', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: tipo === 'boda' ? 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' : 'La frase debajo de los nombres.' }]),
         // Segunda línea de la portada en los diseños que la traen (la edad, la promoción…)
+        ...(modelo.sepiaPortada ? [{ id: 'portada.color', tipo: 'switch', estilo: 'check', etiqueta: 'Portada en color', detalle: 'este diseño la muestra en sepia', si: siFotos('portada') }] : []),
+        ...(modelo.ciudadPortada ? [{ id: 'portada.ciudad', tipo: 'texto', etiqueta: 'Ciudad (junto a la fecha)', max: 18, ancho: 'mitad', ayuda: 'Por ejemplo "Miami". Vacío, no se muestra.' }] : []),
         ...(DETALLE[tipo] ? [{ id: 'textos.portada.detalle', tipo: 'texto', etiqueta: DETALLE[tipo][0], max: DETALLE[tipo][1], base: 'portada.detalle', ancho: 'mitad', ayuda: DETALLE[tipo][2] }] : []),
         { id: 'zonaHoraria', tipo: 'zona', etiqueta: 'País / zona horaria del evento', valores: ZONAS, requerido: true, ancho: 'mitad', ayuda: 'Para la cuenta regresiva y los calendarios.' },
         // Apagada: Premium y Deluxe muestran la portada de Basic (sin cuenta regresiva)
-        { id: 'portada.cuenta', tipo: 'switch', etiqueta: 'Mostrar la cuenta regresiva', defecto: true, rearmar: true,
-          ayuda: 'En los planes Premium y Deluxe. Apagada, la portada queda como la del plan Basic.' },
+        { id: 'portada.cuenta', tipo: 'switch', etiqueta: 'Mostrar la cuenta regresiva', defecto: true, rearmar: true, planGratis: 'basic',
+          ayuda: 'Desde el plan Basic. En el plan gratis no va: si la prendes, pasa a Basic.' },
         // Sobre de apertura (Premium y Deluxe). Apagado: la ventana de bienvenida original del diseño
-        ...(incluye.sobre ? [{ id: 'portada.sobre', tipo: 'switch', etiqueta: 'Sobre de apertura', defecto: true, rearmar: true,
-          ayuda: 'En los planes Premium y Deluxe. Al entrar se abre un sobre lacrado con las iniciales; apagado, aparece la ventana de bienvenida del diseño.' }] : []),
+        ...(incluye.sobre && tipo !== 'empresarial' ? [{ id: 'portada.sobre', tipo: 'switch', etiqueta: 'Sobre de apertura', defecto: true, rearmar: true,
+          ayuda: 'En los planes Premium y Deluxe. Al entrar se abre un sobre lacrado con las iniciales; apagado, aparece la ventana de bienvenida del diseño (si la invitación no tiene música de fondo, esta ventana no se muestra).' }] : []),
       ],
     },
     { id: 'musica', seccion: 'musica', titulo: 'Música de fondo', campos: [
       { id: 'musica.archivo', tipo: 'mp3', etiqueta: 'Canción (MP3)', sinEtiqueta: true, boton: 'Cargar canción (MP3)', maxMB: 12 },
       { id: 'musica.inicio', tipo: 'contador', etiqueta: 'Empezar la canción en el segundo…', min: 0, max: 600, paso: 5, si: { campo: 'musica.archivo' } },
     ] },
-    { id: 'historia', seccion: 'historia', titulo: plural ? 'Nuestra historia' : 'Mi historia',
+    { id: 'historia', seccion: 'historia', titulo: ({ graduacion: 'Mi recorrido', infantil: 'El tiempo vuela', navidad: 'Texto inicial', babyshower: 'Texto inicial', revelacion: 'Texto inicial' })[tipo] || (plural ? 'Nuestra historia' : 'Mi historia'),
       ayudaSeccion: 'Apagada: en su lugar va un saludo corto de bienvenida.',
       campos: [
         titulo('historia.titulo'),
         { id: 'historia.texto', tipo: 'area', etiqueta: 'Texto', max: 600, base: 'historia.texto' },
+        // Diseños con una foto junto a la historia (la "inicial" de Armonía, Lila, Style, Oliva…)
+        ...(modelo.fotoHistoria ? [conFotos('historia'),
+          { id: 'fotos.historia', tipo: 'foto', etiqueta: 'Foto', proporcion: modelo.fotoHistoria, encuadre: true, redonda: modelo.fotoHistoria === '1:1', si: siFotos('historia') }] : []),
       ] },
     { id: 'galeria', seccion: 'galeria', titulo: 'Galería de fotos', ayudaSeccion: 'Si no quieres fotos, apagar esta sección.', campos: [
       // En los modelos con la galería dentro de la confirmación va siempre el carrusel
-      ...(g.enRsvp ? [] : [{ id: 'galeria.tipo', tipo: 'opciones', etiqueta: 'Cómo se muestran', tarjetas: 'galeria', defecto: 'carrusel', valores: TIPOS_GALERIA }]),
+      ...(g.enRsvp || g.fija ? [] : [{ id: 'galeria.tipo', tipo: 'opciones', etiqueta: 'Cómo se muestran', tarjetas: 'galeria', defecto: 'carrusel', valores: TIPOS_GALERIA }]),
       // Solo en los diseños que muestran las fotos en blanco y negro (Romantic, B&N)
       ...(g.byn ? [{ id: 'galeria.color', tipo: 'switch', estilo: 'check', etiqueta: 'Mostrar las fotos en color', detalle: 'este diseño las muestra en blanco y negro' }] : []),
       { id: 'galeria.proporcion', tipo: 'opciones', etiqueta: 'Proporción de la miniatura', tarjetas: 'proporcion', defecto: 'cuadrada', rearmar: true, valores: [
@@ -225,7 +238,7 @@ function pasosInvitacion({ tipo, modelo }) {
       id: 'lugares', titulo: 'Lugares y fecha', obligatoria: true,
       campos: [
         ...(conCeremonia ? [
-          { id: 'ceremonia.modo', tipo: 'opciones', etiqueta: misa ? '¿Hay misa?' : '¿Hay ceremonia?', defecto: 'mismo-lugar', valores: [
+          { id: 'ceremonia.modo', tipo: 'opciones', etiqueta: misa ? '¿Hay misa?' : '¿Hay ceremonia?', defecto: tipo === 'graduacion' ? 'separada' : 'mismo-lugar', valores: [
             { v: 'mismo-lugar', etiqueta: 'Sí, en el mismo lugar de la celebración' },
             { v: 'separada', etiqueta: 'Sí, y se realiza en otro lugar' },
             { v: 'sin', etiqueta: misa ? 'No habrá misa' : 'No habrá ceremonia' },
@@ -276,8 +289,8 @@ function pasosInvitacion({ tipo, modelo }) {
           { id: 'pregunta', tipo: 'texto', etiqueta: 'Pregunta', max: 80, placeholder: '¿Cuál es tu trago favorito?' },
           { id: 'opciones', tipo: 'texto', etiqueta: 'Opciones (separadas con coma)', max: 160, placeholder: 'Vacío = respuesta libre · Ej.: Fernet, Gin tonic' },
         ] },
-        // Los modelos con la galería dentro de la confirmación no llevan foto acá
-        ...(g.enRsvp ? [] : [
+        // Los modelos con la galería dentro de la confirmación no llevan foto aquí
+        ...(g.enRsvp || modelo.sinFotoRsvp ? [] : [
           { ...conFotos('rsvp'), defecto: false },
           { id: 'fotos.rsvp', tipo: 'foto', etiqueta: 'Foto', sinRecorte: true, paquete: 'premium', si: { campo: 'fotosOn.rsvp' } },
         ]),
@@ -322,7 +335,7 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'itinerario', tipo: 'lista', etiqueta: 'Momentos', max: 12, agregar: 'Agregar momento', campos: [
         { id: 'hora', tipo: 'texto', etiqueta: 'Hora', max: 10, placeholder: '21:00' },
         { id: 'texto', tipo: 'texto', etiqueta: 'Qué pasa', max: 30 },
-        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido, el círculo queda vacío.',
+        { id: 'icono', tipo: 'opciones', etiqueta: 'Ícono', iconos: `/modelos/${modelo.id}/img/timeline-icon-{v}.png`, ayuda: 'Sin ícono elegido, se usa el que corresponde al texto (o uno de fiesta).',
           valores: [...(modelo.iconosItinerario || []).map((v) => ({ v, etiqueta: nombreIcono(v) })),
             ...iconosComunesDe(tipo).filter((v) => !(modelo.iconosItinerario || []).includes(v)).map((v) => ({ v, etiqueta: nombreIcono(v), src: `/comun/img/itinerario/timeline-icon-${v}.png` }))] },
       ] },
@@ -354,7 +367,8 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'nota.albumAlbunear', tipo: 'nota', estilo: 'ayuda', texto: 'Luego podrás configurar el álbum en la pestaña Administración.', si: { campo: 'album.origen', no: 'propio' } },
       { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', si: { campo: 'album.origen', es: 'propio' } },
       conFotos('album'),
-      { id: 'fotos.album', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album') },
+      // La misma foto que Instagram Wall (van una u otra): si ya la cargó allá, aquí aparece cargada
+      { id: 'fotos.instagram', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album'), ayuda: 'Es la misma foto de Instagram Wall.' },
     ] },
     { id: 'canciones', seccion: 'canciones', titulo: 'Sugerir canciones', campos: [
       { id: 'nota.canciones', tipo: 'nota', texto: 'Un formulario para que los invitados sugieran canciones. Las sugerencias se ven en la administración de la invitación.' },
@@ -400,7 +414,7 @@ const PALETA_DEFECTO = ['#a78977', '#86a388', '#9ab09c', '#ffffff'];
 const pasoDiseno = (modelo) => ({
   id: 'diseno', seccion: 'diseno', complemento: true, titulo: 'Cambios de diseño',
   campos: [
-    { id: 'nota.diseno', tipo: 'nota', texto: 'Los cambios los hace el equipo de diseño: el pedido se envía al publicar y desde ese momento ya no se puede modificar.' },
+    { id: 'nota.diseno', tipo: 'nota', texto: 'Costo: {precio:diseno} (colores y tipografía, uno o los dos). Los cambios los hace el equipo de diseño: el pedido se envía al publicar y desde ese momento ya no se puede modificar.' },
     { id: 'diseno.paleta.modo', tipo: 'opciones', etiqueta: 'Colores', defecto: 'original', valores: [
       { v: 'original', etiqueta: 'Los colores originales del diseño' }, { v: 'cambiar', etiqueta: 'Quiero otros colores' },
     ] },
@@ -423,27 +437,83 @@ export const DISENOS_FOTO = [
   { v: 'f4', etiqueta: 'Editorial' }, { v: 'f5', etiqueta: 'Minimal' }, { v: 'f6', etiqueta: 'Encaje' },
   { v: 'f7', etiqueta: 'Blanco y negro' }, { v: 'f8', etiqueta: 'Agenda la fecha' },
 ];
-const pasoTarjeta = (clase, modelo) => (clase === 'std' ? {
-  id: 'std', seccion: 'std', complemento: true, titulo: 'Tarjeta Save The Date',
+// README (ronda 22/25): Save The Date con el diseño del modelo en boda, 15, cumpleaños, comunión, bautismo, infantiles,
+// baby shower y revelación (incluida en Premium y Deluxe); la tarjeta con foto y la de agradecimiento, solo en boda y 15.
+// Graduación y Navidad no tienen tarjetas.
+const STD_EVENTOS = new Set(['boda', '15', 'cumple', 'bautismo', 'comunion', 'infantil', 'babyshower', 'revelacion']);
+const CON_FOTO = new Set(['boda', '15']);
+export function tarjetasDe(clase, modelo, tipo) {
+  if (clase === 'agradecimiento') return CON_FOTO.has(tipo);
+  if (!STD_EVENTOS.has(tipo)) return false;
+  return CON_FOTO.has(tipo) || !!modelo?.tarjetas?.std;
+}
+// README (ronda 28/29): Save The Date con diseño a medida (tarjeta o web), en todos los modelos y en el diseño a medida.
+// En la invitación no va en la lista de opciones: la tarjeta lo ofrece debajo del botón para generarla, y la foto y la
+// web como un diseño más ("Diseño a medida", con su precio). Al elegirlo, el paso pasa al brief y al envío al equipo.
+const OPCIONES_STD_MEDIDA = [
+  { v: 'tarjeta-medida', etiqueta: 'Tarjeta · Diseño a medida', ayuda: 'La diseñamos para ti (incluye la versión con foto).', extra: 'std-tarjeta-medida' },
+  { v: 'web-medida', etiqueta: 'Web · Diseño a medida', ayuda: 'Una Save The Date interactiva con su link, diseñada para ti.', extra: 'std-web-medida' },
+];
+const siMedida = { o: [{ campo: 'std.tipo', es: 'tarjeta-medida' }, { campo: 'std.tipo', es: 'web-medida' }] };
+const noMedida = [{ campo: 'std.tipo', no: 'tarjeta-medida' }, { campo: 'std.tipo', no: 'web-medida' }];
+const CAMPOS_STD_MEDIDA = [
+  { id: 'std.medidaAviso', tipo: 'medidaStd', etiqueta: 'Save The Date a medida', sinEtiqueta: true, si: siMedida },
+  ...camposBrief({ clase: 'std', pre: 'std.medida', si: siMedida }),
+];
+// En el diseño a medida, la Save The Date solo a medida
+// README (ronda 30): la web a medida no va como complemento en cumpleaños, bautismo, comunión y baby shower
+const SIN_WEB_MEDIDA = new Set(['cumple', 'infantil', 'bautismo', 'comunion', 'babyshower', 'revelacion']);
+const pasoTarjetaMedida = (tipo, { conAviso = false } = {}) => ({
+  id: 'std', seccion: 'std', complemento: true, titulo: 'Save The Date a medida',
   campos: [
-    { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: 'Una tarjeta para mandar antes de la invitación. La del mismo diseño viene incluida en Premium y Deluxe; la tarjeta con foto se suma en cualquier plan.' },
-    { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'tarjeta', rearmar: true, valores: [
-      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'std-foto' },
+    { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: 'Una Save The Date con el mismo estilo que tu invitación, diseñada por el equipo.' },
+    { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de Save The Date', defecto: 'tarjeta-medida', rearmar: true,
+      valores: OPCIONES_STD_MEDIDA.filter((o) => o.v !== 'web-medida' || !SIN_WEB_MEDIDA.has(tipo)) },
+    ...CAMPOS_STD_MEDIDA.filter((c) => conAviso || c.tipo !== 'medidaStd'),
+  ],
+});
+const pasoTarjeta = (clase, modelo, tipo) => (clase === 'std' ? {
+  id: 'std', seccion: 'std', complemento: true, titulo: 'Tarjeta Save The Date',
+  // Con tarjeta propia del diseño: viene incluida en Premium y Deluxe (se prende sola con la primera sección de esos planes)
+  incluidaPremium: !!modelo?.tarjetas?.std,
+  campos: [
+    { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: modelo?.tarjetas?.std
+      ? 'Una tarjeta para mandar antes de la invitación. La del mismo diseño viene incluida en Premium y Deluxe.'
+      : 'Una tarjeta para mandar antes de la invitación, con una foto y el diseño que se elija. Se suma en cualquier plan.', si: noMedida },
+    // Las opciones de siempre, con su precio: tarjeta del diseño, con foto y web (la foto y la web, en boda y 15)
+    { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de Save The Date', defecto: modelo?.tarjetas?.std ? 'tarjeta' : 'foto', rearmar: true, si: noMedida,
+      oculto: !!modelo?.tarjetas?.std && !CON_FOTO.has(tipo), valores: [
+      ...(modelo?.tarjetas?.std ? [{ v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }] : []),
+      ...(CON_FOTO.has(tipo) ? [
+        { v: 'foto', etiqueta: 'Foto', ayuda: 'Tu foto con el diseño que elijas.', extra: 'std-foto' },
+        // README (ronda 22): la Save The Date web (Classic o Soft) solo en boda y 15, con su propio link
+        { v: 'web', etiqueta: 'Web', ayuda: 'Una página con su link: foto, nombres, fecha y botón para agendar.', extra: 'std-web' },
+      ] : []),
+      // Válidas pero sin radio propio: se eligen desde "Diseño a medida"
+      ...OPCIONES_STD_MEDIDA.filter((o) => o.v === 'tarjeta-medida' || CON_FOTO.has(tipo)).map((o) => ({ ...o, oculta: true })),
     ] },
-    // Diseños con foto: no dependen del modelo (public/comun/tarjetas/foto/catalogo.json)
-    { id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseño', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true, si: { campo: 'std.tipo', es: 'foto' } },
-    { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true },
+    { id: 'std.web', tipo: 'disenoStd', etiqueta: 'Diseño de la Save The Date web', defecto: 'std-classic', valores: DISENOS_STD_WEB, rearmar: true, si: { campo: 'std.tipo', es: 'web' },
+      medida: { campo: 'std.tipo', v: 'web-medida', extra: 'std-web-medida', img: '/comun/img/std-medida-web.webp' } },
+    { id: 'textos.std.titulo', tipo: 'texto', etiqueta: 'Texto de arriba', max: 20, base: 'std.titulo', si: { campo: 'std.tipo', es: 'web' } },
+    { id: 'textos.std.mensaje', tipo: 'area', etiqueta: 'Mensaje breve', max: 60, base: 'std.mensaje', si: { campo: 'std.tipo', es: 'web' } },
+    { ...CAMPO_LINK_STD, si: { campo: 'std.tipo', es: 'web' } },
+    // Diseños con foto: no dependen del modelo (public/comun/tarjetas/foto/catalogo.json); el último, a medida
+    { id: 'std.disenoOk', tipo: 'switch', oculto: true, etiqueta: 'Diseño elegido' },
+    { id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseños', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true, colapsar: 'std.disenoOk', si: { campo: 'std.tipo', es: 'foto' },
+      medida: { campo: 'std.tipo', v: 'tarjeta-medida', extra: 'std-tarjeta-medida', img: '/comun/img/std-medida-tarjeta.jpg' } },
+    { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true, si: [{ campo: 'std.tipo', no: 'web' }, ...noMedida] },
+    // Debajo de la tarjeta del diseño, la opción de pedirla a medida
+    ...(modelo?.tarjetas?.std ? [{ id: 'std.activarMedida', tipo: 'activarMedida', etiqueta: 'Diseño a medida', sinEtiqueta: true, campo: 'std.tipo', v: 'tarjeta-medida', extra: 'std-tarjeta-medida',
+      texto: '¿Quieres un diseño a medida? Actívalo para enviarnos tu idea y estilo, así diseñamos la tarjeta de tus sueños.', boton: 'Activar diseño a medida',
+      si: [{ campo: 'std.tipo', no: 'web' }, { campo: 'std.tipo', no: 'foto' }, ...noMedida] }] : []),
+    ...CAMPOS_STD_MEDIDA,
   ],
 } : {
   id: 'agradecimiento', seccion: 'agradecimiento', complemento: true, titulo: 'Tarjeta de agradecimiento',
   campos: [
     { id: 'nota.agradecimiento', tipo: 'nota', estilo: 'ayuda', texto: 'Para agradecer a los invitados después del evento: un mensaje, los nombres y una foto.' },
-    // Con tarjeta propia en el modelo se elige entre esa y las con foto; si no, van las con foto
-    ...(modelo?.tarjetas?.agradecimiento ? [{ id: 'agradecimiento.tipo', tipo: 'opciones', etiqueta: 'Tipo de tarjeta', defecto: 'foto', rearmar: true, valores: [
-      { v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'agradecimiento' }, { v: 'foto', etiqueta: 'Tarjeta con foto', ayuda: 'Se elige el diseño.', extra: 'agradecimiento' },
-    ] }] : []),
-    { id: 'agradecimiento.diseno', tipo: 'disenoFoto', carpeta: 'gracias', etiqueta: 'Diseño', defecto: DISENOS_GRACIAS[0].v, valores: DISENOS_GRACIAS, rearmar: true,
-      ...(modelo?.tarjetas?.agradecimiento ? { si: { campo: 'agradecimiento.tipo', no: 'tarjeta' } } : {}) },
+    // README (ronda 24): solo las 8 tarjetas con foto (nunca con el diseño de la Save The Date ni del modelo)
+    { id: 'agradecimiento.diseno', tipo: 'disenoFoto', carpeta: 'gracias', etiqueta: 'Diseño', defecto: DISENOS_GRACIAS[0].v, valores: DISENOS_GRACIAS, rearmar: true },
     { id: 'agradecimiento.tarjeta', tipo: 'tarjeta', clase: 'agradecimiento', etiqueta: 'Tarjeta', sinEtiqueta: true },
   ],
 });
@@ -466,7 +536,7 @@ function pasoIdiomaAdicional(base, datos) {
   return {
     id: 'idiomaAdicional', seccion: 'idiomas', complemento: true, titulo: 'Idioma adicional',
     campos: [
-      { id: 'nota.idiomas', tipo: 'nota', estilo: 'ayuda', texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' },
+      { id: 'nota.idiomas', tipo: 'nota', estilo: 'ayuda', texto: 'Cada idioma adicional: {precio:idioma}. Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' },
       ...[2, 3, 4].flatMap((n) => {
         const l = datos.idiomas?.[`l${n}`];
         const ok = l && l !== principal;
@@ -553,17 +623,10 @@ const PRODUCTOS_STD = {
     { id: 'fotos.principal', tipo: 'foto', etiqueta: 'Foto principal', requerido: true, ayuda: 'En buena calidad: es la base del diseño.' },
     { id: 'fotos.extra', tipo: 'fotos', etiqueta: 'Otras fotos para elegir (opcional)', max: 4 },
   ] }, pasoFormato],
-  'std-tarjeta-medida': () => [datosBasicos(), pasoBrief({}), pasoFormato],
-  'std-web-medida': () => [datosBasicos(), pasoBrief({}), { id: 'fotos', titulo: 'Fotos y música', campos: [
+  'std-tarjeta-medida': () => [pasoBrief({ clase: 'std' }), datosBasicos(), pasoFormato],
+  'std-web-medida': () => [pasoBrief({ clase: 'std' }), datosBasicos(), { id: 'fotos', titulo: 'Fotos y música', campos: [
     { id: 'fotos.portada', tipo: 'fotos', etiqueta: 'Fotos', max: 6 }, { id: 'musica.archivo', tipo: 'mp3', etiqueta: 'Música (MP3, opcional)', maxMB: 12 },
   ] }, pasoPublicar('save-the-date')],
-  'std-video': () => [datosBasicos(), { id: 'material', titulo: 'Material para el video', campos: [
-    { id: 'video.fotos', tipo: 'fotos', etiqueta: 'Fotos', max: 20 },
-    { id: 'video.cancion', tipo: 'texto', etiqueta: 'Canción preferida', max: 100, placeholder: 'Artista — Canción' },
-    { id: 'video.duracion', tipo: 'opciones', etiqueta: 'Duración', valores: [{ v: '15', etiqueta: '15 segundos' }, { v: '30', etiqueta: '30 segundos' }, { v: '60', etiqueta: '1 minuto' }] },
-    { id: 'video.ideas', tipo: 'area', etiqueta: 'Ideas, estilo, referencias', max: 800 },
-    { id: 'video.referencias', tipo: 'lista', etiqueta: 'Videos de referencia', max: 5, campos: [{ id: 'url', tipo: 'url', etiqueta: 'Link' }] },
-  ] }, pasoFormato],
   agradecimiento: () => [
     { ...datosBasicos(), campos: datosBasicos().campos.map((c) => (c.id === 'std.frase' ? { ...c, etiqueta: 'Mensaje de agradecimiento', max: 300, placeholder: '¡Gracias por acompañarnos!' } : c)) },
     { id: 'fotos', titulo: 'Foto', campos: [{ id: 'fotos.principal', tipo: 'foto', etiqueta: 'Foto del evento (opcional)' }] },
@@ -572,25 +635,40 @@ const PRODUCTOS_STD = {
 };
 PRODUCTOS_STD['compromiso-web'] = PRODUCTOS_STD['std-web'];
 
-// ── Diseño a medida (personalizado, empresarial, personaje favorito) ──
-function pasoBrief({ aMedida }) {
-  return {
-    id: 'brief', titulo: 'Ideas para el diseño',
-    campos: [
-      ...(aMedida === 'personaje' ? [
-        { id: 'brief.personaje', tipo: 'texto', etiqueta: 'Personaje o temática', max: 80, requerido: true, placeholder: 'Bluey, Frozen, Minecraft…' },
-      ] : []),
-      ...(aMedida === 'empresarial' ? [
-        { id: 'brief.empresa', tipo: 'texto', etiqueta: 'Empresa', max: 80 },
-        { id: 'brief.logo', tipo: 'foto', etiqueta: 'Logo (PNG o SVG, mejor sin fondo)' },
-      ] : []),
-      { id: 'brief.estilo', tipo: 'area', etiqueta: 'Estilo, sensaciones, ideas', max: 1000, placeholder: 'Romántico, rústico, con flores secas…' },
-      { id: 'brief.colores', tipo: 'lista', etiqueta: 'Colores', max: 4, campos: [{ id: 'color', tipo: 'color', etiqueta: 'Color' }] },
-      { id: 'brief.tipografia', tipo: 'texto', etiqueta: 'Tipografía preferida (si hay)', max: 80 },
-      { id: 'brief.referencias', tipo: 'fotos', etiqueta: 'Imágenes de referencia', max: 8 },
-      { id: 'brief.links', tipo: 'lista', etiqueta: 'Links de referencia (Pinterest, Instagram…)', max: 6, campos: [{ id: 'url', tipo: 'url', etiqueta: 'Link' }] },
-    ],
-  };
+// ── Diseño a medida (personalizado, empresarial) ──
+// README (ronda 29): lo que el cliente cuenta para el diseño a medida. Invitación (personalizada o para empresas) y
+// Save The Date (tarjeta, foto o web). Lo marcado con * es obligatorio para "Enviar al equipo de diseño".
+const DOMINANCIA = [
+  { v: 'claro', etiqueta: 'Claro / Luminoso' }, { v: 'oscuro', etiqueta: 'Oscuro / Elegante' },
+  { v: 'combinado', etiqueta: 'Combinado (algunas secciones claras y otras oscuras)' },
+];
+export function camposBrief({ aMedida = null, clase = 'invitacion', pre = 'brief', si = null } = {}) {
+  const std = clase === 'std';
+  const pieza = std ? 'la tarjeta' : 'la invitación';
+  const conSi = (c) => (si ? { ...c, si } : c);
+  return [
+    aMedida === 'empresarial' || std
+      ? { id: `${pre}.tematica`, tipo: 'texto', etiqueta: 'Temática', requerido: true, max: 120, placeholder: std ? 'Viaje, playa, campo, vintage…' : 'Lanzamiento, aniversario de la empresa, congreso…' }
+      : { id: `${pre}.personaje`, tipo: 'texto', etiqueta: 'Temática o personaje (si es infantil)', requerido: true, etiquetaFalta: 'Temática', max: 120, placeholder: 'Bluey, Frozen, Minecraft, rústico, playa…' },
+    { id: `${pre}.estilo`, tipo: 'area', etiqueta: 'Estilo, sensaciones, ideas', requerido: true, max: 1500,
+      subtitulo: `Cualquier detalle o aclaración relacionada al diseño de ${pieza}. Lo más detallado posible.` },
+    ...(std ? [] : [
+      { id: `${pre}.referencia`, tipo: 'area', etiqueta: 'Modelo o diseño de referencia', max: 1000,
+        subtitulo: 'Si quieres que el diseño se base en algún modelo de nuestro catálogo, o en uno que te gusta como referencia, indícalo aquí y cuéntanos qué te gusta y qué no, para armarlo a tu estilo.' },
+      { id: `${pre}.dominancia`, tipo: 'opciones', etiqueta: 'Dominancia de color', requerido: true, subtitulo: '¿Cómo imaginas el fondo general de la invitación?', valores: DOMINANCIA },
+    ]),
+    { id: `${pre}.colores`, tipo: 'colores', etiqueta: 'Paleta de colores', requerido: true, max: std ? 4 : 5, ayuda: `Hasta ${std ? 4 : 5} colores.` },
+    { id: `${pre}.tipografia`, tipo: 'fuente', etiqueta: 'Tipografía preferida', requerido: true, requeridoO: `${pre}.tipografiaOtra`, valores: FUENTES },
+    { id: `${pre}.tipografiaOtra`, tipo: 'texto', etiqueta: '¿Otra fuente? Escribe el nombre', max: 80, placeholder: 'Por ejemplo: Parisienne' },
+    { id: `${pre}.referencias`, tipo: 'fotos', etiqueta: 'Imágenes de referencia', requerido: true, max: std ? 8 : 16,
+      subtitulo: `Carga imágenes, fondos, diseños, logos, decoraciones, etc. (hasta ${std ? 8 : 16}).` },
+    { id: `${pre}.propios`, tipo: 'area', etiqueta: 'Uso de elementos propios', max: 800,
+      subtitulo: 'Si cargaste un logo, monograma o ilustración personalizada, ya sea para el título principal o íconos, indícanos los lugares específicos donde debe ir cada uno.' },
+    ...(std ? [] : [{ id: `${pre}.links`, tipo: 'lista', etiqueta: 'Links de referencia (Pinterest, Instagram…)', max: 6, campos: [{ id: 'url', tipo: 'url', etiqueta: 'Link' }] }]),
+  ].map(conSi);
+}
+function pasoBrief({ aMedida, clase = 'invitacion' }) {
+  return { id: 'brief', titulo: 'Ideas para el diseño', obligatoria: true, campos: camposBrief({ aMedida, clase }) };
 }
 
 // El diseño a medida usa las secciones de un modelo base mientras se diseña
@@ -616,6 +694,7 @@ const usado = (c, v) => (c.tipo === 'switch' ? v === true : Array.isArray(v) ? v
 export function seccionActiva(paso, datos) {
   if (paso.interruptor) return !!leer(datos, paso.interruptor) || (paso.fijoSi ? cumple(paso.fijoSi, datos) : false);
   if (!paso.seccion) return true;
+  if (paso.seccion === 'estilos' && datos.secciones?.dresscode === false) return false;
   const v = datos.secciones?.[paso.seccion];
   return paso.complemento ? v === true : v !== false;
 }
@@ -633,7 +712,12 @@ export function planNecesario(esquema, datos, { gratisPosible = false } = {}) {
       if (c.nivelCantidad && Array.isArray(v) && v.length >= c.nivelCantidad[0]) subir(c.nivelCantidad[1]);
     }
   }
-  return n === 1 && gratisPosible && datos.planElegido === 'gratis' ? 'gratis' : NIVELES[n];
+  // El plan gratis no trae galería (README ronda 24): con la galería prendida, Basic
+  const conGaleria = esquema.pasos.some((p) => p.seccion === 'galeria' && seccionActiva(p, datos));
+  // Tampoco la cuenta regresiva ni los complementos (con cualquiera de los dos, Basic)
+  const conCuenta = esquema.pasos.some((p) => p.campos.some((c) => c.id === 'portada.cuenta')) && datos.portada?.cuenta === true;
+  const conComplementos = complementos(esquema, datos).length > 0;
+  return n === 1 && gratisPosible && datos.planElegido === 'gratis' && !conGaleria && !conCuenta && !conComplementos ? 'gratis' : NIVELES[n];
 }
 
 // Complementos elegidos: colores, tipografía y un idioma por cada adicional
@@ -641,11 +725,18 @@ export function complementos(esquema, datos) {
   const x = [];
   const paso = (id) => esquema.pasos.find((p) => p.id === id);
   if (paso('diseno') && seccionActiva(paso('diseno'), datos)) {
-    if (datos.diseno?.paleta?.modo === 'cambiar') x.push('paleta');
-    if (datos.diseno?.tipografia?.modo === 'cambiar') x.push('tipografia');
+    // Colores y tipografía: un solo cambio de diseño (uno o los dos)
+    if (datos.diseno?.paleta?.modo === 'cambiar' || datos.diseno?.tipografia?.modo === 'cambiar') x.push('diseno');
   }
-  if (paso('std') && seccionActiva(paso('std'), datos)) x.push(datos.std?.tipo === 'foto' ? 'std-foto' : 'std-tarjeta');
+  if (paso('std') && seccionActiva(paso('std'), datos)) {
+    const t = datos.std?.tipo || (paso('std').campos.find((c) => c.id === 'std.tipo')?.defecto) || (paso('std').incluidaPremium ? 'tarjeta' : 'foto');
+    // README (ronda 29): la Save The Date a medida se cobra recién cuando el equipo aprueba el proyecto
+    const medida = t === 'tarjeta-medida' || t === 'web-medida';
+    if (!medida || datos.std?.medida?.aprobado || datos.medida?.aprobado) x.push({ web: 'std-web', foto: 'std-foto', 'tarjeta-medida': 'std-tarjeta-medida', 'web-medida': 'std-web-medida' }[t] || 'std-tarjeta');
+  }
   if (paso('agradecimiento') && seccionActiva(paso('agradecimiento'), datos)) x.push('agradecimiento');
+  // Video de portada: complemento en cualquier plan
+  if (paso('portada')?.campos.some((c) => c.id === 'portada.video') && datos.portada?.tipo === 'video' && datos.fotosOn?.portada !== false) x.push('video-portada');
   if (paso('idiomaAdicional') && seccionActiva(paso('idiomaAdicional'), datos)) {
     const principal = String(datos.variante || 'es').slice(0, 2);
     const ls = new Set([2, 3, 4].map((n) => datos.idiomas?.[`l${n}`]).filter((l) => l && l !== principal));
@@ -655,15 +746,16 @@ export function complementos(esquema, datos) {
 }
 
 // Cada paso con su nivel (para los avisos Basic / Premium / Deluxe / Complemento del menú)
-function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false }) {
+function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false, motivoCerrada = null }) {
   return pasos.map((paso) => ({
     ...paso,
     nivel: paso.complemento ? 'complemento' : paso.nivelPaso || (paso.seccion ? paqueteMinimo(modelo, paso.seccion) : 'basic'),
     campos: paso.campos.map((c) => {
-      if (paso.complemento && gratis) return { ...c, cerrado: 'Los complementos no están disponibles en el plan gratis.' };
+      // README (ronda 28): los complementos se pueden sumar siempre (en el plan gratis, pasa a Basic)
+      if (c.planGratis && gratis) return { ...c, defecto: false, insigniaGratis: 'basic' };
       if (admin) return c;
       if (paso.id === 'diseno' && disenoEnviado && c.tipo !== 'nota') return { ...c, cerrado: 'El pedido de diseño ya se envió al equipo.' };
-      if (cerrada && c.tipo !== 'nota') return { ...c, cerrado: 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
+      if (cerrada && !['nota', 'linkStd'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
       if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'La invitación ya está publicada: los nombres y la fecha se cambian pidiéndolo por WhatsApp.', pedirCambio: true };
       return c;
     }),
@@ -721,13 +813,102 @@ const CAMPOS_ACCESO = [
   { id: 'acceso.ejemplo', tipo: 'ejemploAcceso' },
 ];
 
+// ── Modelos simples y Save The Date web ───────────────────────────────
+// Party, Civil, Compromiso, Pedida de mano: una sola pantalla. Se edita la foto (si el diseño la tiene), el texto de
+// arriba ("Save the date"), los nombres, la frase, la fecha y hora, el mensaje, los lugares y la confirmación (como en
+// Basic). Sin secciones para sumar, ni música, ni sobre, ni Save The Date. Idioma, colores y tipografía, con su costo.
+// Las Save The Date web (Classic y Soft): foto, textos, nombres, frase y fecha (la hora es opcional: sin hora se agenda
+// como evento de todo el día). Sin administración: al final, el link para copiar o mandar.
+const CON_MENSAJE = new Set(['pedida', 'std-classic', 'std-soft']);
+function portadaSimple(base, modelo, { std = false } = {}) {
+  const p = base.find((x) => x.id === 'portada');
+  const conFoto = (modelo?.paquetes?.basic?.incluye?.fotosPortada || 0) > 0;
+  const fuera = new Set(['portada.cuenta', 'portada.sobre', 'portada.tipo', 'portada.video', 'portada.color', 'portada.ciudad', 'nota.portada', 'nota.portadaSinFoto',
+    ...(conFoto ? [] : ['fotosOn.portada', 'fotos.portada'])]);
+  const campos = p.campos.filter((c) => !fuera.has(c.id)).map((c) => (c.id === 'fotos.portada' ? { ...c, max: 1, nivelCantidad: null, etiqueta: 'Foto', sinEtiqueta: false } : c));
+  const i = campos.findIndex((c) => c.id === 'textos.portada.subtitulo');
+  const extra = [
+    { id: 'textos.std.titulo', tipo: 'texto', etiqueta: 'Título', max: 20, base: 'std.titulo', ancho: 'mitad', ayuda: 'Por ejemplo "Save the date".' },
+    ...(CON_MENSAJE.has(modelo?.id) ? [{ id: 'textos.std.mensaje', tipo: 'area', etiqueta: 'Mensaje breve', max: 60, base: 'std.mensaje', ayuda: 'Hasta 60 caracteres, para que no se rompa el diseño.' }] : []),
+  ];
+  campos.splice(i < 0 ? campos.length : i + 1, 0, ...extra);
+  // La Save The Date: la fecha va en la portada (sin lugares)
+  if (std) campos.push(
+    { id: 'celebracion.fecha', tipo: 'fecha', etiqueta: 'Fecha del evento', requerido: true, ancho: 'mitad' },
+    { id: 'celebracion.hora', tipo: 'hora', etiqueta: 'Horario (opcional)', ancho: 'mitad', ayuda: 'Sin hora, en el calendario se agenda como evento de todo el día.' },
+    // README (ronda 28): "Próximamente la invitación formal", se prende, se apaga y se cambia el texto
+    { id: 'std.proximamente', tipo: 'switch', etiqueta: 'Mostrar "Próximamente la invitación formal"', defecto: true },
+    { id: 'textos.std.proximamente', tipo: 'texto', etiqueta: 'Texto', max: 40, base: 'std.proximamente', si: { campo: 'std.proximamente', no: false } },
+  );
+  // README (ronda 29): uno por línea (salvo los nombres), así no se descuadra
+  return { ...p, campos: campos.map((c) => (c.ancho && !c.id.startsWith('nombres.') ? { ...c, ancho: undefined } : c)), obligatoria: true };
+}
+function pasosSimple({ tipo, modelo, datos }) {
+  const base = pasosInvitacion({ tipo, modelo });
+  const de = (id) => base.find((x) => x.id === id);
+  const lugares = de('lugares');
+  // Civil: ceremonia y banquete; los demás, un solo lugar
+  const soloFiesta = modelo?.id !== 'civil';
+  const lug = lugares && { ...lugares, obligatoria: true, campos: lugares.campos.filter((c) => !/^(separador\.fotosLugar|fotosOn\.lugares|ceremonia\.foto|celebracion\.foto)$/.test(c.id)
+    && (!soloFiesta || !/^(ceremonia\.|separador\.ceremonia|separador\.fiesta|celebracion\.tituloUnico|celebracion\.titulo$)/.test(c.id))) };
+  const rsvp = de('rsvp') && { ...de('rsvp'), obligatoria: true, campos: de('rsvp').campos.filter((c) => !/^(rsvp\.aforo|rsvp\.extras|rsvp\.preguntas\.traslado|rsvp\.preguntas\.mensaje)$/.test(c.id)) };
+  const acceso = { id: 'seguridad', titulo: 'Acceso', obligatoria: true,
+    campos: CAMPOS_ACCESO.map((c) => (c.id === 'acceso.tipo' ? { ...c, valores: c.valores.filter((o) => !o.v.startsWith('lista')) } : c)) };
+  const pasos = [portadaSimple(base, modelo), pasoIdioma, lug, rsvp, acceso, pasoPublicar(tipo), { ...pasoDiseno(modelo), separado: true }].filter(Boolean);
+  // README (ronda 29): el idioma adicional con los textos propios de este panel (antes salía vacío)
+  return [...pasos, pasoIdiomaAdicional(pasos, datos)];
+}
+// El link de la Save The Date web, para copiarlo o mandarlo (lo arma el panel)
+const CAMPO_LINK_STD = { id: 'std.link', tipo: 'linkStd', etiqueta: 'Link de la Save The Date', ayuda: 'Cópialo o envíalo por WhatsApp. Se ve apenas se paga.' };
+// Las dos Save The Date web (el diseño se elige; la de 15 años es la "Web Classic" de 15)
+export const DISENOS_STD_WEB = [{ v: 'std-classic', etiqueta: 'Web Classic' }, { v: 'std-soft', etiqueta: 'Web Soft' }];
+function pasosStdWeb({ tipo, modelo, datos }) {
+  const base = pasosInvitacion({ tipo, modelo });
+  const pasos = [portadaSimple(base, modelo, { std: true }), pasoIdioma,
+    { id: 'publicar', titulo: 'Link', obligatoria: true, campos: [CAMPO_LINK_STD] },
+    { ...pasoDiseno(modelo), separado: true }].filter(Boolean);
+  return [...pasos, pasoIdiomaAdicional(pasos, datos)];
+}
+
 // ── Entrada principal ─────────────────────────────────────────────────
 // producto: 'invitacion' | 'a-medida' | 'std-web' | 'std-tarjeta' | …
 export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false }) {
-  if (PRODUCTOS_STD[producto]) {
-    return { producto, pasos: PRODUCTOS_STD[producto]() };
+  // README (ronda 28): Save The Date (tarjeta o foto) y agradecimiento comprados sueltos: el mismo editor que en la
+  // invitación, con el diseño elegido; se paga al generar la tarjeta
+  if (['std-tarjeta', 'std-foto', 'agradecimiento'].includes(producto)) {
+    const gracias = producto === 'agradecimiento';
+    const pasos = [gracias ? {
+      id: 'agradecimiento', titulo: 'Tarjeta de agradecimiento', obligatoria: true, campos: [
+        { id: 'agradecimiento.diseno', tipo: 'disenoFoto', carpeta: 'gracias', etiqueta: 'Diseño', defecto: DISENOS_GRACIAS[0].v, valores: DISENOS_GRACIAS, rearmar: true },
+        { id: 'agradecimiento.tarjeta', tipo: 'tarjeta', clase: 'agradecimiento', etiqueta: 'Tarjeta', sinEtiqueta: true },
+      ] } : {
+      id: 'std', titulo: producto === 'std-foto' ? 'Save The Date con foto' : 'Tarjeta Save The Date', obligatoria: true, campos: [
+        { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo', oculto: true, defecto: producto === 'std-foto' ? 'foto' : 'tarjeta', valores: [{ v: producto === 'std-foto' ? 'foto' : 'tarjeta', etiqueta: 'Tarjeta' }] },
+        // README (ronda 29): el diseño a medida, como un diseño más (foto) o debajo de la tarjeta; pasa al producto a medida
+        // README (ronda 30): lo primero, la grilla de diseños; al elegir uno se colapsa ("Cambiar de diseño")
+        ...(producto === 'std-tarjeta' ? [{ id: 'std.modeloOk', tipo: 'disenoModelo', etiqueta: 'Diseños', rearmar: true,
+          medida: { convertir: true, extra: 'std-tarjeta-medida', img: '/comun/img/std-medida-tarjeta.jpg' } }, { id: 'std.modeloElegido', tipo: 'switch', oculto: true, etiqueta: 'Diseño elegido' }] : []),
+        ...(producto === 'std-foto' ? [{ id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseños', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true, colapsar: 'std.disenoOk',
+          medida: { convertir: true, extra: 'std-tarjeta-medida', img: '/comun/img/std-medida-tarjeta.jpg' } }, { id: 'std.disenoOk', tipo: 'switch', oculto: true, etiqueta: 'Diseño elegido' }] : []),
+        // La tarjeta aparece después de elegir el diseño
+        { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true, si: { campo: producto === 'std-tarjeta' ? 'std.modeloElegido' : 'std.disenoOk', es: true } },
+        ...(producto === 'std-tarjeta' ? [{ id: 'std.activarMedida', tipo: 'activarMedida', etiqueta: 'Diseño a medida', sinEtiqueta: true, convertir: true, extra: 'std-tarjeta-medida',
+          texto: '¿Quieres un diseño a medida? Actívalo para enviarnos tu idea y estilo, así diseñamos la tarjeta de tus sueños.', boton: 'Activar diseño a medida' }] : []),
+      ] }];
+    return { producto, tipo, paquete, suelta: true, sinAdmin: true, sinNiveles: true, pasos: anotar(pasos, { modelo, gratis: false, publicada, admin }) };
+  }
+  if (PRODUCTOS_STD[producto] && !(modelo?.simple || modelo?.std)) {
+    const bloqueada = medidaBloqueada(datos) && !admin;
+    return { producto, sinAdmin: true, sinNiveles: true, cerrada: bloqueada, pasos: anotar(PRODUCTOS_STD[producto](), { modelo, cerrada: bloqueada, admin, motivoCerrada: MOTIVO_ENVIADA }) };
   }
   const m = producto === 'a-medida' ? MODELO_A_MEDIDA : modelo;
+  // Modelos simples y Save The Date web: su panel reducido; al publicarse ya no se editan
+  if (m?.simple || m?.std) {
+    const pasos = m.std ? pasosStdWeb({ tipo, modelo: m, datos }) : pasosSimple({ tipo, modelo: m, datos });
+    const cerrada = publicada && !admin;
+    return { producto, tipo, paquete, publicada, simple: !!m.simple, std: !!m.std, sinAdmin: !!m.std, sinNiveles: true, cerrada,
+      pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, motivoCerrada: 'Ya está publicada: no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.' }) };
+  }
   const base = pasosInvitacion({ tipo, modelo: m });
   // Sin lista de invitados en el modelo (a medida, etc.), la seguridad va sola antes del idioma
   const conAcceso = base.some((p) => p.id === 'invitados') ? [] : [{ id: 'seguridad', titulo: 'Acceso', obligatoria: true,
@@ -739,14 +920,28 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     ...conAcceso,
     pasoPublicar(tipo),
     // Complementos: aparte, después de una línea y el título "Complementos" en el menú
-    ...(producto === 'invitacion' && m?.tarjetas?.std ? [{ ...pasoTarjeta('std', m), separado: true }] : []),
-    { ...pasoDiseno(m), separado: !(producto === 'invitacion' && m?.tarjetas?.std) },
+    // Save The Date en todos los modelos (la del diseño, si el modelo la tiene; si no, las con foto)
+    // README (ronda 30): sin tarjeta Save The Date del evento (egreso, Navidad…), solo las a medida como complemento
+    ...(producto === 'invitacion' ? [tarjetasDe('std', m, tipo) ? { ...pasoTarjeta('std', m, tipo), separado: true } : { ...pasoTarjetaMedida(tipo, { conAviso: true }), separado: true }] : []),
+    // Diseño a medida o empresas: sin cambio de diseño ni agradecimiento; la Save The Date solo a medida
+    ...(producto === 'a-medida' ? [{ ...pasoTarjetaMedida(tipo), separado: true }] : [pasoDiseno(m)]),
     pasoIdiomaAdicional(base, datos),
-    ...(producto === 'invitacion' ? [pasoTarjeta('agradecimiento', m)] : []),
+    ...(producto === 'invitacion' && tarjetasDe('agradecimiento', m, tipo) ? [pasoTarjeta('agradecimiento', m, tipo)] : []),
   ];
-  const cerrada = publicada && edicionCerrada(datos);
-  return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin }) };
+  // README (ronda 29): el diseño a medida, una vez enviado al equipo, no se modifica hasta que el diseño esté listo
+  const bloqueada = producto === 'a-medida' && medidaBloqueada(datos);
+  const cerrada = (publicada && edicionCerrada(datos)) || bloqueada;
+  // La Save The Date a medida (complemento) ya enviada: su brief queda fijo
+  if (datos.std?.medida?.enviado && !admin) {
+    const p = pasos.find((x) => x?.id === 'std');
+    if (p) p.campos = p.campos.map((c) => (c.id.startsWith('std.medida.') || c.id === 'std.tipo' ? { ...c, cerrado: 'Ya enviaste la idea al equipo de diseño.' } : c));
+  }
+  // README (ronda 29): el diseño a medida ya trae todo (Deluxe): sin insignias de plan
+  return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}), pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
 }
+const MOTIVO_ENVIADA = 'Ya enviaste tu proyecto al equipo de diseño: no se puede modificar hasta que el diseño esté listo.';
+// Enviado al equipo y todavía sin el diseño listo
+export const medidaBloqueada = (datos) => !!datos.medida?.enviado && !datos.medida?.listo;
 
 // Condición "si" de un campo: { campo, es | no } · [todas] · { o: [alguna] }
 export function cumple(s, datos) {
@@ -788,19 +983,23 @@ function limpiarValor(c, v) {
     case 'zona': return ZONAS_OK.has(v) ? v : undefined;
     case 'idioma': return IDIOMAS_OK.has(v) ? v : undefined;
     case 'fuente': return c.valores.includes(v) ? v : undefined;
-    case 'bandera': case 'disenoFoto': return c.valores.some((o) => o.v === v) ? v : undefined;
+    case 'bandera': case 'disenoFoto': case 'disenoStd': return c.valores.some((o) => o.v === v) ? v : undefined;
     // Tarjeta editada sobre el diseño: textos con su corrimiento y tamaño, la foto y su encuadre.
     // La imagen generada (y el bloqueo) los pone solo el servidor al generarla.
     case 'tarjeta': {
       if (typeof v !== 'object') return undefined;
       const num = (x, a, b) => (Number.isFinite(Number(x)) ? Math.min(b, Math.max(a, Number(x))) : undefined);
       const textos = {};
-      for (const [k, t] of Object.entries(v.textos || {}).slice(0, 12)) {
+      for (const [k, t] of Object.entries(v.textos || {}).slice(0, 24)) {
         if (!/^\w{1,20}$/.test(k) || typeof t !== 'object' || !t) continue;
-        textos[k] = { ...(typeof t.texto === 'string' ? { texto: t.texto.slice(0, 300) } : {}), dx: num(t.dx, -1200, 1200) || 0, dy: num(t.dy, -1500, 1500) || 0, escala: num(t.escala, 0.3, 3) || 1 };
+        textos[k] = { ...(typeof t.texto === 'string' ? { texto: t.texto.slice(0, 600) } : {}), dx: num(t.dx, -1200, 1200) || 0, dy: num(t.dy, -1500, 1500) || 0, escala: num(t.escala, 0.3, 3) || 1 };
       }
       const opcionales = Object.fromEntries(Object.entries(v.opcionales || {}).filter(([k]) => /^\w{1,20}$/.test(k)).slice(0, 6).map(([k, x]) => [k, !!x]));
-      return { textos, extra: !!v.extra, opcionales, ...(URL_OK.test(v.foto || '') ? { foto: String(v.foto).slice(0, 500) } : {}),
+      // Lo que se cambió en los campos de la tarjeta (nombres, fecha y hora)
+      const d = v.datos && typeof v.datos === 'object' ? v.datos : {};
+      const datosT = { ...(typeof d.a === 'string' ? { a: d.a.slice(0, 20) } : {}), ...(typeof d.b === 'string' ? { b: d.b.slice(0, 20) } : {}),
+        ...(/^\d{4}-\d{2}-\d{2}$/.test(d.fecha || '') ? { fecha: d.fecha } : {}), ...(/^(\d{2}:\d{2})?$/.test(d.hora ?? 'x') ? { hora: d.hora } : {}) };
+      return { textos, extra: !!v.extra, opcionales, datos: datosT, ...(URL_OK.test(v.foto || '') ? { foto: String(v.foto).slice(0, 500) } : {}),
         ...(POS_OK.test(v.fotoPos || '') ? { fotoPos: v.fotoPos } : {}), ...(num(v.fotoZoom, 1, 4) ? { fotoZoom: num(v.fotoZoom, 1, 4) } : {}) };
     }
     // Paleta: los 4 colores del diseño (vacío = ese color se quitó)
@@ -866,6 +1065,7 @@ export function limpiarDatos(esquema, datos, previos = {}) {
 
 export function faltantes(esquema, datos) {
   const visibles = (c) => !c.si || cumple(c.si, datos);
-  return esquema.pasos.flatMap((p) => (!seccionActiva(p, datos) ? [] : p.campos.filter((c) => c.requerido && visibles(c) && !c.cerrado && (leer(datos, c.id) ?? '') === '')
+  const vacio = (id) => { const v = leer(datos, id); return v == null || v === '' || (Array.isArray(v) && !v.filter(Boolean).length); };
+  return esquema.pasos.flatMap((p) => (!seccionActiva(p, datos) ? [] : p.campos.filter((c) => c.requerido && visibles(c) && !c.cerrado && vacio(c.id) && !(c.requeridoO && !vacio(c.requeridoO)))
     .map((c) => ({ paso: p.id, campo: c.id, etiqueta: c.etiquetaFalta || c.etiqueta }))));
 }

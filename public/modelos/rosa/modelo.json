@@ -3,6 +3,7 @@
   "nombre": "Rosa",
   "eventos": [
     "bautismo",
+    "infantil",
     "babyshower"
   ],
   "gratis": false,
@@ -28,13 +29,14 @@
         "sobre": false,
         "musica": false,
         "cuenta": false,
-        "fotosPortada": 1,
+        "fotosPortada": 0,
         "fotosGaleria": 20
       }
     },
     "premium": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -46,13 +48,14 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 1,
+        "fotosPortada": 0,
         "fotosGaleria": 20
       }
     },
     "deluxe": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -72,12 +75,17 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 1,
+        "fotosPortada": 0,
         "fotosGaleria": 20,
         "sugerenciasDress": true
       }
     }
   },
+  "textosDemo": {
+    "historia.texto": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos."
+  },
+  "proporciones": {},
   "nombresHTML": {
     "portada": "{a}",
     "cierre": "{a}",
@@ -101,10 +109,8 @@
   "demo": {
     "bautismo": {
       "portadas": [
-        {
-          "f": "fondo-rosa.jpg",
-          "pos": "40% 70%"
-        }
+        "globo.jpg",
+        "hero-banner.jpg"
       ],
       "nombres": {
         "a": "Juliana"
@@ -148,10 +154,25 @@
       "rsvp": "rsvp.jpg",
       "instagram": "instagram.jpg",
       "testigos": []
+    },
+    "infantil": {
+      "portada": [
+        "foto1.jpg"
+      ],
+      "galeria": [
+        "foto1.jpg",
+        "foto2.jpg",
+        "foto3.jpg",
+        "foto4.jpg",
+        "foto5.jpg",
+        "foto6.jpg"
+      ],
+      "rsvp": "rsvp.jpg",
+      "testigos": []
     }
   },
   "porEvento": {
-    "babyshower": {
+    "infantil": {
       "paquetes": {
         "basic": {
           "secciones": [
@@ -163,13 +184,14 @@
             "sobre": false,
             "musica": false,
             "cuenta": false,
-            "fotosPortada": 1,
+            "fotosPortada": 0,
             "fotosGaleria": 20
           }
         },
         "premium": {
           "secciones": [
             "musica",
+            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -181,13 +203,14 @@
             "sobre": true,
             "musica": true,
             "cuenta": true,
-            "fotosPortada": 1,
+            "fotosPortada": 0,
             "fotosGaleria": 20
           }
         },
         "deluxe": {
           "secciones": [
             "musica",
+            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -206,12 +229,204 @@
             "sobre": true,
             "musica": true,
             "cuenta": true,
-            "fotosPortada": 1,
+            "fotosPortada": 0,
             "fotosGaleria": 20,
             "sugerenciasDress": true
           }
         }
       },
+      "textosDemo": {
+        "portada.subtitulo": "PRIMER AÑITO"
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {},
+      "videoPortada": false,
+      "sobre": {
+        "colores": {
+          "lacre": "#f27cb1",
+          "papel": "#ffe0eb",
+          "fondo": "#fbd0e1"
+        },
+        "bienvenida": "font-family:Montez, cursive; color:rgb(242, 124, 177); font-weight:500; --bv-escala:1.45;"
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "infantil": {
+          "nombres": {
+            "a": "Juliana"
+          }
+        }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1080,
+                "y": 330,
+                "tam": 80,
+                "fuente": "texto",
+                "color": "#a5896e",
+                "mayus": true,
+                "espaciado": 22,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1080,
+                "y": 610,
+                "tam": 360,
+                "fuente": "titulos",
+                "color": "#f27cb1",
+                "ancho": 1450,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1080,
+                "y": 880,
+                "tam": 76,
+                "fuente": "abril",
+                "color": "#a5896e",
+                "mayus": true,
+                "espaciado": 10
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} • {mes} • {anio}",
+                "x": 1080,
+                "y": 2160,
+                "tam": 96,
+                "fuente": "abril",
+                "color": "#f27cb1",
+                "espaciado": 6,
+                "mayus": true,
+                "marcas": {
+                  "chars": "•",
+                  "color": "#a5896e"
+                }
+              },
+              {
+                "id": "extra",
+                "texto": "{lugar}",
+                "x": 1080,
+                "y": 2320,
+                "tam": 56,
+                "fuente": "texto",
+                "color": "#7d6a58",
+                "ancho": 1500,
+                "extra": true,
+                "peso": 500
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1080,
+                "y": 2820,
+                "tam": 40,
+                "fuente": "texto",
+                "color": "#7d6a58",
+                "mayus": true,
+                "espaciado": 8,
+                "opcional": "proximamente",
+                "peso": 500
+              }
+            ]
+          }
+        }
+      }
+    },
+    "babyshower": {
+      "paquetes": {
+        "basic": {
+          "secciones": [
+            "galeria",
+            "rsvp",
+            "dresscode"
+          ],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 0,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "instagram",
+            "canciones",
+            "regalos"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 0,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [
+            "musica",
+            "historia",
+            "galeria",
+            "rsvp",
+            "dresscode",
+            "estilos",
+            "hospedaje",
+            "bus",
+            "itinerario",
+            "instagram",
+            "album",
+            "canciones",
+            "playlist",
+            "regalos",
+            "redes"
+          ],
+          "incluye": {
+            "sobre": true,
+            "musica": true,
+            "cuenta": true,
+            "fotosPortada": 0,
+            "fotosGaleria": 20,
+            "sugerenciasDress": true
+          }
+        }
+      },
+      "textosDemo": {
+        "historia.texto": "Desde el momento en que supimos que venías en camino, nuestras vidas se llenaron de una ilusión enorme y una alegría imposible de explicar. Cada día de espera nos acerca más a conocer tu carita, escuchar tu risa y tenerte al fin entre nuestros brazos. Estamos preparando todo con mucho amor para tu llegada y queremos celebrar este momento tan único rodeados de la gente que más queremos. ¡Gracias por acompañarnos a esperar este hermoso regalo de la vida!",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {},
+      "videoPortada": false,
       "sobre": {
         "colores": {
           "lacre": "#f27cb1",
@@ -237,6 +452,101 @@
             "a": "Juliana"
           }
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1080,
+                "y": 330,
+                "tam": 80,
+                "fuente": "texto",
+                "color": "#a5896e",
+                "mayus": true,
+                "espaciado": 22,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1080,
+                "y": 610,
+                "tam": 360,
+                "fuente": "titulos",
+                "color": "#f27cb1",
+                "ancho": 1450,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1080,
+                "y": 880,
+                "tam": 76,
+                "fuente": "abril",
+                "color": "#a5896e",
+                "mayus": true,
+                "espaciado": 10
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} • {mes} • {anio}",
+                "x": 1080,
+                "y": 2160,
+                "tam": 96,
+                "fuente": "abril",
+                "color": "#f27cb1",
+                "espaciado": 6,
+                "mayus": true,
+                "marcas": {
+                  "chars": "•",
+                  "color": "#a5896e"
+                }
+              },
+              {
+                "id": "extra",
+                "texto": "{lugar}",
+                "x": 1080,
+                "y": 2320,
+                "tam": 56,
+                "fuente": "texto",
+                "color": "#7d6a58",
+                "ancho": 1500,
+                "extra": true,
+                "peso": 500
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1080,
+                "y": 2820,
+                "tam": 40,
+                "fuente": "texto",
+                "color": "#7d6a58",
+                "mayus": true,
+                "espaciado": 8,
+                "opcional": "proximamente",
+                "peso": 500
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -245,5 +555,108 @@
       "/comun/fonts/google/abril-fatface+jost+montez.css",
       "/modelos/rosa/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Montez",
+      "texto": "Jost",
+      "abril": "Abril Fatface",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1080,
+            "y": 330,
+            "tam": 80,
+            "fuente": "texto",
+            "color": "#a5896e",
+            "mayus": true,
+            "espaciado": 22,
+            "peso": 500
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1080,
+            "y": 610,
+            "tam": 360,
+            "fuente": "titulos",
+            "color": "#f27cb1",
+            "ancho": 1450,
+            "ajustar": true
+          },
+          {
+            "id": "evento",
+            "texto": "{evento}",
+            "x": 1080,
+            "y": 880,
+            "tam": 76,
+            "fuente": "abril",
+            "color": "#a5896e",
+            "mayus": true,
+            "espaciado": 10
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} • {mes} • {anio}",
+            "x": 1080,
+            "y": 2160,
+            "tam": 96,
+            "fuente": "abril",
+            "color": "#f27cb1",
+            "espaciado": 6,
+            "mayus": true,
+            "marcas": {
+              "chars": "•",
+              "color": "#a5896e"
+            }
+          },
+          {
+            "id": "extra",
+            "texto": "{lugar}",
+            "x": 1080,
+            "y": 2320,
+            "tam": 56,
+            "fuente": "texto",
+            "color": "#7d6a58",
+            "ancho": 1500,
+            "extra": true,
+            "peso": 500
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1080,
+            "y": 2820,
+            "tam": 40,
+            "fuente": "texto",
+            "color": "#7d6a58",
+            "mayus": true,
+            "espaciado": 8,
+            "opcional": "proximamente",
+            "peso": 500
+          }
+        ]
+      }
+    }
   }
 }

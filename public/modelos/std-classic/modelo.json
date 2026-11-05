@@ -1,0 +1,168 @@
+{
+  "id": "std-classic",
+  "nombre": "Web Classic",
+  "eventos": [
+    "boda",
+    "15"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#a78977",
+    "#fafff8",
+    "#fafff8",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": false,
+  "portadaSinFoto": "img/bg-inicial2023a.jpg",
+  "paquetes": {
+    "basic": {
+      "secciones": [],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    }
+  },
+  "proporciones": {
+    "portada": "1:1"
+  },
+  "nombresHTML": {
+    "portada": "{a}<br class=\"d-md-none\">&#160;<span class=\"circle-singleline2\">&amp;</span>&#160;<br class=\"d-md-none\">{b}",
+    "cierre": "{a}<br class=\"d-md-none\">&#160;<span class=\"circle-singleline2\">&amp;</span>&#160;<br class=\"d-md-none\">{b}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": "/modelos/std-classic/img/bg-inicial2023a.jpg",
+    "colorFondo": "#fafff8",
+    "colorTitulos": "#a78977",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#a78977"
+    }
+  },
+  "demo": {
+    "boda": {
+      "portadas": [
+        {
+          "f": "globo.jpg",
+          "pos": "50% 50%"
+        }
+      ]
+    }
+  },
+  "demoBorrosas": {
+    "15": {
+      "portada": [
+        "globo.jpg"
+      ],
+      "galeria": [],
+      "testigos": []
+    },
+    "boda": {
+      "portada": [
+        "globo.jpg"
+      ],
+      "galeria": [],
+      "testigos": []
+    }
+  },
+  "porEvento": {
+    "15": {
+      "paquetes": {
+        "basic": {
+          "secciones": [],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "premium": {
+          "secciones": [],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        },
+        "deluxe": {
+          "secciones": [],
+          "incluye": {
+            "sobre": false,
+            "musica": false,
+            "cuenta": false,
+            "fotosPortada": 1,
+            "fotosGaleria": 20
+          }
+        }
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {
+        "portada": "1:1"
+      },
+      "videoPortada": false,
+      "sobre": {
+        "colores": {
+          "lacre": "#a78977"
+        }
+      },
+      "nombresHTML": {
+        "portada": "{a}",
+        "cierre": "{a}",
+        "solo": "{a}"
+      },
+      "demo": {
+        "15": {
+          "portadas": [
+            {
+              "f": "globo.jpg",
+              "pos": "50% 50%"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/abril-fatface+alex-brush+jost.css",
+      "/modelos/std-classic/tema.css"
+    ]
+  },
+  "simple": false,
+  "std": true
+}

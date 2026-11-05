@@ -36,6 +36,7 @@
     "premium": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -54,6 +55,7 @@
     "deluxe": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -78,6 +80,13 @@
         "sugerenciasDress": true
       }
     }
+  },
+  "textosDemo": {
+    "historia.texto": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+    "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos."
+  },
+  "proporciones": {
+    "portada": "1:1"
   },
   "nombresHTML": {
     "portada": "{a}",
@@ -173,6 +182,7 @@
         "premium": {
           "secciones": [
             "musica",
+            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -191,6 +201,7 @@
         "deluxe": {
           "secciones": [
             "musica",
+            "historia",
             "galeria",
             "rsvp",
             "dresscode",
@@ -216,6 +227,15 @@
           }
         }
       },
+      "textosDemo": {
+        "historia.texto": "Con la esperanza de que la bendición de Dios me acompañe siempre con su luz",
+        "pie.texto": "Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para celebrar juntos."
+      },
+      "sinFotoRsvp": false,
+      "proporciones": {
+        "portada": "1:1"
+      },
+      "videoPortada": false,
       "sobre": {
         "colores": {
           "lacre": "#b39b5f"
@@ -236,6 +256,105 @@
             }
           ]
         }
+      },
+      "tarjetas": {
+        "std": {
+          "tarjeta": {
+            "ancho": 2160,
+            "alto": 2989,
+            "fondo": "#ffffff",
+            "capas": [
+              {
+                "img": "img/std-fondo.jpg",
+                "x": 0,
+                "y": 0,
+                "w": 2160,
+                "h": 2989
+              }
+            ],
+            "formas": [],
+            "textos": [
+              {
+                "id": "titulo",
+                "texto": "Save the date",
+                "x": 1080,
+                "y": 1760,
+                "tam": 78,
+                "fuente": "texto",
+                "color": "#9c916b",
+                "mayus": true,
+                "espaciado": 20,
+                "peso": 500
+              },
+              {
+                "id": "nombres",
+                "texto": "{nombres}",
+                "x": 1080,
+                "y": 2020,
+                "tam": 360,
+                "fuente": "titulos",
+                "color": "#7d7354",
+                "ancho": 1800,
+                "ajustar": true
+              },
+              {
+                "id": "evento",
+                "texto": "{evento}",
+                "x": 1080,
+                "y": 2300,
+                "tam": 70,
+                "fuente": "texto",
+                "color": "#9c916b",
+                "mayus": true,
+                "espaciado": 14,
+                "peso": 500,
+                "lineas": {
+                  "largo": 150,
+                  "separacion": 34,
+                  "grosor": 3
+                }
+              },
+              {
+                "id": "fecha",
+                "texto": "{dia} • {mes} • {anio}",
+                "x": 1080,
+                "y": 2470,
+                "tam": 84,
+                "fuente": "texto",
+                "color": "#5f5a47",
+                "espaciado": 8,
+                "mayus": true,
+                "marcas": {
+                  "chars": "•",
+                  "color": "#9c916b"
+                }
+              },
+              {
+                "id": "extra",
+                "texto": "{lugar}",
+                "x": 1080,
+                "y": 2600,
+                "tam": 52,
+                "fuente": "texto",
+                "color": "#9c916b",
+                "ancho": 1500,
+                "extra": true
+              },
+              {
+                "id": "pie",
+                "texto": "Próximamente la invitación formal",
+                "x": 1080,
+                "y": 2800,
+                "tam": 40,
+                "fuente": "texto",
+                "color": "#9c916b",
+                "mayus": true,
+                "espaciado": 8,
+                "opcional": "proximamente"
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -244,5 +363,111 @@
       "/comun/fonts/google/abril-fatface+fleur-de-leah+jost.css",
       "/modelos/amanecer/tema.css"
     ]
+  },
+  "tarjetas": {
+    "fuentes": {
+      "titulos": "Fleur De Leah",
+      "texto": "Jost",
+      "css": [
+        "/comun/fonts/catalogo/catalogo.css"
+      ]
+    },
+    "std": {
+      "tarjeta": {
+        "ancho": 2160,
+        "alto": 2989,
+        "fondo": "#ffffff",
+        "capas": [
+          {
+            "img": "img/std-fondo.jpg",
+            "x": 0,
+            "y": 0,
+            "w": 2160,
+            "h": 2989
+          }
+        ],
+        "formas": [],
+        "textos": [
+          {
+            "id": "titulo",
+            "texto": "Save the date",
+            "x": 1080,
+            "y": 1760,
+            "tam": 78,
+            "fuente": "texto",
+            "color": "#9c916b",
+            "mayus": true,
+            "espaciado": 20,
+            "peso": 500
+          },
+          {
+            "id": "nombres",
+            "texto": "{nombres}",
+            "x": 1080,
+            "y": 2020,
+            "tam": 360,
+            "fuente": "titulos",
+            "color": "#7d7354",
+            "ancho": 1800,
+            "ajustar": true
+          },
+          {
+            "id": "evento",
+            "texto": "{evento}",
+            "x": 1080,
+            "y": 2300,
+            "tam": 70,
+            "fuente": "texto",
+            "color": "#9c916b",
+            "mayus": true,
+            "espaciado": 14,
+            "peso": 500,
+            "lineas": {
+              "largo": 150,
+              "separacion": 34,
+              "grosor": 3
+            }
+          },
+          {
+            "id": "fecha",
+            "texto": "{dia} • {mes} • {anio}",
+            "x": 1080,
+            "y": 2470,
+            "tam": 84,
+            "fuente": "texto",
+            "color": "#5f5a47",
+            "espaciado": 8,
+            "mayus": true,
+            "marcas": {
+              "chars": "•",
+              "color": "#9c916b"
+            }
+          },
+          {
+            "id": "extra",
+            "texto": "{lugar}",
+            "x": 1080,
+            "y": 2600,
+            "tam": 52,
+            "fuente": "texto",
+            "color": "#9c916b",
+            "ancho": 1500,
+            "extra": true
+          },
+          {
+            "id": "pie",
+            "texto": "Próximamente la invitación formal",
+            "x": 1080,
+            "y": 2800,
+            "tam": 40,
+            "fuente": "texto",
+            "color": "#9c916b",
+            "mayus": true,
+            "espaciado": 8,
+            "opcional": "proximamente"
+          }
+        ]
+      }
+    }
   }
 }

@@ -73,8 +73,8 @@
         <div class="row align-items-center justify-content-center pb-5">
          <div class="col-md-8 text-center">
 			 <p class="mb-3"><span data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-gris section-sub-title p-1 border border-dark roboto-condensed-font">&#160;12 • 09 • 2027&#160;</span></p>
-           <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="lovestory text-gris">Juana</h1>
-	  		   <h3 data-t="portada.subtitulo" class="text-gris mb-2 date-lineb2"> MI CUMPLE </h3>
+           <h1 data-ajustar-pc="0.3" data-ajustar="0.5" data-campo-html="nombres.portada" class="lovestory text-gris">Juana</h1>
+	  		   <h3 data-t="portada.subtitulo" class="text-gris mb-2 date-lineb2 ai-frase"> MI CUMPLE </h3>
 			     <div class="mt-3 text-gris text-center">
 					 <h6 data-si="cuenta.activa" class="mb-0 font-weight-lighter"><small data-t="cuenta.faltan" class="text-small-sm mb-0 pb-0 text-gris">Faltan</small></h6>
                     <div data-formato="<div class=&quot;m-2&quot;><span class=&quot;font-weight-lighter mb-2 border border-dark&quot;>{d}</span> {dias}</div><div class=&quot;m-2&quot;><span class=&quot;font-weight-lighter mb-2 border border-dark&quot;>{h}</span> {horas}</div><div class=&quot;m-2&quot;><span class=&quot;font-weight-lighter mb-2 border border-dark&quot;>{m}</span> {min}</div><div class=&quot;m-2&quot;><span class=&quot;font-weight-lighter mb-2 border border-dark&quot;>{s}</span> {seg}</div>" data-si="cuenta.activa" id="clock-b" class="p-0 m-0 countdown-deluxe-circles2 d-flex justify-content-center font-weight-light text-gris"></div>
@@ -103,8 +103,8 @@
         <div class="row align-items-center justify-content-center pb-5">
          <div class="col-md-8 text-center">
 			 <p class="mb-3"><span data-fecha-formato=" {dd} • {mm} • {a} " data-fecha="principal" class="text-gris section-sub-title p-1 border border-dark roboto-condensed-font">&#160;12 • 09 • 2027&#160;</span></p>
-           <h1 data-ajustar="0.82" data-campo-html="nombres.portada" class="lovestory text-gris">Juana</h1>
-	  		   <h3 data-t="portada.subtitulo" class="text-gris mb-2 section-sub-title-h3"> MI CUMPLE </h3>
+           <h1 data-ajustar-pc="0.3" data-ajustar="0.5" data-campo-html="nombres.portada" class="lovestory text-gris">Juana</h1>
+	  		   <h3 data-t="portada.subtitulo" class="text-gris mb-2 section-sub-title-h3 ai-frase"> MI CUMPLE </h3>
           </div>
         </div> 
       </div>
@@ -145,19 +145,16 @@
           </div>
         </div>
 	   </div>
-	  </section>
-		  <div id="galeria" data-seccion="galeria" style="background-color:#fff;">
-		      <div data-componente="galeria"></div>
-	    </div>   
-			  
+	  <div class="ai-galeria-historia" data-seccion="galeria" id="galeria"><div data-componente="galeria"></div></div></section>
+
    <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(img/bg-white3.jpg); background-color:#fff; background-position:25% 100%; background-repeat:no-repeat; background-size:cover; position:relative;" id="agenda">
       <div class="container">
          <div class="row item">
 
           <div class="col-md-8 col-lg-5 ml-auto mr-auto mb-5 mt-5 p-lg-0 text-center" data-aos="fade-up" data-aos-delay="150">
-              <img data-no="ceremonia.unificada" loading="lazy" class="img-fluid mb-0 mt-3" src="img/icon-party-3.png" width="95" alt="Imagen" style="opacity: 50%;">
+              <img loading="lazy" class="img-fluid mb-0 mt-3" src="img/icon-party-3.png" width="95" alt="Imagen" style="opacity: 50%;">
 			 <h2 data-campo="celebracion.titulo" class="lovestory text-center text-gris">Fiesta</h2>	
-				   <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;">
+				   <img data-attr="src:c:celebracion.foto;style:c:celebracion.fotoEstilo" data-si="celebracion.foto" loading="lazy" src="../../comun/img/demo-lugar.jpg" alt="Imagen" class="img-fluid rounded-circle mb-3 ai-lugar-redondo" style="width: 200px; height: 200px; object-fit: cover;">
         	  	<p data-t="lugar.diaHorario" class="text-black-50 mb-2 font-weight-bolder section-sub-title">DIA Y HORARIO</p>
 			    <p data-campo="celebracion.fechaLarga" class="text-center text-gris">12 de septiembre de 2027 a las 21:00</p>
 			  	<p data-t="lugar.lugar" class="text-black-50 mb-2 font-weight-bolder section-sub-title">LUGAR</p>
@@ -219,7 +216,7 @@
 			  </div>
 			   <h2 data-t="dress.titulo" data-seccion="dresscode" class="lovestory text-center text-gris">Dress Code</h2>
                 <p data-campo-html="dresscode.texto" data-seccion="dresscode" class="text-center text-gris">Formal y elegante. Por favor no usar blanco.</p><div class="g-evitar mb-3" data-seccion="estilos" data-si="dresscode.evitar">
-            <p class="text-center text-gris mb-2 g-evitar-titulo" data-t="dress.evitar">Colores a evitar</p>
+            <p class="text-center text-gris mb-2 g-evitar-titulo"><span data-t="dress.evitar">Colores a evitar</span></p>
             <div class="g-evitar-colores"><span class="g-evitar-color" role="img" data-repetir="dresscode.evitar" data-i-attr="style:estilo;aria-label:color" style="background-color:#ffffff"></span></div>
           </div>
 				   </div>
@@ -227,7 +224,7 @@
      </div>
 	</section>
 	  	  
-    <section class="bg-diferido site-section" style="background-image: linear-gradient(rgba(255, 255, 255, 0.95), rgba(245, 245, 245, 1)), url(img/bg-dark9.jpg); background-color:#fff; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="musica">
+    <section class="bg-diferido site-section ai-sec-musica" style="background-image: linear-gradient(rgba(255, 255, 255, 0.95), rgba(245, 245, 245, 1)), url(img/bg-dark9.jpg); background-color:#fff; background-position:50% 50%; background-repeat:no-repeat; background-size:cover; position:relative;" id="musica">
       <div class="container">
         <div class="row">
                    <div id="musica" data-seccion="canciones" class="col-md-6 text-center mb-5 ml-auto mr-auto" data-aos="fade-in">
@@ -242,9 +239,9 @@
 					   <!-- ══ MODAL CANCIONES ════════════════════════════════════════════════ -->
 			  	       <div data-componente="canciones"></div>
                      <!-- ══ /MODAL CANCIONES ═════════════════════════════════════════════ -->
-		            </div>	   	   
+		            </div><div data-seccion="playlist" id="playlist"><div data-componente="playlist"></div></div>	   	   
 	 
-	</div><div data-seccion="playlist" id="playlist"><div data-componente="playlist" data-clase-titulo="lovestory"></div></div>
+	</div>
   </div>
           <div id="hashtag" data-seccion="instagram" class="col-md-6 text-center mt-3 ml-auto mr-auto p-lg-0" data-aos="fade-in">
 			  <img loading="lazy" class="img-fluid mb-0" src="img/white-1.png" width="200px" alt="Imagen" style="transform: rotate(180deg);">
@@ -321,12 +318,12 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
           <div class="container">
           <div class="col-md-8 text-center ml-auto mr-auto">
 			 <p data-si="pie.mostrar" class="text-gris"><span class="display-5 icon-quote-left"></span> <span data-campo-html="pie.texto">Los momentos felices de la vida, se tornan geniales si tenemos la suerte de compartirlo con la familia y amigos más queridos, por eso te espero para que festejemos juntos.</span> <span class="display-5 icon-quote-right"></span></p>
-            <h2 data-campo-html="nombres.cierre" class="text-center lovestory mt-auto ml-auto text-gris">Juana</h2>
+            <h2 data-ajustar="0.86" data-campo-html="nombres.cierre" class="text-center lovestory mt-auto ml-auto text-gris">Juana</h2>
        </div>
       </div>
 	
  </section>
-	<section class="bg-diferido site-section byn" style="background-image: linear-gradient(rgba(245, 2345, 245, 0.75), rgba(245, 245, 245, 0.75)), url(img/bg-white4.jpg); background-color:#fff; background-position:50% 30%; background-repeat:no-repeat; background-size:cover; position:relative;">
+	<section class="bg-diferido site-section byn" style="background-image: linear-gradient(rgba(245, 245, 245, 0.75), rgba(245, 245, 245, 0.75)), url(img/bg-white4.jpg); background-color:#fff; background-position:50% 30%; background-repeat:no-repeat; background-size:cover; position:relative;">
           <div class="container">
                <div class="text-center">
 				   <h4 data-t="perdiste.titulo" class="mb-2 text-center text-gris lovestory">¿Te perdiste algo?</h4>
@@ -348,7 +345,7 @@ Etiquétame en Instagram con mi hashtag en tus fotos y videos.</p>
   <footer class="site-footer pt-4 pb-4" data-no="marca.blanca">
     <div class="container">
       <div class="col-md-6 ml-auto mr-auto p-0">
-        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0,0,0,0.15)">
+        <div class="row no-gutters pt-2 rounded mb-0" style="background: rgba(0, 0, 0,0.15)">
           <div class="col-6 ml-auto text-right p-0">
             <a href="https://amoinvitar.com/"><img class="img-fluid mb-1 mr-1" width="90" src="../../comun/img/amoinvitar-line.svg" alt="Amo Invitar!"></a>
           </div>

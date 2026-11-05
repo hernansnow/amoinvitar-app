@@ -1,7 +1,7 @@
 // Tarea diaria: avisa por mail a los dueños cuando se acerca el cierre de la confirmación
 // (7, 3 y 1 día antes) y todavía hay invitados de la lista sin responder.
 // Se apaga por evento con datos.admin.avisosMail = false.
-import { sendEmail, mailAvisoCierre } from './lib/email.js';
+import { sendEmail, mailAvisoCierre, mailRespuestas } from './lib/email.js';
 import { usaLista } from './acceso.js';
 
 const DIAS_AVISO = [7, 3, 1];
@@ -30,5 +30,43 @@ export async function avisosCierre(env) {
         await sendEmail(env, { to, ...mailAvisoCierre(env, { nombres, dias, sinResponder: faltan.length, noAbrieron: faltan.filter((i) => !i.abierto).length, url }) });
       }
     } catch (e) { console.error('[avisos]', ev.id, e); }
+  }
+}
+
+// ── Avisos de respuestas nuevas (Administración → Respuestas: "Avisarme por mail") ──
+// "cada": un mail por respuesta, hasta TOPE_DIARIO por día (las demás se ven en el panel o en el resumen del otro día).
+// "diario": un solo mail por día con las respuestas de las últimas 24 horas. Así se cuidan los mails del plan de Resend.
+const TOPE_DIARIO = 20;
+async function mailsDe(env, id) {
+  const { results } = await env.DB.prepare(`SELECT u.email FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = ?1
+    UNION SELECT email FROM pedidos WHERE evento_id = ?1`).bind(id).all();
+  return [...new Set(results.map((m) => String(m.email || '').toLowerCase()).filter(Boolean))];
+}
+const nombresDe = (d) => [d.nombres?.a, d.nombres?.b].filter(Boolean).join(' & ') || 'la invitación';
+const linkPanel = (env, id, clave) => `${String(env.SITE_URL || 'https://app.amoinvitar.com').replace(/\/$/, '')}/panel/${id}?k=${clave}#admin`;
+const fila = (d) => ({ nombre: String(d.nombre || 'Sin nombre').slice(0, 80), asiste: d.asiste === 'Si', personas: d.personas, mensaje: String(d.mensaje || '').slice(0, 300) });
+
+export async function avisoRespuesta(env, ev, datos) {
+  const desde = new Date(); desde.setUTCHours(0, 0, 0, 0);
+  const hoy = await env.DB.prepare("SELECT COUNT(*) AS n FROM respuestas WHERE evento_id = ? AND tipo = 'rsvp' AND creado >= ?").bind(ev.id, desde.toISOString()).first();
+  if ((hoy?.n || 0) > TOPE_DIARIO) return;
+  const url = linkPanel(env, ev.id, ev.clave);
+  for (const to of await mailsDe(env, ev.id)) await sendEmail(env, { to, ...mailRespuestas(env, { nombres: nombresDe(ev.datos), respuestas: [fila(datos)], url, tope: (hoy?.n || 0) === TOPE_DIARIO }) });
+}
+
+export async function resumenRespuestas(env) {
+  const { results } = await env.DB.prepare(`SELECT id, clave_panel, datos FROM eventos
+    WHERE estado = 'publicado' AND json_extract(datos, '$.admin.avisoRespuestas') IN ('diario', 'cada')`).all();
+  const desde = new Date(Date.now() - 86400000).toISOString();
+  for (const ev of results) {
+    try {
+      const d = JSON.parse(ev.datos);
+      const { results: resp } = await env.DB.prepare("SELECT datos FROM respuestas WHERE evento_id = ? AND tipo = 'rsvp' AND creado >= ? ORDER BY creado").bind(ev.id, desde).all();
+      const lista = resp.map((r) => JSON.parse(r.datos)).filter((x) => !x.prueba);
+      // Con "cada" solo va el resumen si ese día se pasó del tope (las que no tuvieron su mail)
+      if (!lista.length || (d.admin.avisoRespuestas === 'cada' && lista.length <= TOPE_DIARIO)) continue;
+      const url = linkPanel(env, ev.id, ev.clave_panel);
+      for (const to of await mailsDe(env, ev.id)) await sendEmail(env, { to, ...mailRespuestas(env, { nombres: nombresDe(d), respuestas: lista.map(fila), url, resumen: true }) });
+    } catch (e) { console.error('[resumen rsvp]', ev.id, e); }
   }
 }

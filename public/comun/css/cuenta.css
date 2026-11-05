@@ -77,3 +77,16 @@ input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 2px 
 .acciones-evento { display: flex; gap: 8px; flex-wrap: wrap; }
 pre.datos-banco { white-space: pre-wrap; background: var(--fondo); border-radius: 10px; padding: 12px; font-family: inherit; }
 @media (max-width: 600px) { h1 { font-size: 1.45rem; } .barra img { width: 96px; } }
+
+/* README (ronda 30): eliminar invitaciones */
+.btn-borrar { background: #fff; color: #b3261e; border: 1px solid #e3b4b0; }
+.btn-borrar:hover:not(:disabled) { background: #fbeceb; }
+.btn-borrar:disabled { opacity: .5; cursor: not-allowed; }
+#del-si.btn-borrar { background: #b3261e; color: #fff; border-color: #b3261e; }
+.dlg-eliminar { border: 0; border-radius: 14px; max-width: min(480px, calc(100vw - 24px)); padding: 22px 24px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+.dlg-eliminar::backdrop { background: rgba(0,0,0,.45); }
+.dlg-eliminar h2 { margin: 0 0 10px; font-size: 1.2rem; }
+.dlg-eliminar .nota { font-size: .88rem; color: #666; }
+.del-check { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0; font-weight: 600; }
+.del-check input { margin-top: 4px; }
+.del-botones { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }

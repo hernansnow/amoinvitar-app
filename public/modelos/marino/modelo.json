@@ -27,13 +27,14 @@
         "sobre": false,
         "musica": false,
         "cuenta": false,
-        "fotosPortada": 2,
+        "fotosPortada": 1,
         "fotosGaleria": 20
       }
     },
     "premium": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
@@ -45,17 +46,20 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 2,
+        "fotosPortada": 1,
         "fotosGaleria": 20
       }
     },
     "deluxe": {
       "secciones": [
         "musica",
+        "historia",
         "galeria",
         "rsvp",
         "dresscode",
         "estilos",
+        "hospedaje",
+        "bus",
         "itinerario",
         "testigos",
         "instagram",
@@ -69,11 +73,19 @@
         "sobre": true,
         "musica": true,
         "cuenta": true,
-        "fotosPortada": 2,
+        "fotosPortada": 1,
         "fotosGaleria": 20,
         "sugerenciasDress": true
       }
     }
+  },
+  "sinFotoRsvp": true,
+  "textosDemo": {
+    "historia.texto": "Parece que fue ayer cuando comenzó este camino lleno de desafíos, trasnochadas y momentos inolvidables. Cada materia aprobada, cada esfuerzo y el apoyo incondicional de quienes me acompañaron me trajeron hasta aquí. Hoy cierro una etapa increíble de aprendizaje y abro la puerta a una nueva aventura profesional. ¡Gracias por ser parte de este logro tan especial y celebrarlo conmigo!",
+    "pie.texto": "Hemos luchado mucho para estudiar y graduarnos, pero lo irónico de todo esto es que… hoy empieza la verdadera lucha"
+  },
+  "proporciones": {
+    "portada": "1:1"
   },
   "nombresHTML": {
     "portada": "{a}",
@@ -96,10 +108,6 @@
   "demo": {
     "graduacion": {
       "portadas": [
-        {
-          "f": "hero-banner3.jpg",
-          "pos": "50% 100%"
-        },
         {
           "f": "globo2.jpg",
           "pos": "50% 50%"
