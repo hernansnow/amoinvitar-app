@@ -82,7 +82,7 @@ async function aprobar(request, env, id, b) {
   const creditos = Math.max(0, Math.min(1000, parseInt(b.creditos, 10) || 0));
   if (creditos) await nuevoLote(env, empresaId, creditos, 'inicial', str(b.nota, 200) || 'Créditos iniciales');
   await env.DB.prepare("UPDATE solicitudes_pro SET estado = 'aprobada', empresa_id = ?, nota = ?, resuelto = ? WHERE id = ?").bind(empresaId, str(b.nota, 300) || null, t, id).run();
-  try { await sendEmail(env, { to: s.email, ...mailProAprobada(env, { nombre: s.nombre, nivel: PROFESIONALES[nivel].nombre, url: `${sitio(env, request)}/entrar` }) }); } catch (e) { console.error('[pro aprobada]', e); }
+  try { await sendEmail(env, { to: s.email, ...mailProAprobada(env, { nombre: s.nombre, nivel: PROFESIONALES[nivel].nombre, url: sitio(env, request) }) }); } catch (e) { console.error('[pro aprobada]', e); }
   return json({ ok: true, empresa: empresaId });
 }
 

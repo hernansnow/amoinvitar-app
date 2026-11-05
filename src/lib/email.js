@@ -167,8 +167,8 @@ export const mailProAprobada = (env, { nombre, nivel, url }) => ({
   subject: 'Tu cuenta profesional fue aprobada',
   ...plantilla(env, {
     titulo: '¡Tu cuenta profesional fue aprobada!',
-    lineas: [`${nombre ? `${b(nombre)}: ` : ''}la cuenta quedó activa en el nivel ${b(nivel)}.`, 'Se entra con este mismo mail (sin contraseñas). Desde ahí se manejan los eventos, los créditos y el equipo.'],
-    boton: 'Entrar', url,
+    lineas: [`${nombre ? `${b(nombre)}: ` : ''}la cuenta quedó aprobada en el nivel ${b(nivel)}.`, 'El equipo escribe en breve, por este mismo medio, con los pasos para empezar (créditos, equipo y marca). La cuenta se identifica con este mail, sin contraseñas.'],
+    boton: 'Ir a Amo Invitar!', url,
   }),
 });
 
