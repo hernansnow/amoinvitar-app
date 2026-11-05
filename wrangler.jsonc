@@ -40,6 +40,9 @@
   ],
   "r2_buckets": [
     { "binding": "MEDIA", "bucket_name": "amoinvitar-media" }
+    // README (ronda 30) · Etapa 2: el sitio viejo completo (con las invitaciones del sistema anterior). Crear el bucket
+    // (npx wrangler r2 bucket create amoinvitar-legado), subirlo (docs/etapa-2-web.md) y descomentar:
+    // , { "binding": "LEGADO", "bucket_name": "amoinvitar-legado" }
   ],
 
   // Freno contra quien prueba PINs al azar: 8 intentos por minuto por invitación e IP
@@ -64,6 +67,8 @@
   "vars": {
     // Mientras convivan los dos sistemas: lo que no es del sistema nuevo se manda al sitio de siempre
     "ORIGEN_ANTIGUO": "https://amoinvitar.com",
+    // Etapa 2 (docs/etapa-2-web.md): "1" = la web la sirve este Worker (public/sitio + el bucket LEGADO), sin Hostinger
+    // "SITIO_PROPIO": "1",
     "SITE_URL": "https://app.amoinvitar.com",
     "MAIL_FROM": "Amo Invitar <hola@amoinvitar.com>",
     "SUPPORT_EMAIL": "hola@amoinvitar.com",

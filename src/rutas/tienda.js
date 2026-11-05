@@ -58,6 +58,7 @@ function validarPedido(p) {
   // por otro (Civil, Pedida, Party de 15; Web Soft, o la de 15)
   const simple = { 'compromiso-web': 'compromiso', 'std-web': 'std-classic' }[producto];
   const tipoValido = TIPOS_EVENTO.some((t) => t.id === p.tipo) ? p.tipo : 'boda';
+  if (!disponibleSuelto(producto, tipoValido)) throw new HttpError(400, 'Esta opción no está disponible para ese tipo de evento');
   const tipo = producto === 'agradecimiento' || producto === 'std-tarjeta' ? tipoValido : simple ? (['boda', '15'].includes(p.tipo) ? p.tipo : 'boda') : 'save-the-date';
   // La tarjeta Save The Date es la de un modelo: arranca con el primero que la tiene para ese evento
   const modelo = producto === 'std-tarjeta' ? (MODELOS.find((m) => CON_TARJETA_STD.has(m.id) && m.eventos.includes(tipo))?.id || 'garden')
@@ -577,9 +578,19 @@ export async function empezar(request, env) {
 // Save The Date (tarjeta del modelo, con foto o web), agradecimiento y diseño a medida: el cliente elige el diseño,
 // lo arma en el panel y paga al final
 const SUELTOS = ['std-tarjeta', 'std-foto', 'agradecimiento', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'a-medida', 'compromiso-web'];
+// Qué Save The Date se vende suelta en cada evento (las a medida, en todos)
+export const STD_SOLO_BODA_15 = new Set(['std-web', 'std-foto']);
+export const EVENTOS_TARJETA_STD = new Set(['boda', '15', 'cumple', 'infantil', 'bautismo', 'comunion', 'babyshower', 'revelacion']);
+export function disponibleSuelto(producto, tipo) {
+  if (STD_SOLO_BODA_15.has(producto)) return tipo === 'boda' || tipo === '15';
+  if (producto === 'std-tarjeta') return EVENTOS_TARJETA_STD.has(tipo);
+  return true;
+}
 async function empezarProducto(request, env, b, producto) {
   if (!SUELTOS.includes(producto)) throw new HttpError(400, 'Producto desconocido');
   const tipo = TIPOS_EVENTO.some((t) => t.id === b.tipo) || b.tipo === 'empresarial' ? str(b.tipo, 20) : 'boda';
+  // README (ronda 30): la web y la foto, solo boda y 15; la tarjeta del diseño, en los eventos que la tienen
+  if (!disponibleSuelto(producto, tipo)) throw new HttpError(400, 'Esta opción no está disponible para ese tipo de evento');
   const a = str(b.nombres?.a, 20), bb = str(b.nombres?.b, 20);
   if (!a) throw new HttpError(400, 'Falta el nombre');
   const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';

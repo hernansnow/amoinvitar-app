@@ -5,6 +5,7 @@
 //   GET  /auth/google/vuelta
 //   POST /auth/salir
 //   GET  /api/cuenta             datos de la cuenta y sus eventos
+//   POST /api/cuenta/eliminar    { id, confirmo: true } → borra la invitación (solo quien la creó)
 import { json, redirect, readJson, isEmail, str, randomId, getCookie, cookie, isSecureRequest, HttpError } from '../lib/util.js';
 import { usuarioActual, crearUsuario, cookieSesion, cerrarSesion, siguienteSeguro, crearTokenLogin, usarTokenLogin, urlGoogle, canjearGoogle } from '../lib/auth.js';
 import { sendEmail, mailAcceso } from '../lib/email.js';
@@ -68,6 +69,7 @@ export async function cuenta(request, env) {
     if (ev && ev.clave === k && !(await alm.tieneAcceso(id, u.id))) await alm.darAcceso(id, u.id, 'cliente');
   }
   const eventos = await alm.eventosDe(u.id);
+  const roles = Object.fromEntries(await Promise.all(eventos.map(async (e) => [e.id, await alm.rolDe(e.id, u.id)])));
   const { results: pendientes } = await env.DB.prepare("SELECT id, numero, importe, moneda, medio, evento_id FROM pedidos WHERE usuario_id = ? AND estado = 'pendiente' AND medio = 'transferencia'").bind(u.id).all();
   return json({
     usuario: { email: u.email, nombre: u.nombre, admin: !!u.esAdmin },
@@ -77,7 +79,24 @@ export async function cuenta(request, env) {
       nombres: [e.datos.nombres?.a, e.datos.nombres?.b].filter(Boolean).join(' & '),
       fecha: (e.datos.celebracion?.inicio || e.datos.std?.fecha || '').slice(0, 10),
       pagoPendiente: pendientes.some((p) => p.evento_id === e.id),
+      puedeEliminar: roles[e.id] === 'cliente' || !!u.esAdmin,
     })),
   }, 200, recordados.length ? { 'set-cookie': cookie('ai_bor', '', { maxAge: 0, secure: isSecureRequest(request) }) } : {});
 }
 
+
+// README (ronda 30): el cliente puede borrar su invitación o borrador cuando quiera (con confirmación en la página)
+export async function eliminar(request, env) {
+  const u = await usuarioActual(request, env);
+  if (!u) throw new HttpError(401, 'Hay que entrar con la cuenta');
+  const b = await readJson(request);
+  const id = str(b.id, 40);
+  if (b.confirmo !== true) throw new HttpError(400, 'Falta confirmar que entiendes que se borra todo');
+  const alm = almacenD1(env);
+  const ev = await alm.evento(id).catch(() => null);
+  if (!ev) throw new HttpError(404, 'No existe esa invitación');
+  const rol = await alm.rolDe(id, u.id);
+  if (rol !== 'cliente' && !u.esAdmin) throw new HttpError(403, 'Solo quien creó la invitación la puede eliminar');
+  await alm.eliminarEvento(id);
+  return json({ ok: true });
+}

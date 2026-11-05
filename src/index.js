@@ -30,6 +30,8 @@ import { HttpError } from './lib/util.js';
 import { sendEmail, mailNuevoAcceso, mailMedidaAprobada, mailAvisoInterno } from './lib/email.js';
 import { usuarioActual, crearUsuario } from './lib/auth.js';
 import * as cuenta from './rutas/cuenta.js';
+import { servirLegado } from './sitio/legado.js';
+import { sitioNuevo } from './sitio/nuevo.js';
 import * as tienda from './rutas/tienda.js';
 import * as admin from './rutas/admin.js';
 import { getCookie } from './lib/util.js';
@@ -689,10 +691,11 @@ async function apiPanel(env, request, url, partes) {
     // README (ronda 29): parte "std" = la Save The Date a medida que se sumó a una invitación (solo su brief)
     const { parte } = await request.json().catch(() => ({}));
     const std = parte === 'std';
-    if (std ? !['tarjeta-medida', 'web-medida'].includes(ev.datos.std?.tipo) : !['a-medida', 'std-tarjeta-medida', 'std-web-medida'].includes(ev.producto)) return json({ error: 'No es un diseño a medida' }, 400);
+    const tipoStd = ev.datos.std?.tipo || esquema.pasos.find((p) => p.id === 'std')?.campos.find((c) => c.id === 'std.tipo')?.defecto;
+    if (std ? !['tarjeta-medida', 'web-medida'].includes(tipoStd) : !['a-medida', 'std-tarjeta-medida', 'std-web-medida'].includes(ev.producto)) return json({ error: 'No es un diseño a medida' }, 400);
     const faltan = faltantes(esquema, ev.datos).filter((x) => !std || x.paso === 'std');
     if (faltan.length) return json({ error: 'faltan', faltan }, 422);
-    if (std) ev.datos.std.medida = { ...(ev.datos.std.medida || {}), enviado: new Date().toISOString() };
+    if (std) { ev.datos.std = { tipo: tipoStd, ...(ev.datos.std || {}) }; ev.datos.std.medida = { ...(ev.datos.std.medida || {}), enviado: new Date().toISOString() }; }
     else ev.datos.medida = { ...(ev.datos.medida || {}), enviado: new Date().toISOString() };
     await almacen.guardarEvento(ev);
     if (env.SUPPORT_EMAIL) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Diseño a medida para revisar · ${nombresDe(ev.datos.nombres)}`,
@@ -1053,6 +1056,7 @@ export default {
         if (p1 === 'salir') return await cuenta.salir(request, env);
       }
       if (p0 === 'api') {
+        if (p1 === 'cuenta' && partes[2] === 'eliminar' && M === 'POST') return await cuenta.eliminar(request, env);
         if (p1 === 'cuenta') return await cuenta.cuenta(request, env);
         if (p1 === 'tienda') {
           const a = partes[2];
@@ -1080,7 +1084,12 @@ export default {
       if (p0 === 'factura' && p1) return await admin.facturaCliente(request, env, p1);
       if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);
-      if (p0 === 'demo' && partes.length === 2) return await demo(env, url, request, p1);
+      if (p0 === 'demo' && partes.length === 2) {
+        const r = await demo(env, url, request, p1);
+        // Demo del sitio viejo (otro nombre de carpeta): del bucket del sitio viejo
+        if (r.status === 404) { const v = await servirLegado(request, env, url); if (v) return v; }
+        return r;
+      }
       if (p0 === 'std' && partes.length === 2 && p1.startsWith('ev_')) return await saveTheDate(env, url, request, p1);
       if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return env.ASSETS.fetch(new URL('/panel/', url.origin));
       if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, url, p1);
@@ -1102,6 +1111,13 @@ export default {
     // Archivos de public/ (páginas, estilos, imágenes)
     const archivo = await env.ASSETS.fetch(request);
     if (archivo.status !== 404) return archivo;
+    // README (ronda 30) · Etapa 2: la web nueva (public/sitio/…) y, lo que todavía no se rehízo, el sitio viejo desde
+    // el bucket LEGADO (con sus css y scripts, para las invitaciones activas del sistema anterior)
+    if (env.SITIO_PROPIO === '1') {
+      const nuevo = await sitioNuevo(env, request, url);
+      if (nuevo) return nuevo;
+      try { const v = await servirLegado(request, env, url); if (v) return v; } catch (e) { console.error('legado', e); }
+    }
     // Lo demás es del sitio de siempre: en otro dominio (app.amoinvitar.com) se manda allá;
     // en el mismo dominio se pide al hosting actual sin que el visitante lo note
     if (env.ORIGEN_ANTIGUO) {

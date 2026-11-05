@@ -64,7 +64,10 @@ function dibujar() {
       el('button', { type: 'button', class: 'btn', onclick: () => empezar(m) }, 'Personalizar')))) : [el('p', { class: 'vacio' }, 'Pronto habrá diseños para este evento.')]));
 
   $('#paso-std').hidden = S.producto !== 'std';
-  $('#std').replaceChildren(...OPCIONES_STD.map((id) => {
+  // README (ronda 30): web y foto solo en boda y 15; la tarjeta del diseño, en los eventos que la tienen
+  const STD_EVENTO = { 'std-web': ['boda', '15'], 'std-foto': ['boda', '15'], 'std-tarjeta': ['boda', '15', 'cumple', 'bautismo', 'comunion', 'babyshower'] };
+  if (S.std && STD_EVENTO[S.std] && S.tipo && !STD_EVENTO[S.std].includes(S.tipo)) S.std = null;
+  $('#std').replaceChildren(...OPCIONES_STD.filter((id) => !STD_EVENTO[id] || !S.tipo || STD_EVENTO[id].includes(S.tipo)).map((id) => {
     const p = c.productos.find((x) => x.id === id);
     if (p.manual) return el('div', { class: 'opcion' }, el('strong', {}, p.nombre), el('div', { class: 'precio' }, p.precio.texto), el('a', { href: 'https://amoinvitar.com/contacto', target: '_blank', rel: 'noopener' }, 'Pedir cotización'));
     return radio('std', id, S.std === id, (v) => { S.std = v; actualizar(); }, el('strong', {}, p.nombre.replace('Save The Date · ', '').replace('Save The Date ', '')), el('div', { class: 'precio' }, p.precio.texto));

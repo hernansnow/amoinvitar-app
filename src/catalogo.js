@@ -33,7 +33,7 @@ export const A_MEDIDA = {
 export const PRODUCTOS = {
   // Modelos simples de una pantalla (se elige el diseño en el panel; Party es de 15 años)
   'compromiso-web': { precio: 20, nombre: 'Invitación web simple · Civil, Compromiso, Pedida de mano o Party' },
-  'std-web': { precio: 20, nombre: 'Save The Date web (Classic o Soft)' },
+  'std-web': { precio: 20, nombre: 'STD Web' },
   'std-web-medida': { precio: 70, nombre: 'Save The Date web · diseño a medida' },
   'std-tarjeta': { precio: 15, nombre: 'Save The Date · tarjeta' },
   'std-foto': { precio: 18, nombre: 'Save The Date · foto' },

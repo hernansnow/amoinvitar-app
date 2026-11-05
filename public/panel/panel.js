@@ -1076,10 +1076,33 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     case 'disenoFoto': {
       const plural = !!datos.nombres?.b;
       const actual = valor || c.defecto;
+      const muestra = (v) => `/comun/tarjetas/${c.carpeta || 'foto'}/${v}/muestra-${plural ? 'boda' : '15'}.jpg`;
+      // README (ronda 30): elegido un diseño, la grilla se colapsa en "Cambiar de diseño"
+      if (c.colapsar && leer(datos, c.colapsar) && !uiDisenos.has(c.id)) {
+        const o = c.valores.find((x) => x.v === actual);
+        return disenoElegido(c, muestra(actual), o?.etiqueta || '');
+      }
       return el('div', { class: 'disenos-foto', role: 'radiogroup' }, c.valores.map((o) => {
-        const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: o.v, checked: o.v === actual, disabled: dis });
-        i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
+        const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: o.v, checked: o.v === actual && (!c.colapsar || !!leer(datos, c.colapsar)), disabled: dis });
+        i.addEventListener('change', () => { uiDisenos.delete(c.id); if (c.colapsar) cambio(c.colapsar, true); alCambiar(o.v, { rearmar: true }); });
         return el('label', { class: 'diseno-foto' }, i, el('img', { src: `/comun/tarjetas/${c.carpeta || 'foto'}/${o.v}/muestra-${plural ? 'boda' : '15'}.jpg`, alt: '', loading: 'lazy' }), el('span', {}, o.etiqueta));
+      }), opcionMedida(c, idHtml, dis));
+    }
+    // README (ronda 30): Save The Date tarjeta suelta: los modelos del evento en una grilla (como la foto)
+    case 'disenoModelo': {
+      const tipo = S.evento.tipo;
+      const lista = (S.modelos || []).filter((m) => m.id !== 'a-medida');
+      const img = (m) => `/modelos/${m.id}/std-muestra-${m.tipo || tipo}.jpg`;
+      const actual = lista.find((m) => m.id === S.evento.modelo);
+      if (leer(datos, 'std.modeloElegido') && actual && !uiDisenos.has(c.id)) return disenoElegido(c, img(actual), actual.nombre);
+      return el('div', { class: 'disenos-foto', role: 'radiogroup' }, lista.map((m) => {
+        const i = el('input', { type: 'radio', name: `d-${idHtml}`, value: m.id, checked: m.id === S.evento.modelo && !!leer(datos, 'std.modeloElegido'), disabled: dis });
+        i.addEventListener('change', async () => {
+          uiDisenos.delete(c.id); cambio('std.modeloElegido', true);
+          try { clearTimeout(guardarTimer); await guardar(); if (m.id !== S.evento.modelo) await api('/modelo', { method: 'POST', body: JSON.stringify({ modelo: m.id }) }); await recargar(); }
+          catch (e) { aviso(e.message, true); }
+        });
+        return el('label', { class: 'diseno-foto' }, i, el('img', { src: img(m), alt: '', loading: 'lazy', onerror: (e) => { if (e.target.dataset.f) return; e.target.dataset.f = 1; e.target.src = `/modelos/${m.id}/tienda-${tipo}.jpg`; } }), el('span', {}, m.nombre));
       }), opcionMedida(c, idHtml, dis));
     }
     // Diseño de la Save The Date web (Classic o Soft)
@@ -1263,6 +1286,12 @@ async function disenoTarjeta(c) {
 }
 // README (ronda 29): Save The Date a medida dentro de la invitación. Se elige como un diseño más (foto y web) o con el
 // botón debajo de la tarjeta; el paso muestra el brief y se envía al equipo, que lo aprueba antes de cobrarlo
+// Grillas de diseños abiertas a mano con "Cambiar de diseño"
+const uiDisenos = new Set();
+function disenoElegido(c, img, nombre) {
+  return el('div', { class: 'diseno-elegido' }, el('img', { src: img, alt: '' }), el('div', {}, el('small', {}, 'Diseño elegido'), el('strong', {}, nombre),
+    el('button', { type: 'button', class: 'btn btn-sec btn-chico', title: 'Volver a ver todos los diseños para elegir otro', onclick: () => { uiDisenos.add(c.id); dibujarPaso(); } }, 'Cambiar de diseño')));
+}
 async function pasarAMedida(c) {
   // Save The Date comprada sola: pasa al producto a medida (su propio panel, con el envío al equipo)
   if (c.convertir) {
@@ -1649,7 +1678,8 @@ function pintarModelo() {
   const actual = (S.modelos || []).find((m) => m.id === S.evento.modelo);
   const caja = $('#selector-modelo');
   const movil = $('#modelo-movil');
-  if (!actual) { caja.hidden = true; movil.hidden = true; return; }
+  // README (ronda 30): la tarjeta Save The Date suelta elige su diseño en la grilla del paso, no arriba
+  if (!actual || S.evento.producto === 'std-tarjeta') { caja.hidden = true; movil.hidden = true; return; }
   const tipo = S.evento.tipoNombre || '';
   // Escritorio: el modelo y, chico, el tipo de evento
   caja.replaceChildren(el('button', { type: 'button', class: 'btn-modelo', onclick: elegirModelo },
@@ -1729,9 +1759,43 @@ $('#btn-manual').addEventListener('click', mostrarManual);
 function botonAyuda() {
   const wa = whatsapp(); const b = $('#btn-ayuda');
   if (!wa) return;
-  b.href = wa; b.hidden = false; b.innerHTML = `<span class="texto">Ayuda</span>${ICONO_WA}`;
-  b.title = 'Ayuda (WhatsApp)';
+  b.href = wa; b.hidden = false; b.innerHTML = `<span class="texto">Asistencia</span>${ICONO_WA}`;
+  b.title = 'Asistencia: escríbenos por WhatsApp y te ayudamos con tu invitación';
 }
+
+// README (ronda 30): tooltips en todos los botones y enlaces del panel (los fijos por su id y los que se arman en el
+// momento por su texto). El que ya trae su propio title lo conserva.
+const TOOLTIPS_ID = {
+  'btn-volver': 'Volver a Mis invitaciones', marca: 'Ir a la página de Amo Invitar!', 'btn-manual': 'Ayuda: cómo usar el panel, paso a paso',
+  'btn-ojo': 'Ver cómo queda tu invitación', 'btn-completa': 'Ver la vista previa en pantalla completa', 'btn-publicar': 'Revisar el resumen y obtener el link de tu invitación',
+  'btn-publicar-2': 'Revisar el resumen y obtener el link de tu invitación', 'btn-editar': 'Volver a editar la invitación', 'btn-hoja': 'Agrandar o achicar el panel',
+  'btn-ver-pasos': 'Ver todas las secciones de la invitación', 'btn-desplegar': 'Abrir el panel de edición', 'btn-anterior': 'Ir a la sección anterior',
+  'btn-siguiente': 'Ir a la sección siguiente', 'plan-mini': 'Ver el resumen de tu plan y lo que falta pagar',
+};
+const TOOLTIPS_TEXTO = [
+  [/^Editar invitación$/, 'Cargar y cambiar los datos, fotos y secciones de la invitación'],
+  [/^Administración$/, 'Enviar la invitación y ver respuestas, mensajes, mesas y más'],
+  [/^Mis invitaciones$/, 'Ver todas tus invitaciones y borradores'],
+  [/^cambiar/i, 'Cambiar el modelo de la invitación (lo cargado se mantiene)'],
+  [/^Usar este$/, 'Pasar la invitación a este modelo'], [/^Elegir$/, 'Elegir esta opción'],
+  [/Generar|Descargar/i, 'Crear la tarjeta lista para descargar o compartir'],
+  [/^Enviar al equipo/, 'Mandar tu idea al equipo de diseño para que la evalúe'],
+  [/^Activar|^ACTIVAR/, 'Activar esta opción'], [/^Cambiar de diseño$/, 'Volver a ver todos los diseños para elegir otro'],
+  [/^Copiar/, 'Copiar al portapapeles'], [/WhatsApp/, 'Abrir WhatsApp con el mensaje listo'], [/^Ver$|^Ver /, 'Abrir en una pestaña nueva'],
+  [/^Plan|^Save The Date|^Tarjeta|^STD|^Invitación/, 'Ver el resumen de tu plan y lo que falta pagar'],
+  [/^✕$|^Cerrar$/, 'Cerrar'], [/^↶/, 'Deshacer el último cambio'], [/^↷/, 'Rehacer'], [/Original/, 'Volver a la tarjeta original del diseño'],
+  [/^Guardar con Google/, 'Guardar la invitación en tu cuenta con Google'], [/^Con mi mail/, 'Guardar la invitación en tu cuenta con tu mail'],
+];
+function ponerTooltips(raiz = document) {
+  raiz.querySelectorAll('button:not([title]), a:not([title]), [role="button"]:not([title]), input[role="switch"]:not([title])').forEach((x) => {
+    const id = x.id && TOOLTIPS_ID[x.id];
+    const texto = (x.getAttribute('aria-label') || x.textContent || '').replace(/\s+/g, ' ').trim();
+    const t = id || TOOLTIPS_TEXTO.find(([re]) => re.test(texto))?.[1] || texto;
+    if (t) x.title = t.length > 90 ? `${t.slice(0, 87)}…` : t;
+  });
+}
+new MutationObserver(() => { clearTimeout(ponerTooltips.t); ponerTooltips.t = setTimeout(() => ponerTooltips(), 120); }).observe(document.body, { childList: true, subtree: true });
+ponerTooltips();
 
 // Resumen: secciones elegidas, plan y complementos. Al publicar, también el pago.
 async function mostrarResumen(paraPagar, plan = S.plan) {

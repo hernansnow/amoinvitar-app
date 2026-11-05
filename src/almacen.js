@@ -95,6 +95,27 @@ export function almacenD1(env) {
     async sinCliente(eventoId) {
       return !(await db.prepare("SELECT 1 FROM accesos_evento WHERE evento_id = ? AND rol = 'cliente'").bind(eventoId).first());
     },
+    // README (ronda 30): el cliente borra su invitación o borrador: se va todo (respuestas, invitados, accesos y
+    // fotos). Los pedidos y facturas quedan (son registros contables)
+    async eliminarEvento(id) {
+      await db.batch([
+        db.prepare('DELETE FROM respuestas WHERE evento_id = ?').bind(id),
+        db.prepare('DELETE FROM invitados WHERE evento_id = ?').bind(id),
+        db.prepare('DELETE FROM accesos_evento WHERE evento_id = ?').bind(id),
+        db.prepare('DELETE FROM eventos WHERE id = ?').bind(id),
+      ]);
+      try {
+        let cursor;
+        do {
+          const l = await env.MEDIA.list({ prefix: `eventos/${id}/`, cursor });
+          if (l.objects.length) await env.MEDIA.delete(l.objects.map((o) => o.key));
+          cursor = l.truncated ? l.cursor : null;
+        } while (cursor);
+      } catch { /* sin archivos o sin listado (local) */ }
+    },
+    async rolDe(eventoId, usuarioId) {
+      return (await db.prepare('SELECT rol FROM accesos_evento WHERE evento_id = ? AND usuario_id = ?').bind(eventoId, usuarioId).first())?.rol || null;
+    },
     async tieneAcceso(eventoId, usuarioId) {
       return !!(usuarioId && await db.prepare('SELECT 1 FROM accesos_evento WHERE evento_id = ? AND usuario_id = ?').bind(eventoId, usuarioId).first());
     },
