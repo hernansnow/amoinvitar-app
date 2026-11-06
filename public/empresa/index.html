@@ -275,11 +275,42 @@
   }
 
   // ── Cuenta ──
+  // Dominio propio (Studio): contratar la configuración, cargar el dominio, ver el estado y las instrucciones de DNS
+  function tarjetaDominio() {
+    var d = D.dominio, c = el('div', { class: 'tarjeta' }, [el('h3', {}, 'Dominio propio')]);
+    var estados = { pendiente: ['Esperando el DNS', 'aviso'], verificando: ['Verificando', 'aviso'], activo: ['Activo', ''], error: ['Con un problema', 'mal'] };
+    if (!d.studio) { c.append(el('p', { class: 'meta' }, 'El dominio propio es de Studio: renueva el pase para usarlo.')); return c; }
+    if (!d.derecho) {
+      var prod = D.tienda.productos.filter(function (p) { return p.id === 'dominio'; })[0];
+      c.append(el('p', { class: 'meta' }, 'Tus invitaciones pueden salir desde tu propio dominio o subdominio (por ejemplo invitaciones.tusalon.com), sin ninguna marca de Amo Invitar!. La configuración se incluye con el pack Studio de 100 créditos o se contrata una sola vez por ' + eur(D.tienda.config) + ' + IVA.'));
+      if (prod) { var bc = el('button', { class: 'b', type: 'button' }, 'Contratar la configuración'); bc.onclick = function () { comprar(prod); }; c.append(el('div', { class: 'fila' }, bc)); }
+      return c;
+    }
+    if (!d.host) {
+      var inp = el('input', { placeholder: 'invitaciones.tusalon.com', style: 'max-width:340px' }), bo = el('button', { class: 'b', type: 'button' }, 'Conectar mi dominio');
+      bo.onclick = function () { accion(bo, base('/dominio'), { host: inp.value }, 'Dominio cargado: ahora configura el DNS'); };
+      c.append(el('p', { class: 'meta' }, 'Escribe el dominio o subdominio que quieres usar. Recomendamos un subdominio (invitaciones.tusalon.com).'), el('div', { class: 'fila' }, [inp, bo]));
+      return c;
+    }
+    var st = estados[d.estado] || [d.estado, 'aviso'];
+    c.append(el('div', { class: 'fila', style: 'align-items:center' }, [el('strong', {}, d.host), el('span', { class: 'tag ' + st[1] }, st[0])]));
+    if (d.estado !== 'activo') {
+      c.append(el('p', { class: 'meta' }, 'En el panel de DNS de tu dominio crea este registro:'), el('pre', { class: 'datos' }, 'Tipo: CNAME\nNombre: ' + d.host.split('.')[0] + '\nDestino: ' + d.cname),
+        el('p', { class: 'meta' }, 'Cuando el DNS se propague (de minutos a unas horas) se activa solo' + (d.automatico ? '' : ' o lo activa nuestro equipo en el día') + '. Si tu dominio está en Cloudflare, deja el registro «solo DNS» (nube gris).'));
+      if (d.error) c.append(el('p', { class: 'meta', style: 'color:#b3392c' }, d.error));
+    } else c.append(el('p', { class: 'meta' }, 'Tus invitaciones publicadas ya se abren desde ' + d.host + '. Los links de «Ver invitación» del tablero usan tu dominio.'));
+    var br = el('button', { class: 'b sec', type: 'button' }, 'Revisar ahora'), bq = el('button', { class: 'b mal', type: 'button' }, 'Quitar el dominio');
+    br.onclick = function () { accion(br, base('/dominio/revisar'), {}, 'Revisado'); };
+    bq.onclick = function () { if (confirm('¿Quitar ' + d.host + '? Las invitaciones vuelven a abrirse desde amoinvitar.com.')) accion(bq, base('/dominio'), undefined, 'Dominio quitado', 'DELETE'); };
+    c.append(el('div', { class: 'fila' }, [br, bq]));
+    return c;
+  }
   function vistaCuenta() {
     var e = D.empresa, v = el('div');
     v.append(el('h2', {}, 'Cuenta'));
     v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, e.nombre), el('div', { class: 'meta' }, 'Nivel ' + (e.nivel === 'studio' ? 'Studio' : 'Pro') + (e.nivel === 'studio' ? ' · pase hasta ' + fecha(e.paseVence) + (e.paseVencido ? ' (vencido)' : '') : ' · sin pase anual') + ' · ' + D.limites.usados + ' de ' + D.limites.usuarios + ' usuarios' + (e.dominio ? ' · dominio propio activo' : ''))]));
     if (e.nivel !== 'studio') v.append(promoStudio('Marca blanca, 10 usuarios, dominio propio y los packs más baratos.'));
+    if (e.nivel === 'studio' && e.rol === 'duenio') v.append(tarjetaDominio());
     if (e.rol === 'duenio') {
       var msg = function (t) { return 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent(t + ' · Empresa: ' + D.empresa.nombre); };
       v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Pedir algo más'), el('p', { class: 'meta' }, 'El diseño a medida, los cambios de diseño, los idiomas adicionales, los complementos y la configuración del dominio propio se contratan aparte. Escribe y lo coordinamos.'),

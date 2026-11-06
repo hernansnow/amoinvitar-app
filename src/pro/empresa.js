@@ -13,6 +13,7 @@ export function catalogoCompras() {
   out['pro-1'] = { nombre: 'Crédito suelto', creditos: 1, neto: P.credito, nivel: 'pro' };
   for (const k of P.pro.packs) out[`pro-${k.creditos}`] = { nombre: `Pack ${k.creditos} créditos`, creditos: k.creditos, neto: k.precio, nivel: 'pro' };
   for (const k of P.studio.packs) out[`studio-${k.creditos}`] = { nombre: `Pack Studio ${k.creditos} créditos`, creditos: k.creditos, neto: k.precio, nivel: 'studio' };
+  out.dominio = { nombre: 'Configuración del dominio propio', creditos: 0, neto: P.studio.configuracionDominio, nivel: 'studio-dominio' };
   out.pase = { nombre: 'Pase anual Studio (12 meses)', creditos: 0, neto: P.studio.pase, nivel: 'studio-pase' };
   return out;
 }

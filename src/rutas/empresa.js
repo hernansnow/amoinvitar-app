@@ -18,6 +18,7 @@ import { PROFESIONALES } from '../catalogo.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { empresasDe, creditosDe, paseVigente, limiteUsuarios, catalogoCompras } from '../pro/empresa.js';
 import { crearCompra, mediosPro, confirmarCompra } from '../pro/compras.js';
+import { dominioDe, pedirDominio, revisarDominio, quitarDominio, conCloudflare, cnameDe } from '../pro/dominios.js';
 import { transferInfo } from '../lib/pagos.js';
 import { getInvoice, invoiceUrl } from '../lib/facturas.js';
 
@@ -49,6 +50,18 @@ export async function api(request, env, partes) {
     if (id && accion === 'ajustes' && M === 'POST') return ajustesEvento(request, env, c, id);
     if (id && !accion && M === 'DELETE') return borrarEvento(env, c, id);
   }
+  if (recurso === 'dominio') {
+    exigir(c.duenio, 'Solo el dueño maneja el dominio');
+    if (M === 'POST' && !id) {
+      if (!c.studio) throw new HttpError(409, 'El dominio propio es de Studio con el pase vigente');
+      if (!c.e.dominio) throw new HttpError(409, 'Primero hay que contratar la configuración del dominio (49 €, o sin cargo con el pack de 100 créditos)');
+      const b = await readJson(request);
+      try { await pedirDominio(env, c.e.id, b.host); } catch (err) { throw new HttpError(400, err.message); }
+      return json({ ok: true, dominio: await infoDominio(env, c) });
+    }
+    if (M === 'POST' && id === 'revisar') { await revisarDominio(env, c.e.id); return json({ ok: true, dominio: await infoDominio(env, c) }); }
+    if (M === 'DELETE') { await quitarDominio(env, c.e.id); return json({ ok: true }); }
+  }
   if (recurso === 'marca' && M === 'POST') return guardarMarca(request, env, c);
   if (recurso === 'logo' && M === 'POST') return subirLogo(request, env, c);
   if (recurso === 'logo' && M === 'DELETE') return quitarLogo(env, c);
@@ -62,6 +75,12 @@ export async function api(request, env, partes) {
     if (id && accion === 'confirmar' && M === 'POST') return confirmarPago(request, env, c, id);
   }
   return json({ error: 'no encontrado' }, 404);
+}
+
+// Estado del dominio propio para el tablero (se revisa contra Cloudflare o el DNS cada vez que se abre)
+async function infoDominio(env, c) {
+  const d = c.studio || c.e.dominio ? await revisarDominio(env, c.e.id).catch(() => dominioDe(env, c.e.id)) : null;
+  return { derecho: !!c.e.dominio, studio: c.studio, host: d?.host || null, estado: d?.estado || null, error: d?.error || null, cname: cnameDe(env), automatico: conCloudflare(env) };
 }
 
 // ── Resumen ───────────────────────────────────────────────────────────
@@ -85,15 +104,17 @@ async function resumen(request, env, c) {
   const cat = catalogoCompras();
   const nivel = e.nivel;
   const base = sitio(env, request);
+  const dom = await infoDominio(env, c);
   // Con Studio (pase vigente) el panel va sin la marca de Amo Invitar; en Pro, con ella
   return {
     usuario: { id: u.id, email: u.email, nombre: u.nombre },
     empresas: c.empresas.map((x) => ({ id: x.id, nombre: x.nombre })),
+    dominio: dom,
     empresa: { id: e.id, nombre: e.nombre, rol: e.rol, nivel, studio: c.studio, paseVence: e.pase_vence, paseVencido: nivel === 'studio' && !c.studio, estado: e.estado, dominio: !!e.dominio },
     limites: { usuarios: limiteUsuarios(nivel), usados: (miembros || []).length },
     creditos: cred,
     marca: { nombre: e.marca.nombre || '', pie: e.marca.pie || '', logo: e.marca.logo || '', sinPie: !!e.marca.sinPie, blanca: !!e.marca.blanca },
-    eventos, equipo: miembros || [], compras: await Promise.all((compras || []).map(async (x) => {
+    eventos: dom.estado === 'activo' ? eventos.map((x) => (x.link ? { ...x, link: `https://${dom.host}${x.link}` } : x)) : eventos, equipo: miembros || [], compras: await Promise.all((compras || []).map(async (x) => {
       const inv = x.factura ? await getInvoice(env, x.factura).catch(() => null) : null;
       return { ...x, nombre: cat[x.item]?.nombre || x.item, urlFactura: inv ? await invoiceUrl(env, base, inv) : null };
     })),
@@ -101,7 +122,7 @@ async function resumen(request, env, c) {
     modelos: MODELOS.filter((m) => !m.simple && !m.std).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
     tienda: {
       credito: PROFESIONALES.credito, pase: PROFESIONALES.studio.pase, config: PROFESIONALES.studio.configuracionDominio,
-      productos: Object.entries(cat).filter(([k, v]) => (nivel === 'studio' ? (v.nivel === 'studio' && c.studio) || v.nivel === 'studio-pase' : v.nivel === 'pro' || v.nivel === 'studio-pase'))
+      productos: Object.entries(cat).filter(([k, v]) => v.nivel === 'studio-dominio' ? (c.studio && !e.dominio) : (nivel === 'studio' ? (v.nivel === 'studio' && c.studio) || v.nivel === 'studio-pase' : v.nivel === 'pro' || v.nivel === 'studio-pase'))
         .map(([k, v]) => ({ id: k, nombre: v.nombre, creditos: v.creditos, neto: v.neto, nivel: v.nivel })),
       transferencia: transferInfo(env, 'EUR'),
       // Medios de pago online según el país de facturación (el de Argentina cobra en pesos con Mercado Pago)
@@ -225,7 +246,7 @@ async function comprar(request, env, c) {
   const b = await readJson(request);
   const item = str(b.item, 20), cat = catalogoCompras()[item];
   if (!cat) throw new HttpError(400, 'Producto desconocido');
-  const permitido = cat.nivel === 'studio-pase' || (cat.nivel === 'pro' && c.e.nivel === 'pro') || (cat.nivel === 'studio' && c.studio);
+  const permitido = (cat.nivel === 'studio-dominio' && c.studio && !c.e.dominio) || cat.nivel === 'studio-pase' || (cat.nivel === 'pro' && c.e.nivel === 'pro') || (cat.nivel === 'studio' && c.studio);
   if (!permitido) throw new HttpError(409, cat.nivel === 'studio' ? 'Los packs Studio necesitan el pase anual vigente' : 'Ese producto no está disponible para tu nivel');
   const pend = await env.DB.prepare("SELECT COUNT(*) AS n FROM compras_pro WHERE empresa_id = ? AND estado = 'pendiente'").bind(c.e.id).first();
   if (pend.n >= 5) throw new HttpError(409, 'Hay varios pedidos pendientes de pago. Se pueden cancelar los que no se vayan a abonar.');

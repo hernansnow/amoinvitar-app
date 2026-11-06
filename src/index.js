@@ -41,6 +41,7 @@ import { sitioNuevo } from './sitio/nuevo.js';
 import { contacto } from './rutas/contacto.js';
 import * as tienda from './rutas/tienda.js';
 import * as recuerdo from './recuerdo.js';
+import { empresaDeHost } from './pro/dominios.js';
 import * as admin from './rutas/admin.js';
 import * as consola from './rutas/consola.js';
 import * as profesionales from './rutas/profesionales.js';
@@ -194,6 +195,23 @@ async function renderGuardado(plantilla, vista, t, origen, extra) {
   const out = renderizar(plantilla, vista, t, { origen });
   if (clave) try { await cache.put(clave, new Response(out, { headers: { 'cache-control': 'public, max-age=604800', 'content-type': 'text/html; charset=utf-8' } })); } catch { /* nada */ }
   return out;
+}
+
+// ── Dominio propio (README ronda 38) ─────────────────────────────────
+const HOST_PROPIO = /^(www\.)?amoinvitar\.com$|^(app|panel)\.amoinvitar\.com$|^localhost$|^127\.|\.workers\.dev$/i;
+const PERMITIDO_EN_DOMINIO = /^\/(acceso|comun|modelos|media|mesa|puerta|std)\//;
+const API_EN_DOMINIO = /^\/api\/(rsvp|invitados\.csv|mesa|puerta)(\/|$)/;
+const noExiste = () => html('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>No encontrado</title><body style="font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;color:#444"><p>Esta página no existe.</p>', 404, { 'x-robots-tag': 'noindex' });
+// Devuelve una respuesta si hay que cortar acá; null para seguir con el resto
+async function dominioPropio(env, request, url, emp) {
+  const ruta = url.pathname;
+  if (PERMITIDO_EN_DOMINIO.test(ruta) || API_EN_DOMINIO.test(ruta) || /^\/(favicon\.ico|robots\.txt)$/.test(ruta)) return null;
+  const m = /^\/([a-z0-9-]+)\/([a-z0-9-]+)\/?$/.exec(ruta);
+  if (!m) return ruta === '/' ? html(`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${escHtml(emp.nombre)}</title></head><body style="font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;color:#333;text-align:center"><div>${emp.marca?.logo ? `<img src="${escHtml(emp.marca.logo)}" alt="" style="max-height:90px;max-width:70vw">` : ''}<h1 style="font-weight:500">${escHtml(emp.nombre)}</h1></div></body></html>`, 200, { 'x-robots-tag': 'noindex' }) : noExiste();
+  // Una invitación: tiene que ser de esta empresa
+  const ev = await almacenDe(env).eventoPorSlug(m[1], m[2]);
+  if (!ev || ev.empresaId !== emp.id) return noExiste();
+  return null;
 }
 
 // ── Recuerdo: descargas (README ronda 36) ───────────────────────────
@@ -1168,7 +1186,12 @@ export default {
     const [p0, p1] = partes;
     tienda.opcionesTienda.esquemaDe = (ev) => esquemaDe(env, url, ev);
     tienda.opcionesTienda.publicar = publicarEvento;
-    const cerrado = proximamente(request, env, url);
+    // README (ronda 38): dominio propio de una empresa Studio (invitaciones.tusalon.com). Ahí solo se sirven las invitaciones
+    // de esa empresa (y lo que necesitan para verse y responder); nada de la web ni del panel de Amo Invitar!.
+    const host = (env.MODO_LOCAL && request.headers.get('x-host')) || url.hostname;
+    const empHost = HOST_PROPIO.test(host) ? null : await empresaDeHost(env, host);
+    if (empHost) { const r = await dominioPropio(env, request, url, empHost); if (r) return r; }
+    const cerrado = empHost ? null : proximamente(request, env, url);
     if (cerrado) return cerrado;
     // README (ronda 31): los paneles viejos de los clientes (en Hostinger, la carpeta /panel/ servida en
     // panel.amoinvitar.com) siguen en su subdominio, desde la carpeta "panel/" del bucket del sitio viejo. El panel

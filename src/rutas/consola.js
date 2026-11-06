@@ -16,6 +16,7 @@ import { sendEmail, mailMedidaAprobada, mailProAprobada, mailProRechazada } from
 import { PROFESIONALES } from '../catalogo.js';
 import { sumarMeses, nuevoLote, renovarPase as renovarPaseBase, catalogoCompras } from '../pro/empresa.js';
 import { pagarCompra } from '../pro/compras.js';
+import { dominiosParaAdmin, marcarDominio, quitarDominio, revisarDominio, conCloudflare, cnameDe } from '../pro/dominios.js';
 
 const ahora = () => new Date().toISOString();
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
@@ -48,7 +49,8 @@ export async function resumen(request, env) {
     .map((p) => ({ id: p.id, numero: p.numero, email: p.email, importe: p.importe, moneda: p.moneda, producto: (() => { try { return JSON.parse(p.detalle).nombre; } catch { return ''; } })(), creado: p.creado }));
   const cat = catalogoCompras();
   const compras = (await q(`SELECT c.id, c.numero, c.item, c.neto, c.iva_tasa, c.iva, c.total, c.estado, c.creado, c.pagada, c.factura, e.nombre AS empresa FROM compras_pro c JOIN empresas e ON e.id = c.empresa_id ORDER BY (c.estado = 'pendiente') DESC, c.creado DESC LIMIT 100`)).map((x) => ({ ...x, nombre: cat[x.item]?.nombre || x.item }));
-  return json({ solicitudes, empresas, medidas, transferencias, compras, base: { pase: PROFESIONALES.studio.pase, credito: PROFESIONALES.credito } });
+  const dominios = await dominiosParaAdmin(env);
+  return json({ solicitudes, empresas, dominios, dominiosInfo: { cname: cnameDe(env), automatico: conCloudflare(env) }, medidas, transferencias, compras, base: { pase: PROFESIONALES.studio.pase, credito: PROFESIONALES.credito } });
 }
 
 // ── Cuentas profesionales ─────────────────────────────────────────────
@@ -63,7 +65,18 @@ export async function accionPro(request, env, partes) {
     if (accion === 'pagada') { const ok = await pagarCompra(env, id, { medio: str(b.medio, 20) || 'transferencia', nota: str(b.nota, 200) || null, base: sitio(env, request) }); if (!ok) throw new HttpError(409, 'Ese pedido ya estaba pagado o cancelado'); return json({ ok: true }); }
     if (accion === 'cancelar') { const r = await env.DB.prepare("UPDATE compras_pro SET estado = 'cancelada' WHERE id = ? AND estado = 'pendiente'").bind(str(id, 20)).run(); if (!r.meta.changes) throw new HttpError(409, 'Ese pedido ya no se puede cancelar'); return json({ ok: true }); }
   }
+  if (recurso === 'dominios') {
+    // id = el dominio; acciones: activar | verificando | pendiente | revisar | quitar
+    const host = str(id, 253).toLowerCase();
+    if (accion === 'revisar') { const d = await env.DB.prepare('SELECT empresa_id FROM dominios_pro WHERE host = ?').bind(host).first(); if (!d) throw new HttpError(404, 'No existe ese dominio'); await revisarDominio(env, d.empresa_id); return json({ ok: true }); }
+    if (accion === 'quitar') { const d = await env.DB.prepare('SELECT empresa_id FROM dominios_pro WHERE host = ?').bind(host).first(); if (!d) throw new HttpError(404, 'No existe ese dominio'); await quitarDominio(env, d.empresa_id); return json({ ok: true }); }
+    const estado = { activar: 'activo', verificando: 'verificando', pendiente: 'pendiente' }[accion];
+    if (!estado) return json({ error: 'no encontrado' }, 404);
+    if (!(await marcarDominio(env, host, estado, str(b.nota, 200) || null))) throw new HttpError(404, 'No existe ese dominio');
+    return json({ ok: true });
+  }
   if (recurso === 'empresas') {
+    if (accion === 'dominio') { await env.DB.prepare('UPDATE empresas_pro SET dominio = ? WHERE empresa_id = ?').bind(b.derecho ? 1 : 0, str(id, 40)).run(); return json({ ok: true }); }
     if (accion === 'creditos') return darCreditos(env, id, b);
     if (accion === 'pase') return renovarPase(env, id, b);
     if (accion === 'estado') return cambiarEstado(env, id, b);

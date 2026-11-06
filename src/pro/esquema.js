@@ -27,7 +27,7 @@ export const TABLAS_PRO = [
     nivel      TEXT NOT NULL DEFAULT 'pro',   -- pro | studio
     pase_vence TEXT,                           -- solo Studio (pase anual)
     estado     TEXT NOT NULL DEFAULT 'activa', -- activa | suspendida
-    dominio    INTEGER NOT NULL DEFAULT 0,     -- 1 = dominio propio configurado
+    dominio    INTEGER NOT NULL DEFAULT 0,     -- 1 = tiene incluida la configuración del dominio propio (pack de 100 créditos o compra de 49 €)
     creado     TEXT NOT NULL
   )`,
   // Créditos por lotes: cada compra vence a los 12 meses (si se renueva el pase antes, los que sobran pasan al año siguiente)
@@ -65,6 +65,19 @@ export const TABLAS_PRO = [
     pagada      TEXT
   )`,
   'CREATE INDEX IF NOT EXISTS compras_pro_empresa ON compras_pro (empresa_id, estado)',
+  // Dominio propio de las empresas Studio (README ronda 38): un dominio o subdominio por empresa
+  `CREATE TABLE IF NOT EXISTS dominios_pro (
+    host       TEXT PRIMARY KEY,
+    empresa_id TEXT NOT NULL REFERENCES empresas(id),
+    estado     TEXT NOT NULL DEFAULT 'pendiente', -- pendiente | verificando | activo | error
+    token      TEXT,
+    cf_id      TEXT,
+    nota       TEXT,
+    error      TEXT,
+    creado     TEXT NOT NULL,
+    activado   TEXT
+  )`,
+  'CREATE INDEX IF NOT EXISTS dominios_pro_empresa ON dominios_pro (empresa_id)',
   // Mensajes del formulario de contacto (además del mail)
   `CREATE TABLE IF NOT EXISTS consultas (
     id       TEXT PRIMARY KEY,

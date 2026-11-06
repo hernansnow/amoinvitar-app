@@ -384,9 +384,22 @@
         pedir('Agregar créditos a ' + e.nombre, [{ n: 'cantidad', l: 'Cantidad', tipo: 'number', v: 5 }, { n: 'origen', l: 'Origen', tipo: 'select', v: e.nivel === 'studio' ? 'studio-25' : 'pro-5', op: [['pro-1', 'Crédito suelto'], ['pro-5', 'Pack Pro 5'], ['pro-10', 'Pack Pro 10'], ['studio-10', 'Pack Studio 10'], ['studio-25', 'Pack Studio 25'], ['studio-50', 'Pack Studio 50'], ['studio-100', 'Pack Studio 100'], ['manual', 'Regalo / ajuste']] }, { n: 'nota', l: 'Nota (pago, transferencia…)' }]).then(function (r) { if (r) accion(bc, '/api/admin/pro/empresas/' + e.id + '/creditos', r, 'Créditos agregados (vencen a los 12 meses)', refrescarTodo); });
       });
       var bp = btn('Renovar pase', 'sec', function () { pedir('Renovar el pase de ' + e.nombre, [{ n: 'meses', l: 'Meses', tipo: 'number', v: 12 }]).then(function (r) { if (r) accion(bp, '/api/admin/pro/empresas/' + e.id + '/pase', r, 'Pase renovado: los créditos sin usar pasan al año siguiente', refrescarTodo); }); });
+      var bd = btn(e.dominio ? 'Quitar dominio incluido' : 'Dar dominio incluido', 'sec', function () { accion(bd, '/api/admin/pro/empresas/' + e.id + '/dominio', { derecho: !e.dominio }, e.dominio ? 'Listo' : 'La empresa ya puede cargar su dominio', refrescarTodo); });
       var be = btn(e.estado === 'activa' ? 'Suspender' : 'Activar', e.estado === 'activa' ? 'mal' : 'sec', function () { accion(be, '/api/admin/pro/empresas/' + e.id + '/estado', { estado: e.estado === 'activa' ? 'suspendida' : 'activa' }, 'Estado actualizado', refrescarTodo); });
       return [el('div', {}, [el('strong', {}, e.nombre), el('div', { class: 'meta' }, e.duenio || '')]), tag(e.nivel), e.nivel === 'studio' ? el('span', { class: vencido ? 'tag mal' : '' }, fecha(e.pase_vence)) : '—',
-        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'chico' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos), tag(e.estado, e.estado === 'activa' ? '' : 'mal'), el('div', { class: 'acciones' }, [bc, e.nivel === 'studio' ? bp : null, be])];
+        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'chico' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos), tag(e.estado, e.estado === 'activa' ? '' : 'mal'), el('div', { class: 'acciones' }, [bc, e.nivel === 'studio' ? bp : null, e.nivel === 'studio' ? bd : null, be])];
+    })));
+    // Dominios propios (Studio)
+    var DO = D.dominios || [], info = D.dominiosInfo || {};
+    v.append(el('h2', { style: 'margin-top:30px' }, 'Dominios propios'));
+    v.append(el('p', { class: 'meta' }, info.automatico ? 'Cloudflare for SaaS conectado: los dominios se dan de alta solos y pasan a activos cuando el DNS y el certificado están listos.' : 'Sin conexión a la API de Cloudflare: da de alta cada dominio como «custom hostname» en Cloudflare (SSL por HTTP) y márcalo activo acá. El cliente apunta su CNAME a ' + info.cname + '.'));
+    if (!DO.length) v.append(vacio('Todavía no hay dominios cargados.'));
+    else v.append(tabla(['Dominio', 'Empresa', 'Estado', 'Desde', ''], DO.map(function (x) {
+      var rec = function () { return refrescarTodo(); };
+      var b1 = btn('Marcar activo', '', function () { accion(b1, '/api/admin/pro/dominios/' + encodeURIComponent(x.host) + '/activar', {}, 'Dominio activo', rec); });
+      var b2 = btn('Revisar', 'sec', function () { accion(b2, '/api/admin/pro/dominios/' + encodeURIComponent(x.host) + '/revisar', {}, 'Revisado', rec); });
+      var b3 = btn('Quitar', 'mal', function () { if (confirm('¿Quitar ' + x.host + '?')) accion(b3, '/api/admin/pro/dominios/' + encodeURIComponent(x.host) + '/quitar', {}, 'Quitado', rec); });
+      return [el('div', {}, [el('strong', {}, x.host), x.error ? el('div', { class: 'chico' }, x.error) : null]), x.empresa, tag(x.estado, x.estado === 'activo' ? '' : x.estado === 'error' ? 'mal' : 'aviso'), fecha(x.creado), el('div', { class: 'acciones' }, [x.estado === 'activo' ? null : b1, b2, b3])];
     })));
     return v;
   }
