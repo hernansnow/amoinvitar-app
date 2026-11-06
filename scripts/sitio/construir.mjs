@@ -509,4 +509,13 @@ function paginaProfesionales() {
 }
 paginaProfesionales();
 
+// README (ronda 36): «Entrar» y «Mis invitaciones» llevan la misma barra superior que la web (entre marcadores)
+for (const f of ['public/entrar/index.html', 'public/mi-cuenta/index.html']) {
+  const ruta = join(RAIZ, '..', '..', f);
+  let h = readFileSync(ruta, 'utf8');
+  const bloque = `<!--cab-->${sprite()}${cabecera({ slug: 'cuenta' })}<!--/cab-->`;
+  h = h.replace(/<!--cab-->[\s\S]*?<!--\/cab-->/, bloque);
+  writeFileSync(ruta, h);
+}
+
 console.log('Páginas generadas:', PAGINAS.join(', '));

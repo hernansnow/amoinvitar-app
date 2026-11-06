@@ -33,7 +33,7 @@
 
   /* ---------- Encabezado: transparente arriba, blanco al bajar ---------- */
   var cab = $('.cab');
-  function pintaCab() { if (cab) cab.classList.toggle('solida', window.scrollY > 30 || d.body.classList.contains('cajon-abierto')); }
+  function pintaCab() { if (cab) cab.classList.toggle('solida', window.scrollY > 30 || d.body.classList.contains('cajon-abierto') || d.documentElement.hasAttribute('data-cab-fija')); }
   addEventListener('scroll', pintaCab, { passive: true });
 
   /* ---------- Submenú «Invitaciones»: se abre con el puntero o el teclado y no se cierra al ir hacia la lista ---------- */

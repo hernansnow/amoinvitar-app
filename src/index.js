@@ -1222,6 +1222,11 @@ export default {
       return p0 === 'api' ? json({ error: 'Algo falló. Probar de nuevo en un momento.' }, 500) : html('Error al armar la página', 500);
     }
     // Archivos de public/ (páginas, estilos, imágenes)
+    // README (ronda 36): la página «Tienda» ya no existe como portada: el camino es modelos → panel desde la web.
+    // Se conserva solo para los flujos que la usan por dentro (?empezar, ?producto, ?cancelado) y /tienda/gracias.
+    if (request.method === 'GET' && /^\/tienda\/?(index\.html)?$/.test(url.pathname) && !['empezar', 'producto', 'cancelado'].some((k) => url.searchParams.has(k))) {
+      return Response.redirect(new URL('/crear-invitacion' + (url.searchParams.get('paquete') ? `?paquete=${encodeURIComponent(url.searchParams.get('paquete'))}` : ''), url.origin).href, 302);
+    }
     const archivo = await env.ASSETS.fetch(request);
     if (archivo.status !== 404) return archivo;
     // README (ronda 30) · Etapa 2: la web nueva (public/sitio/…) y, lo que todavía no se rehízo, el sitio viejo desde
@@ -1237,7 +1242,7 @@ export default {
       const viejo = new URL(url.pathname + url.search, env.ORIGEN_ANTIGUO);
       if (viejo.host !== url.host) {
         // La app todavía no tiene portada propia: en app.amoinvitar.com el inicio es la tienda
-        if (url.pathname === '/') return Response.redirect(new URL('/tienda/', url.origin).href, 302);
+        if (url.pathname === '/') return Response.redirect(new URL('/crear-invitacion', url.origin).href, 302);
         return Response.redirect(viejo.href, 302);
       }
       return fetch(new Request(viejo, request));

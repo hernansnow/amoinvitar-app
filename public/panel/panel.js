@@ -1722,7 +1722,7 @@ function elegirModelo() {
     // README (ronda 29): con la imagen del diseño a medida (la de la Save The Date en las tarjetas y la web)
     el('img', { class: 'a-medida-img', alt: '', loading: 'lazy', src: !S.aMedida.std ? '/comun/img/modelo-a-medida.webp' : S.evento.producto === 'std-web' ? '/comun/img/std-medida-web.webp' : '/comun/img/std-medida-tarjeta.jpg' }), el('strong', {}, S.aMedida.empresarial ? 'Diseño para empresas' : 'Diseño a medida'),
     el('small', {}, `Creado para ti · ${S.aMedida.precio}`), el('span', { class: 'btn btn-chico' }, 'Elegir')) : null),
-  el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/tienda/', target: '_blank' }, 'la tienda'), '.'));
+  el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/crear-invitacion', target: '_blank' }, 'la web'), '.'));
   // El foco en el modelo que está en uso, no al principio de la lista
   requestAnimationFrame(() => document.querySelector('.modelo-opcion.actual')?.scrollIntoView({ block: 'center' }));
 }
@@ -1941,7 +1941,7 @@ $('#btn-completa').addEventListener('click', () => {
 $('#btn-volver').addEventListener('click', () => {
   if (document.body.classList.contains('ver-previa')) { verPrevia(false); return; }
   if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) history.back();
-  else location.href = S.empresa ? (S.empresa.limpio ? location.pathname + location.search : '/empresa/') : '/tienda/';
+  else location.href = S.empresa ? (S.empresa.limpio ? location.pathname + location.search : '/empresa/') : '/crear-invitacion';
 });
 // La división entre la invitación (arriba) y el panel (abajo) se mueve arrastrando la manija
 (function division() {

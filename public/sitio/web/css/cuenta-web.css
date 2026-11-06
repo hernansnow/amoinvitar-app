@@ -1,0 +1,14 @@
+/* README (ronda 36): «Entrar» y «Mis invitaciones» con la barra y los colores de la web (verde principal) */
+:root { --acento: #4e9c87; --acento-oscuro: #2f6f5f; --fondo: #f4f9f7; }
+html[data-cab-fija] .cab { background: #fff; color: #1c1c1c; border-bottom-color: transparent; box-shadow: 4px 0 20px -5px rgba(0, 0, 0, .12); }
+html[data-cab-fija] .cab .logo .l-b { display: none; } html[data-cab-fija] .cab .logo .l-v { display: block; }
+body { background: var(--fondo); font-family: Jost, system-ui, sans-serif; }
+main { padding-top: calc(var(--cab, 72px) + 28px); }
+main a:not(.btn) { color: var(--verde); }
+main .btn { border-radius: 999px; background: var(--verde); border-color: var(--verde); color: #fff; letter-spacing: .06em; text-transform: uppercase; font-size: 14px; }
+main .btn:hover { background: var(--verde-2, #3d8873); border-color: var(--verde-2, #3d8873); color: #fff; transform: none; }
+main .btn.btn-sec { background: transparent; color: var(--verde); }
+main .btn.btn-sec:hover { background: var(--verde); color: #fff; }
+main .btn-google { background: #fff; color: #1c1c1c; border-color: #dcdcdc; text-transform: none; letter-spacing: 0; font-size: 16px; }
+main .btn-google:hover { background: #fafafa; color: #1c1c1c; border-color: #bbb; }
+.cab .btn-crear { background: var(--verde); color: #fff; }
