@@ -260,22 +260,38 @@
 
     var cab = el('div', { class: 'ci-cab' });
     var tabs = el('div', { class: 'ci-tabs', role: 'tablist' });
+    // Botón redondo con flecha a la derecha: avisa en el celular que las pestañas se deslizan
+    var flecha = el('button', { type: 'button', class: 'ci-tabs-mas', 'aria-label': 'Ver más pestañas', onclick: function () { tabs.scrollBy({ left: tabs.clientWidth * 0.6, behavior: 'smooth' }); } }, '›');
+    var tabsCaja = el('div', { class: 'ci-tabs-caja' }, tabs, flecha);
+    var avisaFlecha = function () { flecha.hidden = tabs.scrollWidth <= tabs.clientWidth + 4 || tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 6; };
+    tabs.addEventListener('scroll', avisaFlecha, { passive: true }); window.addEventListener('resize', avisaFlecha);
     var grilla = el('div', { class: 'ci-grilla', role: 'tabpanel' });
-    caja.replaceChildren(cab, tabs, grilla);
+    var otro = el('p', { class: 'ci-otro', hidden: !ev }, el('a', { href: RAIZ + 'crear-invitacion', text: '¿Es otro tipo de evento? Cámbialo aquí', onclick: function (e) {
+      if (fijo || enPagina) return;
+      e.preventDefault(); ev = null; try { history.replaceState(null, '', RAIZ.replace(/^https?:\/\/[^/]+/, '') + 'crear-invitacion'); } catch (x) { /* sin historial */ } pintarCabecera(); pintar(); otro.hidden = true;
+    } }));
+    caja.replaceChildren(cab, tabsCaja, grilla, otro);
 
+    // README (ronda 37): sin desplegable; se elige el evento en una grilla con foto y solo su nombre. Con un evento elegido
+    // (o una dirección /crear-invitacion-para-boda) se ven directamente los modelos.
+    var grid = []; try { grid = JSON.parse(caja.getAttribute('data-grid') || '[]'); } catch (e) { grid = []; }
+    var titulo = document.querySelector('#disenos .titulo h2'), tituloInicial = titulo ? titulo.innerHTML : '';
     function pintarCabecera() {
       if (!conSelector) return;
-      var sel = el('select', { class: 'ci-select', 'aria-label': 'Tipo de evento', onchange: function () { ev = evento(sel.value); tabActiva = 'web'; cambiarUrl(); pintar(); } },
-        el('option', { value: '', text: 'Elige el tipo de evento…', disabled: true, selected: !ev }),
-        opciones.map(function (e) { return el('option', { value: e.slug, selected: ev && ev.slug === e.slug, text: e.nombre }); }));
-      cab.replaceChildren(el('label', { class: 'ci-tipo' }, el('span', { text: 'Tipo de evento' }), sel));
+      if (ev) { cab.replaceChildren(); if (titulo && grid.length) titulo.innerHTML = '<em>Diseños</em> para ' + (ev.nombre || '').toLowerCase(); return; }
+      if (titulo && grid.length) titulo.innerHTML = '¿Qué vas a <em>celebrar</em>?';
+      cab.replaceChildren(el('div', { class: 'ci-eventos' }, (grid.length ? grid : opciones.map(function (e) { return { slug: e.slug, nombre: e.nombre, img: '' }; })).map(function (g) {
+        return el('button', { type: 'button', class: 'ci-evento', style: g.img ? 'background-image:url(' + g.img + ')' : null, onclick: function () { ev = evento(g.slug); tabActiva = 'web'; cambiarUrl(); pintarCabecera(); pintar(); otro.hidden = false; try { caja.scrollIntoView({ block: 'start' }); } catch (e) { /* sin scroll */ } } },
+          el('span', { text: g.nombre }));
+      })));
     }
     function cambiarUrl() {
       if (!conSelector || enPagina || !history.replaceState || !/crear-invitacion/.test(location.pathname)) return;
       try { history.replaceState(null, '', RAIZ.replace(/^https?:\/\/[^/]+/, '') + 'crear-invitacion-para-' + ev.slug); } catch (e) { /* sin historial */ }
     }
     function pintar() {
-      if (!ev) { tabs.replaceChildren(); grilla.replaceChildren(el('p', { class: 'ci-vacio', text: 'Elige el tipo de evento para ver los modelos.' })); return; }
+      if (!ev) { tabs.replaceChildren(); grilla.replaceChildren(); tabsCaja.hidden = true; return; }
+      tabsCaja.hidden = false;
       grilla.replaceChildren(el('p', { class: 'ci-vacio', text: 'Cargando modelos…' }));
       cargarCatalogo().then(function (c) {
         catalogo = c;
@@ -287,6 +303,7 @@
         }));
         var tab = lista.filter(function (t) { return t.id === tabActiva; })[0];
         grilla.replaceChildren.apply(grilla, tab.items.map(function (it, i) { return tarjeta(it, tab.items, i, ev); }));
+        avisaFlecha();
         document.querySelectorAll('[data-ci-desde]').forEach(function (x) { var d = desdeBasic(c); if (d) x.textContent = d; });
       }).catch(function () {
         grilla.replaceChildren(el('p', { class: 'ci-vacio' }, 'No pudimos cargar los modelos. ', el('a', { href: 'https://wa.me/message/57HQCKAMGELDG1', target: '_blank', rel: 'noopener', text: 'Escríbenos por WhatsApp' }), ' y te ayudamos.'));
@@ -294,9 +311,6 @@
     }
     pintarCabecera();
     pintar();
-    if (!conSelector || enPagina) {
-      caja.append(el('p', { class: 'ci-otro' }, el('a', { href: RAIZ + 'crear-invitacion', text: '¿Es otro tipo de evento? Cámbialo aquí' })));
-    }
   }
 
   function iniciar() { document.querySelectorAll('.ci-widget').forEach(montar); }

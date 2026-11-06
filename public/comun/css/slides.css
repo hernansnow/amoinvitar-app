@@ -5,12 +5,14 @@
   background-repeat: no-repeat; background-size: cover; opacity: 0; transition: opacity 1.8s ease-in-out; will-change: opacity, transform; }
 .ai-slides > .ai-slide:first-child, .ai-slides > .ai-slide.activa { opacity: 1; }
 .ai-slides.listo > .ai-slide:first-child:not(.activa) { opacity: 0; }
-.ai-slides > .ai-slide.activa { z-index: 1; animation: ai-acercar var(--ai-duracion, 7s) ease-out forwards; }
+.ai-slides > .ai-slide.activa { z-index: 1; }
+/* La que sale sigue acercándose hasta el final de la transición (si no, vuelve a escala 1 y da un salto) */
+.ai-slides > .ai-slide.activa, .ai-slides > .ai-slide.saliendo { animation: ai-acercar var(--ai-duracion, 7s) ease-out forwards; }
 .ai-slides > .ai-slide.saliendo { z-index: 0; opacity: 1; }
 @keyframes ai-acercar { from { transform: scale(1); } to { transform: scale(1.06); } }
 @media (prefers-reduced-motion: reduce) {
   .ai-slides > .ai-slide { transition-duration: .01s; }
-  .ai-slides > .ai-slide.activa { animation: none; }
+  .ai-slides > .ai-slide.activa, .ai-slides > .ai-slide.saliendo { animation: none; }
 }
 /* Slideshow en el lugar de una foto (Basic): la primera ocupa su alto, las demás encima */
 .ai-slides.ai-en-linea { position: relative; inset: auto; }

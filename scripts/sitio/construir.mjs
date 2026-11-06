@@ -194,7 +194,7 @@ function planes(E) {
   <p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes cambiar la moneda en el menú. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal. No esperes más, diseña tu invitación hoy mismo sin pagar nada.<br><small>(*) Solo disponible en algunos modelos.</small></p>
   <div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div>
   <h3 class="comparar-tit">Compara todos los planes</h3>
-  <div class="comparar-caja"><table class="comparar comparar-precios"><thead><tr><th scope="col"><span class="sr">Función</span></th>${C.PLANES.map((p) => `<th scope="col">${p.nombre}<br><small data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : ''}</small></th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>
+  <div class="comparar-caja"><table class="comparar comparar-precios" style="--cols:4"><thead><tr><th scope="col"><span class="sr">Función</span></th>${C.PLANES.map((p) => `<th scope="col">${p.nombre}<br><small data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : ''}</small></th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>
   <div class="medida rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones a medida">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => `<img src="/web/img/medida/banner-a-medida-${n}.webp" alt="Invitación a medida, ejemplo ${n}" ${n === 1 ? '' : 'loading="lazy" '}width="1000" height="667">`).join('')}</div><div><span class="desde">Invitación a medida</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><a class="btn btn-claro" href="/contacto?evento=${encodeURIComponent(E.nombre)}">Pedir mi diseño a medida</a></div></div></div>
   ${empresas()}
 </div></section>`;
@@ -284,15 +284,15 @@ function contacto(E) {
 }
 
 function disenos(E) {
-  const attr = !E.widget ? '' : E.widget.includes(',') ? `data-eventos="${E.widget}"` : `data-evento="${E.widget}"`;
-  return `<section class="seccion disenos" id="disenos"><div class="caja">${titulo('Modelos', E.tituloDisenos || `<em>Diseños</em> para ${E.tuEvento}`, 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Míralos, personalízalos y mira tu invitación terminada antes de pagar.')}
+  const attr = E.grid ? `data-grid='${JSON.stringify(E.grid).replace(/'/g, '&#39;')}'` : !E.widget ? '' : E.widget.includes(',') ? `data-eventos="${E.widget}"` : `data-evento="${E.widget}"`;
+  return `<section class="seccion disenos" id="disenos"><div class="caja">${titulo(E.grid ? '' : 'Modelos', E.tituloDisenos || `<em>Diseños</em> para ${E.tuEvento}`, E.grid ? 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.' : 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Míralos, personalízalos y mira tu invitación terminada antes de pagar.')}
 <div class="ci-widget" ${attr}></div></div></section>`;
 }
 
 function pie() {
   const ev = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'babyshower', 'graduacion', 'empresarial', 'otros'].map((id) => C.EVENTOS.find((e) => e.id === id));
   const redes = `<div class="pie-redes"><a href="https://www.instagram.com/AmoInvitar/" target="_blank" rel="noopener" aria-label="Instagram">${ic('instagram')}</a><a href="https://www.facebook.com/AmoInvitar" target="_blank" rel="noopener" aria-label="Facebook">${ic('facebook')}</a><a href="https://www.youtube.com/@AmoInvitar" target="_blank" rel="noopener" aria-label="YouTube">${ic('youtube')}</a><a href="${C.WHATSAPP}" target="_blank" rel="noopener" aria-label="WhatsApp">${ic('wa')}</a></div>`;
-  const lista = (t, arr) => `<div class="pie-col"><h2>${t}</h2><ul>${arr.map(([h, x, ext]) => `<li><a href="${h}"${ext ? ' target="_blank" rel="noopener"' : ''}>${x}</a></li>`).join('')}</ul></div>`;
+  const lista = (t, arr) => `<div class="pie-col pc-${t.toLowerCase().replace(/\s+/g, '')}"><h2>${t}</h2><ul>${arr.map(([h, x, ext]) => `<li><a href="${h}"${ext ? ' target="_blank" rel="noopener"' : ''}>${x}</a></li>`).join('')}</ul></div>`;
   return `<footer class="pie"><div class="caja">
   <div class="pie-grid">
     <div class="pie-marca"><a class="logo" href="/" aria-label="Amo Invitar!"><img src="/web/img/logo-pie.svg" alt="Amo Invitar!" width="170" height="37" loading="lazy"></a><p>Invitaciones digitales interactivas y originales para bodas y eventos.</p>${redes}</div>
@@ -303,7 +303,7 @@ function pie() {
   </div>
   <div class="pie-legal">
     <div class="pie-legal-txt"><p class="pl1"><a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/politica-de-cookies#configurar-cookies" data-cookie-settings>Configurar cookies</a> · <a href="/info/terminos-y-condiciones">Términos</a> · <a href="/info/politica-de-devoluciones">Devoluciones</a> · <a href="/info/rgpd">RGPD</a></p><p class="pl2">© 2020-<span id="anio">2026</span> Amo Invitar!® · Todos los derechos reservados · Hecho con ${ic('heart')} por Snow Producciones®</p></div>
-    <a class="pie-snow" href="https://snowproducciones.com.ar/" target="_blank" rel="noopener"><span>Powered by</span><img src="/web/img/logo-snow.svg" alt="Snow Producciones" width="120" height="40" loading="lazy"></a>
+    <a class="pie-snow" href="https://snowproducciones.com.ar/" target="_blank" rel="noopener"><span>Powered by</span><img src="/web/img/snow-tight.svg" alt="Snow Producciones" width="78" height="31" loading="lazy"></a>
   </div>
 </div></footer>
 <a class="wa-flota" href="${C.WHATSAPP}" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"></a>
@@ -333,7 +333,17 @@ ${P.widget ? '<script src="/web/js/crear-invitacion.js" data-app="" data-img="/i
 const KEY = 'invitaciones digitales, invitación web, RSVP online, confirmar asistencia, save the date, álbum QR, invitación por WhatsApp';
 const GENERICO = { id: 'index', nombre: 'tu evento', tuEvento: 'tu evento', widget: '' };
 const PAGINAS = [];
-const escribe = (slug, P, cuerpo) => { P.slug = slug; writeFileSync(join(RAIZ, slug + '.html'), pagina(P, cuerpo)); PAGINAS.push(slug); };
+// README (ronda 37): en la página de un evento, «Crear invitación» va directo a /crear-invitacion-para-<evento> (ya con los modelos);
+// en el resto, a /crear-invitacion (donde se elige el evento).
+const SLUG_CREAR = { boda: 'boda', 15: '15-anos', bautismo: 'bautismo', comunion: 'comunion', cumple: 'cumpleanos', babyshower: 'baby-shower', graduacion: 'graduacion', empresarial: 'empresarial', otros: 'navidad' };
+const CABECERA_SIMPLE = new Set(['crear-invitacion', 'precios', 'contacto']);
+const escribe = (slug, P, cuerpo) => {
+  P.slug = slug;
+  if (CABECERA_SIMPLE.has(slug)) P.cabFija = true;
+  let h = pagina(P, cuerpo);
+  if (P.evento && SLUG_CREAR[P.evento]) h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, (m, q) => `href="/crear-invitacion-para-${SLUG_CREAR[P.evento]}${q || ''}"`);
+  writeFileSync(join(RAIZ, slug + '.html'), h); PAGINAS.push(slug);
+};
 
 // Portada principal
 {
@@ -383,12 +393,15 @@ for (const E0 of C.EVENTOS) {
   ].join('\n'));
 }
 
+// README (ronda 37): encabezado sin foto para las páginas de trabajo (crear invitación, precios, contacto)
+const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"><div class="caja"><span class="etiqueta">${etiqueta}</span><h1>${h1}</h1><p class="lead">${lead}</p></div></section>`;
+
 // Crear invitación (elige el tipo de evento y el diseño; el widget abre el panel con «Personalizar»)
 {
-  const E = { ...GENERICO, widget: '', tituloDisenos: 'Elige tu <em>diseño</em>' };
+  const E = { ...GENERICO, widget: '', tituloDisenos: '¿Qué vas a <em>celebrar</em>?', grid: C.EVENTOS.map((e) => ({ slug: SLUG_CREAR[e.id], nombre: e.id === 'boda' ? 'Bodas' : e.nombre, img: `/web/img/eventos/${e.img}` })) };
   const P = { titulo: 'Crear invitación digital | Amo Invitar!', descripcion: 'Crea tu invitación digital: elige el modelo, personalízala gratis y obtén tu link. Pago único solo al publicar. Bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower, graduaciones y eventos corporativos.', widget: true };
   escribe('crear-invitacion', P, [
-    `<section class="portada"><div class="caja portada-centro"><span class="etiqueta">Crear invitación</span><h1>Elige el diseño que más te guste</h1><p class="lead" style="margin-inline:auto">Míralo, personalízalo con tus datos y mira tu invitación terminada. Solo pagas cuando decides publicarla.</p></div></section>`,
+    cabeceraSimple('Crear invitación', 'Tu invitación, lista en minutos', 'Elige qué vas a celebrar, escoge el diseño que más te guste y míralo terminado con tus datos. Solo pagas si decides publicarlo.'),
     disenos(E), comoFunciona(E, false), planes(E), faq(E, P), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -398,7 +411,7 @@ for (const E0 of C.EVENTOS) {
   const E = { ...GENERICO };
   const P = { titulo: 'Planes y precios de invitaciones digitales | Amo Invitar!', descripcion: 'Un pago, cero complicaciones: planes Gratis, Basic, Premium y Deluxe para tu invitación digital. Sin suscripciones. Diséñala, míralas terminada y paga solo al publicar.' };
   escribe('precios', P, [
-    `<section class="portada"><div class="caja portada-centro"><span class="etiqueta">Planes y precios</span><h1>Un pago, cero complicaciones</h1><p class="lead" style="margin-inline:auto">Sin suscripciones. Sin sorpresas. Diseña tu invitación, míralas terminada y paga solo cuando decidas publicarla.</p></div></section>`,
+    cabeceraSimple('Planes y precios', 'Un pago único. Sin suscripciones.', 'Empieza gratis, diseña tu invitación y míralas terminada antes de pagar. Eliges el plan solo cuando decides publicarla.'),
     planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -408,7 +421,7 @@ for (const E0 of C.EVENTOS) {
   const E = { ...GENERICO };
   const P = { titulo: 'Contacto | Amo Invitar!', descripcion: 'Escríbenos por WhatsApp o desde el formulario: te ayudamos a elegir el diseño, pedir una invitación a medida o resolver cualquier duda.' };
   escribe('contacto', P, [
-    `<section class="portada"><div class="caja portada-centro"><span class="etiqueta">Contacto</span><h1>¿Hablamos?</h1><p class="lead" style="margin-inline:auto">Cuéntanos qué necesitas y te respondemos en el día.</p></div></section>`,
+    cabeceraSimple('Contacto', '¿Hablamos?', 'Cuéntanos qué necesitas y te respondemos en el día. También por WhatsApp.'),
     contacto(E), faq(E, P),
   ].join('\n'));
 }
@@ -460,7 +473,7 @@ function paginaAlbum() {
       <div class="alb-mock-phone"><div class="card-in"><p class="t0">Boda de</p><p class="t1">Sofi &amp; Ale</p><p class="t2">¡Comparte tus fotos!</p><div class="b">Subir fotos</div><div class="g">${[1, 4, 5, 2, 7, 6].map((n) => `<i style="background-image:url(/web/img/fiestas/fiesta${n}.webp)"></i>`).join('')}</div></div></div>
     </div></div></section>`;
   const pasos = `<section class="seccion" id="como-funciona"><div class="caja">${titulo('Así de simple', '¿Cómo <em>funciona</em>?', 'Para bodas, 15 años, cumpleaños, bautismos, comuniones, graduaciones y eventos corporativos.')}<div class="alb-cards">${ALB_PASOS.map(([h, p], i) => `<article class="alb-card rev"><span class="alb-icon">${ALB_ICONOS[i]}</span><span class="alb-num">${i + 1}</span><h3>${h}</h3><p>${p}</p></article>`).join('')}</div></div></section>`;
-  const comp = `<section class="seccion alt" id="comparativa"><div class="caja">${titulo('Compara', 'Albunear <em>vs</em> otras opciones', '')}<div class="comparar-caja"><table class="comparar"><thead><tr><th scope="col"><span class="sr">Función</span></th><th scope="col" class="col-d">Albunear</th><th scope="col">Otros servicios QR</th><th scope="col">WhatsApp</th><th scope="col">Google Fotos</th><th scope="col">Cabina clásica</th></tr></thead><tbody>${ALB_COMP.map((r) => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map((v, i) => `<td${i === 0 ? ' class="col-d"' : ''}>${MARCA[v]}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="planes-nota" style="margin-top:14px"><small>Parcial: depende del servicio o está limitado.</small></p></div></section>`;
+  const comp = `<section class="seccion alt" id="comparativa"><div class="caja">${titulo('Compara', 'Albunear <em>vs</em> otras opciones', '')}<div class="comparar-caja"><table class="comparar" style="--cols:5"><thead><tr><th scope="col"><span class="sr">Función</span></th><th scope="col" class="col-d">Albunear</th><th scope="col">Otros servicios QR</th><th scope="col">WhatsApp</th><th scope="col">Google Fotos</th><th scope="col">Cabina clásica</th></tr></thead><tbody>${ALB_COMP.map((r) => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map((v, i) => `<td${i === 0 ? ' class="col-d"' : ''}>${MARCA[v]}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="planes-nota" style="margin-top:14px"><small>Parcial: depende del servicio o está limitado.</small></p></div></section>`;
   const func = `<section class="seccion" id="funciones-album"><div class="caja">${titulo('Todo incluido', 'Funciones <em>destacadas</em>', '')}<div class="funciones tres">${ALB_FUNC.map(([i, t, p]) => `<article class="funcion rev"><div class="ic">${ic(i)}</div><h3>${t}</h3><p>${p}</p></article>`).join('')}</div></div></section>`;
   const cta = `<section class="seccion" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¡Deja de perseguir a los invitados para que te envíen las fotos!</h2><p>Si quieres tener las fotos de tus invitados sin apps que solo complican las cosas a quien no se lleva bien con la tecnología, ni tener que crear grupos de WhatsApp, tu mejor opción es el álbum privado de Albunear.</p><div class="fila-btn"><a class="btn btn-claro btn-grande" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/demo" target="_blank" rel="noopener">Ver demo</a></div></div></div></section>`;
   const albumFaq = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'album-faq.json'), 'utf8'));
@@ -484,7 +497,7 @@ function paginaProfesionales() {
   <div class="packs-dos">${tabla('pro', 'Pro · sin pase anual', `Crédito suelto: ${eur(PRO.credito)}.`)}${tabla('studio', `Studio · con pase anual activo`, `Packs exclusivos para cuentas Studio con el pase al día (${eur(PRO.studio.pase)} al año).`)}</div>
   <div class="aparte rev">${ic('clock')}<div><h3>Vencimiento de los créditos</h3><p>Los créditos <strong>vencen a los 12 meses</strong> de la compra si no se usan. Si renuevas tu pase anual <strong>Studio</strong> antes de que venzan, los que no usaste se acumulan para el año siguiente.</p></div></div>
   <div class="aparte rev">${ic('tag')}<div><h3>Lo que se contrata aparte</h3><p>El crédito no incluye el <strong>diseño a medida</strong> (en ninguna de sus variantes), el <strong>cambio de diseño</strong>, los <strong>idiomas adicionales</strong> ni los <strong>complementos pagos</strong> de la invitación. Si tus clientes los necesitan, escríbenos y los contratamos juntos.</p><a class="btn btn-borde" href="#contacto" data-nivel="Consulta">Consultar un diseño o un complemento</a></div></div></div></section>`;
-  const comparar = `<section class="seccion" id="comparar"><div class="caja">${titulo('Comparativa', 'Pro <em>y</em> Studio', '')}<div class="comparar-caja rev"><table class="comparar"><thead><tr><th scope="col"><span class="sr">Función</span></th><th scope="col">Pro</th><th scope="col" class="col-d">Studio</th></tr></thead><tbody>
+  const comparar = `<section class="seccion" id="comparar"><div class="caja">${titulo('Comparativa', 'Pro <em>y</em> Studio', '')}<div class="comparar-caja rev"><table class="comparar" style="--cols:2"><thead><tr><th scope="col"><span class="sr">Función</span></th><th scope="col">Pro</th><th scope="col" class="col-d">Studio</th></tr></thead><tbody>
   ${[['Pase anual', '0 €', `${eur(PRO.studio.pase)} / año`], ['Usuarios administradores', `Hasta ${PRO.pro.administradores}`, `Hasta ${PRO.studio.administradores}`], ['Panel con todos tus eventos', true, true], ['Valor del crédito', eur(PRO.credito), eur(PRO.credito)], ['Packs de créditos', 'De 5 y de 10', 'De 10, 25, 50 y 100'], ['Mejor precio por crédito', eur(PRO.pro.packs[1].precio / PRO.pro.packs[1].creditos), eur(menorPack('studio'))], ['Pie de la invitación', 'Amo Invitar + tu logo', 'Tu logo, tu texto o sin pie'], ['Marca blanca', false, true], ['Tu panel de equipo sin la marca de Amo Invitar', false, true], ['Panel de tu cliente sin marca ni contacto de Amo Invitar', true, true], ['Dominio propio (invitaciones.tusalon.com)', false, true], ['Créditos sin usar al renovar el pase', false, 'Pasan al año siguiente'], ['Tus clientes publican con acceso de administrador', true, true]].map((r) => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map((v, i) => `<td${i === 1 ? ' class="col-d"' : ''}>${celda(v)}</td>`).join('')}</tr>`).join('')}
   </tbody></table></div>
   <div class="pasar-studio rev">${ic('sparkles')}<p><strong>¿Empezaste con Pro y creciste?</strong> Pasar a Studio es posible en cualquier momento: en tu panel vas a ver siempre lo que ganas y un botón para hacerlo. Con más de unas 20 invitaciones al año, Studio ya te sale más barato.</p></div></div></section>`;
