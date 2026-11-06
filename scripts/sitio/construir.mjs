@@ -1,7 +1,7 @@
 // README (ronda 32) · Arma las páginas de la web nueva (public/sitio/*.html) con las mismas piezas en todas.
 //   npm run sitio        → vuelve a generar las páginas (los textos están en scripts/sitio/contenido.mjs)
 // Las páginas generadas se suben al repositorio (el Worker sirve archivos, no genera nada).
-import { writeFileSync, readFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as C from './contenido.mjs';
@@ -339,7 +339,8 @@ const SLUG_CREAR = { boda: 'boda', 15: '15-anos', bautismo: 'bautismo', comunion
 const CABECERA_SIMPLE = new Set(['crear-invitacion', 'precios', 'contacto']);
 const escribe = (slug, P, cuerpo) => {
   P.slug = slug;
-  if (CABECERA_SIMPLE.has(slug)) P.cabFija = true;
+  if (CABECERA_SIMPLE.has(slug) || slug.startsWith('info/')) P.cabFija = true;
+  if (slug.includes('/')) mkdirSync(dirname(join(RAIZ, slug)), { recursive: true });
   let h = pagina(P, cuerpo);
   if (P.evento && SLUG_CREAR[P.evento]) h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, (m, q) => `href="/crear-invitacion-para-${SLUG_CREAR[P.evento]}${q || ''}"`);
   writeFileSync(join(RAIZ, slug + '.html'), h); PAGINAS.push(slug);
@@ -530,6 +531,24 @@ for (const f of ['public/entrar/index.html', 'public/mi-cuenta/index.html']) {
   const bloque = `<!--cab-->${sprite()}${cabecera({ slug: 'cuenta' })}<!--/cab-->`;
   h = h.replace(/<!--cab-->[\s\S]*?<!--\/cab-->/, bloque);
   writeFileSync(ruta, h);
+}
+
+// ── Páginas legales (README ronda 37): el texto vive en scripts/sitio/legales/*.html ──
+const LEGALES = [
+  ['aviso-legal', 'Aviso legal', 'Quién está detrás de Amo Invitar! y las condiciones para usar la web.'],
+  ['politica-de-privacidad', 'Política de privacidad', 'Qué datos tratamos, para qué, con quién los compartimos y cuáles son tus derechos.'],
+  ['politica-de-cookies', 'Política de cookies', 'Qué cookies usamos y cómo puedes decidir sobre ellas.'],
+  ['terminos-y-condiciones', 'Términos y condiciones', 'Las condiciones de contratación de nuestros servicios.'],
+  ['politica-de-devoluciones', 'Política de devoluciones y reembolsos', 'Cuándo puedes cancelar un pedido y recuperar tu dinero.'],
+  ['rgpd', 'Tus derechos (RGPD)', 'Cómo ejercer tus derechos sobre tus datos personales.'],
+];
+for (const [slug, titulo, sub] of LEGALES) {
+  const cuerpo = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'legales', slug + '.html'), 'utf8');
+  const P = { titulo: `${titulo} | Amo Invitar!`, descripcion: sub };
+  escribe('info/' + slug, P, `<section class="cabecera-simple"><div class="caja"><span class="etiqueta">Información legal</span><h1>${titulo}</h1><p class="lead">${sub}</p></div></section>
+<section class="seccion"><div class="caja"><article class="legal-txt"><p class="legal-fecha">Última actualización: 6 de noviembre de 2026</p>
+${cuerpo}
+<p class="legal-otros">Otros textos legales: <a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/terminos-y-condiciones">Términos</a> · <a href="/info/politica-de-devoluciones">Devoluciones</a> · <a href="/info/rgpd">RGPD</a></p></article></div></section>`);
 }
 
 console.log('Páginas generadas:', PAGINAS.join(', '));
