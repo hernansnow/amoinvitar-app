@@ -726,3 +726,12 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .legal-otros { margin-top: 38px; padding-top: 18px; border-top: 1px solid var(--linea); font-size: 15px; color: var(--suave); }
 .legal-txt a.btn { color: #fff; } .legal-txt a.btn:hover { color: #fff; }
 .trayectoria > div, .t-marcas li { min-width: 0; } .t-marcas a { width: 100%; } .t-marcas img { object-fit: contain; }
+
+/* README (ronda 37): franja de confianza bajo la portada */
+.confianza { background: #fff; padding: 6px 0 clamp(26px, 4vw, 44px); }
+.confianza ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 14px; }
+@media (min-width: 900px) { .confianza ul { grid-template-columns: repeat(4, 1fr); gap: 24px; } }
+.confianza li { display: flex; gap: 12px; align-items: flex-start; }
+.confianza .icono { flex: none; width: 40px; height: 40px; padding: 9px; border-radius: 12px; background: var(--verde-claro); color: var(--verde-osc); }
+.confianza b { display: block; font: 600 16px/1.25 var(--sans); color: var(--tinta); }
+.confianza span { display: block; font-size: 14px; line-height: 1.4; color: var(--suave); margin-top: 2px; }

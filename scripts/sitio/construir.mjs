@@ -148,6 +148,12 @@ function pasos(E) {
   return `<ol class="pasos">${textos.map(([h, p], i) => `<li class="paso rev"><span class="paso-num">${i + 1}</span><h3>${h}</h3><p>${p}</p><div class="paso-ui" aria-hidden="true">${uis[i]}</div></li>`).join('')}</ol>`;
 }
 
+// README (ronda 37): franja de confianza justo debajo de la portada (respuestas a las 4 dudas de quien llega)
+function confianza() {
+  const it = [['shield', 'Pagas solo al publicar', 'Diséñala y mírala terminada sin pagar.'], ['phone', 'Sin apps ni registros', 'Tus invitados abren el link y listo.'], ['wa', 'Soporte humano', 'Te ayudamos por WhatsApp, en el día.'], ['award', 'Desde 2005 en bodas y eventos', 'Ganadores de los Wedding Awards.']];
+  return `<section class="confianza"><div class="caja"><ul>${it.map(([i, t, p]) => `<li class="rev">${ic(i)}<div><b>${t}</b><span>${p}</span></div></li>`).join('')}</ul></div></section>`;
+}
+
 function comoFunciona(E, esIndex) {
   const t = E.tuEvento;
   const texto = `<div class="bloque-dos">
@@ -172,7 +178,7 @@ function comoFunciona(E, esIndex) {
 function eventos() {
   const orden = ['boda', '15', 'bautismo', 'comunion', 'cumple', 'babyshower', 'graduacion', 'empresarial', 'otros'];
   const cards = orden.map((id) => C.EVENTOS.find((e) => e.id === id)).map((e) => `<a class="evento-card rev" href="/${e.pagina}"><img src="/web/img/eventos/${e.img}" alt="Invitaciones digitales de ${esc(e.nombre.toLowerCase())}" loading="lazy" width="560" height="420"><div><h3>${esc(e.nombre)}</h3><p>${esc(e.corto)} ${ic('flecha')}</p></div></a>`).join('');
-  return `<section class="seccion alt" id="eventos"><div class="caja">${titulo('Para cada ocasión', '¿Qué <em>celebramos</em>?', 'Tenemos estilos para todos los eventos. Elige el tuyo y mira los diseños disponibles.')}<div class="eventos">${cards}</div></div></section>`;
+  return `<section class="seccion alt" id="eventos"><div class="caja">${titulo('Para cada ocasión', '¿Qué <em>celebramos</em>?', 'Elige tu ocasión y mira diseños pensados para ella. Los personalizas en minutos y los ves terminados antes de pagar.')}<div class="eventos">${cards}</div></div></section>`;
 }
 
 function funciones(E) {
@@ -188,7 +194,7 @@ function planes(E) {
   const cards = C.PLANES.map((p) => `<article class="plan-card rev${p.destacado ? ' destacado' : ''}">${p.destacado ? '<span class="cinta">Más elegido</span>' : ''}<h3>${p.nombre}</h3>${p.id === 'gratis' ? '' : `<span class="promo-cinta" data-promo-de="${p.id}" hidden></span>`}<p class="precio" data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : '&nbsp;'}</p><p class="precio-s">${p.id === 'gratis' ? 'Sin tarjeta, sin pagar nada' : `Pago único<span data-iva> · IVA incluido</span>`}</p><ul>${p.items.map((t, i) => `<li${i === 0 && t.startsWith('Todo') ? ' class="todo"' : ''}>${ic('check')}<span>${esc(t)}</span></li>`).join('')}</ul><a class="btn ${p.destacado ? 'btn-verde' : 'btn-borde'}" href="/crear-invitacion?paquete=${p.id}">${p.boton}</a></article>`).join('');
   const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v) => `<td>${celda(v)}</td>`).join('')}</tr>`).join('');
   return `<section class="seccion alt" id="planes"><div class="caja">
-  ${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones. Sin sorpresas.')}
+  ${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébalo gratis, míralo terminado y paga solo cuando decidas publicarlo. Sin suscripciones ni sorpresas.')}
   <div class="aviso-pago rev">${ic('eye')}<span>Diséñala y mírala terminada — <strong>pagas solo al publicar</strong></span></div>
   <div class="planes">${cards}</div>
   <p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes cambiar la moneda en el menú. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal. No esperes más, diseña tu invitación hoy mismo sin pagar nada.<br><small>(*) Solo disponible en algunos modelos.</small></p>
@@ -262,8 +268,8 @@ function nosotros() {
 }
 
 function llamada(E) {
-  return `<section class="seccion" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¿Listo para empezar a organizar ${E.id === 'otros' || E.id === 'index' ? 'tu evento' : E.tuEvento} como no te imaginas?</h2>
-<p>Personaliza el diseño que te guste o solicita tu invitación con diseño a medida desde cero y sorprende a todos tus invitados.</p>
+  return `<section class="seccion" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¿Listo para que ${E.id === 'otros' || E.id === 'index' ? 'tu evento' : E.tuEvento} sea el comentario de todos?</h2>
+<p>Elige un diseño, personalízalo en minutos y míralo terminado antes de pagar. ¿Quieres algo único? Lo creamos a medida, desde cero.</p>
 <div class="fila-btn"><a class="btn btn-claro btn-grande" href="/crear-invitacion">Crear invitación ${ic('flecha')}</a></div>
 <p class="mini"><span>${ic('leaf')} Sin papel ni imprenta. Más sostenible.</span><span>${ic('shield')} Solo pagas al publicar. Si el modelo es gratis, tienes tu link y no pagas nada.</span></p></div></div></section>`;
 }
@@ -351,8 +357,8 @@ const escribe = (slug, P, cuerpo) => {
   const P = { titulo: 'Invitaciones digitales con RSVP, mesas y álbum QR | Amo Invitar!', descripcion: 'Invitaciones digitales interactivas para bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower y eventos. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista. Prueba gratis.' };
   const E = { ...GENERICO };
   escribe('index', P, [
-    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: 'Interactiva y original', h1: 'Invitaciones digitales <span data-pais="en">en Iberoamérica</span>', lead: 'Todo tu evento en un link. La invitación, RSVP, álbum QR, administración de invitados, organización de mesas y entradas al evento… vaya, tu <strong>Planner digital</strong>. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista final.', demo: demoDe('index') }),
-    comoFunciona(E, true), eventos(), funciones(E), planes(E), faq(E, P), testimonios(), nosotros(), llamada(E), contacto(E),
+    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: 'Invitaciones digitales interactivas', h1: 'Invitaciones digitales <span data-pais="en">en Iberoamérica</span>', lead: 'Una invitación que tus invitados abren, disfrutan y responden con un clic. Tú ves quién viene, organizas mesas y descargas la lista final desde un solo panel: es como tener un <strong>planner digital</strong>. Lista en minutos, sin apps y sin pagar hasta que te encante.', demo: demoDe('index') }),
+    confianza(), comoFunciona(E, true), eventos(), funciones(E), planes(E), faq(E, P), testimonios(), nosotros(), llamada(E), contacto(E),
   ].join('\n'));
 }
 
@@ -390,7 +396,7 @@ for (const E0 of C.EVENTOS) {
   const P = { titulo: `${pt.t} | Amo Invitar!`, descripcion: pt.d, widget: true, evento: E.id };
   escribe(E.pagina, P, [
     portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES[E.id], demo: demoDe(E.id) }),
-    disenos(E), funciones(E), comoFunciona(E, false), planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),
+    confianza(), disenos(E), funciones(E), comoFunciona(E, false), planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),
   ].join('\n'));
 }
 
