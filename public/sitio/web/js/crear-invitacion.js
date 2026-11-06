@@ -260,10 +260,20 @@
 
     var cab = el('div', { class: 'ci-cab' });
     var tabs = el('div', { class: 'ci-tabs', role: 'tablist' });
-    // Botón redondo con flecha a la derecha: avisa en el celular que las pestañas se deslizan
-    var flecha = el('button', { type: 'button', class: 'ci-tabs-mas', 'aria-label': 'Ver más pestañas', onclick: function () { tabs.scrollBy({ left: tabs.clientWidth * 0.6, behavior: 'smooth' }); } }, '›');
+    // Botón redondo con flecha: a la derecha mientras quedan pestañas por ver; al llegar al final pasa a la izquierda para volver
+    var flecha = el('button', { type: 'button', class: 'ci-tabs-mas', 'aria-label': 'Ver más pestañas', onclick: function () {
+      var alFinal = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 6;
+      tabs.scrollTo({ left: alFinal ? 0 : tabs.scrollWidth, behavior: 'smooth' });
+    } }, '›');
     var tabsCaja = el('div', { class: 'ci-tabs-caja' }, tabs, flecha);
-    var avisaFlecha = function () { flecha.hidden = tabs.scrollWidth <= tabs.clientWidth + 4 || tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 6; };
+    var avisaFlecha = function () {
+      var sobra = tabs.scrollWidth > tabs.clientWidth + 4, alFinal = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 6;
+      flecha.hidden = !sobra;
+      flecha.classList.toggle('atras', alFinal); flecha.textContent = alFinal ? '‹' : '›';
+      flecha.setAttribute('aria-label', alFinal ? 'Volver a las primeras pestañas' : 'Ver más pestañas');
+    };
+    // La pestaña elegida se lleva al centro (o hasta donde alcance)
+    var centrar = function (b) { if (b && tabs.scrollWidth > tabs.clientWidth) tabs.scrollTo({ left: b.offsetLeft - (tabs.clientWidth - b.offsetWidth) / 2, behavior: 'smooth' }); };
     tabs.addEventListener('scroll', avisaFlecha, { passive: true }); window.addEventListener('resize', avisaFlecha);
     var grilla = el('div', { class: 'ci-grilla', role: 'tabpanel' });
     var otro = el('p', { class: 'ci-otro', hidden: !ev }, el('a', { href: RAIZ + 'crear-invitacion', text: '¿Es otro tipo de evento? Cámbialo aquí', onclick: function (e) {
@@ -289,6 +299,7 @@
       if (!conSelector || enPagina || !history.replaceState || !/crear-invitacion/.test(location.pathname)) return;
       try { history.replaceState(null, '', RAIZ.replace(/^https?:\/\/[^/]+/, '') + 'crear-invitacion-para-' + ev.slug); } catch (e) { /* sin historial */ }
     }
+    var ya = false;
     function pintar() {
       if (!ev) { tabs.replaceChildren(); grilla.replaceChildren(); tabsCaja.hidden = true; return; }
       tabsCaja.hidden = false;
@@ -303,7 +314,8 @@
         }));
         var tab = lista.filter(function (t) { return t.id === tabActiva; })[0];
         grilla.replaceChildren.apply(grilla, tab.items.map(function (it, i) { return tarjeta(it, tab.items, i, ev); }));
-        avisaFlecha();
+        avisaFlecha(); if (ya) centrar(tabs.querySelector('.activa'));
+        ya = true;
         document.querySelectorAll('[data-ci-desde]').forEach(function (x) { var d = desdeBasic(c); if (d) x.textContent = d; });
       }).catch(function () {
         grilla.replaceChildren(el('p', { class: 'ci-vacio' }, 'No pudimos cargar los modelos. ', el('a', { href: 'https://wa.me/message/57HQCKAMGELDG1', target: '_blank', rel: 'noopener', text: 'Escríbenos por WhatsApp' }), ' y te ayudamos.'));

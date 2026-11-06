@@ -5,6 +5,21 @@
   var d = document, $ = function (s, r) { return (r || d).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || d).querySelectorAll(s)); };
   d.documentElement.classList.remove('sin-js');
 
+  /* ---------- Tablas largas: se ven las primeras filas y el botón va sumando más (como las preguntas frecuentes) ---------- */
+  $$('table[data-paso]').forEach(function (t) {
+    var paso = +t.getAttribute('data-paso') || 8, filas = $$('tbody tr', t), vistas = paso;
+    if (filas.length <= paso + 2) return;
+    var caja = t.closest('.comparar-caja'), b = d.createElement('button');
+    b.type = 'button'; b.className = 'btn btn-borde faq-mas'; caja.parentNode.insertBefore(b, caja.nextSibling);
+    function pinta() {
+      filas.forEach(function (f, i) { f.hidden = i >= vistas; });
+      var quedan = filas.length - vistas;
+      b.hidden = quedan <= 0; b.textContent = quedan > 0 ? 'Ver más funciones (' + quedan + ')' : '';
+    }
+    b.addEventListener('click', function () { vistas += paso; pinta(); });
+    pinta();
+  });
+
   /* ---------- Video en una ventana propia (sin salir a Vimeo) ---------- */
   var dv = null;
   function abreVideo(url) {

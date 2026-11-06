@@ -735,3 +735,5 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .confianza .icono { flex: none; width: 40px; height: 40px; padding: 9px; border-radius: 12px; background: var(--verde-claro); color: var(--verde-osc); }
 .confianza b { display: block; font: 600 16px/1.25 var(--sans); color: var(--tinta); }
 .confianza span { display: block; font-size: 14px; line-height: 1.4; color: var(--suave); margin-top: 2px; }
+
+.comparar tbody tr[hidden] { display: none !important; }
