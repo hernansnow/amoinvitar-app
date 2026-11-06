@@ -14,8 +14,8 @@ const LUGARES = {
 // para que no todas digan «Sofi & Ale». Un diseño puede fijar los suyos en modelo.json (demo.<tipo>.nombres).
 const hash = (t) => [...String(t)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
 const NOMBRES = {
-  boda: [['Sofi', 'Ale'], ['Lau', 'Pablo'], ['Cami', 'Nico'], ['Vero', 'Santi'], ['Flor', 'Dani'], ['Caro', 'Martín'], ['Ana', 'Gabriel'], ['Luz', 'Emiliano'], ['Julia', 'Tomás'], ['Meli', 'Fede'], ['Pau', 'Lucas'], ['Rocío', 'Iván'], ['Mica', 'Franco'], ['Abi', 'Joaquín']],
-  15: ['Mariana', 'Camila', 'Valentina', 'Lola', 'Martina', 'Delfina', 'Julieta', 'Abril', 'Emilia', 'Renata', 'Antonella', 'Malena', 'Guadalupe', 'Bianca'],
+  boda: null, // se arma combinando (ver abajo)
+  15: ['Mariana', 'Camila', 'Valentina', 'Lola', 'Martina', 'Delfina', 'Julieta', 'Abril', 'Emilia', 'Renata', 'Antonella', 'Malena', 'Guadalupe', 'Bianca', 'Candela', 'Morena', 'Sol', 'Ailín', 'Nahir', 'Zaira', 'Jazmín', 'Tamara', 'Constanza', 'Agustina', 'Ludmila', 'Pilar', 'Regina', 'Aitana'],
   bautismo: ['Fátima', 'Olivia', 'Emma', 'Amelia', 'Catalina', 'Josefina', 'Alma', 'Bianca'],
   comunion: ['Mariana', 'Sofía', 'Agustina', 'Pilar', 'Lucía', 'Victoria', 'Isabella', 'Zoe'],
   cumple: ['Mariel', 'Romina', 'Gabriela', 'Paula', 'Silvana', 'Claudia', 'Verónica', 'Natalia', 'Carolina', 'Marcela'],
@@ -23,6 +23,8 @@ const NOMBRES = {
   infantil: ['Martín', 'Joaquín', 'Valentino', 'Benicio', 'Thiago', 'Facundo'],
   babyshower: ['Mateo', 'Lucas', 'Olivia', 'Bruno', 'Alma', 'Santino'],
 };
+const ELLAS = ['Sofi', 'Lau', 'Cami', 'Vero', 'Flor', 'Caro', 'Ana', 'Luz', 'Julia', 'Meli', 'Pau', 'Rocío', 'Mica', 'Abi', 'Lucía', 'Nati', 'Agus', 'Belén', 'Cele', 'Dani'];
+const ELLOS = ['Ale', 'Pablo', 'Nico', 'Santi', 'Dani', 'Martín', 'Gabriel', 'Emiliano', 'Tomás', 'Fede', 'Lucas', 'Iván', 'Franco', 'Joaquín', 'Mati', 'Gonza', 'Seba', 'Rodri', 'Facu', 'Leo'];
 const FECHAS = ['2027-09-12', '2027-10-23', '2027-11-06', '2027-12-04', '2028-03-18', '2027-10-09', '2028-04-15', '2027-09-25'];
 const IGLESIAS = [
   { nombre: 'Parroquia Natividad del Señor', direccion: 'Av. Eugenia Tapia de Cruz 524, Escobar, Bs. As.' },
@@ -84,8 +86,8 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
   const archivos = modelo.demo?.[tipo] || {};
   // Variaciones propias de cada diseño (nombres, fecha, lugares)
   const sem = hash(`${modelo.id}/${tipo}`);
-  const pool = NOMBRES[tipo];
-  const elegido = pool ? pool[sem % pool.length] : null;
+  const pool = tipo === 'boda' ? ELLAS : NOMBRES[tipo];
+  const elegido = tipo === 'boda' ? [ELLAS[sem % ELLAS.length], ELLOS[(sem >>> 9) % ELLOS.length]] : pool ? pool[sem % pool.length] : null;
   const nombres = archivos.nombres || (elegido ? (Array.isArray(elegido) ? { a: elegido[0], b: elegido[1] } : { a: elegido }) : cfg.nombres);
   const fecha = cfg.fecha || (pool ? FECHAS[(sem >>> 3) % FECHAS.length] : '2027-09-12');
   const iglesia = { ...LUGARES.iglesia, ...IGLESIAS[(sem >>> 5) % IGLESIAS.length] }, salon = { ...LUGARES.estancia, ...SALONES[(sem >>> 7) % SALONES.length] };
