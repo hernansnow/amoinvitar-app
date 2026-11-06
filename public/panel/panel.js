@@ -1483,7 +1483,7 @@ const nivelDe = (n) => (n === 'basic' && esGratis() ? 'gratis' : n);
 // Invitados y acceso tiene opciones de Basic y de Premium: lleva las dos insignias
 const insigniasPaso = (p) => (p.niveles ? el('span', { class: 'insignias' }, p.niveles.map(insigniaNivel)) : insigniaNivel(p.nivel));
 // Productos sueltos, invitación simple y diseño a medida: sin insignias de plan (no hay nada para ampliar)
-const insigniaNivel = (n) => (n && n !== 'complemento' && !S.esquema?.sinNiveles ? el('span', { class: `insignia-nivel nivel-${nivelDe(n)}` }, NOMBRE_NIVEL[nivelDe(n)]) : null);
+const insigniaNivel = (n) => (n && n !== 'complemento' && !S.esquema?.sinNiveles && !S.empresa ? el('span', { class: `insignia-nivel nivel-${nivelDe(n)}` }, NOMBRE_NIVEL[nivelDe(n)]) : null);
 
 // Si un paso está prendido en la invitación (las obligatorias siempre)
 function pasoActivo(p) {
@@ -1622,6 +1622,15 @@ function banderaGuardar() {
 
 // ── Plan y precio ─────────────────────────────────────────────────────
 function pintarPlan() {
+  // README (ronda 35): evento de una empresa profesional: se publica con un crédito (no hay precio ni planes que mostrar)
+  if (S.empresa) {
+    $('#plan-mini').hidden = true;
+    const caja = $('#caja-plan');
+    if (S.empresa.limpio) { caja.hidden = true; pintarMedida(); return; }
+    caja.hidden = false;
+    caja.replaceChildren(el('span', { class: 'plan-resumen' }, el('span', {}, 'Publicar usa ', el('strong', {}, '1 crédito'), S.empresa.credito ? ' (ya usado)' : '')));
+    pintarMedida(); return;
+  }
   const pl = S.plan;
   if (!pl) { $('#caja-plan').hidden = true; $('#plan-mini').hidden = true; return; }
   const extra = pl.complementos.length ? ` + ${pl.complementos.length} complemento${pl.complementos.length > 1 ? 's' : ''}` : '';
@@ -1728,6 +1737,7 @@ function cerrarModal() { $('#modal').close(); }
 $('#modal').addEventListener('click', (e) => { if (e.target === $('#modal')) cerrarModal(); });
 
 const whatsapp = () => {
+  if (S.empresa?.limpio) return null; // el cliente de una empresa no ve contactos de Amo Invitar!
   const numero = S.marca?.blanca ? String(S.marca.whatsapp || '').replace(/\D/g, '') : S.ayuda?.whatsapp;
   if (!numero) return null;
   const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' y ');
@@ -1753,9 +1763,9 @@ const MANUAL = [
 function mostrarManual() {
   const wa = whatsapp();
   abrirModal('Ayuda',
-    el('div', { class: 'manual' }, MANUAL.map(([t, x], i) => el('details', { open: i === 0 }, el('summary', {}, t), el('p', {}, x)))),
-    el('p', {}, el('a', { href: '/ayuda/panel/', target: '_blank', rel: 'noopener' }, 'Ver el manual completo →')),
-    el('div', { class: 'botones-ayuda' },
+    el('div', { class: 'manual' }, MANUAL.filter(([t]) => !S.empresa || !['Plan y precio', 'Obtener mi link'].includes(t)).map(([t, x], i) => el('details', { open: i === 0 }, el('summary', {}, t), el('p', {}, x)))),
+    S.empresa?.limpio ? null : el('p', {}, el('a', { href: '/ayuda/panel/', target: '_blank', rel: 'noopener' }, 'Ver el manual completo →')),
+    S.empresa?.limpio ? null : el('div', { class: 'botones-ayuda' },
       wa ? el('a', { class: 'btn btn-wa', href: wa, target: '_blank', rel: 'noopener', html: `${ICONO_WA}<span>Solicitar asistencia personalizada</span>` }) : null,
       el('a', { class: 'btn btn-sec', href: 'https://amoinvitar.com/contacto.html', target: '_blank', rel: 'noopener' }, '✉ Escribir por mail')));
 }
@@ -1871,6 +1881,7 @@ function textoPublicar() {
   const md = S.plan?.medida;
   if (md) return md.aprobado && !S.plan.pagado ? ['Completar el pago', 'Pagar'] : ['Enviar al equipo de diseño', 'Enviar'];
   if (!esInvitacionWeb()) return ['Enviar al diseño', 'Enviar'];
+  if (S.empresa) return S.evento.estado === 'publicado' ? ['Guardar cambios', 'Guardar'] : ['Publicar la invitación', 'Publicar'];
   return S.evento.estado === 'publicado' ? ['Guardar cambios', 'Guardar'] : ['Obtener mi link', 'Obtener link'];
 }
 function pintarPublicar() {
@@ -1930,7 +1941,7 @@ $('#btn-completa').addEventListener('click', () => {
 $('#btn-volver').addEventListener('click', () => {
   if (document.body.classList.contains('ver-previa')) { verPrevia(false); return; }
   if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) history.back();
-  else location.href = '/tienda/';
+  else location.href = S.empresa ? (S.empresa.limpio ? location.pathname + location.search : '/empresa/') : '/tienda/';
 });
 // La división entre la invitación (arriba) y el panel (abajo) se mueve arrastrando la manija
 (function division() {
@@ -1979,6 +1990,21 @@ function aplicarMarca(m) {
   document.title = `Panel · ${m.nombre || ''}`;
 }
 
+// README (ronda 35): panel de un evento de empresa. Para el cliente final (y el equipo Studio) va limpio: sin logo, links ni
+// contactos de Amo Invitar!; se ve el logo o el nombre de la empresa.
+function aplicarEmpresa(e) {
+  if (!e) return;
+  document.body.classList.add('con-empresa');
+  if (!e.limpio) return;
+  document.body.classList.add('panel-limpio');
+  const a = $('#marca');
+  a.removeAttribute('href'); a.classList.add('propia');
+  a.replaceChildren(e.logo ? el('img', { src: e.logo, alt: e.nombre || '' }) : el('strong', {}, e.nombre || ''));
+  document.title = `Panel · ${e.nombre || ''}`;
+  document.querySelectorAll('.link-cuenta').forEach((x) => x.remove());
+  if (!e.rol) { const v = $('#btn-volver'); if (v) v.hidden = true; }
+}
+
 // Opciones que ya vienen elegidas (p. ej. "hay ceremonia"): cuentan desde el principio
 function aplicarDefectos() {
   for (const p of ['ceremonia', 'celebracion']) {
@@ -2017,7 +2043,8 @@ function recordarBorrador() {
   // La Save The Date web no tiene administración (respuestas, envío, mesas)
   document.body.classList.toggle('sin-admin', !!S.esquema?.sinAdmin);
   if (S.modelo?.miniatura?.colorTitulos) document.documentElement.style.setProperty('--icono-fondo', S.modelo.miniatura.colorTitulos);
-  aplicarMarca(S.marca);
+  aplicarMarca(S.empresa?.limpio ? null : S.marca);
+  aplicarEmpresa(S.empresa);
   botonAyuda();
   pintarPlan();
   pintarModelo();

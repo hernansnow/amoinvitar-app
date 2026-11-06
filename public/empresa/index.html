@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tablero profesional</title>
+<link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
+<link rel="stylesheet" href="/comun/fonts/google/jost.css">
+<style>
+  :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 Jost, system-ui, sans-serif; color: var(--tinta); background: #f6f9f8; }
+  a { color: var(--verde-2); }
+  header { background: #fff; border-bottom: 1px solid var(--linea); padding: 12px 20px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 5; }
+  header .marca { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  header .marca img { height: 34px; width: auto; max-width: 180px; object-fit: contain; display: block; }
+  header .marca strong { font-weight: 500; font-size: 19px; }
+  header .der { margin-left: auto; display: flex; gap: 12px; align-items: center; font-size: 14.5px; color: var(--suave); flex-wrap: wrap; }
+  main { max-width: 1120px; margin: 0 auto; padding: 22px 16px 70px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .tabs button { font: 500 15px/1 Jost, sans-serif; background: #fff; border: 1px solid var(--linea); border-radius: 999px; padding: 11px 18px; cursor: pointer; color: var(--tinta); }
+  .tabs button[aria-selected="true"] { background: var(--verde); border-color: var(--verde); color: #fff; }
+  h2 { font-size: 22px; font-weight: 500; margin: 0 0 14px; }
+  h3 { font-size: 18px; margin: 0 0 4px; font-weight: 600; }
+  .tarjeta { background: #fff; border: 1px solid var(--linea); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; }
+  .meta { color: var(--suave); font-size: 14.5px; }
+  .fila { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .cabecera { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  button.b, a.b { font: 600 14px/1 Jost, sans-serif; border-radius: 999px; padding: 10px 16px; border: 1px solid var(--verde); background: var(--verde); color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+  button.b.sec, a.b.sec { background: #fff; color: var(--verde-2); }
+  button.b.mal { background: #fff; border-color: var(--rojo); color: var(--rojo); }
+  button.b:disabled { opacity: .5; cursor: wait; }
+  select, input, textarea { font: 15px Jost, sans-serif; padding: 9px 11px; border: 1px solid #c9dcd4; border-radius: 10px; background: #fff; width: 100%; }
+  label { font-size: 14px; color: var(--suave); display: grid; gap: 4px; }
+  label.casilla { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: var(--tinta); }
+  label.casilla input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--verde); }
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; border-radius: 99px; padding: 3px 9px; background: var(--claro); color: var(--verde-2); }
+  .tag.aviso { background: #fff1d6; color: var(--ambar); } .tag.mal { background: #fde3df; color: var(--rojo); }
+  .vacio { color: var(--suave); padding: 26px; text-align: center; background: #fff; border: 1px dashed var(--linea); border-radius: 14px; }
+  .evento { display: grid; gap: 10px; }
+  @media (min-width: 800px) { .evento { grid-template-columns: 1fr auto; align-items: center; } }
+  .cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .cifras div { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 14px 16px; }
+  .cifras b { display: block; font: 500 32px/1.1 Jost, sans-serif; color: var(--tinta); }
+  .cifras span { color: var(--suave); font-size: 14px; }
+  .aviso-caja { border-radius: 14px; padding: 14px 18px; margin-bottom: 16px; background: var(--claro); display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .aviso-caja.mal { background: #fde3df; } .aviso-caja p { margin: 0; flex: 1; min-width: 220px; }
+  .productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+  .producto { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 16px; display: grid; gap: 4px; align-content: start; }
+  .producto b { font: 500 28px/1.1 Jost, sans-serif; } .producto small { color: var(--suave); }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--linea); border-radius: 14px; overflow: hidden; font-size: 15px; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid #eef4f1; text-align: left; vertical-align: top; }
+  th { background: #f3f9f6; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); }
+  .envuelve { overflow-x: auto; margin-bottom: 14px; }
+  .pie-previa { background: #333; color: #bbb; text-align: center; padding: 22px 12px; border-radius: 12px; font-size: 14px; }
+  .pie-previa img { max-height: 40px; display: block; margin: 0 auto 6px; } .pie-previa .amo { display: block; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.12); font-size: 13px; opacity: .8; }
+  .dos { display: grid; gap: 12px; } @media (min-width: 700px) { .dos { grid-template-columns: 1fr 1fr; } }
+  #aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--tinta); color: #fff; padding: 12px 18px; border-radius: 12px; z-index: 30; max-width: 90vw; }
+  #aviso.error { background: var(--rojo); }
+  dialog { border: 0; border-radius: 16px; padding: 22px; max-width: 520px; width: calc(100vw - 32px); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  dialog::backdrop { background: rgba(30, 42, 38, .5); }
+  dialog h2 { margin: 0 0 12px; } dialog form { display: grid; gap: 12px; }
+  #entrada { max-width: 460px; margin: 70px auto; text-align: center; }
+  pre.datos { background: #f6f9f8; border-radius: 10px; padding: 12px; white-space: pre-wrap; font: 14px/1.5 Jost, sans-serif; margin: 8px 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="marca" id="marca"></div>
+  <div class="der" id="der"></div>
+</header>
+<main>
+  <div id="entrada" hidden><h2 id="entrada-t">Tablero profesional</h2><p class="meta" id="entrada-p"></p><p id="entrada-b"></p></div>
+  <div id="tablero" hidden>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <section id="vista"></section>
+  </div>
+</main>
+<div id="aviso" hidden></div>
+<dialog id="dlg"><h2 id="dlg-t"></h2><form method="dialog" id="dlg-f"><div id="dlg-c" style="display:grid;gap:12px"></div><div class="fila" style="justify-content:flex-end"><button class="b sec" type="button" id="dlg-no">Cancelar</button><button class="b" type="submit" id="dlg-si">Aceptar</button></div></form></dialog>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var D = null, TAB = 'eventos', EMP = new URLSearchParams(location.search).get('e') || '';
+  function el(t, a, h) { var e = document.createElement(t); Object.keys(a || {}).forEach(function (k) { if (k === 'class') e.className = a[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), a[k]); else if (a[k] != null && a[k] !== false) e.setAttribute(k, a[k] === true ? '' : a[k]); }); [].concat(h == null ? [] : h).forEach(function (x) { if (x != null) e.append(x); }); return e; }
+  function aviso(t, mal) { var a = $('#aviso'); a.textContent = t; a.className = mal ? 'error' : ''; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 4200); }
+  function api(ruta, cuerpo, metodo, cruda) {
+    var o = { headers: {} };
+    if (cuerpo !== undefined) { o.method = metodo || 'POST'; if (cruda) { o.body = cuerpo; o.headers['content-type'] = cruda; } else { o.body = JSON.stringify(cuerpo); o.headers['content-type'] = 'application/json'; } } else if (metodo) o.method = metodo;
+    return fetch(ruta, o).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'Error'); e.status = r.status; throw e; } return j; }); });
+  }
+  var base = function (r) { return '/api/empresa' + (r || '') + (EMP ? '?e=' + encodeURIComponent(EMP) : ''); };
+  var eur = function (n) { return Number(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; };
+  var fecha = function (iso) { return iso ? String(iso).slice(0, 10).split('-').reverse().join('/') : '—'; };
+  function pedir(titulo, campos, ok) {
+    return new Promise(function (res) {
+      var d = $('#dlg'), c = $('#dlg-c'); $('#dlg-t').textContent = titulo; $('#dlg-si').textContent = ok || 'Aceptar'; c.replaceChildren();
+      var ins = campos.map(function (f) {
+        if (f.nota) { c.append(el('p', { class: 'meta', style: 'margin:0' }, f.nota)); return null; }
+        var i = f.tipo === 'select' ? el('select', { name: f.n }, f.op.map(function (o) { return el('option', { value: o[0] }, o[1]); })) : f.tipo === 'texto' ? el('textarea', { name: f.n, rows: 3 }) : el('input', { name: f.n, type: f.tipo || 'text', placeholder: f.ph || null });
+        if (f.v != null) i.value = f.v; if (f.on) i.addEventListener('change', function () { f.on(i, ins); });
+        c.append(el('label', {}, [f.l, i])); return i;
+      }).filter(Boolean);
+      var fin = function (v) { d.close(); res(v); };
+      $('#dlg-no').onclick = function () { fin(null); };
+      $('#dlg-f').onsubmit = function (e) { e.preventDefault(); var r = {}; ins.forEach(function (i) { r[i.name] = i.value; }); fin(r); };
+      d.showModal();
+    });
+  }
+  function accion(btn, ruta, cuerpo, msg, metodo) {
+    if (btn) btn.disabled = true;
+    return api(ruta, cuerpo, metodo).then(function (r) { aviso(msg || 'Listo ✓'); return cargar().then(function () { return r; }); }).catch(function (e) { aviso(e.message, true); }).then(function (r) { if (btn) btn.disabled = false; return r; });
+  }
+  function tabla(cab, filas) { return el('div', { class: 'envuelve' }, el('table', {}, [el('thead', {}, el('tr', {}, cab.map(function (c) { return el('th', {}, c); }))), el('tbody', {}, filas.map(function (f) { return el('tr', {}, f.map(function (c) { return el('td', {}, c); })); }))])); }
+
+  // ── Encabezado: con Studio, sin la marca de Amo Invitar ──
+  function pintaCab() {
+    var e = D.empresa, m = D.marca, marca = $('#marca'); marca.replaceChildren();
+    if (e.studio) { if (m.logo) marca.append(el('img', { src: m.logo, alt: m.nombre || e.nombre })); marca.append(el('strong', {}, e.nombre)); document.title = 'Tablero · ' + e.nombre; }
+    else { marca.append(el('a', { href: 'https://amoinvitar.com/' }, el('img', { src: '/web/img/logo-linea-verde.svg', alt: 'Amo Invitar!' })), el('strong', {}, e.nombre)); document.title = 'Tablero profesional · ' + e.nombre; }
+    var der = $('#der'); der.replaceChildren();
+    if (D.empresas.length > 1) { var s = el('select', { style: 'width:auto', onchange: function () { EMP = s.value; cargar(); } }, D.empresas.map(function (x) { return el('option', { value: x.id }, x.nombre); })); s.value = e.id; der.append(s); }
+    der.append(el('span', {}, D.usuario.email), el('span', { class: 'tag' }, e.nivel === 'studio' ? 'Studio' : 'Pro'),
+      el('form', { method: 'post', action: '/auth/salir', style: 'margin:0' }, el('button', { class: 'b sec', type: 'submit', style: 'padding:7px 14px' }, 'Salir')));
+  }
+
+  // ── Eventos ──
+  function nuevoEvento() {
+    var porTipo = function (t) { return D.modelos.filter(function (m) { return m.eventos.indexOf(t) >= 0 || (t === 'cumple' && m.eventos.indexOf('infantil') >= 0); }); };
+    var tipoInicial = D.tipos[0].id;
+    pedir('Nuevo evento', [
+      { n: 'tipo', l: 'Tipo de evento', tipo: 'select', v: tipoInicial, op: D.tipos.map(function (t) { return [t.id, t.nombre]; }), on: function (sel, ins) { var m = ins[1]; m.replaceChildren.apply(m, porTipo(sel.value).map(function (x) { return el('option', { value: x.id }, x.nombre); })); } },
+      { n: 'modelo', l: 'Diseño', tipo: 'select', op: porTipo(tipoInicial).map(function (m) { return [m.id, m.nombre]; }) },
+      { n: 'a', l: 'Nombre (o nombre 1)', ph: 'Ej.: Sofía' }, { n: 'b', l: 'Segundo nombre (bodas, opcional)' }, { n: 'fecha', l: 'Fecha del evento', tipo: 'date' },
+      { nota: 'Cada evento publicado usa 1 crédito. El diseño se puede cambiar después desde el panel del evento.' }], 'Crear y abrir el panel').then(function (r) {
+      if (!r) return;
+      api(base('/eventos'), { tipo: r.tipo, modelo: r.modelo, nombres: { a: r.a, b: r.b }, fecha: r.fecha }).then(function (j) { location.href = j.panel; }).catch(function (e) { aviso(e.message, true); });
+    });
+  }
+  var ESTADO = { borrador: ['Borrador', 'aviso'], publicado: ['Publicada', ''], 'en-diseno': ['En diseño', 'aviso'] };
+  function vistaEventos() {
+    var v = el('div'), puede = D.empresa.rol !== 'lectura';
+    var pub = D.eventos.filter(function (e) { return e.estado === 'publicado'; }).length, conf = D.eventos.reduce(function (t, e) { return t + e.respuestas; }, 0);
+    v.append(el('div', { class: 'cifras' }, [['Eventos', D.eventos.length], ['Publicados', pub], ['Confirmaciones', conf], ['Créditos', D.creditos.disponibles]].map(function (x) { return el('div', {}, [el('b', {}, String(x[1])), el('span', {}, x[0])]); })));
+    v.append(el('div', { class: 'cabecera' }, [el('h2', { style: 'margin:0' }, 'Eventos'), puede ? el('button', { class: 'b', type: 'button', onclick: nuevoEvento }, '＋ Nuevo evento') : null]));
+    if (!D.eventos.length) v.append(el('p', { class: 'vacio' }, 'Todavía no hay eventos. Crea el primero con «Nuevo evento».'));
+    D.eventos.forEach(function (e) {
+      var est = ESTADO[e.estado] || [e.estado, ''];
+      var botones = [el('a', { class: 'b', href: '/panel/' + e.id }, 'Abrir panel')];
+      if (e.link) botones.push(el('a', { class: 'b sec', href: e.link, target: '_blank', rel: 'noopener' }, 'Ver invitación'));
+      if (puede) {
+        var bc = el('button', { class: 'b sec', type: 'button' }, 'Link para el cliente');
+        bc.onclick = function () { var url = location.origin + e.linkCliente; (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { aviso('Link copiado: es el panel del evento para tu cliente'); }).catch(function () { prompt('Copia este link', url); }); };
+        botones.push(bc);
+        if (e.estado !== 'publicado' && !e.creditoUsado) { var bd = el('button', { class: 'b mal', type: 'button' }, 'Borrar'); bd.onclick = function () { if (confirm('¿Borrar este borrador? No se puede deshacer.')) accion(bd, base('/eventos/' + e.id), undefined, 'Borrado', 'DELETE'); }; botones.push(bd); }
+      }
+      var cp = el('label', { class: 'casilla', style: 'margin-top:8px' }, [el('input', { type: 'checkbox', checked: e.clientePublica, disabled: !puede, onchange: function (ev) { accion(null, base('/eventos/' + e.id + '/ajustes'), { clientePublica: ev.target.checked }, ev.target.checked ? 'Tu cliente puede publicar' : 'Solo tu equipo publica'); } }), el('span', {}, 'Mi cliente puede publicar su invitación (con su link del panel)')]);
+      v.append(el('div', { class: 'tarjeta' }, [el('div', { class: 'evento' }, [
+        el('div', {}, [el('h3', {}, [e.nombres || 'Sin nombre', ' ', el('span', { class: 'tag ' + est[1] }, est[0])]),
+          el('div', { class: 'meta' }, e.tipoNombre + ' · ' + e.modelo + (e.paquete && e.paquete !== 'borrador' ? ' · ' + e.paquete : '') + (e.fecha ? ' · ' + fecha(e.fecha) : '')),
+          el('div', { class: 'meta' }, e.invitados + ' invitados cargados · ' + e.respuestas + ' confirmaciones' + (e.vence && e.estado === 'publicado' ? ' · online hasta ' + fecha(e.vence) : '') + (e.creditoUsado ? ' · crédito usado' : ''))]),
+        el('div', { class: 'fila', style: 'margin:0' }, botones)]), puede ? cp : null]));
+    });
+    return v;
+  }
+
+  // ── Créditos y compras ──
+  function comprar(p) {
+    var paises = [['ES', 'España'], ['AR', 'Argentina'], ['MX', 'México'], ['CO', 'Colombia'], ['CL', 'Chile'], ['PE', 'Perú'], ['UY', 'Uruguay'], ['PY', 'Paraguay'], ['BO', 'Bolivia'], ['EC', 'Ecuador'], ['VE', 'Venezuela'], ['CR', 'Costa Rica'], ['PA', 'Panamá'], ['DO', 'República Dominicana'], ['GT', 'Guatemala'], ['HN', 'Honduras'], ['SV', 'El Salvador'], ['NI', 'Nicaragua'], ['US', 'Estados Unidos'], ['PT', 'Portugal'], ['FR', 'Francia'], ['DE', 'Alemania'], ['IT', 'Italia'], ['NL', 'Países Bajos'], ['BE', 'Bélgica'], ['IE', 'Irlanda'], ['AT', 'Austria'], ['GB', 'Reino Unido'], ['CH', 'Suiza'], ['XX', 'Otro país']];
+    pedir('Comprar: ' + p.nombre, [
+      { nota: 'Precio sin IVA: ' + eur(p.neto) + '. En España y la Unión Europea se suma el IVA que corresponda (empresas de otro país de la UE con IVA válido, sin IVA). El pago es por transferencia y se confirma a mano: te llega un mail con los datos.' },
+      { n: 'pais', l: 'País de facturación', tipo: 'select', v: 'ES', op: paises }, { n: 'nombre', l: 'Nombre o razón social para la factura', v: D.empresa.nombre },
+      { n: 'nif', l: 'NIF / CIF / IVA intracomunitario / CUIT (opcional)' }, { n: 'direccion', l: 'Dirección fiscal (opcional)' }], 'Hacer el pedido').then(function (r) {
+      if (!r) return;
+      if (r.pais === 'XX') r.pais = 'ZZ';
+      api(base('/compras'), Object.assign({ item: p.id }, r)).then(function (j) {
+        pedir('Pedido #' + j.numero, [{ nota: j.nombre + ' · total a transferir: ' + eur(j.total) + (j.tasa ? ' (incluye IVA ' + j.tasa + ' %)' : ' (sin IVA)') + '. Referencia: PRO-' + j.numero + '. También te llegó por mail.' }], 'Entendido');
+        if (j.datos) { var c = $('#dlg-c'); c.append(el('pre', { class: 'datos' }, j.datos)); }
+        $('#dlg-no').hidden = true; cargar(); setTimeout(function () { $('#dlg-no').hidden = false; }, 500);
+      }).catch(function (e) { aviso(e.message, true); });
+    });
+  }
+  function vistaCreditos() {
+    var v = el('div'), c = D.creditos, e = D.empresa;
+    v.append(el('div', { class: 'cifras' }, [[c.disponibles, 'Créditos disponibles'], [c.proximoVence ? fecha(c.proximoVence) : '—', 'Primer vencimiento'], [e.nivel === 'studio' ? fecha(e.paseVence) : '—', e.nivel === 'studio' ? 'Pase Studio hasta' : 'Pase']].map(function (x) { return el('div', {}, [el('b', {}, String(x[0])), el('span', {}, x[1])]); })));
+    if (e.paseVencido) v.append(el('div', { class: 'aviso-caja mal' }, [el('p', {}, 'El pase Studio venció: la marca blanca y los packs Studio están pausados. Al renovarlo, los créditos que no venzan antes pasan al año siguiente.')]));
+    v.append(el('p', { class: 'meta' }, 'Cada crédito publica una invitación de cualquier paquete (hasta Deluxe) y modelo. Los créditos vencen a los 12 meses de la compra' + (e.nivel === 'studio' ? '; si renuevas el pase antes de que venzan, los que sobran pasan al año siguiente.' : '.') + ' No incluyen diseño a medida, cambio de diseño, idiomas adicionales ni complementos.'));
+    if (e.rol === 'duenio') {
+      v.append(el('h2', {}, 'Comprar'), el('div', { class: 'productos' }, D.tienda.productos.map(function (p) {
+        var b = el('button', { class: 'b', type: 'button' }, 'Comprar'); b.onclick = function () { comprar(p); };
+        return el('div', { class: 'producto' }, [el('span', { class: 'meta' }, p.nombre), el('b', {}, eur(p.neto)), el('small', {}, p.creditos > 1 ? eur(p.neto / p.creditos) + ' por crédito · + IVA' : '+ IVA'), el('div', { class: 'fila' }, b)]);
+      })));
+    }
+    v.append(el('h2', { style: 'margin-top:26px' }, 'Pedidos'));
+    if (!D.compras.length) v.append(el('p', { class: 'vacio' }, 'Todavía no hiciste pedidos.'));
+    else v.append(tabla(['Pedido', 'Producto', 'Total', 'Estado', ''], D.compras.map(function (x) {
+      var acc = [];
+      if (x.urlFactura) acc.push(el('a', { class: 'b sec', href: x.urlFactura, target: '_blank', rel: 'noopener' }, 'Factura'));
+      if (x.estado === 'pendiente' && e.rol === 'duenio') { var b = el('button', { class: 'b mal', type: 'button' }, 'Cancelar'); b.onclick = function () { accion(b, base('/compras/' + x.id + '/cancelar'), {}, 'Pedido cancelado'); }; acc.push(b); }
+      return ['#' + x.numero + ' · ' + fecha(x.creado), x.nombre, eur(x.total), el('span', { class: 'tag' + (x.estado === 'pagada' ? '' : x.estado === 'cancelada' ? ' mal' : ' aviso') }, x.estado), el('div', { class: 'fila', style: 'margin:0' }, acc)];
+    })));
+    if (D.tienda.transferencia && D.compras.some(function (x) { return x.estado === 'pendiente'; })) v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Datos para la transferencia'), el('pre', { class: 'datos' }, D.tienda.transferencia), el('p', { class: 'meta', style: 'margin:0' }, 'Indicar la referencia PRO-número en el concepto.')]));
+    if (D.creditos.lotes.length) { v.append(el('h2', { style: 'margin-top:26px' }, 'Lotes de créditos')); v.append(tabla(['Origen', 'Comprado', 'Vence', 'Usados'], D.creditos.lotes.map(function (l) { return [l.origen || '—', fecha(l.comprado), el('span', { class: l.vencido ? 'tag mal' : '' }, fecha(l.vence)), l.usados + ' de ' + l.cantidad]; }))); }
+    return v;
+  }
+
+  // ── Equipo ──
+  function vistaEquipo() {
+    var v = el('div'), duenio = D.empresa.rol === 'duenio';
+    v.append(el('div', { class: 'cabecera' }, [el('h2', { style: 'margin:0' }, 'Equipo'), el('span', { class: 'meta' }, D.limites.usados + ' de ' + D.limites.usuarios + ' usuarios')]));
+    v.append(el('p', { class: 'meta' }, 'Quienes sumes entran con su mail (sin contraseñas) y ven todos los eventos de la empresa. Editor: crea y edita eventos y publica. Solo lectura: mira.'));
+    v.append(tabla(['Usuario', 'Rol', ''], D.equipo.map(function (m) {
+      var b = m.rol !== 'duenio' && duenio ? el('button', { class: 'b mal', type: 'button' }, 'Quitar') : null; if (b) b.onclick = function () { if (confirm('¿Quitar a ' + m.email + ' del equipo?')) accion(b, base('/equipo/' + m.usuarioId), undefined, 'Quitado del equipo', 'DELETE'); };
+      return [el('div', {}, [el('strong', {}, m.nombre || m.email), m.nombre ? el('div', { class: 'meta' }, m.email) : null]), el('span', { class: 'tag' }, m.rol === 'duenio' ? 'Dueño' : m.rol === 'editor' ? 'Editor' : 'Solo lectura'), b || ''];
+    })));
+    if (duenio) {
+      var f = el('form', { class: 'tarjeta', onsubmit: function (ev) { ev.preventDefault(); accion(f.querySelector('button'), base('/equipo'), { email: f.email.value, rol: f.rol.value }, 'Invitación enviada').then(function () { f.reset(); }); } }, [
+        el('h3', {}, 'Sumar a alguien'), el('div', { class: 'dos' }, [el('label', {}, ['Email', el('input', { name: 'email', type: 'email', required: true })]), el('label', {}, ['Rol', el('select', { name: 'rol' }, [el('option', { value: 'editor' }, 'Editor'), el('option', { value: 'lectura' }, 'Solo lectura')])])]),
+        el('div', { class: 'fila' }, el('button', { class: 'b', type: 'submit' }, 'Enviar invitación'))]);
+      v.append(f);
+      if (D.empresa.nivel !== 'studio') v.append(promoStudio('Con Studio el equipo llega a 10 usuarios.'));
+    }
+    return v;
+  }
+
+  // ── Marca ──
+  function vistaMarca() {
+    var v = el('div'), m = D.marca, e = D.empresa, duenio = e.rol === 'duenio';
+    v.append(el('h2', {}, 'Marca'));
+    v.append(el('p', { class: 'meta' }, e.studio ? 'Con Studio tus invitaciones salen sin la marca de Amo Invitar. Se aplica a todos tus eventos, los publicados y los nuevos.' : 'Tu logo o tu nombre aparece junto al pie de Amo Invitar en todas tus invitaciones. La marca blanca (sin el pie de Amo Invitar) es del nivel Studio.'));
+    var f = el('form', { class: 'tarjeta' }), prev = el('div', { class: 'pie-previa' });
+    var logo = el('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', disabled: !duenio });
+    var nombre = el('input', { name: 'nombre', value: m.nombre, maxlength: 80, disabled: !duenio, placeholder: 'Nombre de la empresa' });
+    var pie = el('input', { name: 'pie', value: m.pie, maxlength: 140, disabled: !duenio, placeholder: 'Ej.: Salón La Esperanza · Eventos desde 1998' });
+    var blanca = el('input', { type: 'checkbox', checked: m.blanca && e.studio, disabled: !duenio || !e.studio });
+    var sinPie = el('input', { type: 'checkbox', checked: m.sinPie && e.studio, disabled: !duenio || !e.studio });
+    function previa() {
+      prev.replaceChildren();
+      if (blanca.checked && sinPie.checked) { prev.append(el('em', {}, 'La invitación no lleva pie.')); return; }
+      if (m.logo) prev.append(el('img', { src: m.logo, alt: '' }));
+      var t = pie.value || nombre.value; if (t) prev.append(el('div', {}, t));
+      if (!m.logo && !t) prev.append(el('em', {}, 'Sin logo ni texto: ' + (blanca.checked ? 'sin pie.' : 'solo el pie de Amo Invitar!.')));
+      if (!blanca.checked) prev.append(el('span', { class: 'amo' }, 'amoinvitar.com · pie de Amo Invitar!'));
+    }
+    [nombre, pie, blanca, sinPie].forEach(function (i) { i.addEventListener('input', previa); i.addEventListener('change', previa); });
+    logo.addEventListener('change', function () {
+      var a = logo.files[0]; if (!a) return;
+      api(base('/logo'), a, 'POST', a.type).then(function () { aviso('Logo guardado'); cargar(); }).catch(function (x) { aviso(x.message, true); });
+    });
+    f.append(el('div', { class: 'dos' }, [el('label', {}, ['Logo (PNG, JPG o WEBP; fondo transparente de preferencia, hasta 1,5 MB)', logo, m.logo ? el('span', { class: 'fila' }, [el('img', { src: m.logo, alt: '', style: 'max-height:40px;max-width:160px;background:#eee;padding:4px;border-radius:6px' }), duenio ? el('button', { class: 'b mal', type: 'button', onclick: function () { accion(null, base('/logo'), undefined, 'Logo quitado', 'DELETE'); } }, 'Quitar logo') : null]) : null]),
+      el('div', { style: 'display:grid;gap:12px' }, [el('label', {}, ['Nombre', nombre]), el('label', {}, ['Texto del pie (si no hay logo, o junto al logo)', pie])])]));
+    f.append(el('div', { style: 'display:grid;gap:8px;margin-top:14px' }, [
+      el('label', { class: 'casilla' }, [blanca, el('span', {}, [el('strong', {}, 'Marca blanca: '), 'quitar el pie de Amo Invitar y usar el mío', e.studio ? '' : ' (solo Studio)'])]),
+      el('label', { class: 'casilla' }, [sinPie, el('span', {}, [el('strong', {}, 'No mostrar ningún pie '), '(con marca blanca; la invitación no lleva pie)'])])]));
+    f.append(el('h3', { style: 'margin-top:16px' }, 'Así queda el pie de la invitación'), prev);
+    if (duenio) f.append(el('div', { class: 'fila' }, el('button', { class: 'b', type: 'submit' }, 'Guardar marca')));
+    f.addEventListener('submit', function (ev) { ev.preventDefault(); accion(f.querySelector('[type=submit]'), base('/marca'), { nombre: nombre.value, pie: pie.value, blanca: blanca.checked, sinPie: sinPie.checked }, 'Marca guardada'); });
+    previa(); v.append(f);
+    if (!e.studio) v.append(promoStudio('Con Studio: marca blanca (sin el pie de Amo Invitar), panel sin la marca de Amo Invitar y dominio propio.'));
+    return v;
+  }
+
+  function promoStudio(texto) {
+    var wa = D.contacto.whatsapp ? 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent('Hola! Quiero pasar a Studio. Empresa: ' + D.empresa.nombre) : null;
+    return el('div', { class: 'aviso-caja' }, [el('p', {}, [el('strong', {}, 'Pasa a Studio. '), texto + ' Pase anual ' + eur(D.tienda.pase) + ' + IVA, hasta 10 usuarios y packs de hasta ' + '56 % de descuento.']),
+      el('button', { class: 'b', type: 'button', onclick: function () { TAB = 'creditos'; pinta(); window.scrollTo(0, 0); } }, 'Ver el pase'), wa ? el('a', { class: 'b sec', href: wa, target: '_blank', rel: 'noopener' }, 'Hablar con Amo Invitar!') : null]);
+  }
+
+  // ── Cuenta ──
+  function vistaCuenta() {
+    var e = D.empresa, v = el('div');
+    v.append(el('h2', {}, 'Cuenta'));
+    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, e.nombre), el('div', { class: 'meta' }, 'Nivel ' + (e.nivel === 'studio' ? 'Studio' : 'Pro') + (e.nivel === 'studio' ? ' · pase hasta ' + fecha(e.paseVence) + (e.paseVencido ? ' (vencido)' : '') : ' · sin pase anual') + ' · ' + D.limites.usados + ' de ' + D.limites.usuarios + ' usuarios' + (e.dominio ? ' · dominio propio activo' : ''))]));
+    if (e.nivel !== 'studio') v.append(promoStudio('Marca blanca, 10 usuarios, dominio propio y los packs más baratos.'));
+    if (e.rol === 'duenio') {
+      var msg = function (t) { return 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent(t + ' · Empresa: ' + D.empresa.nombre); };
+      v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Pedir algo más'), el('p', { class: 'meta' }, 'El diseño a medida, los cambios de diseño, los idiomas adicionales, los complementos y la configuración del dominio propio se contratan aparte. Escribe y lo coordinamos.'),
+        el('div', { class: 'fila' }, [D.contacto.whatsapp ? el('a', { class: 'b', href: msg('Quiero contratar un extra'), target: '_blank', rel: 'noopener' }, 'Escribir por WhatsApp') : null, el('a', { class: 'b sec', href: 'mailto:' + D.contacto.email + '?subject=' + encodeURIComponent('Pedido de ' + D.empresa.nombre) }, 'Escribir por mail')])]));
+    }
+    return v;
+  }
+
+  function pinta() {
+    var tabs = $('#tabs'); tabs.replaceChildren();
+    [['eventos', 'Eventos'], ['creditos', 'Créditos y pedidos'], ['equipo', 'Equipo'], ['marca', 'Marca'], ['cuenta', 'Cuenta']].forEach(function (t) { tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], onclick: function () { TAB = t[0]; pinta(); } }, t[1])); });
+    var cuerpo = el('div'), e = D.empresa;
+    if (e.nivel !== 'studio' && TAB === 'eventos') cuerpo.append(promoStudio('Sin costo fijo hoy; con Studio, marca blanca y más descuento.'));
+    cuerpo.append(TAB === 'eventos' ? vistaEventos() : TAB === 'creditos' ? vistaCreditos() : TAB === 'equipo' ? vistaEquipo() : TAB === 'marca' ? vistaMarca() : vistaCuenta());
+    $('#vista').replaceChildren(cuerpo);
+  }
+  function cargar() {
+    return api(base()).then(function (d) {
+      D = d; EMP = d.empresa.id; $('#entrada').hidden = true; $('#tablero').hidden = false; pintaCab(); pinta();
+    }).catch(function (e) {
+      $('#tablero').hidden = true; $('#entrada').hidden = false; $('#marca').replaceChildren(el('a', { href: 'https://amoinvitar.com/' }, el('img', { src: '/web/img/logo-linea-verde.svg', alt: 'Amo Invitar!' })));
+      if (e.status === 401) { $('#entrada-p').textContent = 'Entra con el mail de tu cuenta profesional.'; $('#entrada-b').replaceChildren(el('a', { class: 'b', href: '/entrar?siguiente=/empresa/' }, 'Entrar')); }
+      else if (e.status === 403) { $('#entrada-p').textContent = 'Esta cuenta todavía no tiene una empresa profesional.'; $('#entrada-b').replaceChildren(el('a', { class: 'b', href: '/profesionales' }, 'Pedir mi cuenta profesional')); }
+      else { $('#entrada-p').textContent = e.message; }
+    });
+  }
+  cargar();
+})();
+</script>
+</body>
+</html>

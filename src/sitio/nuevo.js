@@ -13,7 +13,7 @@
 // En amoinvitar.com (el dominio principal) se ve siempre, sin clave.
 import { getCookie, cookie, isSecureRequest } from '../lib/util.js';
 
-const RESERVADAS = /^\/(api|panel|tienda|modelos|comun|mi-cuenta|entrar|ayuda|auth|media|demo|std|vista|acceso|mesa|puerta|factura|admin)(\/|$)/;
+const RESERVADAS = /^\/(api|panel|tienda|modelos|comun|mi-cuenta|entrar|ayuda|auth|media|demo|std|vista|acceso|mesa|puerta|factura|admin|empresa)(\/|$)/;
 // Carpetas de las invitaciones y demos del sistema viejo (las de los clientes): nunca las toca la web nueva
 export const PROTEGIDAS = /^\/(boda|15|evento|nuevos-bautismo|nuevos-comunion|nuevos-cumple|mi-bauti|mi-comuion|mi-cumple|mi-graduacion|save-the-date|birthday)\//;
 const PRINCIPAL = /^(www\.)?amoinvitar\.com$/;

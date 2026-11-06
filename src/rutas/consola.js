@@ -14,11 +14,11 @@ import { crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
 import { sendEmail, mailMedidaAprobada, mailProAprobada, mailProRechazada } from '../lib/email.js';
 import { PROFESIONALES } from '../catalogo.js';
+import { sumarMeses, nuevoLote, renovarPase as renovarPaseBase, catalogoCompras } from '../pro/empresa.js';
+import { pagarCompra } from '../pro/compras.js';
 
 const ahora = () => new Date().toISOString();
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
-// Suma meses a una fecha ISO (créditos: 12 meses; pase anual: 12 meses)
-export function sumarMeses(iso, meses) { const d = new Date(iso); d.setUTCMonth(d.getUTCMonth() + meses); return d.toISOString(); }
 
 // ── Resumen ───────────────────────────────────────────────────────────
 export async function resumen(request, env) {
@@ -46,7 +46,9 @@ export async function resumen(request, env) {
   }
   const transferencias = (await q("SELECT id, numero, email, importe, moneda, detalle, creado FROM pedidos WHERE estado = 'pendiente' AND medio = 'transferencia' ORDER BY creado DESC LIMIT 100"))
     .map((p) => ({ id: p.id, numero: p.numero, email: p.email, importe: p.importe, moneda: p.moneda, producto: (() => { try { return JSON.parse(p.detalle).nombre; } catch { return ''; } })(), creado: p.creado }));
-  return json({ solicitudes, empresas, medidas, transferencias, base: { pase: PROFESIONALES.studio.pase, credito: PROFESIONALES.credito } });
+  const cat = catalogoCompras();
+  const compras = (await q(`SELECT c.id, c.numero, c.item, c.neto, c.iva_tasa, c.iva, c.total, c.estado, c.creado, c.pagada, c.factura, e.nombre AS empresa FROM compras_pro c JOIN empresas e ON e.id = c.empresa_id ORDER BY (c.estado = 'pendiente') DESC, c.creado DESC LIMIT 100`)).map((x) => ({ ...x, nombre: cat[x.item]?.nombre || x.item }));
+  return json({ solicitudes, empresas, medidas, transferencias, compras, base: { pase: PROFESIONALES.studio.pase, credito: PROFESIONALES.credito } });
 }
 
 // ── Cuentas profesionales ─────────────────────────────────────────────
@@ -57,6 +59,10 @@ export async function accionPro(request, env, partes) {
   const [, , , recurso, id, accion] = partes; // api admin pro <solicitudes|empresas> <id> <accion>
   const b = await readJson(request);
   if (recurso === 'solicitudes') return accion === 'aprobar' ? aprobar(request, env, id, b) : accion === 'rechazar' ? rechazar(request, env, id, b) : json({ error: 'no encontrado' }, 404);
+  if (recurso === 'compras') {
+    if (accion === 'pagada') { const ok = await pagarCompra(env, id, { medio: str(b.medio, 20) || 'transferencia', nota: str(b.nota, 200) || null, base: sitio(env, request) }); if (!ok) throw new HttpError(409, 'Ese pedido ya estaba pagado o cancelado'); return json({ ok: true }); }
+    if (accion === 'cancelar') { const r = await env.DB.prepare("UPDATE compras_pro SET estado = 'cancelada' WHERE id = ? AND estado = 'pendiente'").bind(str(id, 20)).run(); if (!r.meta.changes) throw new HttpError(409, 'Ese pedido ya no se puede cancelar'); return json({ ok: true }); }
+  }
   if (recurso === 'empresas') {
     if (accion === 'creditos') return darCreditos(env, id, b);
     if (accion === 'pase') return renovarPase(env, id, b);
@@ -96,13 +102,6 @@ async function rechazar(request, env, id, b) {
   return json({ ok: true });
 }
 
-// Créditos: cada compra es un lote que vence a los 12 meses
-async function nuevoLote(env, empresaId, cantidad, origen, nota) {
-  const t = ahora();
-  await env.DB.prepare('INSERT INTO creditos_lotes (id, empresa_id, cantidad, comprado, vence, origen, nota) VALUES (?, ?, ?, ?, ?, ?, ?)')
-    .bind('cl_' + randomId(5), empresaId, cantidad, t, sumarMeses(t, 12), origen, nota || null).run();
-}
-
 async function empresaPro(env, id) {
   const e = await env.DB.prepare('SELECT e.id, e.nombre, p.nivel, p.pase_vence, p.estado FROM empresas e JOIN empresas_pro p ON p.empresa_id = e.id WHERE e.id = ?').bind(id).first();
   if (!e) throw new HttpError(404, 'No existe esa empresa');
@@ -122,18 +121,9 @@ async function darCreditos(env, id, b) {
 
 // Renovar el pase anual. Los créditos que sobran y todavía no vencieron pasan al año siguiente (se extienden 12 meses)
 async function renovarPase(env, id, b) {
-  const e = await empresaPro(env, id);
-  const meses = Math.max(1, Math.min(36, parseInt(b.meses, 10) || 12));
-  const t = ahora();
-  const base = e.pase_vence && e.pase_vence > t ? e.pase_vence : t;
-  const nuevo = sumarMeses(base, meses);
-  const lotes = (await env.DB.prepare('SELECT id, vence FROM creditos_lotes WHERE empresa_id = ? AND usados < cantidad AND vence >= ?').bind(id, t).all()).results || [];
-  await env.DB.batch([
-    env.DB.prepare("UPDATE empresas_pro SET nivel = 'studio', pase_vence = ?, estado = 'activa' WHERE empresa_id = ?").bind(nuevo, id),
-    env.DB.prepare("UPDATE empresas SET plan = 'studio' WHERE id = ?").bind(id),
-    ...lotes.map((l) => env.DB.prepare('UPDATE creditos_lotes SET vence = ? WHERE id = ?').bind(sumarMeses(l.vence, 12), l.id)),
-  ]);
-  return json({ ok: true, paseVence: nuevo, lotesExtendidos: lotes.length });
+  await empresaPro(env, id);
+  const r = await renovarPaseBase(env, id, Math.max(1, Math.min(36, parseInt(b.meses, 10) || 12)));
+  return json({ ok: true, paseVence: r.paseVence, lotesExtendidos: r.lotesExtendidos });
 }
 
 async function cambiarEstado(env, id, b) {

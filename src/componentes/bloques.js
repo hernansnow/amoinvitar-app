@@ -109,11 +109,13 @@ function flotante(v, t) {
 // links (ni el de amoinvitar.com ni uno propio). Sin logo ni texto, o con «sinPie», la invitación no lleva pie.
 export function pieMarca({ v }) {
   const m = v.marca;
-  if (!m?.blanca || m.sinPie) return '';
+  if (!m || (!m.blanca && !m.coBrand) || m.sinPie) return '';
   const texto = String(m.pie || m.nombre || '').trim();
   if (!m.logo && !texto) return '';
   const logo = m.logo ? `<img class="img-fluid mb-1" style="max-height:40px" src="${esc(m.logo)}" alt="${esc(m.nombre || '')}">` : '';
-  return `<footer class="site-footer pt-4 pb-4"><div class="container text-center">${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}</div></footer>`;
+  // README (ronda 35): sin marca blanca (nivel Pro) el logo o texto de la empresa va arriba del pie de Amo Invitar, que se mantiene
+  const ajuste = m.coBrand ? ' style="padding-bottom:0!important"' : '';
+  return `<footer class="site-footer pt-4 pb-4"${ajuste}><div class="container text-center">${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}</div></footer>`;
 }
 
 // Pie chico de las pantallas sueltas (acceso con PIN y «Busca tu mesa»): el logo de Amo Invitar, o con marca blanca el

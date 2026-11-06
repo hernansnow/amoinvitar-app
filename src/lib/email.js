@@ -179,3 +179,31 @@ export const mailProRechazada = (env, { nombre, motivo }) => ({
     lineas: [`Gracias${nombre ? `, ${b(nombre)}` : ''}, por escribir. Por ahora no se pudo aprobar la cuenta profesional.`, ...(motivo ? [escapeHtml(motivo)] : []), 'Si hay más información para compartir (web, trabajos, referencias), se puede responder este mail y se vuelve a revisar.'],
   }),
 });
+
+// README (ronda 35) · Tablero profesional
+export const mailEquipoPro = (env, { empresa, quien, url }) => ({
+  subject: `Te sumaron al equipo de ${empresa}`,
+  ...plantilla(env, {
+    titulo: `Equipo de ${empresa}`,
+    lineas: [`${b(quien)} sumó este mail al equipo de ${b(empresa)} en Amo Invitar!.`, 'Se entra con este mismo mail (sin contraseñas) y se pueden ver y armar los eventos de la empresa.'],
+    boton: 'Entrar al tablero', url,
+  }),
+});
+
+export const mailCompraPro = (env, { numero, producto, total, referencia, datos }) => ({
+  subject: `Pedido #${numero} · ${producto}`,
+  ...plantilla(env, {
+    titulo: `Pedido #${numero}`,
+    lineas: [`${b(producto)}`, `Importe a transferir: ${b(total)}`, `Referencia: ${b(referencia)}`, ...(datos ? [`Datos para la transferencia:<br>${escapeHtml(datos).replace(/\n/g, '<br>')}`] : ['Escribir a hola@amoinvitar.com para recibir los datos de la cuenta.']),
+      'Cuando llega la transferencia se activan los créditos (o el pase) y se emite la factura. Llega un mail de confirmación.'],
+  }),
+});
+
+export const mailCompraProPagada = (env, { numero, producto, url, urlFactura }) => ({
+  subject: `Pedido #${numero} confirmado`,
+  ...plantilla(env, {
+    titulo: 'Pago confirmado',
+    lineas: [`Se confirmó el pedido #${numero}: ${b(producto)}.`, 'Ya figura en el tablero.', ...(urlFactura ? [`La factura está disponible en este link: <a href="${escapeHtml(urlFactura)}">ver o descargar</a>.`] : [])],
+    boton: 'Abrir el tablero', url,
+  }),
+});

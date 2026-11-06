@@ -43,6 +43,8 @@ import * as tienda from './rutas/tienda.js';
 import * as admin from './rutas/admin.js';
 import * as consola from './rutas/consola.js';
 import * as profesionales from './rutas/profesionales.js';
+import * as empresaApi from './rutas/empresa.js';
+import { marcaEfectiva, rolEnEmpresa, proDe, paseVigente, usarCredito, devolverCredito } from './pro/empresa.js';
 import { getCookie } from './lib/util.js';
 import { resolverMapa } from './lib/mapas.js';
 import { leerPlaylist } from './lib/spotify.js';
@@ -238,7 +240,7 @@ async function publicada(env, url, request, tipo, slug) {
   // README (ronda 31): pasado su plazo (según el plan, desde la fecha del evento) deja de verse
   if (vencido(ev)) return html(paginaVencida(nombresDe(ev.datos.nombres)), 410, { 'x-robots-tag': 'noindex' });
   const empresa = ev.empresaId ? await almacen.empresa(ev.empresaId) : null;
-  const marca = empresa?.marca?.blanca ? empresa.marca : null;
+  const marca = await marcaEfectiva(env, empresa);
   const acc = await revisarAcceso({ ev, request, url, almacen, secreto: secretoDe(env) });
   if (!acc.ok) {
     const v = variante(ev.datos.variante);
@@ -378,7 +380,7 @@ async function paginaMesa(env, url, id) {
   const v = variante(ev.datos.variante);
   const t = traductor(ev.tipo, v, ev.datos.textos);
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), estilos: await estilosModelo(env, ev, url), marca: empresa?.marca?.blanca ? empresa.marca : null }), 200,
+  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), estilos: await estilosModelo(env, ev, url), marca: await marcaEfectiva(env, empresa) }), 200,
     { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
 }
 async function buscarMesa(env, request, url) {
@@ -479,7 +481,13 @@ async function eventoConClave(env, request, url, id) {
     return ev;
   }
   const u = await usuarioActual(request, env);
-  return u && (u.esAdmin || await almacenDe(env).tieneAcceso(ev.id, u.id)) ? ev : null;
+  if (u && (u.esAdmin || await almacenDe(env).tieneAcceso(ev.id, u.id))) return ev;
+  // README (ronda 35): el equipo de la empresa entra a todos sus eventos (los de solo lectura, a mirar)
+  if (u && ev.empresaId) {
+    const rol = await rolEnEmpresa(env, ev.empresaId, u.id);
+    if (rol && (rol !== 'lectura' || request.method === 'GET')) return ev;
+  }
+  return null;
 }
 
 async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {}) {
@@ -514,6 +522,43 @@ async function publicarEvento(env, request, ev) {
   await avisarDiseno(env, url, ev);
   await almacenDe(env).guardarEvento(ev);
   return { ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null };
+}
+
+// ── Empresas profesionales: contexto, panel limpio y créditos ─────────────────
+async function empresaContexto(env, ev, usuario, admin) {
+  const alm = almacenDe(env);
+  const empresa = await alm.empresa(ev.empresaId);
+  if (!empresa) return null;
+  const pro = await proDe(env, ev.empresaId);
+  const rol = usuario ? await rolEnEmpresa(env, ev.empresaId, usuario.id) : null;
+  const studio = paseVigente(pro);
+  const marca = empresa.marca || {};
+  return {
+    empresa, pro, rol, studio, nombre: marca.nombre || empresa.nombre, logo: marca.logo || null, pie: marca.pie || null,
+    marcaEfectiva: await marcaEfectiva(env, empresa),
+    // Sin la marca de Amo Invitar: el cliente final del profesional y, con Studio, también su equipo
+    limpio: !admin && (!rol || studio),
+    puedePublicar: admin || (!!rol && rol !== 'lectura') || !!ev.datos.empresa?.clientePublica,
+  };
+}
+// Publicar un evento de empresa: gasta un crédito (una sola vez por evento). Devuelve una respuesta de error o null.
+async function publicarConCredito(env, request, ev, esquema, emp) {
+  const aviso = (propio, ajeno) => (emp.limpio ? ajeno : propio);
+  if (!emp.puedePublicar) return json({ error: 'Esta invitación la publica quien organiza el evento. Pídele que lo haga.' }, 403);
+  if (emp.pro && emp.pro.estado !== 'activa') return json({ error: aviso('La cuenta de la empresa está suspendida. Escribir a Amo Invitar!.', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 403);
+  const plan = await tienda.estadoPlan(env, request, ev, esquema);
+  const sin = (plan.complementos || []).filter((x) => !x.pagado).map((x) => x.nombre);
+  if (sin.length) return json({ error: aviso(`Esta invitación incluye complementos que el crédito no cubre (${sin.join(', ')}). Quitarlos de la invitación o contratarlos con Amo Invitar!.`, `Esta invitación incluye complementos que todavía no están incluidos (${sin.join(', ')}). Consúltalo con quien organiza tu evento.`) }, 402);
+  const nivel = plan.plan === 'gratis' ? 'basic' : plan.plan;
+  if (!ev.datos.empresa?.credito) {
+    const lote = await usarCredito(env, ev.empresaId);
+    if (!lote) return json({ error: aviso('La empresa no tiene créditos disponibles. Se pueden comprar desde el tablero.', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 402);
+    ev.datos.empresa = { ...(ev.datos.empresa || {}), credito: lote, usadoEn: new Date().toISOString() };
+  }
+  const orden = ['basic', 'premium', 'deluxe'];
+  if (orden.indexOf(nivel) > orden.indexOf(ev.paquete)) ev.paquete = nivel;
+  await almacenDe(env).guardarEvento(ev);
+  return null;
 }
 
 // Modelos a los que se puede cambiar (los del mismo tipo de evento)
@@ -614,6 +659,9 @@ async function apiPanel(env, request, url, partes) {
   // Superusuario (administrador de Amo Invitar): edita todo, sin las restricciones de publicada
   const usuario = await usuarioActual(request, env);
   const admin = !!usuario?.esAdmin;
+  // README (ronda 35): eventos de una empresa profesional. El panel del cliente final (o del equipo Studio) va sin la marca
+  // de Amo Invitar; publicar usa un crédito de la empresa.
+  const emp = ev.empresaId ? await empresaContexto(env, ev, usuario, admin) : null;
   // README (ronda 29): una tarjeta Save The Date comprada sin modelo (desde la tienda) toma el tipo de evento y el
   // primer diseño con tarjeta; en el panel se cambia por otro
   if (ev.producto === 'std-tarjeta' && (!ev.modelo || !TIPOS_EVENTO.some((t) => t.id === ev.tipo))) {
@@ -641,7 +689,8 @@ async function apiPanel(env, request, url, partes) {
       usuario: usuario ? { email: usuario.email, admin } : null,
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
-      marca: ev.empresaId ? (await almacen.empresa(ev.empresaId))?.marca || null : null,
+      marca: emp ? emp.marcaEfectiva : null,
+      empresa: emp ? { limpio: emp.limpio, puedePublicar: emp.puedePublicar, nombre: emp.nombre, logo: emp.logo, pie: emp.pie, rol: emp.rol, credito: !!ev.datos.empresa?.credito, conCredito: true } : null,
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
   }
@@ -656,6 +705,7 @@ async function apiPanel(env, request, url, partes) {
     if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
     // Tarjetas ya generadas: quedan fijas
     if (ev.datos.admin) limpio.admin = ev.datos.admin; // lo de la administración se guarda aparte
+    if (ev.datos.empresa) limpio.empresa = ev.datos.empresa; // crédito usado y permisos del cliente (empresas)
     for (const clase of ['std', 'agradecimiento']) {
       const prev = ev.datos[clase]?.tarjeta;
       if (prev?.generada && !admin) limpio[clase] = ev.datos[clase];
@@ -923,6 +973,13 @@ async function apiPanel(env, request, url, partes) {
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
     if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);
     if (await tienda.pagoPendiente(env, ev.id)) return json({ error: 'Se puede publicar cuando se acredite el pago. Mientras tanto, todo lo cargado queda guardado.' }, 402);
+    // README (ronda 35): eventos de una empresa profesional: publicar usa un crédito (hasta Deluxe; los complementos y el diseño a medida van aparte)
+    if (emp && ev.producto === 'invitacion' && !admin) {
+      const bloqueo = await publicarConCredito(env, request, ev, esquema, emp);
+      if (bloqueo) return bloqueo;
+      const r2 = await publicarEvento(env, request, ev);
+      return r2.ok ? json(r2) : json({ error: r2.error || 'faltan', faltan: r2.faltan }, 422);
+    }
     // README (ronda 28): nada se publica sin pagar. Los productos sueltos (Save The Date web, invitación simple)
     // se arman antes de pagar: el link aparece recién con el pago
     if (ev.producto !== 'invitacion' && ev.paquete === 'borrador' && !admin) return json({ error: 'pagar', plan: await tienda.estadoPlan(env, request, ev, esquema) }, 402);
@@ -991,7 +1048,7 @@ async function vistaPrevia(env, url, request, id) {
     const lista = await almacenDe(env).invitados(ev.id).catch(() => []);
     invitado = lista[0] || { codigo: 'ejemplo', nombre: 'Nombre del invitado', pases: 1, mesa: '1' };
   }
-  return pagina(env, url, evento, { marca: empresa?.marca?.blanca ? empresa.marca : null, sinSobre: true, prueba: true, invitado });
+  return pagina(env, url, evento, { marca: await marcaEfectiva(env, empresa), sinSobre: true, prueba: true, invitado });
 }
 
 // Vista previa del panel: donde el cliente todavía no subió fotos van las fotos de la demo
@@ -1110,6 +1167,7 @@ export default {
         if (p1 === 'stripe' && partes[2] === 'webhook' && M === 'POST') return await tienda.webhookStripe(request, env);
         if (p1 === 'mp' && partes[2] === 'webhook') return await tienda.webhookMp(request, env);
         if (p1 === 'admin' && partes[2] === 'pedidos' && partes[4] === 'cobrado' && M === 'POST') return await tienda.marcarCobrado(request, env, partes[3]);
+        if (p1 === 'empresa') return await empresaApi.api(request, env, partes);
         if (p1 === 'profesionales' && partes[2] === 'solicitud' && M === 'POST') return await profesionales.solicitud(request, env);
         if (p1 === 'admin' && partes[2] === 'resumen') return await consola.resumen(request, env);
         if (p1 === 'admin' && partes[2] === 'pro') return await consola.accionPro(request, env, partes);

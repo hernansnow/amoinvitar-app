@@ -42,6 +42,42 @@ export const TABLAS_PRO = [
     nota       TEXT
   )`,
   'CREATE INDEX IF NOT EXISTS creditos_lotes_empresa ON creditos_lotes (empresa_id, vence)',
+  // Compras de créditos y del pase (se pagan por transferencia y se confirman desde /admin)
+  `CREATE TABLE IF NOT EXISTS compras_pro (
+    id          TEXT PRIMARY KEY,
+    numero      INTEGER NOT NULL,
+    empresa_id  TEXT NOT NULL REFERENCES empresas(id),
+    usuario_id  TEXT,
+    item        TEXT NOT NULL,
+    creditos    INTEGER NOT NULL DEFAULT 0,
+    neto        REAL NOT NULL,
+    iva_tasa    REAL NOT NULL DEFAULT 0,
+    iva         REAL NOT NULL DEFAULT 0,
+    total       REAL NOT NULL,
+    pais        TEXT,
+    fiscal      TEXT,
+    inversion   INTEGER NOT NULL DEFAULT 0,
+    estado      TEXT NOT NULL DEFAULT 'pendiente',
+    medio       TEXT,
+    nota        TEXT,
+    factura     TEXT,
+    creado      TEXT NOT NULL,
+    pagada      TEXT
+  )`,
+  'CREATE INDEX IF NOT EXISTS compras_pro_empresa ON compras_pro (empresa_id, estado)',
+  // Mensajes del formulario de contacto (además del mail)
+  `CREATE TABLE IF NOT EXISTS consultas (
+    id       TEXT PRIMARY KEY,
+    nombre   TEXT,
+    email    TEXT,
+    telefono TEXT,
+    evento   TEXT,
+    pais     TEXT,
+    mensaje  TEXT,
+    pagina   TEXT,
+    estado   TEXT NOT NULL DEFAULT 'nueva',
+    creado   TEXT NOT NULL
+  )`,
 ];
 
 let listo = false;
