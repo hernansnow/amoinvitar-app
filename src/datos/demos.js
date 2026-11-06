@@ -87,8 +87,8 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
   const pool = NOMBRES[tipo];
   const elegido = pool ? pool[sem % pool.length] : null;
   const nombres = archivos.nombres || (elegido ? (Array.isArray(elegido) ? { a: elegido[0], b: elegido[1] } : { a: elegido }) : cfg.nombres);
-  const fecha = cfg.fecha || (pool ? FECHAS[(sem >> 3) % FECHAS.length] : '2027-09-12');
-  const iglesia = { ...LUGARES.iglesia, ...IGLESIAS[(sem >> 5) % IGLESIAS.length] }, salon = { ...LUGARES.estancia, ...SALONES[(sem >> 7) % SALONES.length] };
+  const fecha = cfg.fecha || (pool ? FECHAS[(sem >>> 3) % FECHAS.length] : '2027-09-12');
+  const iglesia = { ...LUGARES.iglesia, ...IGLESIAS[(sem >>> 5) % IGLESIAS.length] }, salon = { ...LUGARES.estancia, ...SALONES[(sem >>> 7) % SALONES.length] };
   const cierre = new Date(Date.parse(fecha) - 33 * 86400000).toISOString().slice(0, 10);
   const textos = String(variante).startsWith('es') ? TEMATICOS[`${modelo.id}/${tipo}`] : null;
 
