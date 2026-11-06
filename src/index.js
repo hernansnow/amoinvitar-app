@@ -1,6 +1,6 @@
 // Worker de Amo Invitar 2.0
 //
-//   /demo/<modelo>?evento=&paquete=&pais=&sobre=no  demo de un modelo (sobre=no: ventana de bienvenida; directo=1: sin sobre ni ventana)
+//   /demo/<modelo>?evento=&paquete=&pais=&sobre=no  demo de un modelo (sobre=no: ventana de bienvenida; limpia=1: sin sobre, ventana ni pie, para miniaturas)
 //   /<tipo>/<slug>[?inv=codigo]                  invitación publicada (con su seguridad)
 //   POST /acceso/<id>                             PIN de la pantalla de acceso
 //   GET  /acceso/<id>/dueno?k=<clave>             el dueño entra sin PIN ni link personal
@@ -237,7 +237,13 @@ async function demo(env, url, request, idModelo) {
     const mezclar = (a, b) => { for (const [k, x] of Object.entries(b)) a[k] = x && typeof x === 'object' && !Array.isArray(x) && a[k] && typeof a[k] === 'object' ? mezclar(a[k], x) : x; return a; };
     mezclar(ev, JSON.parse(q.get('prueba')));
   }
-  return pagina(env, url, ev, { demo: true, sinSobre: q.get('directo') === '1' }); // &directo=1: abre sin sobre ni bienvenida (portadas de la web)
+  // README (ronda 38): &limpia=1 es la demo para miniaturas (portadas de la web, Albunear): sin sobre, sin ventana de bienvenida,
+  // sin pie y sin botones flotantes. Sin el parámetro, la demo es la completa (con su sobre de apertura).
+  const limpia = q.get('limpia') === '1' || q.get('directo') === '1';
+  const r = await pagina(env, url, ev, { demo: true, sinSobre: limpia });
+  if (!limpia || !r.ok) return r;
+  const texto = (await r.text()).replace('</head>', '<style>footer,.site-footer,.ai-flotante,#ai-flotante{display:none!important}</style></head>');
+  return new Response(texto, { status: r.status, headers: r.headers });
 }
 
 // ── Save The Date web ─────────────────────────────────────────────────

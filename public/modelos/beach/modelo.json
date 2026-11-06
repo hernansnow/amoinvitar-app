@@ -106,7 +106,12 @@
     "bienvenida": "font-family:Jost, sans-serif; color:rgb(21, 75, 63); font-weight:400; --bv-escala:1;"
   },
   "demo": {
-    "boda": {}
+    "boda": {
+      "nombres": {
+        "a": "Aylén",
+        "b": "Matías"
+      }
+    }
   },
   "demoBorrosas": {
     "15": {
@@ -260,7 +265,11 @@
         "solo": "{a}"
       },
       "demo": {
-        "15": {}
+        "15": {
+          "nombres": {
+            "a": "Ayelén"
+          }
+        }
       },
       "tarjetas": {
         "std": {
@@ -453,7 +462,11 @@
         "solo": "{a}"
       },
       "demo": {
-        "cumple": {}
+        "cumple": {
+          "nombres": {
+            "a": "Ayelén"
+          }
+        }
       },
       "tarjetas": {
         "std": {

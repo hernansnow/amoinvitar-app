@@ -119,7 +119,11 @@
           "f": "inicial.jpg",
           "pos": "50% 50%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Mariano",
+        "b": "Gonzalo"
+      }
     }
   },
   "demoBorrosas": {
@@ -326,7 +330,10 @@
               "f": "inicial.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Macarena"
+          }
         }
       },
       "tarjetas": {
@@ -531,7 +538,10 @@
               "f": "inicial.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Macarena"
+          }
         }
       },
       "tarjetas": {

@@ -114,7 +114,11 @@
           "f": "globo.jpg",
           "pos": "50% 50%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Sol",
+        "b": "Lean"
+      }
     }
   },
   "demoBorrosas": {

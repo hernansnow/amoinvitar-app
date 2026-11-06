@@ -10,47 +10,6 @@ const LUGARES = {
   estancia: { nombre: 'Estancia La Soñada del Pilar', direccion: 'Sor Teresa y Cabo de Hornos, Pilar, Bs. As.', foto: 'img/demo-lugar.jpg' },
 };
 
-// README (ronda 37): cada demo tiene sus propios nombres, fecha y lugares (se eligen por el id del diseño, siempre los mismos),
-// para que no todas digan «Sofi & Ale». Un diseño puede fijar los suyos en modelo.json (demo.<tipo>.nombres).
-const hash = (t) => [...String(t)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
-const NOMBRES = {
-  boda: null, // se arma combinando (ver abajo)
-  15: ['Mariana', 'Camila', 'Valentina', 'Lola', 'Martina', 'Delfina', 'Julieta', 'Abril', 'Emilia', 'Renata', 'Antonella', 'Malena', 'Guadalupe', 'Bianca', 'Candela', 'Morena', 'Sol', 'Ailín', 'Nahir', 'Zaira', 'Jazmín', 'Tamara', 'Constanza', 'Agustina', 'Ludmila', 'Pilar', 'Regina', 'Aitana'],
-  bautismo: ['Fátima', 'Olivia', 'Emma', 'Amelia', 'Catalina', 'Josefina', 'Alma', 'Bianca'],
-  comunion: ['Mariana', 'Sofía', 'Agustina', 'Pilar', 'Lucía', 'Victoria', 'Isabella', 'Zoe'],
-  cumple: ['Mariel', 'Romina', 'Gabriela', 'Paula', 'Silvana', 'Claudia', 'Verónica', 'Natalia', 'Carolina', 'Marcela'],
-  graduacion: ['Cinthia', 'Julieta', 'Brenda', 'Micaela', 'Daniela', 'Florencia', 'Agostina'],
-  infantil: ['Martín', 'Joaquín', 'Valentino', 'Benicio', 'Thiago', 'Facundo'],
-  babyshower: ['Mateo', 'Lucas', 'Olivia', 'Bruno', 'Alma', 'Santino'],
-};
-const ELLAS = ['Sofi', 'Lau', 'Cami', 'Vero', 'Flor', 'Caro', 'Ana', 'Luz', 'Julia', 'Meli', 'Pau', 'Rocío', 'Mica', 'Abi', 'Lucía', 'Nati', 'Agus', 'Belén', 'Cele', 'Dani'];
-const ELLOS = ['Ale', 'Pablo', 'Nico', 'Santi', 'Dani', 'Martín', 'Gabriel', 'Emiliano', 'Tomás', 'Fede', 'Lucas', 'Iván', 'Franco', 'Joaquín', 'Mati', 'Gonza', 'Seba', 'Rodri', 'Facu', 'Leo'];
-const FECHAS = ['2027-09-12', '2027-10-23', '2027-11-06', '2027-12-04', '2028-03-18', '2027-10-09', '2028-04-15', '2027-09-25'];
-const IGLESIAS = [
-  { nombre: 'Parroquia Natividad del Señor', direccion: 'Av. Eugenia Tapia de Cruz 524, Escobar, Bs. As.' },
-  { nombre: 'Iglesia Nuestra Señora del Pilar', direccion: 'Calle Mayor 12, Pilar, Bs. As.' },
-  { nombre: 'Capilla San Isidro Labrador', direccion: 'Camino Real 340, San Isidro, Bs. As.' },
-  { nombre: 'Parroquia Santa Teresita', direccion: 'Av. del Libertador 1800, Vicente López, Bs. As.' },
-];
-const SALONES = [
-  { nombre: 'Estancia La Soñada del Pilar', direccion: 'Sor Teresa y Cabo de Hornos, Pilar, Bs. As.' },
-  { nombre: 'Quinta Los Aromos', direccion: 'Camino de los Aromos 780, Escobar, Bs. As.' },
-  { nombre: 'Salón Terrazas del Río', direccion: 'Av. Costanera 2250, Tigre, Bs. As.' },
-  { nombre: 'Finca Las Rozas', direccion: 'Ruta 6 Km 54, Campana, Bs. As.' },
-  { nombre: 'Jardín de los Olivos', direccion: 'Calle Los Olivos 95, Pilar, Bs. As.' },
-];
-// Textos propios de la temática de algunos diseños (solo en castellano; el resto usa los del tipo de evento)
-const TEMATICOS = {
-  'travel/boda': { bienvenida: { texto: '¡Abrochen los cinturones: nos casamos y el viaje de nuestras vidas despega!' }, historia: { texto: 'Nos conocimos esperando un vuelo demorado y desde entonces no paramos de viajar juntos. Hoy sabemos que el mejor destino es compartir la vida, y queremos que seas parte de este nuevo viaje.' }, dresscode: { texto: 'Elegante y cómodo, como para un buen viaje. Un toque de color en el look siempre suma.' }, regalos: { texto: 'Tu presencia es nuestro mejor regalo. Para quienes quieran sumarse a nuestra luna de miel (el próximo destino ✈️), aquí van los datos.' }, pie: { texto: 'Cada viaje es mejor en buena compañía. Te esperamos para despegar juntos hacia esta nueva aventura.' } },
-  'travel/15': { bienvenida: { texto: '¡Prepárate para despegar: mis 15 son el comienzo de mi gran viaje!' }, historia: { texto: 'Desde chica sueño con recorrer el mundo. A mis 15 empiezo a armar la valija para el viaje más lindo de mi vida, y quiero que seas parte de él.' }, regalos: { texto: 'Tu presencia es mi mejor regalo. Para quienes quieran sumarse a mi próximo viaje ✈️, aquí van los datos.' }, pie: { texto: 'Los mejores viajes se hacen en buena compañía. Te espero para festejar juntos esta gran aventura.' } },
-  'travel/cumple': { bienvenida: { texto: '¡Un año más de aventuras! Quiero invitarte a celebrar este nuevo destino.' }, historia: { texto: 'Cada año es un viaje con paisajes nuevos, personas increíbles y recuerdos para toda la vida. Hoy celebro un destino más y quiero hacerlo con quienes me acompañaron en el camino.' }, pie: { texto: 'La mejor escala de este viaje es compartirla con ustedes. Te espero para festejar juntos.' } },
-  'travel/bautismo': { historia: { texto: 'Hoy comienza el primer gran viaje de mi vida, guiado por la luz y la bendición de Dios.' }, pie: { texto: 'Un nuevo viaje comienza y quiero compartirlo con quienes más quiero. Te espero para festejar juntos.' } },
-  'travel/comunion': { historia: { texto: 'Hoy recibo a Jesús en mi corazón y empiezo un camino nuevo. Quiero compartir esta alegría con las personas que me acompañan en el viaje.' }, pie: { texto: 'Cada paso del camino es más lindo en buena compañía. Te espero para festejar juntos.' } },
-  'rockabilly/boda': { bienvenida: { texto: '¡Prendan los amplificadores: nos casamos con mucho rock and roll!' }, historia: { texto: 'Nos cruzamos en un recital y desde esa noche bailamos al mismo ritmo. Hoy decidimos que el resto de la vida también va con música en vivo, y queremos que seas parte.' }, dresscode: { texto: 'Estilo años 50: vestidos con lunares, jeans de tiro alto, cuero y mucho rock and roll. ¡El look rockabilly es bienvenido!' }, regalos: { texto: 'Tu presencia es nuestro mejor regalo. Para quienes quieran sumarse a nuestra luna de miel, aquí van los datos 🎸' }, pie: { texto: 'Habrá música, baile, buena compañía y mucho rock and roll. Te esperamos para celebrarlo a puro ritmo.' } },
-  'rockabilly/15': { bienvenida: { texto: '¡Sube el volumen: mis 15 son a puro rock and roll!' }, historia: { texto: 'Crecí entre vinilos, faldas con lunares y el rock de los años 50. Mis 15 son una fiesta a mi estilo, y quiero bailarla con quienes más quiero.' }, dresscode: { texto: 'Estilo años 50: lunares, cuero, jeans y mucha actitud. ¡El look rockabilly es bienvenido!' }, pie: { texto: 'Habrá música, baile y mucho rock and roll. Te espero para festejar a puro ritmo.' } },
-  'rockabilly/cumple': { bienvenida: { texto: '¡Una noche de rock and roll para celebrar un año más!' }, historia: { texto: 'Los años pasan, pero el rock and roll no. Hoy celebro un año más a mi manera: con buena música, baile y la gente que más quiero.' }, dresscode: { texto: 'Estilo años 50: lunares, cuero, jeans y mucha actitud. ¡El look rockabilly es bienvenido!' }, pie: { texto: 'Habrá música, baile y mucho rock and roll. Te espero para festejar a puro ritmo.' } },
-};
-
 // Lo que cambia por tipo de evento
 const POR_TIPO = {
   boda: { nombres: { a: 'Sofi', b: 'Ale' }, portada: 4, galeria: 12, testigos: true, ceremonia: 'religiosa' },
@@ -84,15 +43,6 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
   const fotosDe = `${rutas.modelo}/demo/${tipo}`;
   const comun = (p) => `${rutas.comun}/${p}`;
   const archivos = modelo.demo?.[tipo] || {};
-  // Variaciones propias de cada diseño (nombres, fecha, lugares)
-  const sem = hash(`${modelo.id}/${tipo}`);
-  const pool = tipo === 'boda' ? ELLAS : NOMBRES[tipo];
-  const elegido = tipo === 'boda' ? [ELLAS[sem % ELLAS.length], ELLOS[(sem >>> 9) % ELLOS.length]] : pool ? pool[sem % pool.length] : null;
-  const nombres = archivos.nombres || (elegido ? (Array.isArray(elegido) ? { a: elegido[0], b: elegido[1] } : { a: elegido }) : cfg.nombres);
-  const fecha = cfg.fecha || (pool ? FECHAS[(sem >>> 3) % FECHAS.length] : '2027-09-12');
-  const iglesia = { ...LUGARES.iglesia, ...IGLESIAS[(sem >>> 5) % IGLESIAS.length] }, salon = { ...LUGARES.estancia, ...SALONES[(sem >>> 7) % SALONES.length] };
-  const cierre = new Date(Date.parse(fecha) - 33 * 86400000).toISOString().slice(0, 10);
-  const textos = String(variante).startsWith('es') ? TEMATICOS[`${modelo.id}/${tipo}`] : null;
 
   // El modelo puede fijar sus fotos de portada y el encuadre (modelo.json → demo.<tipo>.portadas:
   // ["hero-banner1.jpg", …] o [{ "f": "globo.jpg", "pos": "50% 30%", "posPc": "50% 40%" }])
@@ -107,12 +57,11 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
     id: `demo-${modelo.id}-${tipo}`,
     tipo, modelo: modelo.id, paquete, variante,
     zonaHoraria: 'America/Argentina/Buenos_Aires',
-    nombres,
-    ...(textos ? { textos } : {}),
+    nombres: archivos.nombres || cfg.nombres,
     ceremonia: cfg.ceremonia
-      ? { modo: 'separada', tipo: cfg.ceremonia, inicio: `${fecha}T${hora[0]}`, fin: `${fecha}T${hora[0].replace(/^(\d\d)/, (h) => String(+h + 1).padStart(2, '0'))}`, ...iglesia, foto: comun(iglesia.foto) }
+      ? { modo: 'separada', tipo: cfg.ceremonia, inicio: `${cfg.fecha || '2027-09-12'}T${hora[0]}`, fin: `${cfg.fecha || '2027-09-12'}T${hora[0].replace(/^(\d\d)/, (h) => String(+h + 1).padStart(2, '0'))}`, ...LUGARES.iglesia, foto: comun(LUGARES.iglesia.foto) }
       : { modo: 'sin' },
-    celebracion: { inicio: `${fecha}T${cfg.ceremonia ? hora[1] : cfg.hora || '21:00'}`, ...salon, foto: comun(salon.foto) },
+    celebracion: { inicio: `${cfg.fecha || '2027-09-12'}T${cfg.ceremonia ? hora[1] : cfg.hora || '21:00'}`, ...LUGARES.estancia, foto: comun(LUGARES.estancia.foto) },
     fotos: {
       portada: portada.map(([f, pos, posPc]) => ({ url: `${fotosDe}/${f}`, pos, ...(posPc ? { posPc } : {}) })),
       galeria,
@@ -121,7 +70,7 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
       album: `${fotosDe}/${archivos.album || 'instagram.jpg'}`,
     },
     musica: { archivo: comun(`audio/demo-${tipo}.mp3`) },
-    rsvp: { cierre, acompanantes: 2, preguntas: { comida: true, alcohol: true, ninos: tipo === 'boda', traslado: true } },
+    rsvp: { cierre: '2027-08-10', acompanantes: 2, preguntas: { comida: true, alcohol: true, ninos: tipo === 'boda', traslado: true } },
     dresscode: { fotos: [1, 2, 3, 4, 5, 6].map((n) => comun(`img/demo-dress${n}.jpg`)) },
     hospedaje: {
       items: [

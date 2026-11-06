@@ -112,7 +112,11 @@
     "boda": {
       "portadas": [
         "hero-banner.jpg"
-      ]
+      ],
+      "nombres": {
+        "a": "Victoria",
+        "b": "Marcos"
+      }
     }
   },
   "demoBorrosas": {
@@ -316,7 +320,10 @@
         "15": {
           "portadas": [
             "hero-banner.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Camila"
+          }
         }
       },
       "tarjetas": {
@@ -493,7 +500,10 @@
               "f": "hero-banner.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Camila"
+          }
         }
       },
       "tarjetas": {

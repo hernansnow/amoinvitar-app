@@ -115,7 +115,11 @@
           "f": "globo.jpg",
           "pos": "50% 50%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Priscila",
+        "b": "Jorge"
+      }
     }
   },
   "demoBorrosas": {
@@ -275,7 +279,10 @@
               "f": "globo.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Priscila"
+          }
         }
       },
       "tarjetas": {
@@ -448,7 +455,10 @@
               "f": "globo.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Priscila"
+          }
         }
       },
       "tarjetas": {

@@ -113,7 +113,12 @@
     "bienvenida": "font-family:Jost, sans-serif; color:rgba(255, 255, 255, 0.5); font-weight:600; --bv-escala:1;"
   },
   "demo": {
-    "boda": {}
+    "boda": {
+      "nombres": {
+        "a": "Ana",
+        "b": "Alen"
+      }
+    }
   },
   "demoBorrosas": {
     "15": {
@@ -317,7 +322,10 @@
         "15": {
           "portadas": [
             "hero-banner.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Cecilia"
+          }
         }
       },
       "tarjetas": {
@@ -583,7 +591,10 @@
             "globo.jpg",
             "hero-banner.jpg",
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Cecilia"
+          }
         }
       },
       "tarjetas": {

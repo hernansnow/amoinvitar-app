@@ -31,6 +31,12 @@
     },
     "comunion": {
       "album": "foto3.jpg"
+    },
+    "boda": {
+      "nombres": {
+        "a": "Sofi",
+        "b": "Ale"
+      }
     }
   },
   "demoBorrosas": {

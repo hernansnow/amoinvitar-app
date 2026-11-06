@@ -111,7 +111,12 @@
     "bienvenida": "font-family:Molle, cursive; color:rgb(134, 163, 136); font-weight:350; --bv-escala:1.45;"
   },
   "demo": {
-    "boda": {}
+    "boda": {
+      "nombres": {
+        "a": "Vani",
+        "b": "Dani"
+      }
+    }
   },
   "demoBorrosas": {
     "15": {
@@ -310,7 +315,11 @@
         "solo": "{a}"
       },
       "demo": {
-        "15": {}
+        "15": {
+          "nombres": {
+            "a": "Dayana"
+          }
+        }
       },
       "tarjetas": {
         "std": {

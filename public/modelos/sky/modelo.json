@@ -117,7 +117,11 @@
           "f": "hero-banner.jpg",
           "pos": "50% 10%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Camila",
+        "b": "Gustavo"
+      }
     }
   },
   "demoBorrosas": {
@@ -327,7 +331,10 @@
               "pos": "50% 20%",
               "posPc": "50% 6%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Mariela"
+          }
         }
       },
       "tarjetas": {
@@ -512,7 +519,10 @@
               "pos": "50% 20%",
               "posPc": "50% 4%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Mariela"
+          }
         }
       },
       "tarjetas": {

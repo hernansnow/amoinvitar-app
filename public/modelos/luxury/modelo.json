@@ -127,7 +127,10 @@
           "f": "hero-banner4.jpg",
           "pos": "center center"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Flor"
+      }
     }
   },
   "demoBorrosas": {

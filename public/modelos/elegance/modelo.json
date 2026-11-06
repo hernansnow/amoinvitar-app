@@ -112,7 +112,11 @@
           "f": "hero-banner.jpg",
           "pos": "50% 20%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Agus",
+        "b": "Fran"
+      }
     }
   },
   "demoBorrosas": {

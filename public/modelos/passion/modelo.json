@@ -109,7 +109,11 @@
     "boda": {
       "portadas": [
         "globo.jpg"
-      ]
+      ],
+      "nombres": {
+        "a": "Karen",
+        "b": "Mateo"
+      }
     }
   },
   "demoBorrosas": {
@@ -306,7 +310,11 @@
         "solo": "{a}"
       },
       "demo": {
-        "15": {}
+        "15": {
+          "nombres": {
+            "a": "Milena"
+          }
+        }
       },
       "tarjetas": {
         "std": {
@@ -499,7 +507,11 @@
         "solo": "{a}"
       },
       "demo": {
-        "cumple": {}
+        "cumple": {
+          "nombres": {
+            "a": "Milena"
+          }
+        }
       },
       "tarjetas": {
         "std": {

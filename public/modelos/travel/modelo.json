@@ -120,7 +120,11 @@
           "f": "globo.jpg",
           "pos": "50% 50%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Natalia",
+        "b": "Alejo"
+      }
     }
   },
   "demoBorrosas": {
@@ -327,7 +331,10 @@
               "f": "globo.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Natalia"
+          }
         }
       },
       "tarjetas": {
@@ -568,7 +575,10 @@
               "f": "globo.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Natalia"
+          }
         }
       },
       "tarjetas": {

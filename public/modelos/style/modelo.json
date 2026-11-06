@@ -115,7 +115,10 @@
           "f": "hero-banner.jpg",
           "pos": "50% 20%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Lucila"
+      }
     }
   },
   "demoBorrosas": {
@@ -297,7 +300,10 @@
               "pos": "50% 20%",
               "posPc": "50% 38%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Lucila"
+          }
         }
       },
       "tarjetas": {

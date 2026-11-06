@@ -115,7 +115,11 @@
     "boda": {
       "portadas": [
         "inicial.jpg"
-      ]
+      ],
+      "nombres": {
+        "a": "Juliana",
+        "b": "Valeria"
+      }
     }
   },
   "demoBorrosas": {
@@ -316,7 +320,10 @@
         "15": {
           "portadas": [
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Juliana"
+          }
         }
       },
       "tarjetas": {
@@ -494,7 +501,10 @@
             "globo.jpg",
             "hero-banner.jpg",
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Juliana"
+          }
         }
       },
       "tarjetas": {

@@ -118,7 +118,11 @@
           "f": "hero-banner.jpg",
           "pos": "50% 60%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Laura",
+        "b": "Pablo"
+      }
     }
   },
   "demoBorrosas": {
@@ -327,7 +331,10 @@
               "f": "hero-banner.jpg",
               "pos": "40% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Vicky"
+          }
         }
       },
       "tarjetas": {

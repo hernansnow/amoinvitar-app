@@ -113,7 +113,11 @@
           "f": "globo.jpg",
           "pos": "50% 50%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Carla",
+        "b": "Pablo"
+      }
     }
   },
   "demoBorrosas": {

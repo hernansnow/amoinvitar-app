@@ -110,7 +110,12 @@
     "bienvenida": "font-family:Jost, sans-serif; color:rgb(167, 129, 128); font-weight:500; --bv-escala:1;"
   },
   "demo": {
-    "boda": {}
+    "boda": {
+      "nombres": {
+        "a": "Ale",
+        "b": "Bruno"
+      }
+    }
   },
   "demoBorrosas": {
     "15": {
@@ -313,7 +318,10 @@
         "15": {
           "portadas": [
             "hero-banner.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Agustina"
+          }
         }
       },
       "tarjetas": {
@@ -507,7 +515,10 @@
         "cumple": {
           "portadas": [
             "hero-banner.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Agustina"
+          }
         }
       },
       "tarjetas": {

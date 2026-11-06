@@ -118,7 +118,11 @@
           "f": "globo.jpg",
           "pos": "50% 50%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Romi",
+        "b": "Gaby"
+      }
     }
   },
   "demoBorrosas": {
@@ -327,7 +331,10 @@
               "f": "globo.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Romi"
+          }
         }
       },
       "tarjetas": {
@@ -521,7 +528,10 @@
               "f": "globo.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Romi"
+          }
         }
       },
       "tarjetas": {

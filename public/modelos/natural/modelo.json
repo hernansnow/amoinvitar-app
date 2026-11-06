@@ -117,7 +117,10 @@
           "f": "globo.jpg",
           "pos": "50% 50%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Martina"
+      }
     }
   },
   "demoBorrosas": {
@@ -299,7 +302,10 @@
               "f": "globo.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Martina"
+          }
         }
       },
       "tarjetas": {

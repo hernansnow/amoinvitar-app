@@ -118,7 +118,10 @@
           "f": "globo.jpg",
           "pos": "50% 50%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Abi"
+      }
     }
   },
   "demoBorrosas": {
@@ -301,7 +304,10 @@
               "f": "globo.jpg",
               "pos": "50% 50%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Abi"
+          }
         }
       },
       "tarjetas": {

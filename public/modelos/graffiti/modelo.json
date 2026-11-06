@@ -111,7 +111,11 @@
           "f": "hero-banner.jpg",
           "pos": "50% 15%"
         }
-      ]
+      ],
+      "nombres": {
+        "a": "Ariadna",
+        "b": "Mario"
+      }
     }
   },
   "demoBorrosas": {
@@ -272,7 +276,10 @@
               "f": "hero-banner.jpg",
               "pos": "60% 20%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Ariadna"
+          }
         }
       },
       "tarjetas": {
@@ -450,7 +457,10 @@
               "pos": "60% 20%",
               "posPc": "60% 40%"
             }
-          ]
+          ],
+          "nombres": {
+            "a": "Ariadna"
+          }
         }
       },
       "tarjetas": {

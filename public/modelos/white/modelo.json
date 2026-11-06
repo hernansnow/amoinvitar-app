@@ -111,7 +111,12 @@
     "bienvenida": "font-family:Jost, sans-serif; color:rgba(0, 0, 0, 0.5); font-weight:600; --bv-escala:1;"
   },
   "demo": {
-    "boda": {}
+    "boda": {
+      "nombres": {
+        "a": "Flor",
+        "b": "Gonza"
+      }
+    }
   },
   "demoBorrosas": {
     "15": {
@@ -329,7 +334,10 @@
             "hero-banner2.jpg",
             "hero-banner3.jpg",
             "hero-banner4.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Juana"
+          }
         }
       },
       "tarjetas": {

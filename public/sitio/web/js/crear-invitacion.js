@@ -172,7 +172,7 @@
   function pintarVista() {
     var it = actual.lista[actual.i];
     var marco;
-    if (it.demo) marco = el('div', { class: 'ci-celular' }, el('iframe', { src: it.demo + (it.demo.indexOf('?') > -1 ? '&' : '?') + 'directo=1', title: it.nombre }));
+    if (it.demo) marco = el('div', { class: 'ci-celular' }, el('iframe', { src: it.demo, title: it.nombre }));
     else {
       var grande = el('img', { src: it.galeria[0], alt: it.nombre });
       marco = el('div', { class: 'ci-galeria' }, grande,

@@ -113,7 +113,11 @@
     "boda": {
       "portadas": [
         "inicial.jpg"
-      ]
+      ],
+      "nombres": {
+        "a": "Lau",
+        "b": "Pabli"
+      }
     }
   },
   "demoBorrosas": {
@@ -311,7 +315,10 @@
         "15": {
           "portadas": [
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Noelia"
+          }
         }
       },
       "tarjetas": {
@@ -535,7 +542,10 @@
         "cumple": {
           "portadas": [
             "inicial.jpg"
-          ]
+          ],
+          "nombres": {
+            "a": "Noelia"
+          }
         }
       },
       "tarjetas": {
