@@ -81,13 +81,13 @@ function cabecera(P) {
 </header>
 <div class="cajon" id="cajon" role="dialog" aria-label="Menú">
   <div class="cajon-cuerpo">
-    <p class="cajon-titulo">Invitaciones ${ic('chevron')}</p>
-    <div class="cajon-eventos">${items}</div>
+    <button type="button" class="cajon-titulo" data-plegar aria-expanded="true" aria-controls="cajon-ev">Invitaciones ${ic('chevron')}</button>
+    <div class="cajon-eventos" id="cajon-ev">${items}</div>
     <nav class="cajon-lista" aria-label="Secciones"><a href="/album">Álbum QR</a><a href="/#como-funciona" data-cerrar-menu>Cómo funciona</a><a href="/precios">Precios</a><a href="/#faq" data-cerrar-menu>FAQ</a><a href="/contacto">Contacto</a></nav>
     <div class="cajon-botones">
       <a class="btn btn-panel" href="/panel">${ic('user-check')} Mi panel</a>
       <a class="btn btn-verde" href="/crear-invitacion">Crear mi invitación</a>
-      <a class="btn btn-ayuda" href="${C.WHATSAPP}" target="_blank" rel="noopener">Ayuda ${ic('wa')}</a>
+      <a class="btn btn-ayuda" href="${C.WHATSAPP}" target="_blank" rel="noopener">Soporte ${ic('wa')}</a>
     </div>
   </div>
 </div>`;
@@ -95,6 +95,13 @@ function cabecera(P) {
 
 const checks = (arr) => `<ul class="checks">${arr.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul>`;
 
+// Invitación real que flota en la portada de cada página (modelo y tipo de evento)
+const DEMOS = {
+  boda: ['lovestory', 'boda'], 15: ['party', '15'], bautismo: ['amanecer', 'bautismo'], comunion: ['amanecer', 'comunion'],
+  cumple: ['disco', 'cumple'], babyshower: ['celeste', 'babyshower'], graduacion: ['marino', 'graduacion'],
+  empresarial: ['black', 'cumple'], otros: ['navidad', 'navidad'], index: ['garden', 'boda'],
+};
+const demoDe = (id) => { const [m, t] = DEMOS[id] || DEMOS.index; return `/demo/${m}?evento=${t}&paquete=deluxe&directo=1`; };
 function portada(o) {
   const ticks = ['Paquetes gratis y desde <span data-precio="basic">29 €</span>', 'Pago único (solo si te gusta)', 'Sin apps', 'Lista en minutos', 'Prueba gratis'];
   return `<section class="portada${o.evento ? ' evento' : ''}" id="inicio"${o.fondo ? ` style="${o.fondo}"` : ''}>
@@ -107,8 +114,8 @@ function portada(o) {
       <ul class="puntos">${ticks.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul>
     </div>
     <div class="escena" aria-hidden="true">
-      <div class="esc-tablet"><img src="/web/img/hero-tab.webp" alt="" width="1000" height="746"></div>
-      <div class="esc-cel"><img src="/web/img/hero-cel.webp" alt="" width="560" height="1180"></div>
+      <div class="esc-tablet"><iframe src="${o.demo}" data-w="960" data-h="716" loading="eager" tabindex="-1" title="" referrerpolicy="no-referrer"></iframe></div>
+      <div class="esc-cel"><iframe src="${o.demo}" data-w="390" data-h="822" loading="eager" tabindex="-1" title="" referrerpolicy="no-referrer"></iframe></div>
       <div class="ficha f1">${ic('user-check')}<span>38 confirmaron<small>Sofi &amp; Ale</small></span></div>
       <div class="ficha f2">${ic('qr')}<span>Álbum QR<small>Fotos de todos</small></span></div>
       <div class="ficha f3">${ic('mesa')}<span>Mesa 5<small>Busca tu mesa</small></span></div>
@@ -117,7 +124,9 @@ function portada(o) {
 </section>`;
 }
 
-const titulo = (sobre, h, p, extra = '') => `<div class="titulo rev${extra}">${sobre ? `<span class="sobre">${sobre}</span>` : ''}<h2>${h}</h2>${p ? `<p>${p}</p>` : ''}</div>`;
+// README (ronda 36): el texto en fuente de énfasis (Gwendolyn) siempre empieza en mayúscula; un título de una sola palabra va entero en Gwendolyn
+const mayus = (h) => h.replace(/<em>(\s*)(\S)/g, (m, a, c) => `<em>${a}${c.toUpperCase()}`);
+const titulo = (sobre, h, p, extra = '') => `<div class="titulo rev${extra}">${sobre ? `<span class="sobre">${sobre}</span>` : ''}<h2>${mayus(h)}</h2>${p ? `<p>${p}</p>` : ''}</div>`;
 
 function pasos(E) {
   const t = E.tuEvento;
@@ -168,7 +177,7 @@ function eventos() {
 
 function funciones(E) {
   const lista = C.FUNCIONES.map((f) => `<article class="funcion rev" data-g="${f.g}"><div class="ic">${ic(f.i)}</div>${f.plan ? `<span class="plan">${f.plan}</span>` : ''}<h3>${esc(f.t)}</h3><p>${esc(f.p)}</p></article>`).join('');
-  return `<section class="seccion" id="funciones"><div class="caja">${titulo('Todo en un solo lugar', 'Fun<em>ciones</em>', `Prácticas y modernas: lo que hace que ${E.tuEvento} se organice solo.`)}
+  return `<section class="seccion" id="funciones"><div class="caja">${titulo('Todo en un solo lugar', '<em>Funciones</em>', `Prácticas y modernas: lo que hace que ${E.tuEvento} se organice solo.`)}
 <div class="filtros" role="group" aria-label="Filtrar funciones">${C.GRUPOS.map(([k, n], i) => `<button type="button" data-g="${k}" aria-pressed="${i === 0}">${n}</button>`).join('')}</div>
 <div class="funciones">${lista}</div>
 <p class="centro" style="margin-top:28px"><a class="btn btn-verde" href="/precios">Ver qué incluye cada plan</a></p></div></section>`;
@@ -179,7 +188,7 @@ function planes(E) {
   const cards = C.PLANES.map((p) => `<article class="plan-card rev${p.destacado ? ' destacado' : ''}">${p.destacado ? '<span class="cinta">Más elegido</span>' : ''}<h3>${p.nombre}</h3><p class="precio" data-precio="${p.id}">&nbsp;</p><p class="precio-s">${p.id === 'gratis' ? esc(p.sub) : `Pago único · <span data-iva>IVA incluido</span>`}</p><ul>${p.items.map((t, i) => `<li${i === 0 && t.startsWith('Todo') ? ' class="todo"' : ''}>${ic('check')}<span>${esc(t)}</span></li>`).join('')}</ul><a class="btn ${p.destacado ? 'btn-verde' : 'btn-borde'}" href="/crear-invitacion?paquete=${p.id}">${p.boton}</a></article>`).join('');
   const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v, i) => `<td${i === 3 ? ' class="col-d"' : ''}>${celda(v)}</td>`).join('')}</tr>`).join('');
   return `<section class="seccion alt" id="planes"><div class="caja">
-  ${titulo('Planes y precios', 'Un pago, <em>cero complicaciones</em>', 'Sin suscripciones. Sin sorpresas.')}
+  ${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones. Sin sorpresas.')}
   <div class="aviso-pago rev">${ic('eye')}<span>Diséñala y mírala terminada — <strong>pagas solo al publicar</strong></span></div>
   <div class="planes">${cards}</div>
   <p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes cambiar la moneda en el menú. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal. No esperes más, diseña tu invitación hoy mismo sin pagar nada.<br><small>(*) Solo disponible en algunos modelos.</small></p>
@@ -236,7 +245,7 @@ function testimonios() {
 
 function faq(E, P, lista) {
   P.faq = lista || C.preguntas(E);
-  return `<section class="seccion alt" id="faq"><div class="caja">${titulo('Dudas', 'Preguntas <em>frecuentes</em>', 'Todo lo que necesitas saber antes de empezar.')}
+  return `<section class="seccion alt" id="faq"><div class="caja">${titulo('Dudas', '<em>Preguntas</em> frecuentes', 'Todo lo que necesitas saber antes de empezar.')}
 <div class="faq" data-faq>${P.faq.map(([q, a], i) => `<details id="p${i + 1}"><summary>${esc(q)}</summary><div>${a}</div></details>`).join('')}</div>
 <button type="button" class="btn btn-borde faq-mas" hidden>Más preguntas</button></div></section>`;
 }
@@ -325,7 +334,7 @@ const escribe = (slug, P, cuerpo) => { P.slug = slug; writeFileSync(join(RAIZ, s
   const P = { titulo: 'Invitaciones digitales con RSVP, mesas y álbum QR | Amo Invitar!', descripcion: 'Invitaciones digitales interactivas para bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower y eventos. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista. Prueba gratis.' };
   const E = { ...GENERICO };
   escribe('index', P, [
-    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: 'Interactiva y original', h1: 'Invitaciones digitales <span data-pais="en">en Iberoamérica</span>', lead: 'Todo tu evento en un link. La invitación, RSVP, álbum QR, administración de invitados, organización de mesas y entradas al evento… vaya, tu <strong>Planner digital</strong>. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista final.' }),
+    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: 'Interactiva y original', h1: 'Invitaciones digitales <span data-pais="en">en Iberoamérica</span>', lead: 'Todo tu evento en un link. La invitación, RSVP, álbum QR, administración de invitados, organización de mesas y entradas al evento… vaya, tu <strong>Planner digital</strong>. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista final.', demo: demoDe('index') }),
     comoFunciona(E, true), eventos(), funciones(E), planes(E), faq(E, P), testimonios(), nosotros(), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -363,7 +372,7 @@ for (const E0 of C.EVENTOS) {
   const pt = PORTADAS[E.id];
   const P = { titulo: `${pt.t} | Amo Invitar!`, descripcion: pt.d, widget: true };
   escribe(E.pagina, P, [
-    portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES[E.id] }),
+    portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES[E.id], demo: demoDe(E.id) }),
     disenos(E), funciones(E), comoFunciona(E, false), planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),
   ].join('\n'));
 }

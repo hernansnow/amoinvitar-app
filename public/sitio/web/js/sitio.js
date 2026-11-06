@@ -5,6 +5,11 @@
   var d = document, $ = function (s, r) { return (r || d).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || d).querySelectorAll(s)); };
   d.documentElement.classList.remove('sin-js');
 
+  /* ---------- Portadas: la invitación real se escala al tamaño del dispositivo ---------- */
+  var ifr = $$('.escena iframe[data-w]');
+  function escala() { ifr.forEach(function (f) { var w = +f.getAttribute('data-w'), h = +f.getAttribute('data-h'), p = f.parentNode; var k = p.clientWidth / w; f.style.width = w + 'px'; f.style.height = h + 'px'; f.style.transform = 'scale(' + k + ')'; }); }
+  if (ifr.length) { escala(); window.addEventListener('resize', escala); window.addEventListener('load', escala); }
+
   /* ---------- Encabezado: transparente arriba, blanco al bajar ---------- */
   var cab = $('.cab');
   function pintaCab() { if (cab) cab.classList.toggle('solida', window.scrollY > 30 || d.body.classList.contains('cajon-abierto')); }
@@ -25,6 +30,8 @@
   var cajon = $('#cajon'), abrir = $('[data-abrir-menu]');
   function menu(v) { if (!cajon) return; cajon.classList.toggle('abierto', v); d.body.classList.toggle('cajon-abierto', v); if (abrir) abrir.setAttribute('aria-expanded', v); pintaCab(); }
   pintaCab();
+  var plegar = $('[data-plegar]');
+  if (plegar) plegar.addEventListener('click', function () { var v = plegar.getAttribute('aria-expanded') !== 'true'; plegar.setAttribute('aria-expanded', v); $('#cajon-ev').hidden = !v; });
   if (abrir) abrir.addEventListener('click', function () { menu(!cajon.classList.contains('abierto')); });
   $$('[data-cerrar-menu]').forEach(function (b) { b.addEventListener('click', function () { menu(false); }); });
   d.addEventListener('keydown', function (e) { if (e.key === 'Escape') { menu(false); cerrarMoneda(); } });
