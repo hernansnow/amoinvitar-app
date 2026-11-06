@@ -72,7 +72,7 @@ function cabecera(P) {
       <a href="/contacto" aria-label="Contacto"${actual('contacto')}>${ic('mail')}</a>
     </nav>
     <div class="cab-acciones">
-      <div class="moneda" data-moneda><button class="moneda-boton" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Cambiar la moneda"><img data-bandera src="/web/img/flags/es.svg" alt="" width="22" height="15"><span>EUR</span>${ic('chevron')}</button><div class="moneda-lista" role="menu" aria-label="Moneda"></div></div>
+      <div class="moneda" data-moneda><button class="moneda-boton" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Elegir tu país (moneda e idioma)"><img data-bandera src="/web/img/flags/es.svg" alt="" width="22" height="15"><span>EUR</span>${ic('chevron')}</button><div class="moneda-lista" role="menu" aria-label="País"></div></div>
       <a class="mi-panel" href="/panel">${ic('user-check')} Mi panel</a>
       <a class="btn btn-claro btn-crear" href="/crear-invitacion">Crear invitación</a>
       <button class="hamb" type="button" data-abrir-menu aria-label="Abrir el menú" aria-expanded="false" aria-controls="cajon">${ic('menu')}</button>
@@ -197,7 +197,7 @@ function planes(E) {
   ${E.sinTitulo ? '' : titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébalo gratis, míralo terminado y paga solo cuando decidas publicarlo. Sin suscripciones ni sorpresas.')}
   <div class="aviso-pago rev">${ic('eye')}<span>Diséñala y mírala terminada — <strong>pagas solo al publicar</strong></span></div>
   <div class="planes">${cards}</div>
-  <p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes cambiar la moneda en el menú. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal. No esperes más, diseña tu invitación hoy mismo sin pagar nada.<br><small>(*) Solo disponible en algunos modelos.</small></p>
+  <p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes cambiar de país en el menú. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal. No esperes más, diseña tu invitación hoy mismo sin pagar nada.<br><small>(*) Solo disponible en algunos modelos.</small></p>
   <div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div>
   <h3 class="comparar-tit">Compara todos los planes</h3>
   <div class="comparar-caja"><table class="comparar comparar-precios" style="--cols:4" data-paso="8"><thead><tr><th scope="col"><span class="sr">Función</span></th>${C.PLANES.map((p) => `<th scope="col">${p.nombre}<br><small data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : ''}</small></th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>

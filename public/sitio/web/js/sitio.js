@@ -144,6 +144,15 @@
 
   function getCookie(n) { var m = d.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : ''; }
   function setMoneda(c) { d.cookie = 'cur=' + c + '; Path=/; Max-Age=31536000; SameSite=Lax'; }
+  /* El selector es de PAÍS: cada país trae su moneda y su variante de español (la moneda y el idioma van anclados al país).
+     Por defecto se usa el país detectado; lo elegido se guarda en cookies (pais_sel, cur, idioma). Todavía no se traduce:
+     la variante queda guardada para cuando estén definidos los textos. */
+  var LISTA_PAISES = [['ES', 'España', 'EUR', 'es-es'], ['AR', 'Argentina', 'ARS', 'es-ar'], ['UY', 'Uruguay', 'UYU', 'es-ar'], ['MX', 'México', 'MXN', 'es-latam'], ['CO', 'Colombia', 'COP', 'es-latam'], ['CL', 'Chile', 'CLP', 'es-latam'], ['PE', 'Perú', 'PEN', 'es-latam'],
+    ['EC', 'Ecuador', 'USD', 'es-latam'], ['BO', 'Bolivia', 'BOB', 'es-latam'], ['PY', 'Paraguay', 'PYG', 'es-latam'], ['VE', 'Venezuela', 'USD', 'es-latam'], ['CR', 'Costa Rica', 'CRC', 'es-latam'], ['PA', 'Panamá', 'USD', 'es-latam'], ['DO', 'República Dominicana', 'DOP', 'es-latam'],
+    ['GT', 'Guatemala', 'GTQ', 'es-latam'], ['HN', 'Honduras', 'HNL', 'es-latam'], ['SV', 'El Salvador', 'USD', 'es-latam'], ['NI', 'Nicaragua', 'NIO', 'es-latam'], ['CU', 'Cuba', 'USD', 'es-latam'], ['PR', 'Puerto Rico', 'USD', 'es-latam'], ['US', 'Estados Unidos', 'USD', 'es-latam'],
+    ['BR', 'Brasil', 'BRL', 'es-latam'], ['PT', 'Portugal', 'EUR', 'es-es'], ['FR', 'Francia', 'EUR', 'es-es'], ['DE', 'Alemania', 'EUR', 'es-es'], ['IT', 'Italia', 'EUR', 'es-es'], ['GB', 'Reino Unido', 'GBP', 'es-es'], ['IE', 'Irlanda', 'EUR', 'es-es'], ['NL', 'Países Bajos', 'EUR', 'es-es'],
+    ['BE', 'Bélgica', 'EUR', 'es-es'], ['AT', 'Austria', 'EUR', 'es-es'], ['CH', 'Suiza', 'CHF', 'es-es'], ['AD', 'Andorra', 'EUR', 'es-es'], ['CA', 'Canadá', 'CAD', 'es-latam'], ['AU', 'Australia', 'AUD', 'es-latam'], ['NZ', 'Nueva Zelanda', 'NZD', 'es-latam']];
+  function setPais(p) { var x = LISTA_PAISES.filter(function (y) { return y[0] === p; })[0]; if (!x) return null; ['pais_sel=' + x[0], 'cur=' + x[2], 'idioma=' + x[3]].forEach(function (c) { d.cookie = c + '; Path=/; Max-Age=31536000; SameSite=Lax'; }); return x; }
   function nombreMoneda(c) {
     if (NOMBRE_MONEDA[c]) return NOMBRE_MONEDA[c];
     try { var p = new Intl.NumberFormat('es', { style: 'currency', currency: c, currencyDisplay: 'name' }).formatToParts(2).filter(function (x) { return x.type === 'currency'; }); if (p[0]) return p[0].value; } catch (e) { /* sin nombre */ }
@@ -192,18 +201,20 @@
     // Texto de abajo, con la lógica de Albunear: moneda y medios del país
     $$('[data-nota-precios]').forEach(function (e) {
       e.innerHTML = ar
-        ? 'Precios en <strong>pesos argentinos</strong>.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + ' Podés cambiar la moneda en el menú. No esperes más, diseñá tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>'
-        : 'Precios en <strong>' + nombreMoneda(c.moneda) + '</strong>. Puedes cambiar la moneda en el menú.' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>';
+        ? 'Precios en <strong>pesos argentinos</strong>.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + ' Podés cambiar de país en el menú. No esperes más, diseñá tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>'
+        : 'Precios en <strong>' + nombreMoneda(c.moneda) + '</strong>. Puedes cambiar de país en el menú.' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>';
     });
     $$('[data-pago-iconos]').forEach(function (e) { e.innerHTML = m.logos.map(logo).join('') + m.extra; });
     $$('[data-iva]').forEach(function (e) { e.textContent = c.moneda === 'EUR' ? ' · IVA incluido' : ''; });
-    var bd = $('[data-bandera]');
-    if (bd && c.pais && /^[A-Z]{2}$/.test(c.pais)) { bd.src = '/web/img/flags/' + c.pais.toLowerCase() + '.svg'; bd.onerror = function () { bd.onerror = null; bd.src = '/web/img/flags/es.svg'; }; }
-    // Selector de moneda
-    if ($mon && c.monedas) {
+    // Selector de país (la moneda y el idioma salen del país)
+    if ($mon) {
+      var sel = getCookie('pais_sel') || c.pais || 'ES';
+      var actual = LISTA_PAISES.filter(function (y) { return y[0] === sel; })[0];
+      // Si el país no está en la lista, se muestra el detectado pero con la moneda que corresponde
       var b = $('.moneda-boton span', $mon); if (b) b.textContent = c.moneda;
+      var bd2 = $('[data-bandera]', $mon); if (bd2) bd2.src = '/web/img/flags/' + (actual ? actual[0] : (c.pais || 'es')).toLowerCase() + '.svg';
       var ul = $('.moneda-lista', $mon);
-      ul.innerHTML = c.monedas.map(function (x) { return '<button type="button" role="menuitemradio" aria-checked="' + (x === c.moneda) + '" data-m="' + x + '"><span>' + nombreMoneda(x).replace(/^./, function (z) { return z.toUpperCase(); }) + '</span><small>' + x + '</small></button>'; }).join('');
+      ul.innerHTML = LISTA_PAISES.map(function (y) { return '<button type="button" role="menuitemradio" aria-checked="' + (y[0] === sel) + '" data-p="' + y[0] + '"><span class="pa"><img src="/web/img/flags/' + y[0].toLowerCase() + '.svg" alt="" width="22" height="15">' + y[1] + '</span><small>' + y[2] + '</small></button>'; }).join('');
     }
   }
   var catalogo = null;
@@ -216,7 +227,7 @@
   if ($mon) {
     var bm = $('.moneda-boton', $mon);
     bm.addEventListener('click', function (e) { e.stopPropagation(); var v = !$mon.classList.contains('abierta'); $mon.classList.toggle('abierta', v); bm.setAttribute('aria-expanded', v); });
-    $mon.addEventListener('click', function (e) { var x = e.target.closest('[data-m]'); if (!x) return; setMoneda(x.getAttribute('data-m')); cerrarMoneda(); cargaCatalogo(x.getAttribute('data-m')); });
+    $mon.addEventListener('click', function (e) { var x = e.target.closest('[data-p]'); if (!x) return; var p = setPais(x.getAttribute('data-p')); cerrarMoneda(); if (p) cargaCatalogo(p[2]); });
     d.addEventListener('click', function (e) { if (!$mon.contains(e.target)) cerrarMoneda(); });
   }
   if ($mon || $('[data-precio],[data-pais]')) cargaCatalogo(getCookie('cur') || '');

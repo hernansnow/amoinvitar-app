@@ -737,3 +737,8 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .confianza span { display: block; font-size: 14px; line-height: 1.4; color: var(--suave); margin-top: 2px; }
 
 .comparar tbody tr[hidden] { display: none !important; }
+
+/* README (ronda 38): selector de país */
+.moneda-lista { width: 270px; }
+.moneda-lista .pa { display: inline-flex; align-items: center; gap: 10px; }
+.moneda-lista .pa img { width: 22px; height: 15px; object-fit: cover; border-radius: 2px; }
