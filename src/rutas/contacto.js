@@ -11,6 +11,8 @@
 // tiempo mínimo de 3 s entre abrir y enviar, y 5 envíos cada 10 minutos por IP (LIMITE_PIN).
 import { json, HttpError } from '../lib/util.js';
 import { sendEmail, mailAvisoInterno } from '../lib/email.js';
+import { asegurarTablasPro } from '../pro/esquema.js';
+import { randomId } from '../lib/util.js';
 
 const linea = (v, max = 200) => String(v ?? '').replace(/[\r\n\t]+/g, ' ').trim().slice(0, max);
 const MAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -49,6 +51,12 @@ export async function procesarContacto(env, request, c) {
   if (!c.mensaje) throw new HttpError(400, 'Falta el mensaje.');
   if (!c.privacidad) throw new HttpError(400, 'Para enviarlo hay que aceptar la política de privacidad.');
   const pagina = c.pagina || request.headers.get('referer') || '';
+  // README (ronda 35): queda guardado para verlo en /admin además del mail
+  try {
+    await asegurarTablasPro(env);
+    await env.DB.prepare('INSERT INTO consultas (id, nombre, email, telefono, evento, pais, mensaje, pagina, creado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .bind('cn_' + randomId(6), c.nombre, c.email, c.telefono || null, c.evento || null, c.pais || null, c.mensaje, pagina || null, new Date().toISOString()).run();
+  } catch (e) { console.error('[consulta]', e); }
   await sendEmail(env, { to: env.SUPPORT_EMAIL || 'hola@amoinvitar.com', replyTo: c.email, ...mailAvisoInterno(env, {
     asunto: `Contacto web · ${c.nombre}${c.evento ? ` · ${c.evento}` : ''}`,
     lineas: [`Nombre: ${c.nombre}`, `Mail: ${c.email}`, c.telefono ? `Teléfono: ${c.telefono}` : '', c.evento ? `Evento: ${c.evento}` : '', c.pais ? `País: ${c.pais}` : '',

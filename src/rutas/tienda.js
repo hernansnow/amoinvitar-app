@@ -303,7 +303,7 @@ export async function cumplirPedido(env, request, id) {
 }
 
 // El pedido con los nombres que usa el módulo de facturas (el mismo de Albunear)
-function ordenParaFactura(p) {
+export function ordenParaFactura(p) {
   const f = p.factura ? JSON.parse(p.factura) : {};
   return {
     id: p.id, event_id: p.evento_id, user_id: p.usuario_id || '', email: p.email,

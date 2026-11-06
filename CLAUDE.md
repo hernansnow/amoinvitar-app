@@ -38,3 +38,6 @@ lo personaliza en el panel y paga al publicar. Ver `README.md` (carpetas y cómo
 | Contacto (formulario único) | `src/rutas/contacto.js`, `public/comun/js/contacto.js` |
 | Web nueva / sitio viejo | `src/sitio/nuevo.js`, `src/sitio/legado.js`, `public/sitio/` |
 | Elegir modelo + Personalizar (para las páginas) | `public/sitio/web/js/crear-invitacion.js` |
+| Páginas de la web nueva (se generan: `npm run sitio`) | `scripts/sitio/contenido.mjs`, `scripts/sitio/construir.mjs` |
+| Profesionales: tablero, créditos, marca, equipo | `src/rutas/empresa.js`, `src/pro/`, `public/empresa/`, `docs/empresas.md` |
+| Consola de administración | `src/rutas/superadmin.js`, `src/rutas/consola.js`, `public/admin/index.html` |

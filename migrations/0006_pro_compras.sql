@@ -36,3 +36,13 @@ CREATE TABLE IF NOT EXISTS consultas (
   estado   TEXT NOT NULL DEFAULT 'nueva',   -- nueva | respondida | archivada
   creado   TEXT NOT NULL
 );
+
+-- Registro de lo que cambia el administrador (planes, vencimientos, estados…)
+CREATE TABLE IF NOT EXISTS admin_log (
+  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  fecha   TEXT NOT NULL,
+  admin   TEXT,
+  accion  TEXT NOT NULL,
+  objeto  TEXT,
+  detalle TEXT
+);

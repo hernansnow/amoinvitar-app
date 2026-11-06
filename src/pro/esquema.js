@@ -78,6 +78,14 @@ export const TABLAS_PRO = [
     estado   TEXT NOT NULL DEFAULT 'nueva',
     creado   TEXT NOT NULL
   )`,
+  `CREATE TABLE IF NOT EXISTS admin_log (
+    id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha   TEXT NOT NULL,
+    admin   TEXT,
+    accion  TEXT NOT NULL,
+    objeto  TEXT,
+    detalle TEXT
+  )`,
 ];
 
 let listo = false;

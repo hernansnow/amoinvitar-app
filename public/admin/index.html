@@ -46,12 +46,28 @@
   dialog h2 { margin: 0 0 12px; font-size: 20px; font-weight: 500; }
   dialog form { display: grid; gap: 12px; }
   #entrada { max-width: 420px; margin: 60px auto; text-align: center; }
+  .cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .cifras .c { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 14px 16px; text-align: left; font: inherit; cursor: default; }
+  .cifras button.c { cursor: pointer; } .cifras button.c:hover { border-color: var(--verde); }
+  .cifras b { display: block; font: 500 28px/1.15 Jost, sans-serif; } .cifras span { color: var(--suave); font-size: 14px; }
+  .barras { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; align-items: end; height: 170px; background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 14px 14px 8px; margin-bottom: 18px; }
+  .barras div { display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; height: 100%; text-align: center; font-size: 12px; color: var(--suave); }
+  .barras i { display: block; flex: none; background: var(--verde); border-radius: 6px 6px 0 0; }
+  .filtros { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin-bottom: 14px; }
+  .filtros label { min-width: 150px; } .filtros .ancho { flex: 1; min-width: 220px; }
+  .dos { display: grid; gap: 14px; } @media (min-width: 800px) { .dos { grid-template-columns: 1fr 1fr; } }
+  .caja { border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; background: var(--claro); font-size: 15px; } .caja.aviso { background: #fff1d6; } .caja.mal { background: #fde3df; }
+  .acciones { display: flex; gap: 6px; flex-wrap: wrap; } .acciones .b { padding: 7px 12px; font-size: 13px; }
+  .grupo { border-top: 1px solid #eef4f1; padding-top: 12px; margin-top: 12px; display: grid; gap: 8px; } .grupo h3 { font-size: 15px; margin: 0; }
+  .marcas { display: flex; flex-wrap: wrap; gap: 6px 14px; } .marcas label { display: flex; flex-direction: row; gap: 6px; align-items: center; color: var(--tinta); } .marcas input { width: auto; }
+  dialog.ancho { max-width: 640px; }
+  .chico { font-size: 13px; color: var(--suave); }
 </style>
 </head>
 <body>
 <header>
   <h1>Administración · Amo Invitar!</h1>
-  <nav><a href="/admin/facturas">Facturas</a><a href="/mi-cuenta">Mi cuenta</a><a href="/">Sitio</a></nav>
+  <nav><a href="/mi-cuenta">Mi cuenta</a><a href="/">Sitio</a></nav>
 </header>
 <main>
   <div id="entrada" hidden>
@@ -66,15 +82,15 @@
   </div>
 </main>
 <div id="aviso" hidden></div>
-<dialog id="dlg"><h2 id="dlg-t"></h2><form method="dialog" id="dlg-f"><div id="dlg-c" style="display:grid;gap:12px"></div><div class="fila" style="justify-content:flex-end"><button class="b sec" type="button" id="dlg-no">Cancelar</button><button class="b" type="submit" id="dlg-si">Aceptar</button></div></form></dialog>
+<dialog id="dlg" class="ancho"><h2 id="dlg-t"></h2><form method="dialog" id="dlg-f"><div id="dlg-c" style="display:grid;gap:12px"></div><div class="fila" style="justify-content:flex-end"><button class="b sec" type="button" id="dlg-no">Cancelar</button><button class="b" type="submit" id="dlg-si">Aceptar</button></div></form></dialog>
 <script>
 (function () {
   'use strict';
   var $ = function (s) { return document.querySelector(s); };
-  var D = null, TAB = 'pro';
+  var D = null, TAB = 'resumen', ANIO = new Date().getFullYear();
   var clave = ''; try { clave = sessionStorage.getItem('ai_admin') || ''; } catch (e) { /* sin almacenamiento */ }
   function el(t, a, h) { var e = document.createElement(t); Object.keys(a || {}).forEach(function (k) { if (k === 'class') e.className = a[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), a[k]); else if (a[k] != null && a[k] !== false) e.setAttribute(k, a[k] === true ? '' : a[k]); }); [].concat(h == null ? [] : h).forEach(function (x) { if (x != null) e.append(x); }); return e; }
-  function aviso(t, mal) { var a = $('#aviso'); a.textContent = t; a.className = mal ? 'error' : ''; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 3800); }
+  function aviso(t, mal) { var a = $('#aviso'); a.textContent = t; a.className = mal ? 'error' : ''; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 4200); }
   function api(ruta, cuerpo) {
     var o = { headers: Object.assign({ 'content-type': 'application/json' }, clave ? { 'x-admin': clave } : {}) };
     if (cuerpo !== undefined) { o.method = 'POST'; o.body = JSON.stringify(cuerpo); }
@@ -83,117 +99,348 @@
   var fecha = function (iso) { return iso ? String(iso).slice(0, 10).split('-').reverse().join('/') : '—'; };
   var fechaSeg = function (s) { return s ? new Date(s * 1000).toISOString().slice(0, 10).split('-').reverse().join('/') : '—'; };
   var hoy = function () { return new Date().toISOString(); };
+  var eur = function (n) { return Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; };
+  var dinero = function (n, m) { try { return new Intl.NumberFormat('es-ES', { style: 'currency', currency: m || 'EUR' }).format(n); } catch (e) { return n + ' ' + m; } };
+  var q = function (o) { return Object.keys(o).filter(function (k) { return o[k] !== '' && o[k] != null; }).map(function (k) { return k + '=' + encodeURIComponent(o[k]); }).join('&'); };
+  var MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  var MEDIOS = { stripe: 'Tarjeta (Stripe)', paypal: 'PayPal', mercadopago: 'Mercado Pago', transferencia: 'Transferencia', gratis: 'Gratis', cupon: 'Cupón 100 %', admin: 'Administración', profesionales: 'Profesionales' };
 
   // Ventanita para pedir datos
-  function pedir(titulo, campos) {
-    return new Promise(function (ok) {
-      var d = $('#dlg'), c = $('#dlg-c'); $('#dlg-t').textContent = titulo; c.replaceChildren();
+  function pedir(titulo, campos, ok) {
+    return new Promise(function (res) {
+      var d = $('#dlg'), c = $('#dlg-c'); $('#dlg-t').textContent = titulo; $('#dlg-si').textContent = ok || 'Aceptar'; c.replaceChildren();
       var ins = campos.map(function (f) {
+        if (f.nota) { c.append(el('p', { class: 'meta', style: 'margin:0' }, f.nota)); return null; }
         var i = f.tipo === 'select' ? el('select', { name: f.n }, f.op.map(function (o) { return el('option', { value: o[0] }, o[1]); })) : f.tipo === 'texto' ? el('textarea', { name: f.n, rows: 3 }) : el('input', { name: f.n, type: f.tipo || 'text' });
         if (f.v != null) i.value = f.v; c.append(el('label', {}, [f.l, i])); return i;
-      });
-      var fin = function (v) { d.close(); ok(v); };
+      }).filter(Boolean);
+      var fin = function (v) { d.close(); res(v); };
       $('#dlg-no').onclick = function () { fin(null); };
       $('#dlg-f').onsubmit = function (e) { e.preventDefault(); var r = {}; ins.forEach(function (i) { r[i.name] = i.value; }); fin(r); };
       d.showModal();
     });
   }
-  function accion(btn, ruta, cuerpo, msg) {
-    btn.disabled = true;
-    return api(ruta, cuerpo).then(function (r) { aviso(msg || 'Listo ✓'); return cargar(); }).catch(function (e) { aviso(e.message, true); }).then(function () { btn.disabled = false; });
+  // Ventana con contenido propio (ficha de invitación, de cliente…)
+  function ventana(titulo, cuerpo) {
+    var d = $('#dlg'), c = $('#dlg-c'); $('#dlg-t').textContent = titulo; c.replaceChildren(cuerpo);
+    $('#dlg-si').hidden = true; $('#dlg-no').textContent = 'Cerrar'; $('#dlg-no').onclick = function () { d.close(); $('#dlg-si').hidden = false; $('#dlg-no').textContent = 'Cancelar'; };
+    $('#dlg-f').onsubmit = function (e) { e.preventDefault(); };
+    d.onclose = function () { $('#dlg-si').hidden = false; $('#dlg-no').textContent = 'Cancelar'; };
+    d.showModal();
   }
-
-  // ── Profesionales ──
-  function vistaPro() {
-    var v = el('div'), pend = D.solicitudes.filter(function (s) { return s.estado === 'pendiente'; }), resto = D.solicitudes.filter(function (s) { return s.estado !== 'pendiente'; });
-    v.append(el('h2', {}, 'Solicitudes de cuenta profesional'));
-    if (!pend.length) v.append(el('p', { class: 'vacio' }, 'No hay solicitudes pendientes.'));
-    pend.forEach(function (s) {
-      var b1 = el('button', { class: 'b', type: 'button' }, 'Aprobar…'), b2 = el('button', { class: 'b mal', type: 'button' }, 'Rechazar…');
-      b1.onclick = function () {
-        pedir('Aprobar a ' + (s.empresa || s.nombre), [
-          { n: 'nivel', l: 'Nivel', tipo: 'select', v: s.nivel, op: [['pro', 'Pro (sin pase anual)'], ['studio', 'Studio (pase anual)']] },
-          { n: 'paseMeses', l: 'Pase anual ya pagado (solo Studio): meses', tipo: 'number', v: 0 },
-          { n: 'creditos', l: 'Créditos iniciales (opcional)', tipo: 'number', v: 0 },
-          { n: 'nota', l: 'Nota interna', tipo: 'text' }]).then(function (r) { if (r) accion(b1, '/api/admin/pro/solicitudes/' + s.id + '/aprobar', r, 'Cuenta aprobada: se avisó por mail'); });
-      };
-      b2.onclick = function () { pedir('Rechazar la solicitud', [{ n: 'motivo', l: 'Motivo (se manda por mail; puede quedar vacío)', tipo: 'texto' }]).then(function (r) { if (r) accion(b2, '/api/admin/pro/solicitudes/' + s.id + '/rechazar', r, 'Solicitud rechazada'); }); };
-      v.append(el('div', { class: 'tarjeta' }, [
-        el('h3', {}, [s.empresa || s.nombre, ' ', el('span', { class: 'tag' }, 'Pide ' + (s.nivel === 'studio' ? 'Studio' : 'Pro'))]),
-        el('div', { class: 'meta' }, [s.nombre + ' · ', el('a', { href: 'mailto:' + s.email }, s.email), s.telefono ? ' · ' + s.telefono : '', s.pais ? ' · ' + s.pais : '', ' · ' + fecha(s.creado)]),
-        el('div', { class: 'meta' }, [s.rubro + (s.profesion ? ' · ' + s.profesion : '') + ' · ', el('a', { href: /^https?:/i.test(s.web) ? s.web : (s.web[0] === '@' ? 'https://instagram.com/' + s.web.slice(1) : 'https://' + s.web), target: '_blank', rel: 'noopener noreferrer' }, s.web)]),
-        el('div', { class: 'desc' }, s.descripcion),
-        el('div', { class: 'fila' }, [b1, b2])]));
-    });
-    if (resto.length) { v.append(el('h3', {}, 'Resueltas')); v.append(tabla(['Fecha', 'Quién', 'Pidió', 'Estado', 'Nota'], resto.map(function (s) { return [fecha(s.resuelto || s.creado), (s.empresa || s.nombre) + ' · ' + s.email, s.nivel, el('span', { class: 'tag' + (s.estado === 'rechazada' ? ' mal' : '') }, s.estado), s.nota || '']; }))); }
-    v.append(el('h2', { style: 'margin-top:30px' }, 'Empresas'));
-    if (!D.empresas.length) v.append(el('p', { class: 'vacio' }, 'Todavía no hay cuentas profesionales.'));
-    else v.append(tabla(['Empresa', 'Nivel', 'Pase hasta', 'Créditos', 'Eventos', 'Estado', ''], D.empresas.map(function (e) {
-      var vencido = e.nivel === 'studio' && (!e.pase_vence || e.pase_vence < hoy());
-      var bc = el('button', { class: 'b sec', type: 'button' }, '＋ Créditos'), bp = el('button', { class: 'b sec', type: 'button' }, 'Renovar pase'), be = el('button', { class: 'b ' + (e.estado === 'activa' ? 'mal' : 'sec'), type: 'button' }, e.estado === 'activa' ? 'Suspender' : 'Activar');
-      bc.onclick = function () {
-        pedir('Agregar créditos a ' + e.nombre, [{ n: 'cantidad', l: 'Cantidad', tipo: 'number', v: 5 },
-          { n: 'origen', l: 'Origen', tipo: 'select', v: e.nivel === 'studio' ? 'studio-25' : 'pro-5', op: [['pro-5', 'Pack Pro 5'], ['pro-10', 'Pack Pro 10'], ['studio-10', 'Pack Studio 10'], ['studio-25', 'Pack Studio 25'], ['studio-50', 'Pack Studio 50'], ['studio-100', 'Pack Studio 100'], ['suelto', 'Crédito suelto'], ['manual', 'Regalo / ajuste']] },
-          { n: 'nota', l: 'Nota (pago, transferencia…)', tipo: 'text' }]).then(function (r) { if (r) accion(bc, '/api/admin/pro/empresas/' + e.id + '/creditos', r, 'Créditos agregados (vencen a los 12 meses)'); });
-      };
-      bp.onclick = function () { pedir('Renovar el pase de ' + e.nombre, [{ n: 'meses', l: 'Meses', tipo: 'number', v: 12 }]).then(function (r) { if (r) accion(bp, '/api/admin/pro/empresas/' + e.id + '/pase', r, 'Pase renovado: los créditos sin usar pasan al año siguiente'); }); };
-      be.onclick = function () { accion(be, '/api/admin/pro/empresas/' + e.id + '/estado', { estado: e.estado === 'activa' ? 'suspendida' : 'activa' }, 'Estado actualizado'); };
-      return [el('div', {}, [el('strong', {}, e.nombre), el('div', { class: 'meta' }, e.duenio || '')]), el('span', { class: 'tag' }, e.nivel),
-        e.nivel === 'studio' ? el('span', { class: vencido ? 'tag mal' : '' }, fecha(e.pase_vence)) : '—',
-        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'meta' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos),
-        el('span', { class: 'tag' + (e.estado === 'activa' ? '' : ' mal') }, e.estado), el('div', { class: 'fila', style: 'margin:0' }, [bc, e.nivel === 'studio' ? bp : null, be])];
-    })));
-    return v;
+  function accion(btn, ruta, cuerpo, msg, despues) {
+    if (btn) btn.disabled = true;
+    return api(ruta, cuerpo || {}).then(function (r) { aviso(msg || 'Listo ✓'); return (despues ? despues(r) : refrescar()).then(function () { return r; }); }).catch(function (e) { aviso(e.message, true); }).then(function (r) { if (btn) btn.disabled = false; return r; });
   }
-
-  // ── Diseños a medida ──
-  function vistaMedidas() {
-    var v = el('div', {}, [el('h2', {}, 'Diseños a medida')]);
-    if (!D.medidas.length) { v.append(el('p', { class: 'vacio' }, 'No hay proyectos enviados.')); return v; }
-    var orden = { 0: 0, 1: 1, 2: 2 }, est = function (m) { return m.listo ? 2 : m.aprobado ? 1 : 0; };
-    v.append(tabla(['Proyecto', 'Enviado', 'Estado', ''], D.medidas.slice().sort(function (a, b) { return orden[est(a)] - orden[est(b)]; }).map(function (m) {
-      var ba = el('button', { class: 'b', type: 'button' }, 'Aprobar proyecto'), bl = el('button', { class: 'b sec', type: 'button' }, 'Marcar listo');
-      ba.onclick = function () { accion(ba, '/api/admin/medidas/' + m.id + '/aprobar', { parte: m.parte }, 'Aprobado: se avisó al cliente'); };
-      bl.onclick = function () { accion(bl, '/api/admin/medidas/' + m.id + '/lista', { parte: m.parte }, 'Marcado como listo'); };
-      return [el('div', {}, [el('strong', {}, m.nombres || m.id), el('div', { class: 'meta' }, m.producto + ' · ' + m.tipo + (m.parte === 'std' ? ' · Save The Date' : ''))]), fecha(m.enviado),
-        el('span', { class: 'tag' + (m.listo ? '' : m.aprobado ? '' : ' aviso') }, m.listo ? 'Listo' : m.aprobado ? 'Aprobado · en diseño' : 'Por aprobar'),
-        el('div', { class: 'fila', style: 'margin:0' }, [el('a', { class: 'b sec', href: '/panel/' + m.id, target: '_blank', rel: 'noopener' }, 'Abrir panel'), !m.aprobado ? ba : null, m.aprobado && !m.listo ? bl : null])];
-    })));
-    return v;
-  }
-
-  // ── Transferencias ──
-  function vistaTransf() {
-    var v = el('div', {}, [el('h2', {}, 'Transferencias pendientes')]);
-    if (!D.transferencias.length) { v.append(el('p', { class: 'vacio' }, 'No hay transferencias por cobrar.')); return v; }
-    v.append(tabla(['Pedido', 'Quién', 'Importe', 'Fecha', ''], D.transferencias.map(function (p) {
-      var b = el('button', { class: 'b', type: 'button' }, 'Marcar cobrada');
-      b.onclick = function () { if (confirm('¿Ya llegó la transferencia #' + p.numero + '? Se activa la invitación y se emite la factura.')) accion(b, '/api/admin/pedidos/' + p.id + '/cobrado', {}, 'Cobrada: se activó el pedido'); };
-      return ['#' + p.numero + ' · ' + p.producto, p.email, p.importe + ' ' + p.moneda, fechaSeg(p.creado), b];
-    })));
-    return v;
-  }
-
   function tabla(cab, filas) {
     return el('div', { class: 'envuelve' }, el('table', {}, [el('thead', {}, el('tr', {}, cab.map(function (c) { return el('th', {}, c); }))), el('tbody', {}, filas.map(function (f) { return el('tr', {}, f.map(function (c) { return el('td', {}, c); })); }))]));
   }
-
-  function pinta() {
-    var pend = { pro: D.solicitudes.filter(function (s) { return s.estado === 'pendiente'; }).length, medidas: D.medidas.filter(function (m) { return !m.aprobado; }).length, transf: D.transferencias.length };
-    var tabs = $('#tabs'); tabs.replaceChildren();
-    [['pro', 'Profesionales', pend.pro], ['medidas', 'Diseños a medida', pend.medidas], ['transf', 'Transferencias', pend.transf]].forEach(function (t) {
-      tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], onclick: function () { TAB = t[0]; pinta(); } }, [t[1], t[2] ? el('b', {}, String(t[2])) : null]));
+  function tag(t, clase) { return el('span', { class: 'tag' + (clase ? ' ' + clase : '') }, t); }
+  var vacio = function (t) { return el('p', { class: 'vacio' }, t); };
+  var btn = function (txt, clase, fn) { var b = el('button', { class: 'b ' + (clase || ''), type: 'button' }, txt); b.onclick = function () { fn(b); }; return b; };
+  function buscador(valores, campos, alBuscar) {
+    var f = el('form', { class: 'filtros' }), ins = {};
+    campos.forEach(function (c) {
+      var i = c.op ? el('select', { name: c.n }, c.op.map(function (o) { return el('option', { value: o[0] }, o[1]); })) : el('input', { name: c.n, type: 'search', placeholder: c.ph || '' });
+      i.value = valores[c.n] || ''; ins[c.n] = i; f.append(el('label', { class: c.ancho ? 'ancho' : '' }, [c.l, i]));
     });
-    $('#vista').replaceChildren(TAB === 'pro' ? vistaPro() : TAB === 'medidas' ? vistaMedidas() : vistaTransf());
+    f.append(el('button', { class: 'b', type: 'submit' }, 'Buscar'));
+    f.onsubmit = function (e) { e.preventDefault(); var r = {}; Object.keys(ins).forEach(function (k) { r[k] = ins[k].value; }); alBuscar(r); };
+    return f;
+  }
+  function paginas(pag, hayMas, ir) {
+    return el('div', { class: 'fila' }, [pag > 0 ? btn('← Anteriores', 'sec', function () { ir(pag - 1); }) : null, hayMas ? btn('Siguientes →', 'sec', function () { ir(pag + 1); }) : null, el('span', { class: 'chico' }, 'Página ' + (pag + 1))]);
+  }
+  var VISTAS = {}; // datos de cada pestaña (se cargan al abrirla)
+
+  // ══ Resumen ══
+  function vistaResumen() {
+    var v = el('div'), s = VISTAS.resumen;
+    if (!s) { cargaVista('resumen', '/api/admin/estadisticas?year=' + ANIO); return vacio('Cargando…'); }
+    var anios = el('select', { style: 'width:auto', onchange: function (e) { ANIO = +e.target.value; VISTAS.resumen = null; pinta(); } }, [0, 1, 2, 3].map(function (i) { var y = new Date().getFullYear() - i; return el('option', { value: y }, String(y)); })); anios.value = ANIO;
+    v.append(el('div', { class: 'fila', style: 'justify-content:space-between;margin:0 0 12px' }, [el('h2', { style: 'margin:0' }, 'Resumen del año'), anios]));
+    var ir = function (tab) { return function () { TAB = tab; pinta(); }; };
+    var p = s.pendientes;
+    v.append(el('div', { class: 'cifras' }, [
+      el('div', { class: 'c' }, [el('b', {}, eur(s.total)), el('span', {}, 'Ventas con IVA (' + s.operaciones + ' cobros)')]),
+      el('div', { class: 'c' }, [el('b', {}, eur(s.neto)), el('span', {}, 'Sin IVA')]),
+      el('div', { class: 'c' }, [el('b', {}, eur(s.iva)), el('span', {}, 'IVA incluido')]),
+      el('div', { class: 'c' }, [el('b', {}, String(s.usuarios)), el('span', {}, 'Clientes')])]));
+    v.append(el('h3', { style: 'margin:6px 0 8px' }, 'Pendiente de revisar'));
+    v.append(el('div', { class: 'cifras' }, [['transferencias', 'Transferencias por cobrar', 'pedidos'], ['medidas', 'Diseños a medida por aprobar', 'medidas'], ['solicitudes', 'Solicitudes de cuenta profesional', 'pro'], ['compras', 'Pedidos de créditos por cobrar', 'pro'], ['consultas', 'Consultas nuevas', 'consultas']].map(function (x) {
+      return el('button', { class: 'c', type: 'button', onclick: x[0] === 'transferencias' ? function () { FILTROS.pedidos = { estado: 'pendiente', medio: 'transferencia' }; VISTAS.pedidos = null; TAB = 'pedidos'; pinta(); } : ir(x[2]) }, [el('b', { style: p[x[0]] ? 'color:#b3392c' : '' }, String(p[x[0]])), el('span', {}, x[1])]);
+    }).concat([el('div', { class: 'c' }, [el('b', {}, String(s.eventos.vencen30)), el('span', {}, 'Invitaciones que vencen en 30 días')])])));
+    var max = Math.max.apply(null, s.porMes.concat([1]));
+    v.append(el('h3', { style: 'margin:6px 0 8px' }, 'Ventas por mes (' + s.anio + ')'));
+    v.append(el('div', { class: 'barras' }, s.porMes.map(function (n, i) { return el('div', { title: eur(n) }, [el('span', {}, n ? String(Math.round(n)) : ''), el('i', { style: 'height:' + Math.max(2, Math.round(n / max * 100)) + 'px' }), el('span', {}, MESES[i])]); })));
+    v.append(el('div', { class: 'dos' }, [
+      el('div', {}, [el('h3', {}, 'Por medio de pago'), tabla(['Medio', 'Ventas'], s.porMedio.length ? s.porMedio.map(function (x) { return [MEDIOS[x.k] || x.k, eur(x.v)]; }) : [['—', '—']])]),
+      el('div', {}, [el('h3', {}, 'Por país'), tabla(['País', 'Ventas'], s.porPais.length ? s.porPais.map(function (x) { return [x.k, eur(x.v)]; }) : [['—', '—']])])]));
+    var pq = s.eventos.porPaquete;
+    v.append(el('div', { class: 'dos', style: 'margin-top:14px' }, [
+      el('div', {}, [el('h3', {}, 'Invitaciones publicadas por plan'), tabla(['Plan', 'Cantidad'], ['gratis', 'basic', 'premium', 'deluxe'].map(function (k) { return [k, String(pq[k] || 0)]; }))]),
+      el('div', {}, [el('h3', {}, 'Pedidos'), tabla(['Estado', 'Cantidad'], Object.keys(s.pedidos).length ? Object.keys(s.pedidos).map(function (k) { return [k, String(s.pedidos[k])]; }) : [['—', '0']])])]));
+    v.append(el('p', { class: 'chico' }, s.nota));
+    return v;
   }
 
+  // ══ Pedidos ══
+  var FILTROS = { pedidos: {}, eventos: {}, usuarios: {} }, PAG = { pedidos: 0, eventos: 0, usuarios: 0 };
+  function vistaPedidos() {
+    var v = el('div'), f = FILTROS.pedidos;
+    v.append(el('h2', {}, 'Pedidos'));
+    v.append(buscador(f, [{ n: 'q', l: 'Buscar', ph: 'mail, n.º de pedido, cupón o evento', ancho: true }, { n: 'estado', l: 'Estado', op: [['', 'Todos'], ['pendiente', 'Pendientes'], ['pagado', 'Pagados'], ['cancelado', 'Cancelados'], ['reembolsado', 'Reembolsados']] },
+      { n: 'medio', l: 'Medio', op: [['', 'Todos'], ['stripe', 'Tarjeta'], ['paypal', 'PayPal'], ['mercadopago', 'Mercado Pago'], ['transferencia', 'Transferencia'], ['gratis', 'Gratis'], ['cupon', 'Cupón'], ['admin', 'Administración']] }],
+      function (r) { FILTROS.pedidos = r; PAG.pedidos = 0; VISTAS.pedidos = null; pinta(); }));
+    var d = VISTAS.pedidos;
+    if (!d) { cargaVista('pedidos', '/api/admin/pedidos?' + q(Object.assign({ pagina: PAG.pedidos }, f))); return append(v, vacio('Cargando…')); }
+    if (!d.pedidos.length) return append(v, vacio('No hay pedidos con esos filtros.'));
+    v.append(tabla(['Pedido', 'Cliente', 'Importe', 'Medio', 'Estado', ''], d.pedidos.map(function (p) {
+      var a = [];
+      if (p.estado === 'pendiente' && p.medio === 'transferencia') a.push(btn('Marcar cobrada', '', function (b) { if (confirm('¿Ya llegó la transferencia #' + p.numero + '? Se activa el pedido y se emite la factura.')) accion(b, '/api/admin/pedidos/' + p.id + '/cobrado', {}, 'Cobrada: pedido activado'); }));
+      if (p.estado === 'pendiente') a.push(btn('Cancelar', 'mal', function (b) { if (confirm('¿Cancelar el pedido #' + p.numero + '?')) accion(b, '/api/admin/pedidos/' + p.id + '/cancelar', {}, 'Pedido cancelado'); }));
+      if (p.estado === 'pagado') {
+        if (p.urlFactura) a.push(el('a', { class: 'b sec', href: p.urlFactura, target: '_blank', rel: 'noopener' }, 'Factura'));
+        else if (p.importe > 0) a.push(btn('Emitir factura', 'sec', function (b) { accion(b, '/api/admin/pedidos/' + p.id + '/facturar', {}, 'Factura emitida'); }));
+        a.push(btn('Reenviar mail', 'sec', function (b) { accion(b, '/api/admin/pedidos/' + p.id + '/reenviar', {}, 'Mail reenviado', function () { return Promise.resolve(); }); }));
+        a.push(btn('Reembolsado', 'mal', function (b) { pedir('Registrar reembolso #' + p.numero, [{ nota: 'Esto solo lo anota. El dinero se devuelve desde Stripe, PayPal, Mercado Pago o tu banco.' }, { n: 'nota', l: 'Nota (opcional)' }], 'Registrar').then(function (r) { if (r) accion(b, '/api/admin/pedidos/' + p.id + '/reembolsado', r, 'Registrado como reembolsado'); }); }));
+      }
+      if (p.evento_id) a.push(el('a', { class: 'b sec', href: '/panel/' + p.evento_id, target: '_blank', rel: 'noopener' }, 'Panel'));
+      var cls = p.estado === 'pagado' ? '' : p.estado === 'pendiente' ? 'aviso' : 'mal';
+      return [el('div', {}, [el('strong', {}, '#' + p.numero), el('div', { class: 'meta' }, p.producto || ''), el('div', { class: 'chico' }, fechaSeg(p.creado) + (p.cupon ? ' · cupón ' + p.cupon : '') + (p.pais ? ' · ' + p.pais : ''))]), p.email,
+        p.importe ? dinero(p.importe, p.moneda) : 'Gratis', MEDIOS[p.medio] || p.medio, tag(p.estado, cls), el('div', { class: 'acciones' }, a)];
+    })));
+    v.append(paginas(d.pagina, d.hayMas, function (n) { PAG.pedidos = n; VISTAS.pedidos = null; pinta(); }));
+    return v;
+  }
+  function append(v, x) { v.append(x); return v; }
+
+  // ══ Facturas ══
+  var FQ = { year: new Date().getFullYear(), q: 0 };
+  function vistaFacturas() {
+    var v = el('div'), d = VISTAS.facturas;
+    v.append(el('h2', {}, 'Facturas'));
+    var anio = el('select', { style: 'width:auto' }, [0, 1, 2, 3].map(function (i) { var y = new Date().getFullYear() - i; return el('option', { value: y }, String(y)); })); anio.value = FQ.year;
+    var trim = el('select', { style: 'width:auto' }, [['0', 'Todo el año'], ['1', '1.er trimestre'], ['2', '2.º trimestre'], ['3', '3.er trimestre'], ['4', '4.º trimestre']].map(function (o) { return el('option', { value: o[0] }, o[1]); })); trim.value = String(FQ.q);
+    var cambia = function () { FQ.year = +anio.value; FQ.q = +trim.value; VISTAS.facturas = null; pinta(); };
+    anio.onchange = cambia; trim.onchange = cambia;
+    var qs = 'year=' + FQ.year + (FQ.q ? '&q=' + FQ.q : '');
+    v.append(el('div', { class: 'fila', style: 'margin:0 0 12px' }, [anio, trim, el('a', { class: 'b', href: '/admin/facturas.csv?' + qs }, 'Descargar libro (Excel)'), el('a', { class: 'b sec', href: '/admin/facturas?' + qs, target: '_blank', rel: 'noopener' }, 'Ver / imprimir PDF del período')]));
+    if (!clave) {} else v.append(el('p', { class: 'chico' }, 'Para descargar el libro y el PDF hay que haber entrado con la cuenta de administrador (no con la clave).'));
+    if (!d) { cargaVista('facturas', '/api/admin/facturas?' + qs); return append(v, vacio('Cargando…')); }
+    if (!d.activas) return append(v, el('p', { class: 'caja aviso' }, 'Las facturas no están activadas: faltan los datos fiscales (INVOICE_NAME, INVOICE_TAX_ID, INVOICE_ADDRESS) en Cloudflare.'));
+    var o = d.oss, niv = { ok: ['', 'Ventas a particulares de otros países de la UE: ' + eur(o.current) + ' este año (límite 10.000 €).'], warning: ['aviso', 'Atención: ' + eur(o.current) + ' en ventas a la UE; al superar 10.000 € hay que darse de alta en OSS (modelo 035).'], exceeded: ['mal', 'Se superaron los 10.000 € de ventas a la UE: corresponde OSS y cobrar el IVA de cada país (variable VAT_OSS=1).'], oss: ['', 'OSS activo: se cobra el IVA de cada país. Ventas a la UE este año: ' + eur(o.current) + '.'] }[o.level] || ['', ''];
+    v.append(el('div', { class: 'caja ' + niv[0] }, niv[1]));
+    var vf = d.verifactu;
+    v.append(el('div', { class: 'caja' }, ['VeriFactu: ' + (vf.modo ? vf.modo + (vf.certificado ? '' : ' (falta el certificado)') : 'apagado') + (vf.modo ? ' · ' + vf.pendientesOErrores + ' pendientes o rechazadas ' : ''), vf.modo ? btn('Reenviar a la AEAT', 'sec', function (b) { accion(b, '/api/admin/verifactu/enviar', {}, 'Enviado', function () { VISTAS.facturas = null; return Promise.resolve().then(pinta); }); }) : null]));
+    var tot = d.facturas.reduce(function (t, f) { return { base: t.base + f.base * (f.eur_rate || 1), iva: t.iva + f.vat * (f.eur_rate || 1), total: t.total + f.total * (f.eur_rate || 1) }; }, { base: 0, iva: 0, total: 0 });
+    v.append(el('p', { class: 'meta' }, d.facturas.length + ' facturas · base ' + eur(tot.base) + ' · IVA ' + eur(tot.iva) + ' · total ' + eur(tot.total) + ' (en euros)'));
+    if (!d.facturas.length) return append(v, vacio('No hay facturas en este período.'));
+    var VFE = { off: 'No enviada', pending: 'Pendiente', sent: 'Enviada', accepted_errors: 'Aceptada con errores', error: 'Rechazada' };
+    v.append(tabla(['Número', 'Fecha', 'Cliente', 'Base', 'IVA', 'Total', 'VeriFactu', ''], d.facturas.map(function (f) {
+      return [f.number, (f.vf_date || '').split('-').reverse().join('/') || fechaSeg(f.issued_at), el('div', {}, [f.customer_name || f.customer_email || '—', f.customer_tax_id ? el('div', { class: 'chico' }, f.customer_tax_id) : null]),
+        dinero(f.base, f.currency), dinero(f.vat, f.currency) + (f.vat_rate ? ' (' + f.vat_rate + '%)' : ''), dinero(f.total, f.currency), tag(VFE[f.vf_status] || f.vf_status, f.vf_status === 'error' ? 'mal' : f.vf_status === 'pending' ? 'aviso' : ''),
+        el('div', { class: 'acciones' }, [el('a', { class: 'b sec', href: f.url, target: '_blank', rel: 'noopener' }, 'Ver / PDF'), f.customer_email ? btn('Reenviar', 'sec', function (b) { accion(b, '/api/admin/facturas/' + f.id + '/reenviar', {}, 'Factura enviada a ' + f.customer_email, function () { return Promise.resolve(); }); }) : null])];
+    })));
+    return v;
+  }
+
+  // ══ Cupones ══
+  function vistaCupones() {
+    var v = el('div'), d = VISTAS.cupones;
+    v.append(el('h2', {}, 'Cupones de descuento'));
+    var f = el('form', { class: 'tarjeta' }), clase = el('select', { name: 'clase' }, [el('option', { value: 'porcentaje' }, 'Porcentaje (%)'), el('option', { value: 'fijo' }, 'Importe fijo (€)')]);
+    var valor = el('input', { name: 'valor', type: 'number', min: '1', step: '0.01', required: true, placeholder: '20' }), cod = el('input', { name: 'codigo', placeholder: 'Opcional: si queda vacío se genera uno' });
+    var maxu = el('input', { name: 'max_usos', type: 'number', min: '1', placeholder: 'Sin límite' }), vence = el('input', { name: 'vence', type: 'date' }), nota = el('input', { name: 'nota', placeholder: 'Para qué es (solo lo ves tú)' });
+    var paq = ['basic', 'premium', 'deluxe'].map(function (k) { return el('label', {}, [el('input', { type: 'checkbox', value: k }), k[0].toUpperCase() + k.slice(1)]); });
+    f.append(el('h3', {}, 'Nuevo cupón'), el('div', { class: 'dos' }, [el('label', {}, ['Tipo', clase]), el('label', {}, ['Valor', valor])]), el('div', { class: 'dos' }, [el('label', {}, ['Código', cod]), el('label', {}, ['Usos máximos', maxu])]), el('div', { class: 'dos' }, [el('label', {}, ['Vence (opcional)', vence]), el('label', {}, ['Nota', nota])]),
+      el('div', { class: 'grupo' }, [el('h3', {}, 'Vale para (sin marcar: todos los planes)'), el('div', { class: 'marcas' }, paq)]), el('div', { class: 'fila' }, el('button', { class: 'b', type: 'submit' }, 'Crear cupón')));
+    f.onsubmit = function (e) {
+      e.preventDefault();
+      accion(f.querySelector('[type=submit]'), '/api/admin/cupones', { clase: clase.value, valor: valor.value, codigo: cod.value, max_usos: maxu.value, vence: vence.value, nota: nota.value, paquetes: paq.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked; }).map(function (c) { return c.value; }) }, 'Cupón creado', function () { VISTAS.cupones = null; f.reset(); return Promise.resolve().then(pinta); });
+    };
+    v.append(f);
+    if (!d) { cargaVista('cupones', '/api/admin/cupones'); return append(v, vacio('Cargando…')); }
+    if (!d.cupones.length) return append(v, vacio('Todavía no hay cupones.'));
+    v.append(tabla(['Código', 'Descuento', 'Plan', 'Usos', 'Vence', 'Estado', ''], d.cupones.map(function (c) {
+      var venc = c.vence && c.vence * 1000 < Date.now();
+      var rec = function () { VISTAS.cupones = null; return Promise.resolve().then(pinta); };
+      return [el('div', {}, [el('strong', {}, c.codigo), c.nota ? el('div', { class: 'chico' }, c.nota) : null]), c.clase === 'porcentaje' ? c.valor + ' %' : eur(c.valor), c.paquetes || 'Todos', c.usos + (c.max_usos ? ' de ' + c.max_usos : ''), c.vence ? fechaSeg(c.vence) : '—',
+        tag(!c.activo ? 'Inactivo' : venc ? 'Vencido' : 'Activo', !c.activo || venc ? 'mal' : ''),
+        el('div', { class: 'acciones' }, [btn(c.activo ? 'Desactivar' : 'Activar', 'sec', function (b) { accion(b, '/api/admin/cupones/' + c.codigo + '/editar', { activo: !c.activo }, c.activo ? 'Desactivado' : 'Activado', rec); }),
+          btn('Copiar', 'sec', function () { (navigator.clipboard ? navigator.clipboard.writeText(c.codigo) : Promise.reject()).then(function () { aviso('Código copiado'); }).catch(function () { prompt('Código', c.codigo); }); }),
+          btn(c.usos ? 'Dar de baja' : 'Borrar', 'mal', function (b) { if (confirm(c.usos ? 'Tiene usos: se desactiva y queda el historial. ¿Seguir?' : '¿Borrar el cupón ' + c.codigo + '?')) accion(b, '/api/admin/cupones/' + c.codigo + '/borrar', {}, 'Listo', rec); })])];
+    })));
+    return v;
+  }
+
+  // ══ Invitaciones (superusuario) ══
+  var PAQ = ['gratis', 'basic', 'premium', 'deluxe'];
+  function fichaEvento(e, extrasDisp) {
+    var rec = function () { VISTAS.eventos = null; $('#dlg').close(); return Promise.resolve().then(pinta); };
+    var c = el('div', { style: 'display:grid;gap:4px' });
+    c.append(el('div', { class: 'meta' }, e.tipo + ' · ' + (e.modelo || '—') + ' · ' + (e.empresa ? 'Empresa: ' + e.empresa + ' · ' : '') + 'Clientes: ' + (e.clientes || 'sin cliente')));
+    c.append(el('div', { class: 'fila', style: 'margin:6px 0' }, [el('a', { class: 'b', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Abrir el panel (como administrador)'), e.link ? el('a', { class: 'b sec', href: e.link, target: '_blank', rel: 'noopener' }, 'Ver la invitación') : null]));
+    var plan = el('select', { style: 'width:auto' }, PAQ.concat(['borrador']).map(function (k) { return el('option', { value: k }, k); })); plan.value = e.paquete;
+    c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Plan'), el('div', { class: 'fila', style: 'margin:0' }, [plan, btn('Cambiar plan', '', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/plan', { paquete: plan.value }, 'Plan cambiado', rec); })]), el('p', { class: 'chico', style: 'margin:0' }, 'Sin cobrar. Cambia lo que incluye y cuánto dura online (Gratis 15 días, Basic 3 meses, Premium 6, Deluxe 12 desde la fecha del evento).')]));
+    var venc = el('input', { type: 'date', style: 'width:auto', value: e.venceManual ? e.venceManual.slice(0, 10) : '' });
+    c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Vencimiento'), el('div', { class: 'meta', style: 'margin:0' }, 'Hoy vence: ' + fecha(e.vence) + (e.venceManual ? ' (extensión manual hasta ' + fecha(e.venceManual) + ')' : '')), el('div', { class: 'fila', style: 'margin:0' }, [venc, btn('Extender hasta…', '', function (b) { if (!venc.value) { aviso('Elige una fecha', true); return; } accion(b, '/api/admin/eventos/' + e.id + '/vence', { fecha: venc.value }, 'Vencimiento extendido', rec); }), e.venceManual ? btn('Quitar extensión', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/vence', { fecha: '' }, 'Extensión quitada', rec); }) : null])]));
+    c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Estado'), el('div', { class: 'fila', style: 'margin:0' }, [tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'), e.estado === 'publicado' ? btn('Pasar a borrador (despublicar)', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/estado', { estado: 'borrador' }, 'Despublicada', rec); }) : btn('Publicar', '', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/estado', { estado: 'publicado' }, 'Publicada', rec); })])]));
+    var marcas = extrasDisp.map(function (x) { return el('label', {}, [el('input', { type: 'checkbox', value: x.id, checked: e.extras.indexOf(x.id) >= 0 }), x.nombre]); });
+    c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Complementos incluidos (sin cobrar)'), el('div', { class: 'marcas' }, marcas), el('div', { class: 'fila', style: 'margin:0' }, btn('Guardar complementos', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/extras', { extras: marcas.map(function (l) { return l.firstChild; }).filter(function (i) { return i.checked; }).map(function (i) { return i.value; }) }, 'Complementos guardados', rec); }))]));
+    var slug = el('input', { value: e.slug || '', placeholder: 'link-de-la-invitacion' });
+    c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Link de la invitación'), el('div', { class: 'fila', style: 'margin:0' }, [slug, btn('Cambiar link', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/slug', { slug: slug.value }, 'Link cambiado', rec); })])]));
+    var mail = el('input', { type: 'email', placeholder: 'mail de quien también administra' });
+    c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Dar acceso al panel a otro mail'), el('div', { class: 'fila', style: 'margin:0' }, [mail, btn('Dar acceso', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/cliente', { email: mail.value }, 'Acceso dado', function () { return Promise.resolve(); }); })])]));
+    c.append(el('div', { class: 'grupo' }, [el('h3', { style: 'color:#b3392c' }, 'Zona de riesgo'), el('div', { class: 'fila', style: 'margin:0' }, btn('Eliminar la invitación', 'mal', function (b) { if (confirm('Se borra TODO de esta invitación (datos, invitados, respuestas). No se puede deshacer. ¿Seguir?')) accion(b, '/api/admin/eventos/' + e.id + '/eliminar', { confirmo: true }, 'Eliminada', rec); }))]));
+    ventana((e.nombres || e.id) + ' · ' + e.id, c);
+  }
+  function vistaEventos() {
+    var v = el('div'), f = FILTROS.eventos;
+    v.append(el('h2', {}, 'Invitaciones'));
+    v.append(buscador(f, [{ n: 'q', l: 'Buscar', ph: 'nombres, mail del cliente, link o código', ancho: true }, { n: 'estado', l: 'Estado', op: [['', 'Todos'], ['publicado', 'Publicadas'], ['borrador', 'Borradores'], ['en-diseno', 'En diseño']] }, { n: 'paquete', l: 'Plan', op: [['', 'Todos'], ['gratis', 'Gratis'], ['basic', 'Basic'], ['premium', 'Premium'], ['deluxe', 'Deluxe'], ['borrador', 'Sin plan']] }],
+      function (r) { FILTROS.eventos = r; PAG.eventos = 0; VISTAS.eventos = null; pinta(); }));
+    var d = VISTAS.eventos;
+    if (!d) { cargaVista('eventos', '/api/admin/eventos?' + q(Object.assign({ pagina: PAG.eventos }, f))); return append(v, vacio('Cargando…')); }
+    if (!d.eventos.length) return append(v, vacio('No hay invitaciones con esos filtros.'));
+    v.append(tabla(['Invitación', 'Cliente', 'Plan', 'Estado', 'Vence', ''], d.eventos.map(function (e) {
+      return [el('div', {}, [el('strong', {}, e.nombres || '(sin nombre)'), el('div', { class: 'meta' }, e.tipo + ' · ' + (e.modelo || e.producto)), el('div', { class: 'chico' }, e.id + (e.empresa ? ' · ' + e.empresa : '') + ' · ' + e.respuestas + ' confirmaciones')]), e.clientes || '—', tag(e.paquete, e.paquete === 'borrador' ? 'aviso' : ''), tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'), e.fecha ? el('div', {}, [fecha(e.vence), el('div', { class: 'chico' }, 'evento ' + fecha(e.fecha))]) : fecha(e.vence),
+        el('div', { class: 'acciones' }, [btn('Editar', '', function () { fichaEvento(e, d.extrasDisponibles); }), el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel')])];
+    })));
+    v.append(paginas(d.pagina, d.hayMas, function (n) { PAG.eventos = n; VISTAS.eventos = null; pinta(); }));
+    return v;
+  }
+
+  // ══ Clientes ══
+  function fichaCliente(id) {
+    api('/api/admin/usuarios/' + id).then(function (d) {
+      var c = el('div', { style: 'display:grid;gap:10px' });
+      c.append(el('div', { class: 'meta' }, d.usuario.email + (d.usuario.pais ? ' · ' + d.usuario.pais : '') + ' · alta ' + fechaSeg(d.usuario.creado)));
+      if (d.empresas.length) c.append(el('div', { class: 'caja' }, 'Empresas: ' + d.empresas.map(function (e) { return e.nombre + ' (' + e.rol + ')'; }).join(', ')));
+      c.append(el('h3', { style: 'margin:0' }, 'Invitaciones (' + d.eventos.length + ')'));
+      c.append(d.eventos.length ? tabla(['Invitación', 'Plan', 'Estado', ''], d.eventos.map(function (e) { return [(e.nombres || e.id) + ' · ' + e.tipo, e.paquete, e.estado, el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel')]; })) : vacio('Sin invitaciones'));
+      c.append(el('h3', { style: 'margin:0' }, 'Pedidos (' + d.pedidos.length + ')'));
+      c.append(d.pedidos.length ? tabla(['Pedido', 'Importe', 'Estado'], d.pedidos.map(function (p) { return ['#' + p.numero + ' · ' + (p.producto || ''), p.importe ? dinero(p.importe, p.moneda) : 'Gratis', p.estado]; })) : vacio('Sin pedidos'));
+      ventana(d.usuario.nombre || d.usuario.email, c);
+    }).catch(function (e) { aviso(e.message, true); });
+  }
+  function vistaClientes() {
+    var v = el('div'), f = FILTROS.usuarios;
+    v.append(el('h2', {}, 'Clientes'));
+    v.append(buscador(f, [{ n: 'q', l: 'Buscar', ph: 'mail o nombre', ancho: true }], function (r) { FILTROS.usuarios = r; PAG.usuarios = 0; VISTAS.usuarios = null; pinta(); }));
+    var d = VISTAS.usuarios;
+    if (!d) { cargaVista('usuarios', '/api/admin/usuarios?' + q(Object.assign({ pagina: PAG.usuarios }, f))); return append(v, vacio('Cargando…')); }
+    if (!d.usuarios.length) return append(v, vacio('No hay clientes con ese filtro.'));
+    v.append(tabla(['Cliente', 'País', 'Alta', 'Invitaciones', 'Pedidos pagados', ''], d.usuarios.map(function (u) { return [el('div', {}, [el('strong', {}, u.email), u.nombre ? el('div', { class: 'chico' }, u.nombre) : null]), u.pais || '—', fechaSeg(u.creado), String(u.eventos), String(u.pedidos), btn('Ver ficha', 'sec', function () { fichaCliente(u.id); })]; })));
+    v.append(paginas(d.pagina, d.hayMas, function (n) { PAG.usuarios = n; VISTAS.usuarios = null; pinta(); }));
+    return v;
+  }
+
+  // ══ Consultas ══
+  function vistaConsultas() {
+    var v = el('div', {}, [el('h2', {}, 'Consultas del formulario de contacto')]), d = VISTAS.consultas;
+    if (!d) { cargaVista('consultas', '/api/admin/consultas'); return append(v, vacio('Cargando…')); }
+    if (!d.consultas.length) return append(v, vacio('Todavía no llegaron consultas.'));
+    var rec = function () { VISTAS.consultas = null; return Promise.resolve().then(pinta); };
+    d.consultas.forEach(function (c) {
+      v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, [c.nombre || '—', ' ', tag(c.estado, c.estado === 'nueva' ? 'aviso' : '')]),
+        el('div', { class: 'meta' }, [el('a', { href: 'mailto:' + c.email + '?subject=' + encodeURIComponent('Sobre tu consulta en Amo Invitar!') }, c.email), (c.telefono ? ' · ' + c.telefono : '') + (c.evento ? ' · ' + c.evento : '') + (c.pais ? ' · ' + c.pais : '') + ' · ' + fecha(c.creado)]),
+        el('div', { class: 'desc', style: 'white-space:pre-wrap;background:#f6f9f8;border-radius:10px;padding:10px 12px;margin:10px 0' }, c.mensaje),
+        el('div', { class: 'fila', style: 'margin:0' }, [el('a', { class: 'b', href: 'mailto:' + c.email + '?subject=' + encodeURIComponent('Sobre tu consulta en Amo Invitar!') }, 'Responder por mail'), c.telefono ? el('a', { class: 'b sec', href: 'https://wa.me/' + c.telefono.replace(/\D/g, ''), target: '_blank', rel: 'noopener' }, 'WhatsApp') : null,
+          c.estado !== 'respondida' ? btn('Marcar respondida', 'sec', function (b) { accion(b, '/api/admin/consultas/' + c.id + '/estado', { estado: 'respondida' }, 'Marcada', rec); }) : null, c.estado !== 'archivada' ? btn('Archivar', 'sec', function (b) { accion(b, '/api/admin/consultas/' + c.id + '/estado', { estado: 'archivada' }, 'Archivada', rec); }) : null])]));
+    });
+    return v;
+  }
+
+  // ══ Profesionales ══ (solicitudes, empresas y pedidos de créditos)
+  function vistaPro() {
+    var v = el('div'), S = D.solicitudes || [];
+    var pend = S.filter(function (s) { return s.estado === 'pendiente'; }), resto = S.filter(function (s) { return s.estado !== 'pendiente'; });
+    v.append(el('h2', {}, 'Solicitudes de cuenta profesional'));
+    if (!pend.length) v.append(vacio('No hay solicitudes pendientes.'));
+    pend.forEach(function (s) {
+      var b1 = btn('Aprobar…', '', function () {
+        pedir('Aprobar a ' + (s.empresa || s.nombre), [{ n: 'nivel', l: 'Nivel', tipo: 'select', v: s.nivel, op: [['pro', 'Pro (sin pase anual)'], ['studio', 'Studio (pase anual)']] }, { n: 'paseMeses', l: 'Pase anual ya pagado (solo Studio): meses', tipo: 'number', v: 0 }, { n: 'creditos', l: 'Créditos iniciales (opcional)', tipo: 'number', v: 0 }, { n: 'nota', l: 'Nota interna' }]).then(function (r) { if (r) accion(b1, '/api/admin/pro/solicitudes/' + s.id + '/aprobar', r, 'Cuenta aprobada: se avisó por mail', refrescarTodo); });
+      });
+      var b2 = btn('Rechazar…', 'mal', function () { pedir('Rechazar la solicitud', [{ n: 'motivo', l: 'Motivo (se manda por mail; puede quedar vacío)', tipo: 'texto' }]).then(function (r) { if (r) accion(b2, '/api/admin/pro/solicitudes/' + s.id + '/rechazar', r, 'Solicitud rechazada', refrescarTodo); }); });
+      v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, [s.empresa || s.nombre, ' ', tag('Pide ' + (s.nivel === 'studio' ? 'Studio' : 'Pro'))]),
+        el('div', { class: 'meta' }, [s.nombre + ' · ', el('a', { href: 'mailto:' + s.email }, s.email), s.telefono ? ' · ' + s.telefono : '', s.pais ? ' · ' + s.pais : '', ' · ' + fecha(s.creado)]),
+        el('div', { class: 'meta' }, [s.rubro + (s.profesion ? ' · ' + s.profesion : '') + ' · ', el('a', { href: /^https?:/i.test(s.web) ? s.web : (s.web[0] === '@' ? 'https://instagram.com/' + s.web.slice(1) : 'https://' + s.web), target: '_blank', rel: 'noopener noreferrer' }, s.web)]),
+        el('div', { style: 'white-space:pre-wrap;background:#f6f9f8;border-radius:10px;padding:10px 12px;margin:10px 0' }, s.descripcion), el('div', { class: 'fila' }, [b1, b2])]));
+    });
+    if (resto.length) { v.append(el('h3', {}, 'Resueltas')); v.append(tabla(['Fecha', 'Quién', 'Pidió', 'Estado', 'Nota'], resto.map(function (s) { return [fecha(s.resuelto || s.creado), (s.empresa || s.nombre) + ' · ' + s.email, s.nivel, tag(s.estado, s.estado === 'rechazada' ? 'mal' : ''), s.nota || '']; }))); }
+    var compras = (D.compras || []).filter(function (c) { return c.estado === 'pendiente'; });
+    v.append(el('h2', { style: 'margin-top:30px' }, 'Pedidos de créditos y pase'));
+    if (!compras.length) v.append(vacio('No hay pedidos por cobrar.'));
+    else v.append(tabla(['Pedido', 'Empresa', 'Producto', 'Total', ''], compras.map(function (c) {
+      return ['#' + c.numero + ' · ' + fecha(c.creado), c.empresa, c.nombre, eur(c.total) + (c.iva_tasa ? ' (IVA ' + c.iva_tasa + '%)' : ' (sin IVA)'),
+        el('div', { class: 'acciones' }, [btn('Marcar cobrado', '', function (b) { if (confirm('¿Ya llegó la transferencia del pedido #' + c.numero + '? Se cargan los créditos (o el pase) y se emite la factura.')) accion(b, '/api/admin/pro/compras/' + c.id + '/pagada', {}, 'Cobrado: créditos cargados y factura emitida', refrescarTodo); }), btn('Cancelar', 'mal', function (b) { accion(b, '/api/admin/pro/compras/' + c.id + '/cancelar', {}, 'Pedido cancelado', refrescarTodo); })])];
+    })));
+    v.append(el('h2', { style: 'margin-top:30px' }, 'Empresas'));
+    if (!D.empresas.length) v.append(vacio('Todavía no hay cuentas profesionales.'));
+    else v.append(tabla(['Empresa', 'Nivel', 'Pase hasta', 'Créditos', 'Eventos', 'Estado', ''], D.empresas.map(function (e) {
+      var vencido = e.nivel === 'studio' && (!e.pase_vence || e.pase_vence < hoy());
+      var bc = btn('＋ Créditos', 'sec', function () {
+        pedir('Agregar créditos a ' + e.nombre, [{ n: 'cantidad', l: 'Cantidad', tipo: 'number', v: 5 }, { n: 'origen', l: 'Origen', tipo: 'select', v: e.nivel === 'studio' ? 'studio-25' : 'pro-5', op: [['pro-1', 'Crédito suelto'], ['pro-5', 'Pack Pro 5'], ['pro-10', 'Pack Pro 10'], ['studio-10', 'Pack Studio 10'], ['studio-25', 'Pack Studio 25'], ['studio-50', 'Pack Studio 50'], ['studio-100', 'Pack Studio 100'], ['manual', 'Regalo / ajuste']] }, { n: 'nota', l: 'Nota (pago, transferencia…)' }]).then(function (r) { if (r) accion(bc, '/api/admin/pro/empresas/' + e.id + '/creditos', r, 'Créditos agregados (vencen a los 12 meses)', refrescarTodo); });
+      });
+      var bp = btn('Renovar pase', 'sec', function () { pedir('Renovar el pase de ' + e.nombre, [{ n: 'meses', l: 'Meses', tipo: 'number', v: 12 }]).then(function (r) { if (r) accion(bp, '/api/admin/pro/empresas/' + e.id + '/pase', r, 'Pase renovado: los créditos sin usar pasan al año siguiente', refrescarTodo); }); });
+      var be = btn(e.estado === 'activa' ? 'Suspender' : 'Activar', e.estado === 'activa' ? 'mal' : 'sec', function () { accion(be, '/api/admin/pro/empresas/' + e.id + '/estado', { estado: e.estado === 'activa' ? 'suspendida' : 'activa' }, 'Estado actualizado', refrescarTodo); });
+      return [el('div', {}, [el('strong', {}, e.nombre), el('div', { class: 'meta' }, e.duenio || '')]), tag(e.nivel), e.nivel === 'studio' ? el('span', { class: vencido ? 'tag mal' : '' }, fecha(e.pase_vence)) : '—',
+        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'chico' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos), tag(e.estado, e.estado === 'activa' ? '' : 'mal'), el('div', { class: 'acciones' }, [bc, e.nivel === 'studio' ? bp : null, be])];
+    })));
+    return v;
+  }
+
+  // ══ Diseños a medida ══
+  function vistaMedidas() {
+    var v = el('div', {}, [el('h2', {}, 'Diseños a medida')]);
+    if (!D.medidas.length) return append(v, vacio('No hay proyectos enviados.'));
+    var est = function (m) { return m.listo ? 2 : m.aprobado ? 1 : 0; };
+    v.append(tabla(['Proyecto', 'Enviado', 'Estado', ''], D.medidas.slice().sort(function (a, b) { return est(a) - est(b); }).map(function (m) {
+      var ba = btn('Aprobar proyecto', '', function (b) { accion(b, '/api/admin/medidas/' + m.id + '/aprobar', { parte: m.parte }, 'Aprobado: se avisó al cliente', refrescarTodo); });
+      var bl = btn('Marcar listo', 'sec', function (b) { accion(b, '/api/admin/medidas/' + m.id + '/lista', { parte: m.parte }, 'Marcado como listo', refrescarTodo); });
+      return [el('div', {}, [el('strong', {}, m.nombres || m.id), el('div', { class: 'meta' }, m.producto + ' · ' + m.tipo + (m.parte === 'std' ? ' · Save The Date' : ''))]), fecha(m.enviado), tag(m.listo ? 'Listo' : m.aprobado ? 'Aprobado · en diseño' : 'Por aprobar', m.listo || m.aprobado ? '' : 'aviso'),
+        el('div', { class: 'acciones' }, [el('a', { class: 'b sec', href: '/panel/' + m.id, target: '_blank', rel: 'noopener' }, 'Abrir panel'), !m.aprobado ? ba : null, m.aprobado && !m.listo ? bl : null])];
+    })));
+    return v;
+  }
+
+  // ══ Registro ══
+  function vistaRegistro() {
+    var v = el('div', {}, [el('h2', {}, 'Registro de cambios'), el('p', { class: 'meta' }, 'Lo que cambió el administrador en planes, vencimientos, estados, cupones y pedidos.')]), d = VISTAS.registro;
+    if (!d) { cargaVista('registro', '/api/admin/registro'); return append(v, vacio('Cargando…')); }
+    if (!d.registro.length) return append(v, vacio('Todavía no hay cambios registrados.'));
+    v.append(tabla(['Fecha', 'Quién', 'Qué', 'Sobre', 'Detalle'], d.registro.map(function (r) { return [String(r.fecha).slice(0, 16).replace('T', ' '), r.admin, r.accion, r.objeto || '', r.detalle || '']; })));
+    return v;
+  }
+
+  // ── Estructura ──
+  var PESTANAS = [['resumen', 'Resumen', vistaResumen], ['pedidos', 'Pedidos', vistaPedidos], ['facturas', 'Facturas', vistaFacturas], ['cupones', 'Cupones', vistaCupones], ['eventos', 'Invitaciones', vistaEventos], ['clientes', 'Clientes', vistaClientes], ['consultas', 'Consultas', vistaConsultas], ['pro', 'Profesionales', vistaPro], ['medidas', 'Diseños a medida', vistaMedidas], ['registro', 'Registro', vistaRegistro]];
+  var VISTA_DE = { clientes: 'usuarios' };
+  function cargaVista(nombre, ruta) {
+    var tab = TAB;
+    api(ruta).then(function (d) { VISTAS[VISTA_DE[nombre] || nombre] = d; if (TAB === tab) pinta(); }).catch(function (e) { aviso(e.message, true); });
+  }
+  function pinta() {
+    var p = D.pendientes || {};
+    var cuenta = { pedidos: p.transferencias, pro: (p.solicitudes || 0) + (p.compras || 0), medidas: p.medidas, consultas: p.consultas };
+    var tabs = $('#tabs'); tabs.replaceChildren();
+    PESTANAS.forEach(function (t) { tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], onclick: function () { TAB = t[0]; pinta(); } }, [t[1], cuenta[t[0]] ? el('b', {}, String(cuenta[t[0]])) : null])); });
+    var f = PESTANAS.filter(function (t) { return t[0] === TAB; })[0][2];
+    $('#vista').replaceChildren(f());
+  }
+  // Recarga lo pendiente (contadores y listas que dependen del resumen) y la pestaña abierta
+  function refrescarTodo() { return api('/api/admin/resumen').then(function (d) { D = Object.assign(D, d); VISTAS.resumen = null; pinta(); }); }
+  function refrescar() { return refrescarTodo().then(function () { ['pedidos', 'facturas', 'cupones', 'eventos', 'usuarios', 'consultas', 'registro'].forEach(function (k) { VISTAS[k] = null; }); pinta(); }); }
   function cargar() {
-    return api('/api/admin/resumen').then(function (d) { D = d; $('#entrada').hidden = true; $('#consola').hidden = false; pinta(); })
-      .catch(function (e) { if (e.status === 403) { $('#consola').hidden = true; $('#entrada').hidden = false; } else aviso(e.message, true); });
+    return api('/api/admin/resumen').then(function (d) {
+      return api('/api/admin/estadisticas?year=' + ANIO).then(function (s) { D = d; D.pendientes = s.pendientes; VISTAS.resumen = s; $('#entrada').hidden = true; $('#consola').hidden = false; pinta(); });
+    }).catch(function (e) { if (e.status === 403) { $('#consola').hidden = true; $('#entrada').hidden = false; } else aviso(e.message, true); });
   }
   $('#f-clave').addEventListener('submit', function (e) { e.preventDefault(); clave = $('#clave').value.trim(); try { sessionStorage.setItem('ai_admin', clave); } catch (x) { /* sin almacenamiento */ } cargar(); });
   cargar();
 })();
+
 </script>
 </body>
 </html>

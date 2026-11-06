@@ -1,7 +1,7 @@
 # Amo Invitar para profesionales (planners, fotógrafos, salones, agencias)
 
-> Estado (ronda 34): **modelo comercial definido** y **alta/aprobación de cuentas funcionando** (formulario + consola
-> `/admin/`). El tablero `/empresa`, el uso y cobro de créditos y los permisos están **por armar**. Ya funciona: pie de marca blanca sin links, límite de 35 invitados en Gratis, tablas base
+> Estado (ronda 35): **modelo comercial, alta y aprobación, tablero `/empresa/`, créditos al publicar, equipo, marca y panel
+> limpio funcionando**. Falta el cobro online de créditos y el dominio propio. Ya funciona: pie de marca blanca sin links, límite de 35 invitados en Gratis, tablas base
 > (`empresas`, `miembros`, `accesos_evento`). Precios y niveles viven en `src/catalogo.js` (`PROFESIONALES`) y
 > alimentan la página `/profesionales` de la web (se genera con `npm run sitio`).
 
@@ -113,16 +113,49 @@ Pestañas: **Eventos** (lista con estado, plan, confirmaciones y vencimiento; ab
   la marca de Amo Invitar del panel del equipo.
 - **Cliente final con acceso de administrador:** puede publicar; no ve datos de la empresa, no compra ni cambia la cuenta.
 
-## 9. Consola de administración (`/admin/`)
+## 9. Tablero del profesional (`/empresa/`)
 
-Para administradores (`ADMINS`) con su sesión, o con la clave `ADMIN_CLAVE`. Pestañas:
-**Profesionales** (solicitudes: aprobar/rechazar; empresas: sumar créditos, renovar pase, suspender),
-**Diseños a medida** (proyectos enviados: aprobar —avisa al cliente por mail— y marcar listo) y
-**Transferencias** (marcar cobrada: activa el pedido y emite la factura). Código: `src/rutas/consola.js`,
-`public/admin/index.html`. Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes` (`migrations/0005_profesionales.sql`;
-también se crean solas al primer uso).
+Se entra con el mail (sin contraseñas). Lo ven los miembros de la empresa; el dueño maneja equipo, marca y compras.
+- **Eventos:** crear (tipo, diseño, nombres, fecha), abrir el panel, ver la invitación, copiar el **link para el cliente**
+  y decidir por evento si **el cliente puede publicar**. Se borran solo los borradores sin crédito usado.
+- **Publicar usa 1 crédito** (una sola vez por evento; hasta Deluxe). Si la invitación lleva complementos, el crédito no
+  los cubre: se avisa. Sin créditos no se publica (el equipo ve «comprar»; el cliente, un aviso neutro).
+- **Créditos y pedidos:** saldo, lotes con su vencimiento y compra de packs o del pase. Cada pedido es por **transferencia**
+  (precio neto + IVA según el país; empresa de otra país de la UE con IVA válido, sin IVA) y se **confirma desde `/admin/`**,
+  que carga los créditos, emite la factura y avisa por mail. Todavía no hay cobro con tarjeta para profesionales.
+- **Equipo:** invitar por mail como Editor (crea y edita, publica) o Solo lectura. Límite de usuarios contando al dueño:
+  Pro 2, Studio 10.
+- **Marca:** logo (PNG/JPG/WEBP hasta 1,5 MB), nombre, texto del pie, y con Studio: marca blanca y «no mostrar pie».
+- **Cuenta:** nivel, pase, y contacto con Amo Invitar para extras (diseño a medida, complementos, dominio propio).
+- **Qué se ve de Amo Invitar:** en **Pro** el tablero y los paneles de su equipo llevan la marca de Amo Invitar. En
+  **Studio** (pase vigente) el tablero y los paneles van sin ella. El **cliente final** nunca la ve.
 
-## 10. Pendiente
+Código: `src/rutas/empresa.js` (API), `src/pro/empresa.js` (créditos, marca efectiva), `src/pro/compras.js` (pedidos),
+`public/empresa/index.html`. Los paneles de eventos de empresa reciben `empresa: { limpio, puedePublicar… }` en
+`GET /api/panel/<id>` y `panel.js` aplica el modo limpio.
 
-Tablero `/empresa` del profesional, uso de créditos al publicar, compra de packs y del pase desde la web,
-panel limpio para el cliente final, dominio propio. (Ver el orden en la sección 7.)
+## 10. Consola de administración (`/admin/`)
+
+Entra un administrador (`ADMINS`) con su sesión, o quien tenga la clave `ADMIN_CLAVE`. Pestañas:
+
+| Pestaña | Qué hace |
+|---|---|
+| Resumen | ventas del año (con y sin IVA), por mes, medio y país; pendientes; invitaciones por plan; vencen en 30 días |
+| Pedidos | buscar y filtrar; marcar transferencia cobrada, cancelar, reembolsado (solo lo anota), emitir factura, reenviar mail |
+| Facturas | período por año o trimestre, libro en Excel, PDF del período, estado de VeriFactu y del umbral OSS, ver y reenviar cada una |
+| Cupones | crear (porcentaje o fijo, planes, usos máximos, vencimiento), activar, desactivar, borrar (con usos se da de baja) |
+| Invitaciones | superusuario: cambiar plan sin cobrar, extender el vencimiento, publicar o despublicar, dar complementos, cambiar el link, dar acceso a otro mail, eliminar |
+| Clientes | buscar y ver su ficha: invitaciones y pedidos |
+| Consultas | mensajes del formulario de contacto, responder y marcar |
+| Profesionales | aprobar o rechazar solicitudes, empresas (créditos, pase, suspender) y pedidos de créditos por cobrar |
+| Diseños a medida | aprobar proyectos (avisa al cliente) y marcar listos |
+| Registro | todo lo que cambió el administrador |
+
+Código: `src/rutas/superadmin.js`, `src/rutas/consola.js`, `src/rutas/admin.js` (facturas), `public/admin/index.html`.
+Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `consultas`, `admin_log`
+(`migrations/0005` y `0006`; también se crean solas al primer uso).
+
+## 11. Pendiente
+
+Cobro con tarjeta o PayPal de créditos y pase, dominio propio por empresa (Studio) y el aviso de vencimiento de créditos
+por mail. Ver el orden en la sección 7.
