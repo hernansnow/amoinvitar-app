@@ -17,7 +17,7 @@ import { sendEmail, mailEquipoPro } from '../lib/email.js';
 import { PROFESIONALES } from '../catalogo.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { empresasDe, creditosDe, paseVigente, limiteUsuarios, catalogoCompras } from '../pro/empresa.js';
-import { crearCompra } from '../pro/compras.js';
+import { crearCompra, mediosPro, confirmarCompra } from '../pro/compras.js';
 import { transferInfo } from '../lib/pagos.js';
 import { getInvoice, invoiceUrl } from '../lib/facturas.js';
 
@@ -59,6 +59,7 @@ export async function api(request, env, partes) {
   if (recurso === 'compras') {
     if (!id && M === 'POST') return comprar(request, env, c);
     if (id && accion === 'cancelar' && M === 'POST') return cancelarCompra(env, c, id);
+    if (id && accion === 'confirmar' && M === 'POST') return confirmarPago(request, env, c, id);
   }
   return json({ error: 'no encontrado' }, 404);
 }
@@ -103,6 +104,8 @@ async function resumen(request, env, c) {
       productos: Object.entries(cat).filter(([k, v]) => (nivel === 'studio' ? (v.nivel === 'studio' && c.studio) || v.nivel === 'studio-pase' : v.nivel === 'pro' || v.nivel === 'studio-pase'))
         .map(([k, v]) => ({ id: k, nombre: v.nombre, creditos: v.creditos, neto: v.neto, nivel: v.nivel })),
       transferencia: transferInfo(env, 'EUR'),
+      // Medios de pago online según el país de facturación (el de Argentina cobra en pesos con Mercado Pago)
+      medios: { general: mediosPro(env, 'ES'), AR: mediosPro(env, 'AR') },
     },
     contacto: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, ''), email: env.SUPPORT_EMAIL || 'hola@amoinvitar.com' },
     base,
@@ -230,8 +233,16 @@ async function comprar(request, env, c) {
   if (!/^[A-Z]{2}$/.test(paisFiscal)) throw new HttpError(400, 'Elige el país de facturación');
   if (str(b.nombre, 120).length < 2) throw new HttpError(400, 'Falta el nombre o la razón social para la factura');
   const r = await crearCompra(env, { empresaId: c.e.id, usuarioId: c.u.id, item, pais: paisFiscal, email: c.u.email, empresaNombre: c.e.nombre,
-    fiscal: { nombre: str(b.nombre, 120), id: str(b.nif, 40), direccion: str(b.direccion, 300) } });
+    fiscal: { nombre: str(b.nombre, 120), id: str(b.nif, 40), direccion: str(b.direccion, 300) }, medio: str(b.medio, 20) || 'transfer', base: new URL(request.url).origin });
   return json({ ok: true, ...r }, 201);
+}
+// Al volver de la pasarela: se confirma con ella y se acreditan los créditos (o el pase)
+async function confirmarPago(request, env, c, id) {
+  const b = await readJson(request).catch(() => ({}));
+  const mia = await env.DB.prepare('SELECT 1 FROM compras_pro WHERE id = ? AND empresa_id = ?').bind(str(id, 20), c.e.id).first();
+  if (!mia) throw new HttpError(404, 'Pedido no encontrado');
+  const r = await confirmarCompra(env, str(id, 20), { session: str(b.session, 120), token: str(b.token, 60), base: new URL(request.url).origin });
+  return json({ ok: true, estado: r?.estado || 'desconocido' });
 }
 async function cancelarCompra(env, c, id) {
   exigir(c.duenio);

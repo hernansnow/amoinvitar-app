@@ -167,15 +167,21 @@
   }
 
   // ── Créditos y compras ──
+  var NOMBRE_MEDIO = { stripe: 'Tarjeta', paypal: 'PayPal', mercadopago: 'Mercado Pago (pesos argentinos)', transfer: 'Transferencia' };
+  function mediosDe(pais) { var l = (D.tienda.medios || {})[pais === 'AR' ? 'AR' : 'general'] || ['transfer']; return l.map(function (m) { return [m, NOMBRE_MEDIO[m] || m]; }); }
+  function rellenaMedios(sel, pais) { var v = sel.value; sel.replaceChildren.apply(sel, mediosDe(pais).map(function (o) { return el('option', { value: o[0] }, o[1]); })); sel.value = mediosDe(pais).some(function (o) { return o[0] === v; }) ? v : sel.options[0].value; }
   function comprar(p) {
+    var medios0 = mediosDe('ES');
     var paises = [['ES', 'España'], ['AR', 'Argentina'], ['MX', 'México'], ['CO', 'Colombia'], ['CL', 'Chile'], ['PE', 'Perú'], ['UY', 'Uruguay'], ['PY', 'Paraguay'], ['BO', 'Bolivia'], ['EC', 'Ecuador'], ['VE', 'Venezuela'], ['CR', 'Costa Rica'], ['PA', 'Panamá'], ['DO', 'República Dominicana'], ['GT', 'Guatemala'], ['HN', 'Honduras'], ['SV', 'El Salvador'], ['NI', 'Nicaragua'], ['US', 'Estados Unidos'], ['PT', 'Portugal'], ['FR', 'Francia'], ['DE', 'Alemania'], ['IT', 'Italia'], ['NL', 'Países Bajos'], ['BE', 'Bélgica'], ['IE', 'Irlanda'], ['AT', 'Austria'], ['GB', 'Reino Unido'], ['CH', 'Suiza'], ['XX', 'Otro país']];
     pedir('Comprar: ' + p.nombre, [
-      { nota: 'Precio sin IVA: ' + eur(p.neto) + '. En España y la Unión Europea se suma el IVA que corresponda (empresas de otro país de la UE con IVA válido, sin IVA). El pago es por transferencia y se confirma a mano: te llega un mail con los datos.' },
-      { n: 'pais', l: 'País de facturación', tipo: 'select', v: 'ES', op: paises }, { n: 'nombre', l: 'Nombre o razón social para la factura', v: D.empresa.nombre },
+      { nota: 'Precio sin IVA: ' + eur(p.neto) + '. En España y la Unión Europea se suma el IVA que corresponda (empresas de otro país de la UE con IVA válido, sin IVA). Elige cómo pagar: con tarjeta o PayPal se acreditan al instante; con transferencia se confirma a mano (te llega un mail con los datos). En Argentina, Mercado Pago cobra el equivalente en pesos.' },
+      { n: 'pais', l: 'País de facturación', tipo: 'select', v: 'ES', op: paises, on: function (i, ins) { var m = ins.filter(function (x) { return x.name === 'medio'; })[0]; if (m) rellenaMedios(m, i.value); } },
+      { n: 'medio', l: 'Medio de pago', tipo: 'select', v: medios0[0][0], op: medios0 }, { n: 'nombre', l: 'Nombre o razón social para la factura', v: D.empresa.nombre },
       { n: 'nif', l: 'NIF / CIF / IVA intracomunitario / CUIT (opcional)' }, { n: 'direccion', l: 'Dirección fiscal (opcional)' }], 'Hacer el pedido').then(function (r) {
       if (!r) return;
       if (r.pais === 'XX') r.pais = 'ZZ';
       api(base('/compras'), Object.assign({ item: p.id }, r)).then(function (j) {
+        if (j.url) { location.href = j.url; return; } // pago online: se sigue en la pasarela
         pedir('Pedido #' + j.numero, [{ nota: j.nombre + ' · total a transferir: ' + eur(j.total) + (j.tasa ? ' (incluye IVA ' + j.tasa + ' %)' : ' (sin IVA)') + '. Referencia: PRO-' + j.numero + '. También te llegó por mail.' }], 'Entendido');
         if (j.datos) { var c = $('#dlg-c'); c.append(el('pre', { class: 'datos' }, j.datos)); }
         $('#dlg-no').hidden = true; cargar(); setTimeout(function () { $('#dlg-no').hidden = false; }, 500);
@@ -300,6 +306,20 @@
       else { $('#entrada-p').textContent = e.message; }
     });
   }
+  // Al volver de la pasarela (Stripe, PayPal o Mercado Pago): se confirma el pago y se acreditan los créditos
+  (function () {
+    var q = new URLSearchParams(location.search), id = q.get('pagado') || q.get('cancelado');
+    if (!id) return;
+    var ok = !!q.get('pagado');
+    history.replaceState(null, '', location.pathname);
+    cargar().then(function () {
+      if (!ok) return aviso('El pago se canceló. Puedes cancelar el pedido pendiente o intentarlo de nuevo.', true);
+      api(base('/compras/' + id + '/confirmar'), { session: q.get('session') || '', token: q.get('token') || '' }).then(function (r) {
+        aviso(r.estado === 'pagada' ? '¡Pago confirmado! Los créditos ya están en tu cuenta.' : 'Estamos esperando la confirmación del pago. Se acredita solo en unos minutos.', r.estado !== 'pagada');
+        cargar();
+      }).catch(function (e) { aviso(e.message, true); });
+    });
+  })();
   cargar();
 })();
 </script>

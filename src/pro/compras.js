@@ -1,6 +1,9 @@
 // README (ronda 35) · Compras de créditos y pase de los profesionales: crear el pedido, confirmarlo (cobrado) y facturar.
 import { randomId, now } from '../lib/util.js';
-import { vatRateFor } from '../lib/fx.js';
+import { vatRateFor, getRates } from '../lib/fx.js';
+import { methodsFor, createMpPreference, findMpApproved } from '../lib/pagos.js';
+import { createCheckoutSession, retrieveCheckoutSession } from '../lib/stripe.js';
+import { createPaypalOrder, capturePaypalOrder } from '../lib/paypal.js';
 import { reverseChargeFor } from '../lib/vies.js';
 import { transferInfo } from '../lib/pagos.js';
 import { issueInvoice, invoiceUrl } from '../lib/facturas.js';
@@ -21,7 +24,16 @@ export async function calcularIva(env, { neto, pais, nif }) {
   return { tasa, iva, total: r2(neto + iva), inversion: !!rc, rc };
 }
 
-export async function crearCompra(env, { empresaId, usuarioId, item, pais, fiscal, email, empresaNombre }) {
+// README (ronda 36): medios de pago de los profesionales. Los precios son en euros; con Mercado Pago (Argentina) se cobra
+// el equivalente en pesos. La transferencia sigue disponible y se confirma a mano desde /admin.
+export function mediosPro(env, pais) {
+  const p = String(pais || '').toUpperCase();
+  const online = methodsFor(env, p, p === 'AR' ? 'ARS' : 'EUR').filter((m) => m.id !== 'transfer').map((m) => m.id);
+  return [...online, 'transfer'];
+}
+
+export async function crearCompra(env, { empresaId, usuarioId, item, pais, fiscal, email, empresaNombre, medio = 'transfer', base = '' }) {
+  medio = mediosPro(env, pais).includes(medio) ? medio : 'transfer';
   const cat = catalogoCompras()[item];
   if (!cat) throw new Error('Producto desconocido');
   const calc = await calcularIva(env, { neto: cat.neto, pais, nif: fiscal?.id });
@@ -29,8 +41,9 @@ export async function crearCompra(env, { empresaId, usuarioId, item, pais, fisca
   const numero = await siguienteNumeroCompra(env);
   const f = { nombre: fiscal?.nombre || empresaNombre || '', id: calc.rc ? calc.rc.vatId : String(fiscal?.id || '').toUpperCase().replace(/\s+/g, ''), direccion: fiscal?.direccion || calc.rc?.address || '' };
   await env.DB.prepare(`INSERT INTO compras_pro (id, numero, empresa_id, usuario_id, item, creditos, neto, iva_tasa, iva, total, pais, fiscal, inversion, estado, medio, creado)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', 'transferencia', ?)`)
-    .bind(id, numero, empresaId, usuarioId || null, item, cat.creditos, cat.neto, calc.tasa, calc.iva, calc.total, String(pais || '').toUpperCase() || null, JSON.stringify(f), calc.inversion ? 1 : 0, new Date().toISOString()).run();
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?, ?)`)
+    .bind(id, numero, empresaId, usuarioId || null, item, cat.creditos, cat.neto, calc.tasa, calc.iva, calc.total, String(pais || '').toUpperCase() || null, JSON.stringify(f), calc.inversion ? 1 : 0, medio === 'transfer' ? 'transferencia' : medio, new Date().toISOString()).run();
+  if (medio !== 'transfer') return { id, numero, nombre: cat.nombre, ...calc, rc: undefined, medio, ...(await iniciarPago(env, { id, numero, cat, total: calc.total, medio, email, base })) };
   const datos = transferInfo(env, 'EUR');
   try {
     if (email) await sendEmail(env, { to: email, ...mailCompraPro(env, { numero, producto: cat.nombre, total: eur(calc.total), referencia: `PRO-${numero}`, datos }) });
@@ -66,4 +79,42 @@ export async function pagarCompra(env, id, { medio = 'transferencia', nota = nul
     if (email) await sendEmail(env, { to: email, ...mailCompraProPagada(env, { numero: c.numero, producto: cat?.nombre || c.item, url: `${base}/empresa/`, urlFactura }) });
   } catch (e) { console.error('[factura compra pro]', e); }
   return true;
+}
+
+// ── Pago online de una compra (Stripe, PayPal, Mercado Pago) ─────────────
+async function iniciarPago(env, { id, numero, cat, total, medio, email, base }) {
+  const titulo = `Amo Invitar para profesionales · ${cat.nombre} · #${numero}`;
+  const ok = `${base}/empresa/?pagado=${id}`, no = `${base}/empresa/?cancelado=${id}`;
+  const real = { stripe: env.STRIPE_SECRET_KEY, mercadopago: env.MP_ACCESS_TOKEN, paypal: env.PAYPAL_CLIENT_ID }[medio];
+  if (env.DEV_FAKE_PAYMENTS === '1' && !real) { await pagarCompra(env, id, { medio, base }); return { url: ok }; }
+  if (medio === 'stripe') {
+    const s = await createCheckoutSession(env, { amount: Math.round(total * 100), currency: 'eur', productName: titulo, description: cat.nombre, email, taxRate: '', invoice: false,
+      successUrl: `${ok}&session={CHECKOUT_SESSION_ID}`, cancelUrl: no, metadata: { compra_pro: id, numero: String(numero) } });
+    return { url: s.url };
+  }
+  if (medio === 'paypal') {
+    const pp = await createPaypalOrder(env, { orderId: id, title: titulo, amount: total, currency: 'EUR', returnUrl: ok, cancelUrl: no });
+    return { url: pp.approveUrl };
+  }
+  // Mercado Pago: el equivalente en pesos argentinos (redondeado a 100)
+  const rates = await getRates(env);
+  const ars = Math.max(100, Math.round((total / (rates.EUR || 0.92)) * (rates.ARS || 1400) / 100) * 100);
+  const pref = await createMpPreference(env, { title: titulo, amount: ars, currency: 'ARS', email, orderId: id, successUrl: ok, failureUrl: no, notificationUrl: `${base}/api/mp/webhook` });
+  return { url: pref.init_point };
+}
+
+// Al volver de la pasarela (o desde el aviso): se verifica el pago con la pasarela y se acreditan los créditos
+export async function confirmarCompra(env, id, { session = '', token = '', base = '' } = {}) {
+  const c = await env.DB.prepare('SELECT id, estado, medio FROM compras_pro WHERE id = ?').bind(id).first();
+  if (!c) return null;
+  if (c.estado === 'pendiente') {
+    let ok = false;
+    if (c.medio === 'stripe' && session.startsWith('cs_') && env.STRIPE_SECRET_KEY) {
+      const s = await retrieveCheckoutSession(env, session);
+      ok = s.metadata?.compra_pro === id && s.payment_status === 'paid';
+    } else if (c.medio === 'paypal' && token && env.PAYPAL_CLIENT_ID) ok = await capturePaypalOrder(env, token);
+    else if (c.medio === 'mercadopago' && env.MP_ACCESS_TOKEN) ok = !!(await findMpApproved(env, id));
+    if (ok) await pagarCompra(env, id, { medio: c.medio, base });
+  }
+  return (await env.DB.prepare('SELECT id, estado, medio FROM compras_pro WHERE id = ?').bind(id).first());
 }

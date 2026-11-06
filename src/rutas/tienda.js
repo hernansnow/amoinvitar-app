@@ -18,6 +18,7 @@ import { sendEmail, mailPedidoListo, mailRecuerdoListo, mailTransferencia, mailA
 import { issueInvoice, invoiceUrl } from '../lib/facturas.js';
 import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { reverseChargeFor } from '../lib/vies.js';
+import { pagarCompra } from '../pro/compras.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
 import { RECUERDO, PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, precioPedido, comprable } from '../catalogo.js';
@@ -385,6 +386,7 @@ export async function webhookStripe(request, env) {
   if (['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(evt.type)) {
     const s = evt.data.object;
     if (s.payment_status === 'paid' && s.metadata?.order_id) await cumplirPedido(env, request, s.metadata.order_id);
+    if (s.payment_status === 'paid' && s.metadata?.compra_pro) await pagarCompra(env, s.metadata.compra_pro, { medio: 'stripe', base: sitio(env, request) });
   }
   return json({ recibido: true });
 }
@@ -399,7 +401,8 @@ export async function webhookMp(request, env) {
   const id = b.data?.id || url.searchParams.get('data.id') || url.searchParams.get('id');
   if (tipo === 'payment' && id) {
     const pago = await getMpPayment(env, id);
-    if (pago.status === 'approved' && pago.external_reference) await cumplirPedido(env, request, pago.external_reference);
+    if (pago.status === 'approved' && String(pago.external_reference || '').startsWith('cp_')) await pagarCompra(env, pago.external_reference, { medio: 'mercadopago', base: sitio(env, request) });
+    else if (pago.status === 'approved' && pago.external_reference) await cumplirPedido(env, request, pago.external_reference);
   }
   return json({ ok: true });
 }
