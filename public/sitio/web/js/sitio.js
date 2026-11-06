@@ -5,6 +5,12 @@
   var d = document, $ = function (s, r) { return (r || d).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || d).querySelectorAll(s)); };
   d.documentElement.classList.remove('sin-js');
 
+  /* ---------- Slider de invitaciones a medida ---------- */
+  $$('[data-slider]').forEach(function (s) {
+    var im = $$('img', s), i = 0; if (im.length < 2) return; im[0].classList.add('on');
+    setInterval(function () { im[i].classList.remove('on'); i = (i + 1) % im.length; im[i].classList.add('on'); }, 3800);
+  });
+
   /* ---------- Portadas: la invitación real se escala al tamaño del dispositivo ---------- */
   var ifr = $$('.escena iframe[data-w]');
   function escala() { ifr.forEach(function (f) { var w = +f.getAttribute('data-w'), h = +f.getAttribute('data-h'), p = f.parentNode; var k = p.clientWidth / w; f.style.width = w + 'px'; f.style.height = h + 'px'; f.style.transform = 'scale(' + k + ')'; }); }
