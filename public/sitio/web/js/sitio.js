@@ -5,6 +5,21 @@
   var d = document, $ = function (s, r) { return (r || d).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || d).querySelectorAll(s)); };
   d.documentElement.classList.remove('sin-js');
 
+  /* ---------- Video en una ventana propia (sin salir a Vimeo) ---------- */
+  var dv = null;
+  function abreVideo(url) {
+    if (!dv) {
+      dv = d.createElement('dialog'); dv.className = 'dialogo-video'; dv.setAttribute('aria-label', 'Video');
+      dv.innerHTML = '<div class="dv-caja"><div class="dv-marco"><button type="button" class="dv-x" aria-label="Cerrar">&times;</button><iframe allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Video de Amo Invitar!"></iframe></div></div>';
+      d.body.appendChild(dv);
+      dv.addEventListener('click', function (e) { if (e.target === dv || e.target.classList.contains('dv-caja') || e.target.classList.contains('dv-x')) dv.close(); });
+      dv.addEventListener('close', function () { dv.querySelector('iframe').src = 'about:blank'; });
+    }
+    dv.querySelector('iframe').src = url + (url.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1';
+    if (dv.showModal) dv.showModal(); else window.open(url, '_blank');
+  }
+  d.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('[data-video]'); if (!a) return; e.preventDefault(); abreVideo(a.getAttribute('data-video')); });
+
   /* ---------- Slider de invitaciones a medida ---------- */
   $$('[data-slider]').forEach(function (s) {
     var im = $$('img', s), i = 0; if (im.length < 2) return; im[0].classList.add('on');

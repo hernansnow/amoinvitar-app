@@ -60,15 +60,15 @@ export const WA_PATH = 'M12.04 2a9.9 9.9 0 00-8.5 15l-1.4 5 5.2-1.360A9.900 9.90
 // ── Eventos ─────────────────────────────────────────────────────────────
 // tuEvento: cómo se nombra en los textos · tipo: el del widget de diseños · img: foto de la tarjeta
 export const EVENTOS = [
-  { id: 'boda', pagina: 'bodas', menu: 'Boda',nombre: 'Boda', tuEvento: 'tu boda', widget: 'boda', img: 'boton-boda.jpg', hero: 'hero-bodas-desk.jpg', corto: 'Invitación + web de boda' },
-  { id: '15', pagina: 'mis15', menu: '15 años', nombre: '15 años', tuEvento: 'tus 15', widget: '15-anos', img: 'boton-15.jpg', hero: 'hero-15.jpg', corto: 'Quinceañera' },
-  { id: 'bautismo', pagina: 'bautismo', menu: 'Bautismo', nombre: 'Bautismo', tuEvento: 'el bautismo', widget: 'bautismo', img: 'boton-bautismo.jpg', hero: 'hero-bautismo.jpg', corto: 'Bautizo' },
-  { id: 'comunion', pagina: 'comunion', menu: 'Comunión', nombre: 'Comunión', tuEvento: 'la comunión', widget: 'comunion', img: 'boton-comunion.jpg', hero: 'hero-comunion.jpg', corto: 'Primera comunión' },
-  { id: 'cumple', pagina: 'cumple', menu: 'Cumpleaños', nombre: 'Cumpleaños', tuEvento: 'tu cumpleaños', widget: 'cumpleanos,infantil', img: 'boton-cumple.jpg', hero: 'hero-cumple.jpg', corto: 'Adultos e infantiles' },
-  { id: 'babyshower', pagina: 'baby-shower', menu: 'Baby shower', nombre: 'Baby shower', tuEvento: 'tu baby shower', widget: 'baby-shower', img: 'boton-infantil.jpg', hero: 'hero-infantiles.jpg', corto: 'Baby shower y revelación' },
-  { id: 'graduacion', pagina: 'graduacion', menu: 'Graduación', nombre: 'Graduación', tuEvento: 'tu graduación', widget: 'graduacion', img: 'boton-egreso.jpg', hero: 'hero-graduacion.jpg', corto: 'Egresos y graduaciones' },
-  { id: 'empresarial', pagina: 'empresarial', menu: 'Corporativo', nombre: 'Corporativo', tuEvento: 'tu evento corporativo', widget: 'empresarial', img: 'boton-empresa.jpg', hero: 'hero-empresarial.jpg', corto: 'Empresas y lanzamientos' },
-  { id: 'otros', pagina: 'eventos', menu: 'Otros eventos', nombre: 'Otros eventos', tuEvento: 'tu evento', widget: 'navidad', img: 'boton-eventos.jpg', hero: 'hero-eventos.jpg', corto: 'Navidad y diseño a medida' },
+  { id: 'boda', pagina: 'bodas', menu: 'Boda',nombre: 'Boda', tuEvento: 'tu boda', widget: 'boda', img: 'boton-boda.jpg', hero: 'hero-bodas-desk.jpg', corto: 'Modelos y opciones' },
+  { id: '15', pagina: 'mis15', menu: '15 años', nombre: '15 años', tuEvento: 'tus 15', widget: '15-anos', img: 'boton-15.jpg', hero: 'hero-15.jpg', corto: 'Modelos y opciones' },
+  { id: 'bautismo', pagina: 'bautismo', menu: 'Bautismo', nombre: 'Bautismo', tuEvento: 'el bautismo', widget: 'bautismo', img: 'boton-bautismo.jpg', hero: 'hero-bautismo.jpg', corto: 'Modelos y opciones' },
+  { id: 'comunion', pagina: 'comunion', menu: 'Comunión', nombre: 'Comunión', tuEvento: 'la comunión', widget: 'comunion', img: 'boton-comunion.jpg', hero: 'hero-comunion.jpg', corto: 'Modelos y opciones' },
+  { id: 'cumple', pagina: 'cumple', menu: 'Cumpleaños', nombre: 'Cumpleaños', tuEvento: 'tu cumpleaños', widget: 'cumpleanos,infantil', img: 'boton-cumple.jpg', hero: 'hero-cumple.jpg', corto: 'Modelos adultos e infantiles' },
+  { id: 'babyshower', pagina: 'baby-shower', menu: 'Baby shower', nombre: 'Baby shower', tuEvento: 'tu baby shower', widget: 'baby-shower', img: 'boton-infantil.jpg', hero: 'hero-infantiles.jpg', corto: 'Modelos y opciones' },
+  { id: 'graduacion', pagina: 'graduacion', menu: 'Graduación', nombre: 'Graduación', tuEvento: 'tu graduación', widget: 'graduacion', img: 'boton-egreso.jpg', hero: 'hero-graduacion.jpg', corto: 'Modelos y opciones' },
+  { id: 'empresarial', pagina: 'empresarial', menu: 'Corporativo', nombre: 'Corporativo', tuEvento: 'tu evento corporativo', widget: 'empresarial', img: 'boton-empresa.jpg', hero: 'hero-empresarial.jpg', corto: 'Opciones para empresas' },
+  { id: 'otros', pagina: 'eventos', menu: 'Otros eventos', nombre: 'Otros eventos', tuEvento: 'tu evento', widget: 'navidad', img: 'boton-eventos.jpg', hero: 'hero-eventos.jpg', corto: 'Más opciones' },
 ];
 
 // Opciones del formulario de contacto

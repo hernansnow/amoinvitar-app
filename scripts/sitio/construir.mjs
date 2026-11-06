@@ -155,10 +155,10 @@ function comoFunciona(E, esIndex) {
         <p>No es solo una invitación digital: es <strong>un sitio web de ${esIndex ? 'tu boda o evento' : t}</strong>, personalizado con un atractivo diseño, que envías por WhatsApp fácilmente. Los invitados hacen clic y tienen toda la información del evento, confirman asistencia y participan activamente.</p>
         <p>Y lo más importante: desde el <strong>panel privado</strong> vas a administrar las respuestas, exportarlas, organizar las mesas, la llegada de los invitados el día del evento y mucho más.</p>
         ${checks(['Diseño de catálogo o estilo 100% a medida.', 'Puedes cambiar el diseño siempre, incluso publicada.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.'])}
-        <div class="fila-btn"><a class="btn btn-verde btn-grande" href="/crear-invitacion">Crear invitación ${ic('flecha')}</a><a class="enlace-video" href="${C.VIDEO}" target="_blank" rel="noopener">${ic('play')} Ver video</a></div>
+        <div class="fila-btn"><a class="btn btn-verde btn-grande" href="/crear-invitacion">Crear invitación ${ic('flecha')}</a><a class="enlace-video" href="${C.VIDEO}" data-video="${C.VIDEO}" target="_blank" rel="noopener">${ic('play')} Ver video</a></div>
         <p class="nota-pago">${ic('shield')}<span><strong>Solo pagas al publicar.</strong> Si el modelo es gratis, tienes tu link y no pagas nada.</span></p>
       </div>
-      <a class="video-mini rev" href="${C.VIDEO}" target="_blank" rel="noopener" aria-label="Ver el video de Amo Invitar"><img src="/web/img/p_lovestory.jpg" alt="" loading="lazy"><span><i>${ic('play')}</i></span></a>
+      <a class="video-mini rev" href="${C.VIDEO}" data-video="${C.VIDEO}" target="_blank" rel="noopener" aria-label="Ver el video de Amo Invitar"><picture><source media="(max-width: 899px)" srcset="/web/img/video-ancho.webp" width="1300" height="721"><img src="/web/img/video-cuadrado.webp" alt="" loading="lazy" width="900" height="900"></picture><span><i>${ic('play')}</i></span></a>
     </div>`;
   const tPasos = titulo('', 'Tu invitación hoy, en <em>5 simples pasos</em>', '');
   return `<section class="seccion" id="como-funciona">
@@ -252,12 +252,12 @@ function faq(E, P, lista) {
 
 function nosotros() {
   return `<section class="seccion crema" id="nosotros"><div class="caja nosotros">
-  <div class="nosotros-foto rev" role="img" aria-label="Snow Producciones, fotografía y video de bodas y eventos"></div>
-  <div class="rev"><span class="sobre" style="font:600 13px/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--verde);display:block;margin-bottom:12px">Nosotros</span><h2 style="font-size:clamp(28px,4vw,42px)">Hacemos invitaciones con el <em class="h-script">corazón</em></h2>
+  <div class="nosotros-foto rev"><img src="/web/img/nosotros.webp" alt="Snow Producciones, fotografía y video de bodas y eventos" loading="lazy" width="1200" height="800"><p class="nos-sello"><b>+ de 20 años</b> en bodas y eventos</p></div>
+  <div class="rev"><span class="sobre" style="font:600 13px/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--verde);display:block;margin-bottom:12px">Nosotros</span><h2 style="font-size:clamp(28px,4vw,42px)">Hacemos invitaciones con el <em class="h-script">Corazón</em></h2>
   <p>Somos <strong>Snow Producciones®</strong> y desde 2005 hacemos fotografía y video para bodas y eventos. Nos impulsan los sueños, nos mueve lo hermoso de las pequeñas cosas y nos estremece el amor: es un privilegio conocer un poco de la historia de cada pareja y de cada familia que nos elige.</p>
   <p>Escuchando lo que necesitaba cada evento, nació <strong>Amo Invitar!</strong>: invitaciones digitales, sostenibles e interactivas, que reducen los costos y cuidan el ambiente, con el diseño y el impacto visual de quien lleva años detrás de una cámara.</p>
   <p>Creemos que una invitación no solo informa: emociona y sorprende a cada invitado.</p>
-  <div class="cifras"><div><b>+20</b><span>años en bodas y eventos</span></div><div><b>5 años</b><span>seguidos en los Wedding Awards</span></div><div><b>1 link</b><span>para todo tu evento</span></div></div></div>
+  </div>
 </div></section>`;
 }
 

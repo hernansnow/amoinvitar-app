@@ -584,3 +584,18 @@ body.cajon-abierto { overflow: hidden; }
 
 /* README (ronda 36): tras una portada con foto y borde inclinado blanco, la sección siguiente va en blanco (si no, se ve un triángulo blanco) */
 .portada + .seccion, .portada + section { background: #fff !important; }
+
+/* README (ronda 36): video en ventana propia, miniaturas nuevas y foto de Nosotros con sello */
+.video-mini { aspect-ratio: 16 / 9; max-width: none; width: 100%; }
+@media (min-width: 900px) { .video-mini { aspect-ratio: 1; max-width: 460px; } }
+.video-mini picture, .video-mini picture img { display: block; width: 100%; height: 100%; }
+.video-mini img { object-fit: cover; opacity: 1; }
+.nosotros-foto { aspect-ratio: 3 / 2; background: #1c1c1c; }
+.nos-sello { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 44px 22px 20px; color: #fff; font: 400 clamp(15px, 2vw, 19px)/1.2 var(--sans); background: linear-gradient(transparent, rgba(0, 0, 0, .72)); }
+.nos-sello b { display: block; font: 600 clamp(26px, 4vw, 38px)/1.1 var(--sans); letter-spacing: -.01em; }
+.dialogo-video { border: 0; padding: 0; background: transparent; max-width: none; max-height: none; width: 100%; height: 100%; }
+.dialogo-video::backdrop { background: rgba(10, 18, 16, .86); }
+.dialogo-video .dv-caja { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; }
+.dialogo-video .dv-marco { position: relative; height: min(88vh, 900px); aspect-ratio: 9 / 16; max-width: 100%; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, .6); }
+.dialogo-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+.dialogo-video .dv-x { position: absolute; top: 14px; right: 14px; z-index: 3; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .92); color: #1c1c1c; font: 400 28px/1 var(--sans); cursor: pointer; }
