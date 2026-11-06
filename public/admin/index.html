@@ -414,8 +414,57 @@
     return v;
   }
 
+
+  // ══ Precios y promos: descuento por país y promociones automáticas ══
+  var NOMBRE_CAT = { boda: 'Bodas', 15: '15 años', cumple: 'Cumpleaños', bautismo: 'Bautismo', comunion: 'Comunión', babyshower: 'Baby shower', graduacion: 'Graduación', empresarial: 'Corporativo', otros: 'Otros eventos' };
+  function vistaPrecios() {
+    var v = el('div'), d = VISTAS.precios;
+    v.append(el('h2', {}, 'Precios y promociones'));
+    if (!d) { cargaVista('precios', '/api/admin/precios'); return append(v, vacio('Cargando…')); }
+    // — Descuento por país —
+    var filas = el('div', { class: 'grupo' }), lista = Object.keys(d.descuentos).sort().map(function (k) { return [k, d.descuentos[k]]; });
+    var dl = el('datalist', { id: 'dl-paises' }, d.paises.map(function (c) { return el('option', { value: c }); }));
+    function fila(cod, val) {
+      var a = el('input', { value: cod || '', maxlength: 2, list: 'dl-paises', placeholder: 'AR', style: 'width:70px;text-transform:uppercase' }), b = el('input', { type: 'number', min: '0', max: '90', step: '0.5', value: val || '', placeholder: '20', style: 'width:90px' });
+      var f = el('div', { class: 'fila', style: 'gap:8px;align-items:center;margin:4px 0' }, [a, b, el('span', {}, '%'), btn('Quitar', 'mal', function () { f.remove(); })]); f._v = function () { return [a.value.trim().toUpperCase(), b.value]; }; return f;
+    }
+    lista.forEach(function (x) { filas.append(fila(x[0], x[1])); });
+    var tp = el('div', { class: 'tarjeta' }, [el('h3', {}, 'Descuento por país'), el('p', { class: 'meta' }, 'Ajusta los precios a cada economía: se descuenta del precio de lista (sin IVA español) en ese país. ' + (d.personalizado ? 'Estás usando tu propia tabla.' : 'Hoy rigen los descuentos de siempre; al guardar pasan a ser los tuyos.')), dl, filas,
+      el('div', { class: 'fila', style: 'gap:8px;margin-top:10px;flex-wrap:wrap' }, [btn('+ Agregar país', 'sec', function () { filas.append(fila('', '')); }),
+        btn('Guardar descuentos', '', function (b) { var o = {}; [].slice.call(filas.children).forEach(function (f) { var x = f._v(); if (x[0]) o[x[0]] = x[1]; }); accion(b, '/api/admin/precios', { descuentos: o }, 'Descuentos guardados', function () { VISTAS.precios = null; return Promise.resolve().then(pinta); }); }),
+        d.personalizado ? btn('Volver a los de siempre', 'sec', function (b) { if (confirm('¿Volver a la tabla original de descuentos?')) accion(b, '/api/admin/precios', { restaurar: true }, 'Restaurados', function () { VISTAS.precios = null; return Promise.resolve().then(pinta); }); }) : null])]);
+    v.append(tp);
+    // — Promociones —
+    var cont = el('div'), tarjetas = [];
+    function tarjetaPromo(p) {
+      p = p || { id: '', nombre: '', porcentaje: 20, activa: true, paises: [], categorias: [], planes: [], desde: '', hasta: '' };
+      var nombre = el('input', { value: p.nombre, placeholder: 'Ej.: Cyber Week' }), pct = el('input', { type: 'number', min: '1', max: '90', step: '0.5', value: p.porcentaje }),
+        paises = el('input', { value: (p.paises || []).join(', '), placeholder: 'Vacío = todos los países. Ej.: ES, AR, MX' }), desde = el('input', { type: 'date', value: p.desde || '' }), hasta = el('input', { type: 'date', value: p.hasta || '' }),
+        activa = el('input', { type: 'checkbox' }); activa.checked = !!p.activa;
+      var cats = d.categorias.map(function (k) { var c = el('input', { type: 'checkbox', value: k }); c.checked = (p.categorias || []).indexOf(k) > -1; return el('label', {}, [c, NOMBRE_CAT[k] || k]); });
+      var pls = d.planes.map(function (k) { var c = el('input', { type: 'checkbox', value: k }); c.checked = (p.planes || []).indexOf(k) > -1; return el('label', {}, [c, k[0].toUpperCase() + k.slice(1)]); });
+      var t = el('div', { class: 'tarjeta', style: 'margin:10px 0' }, [
+        el('div', { class: 'dos' }, [el('label', {}, ['Nombre', nombre]), el('label', {}, ['Descuento (%)', pct])]),
+        el('label', {}, ['Países', paises]),
+        el('div', { class: 'dos' }, [el('label', {}, ['Desde (opcional)', desde]), el('label', {}, ['Hasta (opcional)', hasta])]),
+        el('div', { class: 'grupo' }, [el('h3', {}, 'Categorías (sin marcar: todas)'), el('div', { class: 'marcas' }, cats)]),
+        el('div', { class: 'grupo' }, [el('h3', {}, 'Planes (sin marcar: todos los de pago)'), el('div', { class: 'marcas' }, pls)]),
+        el('div', { class: 'fila', style: 'gap:12px;align-items:center;flex-wrap:wrap' }, [el('label', { style: 'display:flex;gap:6px;align-items:center' }, [activa, 'Activa (se ve en toda la web)']), btn('Quitar promoción', 'mal', function () { tarjetas.splice(tarjetas.indexOf(t), 1); t.remove(); })])]);
+      t._v = function () {
+        return { id: p.id, nombre: nombre.value, porcentaje: pct.value, activa: activa.checked, paises: paises.value.split(/[ ,;]+/).filter(Boolean), desde: desde.value, hasta: hasta.value,
+          categorias: cats.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked; }).map(function (c) { return c.value; }), planes: pls.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked; }).map(function (c) { return c.value; }) };
+      };
+      tarjetas.push(t); cont.append(t);
+    }
+    (d.promos || []).forEach(tarjetaPromo);
+    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Promociones'), el('p', { class: 'meta' }, 'Descuento automático sobre el precio de lista: los clientes ven el precio tachado y el precio con promoción en toda la web, y se cobra con el descuento al comprar (se suma a un cupón, si lo usan). Aplica a invitaciones web con plan de pago. Para que valga en una categoría, esa página (por ejemplo Bodas) lo muestra; las páginas generales solo muestran las promociones sin categoría.'),
+      cont, el('div', { class: 'fila', style: 'gap:8px;margin-top:10px;flex-wrap:wrap' }, [btn('+ Nueva promoción', 'sec', function () { tarjetaPromo(null); }),
+        btn('Guardar promociones', '', function (b) { accion(b, '/api/admin/precios', { promos: tarjetas.map(function (t) { return t._v(); }) }, 'Promociones guardadas', function () { VISTAS.precios = null; return Promise.resolve().then(pinta); }); })])]));
+    return v;
+  }
+
   // ── Estructura ──
-  var PESTANAS = [['resumen', 'Resumen', vistaResumen], ['pedidos', 'Pedidos', vistaPedidos], ['facturas', 'Facturas', vistaFacturas], ['cupones', 'Cupones', vistaCupones], ['eventos', 'Invitaciones', vistaEventos], ['clientes', 'Clientes', vistaClientes], ['consultas', 'Consultas', vistaConsultas], ['pro', 'Profesionales', vistaPro], ['medidas', 'Diseños a medida', vistaMedidas], ['registro', 'Registro', vistaRegistro]];
+  var PESTANAS = [['resumen', 'Resumen', vistaResumen], ['pedidos', 'Pedidos', vistaPedidos], ['facturas', 'Facturas', vistaFacturas], ['cupones', 'Cupones', vistaCupones], ['precios', 'Precios y promos', vistaPrecios], ['eventos', 'Invitaciones', vistaEventos], ['clientes', 'Clientes', vistaClientes], ['consultas', 'Consultas', vistaConsultas], ['pro', 'Profesionales', vistaPro], ['medidas', 'Diseños a medida', vistaMedidas], ['registro', 'Registro', vistaRegistro]];
   var VISTA_DE = { clientes: 'usuarios' };
   function cargaVista(nombre, ruta) {
     var tab = TAB;

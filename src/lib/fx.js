@@ -29,6 +29,38 @@ export const DESCUENTO_PAIS = {
   BO: 25, HN: 25, NI: 25,
 };
 // Europa fuera de la UE: el mismo precio que en la UE (en euros con IVA, o su equivalente)
+// README (ronda 36): los descuentos por país y las promociones se editan en /admin/ (pestaña Precios y promos) y se guardan en
+// app_state['config_precios']; acá se leen (con caché corta) y quedan en CONFIG. Sin configuración vale DESCUENTO_PAIS.
+export const CONFIG = { descuentos: null, promos: [] };
+let cfgLeida = 0;
+export async function cargarConfig(env) {
+  if (Date.now() - cfgLeida < 20000) return;
+  cfgLeida = Date.now();
+  try {
+    const row = await env.DB.prepare("SELECT value FROM app_state WHERE key = 'config_precios'").first();
+    const c = row?.value ? JSON.parse(row.value) : {};
+    CONFIG.descuentos = c.descuentos && typeof c.descuentos === 'object' ? c.descuentos : null;
+    CONFIG.promos = Array.isArray(c.promos) ? c.promos : [];
+  } catch { /* sin tabla o sin configuración: valen los descuentos de siempre */ }
+}
+export const olvidarConfig = () => { cfgLeida = 0; };
+export const descuentoPais = (c) => Number((CONFIG.descuentos ?? DESCUENTO_PAIS)[c]) || 0;
+// Categoría de la promo según el tipo de evento del pedido
+export const categoriaDeTipo = (t) => ({ infantil: 'cumple', revelacion: 'babyshower', navidad: 'otros', 'save-the-date': 'boda' }[t] || t);
+export const PLANES_PROMO = ['basic', 'premium', 'deluxe'];
+// Promociones vigentes para un país (activas, dentro de sus fechas)
+export function promosVigentes(pais, ahora = Date.now()) {
+  return CONFIG.promos.filter((p) => p && p.activa && Number(p.porcentaje) > 0
+    && (!p.paises?.length || p.paises.includes(pais))
+    && (!p.desde || Date.parse(p.desde) <= ahora) && (!p.hasta || Date.parse(p.hasta) + 86400000 > ahora));
+}
+// La mejor promo (mayor porcentaje) que alcanza a un plan de una categoría; categoria null = página sin categoría
+export function promoPara({ pais, plan, categoria }) {
+  if (!PLANES_PROMO.includes(plan)) return null;
+  const ok = promosVigentes(pais).filter((p) => (!p.planes?.length || p.planes.includes(plan)) && (!p.categorias?.length || (categoria && p.categorias.includes(categoria))));
+  return ok.sort((a, b) => b.porcentaje - a.porcentaje)[0] || null;
+}
+
 export const EUROPA_OTROS = ['GB', 'CH', 'NO', 'IS', 'LI', 'AD', 'MC', 'SM', 'VA', 'ME', 'AL', 'MK', 'RS', 'BA', 'MD', 'UA', 'XK'];
 
 export const currencyForCountry = (country) => COUNTRY_CURRENCY[country] || 'USD';
@@ -47,6 +79,7 @@ async function fetchRates(env) {
 }
 
 export async function getRates(env) {
+  await cargarConfig(env);
   try {
     const row = await env.DB.prepare('SELECT datos, creado FROM fx WHERE id = 1').first();
     if (row && row.creado > now() - FX_TTL) return JSON.parse(row.datos);
@@ -102,7 +135,7 @@ export function priceIn(clave, eur, currency, rates, country, env, opciones = {}
   const r = (c) => rates[c] || FALLBACK[c];
   const europa = isEU(country) || EUROPA_OTROS.includes(country);
   const sinIva = !europa || opciones.sinIva;
-  const base = (sinIva ? eur / (1 + HOME_VAT / 100) : eur) * (1 - (DESCUENTO_PAIS[country] || 0) / 100);
+  const base = (sinIva ? eur / (1 + HOME_VAT / 100) : eur) * (1 - descuentoPais(country) / 100);
   const fijo = country === 'AR' ? PRICE_OVERRIDES[currency]?.[clave] : undefined;
   const enMoneda = currency === 'EUR' ? base : (base / r('EUR')) * r(currency);
   // En euros con IVA (Europa) el precio queda tal cual; si se convierte o se saca el IVA, se redondea

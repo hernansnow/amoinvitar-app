@@ -185,7 +185,7 @@ function funciones(E) {
 
 const celda = (v) => (v === true ? `<span class="si">${ic('check')}<span class="sr">Incluido</span></span>` : v === false ? '<span class="no" aria-label="No incluido">—</span>' : `<small>${esc(v)}</small>`);
 function planes(E) {
-  const cards = C.PLANES.map((p) => `<article class="plan-card rev${p.destacado ? ' destacado' : ''}">${p.destacado ? '<span class="cinta">Más elegido</span>' : ''}<h3>${p.nombre}</h3><p class="precio" data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : '&nbsp;'}</p><p class="precio-s">${p.id === 'gratis' ? 'Sin tarjeta, sin pagar nada' : `Pago único<span data-iva> · IVA incluido</span>`}</p><ul>${p.items.map((t, i) => `<li${i === 0 && t.startsWith('Todo') ? ' class="todo"' : ''}>${ic('check')}<span>${esc(t)}</span></li>`).join('')}</ul><a class="btn ${p.destacado ? 'btn-verde' : 'btn-borde'}" href="/crear-invitacion?paquete=${p.id}">${p.boton}</a></article>`).join('');
+  const cards = C.PLANES.map((p) => `<article class="plan-card rev${p.destacado ? ' destacado' : ''}">${p.destacado ? '<span class="cinta">Más elegido</span>' : ''}<h3>${p.nombre}</h3>${p.id === 'gratis' ? '' : `<span class="promo-cinta" data-promo-de="${p.id}" hidden></span>`}<p class="precio" data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : '&nbsp;'}</p><p class="precio-s">${p.id === 'gratis' ? 'Sin tarjeta, sin pagar nada' : `Pago único<span data-iva> · IVA incluido</span>`}</p><ul>${p.items.map((t, i) => `<li${i === 0 && t.startsWith('Todo') ? ' class="todo"' : ''}>${ic('check')}<span>${esc(t)}</span></li>`).join('')}</ul><a class="btn ${p.destacado ? 'btn-verde' : 'btn-borde'}" href="/crear-invitacion?paquete=${p.id}">${p.boton}</a></article>`).join('');
   const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v) => `<td>${celda(v)}</td>`).join('')}</tr>`).join('');
   return `<section class="seccion alt" id="planes"><div class="caja">
   ${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones. Sin sorpresas.')}
@@ -312,7 +312,7 @@ function pie() {
 
 function pagina(P, cuerpo) {
   return `${head(P)}
-<body>
+<body${P.evento ? ` data-evento="${P.evento}"` : ''}>
 ${sprite()}
 ${cabecera(P)}
 <main id="principal">
@@ -376,7 +376,7 @@ const OTRAS_ES = { boda: 'Boda', 15: '15 años', bautismo: 'Bautismo', comunion:
 for (const E0 of C.EVENTOS) {
   const E = { ...E0, contactoEvento: OTRAS_ES[E0.id] };
   const pt = PORTADAS[E.id];
-  const P = { titulo: `${pt.t} | Amo Invitar!`, descripcion: pt.d, widget: true };
+  const P = { titulo: `${pt.t} | Amo Invitar!`, descripcion: pt.d, widget: true, evento: E.id };
   escribe(E.pagina, P, [
     portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES[E.id], demo: demoDe(E.id) }),
     disenos(E), funciones(E), comoFunciona(E, false), planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),

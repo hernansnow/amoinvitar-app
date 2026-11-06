@@ -1180,6 +1180,7 @@ export default {
         if (p1 === 'admin' && partes[2] === 'usuarios') return await sa.usuarios(request, env, partes[3]);
         if (p1 === 'admin' && partes[2] === 'consultas') return await sa.consultas(request, env, partes[3], partes[4]);
         if (p1 === 'admin' && partes[2] === 'registro') return await sa.registro(request, env);
+        if (p1 === 'admin' && partes[2] === 'precios') return await sa.precios(request, env);
         if (p1 === 'admin' && partes[2] === 'resumen') return await consola.resumen(request, env);
         if (p1 === 'admin' && partes[2] === 'pro') return await consola.accionPro(request, env, partes);
         if (p1 === 'admin' && partes[2] === 'medidas' && partes[3] && partes[4]) return await consola.medida(request, env, partes[3], partes[4]);

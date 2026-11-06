@@ -158,6 +158,18 @@
     (c.paquetes || []).forEach(function (p) {
       $$('[data-precio="' + p.id + '"]').forEach(function (e) { e.textContent = p.precio.texto; });
     });
+    // Promociones vigentes (admin → Precios y promos): precio de lista tachado y precio con promoción en toda la web.
+    // En una página de evento valen las promos sin categoría y las de esa categoría; en las generales, solo las sin categoría.
+    var cat = d.body.getAttribute('data-evento') || '';
+    var promos = (c.promos || []).filter(function (p) { return !p.categorias.length || (cat && p.categorias.indexOf(cat) > -1); });
+    (c.paquetes || []).forEach(function (p) {
+      var mejor = null;
+      promos.forEach(function (pr) { if (pr.precios[p.id] && (!mejor || pr.porcentaje > mejor.porcentaje)) mejor = pr; });
+      if (!mejor) return;
+      var x = mejor.precios[p.id];
+      $$('[data-precio="' + p.id + '"]').forEach(function (e) { e.innerHTML = '<s class="tachado">' + x.antes + '</s> <span class="promo-precio">' + x.texto + '</span>'; });
+      $$('[data-promo-de="' + p.id + '"]').forEach(function (e) { e.textContent = '−' + mejor.porcentaje + ' % · ' + mejor.nombre; e.hidden = false; });
+    });
     // «0 €» del plan Gratis, con la moneda del visitante (se toma el formato del plan Basic)
     var pb = (c.paquetes || []).filter(function (p) { return p.id === 'basic'; })[0];
     if (pb && pb.precio && pb.precio.texto) { var cero = pb.precio.texto.replace(/[\d.,\s]+/, function (m) { return '0' + (/\s$/.test(m) ? ' ' : ''); }); $$('[data-precio="gratis"]').forEach(function (e) { e.textContent = cero; }); }

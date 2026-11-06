@@ -653,3 +653,8 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .alb-card p { margin: 0; font-size: 15px; color: #5f6b67; }
 .alb-card .alb-icon svg { width: 44px; height: 44px; color: var(--verde); }
 .alb-card .alb-num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #E5F3EC; color: var(--verde); font-weight: 700; font-size: 14px; margin-left: 8px; vertical-align: top; }
+
+/* README (ronda 36): promociones: precio de lista tachado y precio con descuento */
+.tachado { color: var(--suave); font-weight: 400; font-size: .62em; text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.promo-precio { color: var(--verde-osc); }
+.plan-card .promo-cinta { display: inline-block; background: #e8523f; color: #fff; font: 600 11.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; padding: 6px 10px; border-radius: 99px; margin: 0 0 10px; }

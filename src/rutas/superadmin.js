@@ -13,7 +13,8 @@ import { requiereAdmin } from './admin.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { almacenD1 } from '../almacen.js';
 import { crearUsuario } from '../lib/auth.js';
-import { getRates } from '../lib/fx.js';
+import { getRates, DESCUENTO_PAIS, COUNTRY_CURRENCY, CONFIG, cargarConfig, olvidarConfig, PLANES_PROMO } from '../lib/fx.js';
+import { getState, setState } from '../lib/verifactu.js';
 import { EXTRAS, PAQUETES } from '../catalogo.js';
 import { sendEmail, mailFactura, mailPedidoListo } from '../lib/email.js';
 import { issueInvoice, getInvoice, invoiceUrl, invoicesEnabled } from '../lib/facturas.js';
@@ -334,4 +335,46 @@ export async function consultas(request, env, id, accion) {
 export async function registro(request, env) {
   await entrar(request, env);
   return json({ registro: await consulta(env)('SELECT * FROM admin_log ORDER BY id DESC LIMIT 200') });
+}
+
+// ── Precios: descuentos por país y promociones (README ronda 36) ─────────
+const CATEGORIAS_PROMO = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'babyshower', 'graduacion', 'empresarial', 'otros'];
+export async function precios(request, env) {
+  const u = await entrar(request, env);
+  if (request.method === 'GET') {
+    olvidarConfig(); await cargarConfig(env);
+    return json({ descuentos: CONFIG.descuentos ?? DESCUENTO_PAIS, porDefecto: DESCUENTO_PAIS, personalizado: !!CONFIG.descuentos, promos: CONFIG.promos,
+      paises: Object.keys(COUNTRY_CURRENCY).sort(), categorias: CATEGORIAS_PROMO, planes: PLANES_PROMO });
+  }
+  const b = await readJson(request);
+  let actual = {};
+  try { actual = JSON.parse((await getState(env, 'config_precios')) || '{}'); } catch { actual = {}; }
+  if (b.descuentos) {
+    const d = {};
+    for (const [k, v] of Object.entries(b.descuentos)) {
+      const pais = String(k).toUpperCase().trim();
+      const n = Number(v);
+      if (!/^[A-Z]{2}$/.test(pais) || !(n > 0) || n > 90) continue;
+      d[pais] = Math.round(n * 100) / 100;
+    }
+    actual.descuentos = d;
+  }
+  if (b.restaurar) delete actual.descuentos;
+  if (Array.isArray(b.promos)) {
+    actual.promos = b.promos.slice(0, 60).map((p) => ({
+      id: str(p.id, 20) || randomId(5),
+      nombre: str(p.nombre, 80) || 'Promoción',
+      porcentaje: Math.min(90, Math.max(0, Math.round(Number(p.porcentaje) * 100) / 100 || 0)),
+      activa: !!p.activa,
+      paises: [...new Set([].concat(p.paises || []).map((x) => String(x).toUpperCase().trim()).filter((x) => /^[A-Z]{2}$/.test(x)))],
+      categorias: [].concat(p.categorias || []).filter((x) => CATEGORIAS_PROMO.includes(x)),
+      planes: [].concat(p.planes || []).filter((x) => PLANES_PROMO.includes(x)),
+      desde: /^\d{4}-\d{2}-\d{2}$/.test(p.desde || '') ? p.desde : '',
+      hasta: /^\d{4}-\d{2}-\d{2}$/.test(p.hasta || '') ? p.hasta : '',
+    })).filter((p) => p.porcentaje > 0);
+  }
+  await setState(env, 'config_precios', JSON.stringify(actual));
+  olvidarConfig();
+  await registrar(env, u, 'precios.guardar', null, { descuentos: b.descuentos ? Object.keys(b.descuentos).length : undefined, promos: Array.isArray(b.promos) ? b.promos.length : undefined, restaurar: !!b.restaurar });
+  return json({ ok: true });
 }

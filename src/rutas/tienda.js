@@ -9,7 +9,7 @@
 //
 // Los precios de lista están en euros (src/catalogo.js) y se cobran en la moneda del visitante.
 import { json, readJson, isEmail, str, randomId, now, HttpError, getCookie, cookie, isSecureRequest } from '../lib/util.js';
-import { CURRENCIES, currencyForCountry, getRates, priceIn, isZeroDecimal } from '../lib/fx.js';
+import { CURRENCIES, currencyForCountry, getRates, priceIn, isZeroDecimal, promoPara, promosVigentes, categoriaDeTipo, PLANES_PROMO, cargarConfig } from '../lib/fx.js';
 import { formatMoney } from '../lib/dinero.js';
 import { methodsFor, transferInfo, createMpPreference, findMpApproved, getMpPayment } from '../lib/pagos.js';
 import { createCheckoutSession, retrieveCheckoutSession, verifyWebhook } from '../lib/stripe.js';
@@ -89,14 +89,22 @@ function aplicarCupon(precio, c, rates) {
 }
 
 // Precio final de un importe en euros, en cada medio de pago disponible
-async function opciones(env, request, { eur, clave, moneda, cupon, sinIva = false }) {
+// README (ronda 36): promoción automática (admin → Precios y promos): solo invitaciones web con plan de pago, por país, categoría y plan
+export async function promoDe(env, request, pedido) {
+  await cargarConfig(env);
+  if (!pedido || pedido.producto !== 'invitacion') return null;
+  return promoPara({ pais: paisReal(request), plan: pedido.paquete, categoria: categoriaDeTipo(pedido.tipo) });
+}
+async function opciones(env, request, { eur, clave, moneda, cupon, promo = null, sinIva = false }) {
   const rates = await getRates(env);
   const pais = paisReal(request);
   // Empresa de la UE con IVA válido: sin IVA
   const medios = eur > 0 ? methodsFor(env, pais, moneda) : [];
   const conPrecio = medios.map((m) => {
-    const pr = aplicarCupon(priceIn(clave, eur, m.currency, rates, pais, env, { sinIva }), cupon, rates);
-    return { id: m.id, moneda: m.currency, importe: pr.amount, texto: formatMoney(pr.amount, m.currency), iva: pr.vat, ivaTasa: pr.vatRate, antes: pr.before ? formatMoney(pr.before, m.currency) : null, minor: pr.minor };
+    const lista0 = priceIn(clave, eur, m.currency, rates, pais, env, { sinIva });
+    const conPromo = promo ? aplicarCupon(lista0, { clase: 'porcentaje', valor: promo.porcentaje }, rates) : lista0;
+    const pr = aplicarCupon(conPromo, cupon, rates);
+    return { id: m.id, moneda: m.currency, importe: pr.amount, texto: formatMoney(pr.amount, m.currency), iva: pr.vat, ivaTasa: pr.vatRate, antes: lista0.amount && pr.amount < lista0.amount ? formatMoney(lista0.amount, m.currency) : null, minor: pr.minor };
   });
   const lista = priceIn(clave, eur, moneda, rates, pais, env, { sinIva });
   return { pais, rates, medios: conPrecio, lista: { importe: lista.amount, texto: formatMoney(lista.amount, moneda) } };
@@ -126,6 +134,9 @@ export async function catalogo(request, env) {
     stdWeb: MODELOS.filter((m) => m.std).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
     tarjetaStd: [...CON_TARJETA_STD],
     aMedida: precio('a-medida', A_MEDIDA.personalizado.premium),
+    // Promociones vigentes en este país: cada una con el precio de cada plan ya descontado (la web tacha el precio de lista)
+    promos: promosVigentes(pais).map((p) => ({ id: p.id, nombre: p.nombre, porcentaje: p.porcentaje, categorias: p.categorias || [], planes: p.planes?.length ? p.planes : PLANES_PROMO,
+      precios: Object.fromEntries(PLANES_PROMO.filter((k) => !p.planes?.length || p.planes.includes(k)).map((k) => { const l = priceIn(k, PAQUETES[k].precio, moneda, rates, pais, env); const d = aplicarCupon(l, { clase: 'porcentaje', valor: p.porcentaje }, rates); return [k, { antes: formatMoney(l.amount, moneda), texto: formatMoney(d.amount, moneda) }]; })) })),
   }, 200, origenSitio(request));
 }
 
@@ -144,8 +155,9 @@ export async function cotizar(request, env) {
   let cupon = null, errorCupon = null;
   try { cupon = await buscarCupon(env, b.cupon, pedido.paquete); } catch (e) { if (!(e instanceof HttpError)) throw e; errorCupon = e.message; }
   const rc = await inversion(env, request, b.factura);
-  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda: monedaPedida(request, b.moneda), cupon, sinIva: !!rc });
-  return json({ pedido, eur, gratis: eur === 0, medios: o.medios, lista: o.lista, cupon: cupon ? { codigo: cupon.codigo } : null, errorCupon,
+  const promo = await promoDe(env, request, pedido);
+  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda: monedaPedida(request, b.moneda), cupon, promo, sinIva: !!rc });
+  return json({ pedido, eur, gratis: eur === 0, medios: o.medios, lista: o.lista, cupon: cupon ? { codigo: cupon.codigo } : null, promo: promo ? { nombre: promo.nombre, porcentaje: promo.porcentaje } : null, errorCupon,
     empresa: rc ? { valida: true, nombre: rc.name || '', direccion: rc.address || '' } : null });
 }
 
@@ -167,7 +179,8 @@ export async function comprar(request, env) {
   const cupon = await buscarCupon(env, b.cupon, pedido.paquete);
   const moneda = monedaPedida(request, b.moneda);
   const rc = await inversion(env, request, b.factura);
-  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda, cupon, sinIva: !!rc });
+  const promo = await promoDe(env, request, pedido);
+  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda, cupon, promo, sinIva: !!rc });
   // Administradores: pueden crear cualquier invitación sin pagar, para probar (no genera factura)
   const sinPagar = !!(b.sinPagar && usuario?.esAdmin);
   const elegido = sinPagar ? null : o.medios.find((m) => m.id === b.medio) || o.medios[0];
