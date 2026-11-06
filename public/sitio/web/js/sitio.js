@@ -137,6 +137,9 @@
     (c.paquetes || []).forEach(function (p) {
       $$('[data-precio="' + p.id + '"]').forEach(function (e) { e.textContent = p.precio.texto; });
     });
+    // «0 €» del plan Gratis, con la moneda del visitante (se toma el formato del plan Basic)
+    var pb = (c.paquetes || []).filter(function (p) { return p.id === 'basic'; })[0];
+    if (pb && pb.precio && pb.precio.texto) { var cero = pb.precio.texto.replace(/[\d.,\s]+/, function (m) { return '0' + (/\s$/.test(m) ? ' ' : ''); }); $$('[data-precio="gratis"]').forEach(function (e) { e.textContent = cero; }); }
     if (c.aMedida) $$('[data-precio="medida"]').forEach(function (e) { e.textContent = c.aMedida.texto; });
     // Texto de abajo, con la lógica de Albunear: moneda y medios del país
     $$('[data-nota-precios]').forEach(function (e) {
@@ -145,7 +148,7 @@
         : 'Precios en <strong>' + nombreMoneda(c.moneda) + '</strong>. Puedes cambiar la moneda en el menú.' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>';
     });
     $$('[data-pago-iconos]').forEach(function (e) { e.innerHTML = m.logos.map(logo).join('') + m.extra; });
-    $$('[data-iva]').forEach(function (e) { e.textContent = c.moneda === 'EUR' ? 'IVA incluido' : 'pago único'; });
+    $$('[data-iva]').forEach(function (e) { e.textContent = c.moneda === 'EUR' ? ' · IVA incluido' : ''; });
     var bd = $('[data-bandera]');
     if (bd && c.pais && /^[A-Z]{2}$/.test(c.pais)) { bd.src = '/web/img/flags/' + c.pais.toLowerCase() + '.svg'; bd.onerror = function () { bd.onerror = null; bd.src = '/web/img/flags/es.svg'; }; }
     // Selector de moneda

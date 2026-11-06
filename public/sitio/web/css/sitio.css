@@ -359,18 +359,6 @@ body.cajon-abierto { overflow: hidden; }
 .imp-sou .t1 { top: 45.6%; font-size: 8.4cqw; font-weight: 500; text-transform: uppercase; white-space: normal; padding: 0 14%; line-height: 1.12; }
 
 /* ---------- Trayectoria y opiniones ---------- */
-.trayectoria { display: grid; gap: 28px; background: linear-gradient(150deg, var(--verde-2), var(--verde)); color: #d8ede6; border-radius: 28px; padding: clamp(28px, 5vw, 56px); margin-bottom: 50px; }
-@media (min-width: 900px) { .trayectoria { grid-template-columns: 1.3fr .7fr; gap: 48px; } }
-.trayectoria .sobre { font: 600 13px/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: #a9d6c8; display: block; margin-bottom: 12px; }
-.trayectoria h2 { color: #fff; font-size: clamp(28px, 4vw, 42px); }
-.trayectoria h2 em { font: 400 1.2em/1 var(--script); font-style: normal; color: #bde5d8; }
-.trayectoria p { color: #d8ede6; }
-.t-lado { text-align: center; align-self: center; }
-.t-desde { margin: 0 0 4px; font: 400 15px/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: #a9d6c8; }
-.t-desde b { display: block; font: 400 clamp(56px, 8vw, 84px)/1 var(--script); color: #fff; letter-spacing: 0; text-transform: none; margin-top: 8px; }
-.t-marcas { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 14px; }
-.t-marcas li { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 14px; color: #bde5d8; }
-.t-marcas img { height: 34px; width: auto; max-width: 120px; object-fit: contain; filter: brightness(0) invert(1); opacity: .95; }
 .t-premio { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; border-top: 1px solid rgba(255, 255, 255, .22); padding-top: 22px; flex-wrap: wrap; }
 .t-premio .icono { width: 44px; height: 44px; color: var(--oro); stroke-width: 1.5; }
 .t-premio p { margin: 0; line-height: 1.35; }
@@ -513,3 +501,40 @@ body.cajon-abierto { overflow: hidden; }
 .pasar-studio { display: flex; gap: 14px; align-items: flex-start; margin-top: 26px; background: var(--verde-claro); border-radius: 16px; padding: 18px 20px; }
 .pasar-studio .icono { color: var(--verde-2); width: 28px; height: 28px; margin-top: 2px; }
 .pasar-studio p { margin: 0; }
+
+/* README (ronda 36): botones con borde en el verde principal; tabla de precios con encabezado verde y primera columna clara */
+.btn-borde { color: var(--verde); }
+.btn-borde:hover { background: var(--verde); border-color: var(--verde); color: #fff; }
+.comparar-precios thead th { background: var(--verde); color: #fff; }
+.comparar-precios thead th small { color: #fff; font-weight: 500; letter-spacing: .04em; font-size: 14px; text-transform: none; }
+.comparar-precios tbody th { background: var(--verde-palido); }
+@media (max-width: 760px) {
+  .comparar-caja { overflow-x: visible; }
+  .comparar { min-width: 0; table-layout: fixed; font-size: 11.5px; }
+  .comparar th, .comparar td { padding: 8px 3px; }
+  .comparar thead th { font-size: 9.5px; letter-spacing: .04em; }
+  .comparar-precios thead th small { font-size: 11px; }
+  .comparar tbody th { width: 34%; padding-left: 8px; line-height: 1.25; }
+  .comparar .si .icono { width: 15px; height: 15px; }
+}
+
+/* README (ronda 36): trayectoria como en Albunear y Amo Fotear: tarjeta oscura, brillo sobre el año, marcas con link (todo en Jost) */
+.trayectoria { position: relative; overflow: hidden; display: grid; gap: clamp(28px, 5vw, 56px); align-items: center; background: #1c1c1c; color: #efe9dc; border-radius: 28px; padding: clamp(28px, 5vw, 60px); margin-bottom: clamp(48px, 7vw, 80px); }
+@media (min-width: 900px) { .trayectoria { grid-template-columns: 1.25fr 1fr; } }
+.trayectoria::before { content: ''; position: absolute; right: -18%; top: -40%; width: 70%; aspect-ratio: 1; background: radial-gradient(circle, rgba(111, 191, 168, .26), transparent 65%); pointer-events: none; }
+.trayectoria > div { position: relative; }
+.trayectoria .sobre { font: 600 13px/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: #8fd3bd; display: block; margin-bottom: 12px; }
+.trayectoria h2 { color: #fff; font-size: clamp(28px, 4vw, 42px); margin: 0 0 18px; }
+.trayectoria h2 em { font: inherit; font-style: normal; color: #8fd3bd; }
+.trayectoria p { color: #cfc6b2; line-height: 1.7; }
+.t-lado { text-align: center; }
+.t-desde { margin: 0 0 26px; display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.t-desde span { font: 500 13px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: #8fd3bd; }
+.t-desde b { font: 500 clamp(72px, 10vw, 120px)/1 var(--sans); letter-spacing: -.02em; margin-top: 8px; background: linear-gradient(180deg, #fff 30%, #8fd3bd); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.t-k { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #a79f8c !important; margin: 0 0 16px; line-height: 1.3 !important; }
+.t-marcas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.t-marcas li { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px 8px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 16px; background: rgba(255, 255, 255, .03); transition: background .25s, border-color .25s; font-size: 12.5px; color: #bdb4a0; line-height: 1.3; }
+.t-marcas li:hover { background: rgba(255, 255, 255, .07); border-color: rgba(143, 211, 189, .5); }
+.t-marcas a { display: flex; align-items: center; justify-content: center; height: 44px; }
+.t-marcas img { height: 100%; width: auto; max-width: 100%; filter: none; opacity: 1; }
+@media (max-width: 600px) { .t-marcas { gap: 8px; } .t-marcas li { padding: 12px 6px; font-size: 11.5px; } .t-marcas a { height: 32px; } }

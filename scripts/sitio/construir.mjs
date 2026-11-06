@@ -185,8 +185,8 @@ function funciones(E) {
 
 const celda = (v) => (v === true ? `<span class="si">${ic('check')}<span class="sr">Incluido</span></span>` : v === false ? '<span class="no" aria-label="No incluido">—</span>' : `<small>${esc(v)}</small>`);
 function planes(E) {
-  const cards = C.PLANES.map((p) => `<article class="plan-card rev${p.destacado ? ' destacado' : ''}">${p.destacado ? '<span class="cinta">Más elegido</span>' : ''}<h3>${p.nombre}</h3><p class="precio" data-precio="${p.id}">&nbsp;</p><p class="precio-s">${p.id === 'gratis' ? esc(p.sub) : `Pago único · <span data-iva>IVA incluido</span>`}</p><ul>${p.items.map((t, i) => `<li${i === 0 && t.startsWith('Todo') ? ' class="todo"' : ''}>${ic('check')}<span>${esc(t)}</span></li>`).join('')}</ul><a class="btn ${p.destacado ? 'btn-verde' : 'btn-borde'}" href="/crear-invitacion?paquete=${p.id}">${p.boton}</a></article>`).join('');
-  const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v, i) => `<td${i === 3 ? ' class="col-d"' : ''}>${celda(v)}</td>`).join('')}</tr>`).join('');
+  const cards = C.PLANES.map((p) => `<article class="plan-card rev${p.destacado ? ' destacado' : ''}">${p.destacado ? '<span class="cinta">Más elegido</span>' : ''}<h3>${p.nombre}</h3><p class="precio" data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : '&nbsp;'}</p><p class="precio-s">${p.id === 'gratis' ? 'Sin tarjeta, sin pagar nada' : `Pago único<span data-iva> · IVA incluido</span>`}</p><ul>${p.items.map((t, i) => `<li${i === 0 && t.startsWith('Todo') ? ' class="todo"' : ''}>${ic('check')}<span>${esc(t)}</span></li>`).join('')}</ul><a class="btn ${p.destacado ? 'btn-verde' : 'btn-borde'}" href="/crear-invitacion?paquete=${p.id}">${p.boton}</a></article>`).join('');
+  const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v) => `<td>${celda(v)}</td>`).join('')}</tr>`).join('');
   return `<section class="seccion alt" id="planes"><div class="caja">
   ${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones. Sin sorpresas.')}
   <div class="aviso-pago rev">${ic('eye')}<span>Diséñala y mírala terminada — <strong>pagas solo al publicar</strong></span></div>
@@ -194,7 +194,7 @@ function planes(E) {
   <p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes cambiar la moneda en el menú. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal. No esperes más, diseña tu invitación hoy mismo sin pagar nada.<br><small>(*) Solo disponible en algunos modelos.</small></p>
   <div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div>
   <h3 class="comparar-tit">Compara todos los planes</h3>
-  <div class="comparar-caja"><table class="comparar"><thead><tr><th scope="col"><span class="sr">Función</span></th>${C.PLANES.map((p) => `<th scope="col">${p.nombre}${p.id === 'gratis' ? '' : `<br><small data-precio="${p.id}"></small>`}</th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>
+  <div class="comparar-caja"><table class="comparar comparar-precios"><thead><tr><th scope="col"><span class="sr">Función</span></th>${C.PLANES.map((p) => `<th scope="col">${p.nombre}<br><small data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : ''}</small></th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>
   <div class="medida rev"><img src="/web/img/a-medida.jpg" alt="Diseño personalizado de invitación" loading="lazy" width="640" height="420"><div><span class="desde">Diseño personalizado</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><a class="btn btn-claro" href="/contacto?evento=${encodeURIComponent(E.nombre)}">Pedir mi diseño a medida</a></div></div></div>
   ${empresas()}
 </div></section>`;
@@ -236,11 +236,11 @@ function testimonios() {
   const filas = [[], []]; opiniones.forEach((r, i) => filas[Math.floor(i / 2) % 2].push(r));
   return `<section class="seccion" id="opiniones"><div class="caja">
   <div class="trayectoria rev"><div><span class="sobre">Nuestra trayectoria</span><h2>Más de 20 años <em>en bodas y eventos</em></h2><p>${C.TRAYECTORIA.p1}</p><p>${C.TRAYECTORIA.p2}</p></div>
-  <div class="t-lado"><p class="t-desde">Desde<b>2005</b></p><ul class="t-marcas"><li><img src="/web/img/amoinvitar.svg" alt="Amo Invitar!" loading="lazy"><span>Invitaciones digitales</span></li><li><img src="/web/img/amofotear.svg" alt="Amo Fotear" loading="lazy"><span>Foto y video</span></li><li><img src="/web/img/snow-tight.svg" alt="Snow Producciones" loading="lazy"><span>Servicios audiovisuales</span></li></ul></div>
+  <div class="t-lado"><p class="t-desde"><span>Desde</span><b>2005</b></p><p class="t-k">El mismo equipo detrás de</p><ul class="t-marcas"><li><a href="https://albunear.com" target="_blank" rel="noopener"><img src="/web/img/albunear-white.svg" alt="Albunear" width="3246" height="1016" loading="lazy"></a><span>Álbum colaborativo QR</span></li><li><a href="https://amofotear.com" target="_blank" rel="noopener"><img src="/web/img/amofotear.svg" alt="Amo Fotear" width="7000" height="3944" loading="lazy"></a><span>Foto y video</span></li><li><a href="https://snowproducciones.com.ar" target="_blank" rel="noopener"><img src="/web/img/snow-tight.svg" alt="Snow Producciones" width="1945" height="772" loading="lazy"></a><span>Servicios audiovisuales</span></li></ul></div>
   <div class="t-premio">${ic('award')}<p><strong>Ganadores de los Wedding Awards</strong>Cinco años seguidos, gracias a las opiniones de las parejas en <img src="/web/img/casamientos-white.svg" alt="casamientos.com.ar" loading="lazy"></p></div></div>
   ${titulo('Opiniones', 'Algunos <em>testimonios</em>', 'Lo que dicen nuestros clientes.')}</div>
   <div class="opiniones">${filas.map((f) => `<div class="op-fila"><div class="op-pista"><div class="op-set">${f.map(opinionCard).join('')}</div></div></div>`).join('')}</div>
-  <p class="op-nota">Opiniones de clientes en Google, casamientos.com.ar y nuestras redes.</p></section>`;
+</section>`;
 }
 
 function faq(E, P, lista) {
