@@ -291,16 +291,22 @@ function disenos(E) {
 
 function pie() {
   const ev = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'babyshower', 'graduacion', 'empresarial', 'otros'].map((id) => C.EVENTOS.find((e) => e.id === id));
+  const redes = `<div class="pie-redes"><a href="https://www.instagram.com/AmoInvitar/" target="_blank" rel="noopener" aria-label="Instagram">${ic('instagram')}</a><a href="https://www.facebook.com/AmoInvitar" target="_blank" rel="noopener" aria-label="Facebook">${ic('facebook')}</a><a href="https://www.youtube.com/@AmoInvitar" target="_blank" rel="noopener" aria-label="YouTube">${ic('youtube')}</a><a href="${C.WHATSAPP}" target="_blank" rel="noopener" aria-label="WhatsApp">${ic('wa')}</a></div>`;
+  const lista = (t, arr) => `<div class="pie-col"><h2>${t}</h2><ul>${arr.map(([h, x, ext]) => `<li><a href="${h}"${ext ? ' target="_blank" rel="noopener"' : ''}>${x}</a></li>`).join('')}</ul></div>`;
   return `<footer class="pie"><div class="caja">
   <div class="pie-grid">
-    <div><a class="logo" href="/"><img src="/web/img/logo-linea-blanco.svg" alt="Amo Invitar!" width="174" height="37" loading="lazy"></a><p style="margin-top:14px">Invitaciones digitales interactivas y originales para bodas y eventos.</p><div class="pie-redes"><a href="https://www.instagram.com/AmoInvitar/" target="_blank" rel="noopener" aria-label="Instagram">${ic('instagram')}</a><a href="https://www.facebook.com/AmoInvitar" target="_blank" rel="noopener" aria-label="Facebook">${ic('facebook')}</a><a href="https://www.youtube.com/@AmoInvitar" target="_blank" rel="noopener" aria-label="YouTube">${ic('youtube')}</a><a href="${C.WHATSAPP}" target="_blank" rel="noopener" aria-label="WhatsApp">${ic('wa')}</a></div></div>
-    <div><h2>Invitaciones</h2><ul>${ev.map((e) => `<li><a href="/${e.pagina}">${esc(e.id === 'boda' ? 'Bodas' : e.nombre)}</a></li>`).join('')}</ul></div>
-    <div><h2>Amo Invitar!</h2><ul><li><a href="/crear-invitacion">Crear invitación</a></li><li><a href="/#como-funciona">Cómo funciona</a></li><li><a href="/#funciones">Funciones</a></li><li><a href="/precios">Planes y precios</a></li><li><a href="/album">Álbum QR</a></li><li><a href="/profesionales">Para profesionales</a></li><li><a href="/#faq">Preguntas frecuentes</a></li><li><a href="/#nosotros">Nosotros</a></li><li><a href="/contacto">Contacto</a></li></ul></div>
-    <div><h2>Tu cuenta</h2><ul><li><a href="/panel">Mi panel</a></li><li><a href="/mi-cuenta">Mis invitaciones</a></li><li><a href="/entrar">Entrar</a></li></ul></div>
+    <div class="pie-marca"><a class="logo" href="/" aria-label="Amo Invitar!"><img src="/web/img/logo-pie.svg" alt="Amo Invitar!" width="170" height="37" loading="lazy"></a><p>Invitaciones digitales interactivas y originales para bodas y eventos.</p>${redes}</div>
+    <div class="pie-links">
+      <div class="pie-bloque">${lista('Invitaciones', ev.map((e) => [`/${e.pagina}`, esc(e.id === 'boda' ? 'Bodas' : e.nombre)]))}${lista('Recursos', [['/crear-invitacion', 'Crear invitación'], ['/#como-funciona', 'Cómo funciona'], ['/#funciones', 'Funciones'], ['/precios', 'Planes y precios'], ['/album', 'Álbum QR'], ['/profesionales', 'Para profesionales'], ['/#faq', 'Preguntas frecuentes'], ['/#nosotros', 'Nosotros'], ['/contacto', 'Contacto']])}</div>
+      <div class="pie-bloque">${lista('Tu cuenta', [['/panel', 'Mi panel'], ['/mi-cuenta', 'Mis invitaciones'], ['/entrar', 'Entrar']])}${lista('Productos', [['https://amofotear.com', 'Amo Fotear', 1], ['https://albunear.com', 'Albunear', 1], ['https://snowproducciones.com.ar', 'Snow Producciones', 1]])}</div>
+    </div>
   </div>
-  <div class="pie-legal"><p><a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/politica-de-cookies#configurar-cookies" data-cookie-settings>Configurar cookies</a></p><p>© 2020-<span id="anio">2026</span> Amo Invitar!® · Todos los derechos reservados. Hecho con ${ic('heart')} por <a class="pie-snow" href="https://snowproducciones.com.ar/" target="_blank" rel="noopener">Snow Producciones®</a></p></div>
+  <div class="pie-legal">
+    <div class="pie-legal-txt"><p class="pl1"><a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/politica-de-cookies#configurar-cookies" data-cookie-settings>Configurar cookies</a> · <a href="/info/terminos-y-condiciones">Términos</a> · <a href="/info/politica-de-devoluciones">Devoluciones</a> · <a href="/info/rgpd">RGPD</a></p><p class="pl2">© 2020-<span id="anio">2026</span> Amo Invitar!® · Todos los derechos reservados · Hecho con ${ic('heart')} por Snow Producciones®</p></div>
+    <a class="pie-snow" href="https://snowproducciones.com.ar/" target="_blank" rel="noopener"><span>Powered by</span><img src="/web/img/logo-snow.svg" alt="Snow Producciones" width="120" height="40" loading="lazy"></a>
+  </div>
 </div></footer>
-<a class="wa-flota" href="${C.WHATSAPP}" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">${ic('wa')}</a>
+<a class="wa-flota" href="${C.WHATSAPP}" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"></a>
 <div class="barra-movil"><a class="btn btn-verde" href="/crear-invitacion">Crear mi invitación</a></div>`;
 }
 

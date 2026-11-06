@@ -433,20 +433,11 @@ body.cajon-abierto { overflow: hidden; }
 /* ---------- Pie ---------- */
 .pie { background: #333; color: #b5b5b5; padding: 54px 0 24px; font-size: 15.5px; }
 .pie a { color: #bdbdbd; text-decoration: none; } .pie a:hover { color: #fff; text-decoration: underline; }
-.pie-grid { display: grid; gap: 30px; }
-@media (min-width: 800px) { .pie-grid { grid-template-columns: 1.2fr 1fr 1fr 1fr; } }
 .pie h2 { font: 600 12.5px/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: #fff; margin: 0 0 16px; }
 .pie ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
-.pie .logo img { height: 36px; }
 .pie-redes { display: flex; gap: 10px; margin-top: 16px; }
 .pie-redes a { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .1); }
 .pie-redes a:hover { background: var(--verde); text-decoration: none; }
-.pie-legal { border-top: 1px solid rgba(255, 255, 255, .16); margin-top: 36px; padding-top: 20px; text-align: center; font-size: 14px; }
-.pie-legal p { margin: 0 0 6px; }
-.pie-snow img { height: 26px; width: auto; filter: brightness(0) invert(1); opacity: .85; vertical-align: middle; margin-left: 6px; }
-.wa-flota { position: fixed; right: 16px; bottom: 16px; z-index: 80; width: 58px; height: 58px; border-radius: 50%; background: #25d366; color: #fff; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(0, 0, 0, .3); transition: transform .2s; }
-.wa-flota:hover { transform: scale(1.08); color: #fff; }
-.wa-flota .icono { width: 32px; height: 32px; fill: currentColor; stroke: none; }
 .barra-movil { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; padding: 10px 84px 12px 16px; background: rgba(255, 255, 255, .96); border-top: 1px solid var(--linea); transform: translateY(110%); transition: transform .3s; display: none; }
 .barra-movil.on { transform: none; }
 .barra-movil .btn { width: 100%; padding-block: 13px; }
@@ -562,3 +553,34 @@ body.cajon-abierto { overflow: hidden; }
   .juntos-cels { gap: 8px; }
   .juntos-escena { gap: 14px; margin-top: 22px; }
 }
+
+/* README (ronda 36): pie nuevo (logo con «invitar» verde, Recursos y Productos, legales a la izquierda y Powered by a la derecha) y WhatsApp como el viejo */
+.pie .logo img { height: 38px; width: auto; }
+.pie-grid { display: grid; gap: 26px; }
+.pie-marca p { margin: 14px 0 0; max-width: 340px; }
+.pie-links { display: grid; gap: 26px; }
+.pie-bloque { display: grid; gap: 26px; align-content: start; }
+@media (max-width: 799px) { .pie-links { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 800px) {
+  .pie-grid { grid-template-columns: 1.1fr 2fr; gap: 40px; }
+  .pie-links { grid-template-columns: 1fr 1fr 1fr; }
+  .pie-bloque { display: contents; }
+  .pie-bloque:first-child .pie-col:first-child { grid-column: 1; grid-row: 1; }
+  .pie-bloque:first-child .pie-col:last-child { grid-column: 2; grid-row: 1; }
+  .pie-bloque:last-child { display: grid; grid-column: 3; grid-row: 1; gap: 26px; align-content: start; }
+}
+.pie-legal { border-top: 1px solid rgba(255, 255, 255, .16); margin-top: 36px; padding-top: 20px; display: flex; flex-direction: column; gap: 16px; font-size: 14px; }
+.pie-legal p { margin: 0 0 6px; line-height: 1.5; }
+.pie-legal .icono { width: 14px; height: 14px; color: #e0707a; fill: currentColor; stroke: none; vertical-align: -2px; }
+.pie-snow { display: inline-flex; align-items: center; gap: 10px; color: #b5b5b5; font-size: 13px; }
+.pie-snow img { height: 30px; width: auto; filter: brightness(0) invert(1); opacity: .9; }
+@media (min-width: 800px) { .pie-legal { flex-direction: row; justify-content: space-between; align-items: center; } .pie-snow { flex: none; } }
+.wa-flota { position: fixed; right: 18px; bottom: 22px; z-index: 80; width: 50px; height: 50px; border-radius: 50%; display: block; }
+.wa-flota::before { content: ''; position: absolute; left: -21px; top: -21px; width: 92px; height: 92px; border-radius: 50%; background: #1da14e; animation: wa-anillo 1.8s cubic-bezier(.215, .61, .355, 1) infinite; }
+.wa-flota::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 2px rgba(0, 0, 0, .3); animation: wa-boton 1.8s cubic-bezier(.455, .03, .515, .955) -.4s infinite; background: url(/web/img/wp-icon.svg) center / 75% no-repeat #20c95f; }
+@keyframes wa-anillo { 0% { transform: scale(.33); } 80%, 100% { opacity: 0; } }
+@keyframes wa-boton { 0% { transform: scale(.8); } 50% { transform: scale(1); } 100% { transform: scale(.8); } }
+@media (prefers-reduced-motion: reduce) { .wa-flota::before, .wa-flota::after { animation: none; } }
+
+/* README (ronda 36): tras una portada con foto y borde inclinado blanco, la sección siguiente va en blanco (si no, se ve un triángulo blanco) */
+.portada + .seccion, .portada + section { background: #fff !important; }
