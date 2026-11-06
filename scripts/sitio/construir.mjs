@@ -19,7 +19,7 @@ function head(P) {
   const url = `${C.SITIO}/${P.slug === 'index' ? '' : P.slug}`;
   const faq = P.faq ? `,{"@type":"FAQPage","mainEntity":[${P.faq.map(([q, a]) => `{"@type":"Question","name":${JSON.stringify(q)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(a.replace(/<[^>]+>/g, ''))}}}`).join(',')}]}` : '';
   return `<!DOCTYPE html>
-<html lang="es" class="sin-js">
+<html lang="es" class="sin-js"${P.cabFija ? ' data-cab-fija' : ''}>
 <head>
 <!-- README (ronda 32): página generada con scripts/sitio/construir.mjs. No editar a mano: cambiar los textos en scripts/sitio/ y correr npm run sitio -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
@@ -425,6 +425,7 @@ const ALB_FUNC = [
   ['mensaje', 'Libro de firmas digital', 'Cada invitado puede dejar un mensaje al subir sus fotos. Todos se guardan juntos en tu panel.'],
   ['play', 'Slideshow en vivo', 'Proyecta las fotos en tiempo real en una pantalla durante la fiesta: así todos pueden verse.'],
 ];
+const ALB_ICONOS = [`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h3v4h-3"/></svg>`, `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>`, `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`, `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>`];
 const ALB_PASOS = [
   ['Crea tu álbum', 'Elige el estilo, pon los nombres y la fecha. Al instante tienes tu link, tu QR y las tarjetas para imprimir.'],
   ['Tus invitados suben', 'Escanean el QR de la mesa o tocan el botón de tu invitación, y suben fotos y videos desde el celular.'],
@@ -446,24 +447,24 @@ const MARCA = { y: `<span class="si">${ic('check')}<span class="sr">Incluido</sp
 function paginaAlbum() {
   const E = { ...GENERICO, id: 'otros', tuEvento: 'tu evento' };
   const P = { titulo: 'Álbum colaborativo QR para bodas y eventos | Amo Invitar! + Albunear', descripcion: 'Álbum de fotos por QR para bodas y eventos: tus invitados escanean un QR y suben fotos y videos sin apps. Slideshow en vivo y descarga en alta calidad. Se integra con tu invitación digital de Amo Invitar!.' };
-  const ticks = ['Sin apps', 'Listo en 60 segundos', 'Pago único', 'Prueba gratis'];
-  const por = (n) => `<span class="sobre">${n}</span>`;
-  const hero = `<section class="portada" id="inicio"><div class="caja portada-grid">
-    <div class="portada-texto"><span class="etiqueta">Álbum colaborativo QR</span><h1>Todas las fotos de tu evento, en un solo lugar.</h1>
+  const ticks = ['Sin apps', 'Listo en 60 segundos', 'Pago único'];
+  const fd = (n) => `<i style="background-image:url(/web/img/fiestas/fiesta${n}.webp)"></i>`;
+  const hero = `<section class="portada alb-hero" id="inicio" style="--hero-g:linear-gradient(160deg,#fff 0%,#E5F3EC 55%,#cfe8dc 100%);--hero-gd:linear-gradient(160deg,#fff 0%,#E5F3EC 55%,#cfe8dc 100%);--hero-m:none;--hero-d:none"><div class="caja portada-grid">
+    <div class="portada-texto"><img class="alb-logo" src="/web/img/albunear-dark.svg" alt="Albunear" width="3246" height="1016"><span class="etiqueta">Álbum colaborativo QR</span><h1>Todas las fotos de tu evento, <em>en un solo lugar.</em></h1>
       <p class="lead">Tus invitados escanean un QR o tocan el botón de tu invitación y suben sus fotos y videos al instante, sin descargar ninguna app. Proyéctalas en vivo durante la fiesta y descárgalas todas al final.</p>
-      <div class="fila-btn"><a class="btn btn-claro btn-grande" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="enlace-video" style="color:#fff" href="https://albunear.com/demo" target="_blank" rel="noopener">${ic('play')} Ver demo</a></div>
+      <div class="fila-btn"><a class="btn btn-verde" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="btn btn-negro" href="https://albunear.com/demo" target="_blank" rel="noopener">Ver demo</a></div>
       <ul class="puntos">${ticks.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul></div>
-    <div class="escena escena-album" aria-hidden="true">
-      <div class="esc-tablet mosaico"><img src="/web/img/fiestas/fiesta2.webp" alt=""><img src="/web/img/fiestas/fiesta4.webp" alt=""><img src="/web/img/fiestas/fiesta6.webp" alt=""><img src="/web/img/fiestas/fiesta10.webp" alt=""><img src="/web/img/fiestas/fiesta11.webp" alt=""><img src="/web/img/fiestas/fiesta8.webp" alt=""></div>
-      <div class="esc-cel qr-cel"><div class="qr-tarjeta"><p class="q0">¡Comparte tus fotos!</p><p class="q1">Sofi &amp; Ale</p><img src="/web/img/qr-demo.svg" alt="" width="33" height="33"><p class="q2">Escanea el código y sube tus fotos</p><p class="q3">Subir fotos</p></div></div>
-      <div class="ficha f1">${ic('image')}<span>Nueva foto de Lucía<small>Hace un instante</small></span></div>
-      <div class="ficha f2">${ic('users')}<span>126 fotos<small>38 invitados</small></span></div>
+    <div class="alb-mock" aria-hidden="true">
+      <div class="alb-mock-qr"><p class="q0">¡Comparte tus fotos!</p><p class="q1">Sofi &amp; Ale</p><img src="/web/img/qr-demo.svg" alt="" width="33" height="33"><p class="q2">Escanea el código y sube tus fotos</p></div>
+      <div class="alb-mock-tv">${[2, 8, 4, 10, 6, 11].map(fd).join('')}<span class="alb-mock-toast">📷 Nueva foto de Lucía</span></div>
+      <div class="alb-mock-phone"><div class="card-in"><p class="t0">Boda de</p><p class="t1">Sofi &amp; Ale</p><p class="t2">¡Comparte tus fotos!</p><div class="b">Subir fotos</div><div class="g">${[1, 4, 5, 2, 7, 6].map((n) => `<i style="background-image:url(/web/img/fiestas/fiesta${n}.webp)"></i>`).join('')}</div></div></div>
     </div></div></section>`;
-  const pasos = `<section class="seccion" id="como-funciona"><div class="caja">${titulo('Así de simple', '¿Cómo <em>funciona</em>?', 'Para bodas, 15 años, cumpleaños, bautismos, comuniones, graduaciones y eventos corporativos.')}<ol class="alb-pasos">${ALB_PASOS.map(([h, p], i) => `<li class="rev"><span class="paso-num">${i + 1}</span><h3>${h}</h3><p>${p}</p></li>`).join('')}</ol></div></section>`;
+  const pasos = `<section class="seccion" id="como-funciona"><div class="caja">${titulo('Así de simple', '¿Cómo <em>funciona</em>?', 'Para bodas, 15 años, cumpleaños, bautismos, comuniones, graduaciones y eventos corporativos.')}<div class="alb-cards">${ALB_PASOS.map(([h, p], i) => `<article class="alb-card rev"><span class="alb-icon">${ALB_ICONOS[i]}</span><span class="alb-num">${i + 1}</span><h3>${h}</h3><p>${p}</p></article>`).join('')}</div></div></section>`;
   const comp = `<section class="seccion alt" id="comparativa"><div class="caja">${titulo('Compara', 'Albunear <em>vs</em> otras opciones', '')}<div class="comparar-caja"><table class="comparar"><thead><tr><th scope="col"><span class="sr">Función</span></th><th scope="col" class="col-d">Albunear</th><th scope="col">Otros servicios QR</th><th scope="col">WhatsApp</th><th scope="col">Google Fotos</th><th scope="col">Cabina clásica</th></tr></thead><tbody>${ALB_COMP.map((r) => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map((v, i) => `<td${i === 0 ? ' class="col-d"' : ''}>${MARCA[v]}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="planes-nota" style="margin-top:14px"><small>Parcial: depende del servicio o está limitado.</small></p></div></section>`;
   const func = `<section class="seccion" id="funciones-album"><div class="caja">${titulo('Todo incluido', 'Funciones <em>destacadas</em>', '')}<div class="funciones tres">${ALB_FUNC.map(([i, t, p]) => `<article class="funcion rev"><div class="ic">${ic(i)}</div><h3>${t}</h3><p>${p}</p></article>`).join('')}</div></div></section>`;
   const cta = `<section class="seccion" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¡Deja de perseguir a los invitados para que te envíen las fotos!</h2><p>Si quieres tener las fotos de tus invitados sin apps que solo complican las cosas a quien no se lleva bien con la tecnología, ni tener que crear grupos de WhatsApp, tu mejor opción es el álbum privado de Albunear.</p><div class="fila-btn"><a class="btn btn-claro btn-grande" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/demo" target="_blank" rel="noopener">Ver demo</a></div></div></div></section>`;
   const albumFaq = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'album-faq.json'), 'utf8'));
+  P.cabFija = true;
   escribe('album', P, [hero, pasos, juntos(true), comp, func, faq(E, P, albumFaq), cta, contacto({ ...E, id: 'index' })].join('\n'));
 }
 paginaAlbum();
