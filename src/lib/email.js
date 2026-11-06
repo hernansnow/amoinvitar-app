@@ -199,6 +199,45 @@ export const mailCompraPro = (env, { numero, producto, total, referencia, datos 
   }),
 });
 
+export const mailRecuerdoVence = (env, { nombres, dias, fecha, url, compradas = [] }) => ({
+  subject: dias <= 1 ? `Hoy sale de línea la invitación de ${nombres}` : `La invitación de ${nombres} sale de línea en ${dias} días`,
+  ...plantilla(env, {
+    titulo: dias <= 1 ? 'Tu invitación sale de línea' : `Quedan ${dias} días online`,
+    lineas: [
+      `La invitación de ${b(nombres)} deja de estar online el ${b(fecha.split('-').reverse().join('/'))}. Después de esa fecha el link ya no se abre.`,
+      'Si quieres conservarla, puedes elegir:',
+      `${b('Recuerdo en PDF · 10 €')}: una vista fija para guardar en PDF.${compradas.includes('pdf') ? ' (Ya la tienes: descárgala desde el panel.)' : ''}`,
+      `${b('Página web para descargar · 25 €')}: la invitación interactiva en tu computadora, sin conexión y para siempre.${compradas.includes('web') ? ' (Ya la tienes: descárgala desde el panel.)' : ''}`,
+      `${b('Permanencia online ilimitada · 30 €')}: tu mismo link, online sin fecha de vencimiento.`,
+      'Precios en euros; al comprar ves el total en tu moneda. Se elige y se paga desde la pestaña «Recuerdo» de tu panel.',
+    ],
+    boton: 'Ver las opciones', url,
+    pie: 'Si ya no la necesitas, no tienes que hacer nada.',
+  }),
+});
+
+export const mailRecuerdoListo = (env, { url, producto, numero }) => ({
+  subject: `Tu recuerdo está listo${numero ? ` · pedido #${numero}` : ''}`,
+  ...plantilla(env, {
+    titulo: '¡Listo!',
+    lineas: [`Ya está activo: ${b(producto)}${numero ? ` (pedido ${b('#' + numero)})` : ''}.`, 'Lo encuentras en la pestaña «Recuerdo» de tu panel.'],
+    boton: 'Abrir mi recuerdo', url,
+  }),
+});
+
+export const mailCreditosVencen = (env, { empresa, lotes, dias, url, studio }) => ({
+  subject: `Créditos de ${empresa} por vencer (${dias} ${dias === 1 ? 'día' : 'días'})`,
+  ...plantilla(env, {
+    titulo: 'Tus créditos están por vencer',
+    lineas: [
+      `A ${b(empresa)} le quedan créditos sin usar que vencen en ${b(`${dias} ${dias === 1 ? 'día' : 'días'}`)}:`,
+      ...lotes.map((l) => `${b(`${l.restan} ${l.restan === 1 ? 'crédito' : 'créditos'}`)} · vencen el ${l.vence.slice(0, 10).split('-').reverse().join('/')}`),
+      studio ? 'Con Studio, si renuevas el pase anual antes de esa fecha, los créditos que sobran se extienden 12 meses más.' : 'Úsalos publicando tus invitaciones antes de esa fecha: pasado el vencimiento se pierden.',
+    ],
+    boton: 'Abrir el tablero', url,
+  }),
+});
+
 export const mailCompraProPagada = (env, { numero, producto, url, urlFactura }) => ({
   subject: `Pedido #${numero} confirmado`,
   ...plantilla(env, {

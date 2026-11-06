@@ -32,6 +32,13 @@ export const A_MEDIDA = {
   empresarial: { premium: 140, deluxe: 140 },
 };
 
+// ── Recuerdo (README ronda 36): lo que se puede conservar cuando la invitación termina su tiempo online ──
+export const RECUERDO = {
+  pdf: { precio: 10, nombre: 'Recuerdo en PDF', corto: 'Vista estática para guardar', texto: 'Una vista fija de tu invitación, como un álbum de recuerdo, para guardar en PDF e imprimir si quieres. No se mueve ni necesita internet.' },
+  web: { precio: 25, nombre: 'Página web para descargar', corto: 'Interactiva, para siempre en tu equipo', texto: 'Tu invitación interactiva en una carpeta (ZIP): la abres con tu navegador cuando quieras, sin conexión y sin fecha de vencimiento. Se ve como la original; las funciones que necesitan internet (confirmaciones, álbum, mapa) quedan inactivas.' },
+  online: { precio: 30, nombre: 'Permanencia online ilimitada', corto: 'Tu link, online para siempre', texto: 'Tu invitación sigue online en el mismo link, sin fecha de vencimiento, para que puedas volver a verla y compartirla cuando quieras.' },
+};
+
 // ── Otros productos ─────────────────────────────────────────────────────
 export const PRODUCTOS = {
   // Modelos simples de una pantalla (se elige el diseño en el panel; Party es de 15 años)

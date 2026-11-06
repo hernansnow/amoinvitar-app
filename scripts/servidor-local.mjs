@@ -37,6 +37,9 @@ const puerto = Number(process.env.PORT || 8787);
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${puerto}`);
   const cuerpo = req.method === 'GET' || req.method === 'HEAD' ? undefined : await new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); });
+  // Solo en la compu: correr las tareas diarias (avisos de vencimiento, créditos…) y ver los últimos mails «enviados»
+  if (url.pathname === '/__tareas') { const esperar = []; await worker.scheduled({ cron: '0 4 * * *' }, env, { waitUntil: (p) => esperar.push(p) }); await Promise.all(esperar); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true, mails: env.ULTIMOS_MAILS.length })); }
+  if (url.pathname === '/__mails') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(env.ULTIMOS_MAILS)); }
   const request = new Request(url, { method: req.method, headers: req.headers, body: cuerpo, duplex: 'half' });
   // Como en Cloudflare (run_worker_first): todo pasa por el Worker, que sirve los archivos con ASSETS
   const r = await worker.fetch(request, env);

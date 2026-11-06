@@ -2058,7 +2058,8 @@ function recordarBorrador() {
   estado(S.evento.estado === 'publicado' ? 'Publicada' : 'Guardado ✓');
   // Publicada: el panel abre en la administración (siempre se puede volver a editar)
   const hash = location.hash.slice(1);
-  if (hash === 'admin' || (!hash && S.evento.estado === 'publicado')) { irA(''); ponerModo('admin'); }
+  if (hash === 'recuerdo' && S.recuerdo) window.__seccionAdmin = 'recuerdo'; // desde el mail de aviso de vencimiento
+  if (hash === 'admin' || hash === 'recuerdo' || (!hash && S.evento.estado === 'publicado')) { irA(''); ponerModo('admin'); }
   else irA(hash);
   refrescarPrevia();
 })();

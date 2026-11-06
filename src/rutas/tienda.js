@@ -14,13 +14,13 @@ import { formatMoney } from '../lib/dinero.js';
 import { methodsFor, transferInfo, createMpPreference, findMpApproved, getMpPayment } from '../lib/pagos.js';
 import { createCheckoutSession, retrieveCheckoutSession, verifyWebhook } from '../lib/stripe.js';
 import { createPaypalOrder, capturePaypalOrder } from '../lib/paypal.js';
-import { sendEmail, mailPedidoListo, mailTransferencia, mailAvisoInterno, mailFactura } from '../lib/email.js';
+import { sendEmail, mailPedidoListo, mailRecuerdoListo, mailTransferencia, mailAvisoInterno, mailFactura } from '../lib/email.js';
 import { issueInvoice, invoiceUrl } from '../lib/facturas.js';
 import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { reverseChargeFor } from '../lib/vies.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
-import { PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, precioPedido, comprable } from '../catalogo.js';
+import { RECUERDO, PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, precioPedido, comprable } from '../catalogo.js';
 import { MODELOS, TIPOS_EVENTO, CON_TARJETA_STD, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
@@ -150,8 +150,9 @@ export async function cotizar(request, env) {
   const b = await readJson(request);
   // Invitación armada en el panel: lo que falta pagar del plan y los complementos
   const borrador = b.borrador ? await validarBorrador(env, request, b.borrador, { esquemaDe: opcionesTienda.esquemaDe }) : null;
-  const pedido = borrador ? borrador.pedido : validarPedido(b.pedido);
-  const eur = borrador ? borrador.eur : precioPedido(pedido);
+  const rec = !borrador && b.recuerdo ? await validarRecuerdo(env, request, b.recuerdo) : null;
+  const pedido = borrador ? borrador.pedido : rec ? rec.pedido : validarPedido(b.pedido);
+  const eur = borrador ? borrador.eur : rec ? rec.eur : precioPedido(pedido);
   let cupon = null, errorCupon = null;
   try { cupon = await buscarCupon(env, b.cupon, pedido.paquete); } catch (e) { if (!(e instanceof HttpError)) throw e; errorCupon = e.message; }
   const rc = await inversion(env, request, b.factura);
@@ -173,7 +174,8 @@ export async function comprar(request, env) {
   const email = (usuario?.email || str(b.email, 200)).toLowerCase();
   if (!isEmail(email)) throw new HttpError(400, 'Falta un mail válido para mandar el acceso');
   const borrador = b.borrador ? await validarBorrador(env, request, b.borrador, { esquemaDe: opcionesTienda.esquemaDe }) : null;
-  const mejora = borrador || (b.mejora ? await validarMejora(env, request, b.mejora) : null);
+  const rec = !borrador && b.recuerdo ? await validarRecuerdo(env, request, b.recuerdo) : null;
+  const mejora = borrador || rec || (b.mejora ? await validarMejora(env, request, b.mejora) : null);
   const pedido = mejora ? mejora.pedido : validarPedido(b.pedido);
   const eur = mejora ? mejora.eur : precioPedido(pedido);
   const cupon = await buscarCupon(env, b.cupon, pedido.paquete);
@@ -197,7 +199,7 @@ export async function comprar(request, env) {
   } : null;
   await env.DB.prepare(`INSERT INTO pedidos (id, numero, usuario_id, email, tipo, detalle, evento_id, medio, moneda, importe, iva, iva_tasa, eur, cupon, descuento, pais, factura, inversion, vies, creado)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .bind(id, numero, usuario?.id || null, email, borrador ? 'borrador' : mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null }), mejora?.evento.id || null, medio,
+    .bind(id, numero, usuario?.id || null, email, borrador ? 'borrador' : rec ? 'recuerdo' : mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null }), mejora?.evento.id || null, medio,
       elegido?.moneda || moneda, total, elegido?.iva || 0, elegido?.ivaTasa || 0, eur, cupon?.codigo || null, 0, paisReal(request), factura ? JSON.stringify(factura) : null,
       rc ? 1 : 0, rc ? (rc.consultation || 'VIES ' + new Date().toISOString().slice(0, 10)) : null, now()).run();
 
@@ -291,6 +293,13 @@ export async function cumplirPedido(env, request, id) {
     await env.DB.prepare('UPDATE pedidos SET usuario_id = COALESCE(usuario_id, ?) WHERE id = ?').bind(usuario.id, p.id).run();
     await almacen.guardarEvento(ev);
     if (opcionesTienda.publicar) { try { await opcionesTienda.publicar(env, request, ev); } catch (e) { console.error('[publicar]', e); } }
+  } else if (p.tipo === 'recuerdo') {
+    // README (ronda 36): se anota lo comprado; la permanencia ilimitada corre el vencimiento a 2099
+    ev = await almacen.evento(p.evento_id);
+    const op = p.detalle.recuerdo;
+    ev.datos.recuerdo = { ...(ev.datos.recuerdo || {}), [op]: new Date().toISOString() };
+    if (op === 'online') ev.vence = '2099-12-31T23:59:59.000Z';
+    await almacen.guardarEvento(ev);
   } else if (p.tipo === 'mejora') {
     ev = await almacen.evento(p.evento_id);
     ev.paquete = p.detalle.paquete;
@@ -309,7 +318,8 @@ export async function cumplirPedido(env, request, id) {
     if (verifactuMode(env)) await sendPending(env);
   } catch (e) { console.error('[factura]', e); }
   try {
-    await sendEmail(env, { to: p.email, ...mailPedidoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, gratis: ['gratis', 'admin'].includes(p.medio) }) });
+    if (p.tipo === 'recuerdo') await sendEmail(env, { to: p.email, ...mailRecuerdoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}#recuerdo`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null }) });
+    else await sendEmail(env, { to: p.email, ...mailPedidoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, gratis: ['gratis', 'admin'].includes(p.medio) }) });
     if (env.SUPPORT_EMAIL && p.importe) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Venta #${p.numero} · ${formatMoney(p.importe, p.moneda)}`, lineas: [`${p.email} · ${p.detalle.nombre} · ${p.medio}`] }) });
   } catch (e) { console.error('[mail]', e); }
   return true;
@@ -362,7 +372,7 @@ export async function confirmar(request, env) {
     estado: p.estado, numero: p.numero, medio: p.medio, producto: p.detalle.nombre, email: p.email,
     importe: p.importe ? formatMoney(p.importe, p.moneda) : null,
     transferencia: p.medio === 'transferencia' && p.estado !== 'pagado' ? transferInfo(env, p.moneda) : null,
-    panel: mismo && ev ? `/panel/${ev.id}?k=${ev.clave}` : null,
+    panel: mismo && ev ? `/panel/${ev.id}?k=${ev.clave}${p.tipo === 'recuerdo' ? '#recuerdo' : ''}` : null,
     link: p.tipo === 'borrador' && ev?.estado === 'publicado' ? `/${ev.tipo}/${ev.slug}` : null,
   });
 }
@@ -418,6 +428,22 @@ async function validarMejora(env, request, m) {
   const eur = PAQUETES[nuevo].precio - PAQUETES[ev.paquete].precio;
   const mod = buscarModelo(ev.modelo);
   return { evento: ev, eur, pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: nuevo, extras: [], nombre: `Mejora a ${NOMBRES_PAQUETE[nuevo]}${mod ? ` · ${nombreModelo(mod, ev.tipo)}` : ''}` } };
+}
+
+// ── Recuerdo (README ronda 36): PDF, página para descargar o permanencia online ilimitada ──
+async function validarRecuerdo(env, request, m) {
+  const ev = await almacenD1(env).evento(str(m.evento, 40));
+  if (!ev) throw new HttpError(404, 'Evento no encontrado');
+  const usuario = await usuarioActual(request, env);
+  const clave = request.headers.get('x-clave') || str(m.clave, 64);
+  const permitido = (clave && clave === ev.clave) || (usuario && await almacenD1(env).tieneAcceso(ev.id, usuario.id));
+  if (!permitido) throw new HttpError(403, 'Sin permiso para este evento');
+  if (ev.empresaId) throw new HttpError(400, 'Esta opción no está disponible para eventos de una empresa');
+  const op = str(m.opcion, 10), o = RECUERDO[op];
+  if (!o) throw new HttpError(400, 'Opción desconocida');
+  if (ev.estado !== 'publicado') throw new HttpError(400, 'La invitación tiene que estar publicada');
+  if (op === 'online' ? String(ev.vence || '') >= '2090' : ev.datos?.recuerdo?.[op]) throw new HttpError(400, 'Ya tienes esta opción');
+  return { evento: ev, eur: o.precio, pedido: { producto: 'recuerdo', tipo: ev.tipo, modelo: ev.modelo, paquete: `recuerdo-${op}`, recuerdo: op, extras: [], nombre: `${o.nombre} · ${[ev.datos?.nombres?.a, ev.datos?.nombres?.b].filter(Boolean).join(' & ') || 'invitación'}` } };
 }
 
 export async function cotizarMejora(request, env) {

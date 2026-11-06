@@ -40,6 +40,7 @@ const paginaVencida = (nombres) => `<!doctype html><meta charset="utf-8"><meta n
 import { sitioNuevo } from './sitio/nuevo.js';
 import { contacto } from './rutas/contacto.js';
 import * as tienda from './rutas/tienda.js';
+import * as recuerdo from './recuerdo.js';
 import * as admin from './rutas/admin.js';
 import * as consola from './rutas/consola.js';
 import * as profesionales from './rutas/profesionales.js';
@@ -193,6 +194,29 @@ async function renderGuardado(plantilla, vista, t, origen, extra) {
   const out = renderizar(plantilla, vista, t, { origen });
   if (clave) try { await cache.put(clave, new Response(out, { headers: { 'cache-control': 'public, max-age=604800', 'content-type': 'text/html; charset=utf-8' } })); } catch { /* nada */ }
   return out;
+}
+
+// ── Recuerdo: descargas (README ronda 36) ───────────────────────────
+// /recuerdo/<id>/pdf  vista estática para guardar en PDF · /recuerdo/<id>/web  ZIP con la invitación interactiva
+async function descargaRecuerdo(env, request, url, id, que) {
+  const ev = await eventoConClave(env, request, url, id);
+  if (!ev) return html('Sin permiso', 403);
+  const usuario = await usuarioActual(request, env).catch(() => null);
+  if (!recuerdo.compro(ev, que) && !usuario?.esAdmin) return html('Esta opción no está activa. Se compra desde la pestaña Recuerdo del panel.', 402);
+  if (ev.estado !== 'publicado') return html('La invitación no está publicada', 409);
+  const pag = await pagina(env, url, paraMotor(ev), { sinSobre: true });
+  const texto = await pag.text();
+  const nombre = (ev.slug || ev.id).replace(/[^a-z0-9-]/gi, '');
+  if (que === 'pdf') {
+    return html(recuerdo.paginaEstatica(texto), 200, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
+  }
+  const traer = async (ruta) => {
+    if (ruta.startsWith('/media/')) { const o = await almacenDe(env).archivo(ruta.slice(7)); return o ? { cuerpo: await new Response(o.cuerpo).arrayBuffer(), tipo: o.tipo } : null; }
+    const r = await env.ASSETS.fetch(new URL(ruta, url.origin));
+    return r.ok ? { cuerpo: await r.arrayBuffer(), tipo: r.headers.get('content-type') || '' } : null;
+  };
+  const { zip } = await recuerdo.armarZip(texto, { origen: url.origin, traer, nombre });
+  return new Response(zip, { headers: { 'content-type': 'application/zip', 'content-disposition': `attachment; filename="invitacion-${nombre}.zip"`, 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' } });
 }
 
 // ── Demo ──────────────────────────────────────────────────────────────
@@ -691,6 +715,8 @@ async function apiPanel(env, request, url, partes) {
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
       marca: emp ? emp.marcaEfectiva : null,
+      // README (ronda 36): pestaña «Recuerdo» (solo invitaciones publicadas que no son de una empresa)
+      recuerdo: ev.estado === 'publicado' && !emp ? await recuerdo.infoRecuerdo(ev, (clave, eur) => tienda.precioATexto(env, request, clave, eur)) : null,
       empresa: emp ? { limpio: emp.limpio, puedePublicar: emp.puedePublicar, nombre: emp.nombre, logo: emp.logo, pie: emp.pie, rol: emp.rol, credito: !!ev.datos.empresa?.credito, conCredito: true } : null,
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
@@ -707,6 +733,7 @@ async function apiPanel(env, request, url, partes) {
     // Tarjetas ya generadas: quedan fijas
     if (ev.datos.admin) limpio.admin = ev.datos.admin; // lo de la administración se guarda aparte
     if (ev.datos.empresa) limpio.empresa = ev.datos.empresa; // crédito usado y permisos del cliente (empresas)
+    if (ev.datos.recuerdo) limpio.recuerdo = ev.datos.recuerdo; // lo comprado en «Recuerdo» y los avisos enviados
     for (const clase of ['std', 'agradecimiento']) {
       const prev = ev.datos[clase]?.tarjeta;
       if (prev?.generada && !admin) limpio[clase] = ev.datos[clase];
@@ -1195,6 +1222,7 @@ export default {
         return json({ error: 'no encontrado' }, 404);
       }
       if (p0 === 'media') return await media(env, partes);
+      if (p0 === 'recuerdo' && partes.length === 3 && ['pdf', 'web'].includes(partes[2])) return await descargaRecuerdo(env, request, url, partes[1], partes[2]);
       if (p0 === 'factura' && p1) return await admin.facturaCliente(request, env, p1);
       if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);

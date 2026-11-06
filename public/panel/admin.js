@@ -10,7 +10,7 @@ let reloj = null;
 
 const SECCIONES = [
   ['resumen', 'Resumen'], ['enviar', 'Enviar'], ['respuestas', 'Respuestas'], ['mensajes', 'Mensajes'],
-  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Llegadas'], ['album', 'Álbum de fotos'], ['accesos', 'Accesos'],
+  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Llegadas'], ['album', 'Álbum de fotos'], ['accesos', 'Accesos'], ['recuerdo', 'Recuerdo'],
 ];
 
 // ── Datos de la invitación ──
@@ -734,11 +734,57 @@ function vistaAccesos() {
     caja)];
 }
 
-const VISTAS = { accesos: vistaAccesos, llegadas: vistaLlegadas, resumen: vistaResumen, enviar: vistaEnviar, respuestas: vistaRespuestas, mensajes: vistaMensajes, canciones: vistaCanciones, mesas: vistaMesas, album: vistaAlbum };
+// ── README (ronda 36): pestaña «Recuerdo» (conservar la invitación cuando termina su tiempo online) ──
+function vistaRecuerdo() {
+  const rc = ctx.S.recuerdo, id = ctx.S.evento.id, k = encodeURIComponent(claveUrl());
+  const fecha = (iso) => String(iso).slice(0, 10).split('-').reverse().join('/');
+  const estado = rc.ilimitado ? 'Tu invitación está online sin fecha de vencimiento.' : rc.vence ? `Tu invitación está online hasta el ${fecha(rc.vence)}. Después de esa fecha el link deja de abrirse.` : 'Todavía no tiene fecha de vencimiento: se calcula desde la fecha del evento.';
+  const accion = (o) => {
+    if (o.id === 'pdf' && o.comprado) return enlace('Abrir y guardar en PDF', `/recuerdo/${id}/pdf?k=${k}`, 'btn');
+    if (o.id === 'web' && o.comprado) return enlace('Descargar la página (ZIP)', `/recuerdo/${id}/web?k=${k}`, 'btn');
+    if (o.comprado) return ctx.el('span', { class: 'chip' }, 'Activa');
+    return boton(`Elegir · ${o.precio}`, () => comprarRecuerdo(o));
+  };
+  return [tarjeta('Recuerdo de tu invitación', ctx.el('p', { class: 'ayuda' }, estado), ctx.el('p', { class: 'ayuda' }, 'Cuando la invitación termina su tiempo online puedes conservarla de tres maneras. Antes del vencimiento te avisamos por mail.')),
+    ...rc.opciones.map((o) => tarjeta(o.nombre, ctx.el('p', {}, o.texto), ctx.el('p', { class: 'total' }, ctx.el('strong', {}, o.comprado ? 'Comprado' : o.precio)), ctx.el('div', { class: 'ad-botones' }, accion(o))))];
+}
+function comprarRecuerdo(o) {
+  const id = ctx.S.evento.id, clave = claveUrl();
+  const mail = ctx.S.usuario ? null : ctx.el('input', { type: 'email', required: true, placeholder: 'tu@mail.com', autocomplete: 'email' });
+  const cupon = ctx.el('input', { type: 'text', placeholder: 'Cupón (opcional)', maxlength: 30 });
+  const medios = ctx.el('div', { class: 'opciones medios' });
+  const total = ctx.el('p', { class: 'total' }, ctx.el('span', {}, 'Total a pagar'), ctx.el('strong', {}, o.precio));
+  const error = ctx.el('p', { class: 'motivo' });
+  const boton1 = ctx.el('button', { type: 'button', class: 'btn btn-grande' }, 'Pagar');
+  const post = (ruta, cuerpo) => fetch(ruta, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cuerpo) }).then(async (x) => ({ ok: x.ok, ...(await x.json().catch(() => ({}))) }));
+  const cotizar = async () => {
+    try {
+      const r = await post('/api/tienda/cotizar', { recuerdo: { evento: id, clave, opcion: o.id }, cupon: cupon.value });
+      error.textContent = r.errorCupon || r.error || '';
+      medios.replaceChildren(...(r.medios || []).map((m, i) => ctx.el('label', { class: 'opcion' }, ctx.el('input', { type: 'radio', name: 'medio', value: m.id, checked: i === 0 }),
+        ctx.el('span', {}, ({ stripe: 'Tarjeta', mercadopago: 'Mercado Pago', paypal: 'PayPal', transfer: 'Transferencia' })[m.id] || m.id, ctx.el('small', {}, m.antes ? `${m.texto} (antes ${m.antes})` : m.texto)))));
+      if (r.medios?.length) total.lastChild.textContent = r.medios[0].texto;
+    } catch { error.textContent = 'No se pudo calcular el total. Revisa la conexión.'; }
+  };
+  cupon.addEventListener('change', cotizar);
+  boton1.addEventListener('click', async () => {
+    if (mail && !mail.reportValidity()) return;
+    boton1.disabled = true; boton1.textContent = 'Un momento…';
+    const r = await post('/api/tienda/comprar', { recuerdo: { evento: id, clave, opcion: o.id }, email: mail?.value || '', cupon: cupon.value, medio: medios.querySelector('input:checked')?.value });
+    if (!r.ok || !r.url) { error.textContent = r.error || 'No se pudo seguir con el pago'; boton1.disabled = false; boton1.textContent = 'Pagar'; return; }
+    location.href = r.url;
+  });
+  ctx.abrirModal(o.nombre, ctx.el('p', { class: 'ayuda' }, o.texto), total,
+    mail ? ctx.el('label', { class: 'campo-modal' }, 'Mail para recibir el comprobante', mail) : null,
+    ctx.el('div', { class: 'campo-modal' }, 'Medio de pago', medios), cupon, error, boton1);
+  cotizar();
+}
+const VISTAS = { recuerdo: vistaRecuerdo, accesos: vistaAccesos, llegadas: vistaLlegadas, resumen: vistaResumen, enviar: vistaEnviar, respuestas: vistaRespuestas, mensajes: vistaMensajes, canciones: vistaCanciones, mesas: vistaMesas, album: vistaAlbum };
 
 // ── Montaje ──
 export async function montarAdmin(caja, c) {
   ctx = { ...c, redibujar: () => dibujar(caja) };
+  if (window.__seccionAdmin) { seccion = window.__seccionAdmin; window.__seccionAdmin = null; }
   caja.replaceChildren(ctx.el('p', { class: 'ayuda' }, 'Cargando…')); // (el menú se vuelve a armar)
   try { respuestas = publicada() ? (await ctx.api('/respuestas')).respuestas : []; } catch { respuestas = []; }
   dibujar(caja);
@@ -820,7 +866,7 @@ const FUNCIONES = {
     puntos: ['Cada invitado tiene su pase de entrada con QR en la invitación.', 'En la recepción se escanea con el celular o se busca por nombre.', 'Ideal para listas cerradas, eventos con control de acceso o salones con aforo.'] },
 };
 // Qué pestañas existen: la invitación simple, solo envío y respuestas
-const visible = (id) => !esSimple() || ['resumen', 'enviar', 'respuestas', 'accesos'].includes(id);
+const visible = (id) => id === 'recuerdo' ? !!ctx.S.recuerdo : (!esSimple() || ['resumen', 'enviar', 'respuestas', 'accesos'].includes(id));
 const disponible = (id) => {
   if (id === 'mensajes') return !esSimple() && ctx.datos.rsvp?.preguntas?.mensaje !== false;
   if (id === 'canciones') return !esSimple() && alcanza('premium') && ctx.datos.secciones?.canciones !== false;
