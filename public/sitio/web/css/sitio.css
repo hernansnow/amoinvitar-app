@@ -658,3 +658,5 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .tachado { color: var(--suave); font-weight: 400; font-size: .62em; text-decoration: line-through; text-decoration-thickness: 1.5px; }
 .promo-precio { color: var(--verde-osc); }
 .plan-card .promo-cinta { display: inline-block; background: #e8523f; color: #fff; font: 600 11.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; padding: 6px 10px; border-radius: 99px; margin: 0 0 10px; }
+
+@media (max-width: 600px) { .btn { white-space: normal; text-align: center; line-height: 1.2; } .cab .btn { white-space: nowrap; } }

@@ -157,5 +157,5 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
 
 ## 11. Pendiente
 
-Cobro con tarjeta o PayPal de créditos y pase, dominio propio por empresa (Studio) y el aviso de vencimiento de créditos
-por mail. Ver el orden en la sección 7.
+Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos
+(ver `docs/precios-y-recuerdo.md`).
