@@ -499,7 +499,6 @@ body.cajon-abierto { overflow: hidden; }
 .comparar-precios thead th { background: var(--verde); color: #fff; }
 .comparar-precios thead th small { color: #fff; font-weight: 500; letter-spacing: .04em; font-size: 14px; text-transform: none; }
 .comparar-precios tbody th { background: var(--verde-palido); }
-}
 
 /* README (ronda 36): trayectoria como en Albunear y Amo Fotear: tarjeta oscura, brillo sobre el año, marcas con link (todo en Jost) */
 .trayectoria { position: relative; overflow: hidden; display: grid; gap: clamp(28px, 5vw, 56px); align-items: center; background: #1c1c1c; color: #efe9dc; border-radius: 28px; padding: clamp(28px, 5vw, 60px); margin-bottom: clamp(48px, 7vw, 80px); }
@@ -726,3 +725,4 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .tabla-legal td.grupo { background: #f7fbf9; font-weight: 600; color: var(--verde-osc); padding-top: 14px; }
 .legal-otros { margin-top: 38px; padding-top: 18px; border-top: 1px solid var(--linea); font-size: 15px; color: var(--suave); }
 .legal-txt a.btn { color: #fff; } .legal-txt a.btn:hover { color: #fff; }
+.trayectoria > div, .t-marcas li { min-width: 0; } .t-marcas a { width: 100%; } .t-marcas img { object-fit: contain; }
