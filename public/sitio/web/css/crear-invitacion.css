@@ -75,3 +75,12 @@
 .ci-pasos li + li::after { content: ''; position: absolute; top: 17px; right: 50%; width: 100%; height: 2px; background: #cfe3dd; }
 .ci-lema { margin: 4px 0 2px; font-weight: 500; }
 .ci-lema-nota { margin: 0 0 22px; font-size: .85rem; color: #777; }
+
+/* README (ronda 36): vista previa con celular de proporción fija, título solo con el modelo y «×» arriba a la derecha */
+.ci-vista-caja { position: relative; padding-top: 18px; }
+.ci-celular { position: relative; flex: none; width: min(340px, 82vw, calc((100dvh - 230px) * .4621)); height: auto; aspect-ratio: 390 / 844; }
+.ci-celular iframe { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; }
+.ci-vista-nombre { color: #1c1c1c; padding-right: 36px; padding-left: 36px; text-align: center; }
+.ci-x { position: absolute; top: 8px; right: 12px; width: 38px; height: 38px; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .07); color: #1c1c1c; font: 400 26px/1 sans-serif; cursor: pointer; z-index: 2; }
+.ci-x:hover { background: rgba(0, 0, 0, .14); }
+.ci-nombre { color: #1c1c1c; font-size: calc(1.05rem + 1pt); }

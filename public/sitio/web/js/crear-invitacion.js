@@ -167,11 +167,12 @@
     actual.i = Math.max(0, actual.lista.indexOf(lista[i]));
     pintarVista();
     abrir(vista);
+    ajustaCelular();
   }
   function pintarVista() {
     var it = actual.lista[actual.i];
     var marco;
-    if (it.demo) marco = el('div', { class: 'ci-celular' }, el('iframe', { src: it.demo, title: it.nombre, loading: 'lazy' }));
+    if (it.demo) marco = el('div', { class: 'ci-celular' }, el('iframe', { src: it.demo + (it.demo.indexOf('?') > -1 ? '&' : '?') + 'directo=1', title: it.nombre }));
     else {
       var grande = el('img', { src: it.galeria[0], alt: it.nombre });
       marco = el('div', { class: 'ci-galeria' }, grande,
@@ -180,15 +181,24 @@
     var mover = function (d) { return function () { actual.i = (actual.i + d + actual.lista.length) % actual.lista.length; pintarVista(); }; };
     var varios = actual.lista.length > 1;
     vista.replaceChildren(el('div', { class: 'ci-vista-caja' },
-      el('p', { class: 'ci-vista-nombre' }, el('small', { text: it.etiqueta || 'Invitación web' }), ' ', it.nombre),
+      el('button', { type: 'button', class: 'ci-x', 'aria-label': 'Cerrar', onclick: function () { vista.close(); } }, '×'),
+      el('p', { class: 'ci-vista-nombre', text: it.nombre }),
       marco,
       el('div', { class: 'ci-vista-botones' },
         varios ? el('button', { type: 'button', class: 'ci-flecha', 'aria-label': 'Modelo anterior', onclick: mover(-1) }, '‹') : null,
         el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: function () { vista.close(); personalizar(it, actual.ev); } }, 'Personalizar este diseño'),
         varios ? el('button', { type: 'button', class: 'ci-flecha', 'aria-label': 'Modelo siguiente', onclick: mover(1) }, '›') : null),
-      varios ? el('p', { class: 'ci-ayuda-flechas', text: 'Usa las flechas para cambiar de modelo' }) : null,
-      el('button', { type: 'button', class: 'ci-link', onclick: function () { vista.close(); } }, 'Cerrar')));
+      varios ? el('p', { class: 'ci-ayuda-flechas', text: 'Usa las flechas para cambiar de modelo' }) : null));
+    ajustaCelular();
   }
+  // El celular de la vista previa tiene siempre la misma proporción; la invitación se escala adentro (como en el panel)
+  function ajustaCelular() {
+    var c = vista && vista.querySelector('.ci-celular'), f = c && c.querySelector('iframe');
+    if (!f) return;
+    var k = c.clientWidth / 390;
+    f.style.width = '390px'; f.style.height = Math.round(c.clientHeight / k) + 'px'; f.style.transform = 'scale(' + k + ')';
+  }
+  window.addEventListener('resize', ajustaCelular);
 
   function personalizar(it, ev) {
     ventanas();
