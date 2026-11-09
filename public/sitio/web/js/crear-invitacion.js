@@ -86,6 +86,8 @@
     var suf = tipo === '15' ? ['15', '15-1', '1'] : tipo === 'boda' ? ['', '1'] : [''];
     var r = [];
     ks.forEach(function (k) { pref.forEach(function (p) { suf.forEach(function (s) { r.push(IMG + 'p_' + p + k + s + '.jpg'); }); }); });
+    // README (ronda 40): portada de la demo dentro del marco del celular, para los modelos sin miniatura de la web vieja
+    r.push(IMG + 'n_' + m.id + '-' + tipo + '.jpg');
     r.push(APP + '/modelos/' + m.id + '/tienda-' + tipo + '.jpg');
     (m.propios || []).forEach(function (e) { if (e !== tipo) r.push(APP + '/modelos/' + m.id + '/tienda-' + e + '.jpg'); });
     r.push(APP + '/modelos/' + m.id + '/miniatura.jpg', IMG + 'p_pronto.jpg');
