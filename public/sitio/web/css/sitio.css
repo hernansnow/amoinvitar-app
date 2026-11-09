@@ -778,3 +778,6 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .mu-item img { width: 100%; height: auto; display: block; } .mu-item h3 { font: 600 16px/1.2 var(--sans); color: var(--verde); margin: 0; }
 .mu-item .btn { padding: 9px 12px; font-size: 12.5px; }
 .planes.uno { grid-template-columns: 1fr; max-width: 460px; margin-inline: auto; }
+
+/* README (ronda 39): «parcial» de la comparativa en negro y peso normal */
+.comparar .parcial { color: #1c1c1c; font-weight: 400; }
