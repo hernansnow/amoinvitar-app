@@ -50,7 +50,7 @@ export async function sitioNuevo(env, request, url) {
   const elegida = getCookie(request, 'idioma');
   const clave = CLAVES.includes(elegida) ? elegida : claveDePais(getCookie(request, 'pais_sel') || request.cf?.country || request.headers.get('cf-ipcountry'));
   if (clave !== 'es' && !/\.[a-z0-9]+$/i.test(ruta)) {
-    const v = await resolver(pedir, `/v/${clave}${ruta === '/' ? '' : ruta}`);
+    const v = await resolver(pedir, `/v/${clave}${ruta === '/' ? '' : ruta}`, (u) => env.ASSETS.fetch(new Request(new URL(u, url.origin), request)));
     if (v && v.status === 200) { const h = new Headers(v.headers); h.set('cache-control', 'private, no-cache'); h.set('vary', 'Cookie'); if (!PRINCIPAL.test(url.hostname)) { h.set('x-robots-tag', 'noindex, nofollow'); h.set('cache-control', 'private, no-store'); } return new Response(v.body, { status: 200, headers: h }); }
   }
   let r = await pedir(ruta);
@@ -67,10 +67,13 @@ export async function sitioNuevo(env, request, url) {
   return new Response(r.body, { status: r.status, headers: h });
 }
 
-// Prueba las formas de la ruta (/x, /x.html, /x/index.html) y devuelve la primera que existe
-async function resolver(pedir, ruta) {
-  for (const c of [ruta, ruta.endsWith('/') ? `${ruta}index.html` : `${ruta}.html`, `${ruta.replace(/\/$/, '')}/index.html`]) {
-    const r = await pedir(c);
+// Prueba las formas de la ruta (/x, /x/, /x.html, /x/index.html) y devuelve la primera que existe.
+// Cloudflare Assets redirige (307/308) «x.html» → «x» y «x» → «x/» según el caso: se sigue la redirección una vez.
+async function resolver(pedir, ruta, seguir) {
+  const base = ruta.replace(/\/$/, '');
+  for (const c of [ruta, `${base}/`, `${base}.html`, `${base}/index.html`]) {
+    let r = await pedir(c);
+    if (r.status >= 300 && r.status < 400 && r.headers.get('location')) r = await seguir(r.headers.get('location'));
     if (r.status === 200) return r;
   }
   return null;

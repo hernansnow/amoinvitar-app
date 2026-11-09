@@ -14,7 +14,7 @@ export const PAISES = [
   ['BE', 'Bélgica', 'EUR', 'en'], 
   ['BO', 'Bolivia', 'BOB', 'pe'], ['BR', 'Brasil', 'BRL', 'pt'], ['CA', 'Canadá', 'CAD', 'en'], ['CL', 'Chile', 'CLP', 'cl'],
   ['CO', 'Colombia', 'COP', 'cl'], ['CR', 'Costa Rica', 'CRC', 'cr'], ['CU', 'Cuba', 'USD', 'mx'], 
-  ['EC', 'Ecuador', 'USD', 'pe'], ['SV', 'El Salvador', 'USD', 'cr'], ['ES', 'España', 'EUR', 'es-es'], ['US', 'Estados Unidos', 'USD', 'es'],
+  ['EC', 'Ecuador', 'USD', 'pe'], ['SV', 'El Salvador', 'USD', 'cr'], ['ES', 'España', 'EUR', 'es-es'], ['US', 'Estados Unidos', 'USD', 'en'],
   ['FR', 'Francia', 'EUR', 'en'], ['GT', 'Guatemala', 'GTQ', 'cr'], 
   ['HT', 'Haití', 'HTG', 'es'], ['HN', 'Honduras', 'HNL', 'cr'], ['IE', 'Irlanda', 'EUR', 'en'], ['IT', 'Italia', 'EUR', 'en'],
   ['MX', 'México', 'MXN', 'mx'], ['NI', 'Nicaragua', 'NIO', 'cr'], ['NZ', 'Nueva Zelanda', 'NZD', 'en'],
