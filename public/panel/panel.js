@@ -47,6 +47,8 @@ function escribir(o, ruta, v) {
 
 // ── Estado ────────────────────────────────────────────────────────────
 const id = location.pathname.split('/').filter(Boolean)[1];
+// README (ronda 39): /panel sin invitación (el «Mi panel» de la web) va a «Mis invitaciones»; antes pedía una invitación inexistente y volvía a «Entrar» en bucle
+if (!id) { location.replace('/mi-cuenta'); throw new Error('sin invitación'); }
 const params = new URLSearchParams(location.search);
 let clave = params.get('k');
 try { if (clave) sessionStorage.setItem(`clave_${id}`, clave); else clave = sessionStorage.getItem(`clave_${id}`); } catch { /* modo privado */ }

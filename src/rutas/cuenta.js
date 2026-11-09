@@ -12,6 +12,7 @@ import { sendEmail, mailAcceso } from '../lib/email.js';
 import { almacenD1 } from '../almacen.js';
 import { TIPOS_EVENTO, MODELOS, nombreModelo } from '../modelos.js';
 import { venceEvento } from '../vencimiento.js';
+import { empresasDe } from '../pro/empresa.js';
 
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
 const pais = (request) => request.cf?.country || request.headers.get('cf-ipcountry') || null;
@@ -74,6 +75,8 @@ export async function cuenta(request, env) {
   const { results: pendientes } = await env.DB.prepare("SELECT id, numero, importe, moneda, medio, evento_id FROM pedidos WHERE usuario_id = ? AND estado = 'pendiente' AND medio = 'transferencia'").bind(u.id).all();
   return json({
     usuario: { email: u.email, nombre: u.nombre, admin: !!u.esAdmin },
+    // README (ronda 39): si es de una cuenta profesional, «Mis invitaciones» ofrece el tablero
+    empresas: (await empresasDe(env, u.id).catch(() => [])).map((e) => ({ id: e.id, nombre: e.nombre })),
     eventos: eventos.map((e) => ({
       id: e.id, producto: e.producto, tipo: e.tipo, tipoNombre: TIPOS_EVENTO.find((t) => t.id === e.tipo)?.nombre || null,
       modeloNombre: (() => { const m = MODELOS.find((x) => x.id === e.modelo); return m ? nombreModelo(m, e.tipo) : null; })(), modelo: e.modelo, paquete: e.paquete, estado: e.estado, slug: e.slug,

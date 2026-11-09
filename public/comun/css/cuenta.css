@@ -1,6 +1,6 @@
 /* Páginas de la cuenta y la tienda · Amo Invitar 2.0 */
 :root {
-  --acento: #7a9c7e; --acento-oscuro: #5f8264; --acento-texto: #fff;
+  --acento: #4e9c87; --acento-oscuro: #2f6f5f; --acento-texto: #fff;
   --fondo: #f6f5f3; --tarjeta: #fff; --texto: #1f2421; --suave: #6b706c; --borde: #e2e0dc;
   --peligro: #b3261e; --ok: #2e7d32; --premium: #b08a4f; --radio: 14px;
   font-family: Jost, system-ui, sans-serif; color: var(--texto); background: var(--fondo);

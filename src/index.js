@@ -1171,7 +1171,7 @@ function proximamente(request, env, url) {
   if (/^\/[a-z0-9-]+\/[a-z0-9-]+\/?$/.test(url.pathname) && !/^\/(tienda|panel|vista|entrar|mi-cuenta|admin|auth)\//.test(url.pathname)) return null;
   if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/')) return json({ error: 'Próximamente' }, 503);
   return html(`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>Amo Invitar · Muy pronto</title>
-<link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;background:#f6f5f3;color:#1f2421;font:17px/1.6 Jost,system-ui,sans-serif;padding:24px}img{width:min(280px,70vw);height:auto}h1{font:400 clamp(40px,8vw,64px)/1.1 'Great Vibes',cursive;color:#7a9c7e;margin:24px 0 8px}a{color:#4e9c87}</style></head>
+<link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;background:#f6f5f3;color:#1f2421;font:17px/1.6 Jost,system-ui,sans-serif;padding:24px}img{width:min(280px,70vw);height:auto}h1{font:400 clamp(40px,8vw,64px)/1.1 'Great Vibes',cursive;color:#4e9c87;margin:24px 0 8px}a{color:#4e9c87}</style></head>
 <body><main><img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!"><h1>Muy pronto</h1><p>Estamos preparando la nueva tienda de invitaciones digitales.</p><p><a href="https://amoinvitar.com">amoinvitar.com</a></p></main></body></html>`, 503, { 'retry-after': '86400', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' });
 }
 

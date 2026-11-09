@@ -219,7 +219,7 @@ export function invoicesPage(env, invoices, { title, back } = {}) {
 <style>
   body { margin: 0; background: #f1efe9; font: 14px/1.5 Helvetica, Arial, sans-serif; color: #1c1c1c; }
   .bar { position: sticky; top: 0; display: flex; gap: 10px; justify-content: center; padding: 12px; background: #1c1c1c; }
-  .bar button, .bar a { font: inherit; border: 0; border-radius: 999px; padding: 9px 20px; background: #7a9c7e; color: #fff; font-weight: bold; cursor: pointer; text-decoration: none; }
+  .bar button, .bar a { font: inherit; border: 0; border-radius: 999px; padding: 9px 20px; background: #4e9c87; color: #fff; font-weight: bold; cursor: pointer; text-decoration: none; }
   .bar a { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.4); }
   .inv { background: #fff; width: min(210mm, 100% - 24px); box-sizing: border-box; margin: 20px auto; padding: 16mm 15mm; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
   header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; border-bottom: 2px solid #1c1c1c; padding-bottom: 14px; }

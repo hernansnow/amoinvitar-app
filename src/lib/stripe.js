@@ -48,7 +48,7 @@ export function createCheckoutSession(env, { amount, currency, productName, desc
     locale,
     adaptive_pricing: { enabled: false },
     branding_settings: {
-      display_name: 'Amo Invitar', button_color: '#7a9c7e', background_color: '#ffffff', border_style: 'pill',
+      display_name: 'Amo Invitar', button_color: '#4e9c87', background_color: '#ffffff', border_style: 'pill',
       logo: { type: 'url', url: `${site}/comun/img/amoinvitar-email.png` },
       icon: { type: 'url', url: 'https://amoinvitar.com/apple-touch-icon.png' },
     },

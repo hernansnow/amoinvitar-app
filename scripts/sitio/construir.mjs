@@ -73,7 +73,7 @@ function cabecera(P) {
     </nav>
     <div class="cab-acciones">
       <div class="moneda" data-moneda><button class="moneda-boton" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Elegir tu país (moneda e idioma)"><img data-bandera src="/web/img/flags/es.svg" alt="" width="22" height="15"><span>EUR</span>${ic('chevron')}</button><div class="moneda-lista" role="menu" aria-label="País"></div></div>
-      <a class="mi-panel" href="/panel">${ic('user-check')} Mi panel</a>
+      <a class="mi-panel" href="/mi-cuenta">${ic('user-check')} Mi panel</a>
       <a class="btn btn-claro btn-crear" href="/crear-invitacion">Crear invitación</a>
       <button class="hamb" type="button" data-abrir-menu aria-label="Abrir el menú" aria-expanded="false" aria-controls="cajon">${ic('menu')}</button>
     </div>
@@ -85,7 +85,7 @@ function cabecera(P) {
     <div class="cajon-eventos" id="cajon-ev">${items}</div>
     <nav class="cajon-lista" aria-label="Secciones"><a href="/album">Álbum QR</a><a href="/#como-funciona" data-cerrar-menu>Cómo funciona</a><a href="/precios">Precios</a><a href="/#faq" data-cerrar-menu>FAQ</a><a href="/contacto">Contacto</a></nav>
     <div class="cajon-botones">
-      <a class="btn btn-panel" href="/panel">${ic('user-check')} Mi panel</a>
+      <a class="btn btn-panel" href="/mi-cuenta">${ic('user-check')} Mi panel</a>
       <a class="btn btn-verde" href="/crear-invitacion">Crear mi invitación</a>
       <a class="btn btn-ayuda" href="${C.WHATSAPP}" target="_blank" rel="noopener">Soporte ${ic('wa')}</a>
     </div>
@@ -304,7 +304,7 @@ function pie() {
     <div class="pie-marca"><a class="logo" href="/" aria-label="Amo Invitar!"><img src="/web/img/logo-pie.svg" alt="Amo Invitar!" width="170" height="37" loading="lazy"></a><p>Invitaciones digitales interactivas y originales para bodas y eventos.</p>${redes}</div>
     <div class="pie-links">
       <div class="pie-bloque">${lista('Invitaciones', ev.map((e) => [`/${e.pagina}`, esc(e.id === 'boda' ? 'Bodas' : e.nombre)]))}${lista('Recursos', [['/crear-invitacion', 'Crear invitación'], ['/#como-funciona', 'Cómo funciona'], ['/#funciones', 'Funciones'], ['/precios', 'Planes y precios'], ['/album', 'Álbum QR'], ['/profesionales', 'Para profesionales'], ['/#faq', 'Preguntas frecuentes'], ['/#nosotros', 'Nosotros'], ['/contacto', 'Contacto']])}</div>
-      <div class="pie-bloque">${lista('Tu cuenta', [['/panel', 'Mi panel'], ['/mi-cuenta', 'Mis invitaciones'], ['/entrar', 'Entrar']])}${lista('Productos', [['https://amofotear.com', 'Amo Fotear', 1], ['https://albunear.com', 'Albunear', 1], ['https://snowproducciones.com.ar', 'Snow Producciones', 1]])}</div>
+      <div class="pie-bloque">${lista('Tu cuenta', [['/mi-cuenta', 'Mi panel'], ['/entrar', 'Entrar']])}${lista('Productos', [['https://amofotear.com', 'Amo Fotear', 1], ['https://albunear.com', 'Albunear', 1], ['https://snowproducciones.com.ar', 'Snow Producciones', 1]])}</div>
     </div>
   </div>
   <div class="pie-legal">
