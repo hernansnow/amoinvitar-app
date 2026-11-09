@@ -4860,3 +4860,7 @@ audio::-webkit-media-controls-play-button:hover {
 
 /* Nombres (portada y pie) y títulos siempre en mayúsculas, como el diseño; los textos respetan lo que escribe el cliente */
 #home-section h1, #home-section [data-ajustar], #cierre [data-ajustar], .site-wrap section h1, .site-wrap section h2 { text-transform: uppercase; }
+
+/* README (ronda 39): paradas del itinerario con solo la primera letra en mayúscula y letra más chica */
+#timeline .timeline-item .timeline-content h2 { text-transform: lowercase !important; font-size: 17px !important; letter-spacing: 0 !important; }
+#timeline .timeline-item .timeline-content h2::first-letter { text-transform: uppercase !important; }

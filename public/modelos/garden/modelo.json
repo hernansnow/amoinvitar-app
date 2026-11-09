@@ -664,19 +664,19 @@
           "portadas": [
             {
               "f": "hero-banner1.jpg",
-              "pos": "center center"
+              "pos": "36% 25%"
             },
             {
               "f": "hero-banner2.jpg",
-              "pos": "center center"
+              "pos": "50% 5%"
             },
             {
               "f": "hero-banner3.jpg",
-              "pos": "center center"
+              "pos": "48% 30%"
             },
             {
               "f": "hero-banner4.jpg",
-              "pos": "center center"
+              "pos": "50% 20%"
             }
           ]
         }
