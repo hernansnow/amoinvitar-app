@@ -157,7 +157,7 @@
       d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
       document.body.append(d);
     });
-    vista.addEventListener('close', function () { var f = vista.querySelector('iframe'); if (f) f.src = 'about:blank'; });
+    vista.addEventListener('close', function () { completa = false; vista.classList.remove('ci-completa'); var f = vista.querySelector('iframe'); if (f) f.src = 'about:blank'; });
   }
   function abrir(d) { if (d.showModal) { if (!d.open) d.showModal(); } else d.setAttribute('open', ''); }
 
@@ -169,6 +169,7 @@
     abrir(vista);
     ajustaCelular();
   }
+  var completa = false; // vista previa a pantalla completa (se mantiene al pasar de un modelo al otro)
   function pintarVista() {
     var it = actual.lista[actual.i];
     var marco;
@@ -180,21 +181,25 @@
     }
     var mover = function (d) { return function () { actual.i = (actual.i + d + actual.lista.length) % actual.lista.length; pintarVista(); }; };
     var varios = actual.lista.length > 1;
-    vista.replaceChildren(el('div', { class: 'ci-vista-caja' },
-      el('button', { type: 'button', class: 'ci-x', 'aria-label': 'Cerrar', onclick: function () { vista.close(); } }, '×'),
+    var alternar = function () { completa = !completa; pintarVista(); };
+    vista.classList.toggle('ci-completa', completa);
+    vista.replaceChildren(el('div', { class: 'ci-vista-caja' + (completa ? ' ci-full' : '') },
+      el('button', { type: 'button', class: 'ci-x', 'aria-label': 'Cerrar', onclick: function () { completa = false; vista.close(); } }, '×'),
       el('p', { class: 'ci-vista-nombre', text: it.nombre }),
+      it.demo ? el('button', { type: 'button', class: 'ci-pantalla', 'aria-label': completa ? 'Salir de pantalla completa' : 'Ver a pantalla completa', onclick: alternar }, completa ? '⤡ Salir' : '⤢ Pantalla completa') : null,
       marco,
       el('div', { class: 'ci-vista-botones' },
         varios ? el('button', { type: 'button', class: 'ci-flecha', 'aria-label': 'Modelo anterior', onclick: mover(-1) }, '‹') : null,
-        el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: function () { vista.close(); personalizar(it, actual.ev); } }, 'Personalizar este diseño'),
+        el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: function () { completa = false; vista.close(); personalizar(it, actual.ev); } }, 'Personalizar este diseño'),
         varios ? el('button', { type: 'button', class: 'ci-flecha', 'aria-label': 'Modelo siguiente', onclick: mover(1) }, '›') : null),
-      varios ? el('p', { class: 'ci-ayuda-flechas', text: 'Usa las flechas para cambiar de modelo' }) : null));
+      varios && !completa ? el('p', { class: 'ci-ayuda-flechas', text: 'Usa las flechas para cambiar de modelo' }) : null));
     ajustaCelular();
   }
   // El celular de la vista previa tiene siempre la misma proporción; la invitación se escala adentro (como en el panel)
   function ajustaCelular() {
     var c = vista && vista.querySelector('.ci-celular'), f = c && c.querySelector('iframe');
     if (!f) return;
+    if (completa) { f.style.cssText = 'width:100%;height:100%;transform:none'; return; }
     var k = c.clientWidth / 390;
     f.style.width = '390px'; f.style.height = Math.round(c.clientHeight / k) + 'px'; f.style.transform = 'scale(' + k + ')';
   }
