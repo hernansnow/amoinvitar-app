@@ -44,7 +44,10 @@
 
   var catalogo = null, pedido = null;
   function cargarCatalogo() {
-    if (!pedido) pedido = fetch(APP + '/api/tienda/catalogo').then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
+    if (!pedido) pedido = Promise.all([
+      fetch(APP + '/api/tienda/catalogo').then(function (r) { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(IMG + 'manifest.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+    ]).then(function (x) { x[0].muestras = x[1]; return x[0]; });
     return pedido;
   }
 
@@ -102,7 +105,7 @@
         if (m.eventos.indexOf(t) < 0) return;
         // Dentro de un grupo (Cumpleaños → infantil, Baby shower → revelación): el tipo propio del diseño
         var real = (m.propios || m.eventos).indexOf(t) >= 0 ? t : (t === 'cumple' ? 'infantil' : t === 'babyshower' ? 'revelacion' : t);
-        invit.push({ id: m.id, nombre: (m.nombres && m.nombres[real]) || (m.nombres && m.nombres[t]) || m.nombre, gratis: m.gratis, imgs: miniaturas(m, real),
+        invit.push({ id: m.id, nombre: (m.nombres && m.nombres[real]) || (m.nombres && m.nombres[t]) || m.nombre, gratis: m.gratis, desde: m.gratis ? cero(c) : desdeBasic(c), imgs: miniaturas(m, real),
           demo: APP + '/demo/' + m.id + '?evento=' + encodeURIComponent(real) + '&paquete=deluxe', link: { producto: 'invitacion', modelo: m.id, evento: real }, dos: t === 'boda' });
       });
     }
@@ -114,18 +117,20 @@
       (c.stdWeb || []).forEach(function (m) {
         if (m.eventos.indexOf(t) < 0) return;
         var img = IMG + (m.id === 'std-soft' ? 'std-web-soft.jpg' : t === '15' ? 'std-web15.jpg' : 'std-web-classic.jpg');
-        std.push({ id: m.id, nombre: m.nombre, etiqueta: 'Save The Date', imgs: [img], demo: APP + '/demo/' + m.id + '?evento=' + t, link: { producto: 'std-web', modelo: m.id, evento: t } });
+        std.push({ id: m.id, nombre: m.nombre, etiqueta: 'Save The Date', imgs: [img], demo: APP + '/demo/' + m.id + '?evento=' + t, link: { producto: 'std-web', modelo: m.id, evento: t }, precio: precioProducto(c, 'std-web'), fijo: true });
       });
       std.push({ id: 'std-web-medida', nombre: 'Web a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-a-medida.jpg'], link: { producto: 'std-web-medida', evento: t }, precio: precioProducto(c, 'std-web-medida') });
       // Tarjeta del modelo: arranca con el primer diseño del evento que tiene tarjeta (en el panel se cambia)
       var conTarjeta = CON_STD.indexOf(t) < 0 ? [] : c.modelos.filter(function (m) { return m.eventos.indexOf(t) >= 0 && (c.tarjetaStd || []).indexOf(m.id) >= 0; });
       if (conTarjeta.length) {
-        var gal = t === 'boda' ? serie('std-tarjeta', 5) : t === '15' ? serie('std-tarjeta15', 5) : conTarjeta.slice(0, 6).map(function (m) { return APP + '/modelos/' + m.id + '/img/std-fondo.jpg'; });
-        std.push({ id: 'std-tarjeta', nombre: 'Tarjeta', etiqueta: 'Save The Date', imgs: gal, galeria: gal, link: { producto: 'std-tarjeta', modelo: conTarjeta[0].id, evento: t } });
+        var mu = (c.muestras && c.muestras.tarjeta && c.muestras.tarjeta[t]) || [];
+        var gal = mu.length ? mu.map(function (x) { return IMG + x.f; }) : conTarjeta.slice(0, 6).map(function (m) { return APP + '/modelos/' + m.id + '/img/std-fondo.jpg'; });
+        std.push({ id: 'std-tarjeta', nombre: 'Tarjeta', etiqueta: 'Save The Date', imgs: gal, galeria: gal, link: { producto: 'std-tarjeta', modelo: conTarjeta[0].id, evento: t }, precio: precioProducto(c, 'std-tarjeta'), fijo: true });
       }
       if (CON_FOTO.indexOf(t) >= 0) {
-        var fotos = t === '15' ? serie('std-15-foto', 5) : serie('std-foto', 5);
-        std.push({ id: 'std-foto', nombre: 'Foto', etiqueta: 'Save The Date', imgs: fotos, galeria: fotos, link: { producto: 'std-foto', diseno: 'f1', evento: t } });
+        var mf = (c.muestras && c.muestras.foto && c.muestras.foto[t]) || [];
+        var fotos = mf.length ? mf.map(function (x) { return IMG + x.f; }) : (t === '15' ? serie('std-15-foto', 5) : serie('std-foto', 5));
+        std.push({ id: 'std-foto', nombre: 'Foto', etiqueta: 'Save The Date', imgs: fotos, galeria: fotos, link: { producto: 'std-foto', diseno: 'f1', evento: t }, precio: precioProducto(c, 'std-foto'), fijo: true });
       }
       std.push({ id: 'std-tarjeta-medida', nombre: 'Tarjeta a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-a-medida.jpg'], link: { producto: 'std-tarjeta-medida', evento: t }, precio: precioProducto(c, 'std-tarjeta-medida') });
       tabs.push({ id: 'std', nombre: 'Save The Date', items: std });
@@ -135,16 +140,20 @@
       if (m.eventos.indexOf(t) < 0) return;
       var k = m.id === 'pedida' ? 'pedida-de-mano' : m.id;
       adic.push({ id: m.id, nombre: m.nombre, etiqueta: 'Web simple', imgs: [IMG + 'p_' + k + '.jpg', IMG + 'p_pronto.jpg'],
-        demo: APP + '/demo/' + m.id + '?evento=' + t, link: { producto: 'compromiso-web', modelo: m.id, evento: t }, dos: t === 'boda' });
+        demo: APP + '/demo/' + m.id + '?evento=' + t, link: { producto: 'compromiso-web', modelo: m.id, evento: t }, dos: t === 'boda', precio: precioProducto(c, 'compromiso-web'), fijo: true });
     });
-    if (t !== 'empresarial') {
-      var gr = t === 'boda' ? serie('gracias-tarjeta', 8) : t === '15' ? serie('gracias-15-tarjeta', 8) : [1, 2, 3, 4, 5, 6, 7, 8].map(function (i) { return APP + '/comun/tarjetas/gracias/g' + i + '/muestra-boda.jpg'; });
-      adic.push({ id: 'agradecimiento', nombre: 'Tarjeta', etiqueta: 'Agradecimiento', imgs: gr, galeria: gr, link: { producto: 'agradecimiento', diseno: 'g1', evento: t } });
+    // README (ronda 39): la tarjeta de agradecimiento solo existe en boda y 15 años (en los demás eventos no hay pestaña «Adicional»)
+    if (t === 'boda' || t === '15') {
+      var mg = (c.muestras && c.muestras.gracias && c.muestras.gracias[t]) || [];
+      var gr = mg.length ? mg.map(function (x) { return IMG + x.f; }) : (t === 'boda' ? serie('gracias-tarjeta', 8) : serie('gracias-15-tarjeta', 8));
+      adic.push({ id: 'agradecimiento', nombre: 'Tarjeta', etiqueta: 'Agradecimiento', imgs: gr, galeria: gr, link: { producto: 'agradecimiento', diseno: 'g1', evento: t }, precio: precioProducto(c, 'agradecimiento'), fijo: true });
     }
     if (adic.length) tabs.push({ id: 'adicional', nombre: 'Adicional', items: adic });
     return tabs;
   }
   function precioProducto(c, id) { var p = (c.productos || []).filter(function (x) { return x.id === id; })[0]; return p && p.precio && p.precio.texto; }
+  // «0 €» con el formato de la moneda del visitante (se toma el de Basic y se pone el número en cero)
+  function cero(c) { var d = desdeBasic(c); return d ? d.replace(/[\d.,]+/, '0') : '0 €'; }
   function desdeBasic(c) { var p = (c.paquetes || []).filter(function (x) { return x.id === 'basic'; })[0]; return p && p.precio && p.precio.texto; }
 
   // ── Ventanas (una sola por página) ─────────────────────────────────
@@ -258,14 +267,16 @@
 
   // ── Pestañas y tarjetas ────────────────────────────────────────────
   function tarjeta(it, lista, i, ev) {
+    var precioTxt = it.desde ? 'desde ' + it.desde : (it.precio ? (it.fijo || it.medida ? it.precio : 'desde ' + it.precio) : '');
     var ver = function () { if (it.medida) { if (it.ejemplos) location.href = it.ejemplos; else personalizar(it, ev); } else verDiseno(lista, i, ev); };
     return el('div', { class: 'ci-item' + (it.medida ? ' ci-medida' : '') },
       el('button', { type: 'button', class: 'ci-mini', 'aria-label': (it.medida ? 'Ver ejemplos de ' : 'Ver diseño ') + it.nombre, onclick: ver },
         imagen(it.imgs, it.nombre), it.gratis ? el('span', { class: 'ci-gratis', text: 'Gratis' }) : null),
       it.etiqueta ? el('small', { class: 'ci-etiqueta', text: it.etiqueta }) : null,
       el('h4', { class: 'ci-nombre', text: it.nombre }),
+      precioTxt ? el('p', { class: 'ci-precio', text: precioTxt }) : null,
       el('button', { type: 'button', class: 'ci-btn ci-btn-borde', onclick: function () { personalizar(it, ev); } }, it.medida ? 'Comenzar' : 'Personalizar'),
-      it.medida && !it.ejemplos ? null : el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: ver }, it.medida ? 'Ver ejemplos' : 'Ver diseño'));
+      it.medida && !it.ejemplos ? null : el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: ver }, it.medida ? 'Ver ejemplos' : (it.galeria ? 'Ver diseños' : 'Ver diseño')));
   }
 
   function montar(caja) {
@@ -307,10 +318,11 @@
     // (o una dirección /crear-invitacion-para-boda) se ven directamente los modelos.
     var grid = []; try { grid = JSON.parse(caja.getAttribute('data-grid') || '[]'); } catch (e) { grid = []; }
     var titulo = document.querySelector('#disenos .titulo h2'), tituloInicial = titulo ? titulo.innerHTML : '';
+    var subtitulo = document.querySelector('#disenos .titulo p');
     function pintarCabecera() {
       if (!conSelector) return;
-      if (ev) { cab.replaceChildren(); if (titulo && grid.length) titulo.innerHTML = '<em>Diseños</em> para ' + (ev.nombre || '').toLowerCase(); return; }
-      if (titulo && grid.length) titulo.innerHTML = '¿Qué vas a <em>celebrar</em>?';
+      if (ev) { cab.replaceChildren(); if (titulo && grid.length) titulo.innerHTML = '<em>Diseños</em> para ' + (ev.nombre || '').toLowerCase(); if (subtitulo && grid.length) subtitulo.textContent = 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Elige, personaliza y mira tu invitación lista antes de pagar.'; return; }
+      if (titulo && grid.length) titulo.innerHTML = '¿Qué vas a <em>celebrar</em>?'; if (subtitulo && grid.length) subtitulo.textContent = 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.';
       cab.replaceChildren(el('div', { class: 'ci-eventos' }, (grid.length ? grid : opciones.map(function (e) { return { slug: e.slug, nombre: e.nombre, img: '' }; })).map(function (g) {
         return el('button', { type: 'button', class: 'ci-evento', style: g.img ? 'background-image:url(' + g.img + ')' : null, onclick: function () { ev = evento(g.slug); tabActiva = 'web'; cambiarUrl(); pintarCabecera(); pintar(); otro.hidden = false; try { caja.scrollIntoView({ block: 'start' }); } catch (e) { /* sin scroll */ } } },
           el('span', { text: g.nombre }));

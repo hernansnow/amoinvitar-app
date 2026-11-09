@@ -119,3 +119,15 @@ dialog.ci-completa { width: 100vw; height: 100dvh; max-width: none; max-height: 
 .ci-full .ci-flecha { background: rgba(255, 255, 255, .85); }
 .ci-vista-caja:not(.ci-full) .ci-pantalla { position: static; margin: -4px 0 0; }
 .ci-form-caja .ci-select { width: 100%; border-radius: 10px; min-width: 0; }
+
+/* README (ronda 39): miniaturas más grandes (como en la web vieja), sin recorte al pasar el puntero y con el precio bajo el nombre */
+.ci-widget { max-width: 1180px; }
+@media (min-width: 768px) { .ci-grilla { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
+@media (min-width: 1000px) { .ci-grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1240px) { .ci-grilla { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.ci-item { padding: 10px 10px 12px; }
+.ci-mini { aspect-ratio: 300 / 624; overflow: visible; transition: transform .25s; }
+.ci-mini:hover { transform: translateY(-4px); }
+.ci-mini img { object-fit: contain; transition: none; }
+.ci-mini:hover img { transform: none; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .2)); }
+.ci-precio { margin: 0 0 6px; padding-top: 6px; border-top: 1px solid #e6e6e6; font-size: .85rem; font-weight: 400; color: #555; }
