@@ -78,3 +78,6 @@ export function convertir(html, clave) {
   }).join('');
   return out.replace('<html lang="es"', `<html lang="${LANG[clave]}"`);
 }
+
+// Para el texto que arma el navegador (JavaScript) y el panel: la misma conversión, sobre un texto suelto
+export const convertirTexto = (t, clave) => (ZONAS[clave] ? ZONAS[clave](t) : t);

@@ -8,6 +8,7 @@ import * as C from './contenido.mjs';
 import { PROFESIONALES as PRO } from '../../src/catalogo.js';
 import { PAISES, CLAVES } from '../../src/sitio/variantes.js';
 import { convertir } from './variantes.mjs';
+import { LANG } from '../../src/sitio/variantes.js';
 import { rmSync } from 'node:fs';
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '../../public/sitio');
@@ -346,6 +347,7 @@ ${cabecera(P)}
 ${cuerpo}
 </main>
 ${pie()}
+<script src="/comun/js/regional.js" defer></script>
 <script src="/web/js/sitio.js" defer></script>
 <script src="/comun/js/contacto.js" defer></script>
 ${(P.scripts || []).map((x) => `<script src="${x}" defer></script>`).join('\n')}
@@ -645,4 +647,43 @@ console.log('Páginas generadas:', PAGINAS.join(', '));
   const lista = '  var LISTA_PAISES = ' + JSON.stringify(PAISES).replace(/\],\[/g, '], [').replace(/"/g, "'") + ';';
   const n = js.replace(/  var LISTA_PAISES = \[[\s\S]*?\]\];/, () => lista);
   if (n !== js) writeFileSync(f, n);
+}
+
+// README (ronda 40): el mismo conversor, para el navegador (public/comun/js/regional.js): textos que arma el JavaScript y el panel
+{
+  const f = join(dirname(fileURLToPath(import.meta.url)), 'variantes.mjs');
+  const fuente = readFileSync(f, 'utf8').replace(/^import .*\n/m, '').replace(/export (const|function)/g, '$1');
+  const salida = `/* Generado por scripts/sitio/construir.mjs desde scripts/sitio/variantes.mjs (README ronda 40): no editar a mano */
+(function () {
+  var LANG = ${JSON.stringify(LANG)};
+${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n/m, '')}
+  var POR_LANG = {}; Object.keys(LANG).forEach(function (k) { POR_LANG[LANG[k].toLowerCase()] = k; });
+  var ATRIB = ['placeholder', 'aria-label', 'title', 'alt'];
+  var clave = 'es', activo = false;
+  function texto(n) {
+    var p = n.parentNode; if (!p || /^(SCRIPT|STYLE|TEXTAREA|INPUT|CODE)$/.test(p.nodeName) || (p.closest && p.closest('.opinion, [data-sin-regional]'))) return;
+    var v = n.nodeValue; if (!v || !/[A-Za-zÁÉÍÓÚáéíóú]/.test(v)) return;
+    var w = convertirTexto(v, clave); if (w !== v) n.nodeValue = w;
+  }
+  function nodo(raiz) {
+    if (raiz.nodeType === 3) return texto(raiz);
+    if (raiz.nodeType !== 1 || /^(SCRIPT|STYLE)$/.test(raiz.nodeName)) return;
+    var it = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = it.nextNode())) texto(n);
+    var els = raiz.querySelectorAll ? raiz.querySelectorAll('[placeholder],[aria-label],[title],[alt]') : [];
+    [raiz].concat([].slice.call(els)).forEach(function (e) { ATRIB.forEach(function (a) { var v = e.getAttribute && e.getAttribute(a); if (v) { var w = convertirTexto(v, clave); if (w !== v) e.setAttribute(a, w); } }); });
+  }
+  function activar(c) {
+    if (activo || !c || c === 'es' || !LANG[c]) return;
+    clave = c; activo = true;
+    nodo(document.body);
+    new MutationObserver(function (ms) { ms.forEach(function (m) { [].slice.call(m.addedNodes).forEach(nodo); if (m.type === 'characterData') texto(m.target); }); }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  window.AI_REGIONAL = { activar: activar, convertir: function (t, c) { return convertirTexto(t, c || clave); } };
+  // En la web, la variante sale del idioma de la página (<html lang>)
+  function auto() { var c = POR_LANG[(document.documentElement.lang || '').toLowerCase()]; if (c && c !== 'es') activar(c); }
+  if (document.body) auto(); else document.addEventListener('DOMContentLoaded', auto);
+})();
+`;
+  writeFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../public/comun/js/regional.js'), salida);
 }

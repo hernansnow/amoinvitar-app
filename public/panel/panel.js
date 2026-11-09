@@ -1695,6 +1695,7 @@ async function pasarAGratis(gratis) {
 }
 async function recargar() {
   S = await api(); datos = S.datos || {};
+  window.AI_REGIONAL?.activar(S.clave); // README (ronda 40): textos del panel en la variante del español del país
   aplicarDefectos(); pintarPlan(); pintarModelo(); irA(pasoActual?.id); refrescarPrevia();
 }
 
@@ -2044,7 +2045,7 @@ function recordarBorrador() {
 
 // ── Inicio ────────────────────────────────────────────────────────────
 (async () => {
-  try { S = await api(); } catch (e) {
+  try { S = await api(); window.AI_REGIONAL?.activar(S.clave); } catch (e) {
     if (e.status === 403 && !clave) { location.href = `/entrar?siguiente=${encodeURIComponent(location.pathname)}`; return; }
     $('#formulario').replaceChildren(el('div', { class: 'tarjeta mejorar' }, el('h2', {}, 'No se pudo abrir el panel'), el('p', {}, e.status === 403 ? 'El link no es válido o venció. Entrar con el mail de la compra en amoinvitar.com/entrar.' : 'Revisar la conexión y volver a intentar.')));
     $('#titulo-evento').textContent = '';

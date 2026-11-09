@@ -15,6 +15,7 @@
 
 import { diccionario, varianteDePais, VARIANTES, esPlural } from './textos/index.js';
 import { formatoPais, paisDeZona } from './textos/regional.js';
+import { CLAVES, claveDePais } from './sitio/variantes.js';
 import { armarVista } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
@@ -736,6 +737,8 @@ async function apiPanel(env, request, url, partes) {
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       // README (ronda 40): cómo se escriben las horas y fechas en el país del evento (para las tarjetas y los textos del panel)
       formato: formatoPais(paisDeZona(ev.datos.zonaHoraria), idiomasDe(ev.datos)[0]),
+      // Variante del español para los textos del panel: la elegida en el selector de la web o la del país de la visita
+      clave: CLAVES.includes(getCookie(request, 'idioma')) ? getCookie(request, 'idioma') : claveDePais(getCookie(request, 'pais_sel') || request.cf?.country || request.headers.get('cf-ipcountry')),
       plan: await tienda.estadoPlan(env, request, ev, esquema),
       modelos: modelosCambio(ev.tipo, ev.producto, ev.modelo),
       // README (ronda 28): en el cambio de modelo también está el diseño a medida, con su precio
