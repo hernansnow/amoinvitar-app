@@ -32,7 +32,7 @@ function acceso(env, request, url) {
 }
 
 // README (ronda 32): páginas que se unificaron en la web nueva (Infantiles pasó a Cumpleaños)
-const REDIRECCIONES = { '/infantiles': '/cumple', '/infantiles.html': '/cumple', '/crear-invitacion-para-infantil': '/crear-invitacion-para-cumpleanos' };
+const REDIRECCIONES = { '/infantiles': '/cumple', '/infantiles.html': '/cumple', '/crear-invitacion-para-infantil': '/crear-invitacion-para-cumpleanos', '/crear-invitacion-para-empresarial': '/empresarial' };
 
 export async function sitioNuevo(env, request, url) {
   if (!['GET', 'HEAD'].includes(request.method) || RESERVADAS.test(url.pathname) || PROTEGIDAS.test(url.pathname)) return null;

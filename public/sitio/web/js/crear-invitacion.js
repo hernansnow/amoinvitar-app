@@ -109,6 +109,15 @@
           demo: APP + '/demo/' + m.id + '?evento=' + encodeURIComponent(real) + '&paquete=deluxe', link: { producto: 'invitacion', modelo: m.id, evento: real }, dos: t === 'boda' });
       });
     }
+    // README (ronda 39): en Cumpleaños los infantiles se reparten entre los de adultos (no quedan todos al final)
+    if (t === 'cumple') {
+      var primero = invit.slice(0, 1), resto = invit.slice(1);
+      var inf = resto.filter(function (x) { return x.link && x.link.evento === 'infantil'; }), adu = resto.filter(function (x) { return !(x.link && x.link.evento === 'infantil'); });
+      var mezcla = [], k = 0;
+      adu.forEach(function (x, i) { mezcla.push(x); if ((i + 1) % 3 === 2 && k < inf.length) mezcla.push(inf[k++]); });
+      while (k < inf.length) mezcla.push(inf[k++]);
+      invit = primero.concat(mezcla);
+    }
     tabs.push({ id: 'web', nombre: 'Invitación web', items: invit });
 
     // README (ronda 30): la web y la foto, solo boda y 15; la tarjeta del diseño, en los eventos que la tienen; las dos a
@@ -324,7 +333,7 @@
       if (ev) { cab.replaceChildren(); if (titulo && grid.length) titulo.innerHTML = '<em>Diseños</em> para ' + (ev.nombre || '').toLowerCase(); if (subtitulo && grid.length) subtitulo.textContent = 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Elige, personaliza y mira tu invitación lista antes de pagar.'; return; }
       if (titulo && grid.length) titulo.innerHTML = '¿Qué vas a <em>celebrar</em>?'; if (subtitulo && grid.length) subtitulo.textContent = 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.';
       cab.replaceChildren(el('div', { class: 'ci-eventos' }, (grid.length ? grid : opciones.map(function (e) { return { slug: e.slug, nombre: e.nombre, img: '' }; })).map(function (g) {
-        return el('button', { type: 'button', class: 'ci-evento', style: g.img ? 'background-image:url(' + g.img + ')' : null, onclick: function () { ev = evento(g.slug); tabActiva = 'web'; cambiarUrl(); pintarCabecera(); pintar(); otro.hidden = false; try { caja.scrollIntoView({ block: 'start' }); } catch (e) { /* sin scroll */ } } },
+        return el('button', { type: 'button', class: 'ci-evento', style: g.img ? 'background-image:url(' + g.img + ')' : null, onclick: function () { if (g.slug === 'empresarial') { location.href = RAIZ + 'empresarial'; return; } ev = evento(g.slug); tabActiva = 'web'; cambiarUrl(); pintarCabecera(); pintar(); otro.hidden = false; try { caja.scrollIntoView({ block: 'start' }); } catch (e) { /* sin scroll */ } } },
           el('span', { text: g.nombre }));
       })));
     }

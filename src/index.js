@@ -1156,7 +1156,7 @@ async function media(env, partes) {
 // ── Modo "Próximamente": con PREVIEW_KEY cargada, el público ve una página de espera ──
 // Se entra una vez por navegador con ?preview=CLAVE (queda 90 días). Salir: ?preview=salir.
 // Las invitaciones publicadas, las demos y los avisos de las pasarelas siguen funcionando.
-const SIEMPRE_ABIERTO = /^\/(api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/mesa|mesa\/|api\/puerta|puerta\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
+const SIEMPRE_ABIERTO = /^\/(empresa-demos\/|api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/mesa|mesa\/|api\/puerta|puerta\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
 function proximamente(request, env, url) {
   const clave = String(env.PREVIEW_KEY || '').trim();
   if (!clave) return null;
