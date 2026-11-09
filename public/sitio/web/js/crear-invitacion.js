@@ -205,7 +205,8 @@
   }
   window.addEventListener('resize', ajustaCelular);
 
-  function personalizar(it, ev) {
+  function personalizar(it, ev, op) {
+    op = op || {};
     ventanas();
     var dos = !!it.dos, largo = it.link.producto === 'invitacion' ? 15 : 20;
     var campo = function (id, etiqueta, ph) {
@@ -219,13 +220,19 @@
       ? 'Completa tu idea en el panel y envíala al equipo de diseño. Pagas solo cuando el proyecto esté aprobado' + (it.precio ? ' (desde ' + it.precio + ').' : '.')
       : it.gratis ? 'Después puedes cambiar todo en el panel. Este modelo es gratis: tienes tu link sin pagar nada.'
       : 'Después puedes cambiar todo en el panel. No pagas nada hasta publicar.';
+    // README (ronda 39): el diseño a medida elige el tipo de evento acá mismo (salvo que se entre desde la página de un evento)
+    var selTipo = op.selector ? el('select', { class: 'ci-select', 'aria-label': 'Tipo de evento', onchange: function () {
+      var nuevo = evento(this.value), fecha = f.elements.fecha && f.elements.fecha.value;
+      personalizar(Object.assign({}, it, { link: Object.assign({}, it.link, { evento: nuevo.tipo }) }), nuevo, Object.assign({}, op, { fecha: fecha }));
+    } }, EVENTOS.filter(function (e) { return e.tipo !== 'infantil'; }).map(function (e) { return el('option', { value: e.slug, selected: e.tipo === ev.tipo, text: e.nombre }); })) : null;
     var f = el('form', { class: 'ci-form-caja', method: 'dialog' },
-      el('h3', {}, 'Personalizar ', el('strong', { text: it.etiqueta && !it.demo ? it.etiqueta + ' · ' + it.nombre : it.nombre })),
+      el('h3', {}, op.titulo ? op.titulo : ['Personalizar ', el('strong', { text: it.etiqueta && !it.demo ? it.etiqueta + ' · ' + it.nombre : it.nombre })]),
+      selTipo ? el('label', { class: 'ci-campo' }, el('span', { text: 'Tipo de evento' }), selTipo) : null,
       el('div', { class: 'ci-fila' + (nombres.length > 1 ? ' ci-dos' : '') }, nombres),
-      el('label', { class: 'ci-campo ci-fecha' }, el('span', { text: 'Fecha del evento' }), el('input', { type: 'date', name: 'fecha' })),
+      el('label', { class: 'ci-campo ci-fecha' }, el('span', { text: 'Fecha del evento' }), el('input', { type: 'date', name: 'fecha', value: op.fecha || '' })),
       el('p', { class: 'ci-nota', text: nota }),
       el('button', { type: 'submit', class: 'ci-btn ci-btn-verde ci-grande' }, it.medida ? 'Comenzar' : 'Comenzar a personalizar'),
-      el('button', { type: 'button', class: 'ci-link', onclick: function () { form.close(); } }, '← Elegir otro modelo'));
+      el('button', { type: 'button', class: 'ci-link', onclick: function () { form.close(); } }, op.selector || op.titulo ? '← Volver' : '← Elegir otro modelo'));
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var q = new URLSearchParams({ empezar: '1' });
@@ -239,6 +246,15 @@
     abrir(form);
     setTimeout(function () { var x = f.querySelector('input'); if (x) x.focus(); }, 60);
   }
+
+  // Diseño a medida desde cualquier lugar de la web (botón «Comenzar diseño a medida»): abre este mismo cuadro,
+  // con el tipo de evento a elegir; desde la página de un evento (tipo fijo) solo pide el nombre y la fecha.
+  window.AmoCrear = { medida: function (slug, titulo) {
+    cargarCatalogo().then(function (c) {
+      var fijo = slug ? evento(slug) : null, ev = fijo || evento('boda');
+      personalizar({ id: 'a-medida', nombre: 'Diseño a medida', medida: true, link: { producto: 'a-medida', evento: ev.tipo }, precio: c.aMedida && c.aMedida.texto }, ev, { selector: !fijo, titulo: titulo || (fijo ? 'Invitación a medida' : 'Invitación a medida') });
+    }).catch(function () { location.href = RAIZ + 'contacto'; });
+  } };
 
   // ── Pestañas y tarjetas ────────────────────────────────────────────
   function tarjeta(it, lista, i, ev) {

@@ -103,14 +103,14 @@ const DEMOS = {
 };
 const demoDe = (id) => { const [m, t] = DEMOS[id] || DEMOS.index; return `/demo/${m}?evento=${t}&paquete=deluxe&limpia=1`; };
 function portada(o) {
-  const ticks = ['Paquetes gratis y desde <span data-precio="basic">29 €</span>', 'Pago único (solo si te gusta)', 'Sin apps', 'Lista en minutos', 'Prueba gratis'];
+  const ticks = ['Plan gratis y desde <span data-precio="basic">29 €</span>', 'De catálogo o 100% a medida'];
   return `<section class="portada${o.evento ? ' evento' : ''}" id="inicio"${o.fondo ? ` style="${o.fondo}"` : ''}>
   <div class="caja portada-grid">
     <div class="portada-texto">
       <span class="etiqueta">${o.etiqueta}</span>
       <h1>${o.h1}</h1>
       <p class="lead">${o.lead}</p>
-      <div class="fila-btn"><a class="btn btn-claro btn-grande" href="/crear-invitacion">Crear mi invitación</a><a class="btn btn-borde-claro btn-grande" href="${o.demo.replace('&limpia=1', '')}" data-video="${o.demo.replace('&limpia=1', '')}" aria-label="Ver una invitación de ejemplo">${ic('play')} Ver demo</a></div>
+      <div class="fila-btn"><a class="btn btn-claro" href="/crear-invitacion">Crear mi invitación</a><a class="btn btn-borde-claro" href="/crear-invitacion?paquete=gratis">Prueba gratis</a><a class="btn btn-borde-claro" href="${o.demo.replace('&limpia=1', '')}" data-video="${o.demo.replace('&limpia=1', '')}" aria-label="Ver una invitación de ejemplo">${ic('play')} Ver demo</a></div>
       <ul class="puntos">${ticks.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul>
     </div>
     <div class="escena" aria-hidden="true">
@@ -150,7 +150,7 @@ function pasos(E) {
 
 // README (ronda 37): franja de confianza justo debajo de la portada (respuestas a las 4 dudas de quien llega)
 function confianza() {
-  const it = [['shield', 'Pagas solo al publicar', 'Diséñala y mírala terminada sin pagar.'], ['phone', 'Sin apps ni registros', 'Tus invitados abren el link y listo.'], ['wa', 'Soporte humano', 'Te ayudamos por WhatsApp, en el día.'], ['award', 'Desde 2005 en bodas y eventos', 'Ganadores de los Wedding Awards.']];
+  const it = [['shield', 'Pagas solo al publicar', 'Diséñala y mírala terminada sin pagar.'], ['phone', 'Sin apps ni registros', 'Tus invitados abren el link y listo.'], ['wa', 'Soporte humano', 'Te ayudamos por WhatsApp, en el día.'], ['award', 'Acompañándote desde 2005', 'en bodas y eventos.']];
   return `<section class="confianza"><div class="caja"><ul>${it.map(([i, t, p]) => `<li class="rev">${ic(i)}<div><b>${t}</b><span>${p}</span></div></li>`).join('')}</ul></div></section>`;
 }
 
@@ -182,7 +182,7 @@ function eventos() {
 }
 
 function funciones(E) {
-  const lista = C.FUNCIONES.map((f) => `<article class="funcion rev" data-g="${f.g}"><div class="ic">${ic(f.i)}</div>${f.plan ? `<span class="plan">${f.plan}</span>` : ''}<h3>${esc(f.t)}</h3><p>${esc(f.p)}</p></article>`).join('');
+  const lista = C.FUNCIONES.map((f) => `<article class="funcion rev" data-g="${f.g}"><div class="ic">${ic(f.i)}</div><span class="planes-ins">${[].concat(f.plan).map((n) => `<span class="plan n-${n.toLowerCase()}">${n}</span>`).join('')}</span><h3>${esc(f.t)}</h3><p>${esc(f.p)}</p></article>`).join('');
   return `<section class="seccion" id="funciones"><div class="caja">${titulo('Todo en un solo lugar', '<em>Funciones</em>', `Prácticas y modernas: lo que hace que ${E.tuEvento} se organice solo.`)}
 <div class="filtros" role="group" aria-label="Filtrar funciones">${C.GRUPOS.map(([k, n], i) => `<button type="button" data-g="${k}" aria-pressed="${i === 0}">${n}</button>`).join('')}</div>
 <div class="funciones">${lista}</div>
@@ -193,17 +193,21 @@ const celda = (v) => (v === true ? `<span class="si">${ic('check')}<span class="
 function planes(E) {
   const cards = C.PLANES.map((p) => `<article class="plan-card rev${p.destacado ? ' destacado' : ''}">${p.destacado ? '<span class="cinta">Más elegido</span>' : ''}<h3>${p.nombre}</h3>${p.id === 'gratis' ? '' : `<span class="promo-cinta" data-promo-de="${p.id}" hidden></span>`}<p class="precio" data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : '&nbsp;'}</p><p class="precio-s">${p.id === 'gratis' ? 'Sin tarjeta, sin pagar nada' : `Pago único<span data-iva> · IVA incluido</span>`}</p><ul>${p.items.map((t, i) => `<li${i === 0 && t.startsWith('Todo') ? ' class="todo"' : ''}>${ic('check')}<span>${esc(t)}</span></li>`).join('')}</ul><a class="btn ${p.destacado ? 'btn-verde' : 'btn-borde'}" href="/crear-invitacion?paquete=${p.id}">${p.boton}</a></article>`).join('');
   const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v) => `<td>${celda(v)}</td>`).join('')}</tr>`).join('');
-  return `<section class="seccion alt" id="planes"><div class="caja">
-  ${E.sinTitulo ? '' : titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébalo gratis, míralo terminado y paga solo cuando decidas publicarlo. Sin suscripciones ni sorpresas.')}
+  const sec = (id, clase, cuerpo) => `<section class="seccion${clase ? ' ' + clase : ''}" id="${id}"><div class="caja">${cuerpo}</div></section>`;
+  const slugMedida = (typeof SLUG_CREAR !== 'undefined' && SLUG_CREAR[E.id]) || '';
+  const medida = `<div class="medida rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones a medida">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => `<img src="/web/img/medida/banner-a-medida-${n}.webp" alt="Invitación a medida, ejemplo ${n}" ${n === 1 ? '' : 'loading="lazy" '}width="1000" height="667">`).join('')}</div><div><span class="desde">Invitación a medida</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><button type="button" class="btn btn-claro" data-medida="${slugMedida}">Comenzar diseño a medida</button></div></div></div>`;
+  // README (ronda 39): planes → comparar (sección aparte) → a medida → profesionales → detalles y formas de pago
+  return [
+    sec('planes', 'alt', `${E.sinTitulo ? '' : titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébalo gratis, míralo terminado y paga solo cuando decidas publicarlo. Sin suscripciones ni sorpresas.')}
   <div class="aviso-pago rev">${ic('eye')}<span>Diséñala y mírala terminada — <strong>pagas solo al publicar</strong></span></div>
-  <div class="planes">${cards}</div>
-  <p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes cambiar de país en el menú. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal. No esperes más, diseña tu invitación hoy mismo sin pagar nada.<br><small>(*) Solo disponible en algunos modelos.</small></p>
-  <div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div>
-  <h3 class="comparar-tit">Compara todos los planes</h3>
-  <div class="comparar-caja"><table class="comparar comparar-precios" style="--cols:4" data-paso="8"><thead><tr><th scope="col"><span class="sr">Función</span></th>${C.PLANES.map((p) => `<th scope="col">${p.nombre}<br><small data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : ''}</small></th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>
-  <div class="medida rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones a medida">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => `<img src="/web/img/medida/banner-a-medida-${n}.webp" alt="Invitación a medida, ejemplo ${n}" ${n === 1 ? '' : 'loading="lazy" '}width="1000" height="667">`).join('')}</div><div><span class="desde">Invitación a medida</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><a class="btn btn-claro" href="/contacto?evento=${encodeURIComponent(E.nombre)}">Pedir mi diseño a medida</a></div></div></div>
-  ${empresas()}
-</div></section>`;
+  <div class="planes">${cards}</div>`),
+    sec('comparar-planes', '', `<h3 class="comparar-tit">Compara todos los planes</h3>
+  <div class="comparar-caja"><table class="comparar comparar-precios" style="--cols:4" data-paso="8"><thead><tr><th scope="col"><span class="sr">Función</span></th>${C.PLANES.map((p) => `<th scope="col">${p.nombre}<br><small data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : ''}</small></th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>`),
+    sec('a-medida', 'alt', medida),
+    sec('para-profesionales', '', empresas().replace('margin-top:34px', '')),
+    sec('formas-de-pago', 'alt', `<p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal.<br><small>(*) Solo disponible en algunos modelos.</small></p>
+  <div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div>`),
+  ].join('\n');
 }
 
 const eur = (n) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')} €`;

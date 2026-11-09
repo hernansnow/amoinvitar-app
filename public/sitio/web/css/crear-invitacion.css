@@ -118,3 +118,4 @@ dialog.ci-completa { width: 100vw; height: 100dvh; max-width: none; max-height: 
 .ci-full .ci-vista-botones > * { pointer-events: auto; }
 .ci-full .ci-flecha { background: rgba(255, 255, 255, .85); }
 .ci-vista-caja:not(.ci-full) .ci-pantalla { position: static; margin: -4px 0 0; }
+.ci-form-caja .ci-select { width: 100%; border-radius: 10px; min-width: 0; }

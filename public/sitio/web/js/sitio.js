@@ -20,6 +20,18 @@
     pinta();
   });
 
+  /* ---------- «Comenzar diseño a medida»: abre el cuadro de crear invitación (se carga recién al tocar) ---------- */
+  $$('[data-medida]').forEach(function (b) {
+    b.addEventListener('click', function (e) {
+      e.preventDefault();
+      var slug = b.getAttribute('data-medida'), titulo = b.getAttribute('data-titulo') || '';
+      function ir() { window.AmoCrear.medida(slug, titulo); }
+      if (window.AmoCrear) return ir();
+      if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css'; d.head.appendChild(l); }
+      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/img/'); sc.setAttribute('data-raiz', '/'); sc.onload = ir; d.body.appendChild(sc);
+    });
+  });
+
   /* ---------- Video en una ventana propia (sin salir a Vimeo) ---------- */
   var dv = null;
   function abreVideo(url) {
@@ -201,8 +213,8 @@
     // Texto de abajo, con la lógica de Albunear: moneda y medios del país
     $$('[data-nota-precios]').forEach(function (e) {
       e.innerHTML = ar
-        ? 'Precios en <strong>pesos argentinos</strong>.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + ' Podés cambiar de país en el menú. No esperes más, diseñá tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>'
-        : 'Precios en <strong>' + nombreMoneda(c.moneda) + '</strong>. Puedes cambiar de país en el menú.' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>';
+        ? 'Precios en <strong>pesos argentinos</strong>.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + '  No esperes más, diseñá tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>'
+        : 'Precios en <strong>' + nombreMoneda(c.moneda) + '</strong>. ' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>';
     });
     $$('[data-pago-iconos]').forEach(function (e) { e.innerHTML = m.logos.map(logo).join('') + m.extra; });
     $$('[data-iva]').forEach(function (e) { e.textContent = c.moneda === 'EUR' ? ' · IVA incluido' : ''; });
