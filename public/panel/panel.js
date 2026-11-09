@@ -1831,13 +1831,16 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
   // Pago: mail (si no entró con su cuenta), cupón y medio de pago
   const mail = S.usuario ? null : el('input', { type: 'email', required: true, placeholder: 'tu@mail.com', autocomplete: 'email' });
   const cupon = el('input', { type: 'text', placeholder: 'Cupón (opcional)', maxlength: 30 });
+  // README (ronda 40): país de facturación (con la IP define el IVA y los descuentos)
+  const paisF = el('select', { class: 'campo-modal' });
   const medios = el('div', { class: 'opciones medios' });
   const total = partes.at(-1);
   const boton = el('button', { type: 'button', class: 'btn btn-grande', html: `${icono('enviar')}<span>${plan.aPagar.eur ? 'Pagar y obtener mi link' : 'Obtener mi link'}</span>` });
   const error = el('p', { class: 'motivo' });
   const cotizar = async () => {
     try {
-      const r = await fetch('/api/tienda/cotizar', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ borrador: { evento: id, clave }, cupon: cupon.value }) }).then((x) => x.json());
+      const r = await fetch('/api/tienda/cotizar', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ borrador: { evento: id, clave }, cupon: cupon.value, paisFact: paisF.value || undefined }) }).then((x) => x.json());
+      if (!paisF.dataset.listo && r.paisIp) { window.AI_PAISES_FACT?.(paisF, r.paisIp); paisF.dataset.listo = '1'; }
       error.textContent = r.errorCupon || r.error || '';
       medios.replaceChildren(...(r.medios || []).map((m, i) => el('label', { class: 'opcion' }, el('input', { type: 'radio', name: 'medio', value: m.id, checked: i === 0 }),
         el('span', {}, ({ stripe: 'Tarjeta', mercadopago: 'Mercado Pago', paypal: 'PayPal', transfer: 'Transferencia' })[m.id] || m.id, el('small', {}, m.antes ? `${m.texto} (antes ${m.antes})` : m.texto)))));
@@ -1846,12 +1849,13 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
     } catch { error.textContent = 'No se pudo calcular el total. Revisar la conexión.'; }
   };
   cupon.addEventListener('change', cotizar);
+  paisF.addEventListener('change', cotizar);
   boton.addEventListener('click', async () => {
     if (mail && !mail.reportValidity()) return;
     boton.disabled = true; boton.textContent = 'Un momento…';
     try {
       const r = await fetch('/api/tienda/comprar', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
-        borrador: { evento: id, clave }, email: mail?.value || '', cupon: cupon.value, medio: medios.querySelector('input:checked')?.value }) }).then(async (x) => ({ ok: x.ok, ...(await x.json()) }));
+        borrador: { evento: id, clave }, email: mail?.value || '', cupon: cupon.value, paisFact: paisF.value || undefined, medio: medios.querySelector('input:checked')?.value }) }).then(async (x) => ({ ok: x.ok, ...(await x.json()) }));
       if (!r.ok || !r.url) throw new Error(r.error || 'No se pudo seguir con el pago');
       location.href = r.url;
     } catch (e) { error.textContent = e.message; boton.disabled = false; boton.textContent = plan.aPagar.eur ? 'Pagar y obtener mi link' : 'Obtener mi link'; }
@@ -1868,6 +1872,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
   abrirModal(plan.producto ? plan.nombre : 'Obtener el link de la invitación', ...partes.filter(Boolean),
     mail ? el('label', { class: 'campo-modal' }, 'Mail para recibir el acceso y la factura', mail) : null,
     plan.aPagar.eur ? el('div', { class: 'campo-modal' }, 'Medio de pago', medios) : null,
+    plan.aPagar.eur ? el('label', { class: 'campo-modal' }, 'País de facturación (el IVA y los descuentos dependen de tu ubicación y de este país, no de la moneda)', paisF) : null,
     plan.aPagar.eur ? cupon : null, error, boton, sinPagar,
     el('p', { class: 'ayuda' }, 'No se envía nada a los invitados: el link lo compartes tú cuando quieras. Y la invitación se puede seguir editando todas las veces que haga falta.'));
   if (plan.aPagar.eur) cotizar();

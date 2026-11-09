@@ -122,6 +122,18 @@ export function vatRateFor(country, env) {
   return HOME_VAT;
 }
 
+// README (ronda 40): país que manda para el IVA y los descuentos = el de la IP y el de la dirección de facturación juntos.
+// Si uno es de Europa, se cobra el IVA y no hay descuento (aunque se elija otra moneda); si los dos son de otro lado, vale el de menor descuento.
+export function paisFiscal(ip, facturacion) {
+  const fac = /^[A-Za-z]{2}$/.test(facturacion || '') ? facturacion.toUpperCase() : null;
+  const ipc = String(ip || '').toUpperCase();
+  if (!fac || fac === ipc) return ipc || fac || 'XX';
+  const europa = (c) => isEU(c) || EUROPA_OTROS.includes(c);
+  if (europa(fac)) return fac;
+  if (europa(ipc)) return ipc;
+  return descuentoPais(fac) <= descuentoPais(ipc) ? fac : ipc;
+}
+
 /**
  * Precio de lista (en euros, CON el IVA español incluido) en la moneda y el país del visitante.
  *  - Europa (UE y el resto): el precio de lista; en la UE el IVA va dentro (en euros, o su equivalente redondeado).

@@ -72,6 +72,8 @@
           <div style="display:flex;gap:8px;margin-top:8px"><input type="text" id="cupon" placeholder="CÓDIGO" style="text-transform:uppercase"><button class="btn btn-sec" type="button" id="aplicar-cupon">Aplicar</button></div>
           <p class="ayuda" id="cupon-estado"></p>
         </details>
+        <div class="campo"><label for="f-pais">País de facturación</label><select id="f-pais"></select>
+          <p class="ayuda">El IVA y los descuentos por país se calculan con tu ubicación y este país, no con la moneda que elijas.</p></div>
         <details class="campo">
           <summary>Datos para la factura (opcional)</summary>
           <div class="campo" style="margin-top:10px"><label for="f-tipo">Factura a nombre de</label>
@@ -108,6 +110,7 @@
       <button type="button" class="btn-link" data-cerrar>← Elegir otro modelo</button>
     </form>
   </dialog>
+  <script src="/comun/js/paises-fact.js"></script>
   <script type="module" src="/tienda/tienda.js"></script>
 </body>
 </html>

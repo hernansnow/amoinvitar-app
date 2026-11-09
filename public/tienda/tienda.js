@@ -109,14 +109,18 @@ function cotizar() {
     try {
       const r = S.mejora
         ? await post('/api/tienda/mejora', { mejora: S.mejora, moneda: S.moneda })
-        : await post('/api/tienda/cotizar', { pedido: pedido(), moneda: S.moneda, cupon: S.cupon, factura: datosFactura() });
+        : await post('/api/tienda/cotizar', { pedido: pedido(), moneda: S.moneda, cupon: S.cupon, factura: datosFactura(), paisFact: paisFact() });
       S.cotizacion = r;
+      const fp = $('#f-pais');
+      if (fp && !fp.dataset.listo && r.paisIp) { window.AI_PAISES_FACT(fp, r.paisIp); fp.dataset.listo = '1'; }
       mensaje('');
       dibujarPago();
     } catch (e) { mensaje(e.message); }
   }, 150);
 }
 
+// País de facturación: parte del detectado por la IP; al cambiarlo se vuelve a calcular el precio
+function paisFact() { const e = $('#f-pais'); return e && e.value ? e.value : undefined; }
 function datosFactura() {
   const tipo = $('#f-tipo').value, nombre = $('#f-nombre').value.trim(), id = $('#f-id').value.trim();
   return nombre || id ? { tipo, nombre, id, direccion: $('#f-dir').value.trim() } : null;
@@ -156,7 +160,7 @@ $('#pagar').addEventListener('click', async () => {
   b.disabled = true; b.textContent = 'Un momento…';
   try {
     const factura = datosFactura();
-    const r = await post('/api/tienda/comprar', { pedido: pedido(), mejora: S.mejora, email, medio: S.medio, moneda: S.moneda, cupon: S.cupon, factura });
+    const r = await post('/api/tienda/comprar', { pedido: pedido(), mejora: S.mejora, email, medio: S.medio, moneda: S.moneda, cupon: S.cupon, factura, paisFact: paisFact() });
     location.href = r.url;
   } catch (e) { mensaje(e.message); b.disabled = false; dibujarPago(); }
 });
@@ -170,6 +174,7 @@ $('#sin-pagar').addEventListener('click', async () => {
 });
 $('#aplicar-cupon').addEventListener('click', () => { S.cupon = $('#cupon').value.trim(); cotizar(); });
 $('#f-tipo').addEventListener('change', cotizar);
+$('#f-pais').addEventListener('change', cotizar);
 $('#f-id').addEventListener('change', cotizar);
 $('#moneda').addEventListener('change', async (e) => { S.moneda = e.target.value; document.cookie = `cur=${S.moneda}; path=/; max-age=31536000; samesite=lax`; await cargar(); });
 
