@@ -2,6 +2,8 @@
 // el modelo pone las fotos (carpeta demo/<tipo>/) y el idioma sale del país
 // de quien visita. Los textos propios (historia, regalos…) no van acá: salen
 // del diccionario del tipo de evento, así la demo siempre habla como el país.
+import { LUGARES_PAIS } from './lugares-pais.js';
+import { formatoPais, horaTexto } from '../textos/regional.js';
 
 const EN = (variante) => variante === 'en';
 
@@ -37,7 +39,10 @@ const ITINERARIO = {
   cumple: [['20:00', 'tragos', 'Rompiendo el hielo', 'Breaking the ice'], ['21:00', 'cena', 'A cenar se ha dicho', 'Dinner time'], ['22:00', 'disco', '¡Que empiece el baile!', 'Let the dancing begin!'], ['23:00', 'torta3', 'Mordisco al pastel y deseos', 'Cake and wishes'], ['23:30', 'baile', 'Hasta que el cuerpo aguante', 'Dance till we drop'], ['02:00', 'last-call2', 'Despedida', 'Farewell']],
 };
 
-export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
+export function eventoDemo({ tipo, variante, paquete, modelo, rutas, pais }) {
+  // README (ronda 40): lugares, hoteles y cuenta de regalos del país del visitante (sin país en la lista: Argentina)
+  const P = LUGARES_PAIS[String(pais || '').toUpperCase()] || null;
+  const lugar = (clave, k) => (P ? { nombre: P[k][0], direccion: P[k][1], foto: LUGARES[clave].foto } : LUGARES[clave]);
   const cfg = POR_TIPO[tipo] || POR_TIPO.boda;
   const en = EN(variante);
   const fotosDe = `${rutas.modelo}/demo/${tipo}`;
@@ -56,12 +61,12 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
   return {
     id: `demo-${modelo.id}-${tipo}`,
     tipo, modelo: modelo.id, paquete, variante,
-    zonaHoraria: 'America/Argentina/Buenos_Aires',
+    zonaHoraria: P?.tz || 'America/Argentina/Buenos_Aires', pais: String(pais || '').toUpperCase() || undefined,
     nombres: archivos.nombres || cfg.nombres,
     ceremonia: cfg.ceremonia
-      ? { modo: 'separada', tipo: cfg.ceremonia, inicio: `${cfg.fecha || '2027-09-12'}T${hora[0]}`, fin: `${cfg.fecha || '2027-09-12'}T${hora[0].replace(/^(\d\d)/, (h) => String(+h + 1).padStart(2, '0'))}`, ...LUGARES.iglesia, foto: comun(LUGARES.iglesia.foto) }
+      ? { modo: 'separada', tipo: cfg.ceremonia, inicio: `${cfg.fecha || '2027-09-12'}T${hora[0]}`, fin: `${cfg.fecha || '2027-09-12'}T${hora[0].replace(/^(\d\d)/, (h) => String(+h + 1).padStart(2, '0'))}`, ...lugar('iglesia', 'iglesia'), foto: comun(LUGARES.iglesia.foto) }
       : { modo: 'sin' },
-    celebracion: { inicio: `${cfg.fecha || '2027-09-12'}T${cfg.ceremonia ? hora[1] : cfg.hora || '21:00'}`, ...LUGARES.estancia, foto: comun(LUGARES.estancia.foto) },
+    celebracion: { inicio: `${cfg.fecha || '2027-09-12'}T${cfg.ceremonia ? hora[1] : cfg.hora || '21:00'}`, ...lugar('estancia', 'salon'), foto: comun(LUGARES.estancia.foto) },
     fotos: {
       portada: portada.map(([f, pos, posPc]) => ({ url: `${fotosDe}/${f}`, pos, ...(posPc ? { posPc } : {}) })),
       galeria,
@@ -73,12 +78,12 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
     rsvp: { cierre: '2027-08-10', acompanantes: 2, preguntas: { comida: true, alcohol: true, ninos: tipo === 'boda', traslado: true } },
     dresscode: { fotos: [1, 2, 3, 4, 5, 6].map((n) => comun(`img/demo-dress${n}.jpg`)) },
     hospedaje: {
-      items: [
+      items: P ? P.hoteles : [
         { nombre: 'Hilton', direccion: 'Ruta 21, Km. 60.5', link: 'https://www.hilton.com/' },
         { nombre: 'Sheraton', direccion: 'Av. Principal 321', link: 'https://www.marriott.com/' },
       ],
     },
-    bus: { paradas: [{ detalle: en ? '432 Independencia Ave. - 5:00 PM' : 'Av. Independencia 432 - 17:00hs' }, {}] },
+    bus: { paradas: [{ detalle: P ? `${P.bus} - ${horaTexto(17, '00', formatoPais(pais, variante), variante)}` : en ? '432 Independencia Ave. - 5:00 PM' : 'Av. Independencia 432 - 17:00hs' }, {}] },
     itinerario: (ITINERARIO[tipo] || ITINERARIO.boda).map(([h, icono, es, eng]) => ({ hora: en ? h : `${h}${variante === 'es-ar' || variante === 'es-cr' ? 'hs' : ' h'}`, icono, texto: en ? eng : es })),
     testigos: cfg.testigos
       ? [
@@ -101,7 +106,7 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas }) {
     ] },
     regalos: {
       cuentas: [
-        { etiqueta: en ? 'IBAN' : 'Alias', dato: en ? 'XX00 0000 0000 0000' : 'XXX-XXX-XXX' },
+        { etiqueta: P ? P.banco[0] : en ? 'IBAN' : 'Alias', dato: P ? P.banco[1] : en ? 'XX00 0000 0000 0000' : 'XXX-XXX-XXX' },
         { etiqueta: en ? 'Account holder' : 'Titular', dato: 'Juan Fulano', copiable: false },
       ],
       lista: { etiqueta: en ? 'Registry' : 'Lista', dato: '000000-00', link: 'https://amoinvitar.com/' },

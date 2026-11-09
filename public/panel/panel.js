@@ -109,6 +109,7 @@ async function guardar() {
       if (antes && antes !== r.plan.plan && pasoActual?.id === 'portada' && !document.activeElement?.closest?.('#formulario input, #formulario textarea')) dibujarPaso();
     }
     if (r.textosIdiomas) S.textosIdiomas = r.textosIdiomas;
+    if (r.formato) S.formato = r.formato; // README (ronda 40)
     // Si cambió el esquema (por ejemplo, un idioma adicional suma sus campos) se redibuja el paso
     const cambioEsquema = r.esquema && JSON.stringify(r.esquema.pasos.map((x) => [x.id, x.campos.length])) !== JSON.stringify(S.esquema.pasos.map((x) => [x.id, x.campos.length]));
     if (r.esquema) S.esquema = r.esquema;
@@ -1234,6 +1235,14 @@ const FRASES = {
   babyshower: { evento: 'Baby shower', exclama: '¡Baby shower!', invitamos: 'Te invitamos a celebrar\nla llegada del bebé' },
   revelacion: { evento: 'Revelación', exclama: '¿Niño o niña?', invitamos: 'Te invitamos a descubrir\nsi es niño o niña' },
 };
+// README (ronda 40): la hora y la fecha como se usan en el país del evento (viene del servidor en S.formato)
+function horaPais(hora, corta = false) {
+  const m = /^(\d{1,2}):(\d{2})/.exec(hora || '');
+  if (!m) return '';
+  const f = S.formato || { h: 24, suf: 'hs' }, h = Number(m[1]);
+  if (f.h === 12) return `${h % 12 || 12}${corta && m[2] === '00' ? '' : ':' + m[2]} ${h < 12 ? 'am' : 'pm'}`;
+  return `${corta ? m[1] + (m[2] === '00' ? '' : ':' + m[2]) : m[1].padStart(2, '0') + ':' + m[2]}${f.suf}`;
+}
 function varsTarjeta(o = {}) {
   // o: lo que el cliente cambió en los campos de la tarjeta (nombres, fecha, hora); si no, lo de la invitación
   const nA = o.a ?? datos.nombres?.a ?? '', nB = o.b ?? datos.nombres?.b ?? '';
@@ -1243,18 +1252,19 @@ function varsTarjeta(o = {}) {
   const [a, m, d] = iso ? iso.split('-') : [];
   const fecha = iso ? new Date(`${iso}T12:00:00`) : null;
   const mes = fecha ? MESES[Number(m) - 1] : '';
+  const MDY = S.formato?.fecha === 'MDY';
   const plural = !!nB;
   const f = FRASES[S.evento.tipo] || FRASES[plural ? 'boda' : 'cumple'];
   const cierre = datos.rsvp?.cierre ? datos.rsvp.cierre.split('-').reverse().join('/') : '';
   return {
     iso, horaIso: hora, nombres: [nA, nB].filter(Boolean).join(' & '), a: nA || '', b: nB || '',
-    fecha: iso ? `${d} · ${m} · ${a}` : '', fechaCorta: iso ? `${d} ${mes.slice(0, 3).toUpperCase()} ${a}` : '',
+    fecha: iso ? (MDY ? `${m} · ${d} · ${a}` : `${d} · ${m} · ${a}`) : '', fechaCorta: iso ? `${d} ${mes.slice(0, 3).toUpperCase()} ${a}` : '',
     fechaLarga: iso ? `${Number(d)} ${may(mes)} ${a}` : '', fechaPuntos: iso ? `${Number(d)}·${may(mes)}·${a}` : '',
     dia: iso ? String(Number(d)) : '', mes: may(mes), mesCorto: may(mes.slice(0, 3)), mesNum: m || '', anio: a || '', anioCorto: a ? a.slice(2) : '',
-    diaSemana: fecha ? may(DIAS[fecha.getDay()]) : '', hora: hora ? `${hora}hs` : '',
+    diaSemana: fecha ? may(DIAS[fecha.getDay()]) : '', hora: horaPais(hora),
     // Día con dos cifras ("05"), día de la semana corto ("Sáb") y la hora sin los minutos en punto ("21hs", "21:30hs")
-    dd: d || '', diaSemanaCorto: fecha ? may(DIAS[fecha.getDay()]).slice(0, 3) : '', horaCorta: hora ? `${hora.replace(/:00$/, '')}hs` : '',
-    lugar, horaLugar: [hora ? `${hora}hs` : '', lugar.toUpperCase()].filter(Boolean).join(' - '),
+    dd: d || '', diaSemanaCorto: fecha ? may(DIAS[fecha.getDay()]).slice(0, 3) : '', horaCorta: horaPais(hora, true),
+    lugar, horaLugar: [horaPais(hora), lugar.toUpperCase()].filter(Boolean).join(' - '),
     rsvpAntes: cierre ? `Responder RSVP antes del ${cierre}` : '',
     evento: f.evento, eventoExclama: f.exclama, invitamos: plural ? f.invitamos.replace('Te invito', 'Te invitamos') : f.invitamos,
     teEsperamos: plural ? 'Te esperamos' : 'Te espero', mensaje: MENSAJE_GRACIAS.replace(/\s*\n+\s*/g, ' '),

@@ -173,7 +173,11 @@ function textos(doc, v, t) {
     if (!/^(principal|ceremonia|celebracion)$/.test(el.getAttribute('data-fecha'))) continue; // el botón de confirmar usa data-fecha para la fecha límite
     const f = v.fechas?.[el.getAttribute('data-fecha')];
     const formato = el.getAttribute('data-fecha-formato') || '{dd} • {mm} • {a}';
-    el.textContent = f ? formato.replace(/\{(\w+)\}/g, (m, k) => f[k] ?? '') : '';
+    // README (ronda 40): fecha con el mes primero (Estados Unidos, Puerto Rico) y reloj en 12 horas: se cambia el orden del diseño
+    let fmt = formato;
+    if (f?.mdy && /\{dd?\}/.test(fmt) && /\{mm?\}/.test(fmt) && !/\{(mes|MES|Mes)/.test(fmt)) fmt = fmt.replace(/\{dd\}/, '\u0001').replace(/\{mm\}/, '{dd}').replace('\u0001', '{mm}');
+    if (f?.h12 && /^\s*\{hh\}:\{mi\}\s*$/.test(fmt)) fmt = '{hora}';
+    el.textContent = f ? fmt.replace(/\{(\w+)\}/g, (m, k) => f[k] ?? '') : '';
     el.removeAttribute('data-fecha'); el.removeAttribute('data-fecha-formato');
   }
   for (const el of todos(doc, '[data-attr]')) {

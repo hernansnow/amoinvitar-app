@@ -14,6 +14,7 @@
 // Lo que no reconoce se pide al hosting actual (las invitaciones viejas siguen igual).
 
 import { diccionario, varianteDePais, VARIANTES, esPlural } from './textos/index.js';
+import { formatoPais, paisDeZona } from './textos/regional.js';
 import { armarVista } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
@@ -249,7 +250,7 @@ async function demo(env, url, request, idModelo) {
   const pais = q.get('pais') || getCookie(request, 'pais_sel') || request.cf?.country || request.headers.get('cf-ipcountry') || '';
   const v = VARIANTES.includes(q.get('idioma')) ? q.get('idioma') : varianteDePais(pais);
   const rutas = { comun: '/comun', modelo: `/modelos/${idModelo}` };
-  const ev = eventoDemo({ tipo, variante: v, paquete, modelo, rutas });
+  const ev = eventoDemo({ tipo, variante: v, paquete, modelo, rutas, pais }); // README (ronda 40): lugares, horas y fechas como en ese país
   if (q.get('sobre') === 'no') ev.portada = { ...(ev.portada || {}), sobre: false }; // &sobre=no: la ventana de bienvenida
   // Solo en la compu (npm run local): &prueba={json} pisa datos de la demo para revisar casos (nombres largos, secciones apagadas…)
   if (env.MODO_LOCAL && q.get('prueba')) {
@@ -733,6 +734,8 @@ async function apiPanel(env, request, url, partes) {
       esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
       // Textos de cada idioma adicional (para traducir en el panel)
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
+      // README (ronda 40): cómo se escriben las horas y fechas en el país del evento (para las tarjetas y los textos del panel)
+      formato: formatoPais(paisDeZona(ev.datos.zonaHoraria), idiomasDe(ev.datos)[0]),
       plan: await tienda.estadoPlan(env, request, ev, esquema),
       modelos: modelosCambio(ev.tipo, ev.producto, ev.modelo),
       // README (ronda 28): en el cambio de modelo también está el diseño a medida, con su precio
@@ -779,6 +782,7 @@ async function apiPanel(env, request, url, partes) {
     const nuevo = await esquemaDe(env, url, ev, ev.datos, { admin });
     return json({ ok: true, datos: limpio, faltan: faltantes(nuevo, limpio), esquema: nuevo,
       textosIdiomas: Object.fromEntries(idiomasDe(limpio).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
+      formato: formatoPais(paisDeZona(limpio.zonaHoraria), idiomasDe(limpio)[0]),
       plan: await tienda.estadoPlan(env, request, ev, nuevo) });
   }
   // Cambiar de modelo (el mismo tipo de evento); lo cargado queda igual

@@ -6,6 +6,7 @@
 // el diccionario de textos ya resuelto para su tipo y variante.
 
 import { embedMapa } from '../lib/mapas.js';
+import { formatoPais, paisDeZona, horaTexto, horaDeTexto } from '../textos/regional.js';
 import { ICONOS_COMUNES } from '../panel/esquemas.js';
 
 const LOCALES = { es: 'es-MX', 'es-ar': 'es-AR', 'es-cr': 'es-CR', 'es-es': 'es-ES', en: 'en-GB', pt: 'pt-BR', fr: 'fr-FR', it: 'it-IT', ca: 'ca-ES', de: 'de-DE', nl: 'nl-NL' };
@@ -25,8 +26,9 @@ function partes(fh) {
 // "inicio" (AAAA-MM-DDTHH:MM) o, desde la ronda 4, fecha y hora por separado
 const inicioDe = (l = {}) => (l.fecha ? (l.hora ? `${l.fecha}T${l.hora}` : l.fecha) : l.inicio || '');
 
-function hora(p, variante) {
+function hora(p, variante, fmt) {
   if (!p || p.hh == null) return '';
+  if (fmt) return horaTexto(p.hh, p.mm, fmt, variante); // README (ronda 40): el formato del país
   if (variante === 'en') {
     const h = Number(p.hh), ampm = h < 12 ? 'AM' : 'PM';
     return `${h % 12 || 12}:${p.mm} ${ampm}`;
@@ -36,37 +38,37 @@ function hora(p, variante) {
 }
 
 const fechaPuntos = (p) => (p ? `${p.d} • ${p.m} • ${p.a}` : '');
-const fechaCirculos = (p) => (p ? `${p.d} ◦ ${p.m} ◦ ${p.a}` : '');
+const fechaCirculos = (p, fmt) => (p ? (fmt?.fecha === 'MDY' ? `${p.m} ◦ ${p.d} ◦ ${p.a}` : `${p.d} ◦ ${p.m} ◦ ${p.a}`) : '');
 
-function fechaHora(fh, variante) {
+function fechaHora(fh, variante, fmt) {
   const p = partes(fh);
   if (!p) return '';
-  const h = hora(p, variante);
-  return h ? `${fechaCirculos(p)} - ${h}` : fechaCirculos(p);
+  const h = hora(p, variante, fmt);
+  return h ? `${fechaCirculos(p, fmt)} - ${h}` : fechaCirculos(p, fmt);
 }
 
 // Las partes de una fecha para la marca data-fecha (plantillas con {d} {dd} {mm} {mes} {MES} {Mes} {a} {hora})
-function piezas(fh, variante) {
+function piezas(fh, variante, fmt) {
   const p = partes(fh);
   if (!p) return null;
   let mes = '';
   try { mes = new Intl.DateTimeFormat(LOCALES[variante] || 'es-MX', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(+p.a, +p.m - 1, 1))); } catch { /* sin Intl */ }
   const mes3 = mes.slice(0, 3);
   return { d: String(+p.d), dd: p.d, m: String(+p.m), mm: p.m, a: p.a, mes, MES: mes.toLocaleUpperCase(), Mes: mes.charAt(0).toLocaleUpperCase() + mes.slice(1),
-    mes3, MES3: mes3.toLocaleUpperCase(), Mes3: mes3.charAt(0).toLocaleUpperCase() + mes3.slice(1), hora: hora(p, variante),
+    mes3, MES3: mes3.toLocaleUpperCase(), Mes3: mes3.charAt(0).toLocaleUpperCase() + mes3.slice(1), hora: hora(p, variante, fmt), mdy: fmt?.fecha === 'MDY' ? '1' : '', h12: fmt?.h === 12 ? '1' : '',
     aa: p.a.slice(2), hh: p.hh ?? '', mi: p.mm ?? '' };
 }
 
 // "12 de septiembre de 2027 a las 20:00" (la fecha larga que usan muchos diseños), en el idioma de la invitación
 const A_LAS = { es: 'a las', en: 'at', pt: 'às', fr: 'à', it: 'alle', ca: 'a les', de: 'um', nl: 'om' };
-function fechaLarga(fh, variante) {
+function fechaLarga(fh, variante, fmt) {
   const p = partes(fh);
   if (!p) return '';
   let f;
   try { f = new Intl.DateTimeFormat(LOCALES[variante] || 'es-MX', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(+p.a, +p.m - 1, +p.d))); }
   catch { f = fechaCirculos(p); }
   if (p.hh == null) return f;
-  const h = variante === 'en' ? hora(p, 'en') : `${p.hh}:${p.mm}`;
+  const h = fmt ? hora(p, variante, fmt) : variante === 'en' ? hora(p, 'en') : `${p.hh}:${p.mm}`;
   return `${f} ${A_LAS[variante.slice(0, 2)] || ''} ${h}`.replace(/\s+/g, ' ');
 }
 
@@ -153,6 +155,8 @@ function respuestaPrevia(r) {
 }
 
 export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false, invitado = null, marca = null }) {
+  // README (ronda 40): horas y fechas como se usan en el país del evento (el de la demo, o el de su zona horaria)
+  const F = formatoPais(e.pais || paisDeZona(e.zonaHoraria), variante);
   const plural = !!e.nombres?.b;
   const paquete = modelo.paquetes[e.paquete] || modelo.paquetes.basic;
   // Basic trae la cuenta regresiva; el plan gratis no
@@ -207,8 +211,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     titulo: tituloCer,
     foto: fotoLugar(cer),
     fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cer.fotoPos),
-    fechaHora: fechaHora(cerInicio, variante),
-    fechaLarga: fechaLarga(cerInicio, variante),
+    fechaHora: fechaHora(cerInicio, variante, F),
+    fechaLarga: fechaLarga(cerInicio, variante, F),
     lugarTexto: lugarTexto(cer),
     mapa: mapa(cer),
   };
@@ -216,8 +220,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     titulo: tituloCel,
     foto: fotoLugar(cel),
     fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cel.fotoPos),
-    fechaHora: fechaHora(celInicio, variante),
-    fechaLarga: fechaLarga(celInicio, variante),
+    fechaHora: fechaHora(celInicio, variante, F),
+    fechaLarga: fechaLarga(celInicio, variante, F),
     lugarTexto: lugarTexto(cel),
     mapa: mapa(cel),
   };
@@ -236,7 +240,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
 
   // Fecha principal: la de la ceremonia si hay, si no la de la fiesta
   const principal = partes((modo === 'separada' && cerInicio) || celInicio || e.fecha);
-  const fechas = { principal: piezas((modo === 'separada' && cerInicio) || celInicio || e.fecha, variante), ceremonia: piezas(cerInicio, variante), celebracion: piezas(celInicio, variante) };
+  const fechas = { principal: piezas((modo === 'separada' && cerInicio) || celInicio || e.fecha, variante, F), ceremonia: piezas(cerInicio, variante, F), celebracion: piezas(celInicio, variante, F) };
 
   const fotos = e.fotos || {};
   // Portada: un encuadre para el celular (pos) y otro para la computadora (posPc)
@@ -269,7 +273,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     [/fin|cierre|end|despedida/i, 'last-call'], [/fiesta|party/i, 'fiesta']];
   const iconoDe = (i) => i.icono || (ICONO_TEXTO.find(([re]) => re.test(i.texto || '')) || [, 'fiesta'])[1];
   const itinerario = (e.itinerario || []).map((i) => ({ ...i, icono: iconoDe(i) })).map((i) => ({
-    hora: i.hora || '', texto: i.texto || '',
+    hora: horaDeTexto(i.hora || '', F, variante), texto: i.texto || '',
     // El del modelo o uno de los comunes
     iconoUrl: (modelo.iconosItinerario || []).includes(i.icono) ? `${rutas.modelo}/img/timeline-icon-${i.icono}.png`
       : ICONOS_COMUNES.includes(i.icono) ? `${rutas.comun}/img/itinerario/timeline-icon-${i.icono}.png` : '',
