@@ -7,9 +7,15 @@
 
 const mayus = (o, n) => (o[0] !== o[0].toLowerCase() ? n[0].toUpperCase() + n.slice(1) : n);
 const B = (p) => `(?<![\\p{L}\\p{N}_-])(?:${p})(?![\\p{L}\\p{N}_-])`;
+// README (ronda 40): la expresión de cada tabla se arma una sola vez (armarla en cada texto era lo que trababa la página)
+const CACHE_RE = new Map();
 const reemplaza = (t, tabla) => {
-  const claves = Object.keys(tabla).sort((a, b) => b.length - a.length);
-  const re = new RegExp(B(claves.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')), 'giu');
+  let re = CACHE_RE.get(tabla);
+  if (!re) {
+    const claves = Object.keys(tabla).sort((a, b) => b.length - a.length);
+    re = new RegExp(B(claves.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')), 'giu');
+    CACHE_RE.set(tabla, re);
+  }
   return t.replace(re, (m) => (tabla[m.toLowerCase()] !== undefined ? mayus(m, tabla[m.toLowerCase()]) : m));
 };
 
@@ -36,11 +42,10 @@ const VOS_IMPERATIVO = {
   ingresa: 'ingresá', mira: 'mirá', organiza: 'organizá', paga: 'pagá', personaliza: 'personalizá', pide: 'pedí',
   proyecta: 'proyectá', prueba: 'probá', publica: 'publicá', selecciona: 'seleccioná', suma: 'sumá', toca: 'tocá', ten: 'tené', activa: 'activá',
 };
+const RE_IMPERATIVO = new RegExp(`(^\\s*|[.!?¡¿:;]\\s+)(${Object.keys(VOS_IMPERATIVO).join('|')})(?![\\p{L}])`, 'giu');
 function aVos(t) {
   t = reemplaza(t, VOS_PRESENTE);
-  const ini = Object.keys(VOS_IMPERATIVO).join('|');
-  // al empezar el texto, tras un signo de apertura/puntuación, o tras « y » / coma cuando ya venía un imperativo
-  t = t.replace(new RegExp(`(^\\s*|[.!?¡¿:;]\\s+)(${ini})(?![\\p{L}])`, 'giu'), (m, a, v) => a + mayus(v, VOS_IMPERATIVO[v.toLowerCase()]));
+  t = t.replace(RE_IMPERATIVO, (m, a, v) => a + mayus(v, VOS_IMPERATIVO[v.toLowerCase()]));
   t = t.replace(/\b(para|a|de|por|en|sobre|sin|hasta|como|entre)\s+ti\b/giu, (m, p) => `${p} vos`);
   t = t.replace(/\bcontigo\b/giu, (m) => mayus(m, 'con vos'));
   t = t.replace(/(?<![\p{L}])tú(?![\p{L}])/giu, (m) => mayus(m, 'vos'));
@@ -56,14 +61,18 @@ function boda(t, sing, plur) {
 }
 const noMatrimonio = (t) => t.replace(/(?<![\p{L}])(casamiento)(s?)(?![\p{L}])/giu, (m, a, s) => mayus(m, 'boda' + s)); // lo que ya dice «casamiento» en el neutro
 
+// Las tablas van fuera de las funciones: así la expresión de cada una se arma una sola vez
+const T_ES = { celular: 'móvil', celulares: 'móviles', computadora: 'ordenador', computadoras: 'ordenadores', bautismo: 'bautizo', bautismos: 'bautizos', lindo: 'bonito', linda: 'bonita', lindos: 'bonitos', lindas: 'bonitas', livianas: 'ligeras', liviano: 'ligero', ustedes: 'vosotros' };
+const T_BAUT = { bautismo: 'bautizo', bautismos: 'bautizos' };
+const T_CL = { bautismo: 'bautizo', bautismos: 'bautizos', computadora: 'computador', computadoras: 'computadores' };
 const ZONAS = {
   es: (t) => t,
-  'es-es': (t) => reemplaza(t, { celular: 'móvil', celulares: 'móviles', computadora: 'ordenador', computadoras: 'ordenadores', bautismo: 'bautizo', bautismos: 'bautizos', lindo: 'bonito', linda: 'bonita', lindos: 'bonitos', lindas: 'bonitas', livianas: 'ligeras', liviano: 'ligero', ustedes: 'vosotros' }),
+  'es-es': (t) => reemplaza(t, T_ES),
   ar: (t) => aVos(boda(t, 'casamiento', 'casamientos')),
-  cr: (t) => aVos(reemplaza(noMatrimonio(t), { bautismo: 'bautizo', bautismos: 'bautizos' })),
-  mx: (t) => reemplaza(noMatrimonio(t), { bautismo: 'bautizo', bautismos: 'bautizos' }),
-  cl: (t) => reemplaza(boda(t, 'matrimonio', 'matrimonios').replace(/(?<![\p{L}])(casamiento)(s?)(?![\p{L}])/giu, (m, a, s) => mayus(m, 'matrimonio' + s)), { bautismo: 'bautizo', bautismos: 'bautizos', computadora: 'computador', computadoras: 'computadores' }),
-  pe: (t) => reemplaza(boda(t, 'matrimonio', 'matrimonios').replace(/(?<![\p{L}])(casamiento)(s?)(?![\p{L}])/giu, (m, a, s) => mayus(m, 'matrimonio' + s)), { bautismo: 'bautizo', bautismos: 'bautizos' }),
+  cr: (t) => aVos(reemplaza(noMatrimonio(t), T_BAUT)),
+  mx: (t) => reemplaza(noMatrimonio(t), T_BAUT),
+  cl: (t) => reemplaza(boda(t, 'matrimonio', 'matrimonios').replace(/(?<![\p{L}])(casamiento)(s?)(?![\p{L}])/giu, (m, a, s) => mayus(m, 'matrimonio' + s)), T_CL),
+  pe: (t) => reemplaza(boda(t, 'matrimonio', 'matrimonios').replace(/(?<![\p{L}])(casamiento)(s?)(?![\p{L}])/giu, (m, a, s) => mayus(m, 'matrimonio' + s)), T_BAUT),
 };
 
 
@@ -97,14 +106,14 @@ const convertirTexto = (t, clave) => (ZONAS[clave] ? ZONAS[clave](t) : t);
     var els = raiz.querySelectorAll ? raiz.querySelectorAll('[placeholder],[aria-label],[title],[alt]') : [];
     [raiz].concat([].slice.call(els)).forEach(function (e) { ATRIB.forEach(function (a) { var v = e.getAttribute && e.getAttribute(a); if (v) { var w = aTexto(v); if (w !== v) e.setAttribute(a, w); } }); });
   }
-  function activar(c) {
+  function activar(c, sinInicial) {
     if (activo || !c || c === 'es' || !LANG[c]) return;
     clave = c; activo = true;
-    nodo(document.body);
+    if (!sinInicial) nodo(document.body); // en la web las páginas ya vienen convertidas del servidor: solo se miran los textos que arma el JavaScript
     new MutationObserver(function (ms) { ms.forEach(function (m) { [].slice.call(m.addedNodes).forEach(nodo); if (m.type === 'characterData') texto(m.target); }); }).observe(document.body, { childList: true, subtree: true, characterData: true });
   }
   window.AI_REGIONAL = { activar: activar, convertir: function (t, c) { return convertirTexto(t, c || clave); }, traduce: aTexto };
   // En la web, la variante sale del idioma de la página (<html lang>)
-  function auto() { var c = POR_LANG[(document.documentElement.lang || '').toLowerCase()]; if (c && c !== 'es') activar(c); }
+  function auto() { var c = POR_LANG[(document.documentElement.lang || '').toLowerCase()]; if (c && c !== 'es') activar(c, true); }
   if (document.body) auto(); else document.addEventListener('DOMContentLoaded', auto);
 })();

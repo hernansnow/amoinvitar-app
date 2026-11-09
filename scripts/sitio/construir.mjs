@@ -703,15 +703,15 @@ ${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n
     var els = raiz.querySelectorAll ? raiz.querySelectorAll('[placeholder],[aria-label],[title],[alt]') : [];
     [raiz].concat([].slice.call(els)).forEach(function (e) { ATRIB.forEach(function (a) { var v = e.getAttribute && e.getAttribute(a); if (v) { var w = aTexto(v); if (w !== v) e.setAttribute(a, w); } }); });
   }
-  function activar(c) {
+  function activar(c, sinInicial) {
     if (activo || !c || c === 'es' || !LANG[c]) return;
     clave = c; activo = true;
-    nodo(document.body);
+    if (!sinInicial) nodo(document.body); // en la web las páginas ya vienen convertidas del servidor: solo se miran los textos que arma el JavaScript
     new MutationObserver(function (ms) { ms.forEach(function (m) { [].slice.call(m.addedNodes).forEach(nodo); if (m.type === 'characterData') texto(m.target); }); }).observe(document.body, { childList: true, subtree: true, characterData: true });
   }
   window.AI_REGIONAL = { activar: activar, convertir: function (t, c) { return convertirTexto(t, c || clave); }, traduce: aTexto };
   // En la web, la variante sale del idioma de la página (<html lang>)
-  function auto() { var c = POR_LANG[(document.documentElement.lang || '').toLowerCase()]; if (c && c !== 'es') activar(c); }
+  function auto() { var c = POR_LANG[(document.documentElement.lang || '').toLowerCase()]; if (c && c !== 'es') activar(c, true); }
   if (document.body) auto(); else document.addEventListener('DOMContentLoaded', auto);
 })();
 `;
