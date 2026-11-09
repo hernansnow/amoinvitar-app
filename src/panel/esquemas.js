@@ -442,10 +442,12 @@ export const DISENOS_FOTO = [
 // Graduación y Navidad no tienen tarjetas.
 const STD_EVENTOS = new Set(['boda', '15', 'cumple', 'bautismo', 'comunion', 'infantil', 'babyshower', 'revelacion']);
 const CON_FOTO = new Set(['boda', '15']);
+// README (ronda 40): la Save The Date con foto también en bautismo, comunión y cumpleaños (la web y el agradecimiento, solo boda y 15)
+const CON_FOTO_STD = new Set(['boda', '15', 'bautismo', 'comunion', 'cumple']);
 export function tarjetasDe(clase, modelo, tipo) {
   if (clase === 'agradecimiento') return CON_FOTO.has(tipo);
   if (!STD_EVENTOS.has(tipo)) return false;
-  return CON_FOTO.has(tipo) || !!modelo?.tarjetas?.std;
+  return CON_FOTO_STD.has(tipo) || !!modelo?.tarjetas?.std;
 }
 // README (ronda 28/29): Save The Date con diseño a medida (tarjeta o web), en todos los modelos y en el diseño a medida.
 // En la invitación no va en la lista de opciones: la tarjeta lo ofrece debajo del botón para generarla, y la foto y la
@@ -482,10 +484,10 @@ const pasoTarjeta = (clase, modelo, tipo) => (clase === 'std' ? {
       : 'Una tarjeta para mandar antes de la invitación, con una foto y el diseño que se elija. Se suma en cualquier plan.', si: noMedida },
     // Las opciones de siempre, con su precio: tarjeta del diseño, con foto y web (la foto y la web, en boda y 15)
     { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de Save The Date', defecto: modelo?.tarjetas?.std ? 'tarjeta' : 'foto', rearmar: true, si: noMedida,
-      oculto: !!modelo?.tarjetas?.std && !CON_FOTO.has(tipo), valores: [
+      oculto: !!modelo?.tarjetas?.std && !CON_FOTO_STD.has(tipo), valores: [
       ...(modelo?.tarjetas?.std ? [{ v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }] : []),
+      ...(CON_FOTO_STD.has(tipo) ? [{ v: 'foto', etiqueta: 'Foto', ayuda: 'Tu foto con el diseño que elijas.', extra: 'std-foto' }] : []),
       ...(CON_FOTO.has(tipo) ? [
-        { v: 'foto', etiqueta: 'Foto', ayuda: 'Tu foto con el diseño que elijas.', extra: 'std-foto' },
         // README (ronda 22): la Save The Date web (Classic o Soft) solo en boda y 15, con su propio link
         { v: 'web', etiqueta: 'Web', ayuda: 'Una página con su link: foto, nombres, fecha y botón para agendar.', extra: 'std-web' },
       ] : []),

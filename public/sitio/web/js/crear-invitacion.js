@@ -28,6 +28,8 @@
   // Save The Date: en estos eventos (la web Classic/Soft y la foto, solo boda y 15)
   var CON_STD = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'infantil', 'babyshower'];
   var CON_FOTO = ['boda', '15'];
+  // README (ronda 40): la Save The Date con foto también en bautismo, comunión y cumpleaños
+  var FOTO_STD = ['boda', '15', 'bautismo', 'comunion', 'cumple'];
 
   // Orden de los modelos como en las páginas de cada evento (los que no están, después)
   var ORDEN = {
@@ -138,7 +140,7 @@
         var gal = mu.length ? mu.map(function (x) { return IMG + x.f; }) : conTarjeta.slice(0, 6).map(function (m) { return APP + '/modelos/' + m.id + '/img/std-fondo.jpg'; });
         std.push({ id: 'std-tarjeta', nombre: 'Tarjeta', etiqueta: 'Save The Date', imgs: gal, galeria: gal, link: { producto: 'std-tarjeta', modelo: conTarjeta[0].id, evento: t }, precio: precioProducto(c, 'std-tarjeta'), fijo: true });
       }
-      if (CON_FOTO.indexOf(t) >= 0) {
+      if (FOTO_STD.indexOf(t) >= 0) {
         var mf = (c.muestras && c.muestras.foto && c.muestras.foto[t]) || [];
         var fotos = mf.length ? mf.map(function (x) { return IMG + x.f; }) : (t === '15' ? serie('std-15-foto', 5) : serie('std-foto', 5));
         std.push({ id: 'std-foto', nombre: 'Foto', etiqueta: 'Save The Date', imgs: fotos, galeria: fotos, link: { producto: 'std-foto', diseno: 'f1', evento: t }, precio: precioProducto(c, 'std-foto'), fijo: true });
