@@ -1,0 +1,6 @@
+{
+  "_ayuda": "Cada grupo muestra sus ejemplos en una grilla de celulares (o tarjetas). Agregar objetos { \"nombre\": \"…\", \"img\": \"/web/img/ejemplos/archivo.webp\", \"link\": \"(opcional) demo\" } y correr npm run sitio.",
+  "invitacion": { "titulo": "Invitación web a medida", "texto": "Diseños creados desde cero, con la identidad, la historia y el estilo de cada evento.", "ejemplos": [] },
+  "std-web": { "titulo": "Save The Date web a medida", "texto": "Una web de una pantalla para anunciar la fecha, con tu diseño.", "ejemplos": [] },
+  "std-tarjeta": { "titulo": "Tarjeta Save The Date a medida", "texto": "Una tarjeta única, con tu foto, tu estilo y tus textos.", "ejemplos": [] }
+}

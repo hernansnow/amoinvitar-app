@@ -97,7 +97,7 @@
     var t = ev.tipo, tabs = [];
     var invit = [], std = [], adic = [];
     var medida = { id: 'a-medida', nombre: 'Diseño a medida', medida: true, imgs: [IMG + 'p_a-medida.jpg'],
-      ejemplos: t === 'empresarial' ? RAIZ + 'empresarial#online' : '/store/producto/invitacion-web-diseno-a-medida/',
+      ejemplos: RAIZ + 'ejemplos-a-medida#invitacion',
       link: { producto: 'a-medida', evento: t }, precio: c.aMedida && c.aMedida.texto };
     invit.push(medida);
     if (t !== 'empresarial') {
@@ -119,7 +119,7 @@
         var img = IMG + (m.id === 'std-soft' ? 'std-web-soft.jpg' : t === '15' ? 'std-web15.jpg' : 'std-web-classic.jpg');
         std.push({ id: m.id, nombre: m.nombre, etiqueta: 'Save The Date', imgs: [img], demo: APP + '/demo/' + m.id + '?evento=' + t, link: { producto: 'std-web', modelo: m.id, evento: t }, precio: precioProducto(c, 'std-web'), fijo: true });
       });
-      std.push({ id: 'std-web-medida', nombre: 'Web a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-a-medida.jpg'], link: { producto: 'std-web-medida', evento: t }, precio: precioProducto(c, 'std-web-medida') });
+      std.push({ id: 'std-web-medida', nombre: 'Web a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_a-medida.jpg'], link: { producto: 'std-web-medida', evento: t }, precio: precioProducto(c, 'std-web-medida'), ejemplos: RAIZ + 'ejemplos-a-medida#std-web' });
       // Tarjeta del modelo: arranca con el primer diseño del evento que tiene tarjeta (en el panel se cambia)
       var conTarjeta = CON_STD.indexOf(t) < 0 ? [] : c.modelos.filter(function (m) { return m.eventos.indexOf(t) >= 0 && (c.tarjetaStd || []).indexOf(m.id) >= 0; });
       if (conTarjeta.length) {
@@ -132,7 +132,7 @@
         var fotos = mf.length ? mf.map(function (x) { return IMG + x.f; }) : (t === '15' ? serie('std-15-foto', 5) : serie('std-foto', 5));
         std.push({ id: 'std-foto', nombre: 'Foto', etiqueta: 'Save The Date', imgs: fotos, galeria: fotos, link: { producto: 'std-foto', diseno: 'f1', evento: t }, precio: precioProducto(c, 'std-foto'), fijo: true });
       }
-      std.push({ id: 'std-tarjeta-medida', nombre: 'Tarjeta a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-a-medida.jpg'], link: { producto: 'std-tarjeta-medida', evento: t }, precio: precioProducto(c, 'std-tarjeta-medida') });
+      std.push({ id: 'std-tarjeta-medida', nombre: 'Tarjeta a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_a-medida.jpg'], link: { producto: 'std-tarjeta-medida', evento: t }, precio: precioProducto(c, 'std-tarjeta-medida'), ejemplos: RAIZ + 'ejemplos-a-medida#std-tarjeta' });
       tabs.push({ id: 'std', nombre: 'Save The Date', items: std });
     }
 

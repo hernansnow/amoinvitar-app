@@ -346,7 +346,7 @@ const PAGINAS = [];
 // README (ronda 37): en la página de un evento, «Crear invitación» va directo a /crear-invitacion-para-<evento> (ya con los modelos);
 // en el resto, a /crear-invitacion (donde se elige el evento).
 const SLUG_CREAR = { boda: 'boda', 15: '15-anos', bautismo: 'bautismo', comunion: 'comunion', cumple: 'cumpleanos', babyshower: 'baby-shower', graduacion: 'graduacion', empresarial: 'empresarial', otros: 'navidad' };
-const CABECERA_SIMPLE = new Set(['crear-invitacion', 'precios', 'contacto']);
+const CABECERA_SIMPLE = new Set(['crear-invitacion', 'precios', 'contacto', 'ejemplos-a-medida']);
 const escribe = (slug, P, cuerpo) => {
   P.slug = slug;
   if (CABECERA_SIMPLE.has(slug) || slug.startsWith('info/')) P.cabFija = true;
@@ -435,6 +435,19 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
     cabeceraSimple('Contacto', '¿Hablamos?', 'Cuéntanos qué necesitas y te respondemos en el día. También por WhatsApp.'),
     contacto(E), faq(E, P),
   ].join('\n'));
+}
+
+// ── Ejemplos de diseños a medida (README ronda 39): la lista de ejemplos está en scripts/sitio/ejemplos-a-medida.json ──
+{
+  const J = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'ejemplos-a-medida.json'), 'utf8'));
+  const E = { ...GENERICO };
+  const P = { titulo: 'Ejemplos de diseños a medida | Amo Invitar!', descripcion: 'Mira ejemplos de invitaciones web, Save The Date y tarjetas a medida, creados desde cero para cada evento.', widget: false };
+  const grupo = (id) => {
+    const g = J[id];
+    const lista = g.ejemplos.length ? `<div class="ej-grilla">${g.ejemplos.map((x) => `<figure class="ej-item rev"><div class="ej-marco"><img src="${esc(x.img)}" alt="${esc(x.nombre)}" loading="lazy"></div><figcaption>${esc(x.nombre)}</figcaption>${x.link ? `<a class="btn btn-borde" href="${esc(x.link)}" target="_blank" rel="noopener">Ver ejemplo</a>` : ''}</figure>`).join('')}</div>` : `<p class="ej-pronto rev">Estamos preparando los ejemplos. Mientras tanto, cuéntanos tu idea y te mostramos propuestas.</p>`;
+    return `<section class="seccion${id === 'std-web' ? ' alt' : ''}" id="${id}"><div class="caja">${titulo('Diseño a medida', esc(g.titulo), esc(g.texto))}${lista}<p class="centro" style="margin-top:26px"><button type="button" class="btn btn-verde" data-medida="">Comenzar diseño a medida</button></p></div></section>`;
+  };
+  escribe('ejemplos-a-medida', P, [cabeceraSimple('Diseño a medida', 'Ejemplos de diseños a medida', 'Invitaciones, Save The Date y tarjetas creados desde cero. Elige el tipo y mira algunos ejemplos.'), grupo('invitacion'), grupo('std-web'), grupo('std-tarjeta'), llamada(E), contacto(E)].join('\n'));
 }
 
 // ── Álbum QR (Albunear) ─────────────────────────────────────────────────
