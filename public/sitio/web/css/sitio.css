@@ -2,6 +2,7 @@
    Todo propio de /web/: no se pisa nada del sitio viejo. Móvil primero. */
 @font-face { font-family: 'Jost'; font-weight: 100 900; font-style: normal; font-display: swap; src: url(/web/fonts/jost-35841fe7.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 @font-face { font-family: 'Jost'; font-weight: 100 900; font-style: normal; font-display: swap; src: url(/web/fonts/jost-5054f2c4.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113; }
+@font-face { font-family: 'Dantina'; font-weight: 400; font-display: swap; src: url(/web/fonts/dantina-webfont.woff2) format('woff2'); }
 @font-face { font-family: 'Gwendolyn'; font-weight: 400; font-display: swap; src: url(/web/fonts/gwendolyn-400.ttf) format('truetype'); }
 @font-face { font-family: 'Gwendolyn'; font-weight: 700; font-display: swap; src: url(/web/fonts/gwendolyn-700.ttf) format('truetype'); }
 
@@ -125,7 +126,8 @@ body.cajon-abierto { overflow: hidden; }
 .titulo .sobre { display: block; font: 600 13px/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: var(--verde); margin-bottom: 14px; }
 .verde .titulo .sobre { color: #a9d6c8; }
 .titulo h2 { font-size: clamp(30px, 4.4vw, 46px); }
-.titulo h2 em, .h-script { font-family: var(--script); font-style: normal; font-weight: 400; color: var(--verde); font-size: 1.32em; line-height: 1.1; letter-spacing: 0; word-spacing: .1em; }
+/* README (ronda 40): los énfasis vuelven a Dantina. Es una letra de trazos altos y muy ancha: tamaño bajo, interlineado generoso y aire a los costados para que no pise las líneas vecinas */
+.titulo h2 em, .h-script { font-family: 'Dantina', var(--script); font-style: normal; font-weight: 400; color: var(--verde); font-size: .98em; line-height: 1.25; letter-spacing: .01em; word-spacing: .22em; display: inline-block; padding: .04em .08em .1em; vertical-align: baseline; }
 .verde .titulo h2 em { color: #fff; }
 .titulo p { font-size: 1.12rem; color: var(--suave); }
 .verde .titulo p { color: #cde6dd; }
@@ -784,3 +786,8 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 
 /* README (ronda 40): videos del recorrido (invitación en el celular, panel en la tablet) en la portada */
 .esc-tablet video, .esc-cel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; background: #fff; }
+
+/* README (ronda 40): los efectos al pasar el puntero van en toda la tarjeta (imagen, texto y botones), no solo en la miniatura */
+.mu-item, .ej-item, .ci-item { transition: transform .25s, box-shadow .25s; }
+.mu-item:hover, .ej-item:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(0, 0, 0, .16); }
+.mu-mini { display: block; cursor: pointer; }

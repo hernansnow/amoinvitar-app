@@ -477,7 +477,7 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
   <p>Cada invitación se personaliza con la identidad de tu marca o evento, con paleta de colores, tipografía, diseños, secciones y funciones que mejor se adapten al evento.</p>
   <div class="fila-btn"><a class="btn btn-claro" href="#precio">Ver precio</a><a class="btn btn-borde-claro" href="#funciones">Funciones</a><a class="btn btn-borde-claro" href="#modelos">Modelos de muestra</a></div></div></div></div></section>`;
   const muestras = `<section class="seccion alt" id="modelos"><div class="caja">${titulo('Modelos de muestra', 'Algunos <em>ejemplos</em>', 'Algunos ejemplos de invitaciones web para que puedas probar las funciones y ver variaciones de estilos.')}
-  <div class="mu-grilla">${MUESTRAS.map(([d, n], i) => `<article class="mu-item rev"><img src="/web/img/ci/p_empresarial-${n}.jpg" alt="Corporativa muestra ${i + 1}" loading="lazy" width="300" height="624"><h3>Corporativa muestra ${i + 1}</h3><a class="btn btn-verde" href="${urlDemo(d)}" data-video="${urlDemo(d)}" target="_blank" rel="noopener">Ver Ejemplo</a></article>`).join('')}</div></div></section>`;
+  <div class="mu-grilla">${MUESTRAS.map(([d, n], i) => `<article class="mu-item rev"><a class="mu-mini" href="${urlDemo(d)}" data-video="${urlDemo(d)}" target="_blank" rel="noopener" aria-label="Ver la muestra ${i + 1}"><img src="/web/img/ci/p_empresarial-${n}.jpg" alt="Corporativa muestra ${i + 1}" loading="lazy" width="300" height="624"></a><h3>Corporativa muestra ${i + 1}</h3><a class="btn btn-verde" href="${urlDemo(d)}" data-video="${urlDemo(d)}" target="_blank" rel="noopener">Ver Ejemplo</a></article>`).join('')}</div></div></section>`;
   const deluxe = C.TABLA.filter((r) => r[4] === true).map((r) => r[0].replace(/^Historia$/, 'Historia / Relato del evento'));
   const precio = `<section class="seccion" id="precio"><div class="caja">${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones ni sorpresas.')}
   <div class="planes uno"><article class="plan-card destacado rev"><h3>Deluxe · Corporativo</h3><p class="precio" data-precio="medida">140 €</p><p class="precio-s">Pago único<span data-iva> · IVA incluido</span></p><ul>${deluxe.map((t) => `<li>${ic('check')}<span>${esc(t)}</span></li>`).join('')}<li>${ic('check')}<span>Diseño 100% a medida con la identidad de tu marca</span></li></ul><a class="btn btn-verde" href="/crear-invitacion">Crear invitación</a></article></div>
@@ -494,7 +494,7 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
     ['¿Y si organizo muchos eventos al año?', '<p>Mira las <a href="/profesionales">cuentas profesionales</a>: un panel con todos tus eventos, equipo y créditos con precio mayorista.</p>'],
   ];
   escribe('empresarial', P, [
-    portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES.empresarial, demo: '', sinGratis: true, ticks: ['100% a medida', 'Con la identidad de tu marca'], imgs: ['/web/img/corp/banner-empresarial-store.webp', '/web/img/ci/p_empresarial-1.jpg'], demoVer: urlDemo('snow') }),
+    portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES.empresarial, demo: urlDemo('aquasalud') + '.html', sinGratis: true, ticks: ['100% a medida', 'Con la identidad de tu marca'], demoVer: urlDemo('aquasalud') }),
     confianza(), identidad, comoFunciona(E, false), muestras, funciones(E), precio, faq(E, P, preg), testimonios(), llamada(E), contacto(E),
   ].join('\n'));
 }

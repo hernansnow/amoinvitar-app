@@ -131,3 +131,9 @@ dialog.ci-completa { width: 100vw; height: 100dvh; max-width: none; max-height: 
 .ci-mini img { object-fit: contain; transition: none; }
 .ci-mini:hover img { transform: none; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .2)); }
 .ci-precio { margin: 0 0 6px; padding-top: 6px; border-top: 1px solid #e6e6e6; font-size: .85rem; font-weight: 400; color: #555; }
+
+/* README (ronda 40): sin zoom ni sombra sobre la miniatura; al pasar el puntero se levanta toda la tarjeta (imagen, nombre, precio y botones) */
+.ci-mini, .ci-mini:hover { transform: none; transition: none; }
+.ci-mini img, .ci-mini:hover img { transform: none; filter: none; transition: none; }
+.ci-item { transition: transform .25s, box-shadow .25s; }
+.ci-item:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(0, 0, 0, .16); }

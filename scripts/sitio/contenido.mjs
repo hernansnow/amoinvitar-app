@@ -89,11 +89,11 @@ export const PASOS = [
 // g: invitados · experiencia · dia · panel   (plan: el mínimo que la incluye; sin plan = todos)
 export const FUNCIONES = [
   // plan: nivel desde el que está (Gratis, Basic, Premium, Deluxe); PLUS = complemento que se paga aparte; puede ser una lista
-  { g: 'invitados', i: 'user-check', t: 'Confirmación de asistencia (RSVP)', p: 'Tus invitados confirman con un clic y tú ves las respuestas al instante, en el panel y en tu email.', plan: 'Gratis' },
+  { g: 'invitados', i: 'user-check', t: 'Confirmación de asistencia (RSVP)', p: 'Tus invitados confirman con un clic y tú ves las respuestas al instante, en el panel y en tu email.', plan: 'Basic' },
   { g: 'invitados', i: 'link', t: 'Un link por invitado', p: 'Cada persona recibe su invitación con su nombre, sus pases y su grupo familiar.', plan: 'Premium' },
-  { g: 'invitados', i: 'utensils', t: 'Menú y restricciones', p: 'Eligen su menú o avisan alergias y preferencias alimentarias antes del evento.', plan: 'Gratis' },
+  { g: 'invitados', i: 'utensils', t: 'Menú y restricciones', p: 'Eligen su menú o avisan alergias y preferencias alimentarias antes del evento.', plan: 'Basic' },
   { g: 'invitados', i: 'music', t: 'Sugerencias de canciones', p: 'Tus invitados proponen los temas que no pueden faltar en la fiesta.', plan: 'Premium' },
-  { g: 'invitados', i: 'mensaje', t: 'Libro de mensajes', p: 'Dejan sus saludos y dedicatorias, y tú los guardas para siempre.', plan: 'Gratis' },
+  { g: 'invitados', i: 'mensaje', t: 'Libro de mensajes', p: 'Dejan sus saludos y dedicatorias, y tú los guardas para siempre.', plan: 'Basic' },
   { g: 'invitados', i: 'qr', t: 'Álbum colaborativo QR', p: 'Todos suben sus fotos y videos del evento a un álbum privado, sin descargar apps.', plan: 'Deluxe' },
   { g: 'invitados', i: 'instagram', t: 'Instagram Wall', p: 'Con tu hashtag, las fotos que suban a Instagram se ven juntas en un solo lugar.', plan: 'Premium' },
   { g: 'invitados', i: 'gift', t: 'Regalos', p: 'Comparte tu cuenta bancaria o billetera virtual y suma una lista de regalos.', plan: 'Premium' },
@@ -104,19 +104,19 @@ export const FUNCIONES = [
   { g: 'experiencia', i: 'video', t: 'Video de portada', p: 'Abre tu invitación con tu propio video. Se agrega a cualquier modelo.', plan: 'PLUS' },
   { g: 'experiencia', i: 'globe', t: 'Varios idiomas', p: 'Si tus invitados hablan distintos idiomas, tu invitación puede estar en dos o más.', plan: 'PLUS' },
   { g: 'experiencia', i: 'shirt', t: 'Dress code', p: 'Indica la vestimenta elegida y, en Deluxe, suma sugerencias con imágenes.', plan: ['Basic', 'Deluxe'] },
-  { g: 'dia', i: 'pin', t: 'Ubicación con mapa', p: 'Nadie se pierde: mapa integrado y cómo llegar con un toque.', plan: 'Gratis' },
-  { g: 'dia', i: 'calendar', t: 'Agendar la fecha', p: 'Cada momento se agrega a la agenda del celular con horario y lugar, en un clic.', plan: 'Gratis' },
+  { g: 'dia', i: 'pin', t: 'Ubicación con mapa', p: 'Nadie se pierde: mapa integrado y cómo llegar con un toque.', plan: 'Basic' },
+  { g: 'dia', i: 'calendar', t: 'Agendar la fecha', p: 'Cada momento se agrega a la agenda del celular con horario y lugar, en un clic.', plan: 'Basic' },
   { g: 'dia', i: 'timeline', t: 'Itinerario', p: 'La línea de tiempo del evento, paso a paso, para que todos sepan qué viene.', plan: 'Deluxe' },
   { g: 'dia', i: 'bus', t: 'Traslado y hospedaje', p: 'Quienes viajan ven el transporte y los alojamientos recomendados cerca.', plan: 'Deluxe' },
   { g: 'dia', i: 'mesa', t: 'Mesas y «Busca tu mesa»', p: 'Organiza las mesas desde el panel y cada invitado ve la suya en su invitación.', plan: 'Deluxe' },
   { g: 'dia', i: 'ticket', t: 'Entradas y control de llegada', p: 'Pase de entrada con QR y registro de llegadas el día del evento.', plan: 'Deluxe' },
-  { g: 'panel', i: 'lock', t: 'Panel privado', p: 'Administra invitados, respuestas y cambios desde tu celular o computadora.', plan: 'Gratis' },
-  { g: 'panel', i: 'users', t: 'Co-administración', p: 'En una boda, los dos tienen acceso al panel, y también pueden invitar a organizadores o wedding planners.', plan: 'Gratis' },
-  { g: 'panel', i: 'excel', t: 'Lista para descargar', p: 'Exporta quién viene, con cuántos pases y qué menú, en Excel o PDF.', plan: 'Gratis' },
-  { g: 'panel', i: 'edit', t: 'Cambios cuando quieras', p: 'Corrige datos o cambia el diseño las veces que necesites, incluso ya publicada.', plan: 'Gratis' },
+  { g: 'panel', i: 'lock', t: 'Panel privado', p: 'Administra invitados, respuestas y cambios desde tu celular o computadora.', plan: 'Basic' },
+  { g: 'panel', i: 'users', t: 'Co-administración', p: 'En una boda, los dos tienen acceso al panel, y también pueden invitar a organizadores o wedding planners.', plan: 'Basic' },
+  { g: 'panel', i: 'excel', t: 'Lista para descargar', p: 'Exporta quién viene, con cuántos pases y qué menú, en Excel o PDF.', plan: 'Basic' },
+  { g: 'panel', i: 'edit', t: 'Cambios cuando quieras', p: 'Corrige datos o cambia el diseño las veces que necesites, incluso ya publicada.', plan: 'Basic' },
   { g: 'panel', i: 'send', t: 'Envíos ilimitados', p: 'Un pago, tantos invitados como necesites, por WhatsApp, email o redes.', plan: 'Basic' },
-  { g: 'panel', i: 'shield', t: 'Acceso seguro', p: 'Abierta, solo con link personal o con PIN: tú decides quién entra.', plan: 'Gratis' },
-  { g: 'panel', i: 'phone', t: 'Funciona en cualquier dispositivo', p: 'Android, iPhone, Windows, tableta… cualquier dispositivo con navegador alcanza.', plan: 'Gratis' },
+  { g: 'panel', i: 'shield', t: 'Acceso seguro', p: 'Abierta, solo con link personal o con PIN: tú decides quién entra.', plan: 'Basic' },
+  { g: 'panel', i: 'phone', t: 'Funciona en cualquier dispositivo', p: 'Android, iPhone, Windows, tableta… cualquier dispositivo con navegador alcanza.', plan: 'Basic' },
 ];
 export const GRUPOS = [['todas', 'Todas'], ['invitados', 'Invitados'], ['experiencia', 'Experiencia'], ['dia', 'Día del evento'], ['panel', 'Panel y control']];
 
