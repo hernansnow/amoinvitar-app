@@ -791,3 +791,8 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .mu-item, .ej-item, .ci-item { transition: transform .25s, box-shadow .25s; }
 .mu-item:hover, .ej-item:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(0, 0, 0, .16); }
 .mu-mini { display: block; cursor: pointer; }
+
+/* README (ronda 40): fila de idiomas al pie del selector de país */
+.idiomas-fila { display: flex; gap: 6px; padding: 8px 10px; border-top: 1px solid #e6e6e6; position: sticky; bottom: 0; background: #fff; }
+.idiomas-fila button { flex: 1; padding: 6px 4px; border: 1px solid #cfd8d4; border-radius: 99px; background: #fff; font: 500 13px/1 var(--sans); cursor: pointer; color: var(--verde-osc, #0c463a); }
+.idiomas-fila button:hover { background: #eef5f2; }

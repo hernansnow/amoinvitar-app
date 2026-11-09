@@ -9,6 +9,8 @@ import { PROFESIONALES as PRO } from '../../src/catalogo.js';
 import { PAISES, CLAVES } from '../../src/sitio/variantes.js';
 import { convertir } from './variantes.mjs';
 import { LANG } from '../../src/sitio/variantes.js';
+import { IDIOMAS, cargaMapa, traducir } from './i18n.mjs';
+const MAPAS = Object.fromEntries(IDIOMAS.map((l) => [l, cargaMapa(l)]));
 import { rmSync } from 'node:fs';
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '../../public/sitio');
@@ -373,12 +375,19 @@ const escribe = (slug, P, cuerpo) => {
   let h = pagina(P, cuerpo);
   if (P.evento === 'empresarial') h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, 'href="#crear" data-medida="empresarial" data-titulo="Diseño corporativo a medida"');
   else if (P.evento && SLUG_CREAR[P.evento]) h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, (m, q) => `href="/crear-invitacion-para-${SLUG_CREAR[P.evento]}${q || ''}"`);
+  h = h.replace(/(?<![\p{L}])([Dd])e el (?=[a-záéíóúñ])/gu, '$1el '); // «de el bautismo» → «del bautismo»
   writeFileSync(join(RAIZ, slug + '.html'), h); PAGINAS.push(slug);
   // README (ronda 40): una copia por variante del español (public/sitio/v/<clave>/…), la elige el Worker según el país
   for (const c of CLAVES.filter((x) => x !== 'es')) {
     const dest = join(RAIZ, 'v', c, slug + '.html');
     mkdirSync(dirname(dest), { recursive: true });
     writeFileSync(dest, convertir(h, c));
+  }
+  // Una copia por idioma traducido (inglés, portugués): public/sitio/v/<idioma>/…
+  for (const l of IDIOMAS) {
+    const dest = join(RAIZ, 'v', l, slug + '.html');
+    mkdirSync(dirname(dest), { recursive: true });
+    writeFileSync(dest, traducir(h, MAPAS[l], LANG[l] || l));
   }
 };
 // Se borran las variantes de la corrida anterior para que no queden páginas que ya no existen
@@ -653,17 +662,38 @@ console.log('Páginas generadas:', PAGINAS.join(', '));
 {
   const f = join(dirname(fileURLToPath(import.meta.url)), 'variantes.mjs');
   const fuente = readFileSync(f, 'utf8').replace(/^import .*\n/m, '').replace(/export (const|function)/g, '$1');
+  // Diccionarios para el texto que arma el JavaScript (widget, banner de cookies) y para el panel: español → idioma
+  const jsFuente = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'i18n/js-fuente.json'), 'utf8'));
+  const DICT = {};
+  for (const l of ['en', 'pt']) {
+    const tr = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), `i18n/js-${l}.json`), 'utf8'));
+    DICT[l] = {}; for (const [i, v] of Object.entries(tr)) if (jsFuente[i] && v) DICT[l][jsFuente[i].trim()] = v.replace(/^\s+|\s+$/g, '');
+  }
+  const PREF = [['desde ', 'from ', 'a partir de '], ['Ver ejemplos de ', 'See examples of ', 'Ver exemplos de '], ['Ver diseño ', 'See design ', 'Ver design '], ['Personalizar ', 'Customize ', 'Personalizar '],
+    ['Ver más funciones (', 'Show more features (', 'Ver mais funções ('], ['Puedes pagar con ', 'You can pay with ', 'Você pode pagar com '], ['Podés pagar con ', 'You can pay with ', 'Você pode pagar com ']];
+  const NOMBRES_PAIS = Object.fromEntries(PAISES.map((x) => [x[1], x[0]]));
   const salida = `/* Generado por scripts/sitio/construir.mjs desde scripts/sitio/variantes.mjs (README ronda 40): no editar a mano */
 (function () {
   var LANG = ${JSON.stringify(LANG)};
 ${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n/m, '')}
+  var DICT = ${JSON.stringify(DICT)};
+  var PREF = ${JSON.stringify(PREF)};
+  var PAISES = ${JSON.stringify(NOMBRES_PAIS)};
+  var NOMBRES = {};
+  function traduce(v, l) {
+    var t = v.trim(), r = DICT[l][t];
+    if (r == null) { for (var i = 0; i < PREF.length; i++) { if (t.indexOf(PREF[i][0]) === 0) { r = PREF[i][l === 'en' ? 1 : 2] + t.slice(PREF[i][0].length); break; } } }
+    if (r == null && PAISES[t]) { try { NOMBRES[l] = NOMBRES[l] || new Intl.DisplayNames([l === 'pt' ? 'pt-BR' : 'en'], { type: 'region' }); r = NOMBRES[l].of(PAISES[t]); } catch (e) {} }
+    return r == null ? v : v.replace(t, function () { return r; });
+  }
+  function aTexto(v) { return clave === 'en' || clave === 'pt' ? traduce(v, clave) : convertirTexto(v, clave); }
   var POR_LANG = {}; Object.keys(LANG).forEach(function (k) { POR_LANG[LANG[k].toLowerCase()] = k; });
   var ATRIB = ['placeholder', 'aria-label', 'title', 'alt'];
   var clave = 'es', activo = false;
   function texto(n) {
     var p = n.parentNode; if (!p || /^(SCRIPT|STYLE|TEXTAREA|INPUT|CODE)$/.test(p.nodeName) || (p.closest && p.closest('.opinion, [data-sin-regional]'))) return;
     var v = n.nodeValue; if (!v || !/[A-Za-zÁÉÍÓÚáéíóú]/.test(v)) return;
-    var w = convertirTexto(v, clave); if (w !== v) n.nodeValue = w;
+    var w = aTexto(v); if (w !== v) n.nodeValue = w;
   }
   function nodo(raiz) {
     if (raiz.nodeType === 3) return texto(raiz);
@@ -671,7 +701,7 @@ ${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n
     var it = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, null), n;
     while ((n = it.nextNode())) texto(n);
     var els = raiz.querySelectorAll ? raiz.querySelectorAll('[placeholder],[aria-label],[title],[alt]') : [];
-    [raiz].concat([].slice.call(els)).forEach(function (e) { ATRIB.forEach(function (a) { var v = e.getAttribute && e.getAttribute(a); if (v) { var w = convertirTexto(v, clave); if (w !== v) e.setAttribute(a, w); } }); });
+    [raiz].concat([].slice.call(els)).forEach(function (e) { ATRIB.forEach(function (a) { var v = e.getAttribute && e.getAttribute(a); if (v) { var w = aTexto(v); if (w !== v) e.setAttribute(a, w); } }); });
   }
   function activar(c) {
     if (activo || !c || c === 'es' || !LANG[c]) return;
@@ -679,7 +709,7 @@ ${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n
     nodo(document.body);
     new MutationObserver(function (ms) { ms.forEach(function (m) { [].slice.call(m.addedNodes).forEach(nodo); if (m.type === 'characterData') texto(m.target); }); }).observe(document.body, { childList: true, subtree: true, characterData: true });
   }
-  window.AI_REGIONAL = { activar: activar, convertir: function (t, c) { return convertirTexto(t, c || clave); } };
+  window.AI_REGIONAL = { activar: activar, convertir: function (t, c) { return convertirTexto(t, c || clave); }, traduce: aTexto };
   // En la web, la variante sale del idioma de la página (<html lang>)
   function auto() { var c = POR_LANG[(document.documentElement.lang || '').toLowerCase()]; if (c && c !== 'es') activar(c); }
   if (document.body) auto(); else document.addEventListener('DOMContentLoaded', auto);
