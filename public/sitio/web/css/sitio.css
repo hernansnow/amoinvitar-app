@@ -781,3 +781,6 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 
 /* README (ronda 39): «parcial» de la comparativa en negro y peso normal */
 .comparar .parcial { color: #1c1c1c; font-weight: 400; }
+
+/* README (ronda 40): videos del recorrido (invitación en el celular, panel en la tablet) en la portada */
+.esc-tablet video, .esc-cel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; background: #fff; }

@@ -240,3 +240,5 @@
   }
   if ($mon || $('[data-precio],[data-pais]')) cargaCatalogo(getCookie('cur') || '');
 })();
+/* README (ronda 40): con «reducir movimiento» los videos de la portada quedan quietos */
+(function () { try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelectorAll('.escena video').forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); }); } catch (e) {} })();

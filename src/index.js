@@ -259,7 +259,10 @@ async function demo(env, url, request, idModelo) {
   // README (ronda 38): &limpia=1 es la demo para miniaturas (portadas de la web, Albunear): sin sobre, sin ventana de bienvenida,
   // sin pie y sin botones flotantes. Sin el parámetro, la demo es la completa (con su sobre de apertura).
   const limpia = q.get('limpia') === '1' || q.get('directo') === '1';
-  const r = await pagina(env, url, ev, { demo: true, sinSobre: limpia });
+  // README (ronda 40): &invitado=familia muestra la confirmación con lista de invitados (como el link personal de un invitado), para el video de la portada
+  const invitado = q.get('invitado') === 'familia' ? { codigo: 'demo', nombre: 'Familia Ríos', pases: 4, integrantes: 'Carla Ríos,Diego Ríos,Lucas Ríos,Sofía Ríos' } : null;
+  if (invitado) ev.acceso = { ...(ev.acceso || {}), modo: 'codigo' };
+  const r = await pagina(env, url, ev, { demo: true, sinSobre: limpia, invitado });
   if (!limpia || !r.ok) return r;
   const texto = (await r.text()).replace('</head>', '<style>footer,.site-footer,.ai-flotante,#ai-flotante{display:none!important}</style></head>');
   return new Response(texto, { status: r.status, headers: r.headers });
