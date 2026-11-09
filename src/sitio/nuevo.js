@@ -12,6 +12,7 @@
 //   - siempre fuera de amoinvitar.com: "noindex" (los buscadores no la indexan).
 // En amoinvitar.com (el dominio principal) se ve siempre, sin clave.
 import { getCookie, cookie, isSecureRequest } from '../lib/util.js';
+import { CLAVES, claveDePais } from './variantes.js';
 
 const RESERVADAS = /^\/(api|panel|tienda|modelos|comun|mi-cuenta|entrar|ayuda|auth|media|demo|std|vista|acceso|mesa|puerta|factura|admin|empresa)(\/|$)/;
 // Carpetas de las invitaciones y demos del sistema viejo (las de los clientes): nunca las toca la web nueva
@@ -45,6 +46,13 @@ export async function sitioNuevo(env, request, url) {
   const ruta = /^\/crear-invitacion-para-[a-z0-9-]+\/?$/i.test(url.pathname) ? '/crear-invitacion' : url.pathname;
   // Cloudflare resuelve solo "/sitio/bodas" → bodas.html; igual se prueban las variantes (en la compu no lo hace)
   const pedir = (p) => env.ASSETS.fetch(new Request(new URL(`/sitio${p}${url.search}`, url.origin), request));
+  // README (ronda 40): variante del español según lo elegido en el selector (cookie idioma) o el país de la visita
+  const elegida = getCookie(request, 'idioma');
+  const clave = CLAVES.includes(elegida) ? elegida : claveDePais(getCookie(request, 'pais_sel') || request.cf?.country || request.headers.get('cf-ipcountry'));
+  if (clave !== 'es' && !/\.[a-z0-9]+$/i.test(ruta)) {
+    const v = await resolver(pedir, `/v/${clave}${ruta === '/' ? '' : ruta}`);
+    if (v && v.status === 200) { const h = new Headers(v.headers); h.set('cache-control', 'private, no-cache'); h.set('vary', 'Cookie'); if (!PRINCIPAL.test(url.hostname)) { h.set('x-robots-tag', 'noindex, nofollow'); h.set('cache-control', 'private, no-store'); } return new Response(v.body, { status: 200, headers: h }); }
+  }
   let r = await pedir(ruta);
   if (r.status === 404 && !/\.[a-z0-9]+$/i.test(ruta)) r = await pedir(ruta.endsWith('/') ? `${ruta}index.html` : `${ruta}.html`);
   if (r.status === 404 && !/\.[a-z0-9]+$/i.test(ruta) && !ruta.endsWith('/')) r = await pedir(`${ruta}/index.html`);
@@ -54,7 +62,16 @@ export async function sitioNuevo(env, request, url) {
     const l = r.headers.get('location');
     if (l) return Response.redirect(new URL(new URL(l, url.origin).pathname.replace(/^\/sitio/, '') || '/', url.origin).href + url.search, r.status);
   }
-  if (PRINCIPAL.test(url.hostname)) return r;
+  if (PRINCIPAL.test(url.hostname)) { if (!/\.[a-z0-9]+$/i.test(ruta)) { const h2 = new Headers(r.headers); h2.set('cache-control', 'private, no-cache'); h2.set('vary', 'Cookie'); return new Response(r.body, { status: r.status, headers: h2 }); } return r; }
   const h = new Headers(r.headers); h.set('x-robots-tag', 'noindex, nofollow'); h.set('cache-control', 'private, no-store');
   return new Response(r.body, { status: r.status, headers: h });
+}
+
+// Prueba las formas de la ruta (/x, /x.html, /x/index.html) y devuelve la primera que existe
+async function resolver(pedir, ruta) {
+  for (const c of [ruta, ruta.endsWith('/') ? `${ruta}index.html` : `${ruta}.html`, `${ruta.replace(/\/$/, '')}/index.html`]) {
+    const r = await pedir(c);
+    if (r.status === 200) return r;
+  }
+  return null;
 }

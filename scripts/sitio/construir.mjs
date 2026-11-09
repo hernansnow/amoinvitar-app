@@ -6,6 +6,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as C from './contenido.mjs';
 import { PROFESIONALES as PRO } from '../../src/catalogo.js';
+import { PAISES, CLAVES } from '../../src/sitio/variantes.js';
+import { convertir } from './variantes.mjs';
+import { rmSync } from 'node:fs';
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '../../public/sitio');
 const opiniones = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'opiniones.json'), 'utf8'));
@@ -369,7 +372,15 @@ const escribe = (slug, P, cuerpo) => {
   if (P.evento === 'empresarial') h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, 'href="#crear" data-medida="empresarial" data-titulo="Diseño corporativo a medida"');
   else if (P.evento && SLUG_CREAR[P.evento]) h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, (m, q) => `href="/crear-invitacion-para-${SLUG_CREAR[P.evento]}${q || ''}"`);
   writeFileSync(join(RAIZ, slug + '.html'), h); PAGINAS.push(slug);
+  // README (ronda 40): una copia por variante del español (public/sitio/v/<clave>/…), la elige el Worker según el país
+  for (const c of CLAVES.filter((x) => x !== 'es')) {
+    const dest = join(RAIZ, 'v', c, slug + '.html');
+    mkdirSync(dirname(dest), { recursive: true });
+    writeFileSync(dest, convertir(h, c));
+  }
 };
+// Se borran las variantes de la corrida anterior para que no queden páginas que ya no existen
+rmSync(join(RAIZ, 'v'), { recursive: true, force: true });
 
 // Portada principal
 {
@@ -626,3 +637,12 @@ ${cuerpo}
 }
 
 console.log('Páginas generadas:', PAGINAS.join(', '));
+
+// README (ronda 40): la lista de países del selector (alfabética) sale de src/sitio/variantes.js
+{
+  const f = join(dirname(fileURLToPath(import.meta.url)), '../../public/sitio/web/js/sitio.js');
+  const js = readFileSync(f, 'utf8');
+  const lista = '  var LISTA_PAISES = ' + JSON.stringify(PAISES).replace(/\],\[/g, '], [').replace(/"/g, "'") + ';';
+  const n = js.replace(/  var LISTA_PAISES = \[[\s\S]*?\]\];/, () => lista);
+  if (n !== js) writeFileSync(f, n);
+}

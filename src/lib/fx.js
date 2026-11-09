@@ -8,11 +8,11 @@ export const COUNTRY_CURRENCY = {
   AR: 'ARS', UY: 'UYU', PY: 'PYG', BO: 'BOB', CL: 'CLP', PE: 'PEN', CO: 'COP', EC: 'USD', VE: 'USD', MX: 'MXN',
   CR: 'CRC', NI: 'NIO', PA: 'USD', DO: 'DOP', GT: 'GTQ', HN: 'HNL', SV: 'USD', PR: 'USD', CU: 'USD',
   US: 'USD', CA: 'CAD', BR: 'BRL', GB: 'GBP', CH: 'CHF', AU: 'AUD', NZ: 'NZD', ZA: 'ZAR', DK: 'DKK', SE: 'SEK', NO: 'NOK',
-  PL: 'PLN', JP: 'JPY', SK: 'EUR', SI: 'EUR', EE: 'EUR', LV: 'EUR', LT: 'EUR', MT: 'EUR', CY: 'EUR', HR: 'EUR',
+  PL: 'PLN', JP: 'JPY', AG: 'XCD', DM: 'XCD', GD: 'XCD', KN: 'XCD', LC: 'XCD', VC: 'XCD', BS: 'BSD', BB: 'BBD', BZ: 'BZD', GY: 'GYD', HT: 'HTG', JM: 'JMD', SR: 'SRD', TT: 'TTD', SK: 'EUR', SI: 'EUR', EE: 'EUR', LV: 'EUR', LT: 'EUR', MT: 'EUR', CY: 'EUR', HR: 'EUR',
 };
 
 export const CURRENCIES = ['EUR', 'USD', 'ARS', 'AUD', 'BOB', 'BRL', 'CAD', 'CHF', 'CLP', 'COP', 'CRC', 'DKK', 'DOP', 'GBP', 'GTQ', 'HNL',
-  'JPY', 'MXN', 'NIO', 'NOK', 'NZD', 'PEN', 'PLN', 'PYG', 'SEK', 'UYU', 'ZAR'];
+  'JPY', 'MXN', 'NIO', 'NOK', 'NZD', 'PEN', 'PLN', 'PYG', 'SEK', 'UYU', 'ZAR', 'XCD', 'BSD', 'BBD', 'BZD', 'GYD', 'HTG', 'JMD', 'SRD', 'TTD'];
 
 const ZERO_DECIMAL = ['CLP', 'PYG', 'JPY'];
 export const isZeroDecimal = (c) => ZERO_DECIMAL.includes(c);
@@ -66,7 +66,8 @@ export const EUROPA_OTROS = ['GB', 'CH', 'NO', 'IS', 'LI', 'AD', 'MC', 'SM', 'VA
 export const currencyForCountry = (country) => COUNTRY_CURRENCY[country] || 'USD';
 
 const FALLBACK = { USD: 1, EUR: 0.92, ARS: 1400, MXN: 18.5, COP: 4100, CLP: 950, PEN: 3.75, UYU: 40, PYG: 7500, BOB: 6.9, CRC: 510, NIO: 36.7, DOP: 60, GTQ: 7.7, HNL: 25,
-  BRL: 5.4, GBP: 0.78, CHF: 0.88, CAD: 1.37, AUD: 1.52, NZD: 1.68, ZAR: 18, DKK: 6.9, SEK: 10.5, NOK: 10.8, PLN: 3.95, JPY: 148 };
+  BRL: 5.4, GBP: 0.78, CHF: 0.88, CAD: 1.37, AUD: 1.52, NZD: 1.68, ZAR: 18, DKK: 6.9, SEK: 10.5, NOK: 10.8, PLN: 3.95, JPY: 148,
+  XCD: 2.7, BSD: 1, BBD: 2, BZD: 2, GYD: 209, HTG: 131, JMD: 157, SRD: 36, TTD: 6.8 };
 
 // Cotizaciones con base USD (open.er-api.com, gratis; con OXR_APP_ID se usa openexchangerates.org)
 const FX_TTL = 3600;

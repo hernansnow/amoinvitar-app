@@ -520,10 +520,10 @@ EVENTOS.navidad = derivado('babyshower', {
 // Qué variante usa cada país
 const PAISES = {
   AR: 'es-ar', UY: 'es-ar', PY: 'es-ar',
-  CR: 'es-cr', NI: 'es-cr',
+  CR: 'es-cr', NI: 'es-cr', GT: 'es-cr', HN: 'es-cr', SV: 'es-cr',
   ES: 'es-es',
-  US: 'es', MX: 'es', CO: 'es', CL: 'es', PE: 'es', BO: 'es', EC: 'es', VE: 'es', DO: 'es', GT: 'es', HN: 'es', SV: 'es', PA: 'es', CU: 'es', PR: 'es',
-  GB: 'en', IE: 'en', AU: 'en', NZ: 'en', CA: 'en', ZA: 'en',
+  US: 'es', MX: 'es', CO: 'es', CL: 'es', PE: 'es', BO: 'es', EC: 'es', VE: 'es', DO: 'es', PA: 'es', CU: 'es', PR: 'es',
+  GB: 'en', IE: 'en', JM: 'en', BS: 'en', BB: 'en', BZ: 'en', GY: 'en', TT: 'en', AG: 'en', DM: 'en', GD: 'en', KN: 'en', LC: 'en', VC: 'en', HT: 'fr', AU: 'en', NZ: 'en', CA: 'en', ZA: 'en',
   BR: 'pt', PT: 'pt', AO: 'pt', MZ: 'pt', FR: 'fr', MC: 'fr', LU: 'fr', IT: 'it', SM: 'it', AD: 'ca',
   DE: 'de', AT: 'de', LI: 'de', NL: 'nl', SR: 'nl',
 };

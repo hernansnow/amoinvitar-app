@@ -159,11 +159,7 @@
   /* El selector es de PAÍS: cada país trae su moneda y su variante de español (la moneda y el idioma van anclados al país).
      Por defecto se usa el país detectado; lo elegido se guarda en cookies (pais_sel, cur, idioma). Todavía no se traduce:
      la variante queda guardada para cuando estén definidos los textos. */
-  var LISTA_PAISES = [['ES', 'España', 'EUR', 'es-es'], ['AR', 'Argentina', 'ARS', 'es-ar'], ['UY', 'Uruguay', 'UYU', 'es-ar'], ['MX', 'México', 'MXN', 'es-latam'], ['CO', 'Colombia', 'COP', 'es-latam'], ['CL', 'Chile', 'CLP', 'es-latam'], ['PE', 'Perú', 'PEN', 'es-latam'],
-    ['EC', 'Ecuador', 'USD', 'es-latam'], ['BO', 'Bolivia', 'BOB', 'es-latam'], ['PY', 'Paraguay', 'PYG', 'es-latam'], ['VE', 'Venezuela', 'USD', 'es-latam'], ['CR', 'Costa Rica', 'CRC', 'es-latam'], ['PA', 'Panamá', 'USD', 'es-latam'], ['DO', 'República Dominicana', 'DOP', 'es-latam'],
-    ['GT', 'Guatemala', 'GTQ', 'es-latam'], ['HN', 'Honduras', 'HNL', 'es-latam'], ['SV', 'El Salvador', 'USD', 'es-latam'], ['NI', 'Nicaragua', 'NIO', 'es-latam'], ['CU', 'Cuba', 'USD', 'es-latam'], ['PR', 'Puerto Rico', 'USD', 'es-latam'], ['US', 'Estados Unidos', 'USD', 'es-latam'],
-    ['BR', 'Brasil', 'BRL', 'es-latam'], ['PT', 'Portugal', 'EUR', 'es-es'], ['FR', 'Francia', 'EUR', 'es-es'], ['DE', 'Alemania', 'EUR', 'es-es'], ['IT', 'Italia', 'EUR', 'es-es'], ['GB', 'Reino Unido', 'GBP', 'es-es'], ['IE', 'Irlanda', 'EUR', 'es-es'], ['NL', 'Países Bajos', 'EUR', 'es-es'],
-    ['BE', 'Bélgica', 'EUR', 'es-es'], ['AT', 'Austria', 'EUR', 'es-es'], ['CH', 'Suiza', 'CHF', 'es-es'], ['AD', 'Andorra', 'EUR', 'es-es'], ['CA', 'Canadá', 'CAD', 'es-latam'], ['AU', 'Australia', 'AUD', 'es-latam'], ['NZ', 'Nueva Zelanda', 'NZD', 'es-latam']];
+  var LISTA_PAISES = [['DE','Alemania','EUR','es-es'], ['AD','Andorra','EUR','es-es'], ['AG','Antigua y Barbuda','XCD','es'], ['AR','Argentina','ARS','ar'], ['AU','Australia','AUD','es'], ['AT','Austria','EUR','es-es'], ['BS','Bahamas','BSD','es'], ['BB','Barbados','BBD','es'], ['BE','Bélgica','EUR','es-es'], ['BZ','Belice','BZD','es'], ['BO','Bolivia','BOB','pe'], ['BR','Brasil','BRL','es'], ['CA','Canadá','CAD','es'], ['CL','Chile','CLP','cl'], ['CO','Colombia','COP','cl'], ['CR','Costa Rica','CRC','cr'], ['CU','Cuba','USD','mx'], ['DM','Dominica','XCD','es'], ['EC','Ecuador','USD','pe'], ['SV','El Salvador','USD','cr'], ['ES','España','EUR','es-es'], ['US','Estados Unidos','USD','es'], ['FR','Francia','EUR','es-es'], ['GD','Granada','XCD','es'], ['GT','Guatemala','GTQ','cr'], ['GY','Guyana','GYD','es'], ['HT','Haití','HTG','es'], ['HN','Honduras','HNL','cr'], ['IE','Irlanda','EUR','es-es'], ['IT','Italia','EUR','es-es'], ['JM','Jamaica','JMD','es'], ['MX','México','MXN','mx'], ['NI','Nicaragua','NIO','cr'], ['NZ','Nueva Zelanda','NZD','es'], ['NL','Países Bajos','EUR','es-es'], ['PA','Panamá','USD','mx'], ['PY','Paraguay','PYG','ar'], ['PE','Perú','PEN','pe'], ['PT','Portugal','EUR','es-es'], ['PR','Puerto Rico','USD','mx'], ['GB','Reino Unido','GBP','es-es'], ['DO','República Dominicana','DOP','mx'], ['KN','San Cristóbal y Nieves','XCD','es'], ['VC','San Vicente y las Granadinas','XCD','es'], ['LC','Santa Lucía','XCD','es'], ['CH','Suiza','CHF','es-es'], ['SR','Surinam','SRD','es'], ['TT','Trinidad y Tobago','TTD','es'], ['UY','Uruguay','UYU','ar'], ['VE','Venezuela','USD','mx']];
   function setPais(p) { var x = LISTA_PAISES.filter(function (y) { return y[0] === p; })[0]; if (!x) return null; ['pais_sel=' + x[0], 'cur=' + x[2], 'idioma=' + x[3]].forEach(function (c) { d.cookie = c + '; Path=/; Max-Age=31536000; SameSite=Lax'; }); return x; }
   function nombreMoneda(c) {
     if (NOMBRE_MONEDA[c]) return NOMBRE_MONEDA[c];
@@ -224,7 +220,7 @@
       var actual = LISTA_PAISES.filter(function (y) { return y[0] === sel; })[0];
       // Si el país no está en la lista, se muestra el detectado pero con la moneda que corresponde
       var b = $('.moneda-boton span', $mon); if (b) b.textContent = c.moneda;
-      var bd2 = $('[data-bandera]', $mon); if (bd2) bd2.src = '/web/img/flags/' + (actual ? actual[0] : (c.pais || 'es')).toLowerCase() + '.svg';
+      var bd2 = $('[data-bandera]', $mon); if (bd2) { bd2.onerror = function () { bd2.onerror = null; bd2.src = '/web/img/flags/us.svg'; }; bd2.src = '/web/img/flags/' + (actual ? actual[0] : (c.pais || 'us')).toLowerCase() + '.svg'; }
       var ul = $('.moneda-lista', $mon);
       ul.innerHTML = LISTA_PAISES.map(function (y) { return '<button type="button" role="menuitemradio" aria-checked="' + (y[0] === sel) + '" data-p="' + y[0] + '"><span class="pa"><img src="/web/img/flags/' + y[0].toLowerCase() + '.svg" alt="" width="22" height="15">' + y[1] + '</span><small>' + y[2] + '</small></button>'; }).join('');
     }
@@ -239,7 +235,7 @@
   if ($mon) {
     var bm = $('.moneda-boton', $mon);
     bm.addEventListener('click', function (e) { e.stopPropagation(); var v = !$mon.classList.contains('abierta'); $mon.classList.toggle('abierta', v); bm.setAttribute('aria-expanded', v); });
-    $mon.addEventListener('click', function (e) { var x = e.target.closest('[data-p]'); if (!x) return; var p = setPais(x.getAttribute('data-p')); cerrarMoneda(); if (p) cargaCatalogo(p[2]); });
+    $mon.addEventListener('click', function (e) { var x = e.target.closest('[data-p]'); if (!x) return; var antes = getCookie('idioma'); var p = setPais(x.getAttribute('data-p')); cerrarMoneda(); if (!p) return; /* README (ronda 40): si cambia la variante del español, se vuelve a cargar la página */ if (antes !== p[3]) { location.reload(); return; } cargaCatalogo(p[2]); });
     d.addEventListener('click', function (e) { if (!$mon.contains(e.target)) cerrarMoneda(); });
   }
   if ($mon || $('[data-precio],[data-pais]')) cargaCatalogo(getCookie('cur') || '');

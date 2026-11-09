@@ -174,7 +174,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   return html(await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
     'x-robots-tag': 'noindex',
-    ...(demo ? { vary: 'cf-ipcountry' } : {}),
+    ...(demo ? { vary: 'cf-ipcountry, Cookie' } : {}),
   });
 }
 
@@ -245,7 +245,8 @@ async function demo(env, url, request, idModelo) {
   const tipo = base.eventos.includes(q.get('evento')) ? q.get('evento') : base.eventos[0];
   const modelo = conEvento(base, tipo);
   const paquete = ['basic', 'premium', 'deluxe'].includes(q.get('paquete')) ? q.get('paquete') : 'deluxe';
-  const pais = q.get('pais') || request.cf?.country || request.headers.get('cf-ipcountry') || '';
+  // README (ronda 40): el país elegido en el selector de la web (cookie pais_sel) manda sobre el de la IP
+  const pais = q.get('pais') || getCookie(request, 'pais_sel') || request.cf?.country || request.headers.get('cf-ipcountry') || '';
   const v = VARIANTES.includes(q.get('idioma')) ? q.get('idioma') : varianteDePais(pais);
   const rutas = { comun: '/comun', modelo: `/modelos/${idModelo}` };
   const ev = eventoDemo({ tipo, variante: v, paquete, modelo, rutas });

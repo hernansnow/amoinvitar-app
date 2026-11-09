@@ -32,6 +32,15 @@ export const CURRENCY_META = {
   NOK: { sym: 'kr', menu: 'kr', locale: 'nb-NO', after: true },
   PLN: { sym: 'zł', menu: 'zł', locale: 'pl-PL', after: true },
   JPY: { sym: '¥', menu: '¥', locale: 'ja-JP' },
+  XCD: { sym: '$', menu: 'EC$', locale: 'en-AG' },
+  BSD: { sym: '$', menu: 'B$', locale: 'en-BS' },
+  BBD: { sym: '$', menu: 'Bds$', locale: 'en-BB' },
+  BZD: { sym: '$', menu: 'BZ$', locale: 'en-BZ' },
+  GYD: { sym: '$', menu: 'G$', locale: 'en-GY' },
+  HTG: { sym: 'G', menu: 'G', locale: 'fr-HT', space: true },
+  JMD: { sym: '$', menu: 'J$', locale: 'en-JM' },
+  SRD: { sym: '$', menu: 'SR$', locale: 'nl-SR' },
+  TTD: { sym: '$', menu: 'TT$', locale: 'en-TT' },
   CNY: { sym: '¥', menu: 'CN¥', locale: 'zh-CN' },
 };
 
