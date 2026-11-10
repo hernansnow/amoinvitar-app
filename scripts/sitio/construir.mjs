@@ -180,16 +180,16 @@ function comoFunciona(E, esIndex) {
       <div class="rev">
         <p>No es solo una invitación digital: es <strong>un sitio web de ${esIndex ? 'tu boda o evento' : t}</strong>, personalizado ${E.corp ? 'con la identidad de tu marca y ' : ''}con un atractivo diseño, que envías por WhatsApp${E.corp ? ' o email' : ''} fácilmente. Los invitados hacen clic y tienen toda la información del evento, confirman asistencia y participan activamente.</p>
         <p>Y lo más importante: desde el <strong>panel privado</strong> vas a administrar las respuestas, exportarlas, organizar las mesas, la llegada de los invitados el día del evento y mucho más.</p>
-        ${E.corp ? '' : checks(['Diseño de catálogo o estilo 100% a medida.', 'Puedes cambiar el diseño siempre, incluso publicada.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.'])}
+        ${E.corp ? checks(['Diseño 100% a medida con tu identidad.', '3 cambios de diseño hasta que lo apruebes.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.']) : checks(['Diseño de catálogo o estilo 100% a medida.', 'Puedes cambiar el diseño siempre, incluso publicada.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.'])}
         <div class="fila-btn"><a class="btn btn-verde btn-grande" href="/crear-invitacion">Crear invitación ${ic('flecha')}</a><a class="enlace-video" href="${C.VIDEO}" data-video="${C.VIDEO}" target="_blank" rel="noopener">${ic('play')} Ver video</a></div>
         ${E.corp ? '' : `<p class="nota-pago">${ic('shield')}<span><strong>Solo pagas al publicar.</strong> Si el modelo es gratis, tienes tu link y no pagas nada.</span></p>`}
       </div>
       <a class="video-mini rev" href="${C.VIDEO}" data-video="${C.VIDEO}" target="_blank" rel="noopener" aria-label="Ver el video de Amo Invitar"><picture><source media="(max-width: 899px)" srcset="/web/img/video-ancho.webp" width="1300" height="721"><img src="/web/img/video-cuadrado.webp" alt="" loading="lazy" width="900" height="900"></picture><span><i>${ic('play')}</i></span></a>
     </div>`;
-  const tPasos = titulo('', 'Tu invitación hoy, en <em>5 simples pasos</em>', '');
+  const tPasos = titulo('', E.corp ? 'Tu <em>invitación</em> en 5 simples pasos' : 'Tu <em>invitación</em> hoy, en 5 simples pasos', '');
   return `<section class="seccion" id="como-funciona">
   <div class="caja">
-    ${E.corp ? `${tPasos}${pasos(E)}<div style="margin-top:clamp(40px,6vw,64px)">${texto}</div>` : esIndex ? `${titulo('¿Cómo funciona?', 'Invitar nunca fue <em>tan fácil</em>', '')}${texto}<div style="margin-top:clamp(44px,6vw,72px)">${tPasos}${pasos(E)}</div>`
+    ${E.corp ? `${tPasos}${pasos(E)}<div style="margin-top:clamp(40px,6vw,64px)">${texto}</div>` : esIndex ? `${titulo('¿Cómo funciona?', '<em>Invitar</em> nunca fue tan fácil', '')}${texto}<div style="margin-top:clamp(44px,6vw,72px)">${tPasos}${pasos(E)}</div>`
       : `${tPasos}${pasos(E)}<div style="margin-top:clamp(40px,6vw,64px)">${texto}</div>`}
   </div>
 </section>`;
@@ -215,22 +215,23 @@ function planes(E) {
   const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v) => `<td>${celda(v)}</td>`).join('')}</tr>`).join('');
   const sec = (id, clase, cuerpo) => `<section class="seccion${clase ? ' ' + clase : ''}" id="${id}"><div class="caja">${cuerpo}</div></section>`;
   const slugMedida = (typeof SLUG_CREAR !== 'undefined' && SLUG_CREAR[E.id]) || '';
-  const medida = `<div class="medida rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones a medida">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => `<img src="/web/img/medida/banner-a-medida-${n}.webp" alt="Invitación a medida, ejemplo ${n}" ${n === 1 ? '' : 'loading="lazy" '}width="1000" height="667">`).join('')}</div><div><span class="desde">Invitación a medida</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><button type="button" class="btn btn-claro" data-medida="${slugMedida}">Comenzar diseño a medida</button></div></div></div>`;
-  // README (ronda 39): planes → comparar (sección aparte) → a medida → profesionales → detalles y formas de pago
+  const medida = `<div class="medida rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones a medida">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => `<img src="/web/img/medida/banner-a-medida-${n}.webp" alt="Invitación a medida, ejemplo ${n}" ${n === 1 ? '' : 'loading="lazy" '}width="1000" height="667">`).join('')}</div><div><span class="desde">Invitación a medida</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><button type="button" class="btn btn-claro" data-medida="${slugMedida}">Comenzar diseño a medida</button></div></div></div>`;
+  // README (ronda 41): orden pedido (precios.png): título y aviso → planes → invitación a medida → precios en euros y pago seguro (todo en una sección) → comparar → profesionales
   return [
     sec('planes', 'alt', `${E.sinTitulo ? '' : titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébalo gratis, míralo terminado y paga solo cuando decidas publicarlo. Sin suscripciones ni sorpresas.')}
   <div class="aviso-pago rev">${ic('eye')}<span>Diséñala y mírala terminada — <strong>pagas solo al publicar</strong></span></div>
-  <div class="planes">${cards}</div>`),
+  <div class="planes">${cards}</div>
+  <div class="bloque-medida">${medida}</div>
+  <p class="planes-nota" data-nota-precios>Precios en euros. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal.<br><small>(*) Solo disponible en algunos modelos.</small></p>
+  <div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div>`),
     sec('comparar-planes', '', `<h3 class="comparar-tit">Compara todos los planes</h3>
   <div class="comparar-caja"><table class="comparar comparar-precios" style="--cols:4" data-paso="8"><thead><tr><th scope="col"><span class="sr">Función</span></th>${C.PLANES.map((p) => `<th scope="col">${p.nombre}<br><small data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : ''}</small></th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>`),
-    sec('a-medida', 'alt', medida),
-    sec('para-profesionales', '', empresas().replace('margin-top:34px', '')),
-    sec('formas-de-pago', 'alt', `<p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>. Puedes pagar con tarjeta de crédito o débito, Apple Pay, Google Pay y PayPal.<br><small>(*) Solo disponible en algunos modelos.</small></p>
-  <div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div>`),
+    sec('para-profesionales', 'alt', empresas().replace('margin-top:34px', '')),
   ].join('\n');
 }
 
-const eur = (n) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')} €`;
+// README (ronda 41): cada importe lleva data-eur: la web lo pasa a la moneda del visitante (sitio.js)
+const eur = (n) => `<span data-eur="${n}">${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')} €</span>`;
 const dto = (precio, creditos) => Math.round((1 - precio / creditos / PRO.credito) * 100);
 const menorPack = (n) => Math.min(...PRO[n].packs.map((k) => k.precio / k.creditos));
 
@@ -241,7 +242,7 @@ function empresas() {
 
 function juntos(enAlbum = false) {
   return `<section class="seccion juntos" id="mejor-juntos"><div class="caja">
-  <div class="titulo rev"><h2>Mejor <em>juntos</em></h2><div class="juntos-logos"><img class="l-ai" src="/web/img/amoinvitar-line.svg" alt="Amo Invitar!" width="3682" height="792"><span aria-hidden="true">+</span><img class="l-alb" src="/web/img/albunear-dark.svg" alt="Albunear" width="3246" height="1016"></div><p><strong>Invitación + álbum colaborativo QR</strong></p><p>Nuestras invitaciones web se integran con el álbum digital QR de Albunear: un mismo estilo y diseño para la web e invitación del evento, el álbum digital QR y el paquete de recursos gráficos: invitación en papel, número de mesa, menú, recuerdos, mural y mucho más.</p><p class="promo">Por tiempo limitado, con nuestro paquete <strong>Deluxe</strong> te regalamos el <strong>Álbum colaborativo QR Classic</strong> de Albunear.</p></div>
+  <div class="titulo rev"><h2>Mejor <em>Juntos</em></h2><div class="juntos-logos"><img class="l-ai" src="/web/img/amoinvitar-line.svg" alt="Amo Invitar!" width="3682" height="792"><span aria-hidden="true">+</span><img class="l-alb" src="/web/img/albunear-dark.svg" alt="Albunear" width="3246" height="1016"></div><span class="sobre">Invitación + álbum colaborativo QR</span><p>Nuestras invitaciones web se integran con el álbum digital QR de Albunear: un mismo estilo y diseño para la web e invitación del evento, el álbum digital QR y el paquete de recursos gráficos: invitación en papel, número de mesa, menú, recuerdos, mural y mucho más.</p><p class="promo">Por tiempo limitado, con nuestro paquete <strong>Deluxe</strong> te regalamos el <strong>Álbum colaborativo QR Classic</strong> de Albunear.</p></div>
   <div class="juntos-escena">
     <div class="juntos-cels">
       <figure><div class="pantalla poster"><iframe src="/demo/lovestory?evento=boda&paquete=deluxe&limpia=1" loading="lazy" title="Amo Invitar! · Love Story" referrerpolicy="no-referrer"></iframe></div><figcaption>Invitación digital interactiva</figcaption></figure>
@@ -398,7 +399,7 @@ rmSync(join(RAIZ, 'v'), { recursive: true, force: true });
   const P = { titulo: 'Invitaciones digitales con RSVP, mesas y álbum QR | Amo Invitar!', descripcion: 'Invitaciones digitales interactivas para bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower y eventos. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista. Prueba gratis.' };
   const E = { ...GENERICO };
   escribe('index', P, [
-    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: '', h1: 'Invitaciones digitales <span data-pais="en">en Iberoamérica</span>', videos: true, lead: 'La web de tu evento. Tus invitados abren, disfrutan y responden con un clic. Tú ves quién viene, organizas mesas y descargas la lista final desde un solo panel: es como tener un <strong>planner digital</strong>. Lista en minutos y sin pagar hasta que te encante.', demo: demoDe('index') }),
+    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: '', h1: 'Invitaciones digitales', videos: true, lead: 'La web de tu evento. Tus invitados abren, disfrutan y responden con un clic. Tú ves quién viene, organizas mesas y descargas la lista final desde un solo panel: es como tener un <strong>planner digital</strong>. Lista en minutos y sin pagar hasta que te encante.', demo: demoDe('index') }),
     confianza(), comoFunciona(E, true), eventos(), funciones(E), planes(E), faq(E, P), testimonios(), nosotros(), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -443,14 +444,18 @@ for (const E0 of C.EVENTOS) {
 }
 
 // README (ronda 37): encabezado sin foto para las páginas de trabajo (crear invitación, precios, contacto)
+// README (ronda 41): cabecera de «Crear invitación» (y de /crear-invitacion-para-…): pasos 1 Diseño · 2 Personalizar · 3 Enviar y la frase de abajo
+const cabeceraCrear = () => `<section class="cabecera-crear"><div class="caja"><h1 class="sr">Crear invitación digital</h1><span class="etiqueta">Crear invitación</span>
+  <ol class="pasos-crear" aria-label="Pasos"><li class="activo"><b>1</b><span>Diseño</span></li><li><b>2</b><span>Personalizar</span></li><li><b>3</b><span>Enviar</span></li></ol>
+  <p class="crear-nota">Pruébala antes de pagar · Plan gratis y desde <span data-precio="basic">29 €</span> · De catálogo o 100% a medida</p></div></section>`;
 const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"><div class="caja"><span class="etiqueta">${etiqueta}</span><h1>${h1}</h1><p class="lead">${lead}</p></div></section>`;
 
 // Crear invitación (elige el tipo de evento y el diseño; el widget abre el panel con «Personalizar»)
 {
-  const E = { ...GENERICO, widget: '', tituloDisenos: '¿Qué vas a <em>celebrar</em>?', grid: C.EVENTOS.map((e) => ({ slug: SLUG_CREAR[e.id], nombre: e.id === 'boda' ? 'Bodas' : e.nombre, img: `/web/img/eventos/${e.img}` })) };
+  const E = { ...GENERICO, widget: '', tituloDisenos: '¿Qué <em>Celebramos</em>?', grid: C.EVENTOS.map((e) => ({ slug: SLUG_CREAR[e.id], nombre: e.id === 'boda' ? 'Bodas' : e.nombre, img: `/web/img/eventos/${e.img}` })) };
   const P = { titulo: 'Crear invitación digital | Amo Invitar!', descripcion: 'Crea tu invitación digital: elige el modelo, personalízala gratis y obtén tu link. Pago único solo al publicar. Bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower, graduaciones y eventos corporativos.', widget: true };
   escribe('crear-invitacion', P, [
-    cabeceraSimple('Crear invitación', 'Tu invitación, lista en minutos', 'Elige qué vas a celebrar, escoge el diseño que más te guste y míralo terminado con tus datos. Solo pagas si decides publicarlo.'),
+    cabeceraCrear(),
     disenos(E), comoFunciona(E, false), planes(E), faq(E, P), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -482,17 +487,28 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
   const P = { titulo: `${pt.t} | Amo Invitar!`, descripcion: pt.d, widget: false, evento: 'empresarial' };
   const MUESTRAS = [['snow', 1], ['prave', 5], ['aquasalud', 2], ['liseth', 3], ['aitravel', 4]]; // [demo, miniatura p_empresarial-N]
   const urlDemo = (d) => `/empresa-demos/demo/empresarial/${d}`;
-  const identidad = `<section class="seccion" id="identidad"><div class="caja">${titulo('Para tu marca', 'Invitar con <em>identidad propia</em>', '')}
-  <div class="medida identidad rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones empresariales">${['store', '1', '2', '3', '4', '5'].map((n, i) => `<img src="/web/img/corp/banner-empresarial-${n}.webp" alt="Invitación web empresarial, ejemplo ${i + 1}" ${i ? 'loading="lazy" ' : ''}width="1000" height="667">`).join('')}</div>
+  const identidad = `<section class="seccion" id="identidad"><div class="caja">${titulo('Para tu marca', '<em>Invitar</em> con identidad propia', '')}
+  <div class="medida identidad rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones empresariales">${['store', '1', '2', '3', '4', '5', '6', '7'].map((n, i) => `<img src="/web/img/corp/banner-empresarial-${n}.webp" alt="Invitación web empresarial, ejemplo ${i + 1}" ${i ? 'loading="lazy" ' : ''}width="1000" height="667">`).join('')}</div>
   <div><p>Con nuestra invitación web interactiva, tendrás un sitio web personalizado a la medida de tu evento, marca, congreso, producto, o lo que te imagines. Con un atractivo diseño que compartes por WhatsApp o email, tus invitados confirman con un clic y tú sabes exactamente quién viene. Con ubicación para llegar, temática, dress code, menú, organizador de mesas y entrada, álbum QR y mucho más.</p>
   <p>Cada invitación se personaliza con la identidad de tu marca o evento, con paleta de colores, tipografía, diseños, secciones y funciones que mejor se adapten al evento.</p>
   <div class="fila-btn"><a class="btn btn-claro" href="#precio">Ver precio</a><a class="btn btn-borde-claro" href="#funciones">Funciones</a><a class="btn btn-borde-claro" href="#modelos">Modelos de muestra</a></div></div></div></div></section>`;
-  const muestras = `<section class="seccion alt" id="modelos"><div class="caja">${titulo('Modelos de muestra', 'Algunos <em>ejemplos</em>', 'Algunos ejemplos de invitaciones web para que puedas probar las funciones y ver variaciones de estilos.')}
+  const muestras = `<section class="seccion alt" id="modelos"><div class="caja">${titulo('Algunos ejemplos', '<em>Modelos</em> de muestra', 'Algunos ejemplos de invitaciones web para que puedas probar las funciones y ver variaciones de estilos.')}
   <div class="mu-grilla">${MUESTRAS.map(([d, n], i) => `<article class="mu-item rev"><a class="mu-mini" href="${urlDemo(d)}" data-video="${urlDemo(d)}" target="_blank" rel="noopener" aria-label="Ver la muestra ${i + 1}"><img src="/web/img/ci/p_empresarial-${n}.jpg" alt="Corporativa muestra ${i + 1}" loading="lazy" width="300" height="624"></a><h3>Corporativa muestra ${i + 1}</h3><a class="btn btn-verde" href="${urlDemo(d)}" data-video="${urlDemo(d)}" target="_blank" rel="noopener">Ver Ejemplo</a></article>`).join('')}</div></div></section>`;
-  const deluxe = C.TABLA.filter((r) => r[4] === true).map((r) => r[0].replace(/^Historia$/, 'Historia / Relato del evento'));
+  // README (ronda 41): tres tarjetas (invitación Deluxe corporativa y las dos Save The Date a medida), con listas cortas y modales de ejemplos
+  const gal = (lista) => esc(JSON.stringify(lista));
+  const GAL_WEB = [{ img: '/web/img/ejemplos/stdw-point.webp', t: 'Point' }, { img: '/web/img/ejemplos/stdw-rama.webp', t: 'Rama' }];
+  const GAL_TAR = [{ img: '/web/img/ejemplos/stdt-degasa.webp', t: 'Degasa' }, { img: '/web/img/ejemplos/stdt-rama.webp', t: 'Rama' }];
+  const tarjetaPlan = (nombre, precio, items, botones, destacado) => `<article class="plan-card${destacado ? ' destacado' : ''} rev"><h3>${nombre}</h3><p class="precio" ${precio}></p><p class="precio-s">Pago único<span data-iva> · IVA incluido</span></p><ul>${items.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul><div class="plan-botones">${botones}</div></article>`;
   const precio = `<section class="seccion" id="precio"><div class="caja">${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones ni sorpresas.')}
-  <div class="planes uno"><article class="plan-card destacado rev"><h3>Deluxe · Corporativo</h3><p class="precio" data-precio="medida">140 €</p><p class="precio-s">Pago único<span data-iva> · IVA incluido</span></p><ul>${deluxe.map((t) => `<li>${ic('check')}<span>${esc(t)}</span></li>`).join('')}<li>${ic('check')}<span>Diseño 100% a medida con la identidad de tu marca</span></li></ul><a class="btn btn-verde" href="/crear-invitacion">Crear invitación</a></article></div>
-  <p class="planes-nota" data-nota-precios>Precios en <strong>euros</strong>.</p><div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div></div></section>`;
+  <div class="planes tres">
+  ${tarjetaPlan('Invitación Web Deluxe · Corporativo', 'data-precio="medida">140 €', ['Diseño 100% a medida con la identidad de tu marca', 'Acceso VIP restringido', 'Todas las secciones y funciones', 'Lista de invitados con nombre y link personalizado', 'Confirmación de asistencia (RSVP)', 'Panel privado con organizador'],
+    `<a class="btn btn-verde" href="/crear-invitacion">Crear invitación</a><a class="btn btn-borde" href="${urlDemo('snow')}" data-video="${urlDemo('snow')}" target="_blank" rel="noopener">Ver ejemplo</a>`, true)}
+  ${tarjetaPlan('Save The Date Web · Diseño a medida', 'data-prod="std-web-medida">70 €', ['Diseño 100% a medida con la identidad de tu marca', 'Agenda multiplataforma', 'Ubicación con mapa'],
+    `<a class="btn btn-verde" href="#crear" data-medida="empresarial" data-producto="std-web-medida" data-titulo="Save The Date web a medida">Crear Save The Date</a><button type="button" class="btn btn-borde" data-galeria="${gal(GAL_WEB)}" data-titulo="Save The Date web a medida">Ver ejemplos</button>`)}
+  ${tarjetaPlan('Save The Date Tarjeta · Diseño a medida', 'data-prod="std-tarjeta-medida">50 €', ['Diseño 100% a medida con la identidad de tu marca'],
+    `<a class="btn btn-verde" href="#crear" data-medida="empresarial" data-producto="std-tarjeta-medida" data-titulo="Save The Date tarjeta a medida">Crear Save The Date</a><button type="button" class="btn btn-borde" data-galeria="${gal(GAL_TAR)}" data-titulo="Save The Date tarjeta a medida">Ver ejemplos</button>`)}
+  </div>
+  <p class="planes-nota" data-nota-precios data-sin-nota>Precios en euros.</p><div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div></div></section>`;
   const preg = [
     ['¿Qué es una invitación web empresarial?', '<p>Es un sitio web de una pantalla (para verlo desde el celular o la computadora) creado a medida para tu evento, marca, congreso o lanzamiento. Tus invitados lo abren con un link, confirman asistencia con un clic y tú gestionas todo desde un panel privado.</p>'],
     ['¿Cuánto cuesta y cuándo pago?', '<p>El diseño a medida tiene un <strong>pago único</strong> (el precio figura en esta página, IVA incluido). Primero cuentas tu idea desde el panel, la revisamos y te contactamos con la aprobación. <strong>Pagas recién cuando el proyecto está aprobado</strong>.</p>'],
@@ -642,7 +658,7 @@ for (const [slug, titulo, sub] of LEGALES) {
   const cuerpo = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'legales', slug + '.html'), 'utf8');
   const P = { titulo: `${titulo} | Amo Invitar!`, descripcion: sub };
   escribe('info/' + slug, P, `<section class="cabecera-simple"><div class="caja"><span class="etiqueta">Información legal</span><h1>${titulo}</h1><p class="lead">${sub}</p></div></section>
-<section class="seccion"><div class="caja"><article class="legal-txt"><p class="legal-fecha">Última actualización: 6 de noviembre de 2026</p>
+<section class="seccion"><div class="caja"><article class="legal-txt"><p class="legal-fecha">Última actualización: ${slug === 'terminos-y-condiciones' ? '6 de noviembre de 2026' : '10 de noviembre de 2026'}</p>
 ${cuerpo}
 <p class="legal-otros">Otros textos legales: <a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/terminos-y-condiciones">Términos</a> · <a href="/info/politica-de-devoluciones">Devoluciones</a> · <a href="/info/rgpd">RGPD</a></p></article></div></section>`);
 }

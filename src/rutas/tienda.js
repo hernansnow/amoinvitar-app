@@ -9,7 +9,7 @@
 //
 // Los precios de lista están en euros (src/catalogo.js) y se cobran en la moneda del visitante.
 import { json, readJson, isEmail, str, randomId, now, HttpError, getCookie, cookie, isSecureRequest } from '../lib/util.js';
-import { CURRENCIES, currencyForCountry, getRates, priceIn, isZeroDecimal, promoPara, promosVigentes, categoriaDeTipo, PLANES_PROMO, cargarConfig, paisFiscal } from '../lib/fx.js';
+import { CURRENCIES, currencyForCountry, getRates, priceIn, isZeroDecimal, promoPara, promosVigentes, categoriaDeTipo, PLANES_PROMO, cargarConfig, paisFiscal, convertirSimple } from '../lib/fx.js';
 import { formatMoney } from '../lib/dinero.js';
 import { methodsFor, transferInfo, createMpPreference, findMpApproved, getMpPayment } from '../lib/pagos.js';
 import { createCheckoutSession, retrieveCheckoutSession, verifyWebhook } from '../lib/stripe.js';
@@ -21,7 +21,7 @@ import { reverseChargeFor } from '../lib/vies.js';
 import { pagarCompra } from '../pro/compras.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
-import { RECUERDO, PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, precioPedido, comprable } from '../catalogo.js';
+import { RECUERDO, PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, PROFESIONALES, precioPedido, comprable } from '../catalogo.js';
 import { MODELOS, TIPOS_EVENTO, CON_TARJETA_STD, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
@@ -129,6 +129,10 @@ export async function catalogo(request, env) {
     modelos: MODELOS.filter((m) => !m.simple && !m.std).map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {},
       eventos: [...new Set([...m.eventos, ...TIPOS_EVENTO.filter((t) => t.grupo && m.eventos.includes(t.id)).map((t) => t.grupo)])],
       gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), dosNombres: m.eventos.includes('revelacion'), propios: m.eventos })),
+    // README (ronda 41): precios de profesionales en la moneda del visitante (sin IVA ni descuento por país). Clave: el importe en euros
+    pro: Object.fromEntries([PROFESIONALES.credito, PROFESIONALES.pro.pase, PROFESIONALES.studio.pase, PROFESIONALES.studio.configuracionDominio,
+      ...PROFESIONALES.pro.packs.flatMap((k) => [k.precio, k.precio / k.creditos]), ...PROFESIONALES.studio.packs.flatMap((k) => [k.precio, k.precio / k.creditos]),
+    ].filter((v) => v > 0).map((v) => [String(v), formatMoney(convertirSimple(v, moneda, rates), moneda)])),
     paquetes: ORDEN.map((id) => ({ id, nombre: NOMBRES_PAQUETE[id], incluye: RESUMEN_PAQUETES[id], precio: precio(id, PAQUETES[id].precio) })),
     extras: Object.entries(EXTRAS).map(([id, e]) => ({ id, nombre: e.nombre, precio: precio(id, e.precio) })),
     productos: Object.entries(PRODUCTOS).map(([id, p]) => ({ id, nombre: p.nombre, manual: !!p.manual, precio: p.manual ? { texto: `desde ${formatMoney(priceIn(id, p.desde, moneda, rates, pais, env).amount, moneda)}` } : precio(id, p.precio) })),

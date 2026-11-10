@@ -123,11 +123,11 @@ body.cajon-abierto { overflow: hidden; }
 .seccion.verde { background: linear-gradient(160deg, var(--verde-osc), #20695a 55%, var(--verde-2)); color: #e6f3ee; }
 .seccion.verde h2, .seccion.verde h3 { color: #fff; }
 .titulo { text-align: center; max-width: 780px; margin: 0 auto clamp(30px, 5vw, 52px); }
-.titulo .sobre { display: block; font: 600 13px/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: var(--verde); margin-bottom: 14px; }
+.titulo .sobre { display: block; font: 600 13px/1.2 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: var(--verde); margin-bottom: 18px; }
 .verde .titulo .sobre { color: #a9d6c8; }
 .titulo h2 { font-size: clamp(30px, 4.4vw, 46px); }
 /* README (ronda 40): los énfasis vuelven a Dantina. Es una letra de trazos altos y muy ancha: tamaño bajo, interlineado generoso y aire a los costados para que no pise las líneas vecinas */
-.titulo h2 em, .h-script { font-family: 'Dantina', var(--script); font-style: normal; font-weight: 400; color: var(--verde); font-size: .98em; line-height: 1.25; letter-spacing: .01em; word-spacing: .22em; display: inline-block; padding: .04em .08em .1em; vertical-align: baseline; }
+.titulo h2 em, .h-script { font-family: 'Dantina', var(--script); font-style: normal; font-weight: 400; color: var(--verde); font-size: .72em; line-height: 1.5; letter-spacing: .01em; word-spacing: .2em; display: inline-block; padding: .2em .06em .14em; vertical-align: baseline; }
 .verde .titulo h2 em { color: #fff; }
 .titulo p { font-size: 1.12rem; color: var(--suave); }
 .verde .titulo p { color: #cde6dd; }
@@ -535,8 +535,8 @@ body.cajon-abierto { overflow: hidden; }
 .medida > .med-slider { padding: 0; align-self: stretch; min-height: 260px; }
 
 /* README (ronda 36): «Mejor juntos» como en el álbum viejo: subtítulo verde, cartel chico y blanco, pantallas bien escaladas */
-.juntos .titulo > p:first-of-type, .juntos .titulo > p:first-of-type strong { color: var(--verde); }
-.juntos .titulo > p:first-of-type { font: 600 clamp(16px, 2vw, 19px)/1.3 var(--sans); letter-spacing: .04em; margin-bottom: 14px; }
+/* README (ronda 41): «Invitación + álbum colaborativo QR» con el estilo de los títulos pequeños (Así de simple…) */
+.juntos .titulo > .sobre { margin: 6px 0 14px; }
 .juntos .promo, .juntos .promo strong { color: #fff; font-size: 13.5px; line-height: 1.4; }
 .juntos .promo { padding: 9px 16px; border-radius: 12px; }
 .pantalla iframe { max-width: none; transform: scale(.5692); }
@@ -756,7 +756,7 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .portada .fila-btn { gap: 10px 12px; }
 .portada:not(.alb-hero):not(.portada-centro) .portada-grid { padding-bottom: 0; align-items: end; }
 .portada:not(.alb-hero) .portada-texto { padding-bottom: clamp(90px, 11vw, 160px); }
-.portada:not(.alb-hero) .escena { align-self: end; margin-bottom: -3%; }
+.portada:not(.alb-hero) .escena { align-self: center; margin-bottom: 0; }
 @media (max-width: 959px) { .portada:not(.alb-hero) .portada-texto { padding-bottom: 8px; } .portada:not(.alb-hero) .escena { margin-top: 10px; } }
 
 /* README (ronda 39): insignias de las funciones con los colores del panel (Gratis, Basic, Premium, Deluxe) y PLUS para los complementos */
@@ -791,3 +791,40 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .mu-item, .ej-item, .ci-item { transition: transform .25s, box-shadow .25s; }
 .mu-item:hover, .ej-item:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(0, 0, 0, .16); }
 .mu-mini { display: block; cursor: pointer; }
+
+/* README (ronda 41): precios — poco aire entre el título y el aviso del ojito; la invitación a medida va dentro de la sección de planes */
+#planes .titulo { margin-bottom: 18px; }
+#planes .aviso-pago { margin-top: 0; }
+#planes .bloque-medida { margin-top: clamp(28px, 4vw, 44px); }
+#planes .bloque-medida .medida { margin-top: 0; }
+#planes .planes-nota { margin-top: 26px; }
+.cabecera-simple + .seccion { padding-top: 26px; }
+
+/* README (ronda 41): cabecera de Crear invitación (crear.jpg): etiqueta, 3 pasos unidos por una línea y la frase de abajo */
+.cabecera-crear { padding: calc(var(--cab) + clamp(26px, 4vw, 44px)) 0 clamp(22px, 3vw, 34px); background: var(--verde-palido); text-align: center; }
+.cabecera-crear .etiqueta { display: block; color: var(--verde); font: 600 13px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; margin-bottom: 18px; }
+.pasos-crear { list-style: none; margin: 0 auto 14px; padding: 0; display: flex; align-items: flex-start; justify-content: center; max-width: 620px; position: relative; }
+.pasos-crear::before { content: ''; position: absolute; left: 12%; right: 12%; top: 16px; height: 1px; background: #c9d6d1; }
+.pasos-crear li { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #6f7f79; font: 400 14px/1.2 var(--sans); }
+.pasos-crear b { width: 32px; height: 32px; border-radius: 50%; background: #d4e4de; color: #5d6f68; display: grid; place-items: center; font: 600 15px/1 var(--sans); }
+.pasos-crear li.activo b { background: var(--verde); color: #fff; }
+.pasos-crear li.activo span { color: var(--verde-osc, #0c463a); }
+.crear-nota { margin: 0; font-size: 13.5px; color: var(--suave); }
+.cabecera-crear + .seccion { padding-top: 34px; }
+
+/* README (ronda 41): corporativo con tres tarjetas de precio y modal de ejemplos */
+.planes.tres { grid-template-columns: 1fr; max-width: 1060px; margin-inline: auto; }
+@media (min-width: 860px) { .planes.tres { grid-template-columns: repeat(3, 1fr); } }
+.plan-botones { display: grid; gap: 10px; margin-top: auto; padding-top: 18px; }
+.plan-botones .btn { width: 100%; text-align: center; justify-content: center; }
+.planes.tres .plan-card { display: flex; flex-direction: column; }
+.gal-modal { border: 0; border-radius: 14px; padding: 0; width: min(920px, 94vw); max-height: 92vh; overflow: auto; background: #fff; }
+.gal-modal::backdrop { background: rgba(0, 0, 0, .6); }
+.gal-caja { padding: 18px 18px 22px; }
+.gal-caja h3 { margin: 0 40px 14px 0; font: 600 20px/1.2 var(--sans); color: var(--verde-osc, #0c463a); }
+.gal-x { position: absolute; top: 10px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #eef5f2; font-size: 22px; line-height: 1; cursor: pointer; }
+.gal-grilla { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.gal-grilla figure { margin: 0; flex: 0 1 300px; }
+.gal-grilla img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(0, 0, 0, .2); display: block; }
+
+.planes.tres .plan-card h3 { line-height: 1.4; min-height: 2.8em; }

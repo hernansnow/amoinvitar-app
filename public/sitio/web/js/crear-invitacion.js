@@ -130,22 +130,24 @@
       (c.stdWeb || []).forEach(function (m) {
         if (m.eventos.indexOf(t) < 0) return;
         var img = IMG + (m.id === 'std-soft' ? 'std-web-soft.jpg' : t === '15' ? 'std-web15.jpg' : 'std-web-classic.jpg');
-        std.push({ id: m.id, nombre: m.nombre, etiqueta: 'Save The Date', imgs: [img], demo: APP + '/demo/' + m.id + '?evento=' + t, link: { producto: 'std-web', modelo: m.id, evento: t }, precio: precioProducto(c, 'std-web'), fijo: true });
+        // README (ronda 41): captura real de cada modelo y evento dentro del marco del celular (n_<modelo>-<evento>.jpg)
+        std.push({ id: m.id, nombre: m.nombre, etiqueta: 'Save The Date', imgs: [IMG + 'n_' + m.id + '-' + t + '.jpg', img], demo: APP + '/demo/' + m.id + '?evento=' + t, link: { producto: 'std-web', modelo: m.id, evento: t }, precio: precioProducto(c, 'std-web'), fijo: true });
       });
-      std.push({ id: 'std-web-medida', nombre: 'Web a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_a-medida.jpg'], link: { producto: 'std-web-medida', evento: t }, precio: precioProducto(c, 'std-web-medida'), ejemplos: RAIZ + 'ejemplos-a-medida#std-web' });
+      std.push({ id: 'std-web-medida', nombre: 'Web a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-web-a-medida.png', IMG + 'p_a-medida.jpg'], link: { producto: 'std-web-medida', evento: t }, precio: precioProducto(c, 'std-web-medida'), ejemplos: RAIZ + 'ejemplos-a-medida#std-web' });
       // Tarjeta del modelo: arranca con el primer diseño del evento que tiene tarjeta (en el panel se cambia)
       var conTarjeta = CON_STD.indexOf(t) < 0 ? [] : c.modelos.filter(function (m) { return m.eventos.indexOf(t) >= 0 && (c.tarjetaStd || []).indexOf(m.id) >= 0; });
       if (conTarjeta.length) {
         var mu = (c.muestras && c.muestras.tarjeta && c.muestras.tarjeta[t]) || [];
         var gal = mu.length ? mu.map(function (x) { return IMG + x.f; }) : conTarjeta.slice(0, 6).map(function (m) { return APP + '/modelos/' + m.id + '/img/std-fondo.jpg'; });
-        std.push({ id: 'std-tarjeta', nombre: 'Tarjeta', etiqueta: 'Save The Date', imgs: gal, galeria: gal, link: { producto: 'std-tarjeta', modelo: conTarjeta[0].id, evento: t }, precio: precioProducto(c, 'std-tarjeta'), fijo: true });
+        // README (ronda 41): en la grilla va el collage de tarjetas; la galería completa se ve en «Ver diseños»
+        std.push({ id: 'std-tarjeta', nombre: 'Tarjeta', etiqueta: 'Save The Date', imgs: [IMG + 'col-tarjeta-' + t + '.jpg', gal[0]], galeria: gal, link: { producto: 'std-tarjeta', modelo: conTarjeta[0].id, evento: t }, precio: precioProducto(c, 'std-tarjeta'), fijo: true });
       }
       if (FOTO_STD.indexOf(t) >= 0) {
         var mf = (c.muestras && c.muestras.foto && c.muestras.foto[t]) || [];
         var fotos = mf.length ? mf.map(function (x) { return IMG + x.f; }) : (t === '15' ? serie('std-15-foto', 5) : serie('std-foto', 5));
-        std.push({ id: 'std-foto', nombre: 'Foto', etiqueta: 'Save The Date', imgs: fotos, galeria: fotos, link: { producto: 'std-foto', diseno: 'f1', evento: t }, precio: precioProducto(c, 'std-foto'), fijo: true });
+        std.push({ id: 'std-foto', nombre: 'Foto', etiqueta: 'Save The Date', imgs: [IMG + 'col-foto-' + t + '.jpg', fotos[0]], galeria: fotos, link: { producto: 'std-foto', diseno: 'f1', evento: t }, precio: precioProducto(c, 'std-foto'), fijo: true });
       }
-      std.push({ id: 'std-tarjeta-medida', nombre: 'Tarjeta a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_a-medida.jpg'], link: { producto: 'std-tarjeta-medida', evento: t }, precio: precioProducto(c, 'std-tarjeta-medida'), ejemplos: RAIZ + 'ejemplos-a-medida#std-tarjeta' });
+      std.push({ id: 'std-tarjeta-medida', nombre: 'Tarjeta a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-tarjeta-a-medida.jpg', IMG + 'p_a-medida.jpg'], link: { producto: 'std-tarjeta-medida', evento: t }, precio: precioProducto(c, 'std-tarjeta-medida'), ejemplos: RAIZ + 'ejemplos-a-medida#std-tarjeta' });
       tabs.push({ id: 'std', nombre: 'Save The Date', items: std });
     }
 
@@ -159,7 +161,7 @@
     if (t === 'boda' || t === '15') {
       var mg = (c.muestras && c.muestras.gracias && c.muestras.gracias[t]) || [];
       var gr = mg.length ? mg.map(function (x) { return IMG + x.f; }) : (t === 'boda' ? serie('gracias-tarjeta', 8) : serie('gracias-15-tarjeta', 8));
-      adic.push({ id: 'agradecimiento', nombre: 'Tarjeta', etiqueta: 'Agradecimiento', imgs: gr, galeria: gr, link: { producto: 'agradecimiento', diseno: 'g1', evento: t }, precio: precioProducto(c, 'agradecimiento'), fijo: true });
+      adic.push({ id: 'agradecimiento', nombre: 'Tarjeta', etiqueta: 'Agradecimiento', imgs: [IMG + 'col-gracias-' + t + '.jpg', gr[0]], galeria: gr, link: { producto: 'agradecimiento', diseno: 'g1', evento: t }, precio: precioProducto(c, 'agradecimiento'), fijo: true });
     }
     if (adic.length) tabs.push({ id: 'adicional', nombre: 'Adicional', items: adic });
     return tabs;
@@ -271,10 +273,10 @@
 
   // Diseño a medida desde cualquier lugar de la web (botón «Comenzar diseño a medida»): abre este mismo cuadro,
   // con el tipo de evento a elegir; desde la página de un evento (tipo fijo) solo pide el nombre y la fecha.
-  window.AmoCrear = { medida: function (slug, titulo) {
+  window.AmoCrear = { medida: function (slug, titulo, producto) {
     cargarCatalogo().then(function (c) {
       var fijo = slug ? evento(slug) : null, ev = fijo || evento('boda');
-      personalizar({ id: 'a-medida', nombre: 'Diseño a medida', medida: true, link: { producto: 'a-medida', evento: ev.tipo }, precio: c.aMedida && c.aMedida.texto }, ev, { selector: !fijo, titulo: titulo || (fijo ? 'Invitación a medida' : 'Invitación a medida') });
+      personalizar({ id: producto || 'a-medida', nombre: 'Diseño a medida', medida: true, link: { producto: producto || 'a-medida', evento: ev.tipo }, precio: producto ? precioProducto(c, producto) : c.aMedida && c.aMedida.texto }, ev, { selector: !fijo, titulo: titulo || (fijo ? 'Invitación a medida' : 'Invitación a medida') });
     }).catch(function () { location.href = RAIZ + 'contacto'; });
   } };
 
@@ -335,7 +337,7 @@
     function pintarCabecera() {
       if (!conSelector) return;
       if (ev) { cab.replaceChildren(); if (titulo && grid.length) titulo.innerHTML = '<em>Diseños</em> para ' + (ev.nombre || '').toLowerCase(); if (subtitulo && grid.length) subtitulo.textContent = 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Elige, personaliza y mira tu invitación lista antes de pagar.'; return; }
-      if (titulo && grid.length) titulo.innerHTML = '¿Qué vas a <em>celebrar</em>?'; if (subtitulo && grid.length) subtitulo.textContent = 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.';
+      if (titulo && grid.length) titulo.innerHTML = '¿Qué <em>Celebramos</em>?'; if (subtitulo && grid.length) subtitulo.textContent = 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.';
       cab.replaceChildren(el('div', { class: 'ci-eventos' }, (grid.length ? grid : opciones.map(function (e) { return { slug: e.slug, nombre: e.nombre, img: '' }; })).map(function (g) {
         return el('button', { type: 'button', class: 'ci-evento', style: g.img ? 'background-image:url(' + g.img + ')' : null, onclick: function () { if (g.slug === 'empresarial') { location.href = RAIZ + 'empresarial'; return; } ev = evento(g.slug); tabActiva = 'web'; cambiarUrl(); pintarCabecera(); pintar(); otro.hidden = false; try { caja.scrollIntoView({ block: 'start' }); } catch (e) { /* sin scroll */ } } },
           el('span', { text: g.nombre }));

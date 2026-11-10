@@ -134,6 +134,14 @@ export function paisFiscal(ip, facturacion) {
   return descuentoPais(fac) <= descuentoPais(ipc) ? fac : ipc;
 }
 
+// README (ronda 41): un importe en euros pasado a otra moneda, sin IVA ni descuento por país (precios de profesionales)
+export function convertirSimple(eur, currency, rates) {
+  currency = CURRENCIES.includes(currency) ? currency : 'USD';
+  if (!eur || currency === 'EUR') return eur;
+  const r = (c) => rates[c] || FALLBACK[c];
+  return nice((eur / r('EUR')) * r(currency));
+}
+
 /**
  * Precio de lista (en euros, CON el IVA español incluido) en la moneda y el país del visitante.
  *  - Europa (UE y el resto): el precio de lista; en la UE el IVA va dentro (en euros, o su equivalente redondeado).

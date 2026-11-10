@@ -1,6 +1,89 @@
 {
   "_ayuda": "Cada grupo muestra sus ejemplos en una grilla de celulares (o tarjetas). Agregar objetos { \"nombre\": \"…\", \"img\": \"/web/img/ejemplos/archivo.webp\", \"link\": \"(opcional) demo\" } y correr npm run sitio.",
-  "invitacion": { "titulo": "Invitación web a medida", "texto": "Diseños creados desde cero, con la identidad, la historia y el estilo de cada evento.", "ejemplos": [] },
-  "std-web": { "titulo": "Save The Date web a medida", "texto": "Una web de una pantalla para anunciar la fecha, con tu diseño.", "ejemplos": [] },
-  "std-tarjeta": { "titulo": "Tarjeta Save The Date a medida", "texto": "Una tarjeta única, con tu foto, tu estilo y tus textos.", "ejemplos": [] }
+  "invitacion": {
+    "titulo": "Invitación web a medida",
+    "texto": "Diseños creados desde cero, con la identidad, la historia y el estilo de cada evento.",
+    "ejemplos": [
+      {
+        "nombre": "Invitación a medida 1",
+        "img": "/web/img/ejemplos/inv-1.webp"
+      },
+      {
+        "nombre": "Invitación a medida 2",
+        "img": "/web/img/ejemplos/inv-2.webp"
+      },
+      {
+        "nombre": "Invitación a medida 3",
+        "img": "/web/img/ejemplos/inv-3.webp"
+      }
+    ]
+  },
+  "std-web": {
+    "titulo": "Save The Date web a medida",
+    "texto": "Una web de una pantalla para anunciar la fecha, con tu diseño.",
+    "ejemplos": [
+      {
+        "nombre": "Point · 15 años",
+        "img": "/web/img/ejemplos/stdw-point.webp"
+      },
+      {
+        "nombre": "Rama",
+        "img": "/web/img/ejemplos/stdw-rama.webp"
+      },
+      {
+        "nombre": "Pau y Mike",
+        "img": "/web/img/ejemplos/stdw-pau-mike.webp"
+      },
+      {
+        "nombre": "Maca y Mauri",
+        "img": "/web/img/ejemplos/stdw-maca-mauri.webp"
+      },
+      {
+        "nombre": "Mariana y Josh",
+        "img": "/web/img/ejemplos/stdw-mariana-josh.webp"
+      }
+    ]
+  },
+  "std-tarjeta": {
+    "titulo": "Tarjeta Save The Date a medida",
+    "texto": "Una tarjeta única, con tu foto, tu estilo y tus textos.",
+    "ejemplos": [
+      {
+        "nombre": "Natalia y Daniel",
+        "img": "/web/img/ejemplos/stdt-natalia-daniel.webp"
+      },
+      {
+        "nombre": "Alma · 15 años",
+        "img": "/web/img/ejemplos/stdt-alma-15.webp"
+      },
+      {
+        "nombre": "Degasa",
+        "img": "/web/img/ejemplos/stdt-degasa.webp"
+      },
+      {
+        "nombre": "Rama",
+        "img": "/web/img/ejemplos/stdt-rama.webp"
+      },
+      {
+        "nombre": "Jime y Feli",
+        "img": "/web/img/ejemplos/stdt-jime-feli.webp"
+      },
+      {
+        "nombre": "María · 15 años",
+        "img": "/web/img/ejemplos/stdt-maria-15.webp"
+      },
+      {
+        "nombre": "Rosa y Pablo",
+        "img": "/web/img/ejemplos/stdt-rosa-pablo.webp"
+      },
+      {
+        "nombre": "Flor y Andy",
+        "img": "/web/img/ejemplos/stdt-flor-andy.webp"
+      },
+      {
+        "nombre": "Marcela y Rober",
+        "img": "/web/img/ejemplos/stdt-marcela-rober.webp"
+      }
+    ]
+  }
 }

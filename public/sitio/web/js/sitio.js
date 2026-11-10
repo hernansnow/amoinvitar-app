@@ -24,11 +24,27 @@
   $$('[data-medida]').forEach(function (b) {
     b.addEventListener('click', function (e) {
       e.preventDefault();
-      var slug = b.getAttribute('data-medida'), titulo = b.getAttribute('data-titulo') || '';
-      function ir() { window.AmoCrear.medida(slug, titulo); }
+      var slug = b.getAttribute('data-medida'), titulo = b.getAttribute('data-titulo') || '', producto = b.getAttribute('data-producto') || '';
+      function ir() { window.AmoCrear.medida(slug, titulo, producto); }
       if (window.AmoCrear) return ir();
       if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css'; d.head.appendChild(l); }
       var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', '/'); sc.onload = ir; d.body.appendChild(sc);
+    });
+  });
+
+  /* ---------- README (ronda 41): «Ver ejemplos» en una ventana con las capturas ---------- */
+  $$('[data-galeria]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var lista = []; try { lista = JSON.parse(b.getAttribute('data-galeria')); } catch (e) { return; }
+      var m = d.createElement('dialog'); m.className = 'gal-modal';
+      m.innerHTML = '<div class="gal-caja"><button type="button" class="gal-x" aria-label="Cerrar">&times;</button><h3></h3><div class="gal-grilla"></div></div>';
+      m.querySelector('h3').textContent = b.getAttribute('data-titulo') || 'Ejemplos';
+      var g = m.querySelector('.gal-grilla');
+      lista.forEach(function (x) { var f = d.createElement('figure'), i = d.createElement('img'); i.src = x.img; i.alt = x.t || ''; i.loading = 'lazy'; f.appendChild(i); g.appendChild(f); });
+      m.querySelector('.gal-x').addEventListener('click', function () { m.close(); });
+      m.addEventListener('click', function (e) { if (e.target === m) m.close(); });
+      m.addEventListener('close', function () { m.remove(); });
+      d.body.appendChild(m); m.showModal();
     });
   });
 
@@ -206,11 +222,15 @@
     var pb = (c.paquetes || []).filter(function (p) { return p.id === 'basic'; })[0];
     if (pb && pb.precio && pb.precio.texto) { var cero = pb.precio.texto.replace(/[\d.,\s]+/, function (m) { return '0' + (/\s$/.test(m) ? ' ' : ''); }); $$('[data-precio="gratis"]').forEach(function (e) { e.textContent = cero; }); }
     if (c.aMedida) $$('[data-precio="medida"]').forEach(function (e) { e.textContent = c.aMedida.texto; });
+    // README (ronda 41): precio de un producto suelto (Save The Date a medida…)
+    $$('[data-prod]').forEach(function (e) { var p = (c.productos || []).filter(function (x) { return x.id === e.getAttribute('data-prod'); })[0]; if (p && p.precio && p.precio.texto) e.textContent = p.precio.texto; });
+    // README (ronda 41): precios de profesionales en la moneda del visitante
+    $$('[data-eur]').forEach(function (e) { var v = c.pro && c.pro[e.getAttribute('data-eur')]; if (v) e.textContent = v; });
     // Texto de abajo, con la lógica de Albunear: moneda y medios del país
     $$('[data-nota-precios]').forEach(function (e) {
       e.innerHTML = ar
-        ? 'Precios en <strong>pesos argentinos</strong>.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + '  No esperes más, diseñá tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>'
-        : 'Precios en <strong>' + nombreMoneda(c.moneda) + '</strong>. ' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada. <br><small>(*) Solo disponible en algunos modelos.</small>';
+        ? 'Precios en pesos argentinos.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + '  No esperes más, diseñá tu invitación hoy mismo sin pagar nada.' + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>(*) Solo disponible en algunos modelos.</small>')
+        : 'Precios en ' + nombreMoneda(c.moneda) + '. ' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada.' + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>(*) Solo disponible en algunos modelos.</small>');
     });
     $$('[data-pago-iconos]').forEach(function (e) { e.innerHTML = m.logos.map(logo).join('') + m.extra; });
     $$('[data-iva]').forEach(function (e) { e.textContent = c.moneda === 'EUR' ? ' · IVA incluido' : ''; });
@@ -246,7 +266,13 @@
 (function () {
   document.querySelectorAll('.escena iframe').forEach(function (f) {
     f.addEventListener('load', function () {
-      [500, 1600].forEach(function (ms) { setTimeout(function () { try { var d = f.contentDocument; var b = d && d.querySelector('.modal.show [data-dismiss="modal"], .modal.show .close'); if (b) b.click(); } catch (e) {} }, ms); });
+      [500, 1600, 3200].forEach(function (ms) { setTimeout(function () { try {
+        var dd = f.contentDocument, w = f.contentWindow;
+        // README (ronda 41): sin música en los dispositivos de las portadas (y sin que se duplique entre el celular y la tablet)
+        if (w && w.HTMLMediaElement) w.HTMLMediaElement.prototype.play = function () { this.muted = true; this.pause(); return Promise.resolve(); };
+        [].forEach.call(dd.querySelectorAll('audio,video'), function (m) { m.muted = true; m.pause(); });
+        var b = dd && dd.querySelector('.modal.show [data-dismiss="modal"], .modal.show .close'); if (b) b.click();
+      } catch (e) {} }, ms); });
     });
   });
 })();
