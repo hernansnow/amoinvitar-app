@@ -1226,7 +1226,7 @@ const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', '
 const may = (x) => x.charAt(0).toUpperCase() + x.slice(1);
 // Frases según el evento (dos nombres: boda; uno: 15, bautismo, comunión, cumple…)
 const FRASES = {
-  boda: { evento: 'Nuestra boda', exclama: '¡Nos casamos!', invitamos: 'Te invitamos a celebrar\nnuestro casamiento' },
+  boda: { evento: 'Nuestra boda', exclama: '¡Nos casamos!', invitamos: 'Te invitamos a celebrar\nnuestra boda' },
   15: { evento: 'Mis 15 años', exclama: '¡Mis quince años!', invitamos: 'Te invito a celebrar mis 15 años' },
   bautismo: { evento: 'Mi bautismo', exclama: '¡Mi bautismo!', invitamos: 'Te invito a celebrar mi bautismo' },
   comunion: { evento: 'Mi primera comunión', exclama: '¡Mi primera comunión!', invitamos: 'Te invito a celebrar mi primera comunión' },
@@ -1255,7 +1255,10 @@ function varsTarjeta(o = {}) {
   const mes = fecha ? MESES[Number(m) - 1] : '';
   const MDY = S.formato?.fecha === 'MDY';
   const plural = !!nB;
-  const f = FRASES[S.evento.tipo] || FRASES[plural ? 'boda' : 'cumple'];
+  let f = FRASES[S.evento.tipo] || FRASES[plural ? 'boda' : 'cumple'];
+  // README (ronda 42): «bautizo» si la invitación se creó en un país donde se dice así (o si la frase de la portada lo dice)
+  const sub = datos.textos?.portada?.subtitulo || '';
+  if (S.evento.tipo === 'bautismo' && (/bautiz/i.test(sub) || (datos.bautizo && !/bautism/i.test(sub)))) f = Object.fromEntries(Object.entries(f).map(([k, x]) => [k, x.replace(/bautismo/g, 'bautizo')]));
   const cierre = datos.rsvp?.cierre ? datos.rsvp.cierre.split('-').reverse().join('/') : '';
   return {
     iso, horaIso: hora, nombres: [nA, nB].filter(Boolean).join(' & '), a: nA || '', b: nB || '',

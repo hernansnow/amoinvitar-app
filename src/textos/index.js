@@ -197,7 +197,7 @@ const EVENTOS = {
     plural: true,
     es: {
       'celebracion.sola': 'Boda', 'bienvenida.texto': '¡Queremos invitarte a nuestra boda!', 'evento.nombre': 'Boda', 'evento.descripcion': 'Te esperamos para nuestra boda',
-      'portada.subtitulo': '¡NOS CASAMOS!', 'std.mensaje': 'Te esperamos para celebrar nuestro casamiento.', 'historia.titulo': 'Nuestra Historia', 'playlist.titulo': 'Nuestra playlist',
+      'portada.subtitulo': '¡NOS CASAMOS!', 'std.mensaje': 'Te esperamos para celebrar nuestra boda.', 'historia.titulo': 'Nuestra Historia', 'playlist.titulo': 'Nuestra playlist',
       'historia.texto': 'Andábamos sin buscarnos, pero sabiendo que andábamos para encontrarnos.',
       'rsvp.texto': 'Tu presencia hará que este día sea realmente especial e inolvidable.',
       'bus.destinoTexto': '¡Nuestra Boda!', 'testigos.titulo': 'Los Testigos',

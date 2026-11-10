@@ -565,6 +565,8 @@ body.cajon-abierto { overflow: hidden; }
 .pie-legal { border-top: 1px solid rgba(255, 255, 255, .16); margin-top: 36px; padding-top: 20px; display: flex; flex-direction: column; gap: 16px; font-size: 14px; }
 .pie-legal p { margin: 0 0 6px; line-height: 1.5; }
 .pie-legal .icono { width: 14px; height: 14px; color: #e0707a; fill: currentColor; stroke: none; vertical-align: -2px; }
+/* README (ronda 42): la zona del país (ciudades) en el pie */
+.pie-legal .pie-zona { font-size: 13px; opacity: .75; margin-bottom: 10px; }
 .pie-snow { display: inline-flex; align-items: center; gap: 10px; color: #b5b5b5; font-size: 13px; }
 .pie-snow img { height: 30px; width: auto; filter: brightness(0) invert(1); opacity: .9; }
 @media (min-width: 800px) { .pie-legal { flex-direction: row; justify-content: space-between; align-items: center; } .pie-snow { flex: none; } }

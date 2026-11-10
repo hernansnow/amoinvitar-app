@@ -28,7 +28,7 @@
       function ir() { window.AmoCrear.medida(slug, titulo, producto); }
       if (window.AmoCrear) return ir();
       if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css'; d.head.appendChild(l); }
-      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', '/'); sc.onload = ir; d.body.appendChild(sc);
+      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
     });
   });
 
@@ -172,11 +172,17 @@
 
   function getCookie(n) { var m = d.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : ''; }
   function setMoneda(c) { d.cookie = 'cur=' + c + '; Path=/; Max-Age=31536000; SameSite=Lax'; }
-  /* El selector es de PAÍS: cada país trae su moneda y su variante de español (la moneda y el idioma van anclados al país).
-     Por defecto se usa el país detectado; lo elegido se guarda en cookies (pais_sel, cur, idioma). Todavía no se traduce:
-     la variante queda guardada para cuando estén definidos los textos. */
-  var LISTA_PAISES = [['DE','Alemania','EUR','en'], ['AR','Argentina','ARS','ar'], ['AU','Australia','AUD','en'], ['AT','Austria','EUR','en'], ['BE','Bélgica','EUR','en'], ['BO','Bolivia','BOB','pe'], ['BR','Brasil','BRL','pt'], ['CA','Canadá','CAD','en'], ['CL','Chile','CLP','cl'], ['CO','Colombia','COP','cl'], ['CR','Costa Rica','CRC','cr'], ['CU','Cuba','USD','mx'], ['EC','Ecuador','USD','pe'], ['SV','El Salvador','USD','cr'], ['ES','España','EUR','es-es'], ['US','Estados Unidos','USD','en'], ['FR','Francia','EUR','en'], ['GT','Guatemala','GTQ','cr'], ['HT','Haití','HTG','es'], ['HN','Honduras','HNL','cr'], ['IE','Irlanda','EUR','en'], ['IT','Italia','EUR','en'], ['MX','México','MXN','mx'], ['NI','Nicaragua','NIO','cr'], ['NZ','Nueva Zelanda','NZD','en'], ['NL','Países Bajos','EUR','en'], ['PA','Panamá','USD','mx'], ['PY','Paraguay','PYG','ar'], ['PE','Perú','PEN','pe'], ['PT','Portugal','EUR','pt'], ['PR','Puerto Rico','USD','mx'], ['GB','Reino Unido','GBP','en'], ['DO','República Dominicana','DOP','mx'], ['VC','San Vicente y las Granadinas','XCD','es'], ['CH','Suiza','CHF','en'], ['UY','Uruguay','UYU','ar'], ['VE','Venezuela','USD','mx']];
-  function setPais(p) { var x = LISTA_PAISES.filter(function (y) { return y[0] === p; })[0]; if (!x) return null; ['pais_sel=' + x[0], 'cur=' + x[2], 'idioma=' + x[3]].forEach(function (c) { d.cookie = c + '; Path=/; Max-Age=31536000; SameSite=Lax'; }); return x; }
+  /* README (ronda 42): el selector es de PAÍS y lleva a su carpeta (/es/, /ar/, /us/en/…): cada país trae su idioma y su moneda.
+     Lo elegido queda en la cookie ai_sede (el Worker la respeta y no vuelve a llevar a la del país de la IP).
+     LISTA_PAISES: [código, nombre, moneda, carpeta] (la arma npm run sitio desde src/sitio/variantes.js) */
+  var LISTA_PAISES = [['','Internacional','EUR',''], ['DE','Alemania','EUR','/de'], ['AR','Argentina','ARS','/ar'], ['AU','Australia','AUD','/au'], ['AT','Austria','EUR','/at'], ['BE','Bélgica','EUR','/be'], ['BO','Bolivia','BOB','/bo'], ['BR','Brasil','BRL','/br'], ['CA','Canadá','CAD','/ca'], ['CL','Chile','CLP','/cl'], ['CO','Colombia','COP','/co'], ['CR','Costa Rica','CRC','/cr'], ['CU','Cuba','USD','/cu'], ['EC','Ecuador','USD','/ec'], ['SV','El Salvador','USD','/sv'], ['ES','España','EUR','/es'], ['US','Estados Unidos','USD','/us'], ['US','Estados Unidos (English)','USD','/us/en'], ['FR','Francia','EUR','/fr'], ['GT','Guatemala','GTQ','/gt'], ['HT','Haití','HTG','/ht'], ['HN','Honduras','HNL','/hn'], ['IE','Irlanda','EUR','/ie'], ['IT','Italia','EUR','/it'], ['MX','México','MXN','/mx'], ['NI','Nicaragua','NIO','/ni'], ['NZ','Nueva Zelanda','NZD','/nz'], ['NL','Países Bajos','EUR','/nl'], ['PA','Panamá','USD','/pa'], ['PY','Paraguay','PYG','/py'], ['PE','Perú','PEN','/pe'], ['PT','Portugal','EUR','/pt'], ['PR','Puerto Rico','USD','/pr'], ['GB','Reino Unido','GBP','/gb'], ['DO','República Dominicana','DOP','/do'], ['VC','San Vicente y las Granadinas','XCD','/vc'], ['CH','Suiza','CHF','/ch'], ['UY','Uruguay','UYU','/uy'], ['VE','Venezuela','USD','/ve']];
+  var CARPETA = d.documentElement.getAttribute('data-carpeta') || '';
+  function irAPais(carpeta) {
+    var x = LISTA_PAISES.filter(function (y) { return y[3] === carpeta; })[0]; if (!x) return;
+    ['ai_sede=' + encodeURIComponent(x[3] || 'raiz'), 'cur=' + x[2]].concat(x[0] ? ['pais_sel=' + x[0]] : []).forEach(function (c) { d.cookie = c + '; Path=/; Max-Age=31536000; SameSite=Lax'; });
+    var resto = location.pathname.indexOf(CARPETA) === 0 ? location.pathname.slice(CARPETA.length) : location.pathname;
+    location.href = x[3] + (resto || '/') + location.search + location.hash;
+  }
   function nombreMoneda(c) {
     if (NOMBRE_MONEDA[c]) return NOMBRE_MONEDA[c];
     try { var p = new Intl.NumberFormat('es', { style: 'currency', currency: c, currencyDisplay: 'name' }).formatToParts(2).filter(function (x) { return x.type === 'currency'; }); if (p[0]) return p[0].value; } catch (e) { /* sin nombre */ }
@@ -236,13 +242,12 @@
     $$('[data-iva]').forEach(function (e) { e.textContent = c.moneda === 'EUR' ? ' · IVA incluido' : ''; });
     // Selector de país (la moneda y el idioma salen del país)
     if ($mon) {
-      var sel = getCookie('pais_sel') || c.pais || 'ES';
-      var actual = LISTA_PAISES.filter(function (y) { return y[0] === sel; })[0];
+      var actual = LISTA_PAISES.filter(function (y) { return y[3] === CARPETA; })[0];
       // Si el país no está en la lista, se muestra el detectado pero con la moneda que corresponde
       var b = $('.moneda-boton span', $mon); if (b) b.textContent = c.moneda;
-      var bd2 = $('[data-bandera]', $mon); if (bd2) { bd2.onerror = function () { bd2.onerror = null; bd2.src = '/web/img/flags/us.svg'; }; bd2.src = '/web/img/flags/' + (actual ? actual[0] : (c.pais || 'us')).toLowerCase() + '.svg'; }
+      var bd2 = $('[data-bandera]', $mon); if (bd2) { bd2.onerror = function () { bd2.onerror = null; bd2.src = '/web/img/flags/us.svg'; }; bd2.src = actual && actual[0] ? '/web/img/flags/' + actual[0].toLowerCase() + '.svg' : '/web/img/flags/globo.svg'; }
       var ul = $('.moneda-lista', $mon);
-      ul.innerHTML = LISTA_PAISES.map(function (y) { return '<button type="button" role="menuitemradio" aria-checked="' + (y[0] === sel) + '" data-p="' + y[0] + '"><span class="pa"><img src="/web/img/flags/' + y[0].toLowerCase() + '.svg" alt="" width="22" height="15">' + y[1] + '</span><small>' + y[2] + '</small></button>'; }).join('');
+      ul.innerHTML = LISTA_PAISES.map(function (y) { return '<button type="button" role="menuitemradio" aria-checked="' + (y[3] === CARPETA) + '" data-p="' + y[3] + '"><span class="pa"><img src="/web/img/flags/' + (y[0] ? y[0].toLowerCase() : 'globo') + '.svg" alt="" width="22" height="15">' + y[1] + '</span><small>' + y[2] + '</small></button>'; }).join('');
     }
   }
   var catalogo = null;
@@ -255,10 +260,11 @@
   if ($mon) {
     var bm = $('.moneda-boton', $mon);
     bm.addEventListener('click', function (e) { e.stopPropagation(); var v = !$mon.classList.contains('abierta'); $mon.classList.toggle('abierta', v); bm.setAttribute('aria-expanded', v); });
-    $mon.addEventListener('click', function (e) { var x = e.target.closest('[data-p]'); if (!x) return; var antes = getCookie('idioma'); var p = setPais(x.getAttribute('data-p')); cerrarMoneda(); if (!p) return; /* README (ronda 40): si cambia la variante del español, se vuelve a cargar la página */ if (antes !== p[3]) { location.reload(); return; } cargaCatalogo(p[2]); });
+    $mon.addEventListener('click', function (e) { var x = e.target.closest('[data-p]'); if (!x) return; cerrarMoneda(); if (x.getAttribute('data-p') !== CARPETA) irAPais(x.getAttribute('data-p')); });
     d.addEventListener('click', function (e) { if (!$mon.contains(e.target)) cerrarMoneda(); });
   }
-  if ($mon || $('[data-precio],[data-pais]')) cargaCatalogo(getCookie('cur') || '');
+  // La moneda es la del país de la carpeta; en la raíz, la elegida antes o la del país de la IP
+  if ($mon || $('[data-precio],[data-pais]')) cargaCatalogo(d.documentElement.getAttribute('data-moneda') || getCookie('cur') || '');
 })();
 /* README (ronda 40): con «reducir movimiento» los videos de la portada quedan quietos */
 (function () { try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelectorAll('.escena video').forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); }); } catch (e) {} })();

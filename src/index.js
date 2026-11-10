@@ -15,7 +15,7 @@
 
 import { diccionario, varianteDePais, VARIANTES, esPlural } from './textos/index.js';
 import { formatoPais, paisDeZona } from './textos/regional.js';
-import { CLAVES, claveDePais } from './sitio/variantes.js';
+import { paisVisitante, claveVisitante, varianteVisitante, bautizoVisitante } from './sitio/visitante.js';
 import { armarVista } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
@@ -88,15 +88,17 @@ const variante = (v) => (VARIANTES.includes(v) ? v : 'es');
 const conTextosModelo = (dic, modelo, varnt) => (modelo?.textosDemo && String(varnt).startsWith('es') ? { ...dic, ...modelo.textosDemo } : dic);
 // "Confirmar asistencia" en vez de "CONFIRMAR ASISTENCIA" (modelo.textosCaso: { clave: 'oracion' }), sin tocar las etiquetas
 const aOracion = (html) => { let primera = true; return html.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, tx) => { if (tag) return tag; const t = tx.toLocaleLowerCase(); if (!primera || !t.trim()) return t; primera = false; return t.replace(/\p{L}/u, (l) => l.toLocaleUpperCase()); }); };
-function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null) {
+function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null, { bautizo } = {}) {
   const d = { ...conTextosModelo(diccionario(tipo, varnt), modelo, varnt), ...propios };
   for (const [k, caso] of Object.entries(modelo?.textosCaso || {})) if (caso === 'oracion' && d[k] && !(k in propios)) d[k] = aOracion(String(d[k]));
   // Un prefijo propio del diseño (Travel: "Tripulación – Testigos"); si el cliente escribe su título, va el suyo entero
   for (const [k, pre] of Object.entries(modelo?.textosPrefijo || {})) if (d[k] && !(k in propios)) d[k] = `${pre}${d[k]}`;
   // Bautismo o Bautizo: la demo usa el del país; la invitación, el que eligió el cliente en la frase de la portada
   // (así el botón Agendar, el pie y los demás textos dicen lo mismo)
-  if (tipo === 'bautismo' && propios['portada.subtitulo']) {
-    const z = /bautiz/i.test(propios['portada.subtitulo']), m = /bautism/i.test(propios['portada.subtitulo']);
+  // README (ronda 42): sin frase propia, manda el país (datos.bautizo: lo que se dice donde se creó la invitación o donde se mira la demo)
+  if (tipo === 'bautismo' && (propios['portada.subtitulo'] || bautizo !== undefined)) {
+    const f = propios['portada.subtitulo'] || '';
+    const z = f ? /bautiz/i.test(f) : !!bautizo, m = f ? /bautism/i.test(f) : !bautizo;
     if (z !== m) {
       const cambiar = (t) => t.replace(/(bauti)(smo|zo)/gi, (x, a, b) => a + (z ? (b === b.toUpperCase() ? 'ZO' : 'zo') : (b === b.toUpperCase() ? 'SMO' : 'smo')));
       for (const k of Object.keys(d)) if (typeof d[k] === 'string' && !(k in propios)) d[k] = cambiar(d[k]);
@@ -164,7 +166,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     evento = structuredClone(evento);
     for (const [ruta, val] of Object.entries(aplanar(evento.traducciones?.[v.slice(0, 2)] || {}))) if (typeof val === 'string' && val.trim()) escribirRuta(evento, ruta, val);
   }
-  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres), modelo);
+  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres), modelo, { bautizo: evento.bautizo });
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
   vista.idiomas = { lista: idiomas, actual: v, banderas: Object.fromEntries(idiomas.map((x) => [x.slice(0, 2), banderaDe(x.slice(0, 2), evento)])) };
@@ -248,10 +250,12 @@ async function demo(env, url, request, idModelo) {
   const modelo = conEvento(base, tipo);
   const paquete = ['basic', 'premium', 'deluxe'].includes(q.get('paquete')) ? q.get('paquete') : 'deluxe';
   // README (ronda 40): el país elegido en el selector de la web (cookie pais_sel) manda sobre el de la IP
-  const pais = q.get('pais') || getCookie(request, 'pais_sel') || request.cf?.country || request.headers.get('cf-ipcountry') || '';
-  const v = VARIANTES.includes(q.get('idioma')) ? q.get('idioma') : varianteDePais(pais);
+  // README (ronda 42): y el idioma de la web que está mirando (inglés, portugués…) manda sobre el del país
+  const pais = q.get('pais') || paisVisitante(request);
+  const v = VARIANTES.includes(q.get('idioma')) ? q.get('idioma') : q.get('pais') ? varianteDePais(pais) : varianteVisitante(request);
   const rutas = { comun: '/comun', modelo: `/modelos/${idModelo}` };
   const ev = eventoDemo({ tipo, variante: v, paquete, modelo, rutas, pais }); // README (ronda 40): lugares, horas y fechas como en ese país
+  if (tipo === 'bautismo' && v.startsWith('es')) ev.bautizo = q.get('pais') ? undefined : bautizoVisitante(request);
   if (q.get('sobre') === 'no') ev.portada = { ...(ev.portada || {}), sobre: false }; // &sobre=no: la ventana de bienvenida
   // Solo en la compu (npm run local): &prueba={json} pisa datos de la demo para revisar casos (nombres largos, secciones apagadas…)
   if (env.MODO_LOCAL && q.get('prueba')) {
@@ -729,7 +733,10 @@ async function apiPanel(env, request, url, partes) {
 
   if (!accion && request.method === 'GET') {
     const v = variante(ev.datos.variante);
-    const dic = conTextosModelo(diccionario(ev.tipo, v), ev.modelo ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null, v);
+    const dic0 = conTextosModelo(diccionario(ev.tipo, v), ev.modelo ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null, v);
+    // README (ronda 42): los textos de ejemplo del panel dicen «bautizo» si la invitación se creó en un país donde se dice así
+    const dic = ev.tipo === 'bautismo' && ev.datos.bautizo && !/bautism/i.test(ev.datos.textos?.portada?.subtitulo || '')
+      ? Object.fromEntries(Object.entries(dic0).map(([k, x]) => [k, typeof x === 'string' ? x.replace(/(bauti)(smo)/gi, (m, a, b) => a + (b === b.toUpperCase() ? 'ZO' : 'zo')) : x])) : dic0;
     return json({
       evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, tipoNombre: nombreTipo(ev.tipo), modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
       esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
@@ -738,7 +745,7 @@ async function apiPanel(env, request, url, partes) {
       // README (ronda 40): cómo se escriben las horas y fechas en el país del evento (para las tarjetas y los textos del panel)
       formato: formatoPais(paisDeZona(ev.datos.zonaHoraria), idiomasDe(ev.datos)[0]),
       // Variante del español para los textos del panel: la elegida en el selector de la web o la del país de la visita
-      clave: CLAVES.includes(getCookie(request, 'idioma')) ? getCookie(request, 'idioma') : claveDePais(getCookie(request, 'pais_sel') || request.cf?.country || request.headers.get('cf-ipcountry')),
+      clave: claveVisitante(request),
       plan: await tienda.estadoPlan(env, request, ev, esquema),
       modelos: modelosCambio(ev.tipo, ev.producto, ev.modelo),
       // README (ronda 28): en el cambio de modelo también está el diseño a medida, con su precio
@@ -811,7 +818,7 @@ async function apiPanel(env, request, url, partes) {
     if (ev.estado === 'publicado' && antes?.simple && !admin) return json({ error: 'La invitación ya está publicada y no se puede cambiar. Escríbenos por WhatsApp.' }, 400);
     // README (ronda 22): entre un modelo simple y uno completo el panel arranca de nuevo; quedan los nombres y la fecha
     if (!!antes?.simple !== !!elegido.simple) {
-      const d = ev.datos, quedan = { nombres: d.nombres, variante: d.variante, zonaHoraria: d.zonaHoraria, idiomas: d.idiomas, extras: d.extras, acceso: d.acceso,
+      const d = ev.datos, quedan = { nombres: d.nombres, variante: d.variante, bautizo: d.bautizo, zonaHoraria: d.zonaHoraria, idiomas: d.idiomas, extras: d.extras, acceso: d.acceso,
         celebracion: d.celebracion && { fecha: d.celebracion.fecha, hora: d.celebracion.hora }, ceremonia: d.ceremonia && { fecha: d.ceremonia.fecha, hora: d.ceremonia.hora } };
       ev.datos = JSON.parse(JSON.stringify(quedan));
     }
@@ -1267,6 +1274,9 @@ export default {
       if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);
       if (p0 === 'demo' && partes.length === 2) {
+        // README (ronda 42): las demos de 15 del sitio viejo (/demo/disco15) son la misma demo con el evento de 15
+        const m15 = /^([a-z]+)15$/.exec(p1);
+        if (m15 && MODELOS.some((x) => x.id === m15[1])) return Response.redirect(new URL(`/demo/${m15[1]}?evento=15${url.search.replace(/^\?/, '&')}`, url.origin).href, 301);
         const r = await demo(env, url, request, p1);
         // Demo del sitio viejo (otro nombre de carpeta): del bucket del sitio viejo
         if (r.status === 404) { const v = await servirLegado(request, env, url); if (v) return v; }
@@ -1296,6 +1306,8 @@ export default {
     if (request.method === 'GET' && /^\/tienda\/?(index\.html)?$/.test(url.pathname) && !['empezar', 'producto', 'cancelado'].some((k) => url.searchParams.has(k))) {
       return Response.redirect(new URL('/crear-invitacion' + (url.searchParams.get('paquete') ? `?paquete=${encodeURIComponent(url.searchParams.get('paquete'))}` : ''), url.origin).href, 302);
     }
+    // README (ronda 42): las páginas de la web se sirven armadas para cada país (src/sitio/nuevo.js), nunca sueltas
+    if (url.pathname.startsWith('/sitio/')) return noExiste();
     const archivo = await env.ASSETS.fetch(request);
     if (archivo.status !== 404) return archivo;
     // README (ronda 30) · Etapa 2: la web nueva (public/sitio/…) y, lo que todavía no se rehízo, el sitio viejo desde

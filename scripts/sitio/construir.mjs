@@ -1,15 +1,15 @@
 // README (ronda 32) · Arma las páginas de la web nueva (public/sitio/*.html) con las mismas piezas en todas.
 //   npm run sitio        → vuelve a generar las páginas (los textos están en scripts/sitio/contenido.mjs)
 // Las páginas generadas se suben al repositorio (el Worker sirve archivos, no genera nada).
-import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as C from './contenido.mjs';
 import { PROFESIONALES as PRO } from '../../src/catalogo.js';
-import { PAISES, CLAVES } from '../../src/sitio/variantes.js';
+import { PAISES, CLAVES, SEDES } from '../../src/sitio/variantes.js';
 import { convertir } from './variantes.mjs';
 import { LANG } from '../../src/sitio/variantes.js';
-import { IDIOMAS, cargaMapa, traducir } from './i18n.mjs';
+import { IDIOMAS, ARCHIVO, cargaMapa, traducir, aPortugal } from './i18n.mjs';
 // README (ronda 41): clave PÚBLICA de Cloudflare Turnstile para el formulario de contacto (se escribe en scripts/sitio/turnstile-sitekey.txt)
 const TS_ARCHIVO = join(dirname(fileURLToPath(import.meta.url)), 'turnstile-sitekey.txt');
 const TS_CLAVE = (existsSync(TS_ARCHIVO) ? readFileSync(TS_ARCHIVO, 'utf8') : '').trim();
@@ -25,10 +25,12 @@ const ic = (n, extra = '') => `<svg class="icono${extra ? ' ' + extra : ''}" ari
 const sprite = () => `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${Object.entries(C.ICONOS).map(([k, v]) => `<symbol id="i-${k}" viewBox="0 0 24 24">${v}</symbol>`).join('')}<symbol id="i-wa" viewBox="0 0 24 24"><path d="${C.WA_PATH}"/></symbol></defs></svg>`;
 
 function head(P) {
-  const url = `${C.SITIO}/${P.slug === 'index' ? '' : P.slug}`;
+  // README (ronda 42): la URL, el país del título, el canonical y los hreflang los completa el Worker (src/sitio/nuevo.js)
+  // en cada carpeta de país: {{URL}}, {{LANG}}, {{OGL}}, <!--alternos--> y el final del <title>
+  const url = '{{URL}}';
   const faq = P.faq ? `,{"@type":"FAQPage","mainEntity":[${P.faq.map(([q, a]) => `{"@type":"Question","name":${JSON.stringify(q)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(a.replace(/<[^>]+>/g, ''))}}}`).join(',')}]}` : '';
   return `<!DOCTYPE html>
-<html lang="es" class="sin-js"${P.cabFija ? ' data-cab-fija' : ''}>
+<html lang="es" class="sin-js"${P.cabFija ? ' data-cab-fija' : ''} data-clave="es" data-raiz="{{R}}/" data-carpeta="{{R}}" data-moneda="{{MON}}">
 <head>
 <!-- README (ronda 32): página generada con scripts/sitio/construir.mjs. No editar a mano: cambiar los textos en scripts/sitio/ y correr npm run sitio -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
@@ -38,17 +40,17 @@ gtag('consent','default',{analytics_storage:aiConsent.analitica?'granted':'denie
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(P.titulo)}</title>
 <meta name="description" content="${esc(P.descripcion)}">
-<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="robots" content="${P.noindex ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large'}">
 <meta name="theme-color" content="#0c463a">
-<link rel="canonical" href="${url}">
+<!--alternos-->
 <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="https://amoinvitar.com/favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://amoinvitar.com/apple-touch-icon.png">
 <link rel="manifest" href="https://amoinvitar.com/site.webmanifest">
-<meta property="og:type" content="website"><meta property="og:locale" content="es_LA"><meta property="og:site_name" content="Amo Invitar!">
+<meta property="og:type" content="website"><meta property="og:locale" content="{{OGL}}"><meta property="og:site_name" content="Amo Invitar!">
 <meta property="og:title" content="${esc(P.titulo)}"><meta property="og:description" content="${esc(P.descripcion)}"><meta property="og:url" content="${url}">
 <meta property="og:image" content="https://amoinvitar.com/images/banner-invitacion.jpg"><meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"${C.SITIO}/#organization","name":"Amo Invitar!","url":"${C.SITIO}/","logo":"${C.SITIO}/logo.png","sameAs":["https://www.facebook.com/AmoInvitar","https://www.instagram.com/AmoInvitar/","https://www.youtube.com/@AmoInvitar"]},{"@type":"WebPage","@id":"${url}#webpage","url":"${url}","name":${JSON.stringify(P.titulo)},"description":${JSON.stringify(P.descripcion)},"inLanguage":"es","isPartOf":{"@id":"${C.SITIO}/#website"}},{"@type":"WebSite","@id":"${C.SITIO}/#website","url":"${C.SITIO}/","name":"Amo Invitar!","publisher":{"@id":"${C.SITIO}/#organization"}}${faq}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"${C.SITIO}/#organization","name":"Amo Invitar!","url":"${C.SITIO}/","logo":"${C.SITIO}/logo.png","sameAs":["https://www.facebook.com/AmoInvitar","https://www.instagram.com/AmoInvitar/","https://www.youtube.com/@AmoInvitar"]},{"@type":"WebPage","@id":"${url}#webpage","url":"${url}","name":${JSON.stringify(P.titulo)},"description":${JSON.stringify(P.descripcion)},"inLanguage":"{{LANG}}","isPartOf":{"@id":"${C.SITIO}/#website"}},{"@type":"WebSite","@id":"${C.SITIO}/#website","url":"${C.SITIO}/","name":"Amo Invitar!","publisher":{"@id":"${C.SITIO}/#organization"}}${faq}]}</script>
 <link rel="preload" href="/web/fonts/jost-35841fe7.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/web/css/sitio.css">
 ${P.widget ? '<link rel="stylesheet" href="/web/css/crear-invitacion.css">\n' : ''}<link rel="stylesheet" href="/web/css/cookies.css">
@@ -336,7 +338,7 @@ function pie() {
     </div>
   </div>
   <div class="pie-legal">
-    <div class="pie-legal-txt"><p class="pl1"><a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/politica-de-cookies#configurar-cookies" data-cookie-settings>Configurar cookies</a> · <a href="/info/terminos-y-condiciones">Términos</a> · <a href="/info/politica-de-devoluciones">Devoluciones</a> · <a href="/info/rgpd">RGPD</a></p><p class="pl2">© 2020-<span id="anio">2026</span> Amo Invitar!® · Todos los derechos reservados · Hecho con ${ic('heart')} por Snow Producciones®</p></div>
+    <div class="pie-legal-txt"><p class="pie-zona">{{ZONA}}</p><p class="pl1"><a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/politica-de-cookies#configurar-cookies" data-cookie-settings>Configurar cookies</a> · <a href="/info/terminos-y-condiciones">Términos</a> · <a href="/info/politica-de-devoluciones">Devoluciones</a> · <a href="/info/rgpd">RGPD</a></p><p class="pl2">© 2020-<span id="anio">2026</span> Amo Invitar!® · Todos los derechos reservados · Hecho con ${ic('heart')} por Snow Producciones®</p></div>
     <a class="pie-snow" href="https://snowproducciones.com.ar/" target="_blank" rel="noopener"><span>Powered by</span><img src="/web/img/snow-tight.svg" alt="Snow Producciones" width="78" height="31" loading="lazy"></a>
   </div>
 </div></footer>
@@ -357,7 +359,7 @@ ${pie()}
 <script src="/web/js/sitio.js" defer></script>
 <script src="/comun/js/contacto.js" defer></script>
 ${(P.scripts || []).map((x) => `<script src="${x}" defer></script>`).join('\n')}
-${P.widget ? '<script src="/web/js/crear-invitacion.js" data-app="" data-img="/web/img/ci/" data-raiz="/" defer></script>\n' : ''}<script src="/web/js/cookies.js" defer></script>
+${P.widget ? '<script src="/web/js/crear-invitacion.js" data-app="" data-img="/web/img/ci/" data-raiz="{{R}}/" defer></script>\n' : ''}<script src="/web/js/cookies.js" defer></script>
 <script>document.getElementById('anio').textContent=new Date().getFullYear();</script>
 </body>
 </html>
@@ -372,34 +374,49 @@ const PAGINAS = [];
 // en el resto, a /crear-invitacion (donde se elige el evento).
 const SLUG_CREAR = { boda: 'boda', 15: '15-anos', bautismo: 'bautismo', comunion: 'comunion', cumple: 'cumpleanos', babyshower: 'baby-shower', graduacion: 'graduacion', empresarial: 'empresarial', otros: 'navidad' };
 const CABECERA_SIMPLE = new Set(['crear-invitacion', 'precios', 'contacto', 'ejemplos-a-medida']);
+// README (ronda 42): links internos de la web con la carpeta del país ({{R}} → '' en la raíz, '/ar', '/us/en'…). Las páginas
+// legales (/info/…), el panel, la cuenta y las demos son las mismas para todos y no llevan carpeta.
+const SLUGS_WEB = ['bodas', 'mis15', 'bautismo', 'comunion', 'cumple', 'baby-shower', 'graduacion', 'empresarial', 'eventos', 'album', 'precios', 'contacto', 'crear-invitacion', 'ejemplos-a-medida', 'profesionales'];
+const RE_LINK = new RegExp(`href="/(?=(?:${SLUGS_WEB.join('|')})(?:[-?#"/]|$)|#|")`, 'g');
+const prefijar = (h) => h.replace(RE_LINK, 'href="{{R}}/');
+// FAQ de los datos estructurados con las preguntas ya traducidas (se leen de la página)
+function faqDeLaPagina(h) {
+  const items = [...h.matchAll(/<details id="p\d+"><summary>([\s\S]*?)<\/summary><div>([\s\S]*?)<\/div><\/details>/g)];
+  if (!items.length) return h;
+  const txt = (x) => x.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/\s+/g, ' ').trim();
+  const lista = items.map(([, q, a]) => `{"@type":"Question","name":${JSON.stringify(txt(q))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(txt(a))}}}`).join(',');
+  return h.replace(/\{"@type":"FAQPage","mainEntity":\[[\s\S]*?\]\}(?=\]\}<\/script>)/, () => `{"@type":"FAQPage","mainEntity":[${lista}]}`);
+}
+const TRADUCIDAS = new Set(IDIOMAS);
+// Cada página se escribe una vez por clave de texto (public/sitio/t/<clave>/<página>.html); el Worker la sirve en cada
+// carpeta de país que usa esa clave. Las legales, solo en español neutro (se ven en /info/… para todos).
 const escribe = (slug, P, cuerpo) => {
   P.slug = slug;
   if (CABECERA_SIMPLE.has(slug) || slug.startsWith('info/')) P.cabFija = true;
-  if (slug.includes('/')) mkdirSync(dirname(join(RAIZ, slug)), { recursive: true });
   let h = pagina(P, cuerpo);
   if (P.evento === 'empresarial') h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, 'href="#crear" data-medida="empresarial" data-titulo="Diseño corporativo a medida"');
   else if (P.evento && SLUG_CREAR[P.evento]) h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, (m, q) => `href="/crear-invitacion-para-${SLUG_CREAR[P.evento]}${q || ''}"`);
   h = h.replace(/(?<![\p{L}])([Dd])e el (?=[a-záéíóúñ])/gu, '$1el '); // «de el bautismo» → «del bautismo»
-  writeFileSync(join(RAIZ, slug + '.html'), h); PAGINAS.push(slug);
-  // README (ronda 40): una copia por variante del español (public/sitio/v/<clave>/…), la elige el Worker según el país
-  for (const c of CLAVES.filter((x) => x !== 'es')) {
-    const dest = join(RAIZ, 'v', c, slug + '.html');
+  h = prefijar(h);
+  PAGINAS.push(slug);
+  const claves = slug.startsWith('info/') ? ['es'] : CLAVES;
+  for (const c of claves) {
+    let x = c === 'es' ? h : TRADUCIDAS.has(c) ? faqDeLaPagina(traducir(h, MAPAS[c], LANG[c] || c)) : convertir(h, c);
+    x = x.replace('data-clave="es"', `data-clave="${c}"`);
+    const dest = join(RAIZ, 't', c, slug + '.html');
     mkdirSync(dirname(dest), { recursive: true });
-    writeFileSync(dest, convertir(h, c));
-  }
-  // Una copia por idioma traducido (inglés, portugués): public/sitio/v/<idioma>/…
-  for (const l of IDIOMAS) {
-    const dest = join(RAIZ, 'v', l, slug + '.html');
-    mkdirSync(dirname(dest), { recursive: true });
-    writeFileSync(dest, traducir(h, MAPAS[l], LANG[l] || l));
+    writeFileSync(dest, x);
+    if (c === 'es') BASE[slug] = h;
   }
 };
-// Se borran las variantes de la corrida anterior para que no queden páginas que ya no existen
-rmSync(join(RAIZ, 'v'), { recursive: true, force: true });
+const BASE = {};
+// Se borran las páginas de la corrida anterior (y las del sistema de variantes por cookie, ronda 40) para que no queden viejas
+for (const x of ['v', 't', 'info']) rmSync(join(RAIZ, x), { recursive: true, force: true });
+for (const f of readdirSync(RAIZ)) if (f.endsWith('.html')) rmSync(join(RAIZ, f));
 
 // Portada principal
 {
-  const P = { titulo: 'Invitaciones digitales con RSVP, mesas y álbum QR | Amo Invitar!', descripcion: 'Invitaciones digitales interactivas para bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower y eventos. Compartes por WhatsApp, tus invitados confirman con un clic y tú descargas la lista. Prueba gratis.' };
+  const P = { titulo: 'Invitaciones digitales para bodas y eventos', descripcion: 'Invitaciones digitales con RSVP para bodas, 15 años, bautismos y eventos: se envían por WhatsApp, confirman con un clic y tú ves la lista. Prueba gratis.' };
   const E = { ...GENERICO };
   escribe('index', P, [
     portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: '', h1: 'Invitaciones digitales', panelImg: '/web/img/hero-panel-captura.webp', lead: 'La web de tu evento. Tus invitados abren, disfrutan y responden con un clic. Tú ves quién viene, organizas mesas y descargas la lista final desde un solo panel: es como tener un <strong>planner digital</strong>. Lista en minutos y sin pagar hasta que te encante.', demo: '/demo/garden?evento=boda&paquete=deluxe&limpia=1' }),
@@ -424,22 +441,22 @@ const HEROES = {
   otros: fondoDe(IMG_EV('hero-eventos.jpg'), G('0,0,0,.4', '126,114,91,.6')),
 };
 const PORTADAS = {
-  boda: { etiqueta: 'Invitación + web', h1: 'Toda tu boda en un link', lead: 'Compartes por WhatsApp, tus invitados confirman asistencia con un clic, tú gestionas y descargas la lista. Además, van a agendar la fecha, ver el mapa, elegir menú, conocer el código de vestimenta, regalos, mesa asignada, sugerir canciones, álbum QR y mucho más.', t: 'Invitaciones de boda digitales con RSVP, mesas y álbum QR', d: 'Invitación de boda digital + web: tus invitados confirman asistencia con un clic, ven el mapa, el menú y el dress code, y tú gestionas mesas y lista. Diseños de catálogo o a medida. Prueba gratis.' },
-  15: { etiqueta: 'Invitación + web', h1: 'Tus 15, en un solo link', lead: 'Compartes por WhatsApp, tus invitados confirman asistencia con un clic, tú gestionas y descargas la lista. Además, van a agendar la fecha, ver el mapa, elegir menú, conocer el código de vestimenta, regalos, mesa asignada, sugerir canciones, álbum QR y mucho más.', t: 'Invitaciones de 15 años digitales con RSVP y álbum QR', d: 'Invitación digital de 15 años: confirmación con un clic, cuenta regresiva, canciones sugeridas, mesas y álbum QR. Diseños de catálogo o a medida. Prueba gratis.' },
-  bautismo: { etiqueta: 'Invitación + web', h1: 'Todo el bautismo en un link', lead: 'Compartes por WhatsApp, toda la familia y amigos confirman con un clic y tú sabes exactamente quién viene: fecha, iglesia, lugar de la celebración, mapa para llegar, menú, regalos, canciones, álbum QR y mucho más.', t: 'Invitaciones de bautismo y bautizo digitales', d: 'Invitación digital de bautismo (bautizo): la familia confirma con un clic y ve la iglesia, el lugar y el mapa. Diseños de catálogo o a medida. Prueba gratis.' },
-  comunion: { etiqueta: 'Invitación + web', h1: 'Toda la comunión en un link', lead: 'Compartes por WhatsApp y tus invitados confirman asistencia con un clic. Ceremonia, celebración, mapa para llegar, menú, regalos, canciones, álbum QR y mucho más. Todo en un solo lugar.', t: 'Invitaciones de comunión digitales con RSVP', d: 'Invitación digital de primera comunión: confirmación con un clic, misa, celebración, mapa y menú. Diseños de catálogo o a medida. Prueba gratis.' },
-  cumple: { etiqueta: 'Invitación + web', h1: 'Tu cumpleaños, en un solo link', lead: 'Para adultos y niños: compartes por WhatsApp, tus invitados confirman con un clic y tú sabes exactamente quién viene. Con ubicación, temática, dress code, menú, regalos, canciones, álbum QR y mucho más.', t: 'Invitaciones de cumpleaños digitales (adultos e infantiles)', d: 'Invitación digital de cumpleaños para adultos e infantiles: confirmación con un clic, mapa, temática, regalos y álbum QR. Diseños de catálogo o a medida. Prueba gratis.' },
-  babyshower: { etiqueta: 'Invitación + web', h1: 'Tu baby shower en un solo link', lead: 'Para celebrar la llegada de tu bebé: compartes por WhatsApp, tus invitados confirman con un clic, y suman lista de regalos, ubicación, álbum QR y mucho más. También para fiestas de revelación de género.', t: 'Invitaciones de baby shower y revelación de género digitales', d: 'Invitación digital de baby shower y revelación de género: confirmación con un clic, lista de regalos, mapa y álbum QR. Diseños de catálogo o a medida. Prueba gratis.' },
-  graduacion: { etiqueta: 'Invitación + web', h1: 'Tu graduación, en un solo link', lead: 'Compartes por WhatsApp, tus invitados confirman con un clic y tú los recibes con todo organizado: acto, fiesta, mapa, dress code, canciones y álbum QR para no perderte ninguna foto.', t: 'Invitaciones de graduación y egreso digitales', d: 'Invitación digital de graduación y egreso: confirmación con un clic, mapa, dress code, canciones y álbum QR. Diseños de catálogo o a medida. Prueba gratis.' },
-  empresarial: { etiqueta: 'Eventos empresariales', h1: 'Tu evento corporativo en un solo link', lead: 'Lanzamientos, cenas de fin de año, congresos y capacitaciones: envías por WhatsApp o email, tus invitados confirman con un clic y tú controlas la lista, las mesas y la entrada con QR. Con la imagen de tu marca y diseño 100% a medida.', t: 'Invitaciones digitales para eventos corporativos y empresas', d: 'Invitaciones digitales para eventos de empresa: confirmación con un clic, control de acceso con QR, mesas y lista exportable. Diseño a medida con tu marca. Pide tu propuesta.' },
-  otros: { etiqueta: 'Más eventos', h1: 'Cualquier evento, en un solo link', lead: 'Navidad, aniversarios, despedidas, reuniones, inauguraciones… Si lo vas a celebrar, lo invitamos. Elige un diseño de catálogo, o pide una invitación a medida 100% personalizada.', t: 'Invitaciones digitales para Navidad y otros eventos', d: 'Invitaciones digitales para Navidad, aniversarios, despedidas y cualquier evento: confirmación con un clic, mapa y lista exportable. Diseños de catálogo o a medida. Prueba gratis.' },
+  boda: { etiqueta: 'Invitación + web', h1: 'Toda tu boda en un link', lead: 'Compartes por WhatsApp, tus invitados confirman asistencia con un clic, tú gestionas y descargas la lista. Además, van a agendar la fecha, ver el mapa, elegir menú, conocer el código de vestimenta, regalos, mesa asignada, sugerir canciones, álbum QR y mucho más.', t: 'Invitaciones de boda digitales con RSVP', d: 'Invitación de boda digital con web: confirman asistencia con un clic, ven mapa, menú y dress code, y tú organizas mesas y lista. Prueba gratis.' },
+  15: { etiqueta: 'Invitación + web', h1: 'Tus 15, en un solo link', lead: 'Compartes por WhatsApp, tus invitados confirman asistencia con un clic, tú gestionas y descargas la lista. Además, van a agendar la fecha, ver el mapa, elegir menú, conocer el código de vestimenta, regalos, mesa asignada, sugerir canciones, álbum QR y mucho más.', t: 'Invitaciones de 15 años digitales con RSVP', d: 'Invitación digital de 15 años: confirmación con un clic, cuenta regresiva, canciones, mesas y álbum QR. De catálogo o a medida. Prueba gratis.' },
+  bautismo: { etiqueta: 'Invitación + web', h1: 'Todo el bautismo en un link', lead: 'Compartes por WhatsApp, toda la familia y amigos confirman con un clic y tú sabes exactamente quién viene: fecha, iglesia, lugar de la celebración, mapa para llegar, menú, regalos, canciones, álbum QR y mucho más.', t: 'Invitaciones de bautismo digitales con RSVP', d: 'Invitación digital de bautismo: la familia confirma con un clic y ve la iglesia, el lugar y el mapa. De catálogo o a medida. Prueba gratis.' },
+  comunion: { etiqueta: 'Invitación + web', h1: 'Toda la comunión en un link', lead: 'Compartes por WhatsApp y tus invitados confirman asistencia con un clic. Ceremonia, celebración, mapa para llegar, menú, regalos, canciones, álbum QR y mucho más. Todo en un solo lugar.', t: 'Invitaciones de comunión digitales con RSVP', d: 'Invitación digital de primera comunión: confirmación con un clic, misa, celebración, mapa y menú. De catálogo o a medida. Prueba gratis.' },
+  cumple: { etiqueta: 'Invitación + web', h1: 'Tu cumpleaños, en un solo link', lead: 'Para adultos y niños: compartes por WhatsApp, tus invitados confirman con un clic y tú sabes exactamente quién viene. Con ubicación, temática, dress code, menú, regalos, canciones, álbum QR y mucho más.', t: 'Invitaciones de cumpleaños digitales con RSVP', d: 'Invitación digital de cumpleaños, para adultos e infantiles: confirmación con un clic, mapa, temática, regalos y álbum QR. Prueba gratis.' },
+  babyshower: { etiqueta: 'Invitación + web', h1: 'Tu baby shower en un solo link', lead: 'Para celebrar la llegada de tu bebé: compartes por WhatsApp, tus invitados confirman con un clic, y suman lista de regalos, ubicación, álbum QR y mucho más. También para fiestas de revelación de género.', t: 'Invitaciones de baby shower digitales con RSVP', d: 'Invitación digital de baby shower y revelación de género: confirmación con un clic, lista de regalos, mapa y álbum QR. Prueba gratis.' },
+  graduacion: { etiqueta: 'Invitación + web', h1: 'Tu graduación, en un solo link', lead: 'Compartes por WhatsApp, tus invitados confirman con un clic y tú los recibes con todo organizado: acto, fiesta, mapa, dress code, canciones y álbum QR para no perderte ninguna foto.', t: 'Invitaciones de graduación digitales con RSVP', d: 'Invitación digital de graduación: confirmación con un clic, mapa, dress code, canciones y álbum QR. De catálogo o a medida. Prueba gratis.' },
+  empresarial: { etiqueta: 'Eventos empresariales', h1: 'Tu evento corporativo en un solo link', lead: 'Lanzamientos, cenas de fin de año, congresos y capacitaciones: envías por WhatsApp o email, tus invitados confirman con un clic y tú controlas la lista, las mesas y la entrada con QR. Con la imagen de tu marca y diseño 100% a medida.', t: 'Invitaciones corporativas digitales a medida', d: 'Invitaciones digitales para eventos de empresa: confirmación con un clic, acceso con QR, mesas y lista exportable. Diseño a medida con tu marca.' },
+  otros: { etiqueta: 'Más eventos', h1: 'Cualquier evento, en un solo link', lead: 'Navidad, aniversarios, despedidas, reuniones, inauguraciones… Si lo vas a celebrar, lo invitamos. Elige un diseño de catálogo, o pide una invitación a medida 100% personalizada.', t: 'Invitaciones digitales para Navidad y eventos', d: 'Invitaciones digitales para Navidad, aniversarios, despedidas y cualquier evento: confirmación con un clic, mapa y lista exportable. Prueba gratis.' },
 };
 const OTRAS_ES = { boda: 'Boda', 15: '15 años', bautismo: 'Bautismo', comunion: 'Comunión', cumple: 'Cumpleaños', babyshower: 'Baby shower', graduacion: 'Graduación', empresarial: 'Corporativo', otros: 'Navidad' };
 for (const E0 of C.EVENTOS) {
   if (E0.id === 'empresarial') continue; // README (ronda 39): el corporativo tiene su propia página (más abajo)
   const E = { ...E0, contactoEvento: OTRAS_ES[E0.id] };
   const pt = PORTADAS[E.id];
-  const P = { titulo: `${pt.t} | Amo Invitar!`, descripcion: pt.d, widget: true, evento: E.id };
+  const P = { titulo: pt.t, descripcion: pt.d, widget: true, evento: E.id };
   escribe(E.pagina, P, [
     portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES[E.id], demo: demoDe(E.id) }),
     confianza(), disenos(E), funciones(E), comoFunciona(E, false), planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),
@@ -456,7 +473,7 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
 // Crear invitación (elige el tipo de evento y el diseño; el widget abre el panel con «Personalizar»)
 {
   const E = { ...GENERICO, widget: '', tituloDisenos: '¿Qué <em>Celebramos</em>?', grid: C.EVENTOS.map((e) => ({ slug: SLUG_CREAR[e.id], nombre: e.id === 'boda' ? 'Bodas' : e.nombre, img: `/web/img/eventos/${e.img}` })) };
-  const P = { titulo: 'Crear invitación digital | Amo Invitar!', descripcion: 'Crea tu invitación digital: elige el modelo, personalízala gratis y obtén tu link. Pago único solo al publicar. Bodas, 15 años, bautismos, comuniones, cumpleaños, baby shower, graduaciones y eventos corporativos.', widget: true };
+  const P = { titulo: 'Crear invitación digital online', descripcion: 'Crea tu invitación digital: elige el modelo, personalízala gratis y obtén tu link. Pago único solo al publicar, para bodas, 15 años y todo evento.', widget: true };
   escribe('crear-invitacion', P, [
     cabeceraCrear(),
     disenos(E), comoFunciona(E, false), planes(E), faq(E, P), llamada(E), contacto(E),
@@ -466,9 +483,9 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
 // Precios
 {
   const E = { ...GENERICO, sinTitulo: true };
-  const P = { titulo: 'Planes y precios de invitaciones digitales | Amo Invitar!', descripcion: 'Un pago, cero complicaciones: planes Gratis, Basic, Premium y Deluxe para tu invitación digital. Sin suscripciones. Diséñala, míralas terminada y paga solo al publicar.' };
+  const P = { titulo: 'Precios de invitaciones digitales', descripcion: 'Planes Gratis, Basic, Premium y Deluxe para tu invitación digital, con pago único y sin suscripciones. Diséñala, mírala terminada y paga al publicar.' };
   escribe('precios', P, [
-    cabeceraSimple('Planes y precios', 'Un pago único. Sin suscripciones.', 'Empieza gratis, diseña tu invitación y míralas terminada antes de pagar. Eliges el plan solo cuando decides publicarla.'),
+    cabeceraSimple('Planes y precios', 'Un pago único. Sin suscripciones.', 'Empieza gratis, diseña tu invitación y mírala terminada antes de pagar. Eliges el plan solo cuando decides publicarla.'),
     planes(E), faq(E, P), testimonios(), llamada(E), contacto({ ...E, sinTitulo: false }),
   ].join('\n'));
 }
@@ -476,7 +493,7 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
 // Contacto
 {
   const E = { ...GENERICO, sinTitulo: true };
-  const P = { titulo: 'Contacto | Amo Invitar!', descripcion: 'Escríbenos por WhatsApp o desde el formulario: te ayudamos a elegir el diseño, pedir una invitación a medida o resolver cualquier duda.' };
+  const P = { titulo: 'Contacto y soporte por WhatsApp', descripcion: 'Escríbenos por WhatsApp o desde el formulario: te ayudamos a elegir el diseño, pedir una invitación a medida o resolver cualquier duda.' };
   escribe('contacto', P, [
     cabeceraSimple('Contacto', '¿Hablamos?', 'Cuéntanos qué necesitas y te respondemos en el día. También por WhatsApp.'),
     contacto(E), faq(E, P),
@@ -487,7 +504,7 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
 {
   const E = { ...C.EVENTOS.find((e) => e.id === 'empresarial'), contactoEvento: 'Corporativo', corp: true };
   const pt = PORTADAS.empresarial;
-  const P = { titulo: `${pt.t} | Amo Invitar!`, descripcion: pt.d, widget: false, evento: 'empresarial' };
+  const P = { titulo: pt.t, descripcion: pt.d, widget: false, evento: 'empresarial' };
   const MUESTRAS = [['snow', 1], ['prave', 5], ['aquasalud', 2], ['liseth', 3], ['aitravel', 4]]; // [demo, miniatura p_empresarial-N]
   const urlDemo = (d) => `/empresa-demos/demo/empresarial/${d}`;
   const identidad = `<section class="seccion" id="identidad"><div class="caja">${titulo('Para tu marca', '<em>Invitar</em> con identidad propia', '')}
@@ -533,7 +550,7 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
 {
   const J = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'ejemplos-a-medida.json'), 'utf8'));
   const E = { ...GENERICO };
-  const P = { titulo: 'Ejemplos de diseños a medida | Amo Invitar!', descripcion: 'Mira ejemplos de invitaciones web, Save The Date y tarjetas a medida, creados desde cero para cada evento.', widget: false };
+  const P = { titulo: 'Invitaciones a medida: ejemplos de diseños', descripcion: 'Mira ejemplos de invitaciones web, Save The Date y tarjetas a medida, creados desde cero para cada evento.', widget: false };
   const grupo = (id) => {
     const g = J[id];
     const lista = g.ejemplos.length ? `<div class="ej-grilla">${g.ejemplos.map((x) => `<figure class="ej-item rev"><div class="ej-marco${/-marco\./.test(x.img) ? ' ej-phone' : ''}"><img src="${esc(x.img)}" alt="${esc(x.nombre)}" loading="lazy"></div><figcaption>${esc(x.nombre)}</figcaption>${x.link ? `<a class="btn btn-borde" href="${esc(x.link)}" target="_blank" rel="noopener">Ver ejemplo</a>` : ''}</figure>`).join('')}</div>` : `<p class="ej-pronto rev">Estamos preparando los ejemplos. Mientras tanto, cuéntanos tu idea y te mostramos propuestas.</p>`;
@@ -575,7 +592,7 @@ const MARCA = { y: `<span class="si">${ic('check')}<span class="sr">Incluido</sp
 
 function paginaAlbum() {
   const E = { ...GENERICO, id: 'otros', tuEvento: 'tu evento' };
-  const P = { titulo: 'Álbum colaborativo QR para bodas y eventos | Amo Invitar! + Albunear', descripcion: 'Álbum de fotos por QR para bodas y eventos: tus invitados escanean un QR y suben fotos y videos sin apps. Slideshow en vivo y descarga en alta calidad. Se integra con tu invitación digital de Amo Invitar!.' };
+  const P = { titulo: 'Álbum QR colaborativo para bodas y eventos', descripcion: 'Álbum de fotos por QR para bodas y eventos: tus invitados escanean y suben fotos y videos sin apps. Slideshow en vivo y descarga en alta calidad.' };
   const ticks = ['Sin apps', 'Listo en 60 segundos', 'Pago único'];
   const fd = (n) => `<i style="background-image:url(/web/img/fiestas/fiesta${n}.webp)"></i>`;
   const hero = `<section class="portada alb-hero" id="inicio" style="--hero-g:linear-gradient(160deg,#fff 0%,#E5F3EC 55%,#cfe8dc 100%);--hero-gd:linear-gradient(160deg,#fff 0%,#E5F3EC 55%,#cfe8dc 100%);--hero-m:none;--hero-d:none"><div class="caja portada-grid">
@@ -601,7 +618,7 @@ paginaAlbum();
 // ── Profesionales ───────────────────────────────────────────────────────
 function paginaProfesionales() {
   const E = { ...GENERICO, id: 'index' };
-  const P = { scripts: ['/web/js/profesionales.js'], titulo: 'Invitaciones digitales para wedding planners, fotógrafos y salones | Amo Invitar!', descripcion: 'Planes Pro y Studio para profesionales: panel con todos tus eventos, usuarios administradores, créditos a precio mayorista, marca blanca y dominio propio para tus invitaciones digitales.' };
+  const P = { scripts: ['/web/js/profesionales.js'], titulo: 'Invitaciones digitales para profesionales', descripcion: 'Para wedding planners, fotógrafos y salones: panel con todos tus eventos, equipo, créditos a precio mayorista, marca blanca y dominio propio.' };
   const hero = `<section class="portada" id="inicio"><div class="caja portada-centro"><span class="etiqueta">Para profesionales</span><h1>Invitaciones digitales para tus clientes, con tu marca</h1><p class="lead" style="margin-inline:auto">Wedding planners, fotógrafos, salones y agencias: administra todos tus eventos en un solo panel, suma a tu equipo y entrega invitaciones que se sienten tuyas.</p><div class="fila-btn" style="justify-content:center"><a class="btn btn-claro btn-grande" href="#contacto">Quiero mi cuenta</a><a class="btn btn-borde-claro btn-grande" href="#niveles">Ver los niveles</a></div></div></section>`;
   const nivel = (n, o) => `<article class="plan-card rev${o.destacado ? ' destacado' : ''}">${o.destacado ? '<span class="cinta">Marca blanca</span>' : ''}<h3>${PRO[n].nombre}</h3><p class="precio">${PRO[n].pase ? `${eur(PRO[n].pase)} <small style="font-size:.4em;color:var(--suave)">/ año</small>` : '0 €'}</p><p class="precio-s">${o.ideal}</p><ul>${o.items.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul><a class="btn ${o.destacado ? 'btn-verde' : 'btn-borde'}" href="#contacto" data-nivel="${PRO[n].nombre}">${o.boton}</a></article>`;
   const niveles = `<section class="seccion" id="niveles"><div class="caja">${titulo('Niveles', 'Elige cómo <em>trabajar</em>', 'Empieza sin costo fijo y pasa a Studio cuando tu volumen lo pida.')}
@@ -659,56 +676,82 @@ const LEGALES = [
 ];
 for (const [slug, titulo, sub] of LEGALES) {
   const cuerpo = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'legales', slug + '.html'), 'utf8');
-  const P = { titulo: `${titulo} | Amo Invitar!`, descripcion: sub };
+  const P = { titulo, descripcion: sub, noindex: true };
   escribe('info/' + slug, P, `<section class="cabecera-simple"><div class="caja"><span class="etiqueta">Información legal</span><h1>${titulo}</h1><p class="lead">${sub}</p></div></section>
 <section class="seccion"><div class="caja"><article class="legal-txt"><p class="legal-fecha">Última actualización: ${slug === 'terminos-y-condiciones' ? '6 de noviembre de 2026' : '10 de noviembre de 2026'}</p>
 ${cuerpo}
 <p class="legal-otros">Otros textos legales: <a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/terminos-y-condiciones">Términos</a> · <a href="/info/politica-de-devoluciones">Devoluciones</a> · <a href="/info/rgpd">RGPD</a></p></article></div></section>`);
 }
 
-console.log('Páginas generadas:', PAGINAS.join(', '));
+console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} versiones de texto (${CLAVES.join(', ')}) · ${SEDES.length} carpetas`);
 
-// README (ronda 40): la lista de países del selector (alfabética) sale de src/sitio/variantes.js
+// README (ronda 42) · Sitemap y robots: todas las páginas de cada carpeta de país (los hreflang van en cada página, los pone el Worker).
+// Las legales (/info/…) no van: son las mismas para todos y quedan con noindex.
+{
+  const hoy = new Date().toISOString().slice(0, 10);
+  const indexables = PAGINAS.filter((x) => !x.startsWith('info/'));
+  const urls = SEDES.flatMap((sd) => indexables.map((x) => `${C.SITIO}${sd.carpeta}/${x === 'index' ? '' : x}`));
+  writeFileSync(join(RAIZ, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${hoy}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+  // Lo que no tiene que salir en Google: la app (panel, cuenta, tienda, api), las invitaciones de los clientes y las legales.
+  // Las demos sí se pueden rastrear (se ven en las páginas), pero no se listan.
+  const fuera = ['/api/', '/panel/', '/mi-cuenta', '/entrar', '/tienda', '/empresa/', '/admin', '/acceso/', '/vista/', '/mesa/', '/puerta/', '/factura/', '/recuerdo/',
+    '/boda/', '/15/', '/evento/', '/info/', '/email/', '/sitio/', ...SEDES.filter((x) => x.carpeta).flatMap((x) => [`${x.carpeta}/email/`, `${x.carpeta}/info/`])];
+  writeFileSync(join(RAIZ, 'robots.txt'), `# Generado por scripts/sitio/construir.mjs (README ronda 42)\nUser-agent: *\n${fuera.map((x) => `Disallow: ${x}`).join('\n')}\n\nUser-agent: facebookexternalhit\nAllow: /\n\nUser-agent: Twitterbot\nAllow: /\n\nSitemap: ${C.SITIO}/sitemap.xml\n`);
+  console.log('Sitemap:', urls.length, 'direcciones');
+}
+
+// README (ronda 42): la lista del selector de país (alfabética) sale de src/sitio/variantes.js: [código, nombre, moneda, carpeta]
 {
   const f = join(dirname(fileURLToPath(import.meta.url)), '../../public/sitio/web/js/sitio.js');
   const js = readFileSync(f, 'utf8');
-  const lista = '  var LISTA_PAISES = ' + JSON.stringify(PAISES).replace(/\],\[/g, '], [').replace(/"/g, "'") + ';';
+  const filas = [['', 'Internacional', 'EUR', ''], ...SEDES.filter((x) => x.carpeta).map((x) => [x.pais, PAISES.find((p) => p[0] === x.pais)[1] + (x.carpeta.split('/').length > 2 ? ' (English)' : ''), x.moneda, x.carpeta])]
+    .sort((a, b) => (!a[0] ? -1 : !b[0] ? 1 : a[1].localeCompare(b[1], 'es')));
+  const lista = '  var LISTA_PAISES = ' + JSON.stringify(filas).replace(/\],\[/g, '], [').replace(/"/g, "'") + ';';
   const n = js.replace(/  var LISTA_PAISES = \[[\s\S]*?\]\];/, () => lista);
   if (n !== js) writeFileSync(f, n);
 }
 
-// README (ronda 40): el mismo conversor, para el navegador (public/comun/js/regional.js): textos que arma el JavaScript y el panel
+// README (ronda 40/42): el mismo conversor, para el navegador (public/comun/js/regional.js): textos que arma el JavaScript,
+// el panel y la cuenta. En la web convierte también boda → casamiento/matrimonio; en el panel, no.
 {
-  const f = join(dirname(fileURLToPath(import.meta.url)), 'variantes.mjs');
-  const fuente = readFileSync(f, 'utf8').replace(/^import .*\n/m, '').replace(/export (const|function)/g, '$1');
-  // Diccionarios para el texto que arma el JavaScript (widget, banner de cookies) y para el panel: español → idioma
-  const jsFuente = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'i18n/js-fuente.json'), 'utf8'));
+  const aqui = dirname(fileURLToPath(import.meta.url));
+  const fuente = readFileSync(join(aqui, 'variantes.mjs'), 'utf8').replace(/^import .*\n/m, '').replace(/export (const|function)/g, '$1');
+  const jsFuente = JSON.parse(readFileSync(join(aqui, 'i18n/js-fuente.json'), 'utf8'));
   const DICT = {};
-  for (const l of ['en', 'pt']) {
-    const tr = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), `i18n/js-${l}.json`), 'utf8'));
-    DICT[l] = {}; for (const [i, v] of Object.entries(tr)) if (jsFuente[i] && v) DICT[l][jsFuente[i].trim()] = v.replace(/^\s+|\s+$/g, '');
+  for (const l of IDIOMAS) {
+    const archivo = join(aqui, `i18n/js-${ARCHIVO[l]}.json`);
+    if (!existsSync(archivo)) continue;
+    const tr = JSON.parse(readFileSync(archivo, 'utf8'));
+    DICT[l] = {}; for (const [i, v] of Object.entries(tr)) if (jsFuente[i] && v) DICT[l][jsFuente[i].trim()] = (l === 'pt-pt' ? aPortugal(v) : v).replace(/^\s+|\s+$/g, '');
   }
-  const PREF = [['desde ', 'from ', 'a partir de '], ['Ver ejemplos de ', 'See examples of ', 'Ver exemplos de '], ['Ver diseño ', 'See design ', 'Ver design '], ['Personalizar ', 'Customize ', 'Personalizar '],
-    ['Ver más funciones (', 'Show more features (', 'Ver mais funções ('], ['Puedes pagar con ', 'You can pay with ', 'Você pode pagar com '], ['Podés pagar con ', 'You can pay with ', 'Você pode pagar com ']];
+  // Comienzos de frase que el JavaScript completa (desde 29 €, Ver ejemplos de bodas…): [es, en, pt, fr, it, de, nl]
+  const PREF = [['desde ', 'from ', 'a partir de ', 'à partir de ', 'da ', 'ab ', 'vanaf '],
+    ['Ver ejemplos de ', 'See examples of ', 'Ver exemplos de ', 'Voir des exemples : ', 'Vedi esempi: ', 'Beispiele: ', 'Voorbeelden: '],
+    ['Ver diseño ', 'See design ', 'Ver design ', 'Voir le design ', 'Vedi il design ', 'Design ansehen: ', 'Bekijk ontwerp '],
+    ['Personalizar ', 'Customize ', 'Personalizar ', 'Personnaliser ', 'Personalizza ', 'Anpassen: ', 'Personaliseer '],
+    ['Ver más funciones (', 'Show more features (', 'Ver mais funções (', 'Voir plus de fonctions (', 'Mostra altre funzioni (', 'Weitere Funktionen (', 'Meer functies ('],
+    ['Puedes pagar con ', 'You can pay with ', 'Você pode pagar com ', 'Vous pouvez payer par ', 'Puoi pagare con ', 'Sie können bezahlen mit ', 'Je kunt betalen met '],
+    ['Podés pagar con ', 'You can pay with ', 'Você pode pagar com ', 'Vous pouvez payer par ', 'Puoi pagare con ', 'Sie können bezahlen mit ', 'Je kunt betalen met ']];
+  const COL = { en: 1, 'pt-br': 2, 'pt-pt': 2, fr: 3, it: 4, de: 5, nl: 6 };
   const NOMBRES_PAIS = Object.fromEntries(PAISES.map((x) => [x[1], x[0]]));
-  const salida = `/* Generado por scripts/sitio/construir.mjs desde scripts/sitio/variantes.mjs (README ronda 40): no editar a mano */
+  const salida = `/* Generado por scripts/sitio/construir.mjs desde scripts/sitio/variantes.mjs (README ronda 40/42): no editar a mano */
 (function () {
   var LANG = ${JSON.stringify(LANG)};
 ${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n/m, '')}
   var DICT = ${JSON.stringify(DICT)};
   var PREF = ${JSON.stringify(PREF)};
+  var COL = ${JSON.stringify(COL)};
   var PAISES = ${JSON.stringify(NOMBRES_PAIS)};
   var NOMBRES = {};
   function traduce(v, l) {
-    var t = v.trim(), r = DICT[l][t];
-    if (r == null) { for (var i = 0; i < PREF.length; i++) { if (t.indexOf(PREF[i][0]) === 0) { r = PREF[i][l === 'en' ? 1 : 2] + t.slice(PREF[i][0].length); break; } } }
-    if (r == null && PAISES[t]) { try { NOMBRES[l] = NOMBRES[l] || new Intl.DisplayNames([l === 'pt' ? 'pt-BR' : 'en'], { type: 'region' }); r = NOMBRES[l].of(PAISES[t]); } catch (e) {} }
+    var t = v.trim(), r = DICT[l] ? DICT[l][t] : null;
+    if (r == null) { for (var i = 0; i < PREF.length; i++) { if (t.indexOf(PREF[i][0]) === 0) { r = PREF[i][COL[l]] + t.slice(PREF[i][0].length); break; } } }
+    if (r == null && PAISES[t]) { try { NOMBRES[l] = NOMBRES[l] || new Intl.DisplayNames([LANG[l] || l], { type: 'region' }); r = NOMBRES[l].of(PAISES[t]); } catch (e) {} }
     return r == null ? v : v.replace(t, function () { return r; });
   }
-  function aTexto(v) { return clave === 'en' || clave === 'pt' ? traduce(v, clave) : convertirTexto(v, clave); }
-  var POR_LANG = {}; Object.keys(LANG).forEach(function (k) { POR_LANG[LANG[k].toLowerCase()] = k; });
+  var clave = 'es', activo = false, web = false;
+  function aTexto(v) { return COL[clave] ? traduce(v, clave) : convertirTexto(v, clave, { web: web }); }
   var ATRIB = ['placeholder', 'aria-label', 'title', 'alt'];
-  var clave = 'es', activo = false;
   function texto(n) {
     var p = n.parentNode; if (!p || /^(SCRIPT|STYLE|TEXTAREA|INPUT|CODE)$/.test(p.nodeName) || (p.closest && p.closest('.opinion, [data-sin-regional]'))) return;
     var v = n.nodeValue; if (!v || !/[A-Za-zÁÉÍÓÚáéíóú]/.test(v)) return;
@@ -722,17 +765,18 @@ ${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n
     var els = raiz.querySelectorAll ? raiz.querySelectorAll('[placeholder],[aria-label],[title],[alt]') : [];
     [raiz].concat([].slice.call(els)).forEach(function (e) { ATRIB.forEach(function (a) { var v = e.getAttribute && e.getAttribute(a); if (v) { var w = aTexto(v); if (w !== v) e.setAttribute(a, w); } }); });
   }
-  function activar(c, sinInicial) {
+  // activar(clave, sinInicial, { web }): web solo en las páginas de la web (boda → casamiento/matrimonio); el panel va sin web
+  function activar(c, sinInicial, opc) {
     if (activo || !c || c === 'es' || !LANG[c]) return;
-    clave = c; activo = true;
+    clave = c; activo = true; web = !!(opc && opc.web);
     if (!sinInicial) nodo(document.body); // en la web las páginas ya vienen convertidas del servidor: solo se miran los textos que arma el JavaScript
     new MutationObserver(function (ms) { ms.forEach(function (m) { [].slice.call(m.addedNodes).forEach(nodo); if (m.type === 'characterData') texto(m.target); }); }).observe(document.body, { childList: true, subtree: true, characterData: true });
   }
-  window.AI_REGIONAL = { activar: activar, convertir: function (t, c) { return convertirTexto(t, c || clave); }, traduce: aTexto };
-  // En la web, la variante sale del idioma de la página (<html lang>)
-  function auto() { var c = POR_LANG[(document.documentElement.lang || '').toLowerCase()]; if (c && c !== 'es') activar(c, true); }
+  window.AI_REGIONAL = { activar: activar, convertir: function (t, c) { return convertirTexto(t, c || clave, { web: web }); }, traduce: aTexto, clave: function () { return clave; } };
+  // En la web, la clave sale de la página (<html data-clave>)
+  function auto() { var c = document.documentElement.getAttribute('data-clave'); if (c && c !== 'es') activar(c, true, { web: true }); }
   if (document.body) auto(); else document.addEventListener('DOMContentLoaded', auto);
 })();
 `;
-  writeFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../public/comun/js/regional.js'), salida);
+  writeFileSync(join(aqui, '../../public/comun/js/regional.js'), salida);
 }

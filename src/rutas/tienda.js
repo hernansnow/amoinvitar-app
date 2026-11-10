@@ -24,6 +24,8 @@ import { almacenD1 } from '../almacen.js';
 import { RECUERDO, PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, PROFESIONALES, precioPedido, comprable } from '../catalogo.js';
 import { MODELOS, TIPOS_EVENTO, CON_TARJETA_STD, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
+import { varianteVisitante, bautizoVisitante } from '../sitio/visitante.js';
+import { diceBautizo } from '../sitio/variantes.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
 import { ZONAS } from '../datos/zonas.js';
 
@@ -276,7 +278,7 @@ async function crearEventoDePedido(env, p) {
   const ev = {
     id: `ev_${randomId(5)}`, producto: d.producto, tipo: d.tipo, modelo: d.modelo, paquete: d.paquete, aMedida: d.aMedida || null,
     estado: 'borrador', clave: randomId(16), empresaId: null, slug: null,
-    datos: { variante: varianteDePais(d.pais || p.pais), acceso: { modo: 'abierta' }, extras: d.extras || [] },
+    datos: { variante: d.variante || varianteDePais(d.pais || p.pais), acceso: { modo: 'abierta' }, extras: d.extras || [], ...(d.tipo === 'bautismo' && diceBautizo(d.pais || p.pais) ? { bautizo: true } : {}) },
   };
   await almacen.guardarEvento(ev);
   await almacen.darAcceso(ev.id, usuario.id, 'cliente');
@@ -607,7 +609,8 @@ export async function empezar(request, env) {
     id: `ev_${randomId(5)}`, producto: 'invitacion', tipo, modelo: m.id, paquete: 'borrador', aMedida: null,
     estado: 'borrador', clave: randomId(16), empresaId: null, slug: null,
     datos: {
-      variante: varianteDePais(pais), zonaHoraria: zona, acceso: { modo: 'abierta' }, extras: [], secciones,
+      // README (ronda 42): idioma y bautismo/bautizo del país que eligió en la web (o el de su IP)
+      variante: varianteVisitante(request), zonaHoraria: zona, acceso: { modo: 'abierta' }, extras: [], secciones, ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}),
       nombres: bb ? { a, b: bb } : { a }, celebracion: fecha ? { fecha, inicio: fecha } : {},
       planElegido: gratisPosible ? 'gratis' : null,
       // README (ronda 28): los modelos con plan gratis arrancan gratis (sin galería ni cuenta regresiva); al prender
@@ -648,7 +651,7 @@ async function empezarProducto(request, env, b, producto) {
   if (!a) throw new HttpError(400, 'Falta el nombre');
   const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';
   let modelo = null;
-  const datos = { variante: varianteDePais(paisReal(request)), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
+  const datos = { variante: varianteVisitante(request), ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
     celebracion: fecha ? { fecha, inicio: fecha } : {}, std: { ...(fecha ? { fecha } : {}) } };
   if (producto === 'std-tarjeta') {
     // Sin diseño elegido (desde la tienda): el primero con tarjeta para ese evento
