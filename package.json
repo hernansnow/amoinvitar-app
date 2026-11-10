@@ -16,7 +16,7 @@
     "qrcode-generator": "2.0.4"
   },
   "devDependencies": {
-    "purgecss": "7.0.2",
-    "wrangler": "4.148.0"
+    "purgecss": "^8.0.0",
+    "wrangler": "^4.158.0"
   }
 }
