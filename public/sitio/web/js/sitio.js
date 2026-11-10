@@ -233,7 +233,23 @@
     // README (ronda 41): precios de profesionales en la moneda del visitante
     $$('[data-eur]').forEach(function (e) { var v = c.pro && c.pro[e.getAttribute('data-eur')]; if (v) e.textContent = v; });
     // Texto de abajo, con la lógica de Albunear: moneda y medios del país
-    $$('[data-nota-precios]').forEach(function (e) {
+    // README (ronda 42): en las páginas traducidas, la nota va en el idioma de la página
+    var IDI = { en: 'en', 'pt-br': 'pt', 'pt-pt': 'pt', fr: 'fr', it: 'it', de: 'de', nl: 'nl' }[d.documentElement.getAttribute('data-clave') || 'es'];
+    if (IDI) {
+      var NOTA = { en: ['Prices in {m}.', 'You can pay with {x}.', 'Design your invitation today without paying anything.', '(*) Only available on some models.', ' and '],
+        pt: ['Preços em {m}.', 'Você pode pagar com {x}.', 'Crie seu convite hoje mesmo sem pagar nada.', '(*) Disponível apenas em alguns modelos.', ' e '],
+        fr: ['Prix en {m}.', 'Vous pouvez payer par {x}.', 'Créez votre invitation dès aujourd’hui sans rien payer.', '(*) Disponible uniquement sur certains modèles.', ' et '],
+        it: ['Prezzi in {m}.', 'Puoi pagare con {x}.', 'Crea il tuo invito oggi stesso senza pagare nulla.', '(*) Disponibile solo su alcuni modelli.', ' e '],
+        de: ['Preise in {m}.', 'Du kannst bezahlen mit {x}.', 'Gestalte deine Einladung noch heute, ohne etwas zu zahlen.', '(*) Nur bei einigen Designs verfügbar.', ' und '],
+        nl: ['Prijzen in {m}.', 'Je kunt betalen met {x}.', 'Ontwerp vandaag nog je uitnodiging zonder iets te betalen.', '(*) Alleen beschikbaar bij sommige ontwerpen.', ' en '] }[IDI];
+      var mon = c.moneda; try { mon = new Intl.NumberFormat(IDI, { style: 'currency', currency: c.moneda, currencyDisplay: 'name' }).formatToParts(2).filter(function (x) { return x.type === 'currency'; })[0].value; } catch (x) { /* sin nombre */ }
+      var tr = function (t) { return window.AI_REGIONAL ? AI_REGIONAL.traduce(t) : t; };
+      var ns = m.nombres.map(tr), lx = ns.length > 1 ? ns.slice(0, -1).join(', ') + NOTA[4] + ns[ns.length - 1] : ns.join('');
+      $$('[data-nota-precios]').forEach(function (e) {
+        e.setAttribute('data-sin-regional', '');
+        e.innerHTML = NOTA[0].replace('{m}', mon) + (lx ? ' ' + NOTA[1].replace('{x}', lx) : '') + ' ' + NOTA[2] + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>' + NOTA[3] + '</small>');
+      });
+    } else $$('[data-nota-precios]').forEach(function (e) {
       e.innerHTML = ar
         ? 'Precios en pesos argentinos.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + '  No esperes más, diseñá tu invitación hoy mismo sin pagar nada.' + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>(*) Solo disponible en algunos modelos.</small>')
         : 'Precios en ' + nombreMoneda(c.moneda) + '. ' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada.' + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>(*) Solo disponible en algunos modelos.</small>');

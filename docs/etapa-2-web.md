@@ -139,3 +139,35 @@ Las páginas de `public/sitio/*.html` (portada, eventos, precios, contacto, crea
 - Estilos: `public/sitio/web/css/sitio.css` (sin Bootstrap ni jQuery). Scripts: `web/js/sitio.js` (menú, moneda, precios, FAQ, opiniones).
 - Precios, país, moneda y medios de pago se piden a `/api/tienda/catalogo`; el texto de abajo de los planes sale de la misma lógica de Albunear.
 - `/infantiles` redirige a `/cumple` (src/sitio/nuevo.js). `/album` todavía usa el diseño viejo.
+
+## 10. Países, idiomas y SEO (ronda 42)
+
+**Carpetas por país, como el sitio viejo.** Cada página existe en la raíz (versión neutra: `/bodas`) y en la carpeta de
+cada país (`/es/bodas`, `/ar/bodas`, `/mx/bodas`…, y `/us/en/bodas` para Estados Unidos en inglés). La lista de países,
+su idioma, su moneda y sus ciudades está en `src/sitio/variantes.js` (PAISES): para sumar un país, agregarlo ahí y
+correr `npm run sitio`.
+
+- Archivos: `public/sitio/t/<clave>/<página>.html`, uno por **clave de texto** (es, es-es, es-ar, es-mx, en, fr…). El
+  Worker (`src/sitio/nuevo.js`, función `componer`) completa cada copia para su país: título con «| Amo Invitar! – País»,
+  descripción con las ciudades, `canonical`, todos los `hreflang` (+ `x-default` a la raíz), `og:locale`, links internos
+  con la carpeta (`{{R}}`), moneda (`data-moneda`) y la línea de ciudades del pie.
+- `/sitemap.xml` y `/robots.txt` los genera `npm run sitio` (en `public/sitio/`). Las legales (`/info/…`) son una sola
+  versión en español, con `noindex`, fuera del sitemap.
+- **Idioma automático**: a una persona (no a los buscadores) que entra sin haber elegido país se la lleva (302) a la
+  carpeta del país de su IP; Estados Unidos va a `/us/en/` si el navegador está en inglés. Lo elegido en el selector queda
+  en la cookie `ai_sede` y manda sobre la IP. Los buscadores ven cada dirección tal cual, sin redirecciones.
+- Al ver una carpeta se guardan las cookies `pais_sel`, `cur` e `idioma`: las usan las demos, el panel y la tienda
+  (`src/sitio/visitante.js`). Los precios y el IVA siguen yendo por la IP y los datos de facturación.
+- Demos viejas por país (`/ar/aquarella/`, `/mx/disco15/`) → 301 a `/demo/<modelo>?evento=…` (una sola demo).
+
+**Variantes del español** (`scripts/sitio/variantes.mjs`, también en el navegador: `public/comun/js/regional.js`):
+neutro (tú, boda, bautismo), España (vosotros, móvil, ordenador, vídeo, coste, bautizo), México (bautizo, XV años),
+rioplatense (vos, casamiento — Argentina y Uruguay), Paraguay (vos, boda), vos centroamericano (bautizo), Chile y
+Colombia (matrimonio, computador), Perú (matrimonio). **«Casamiento / matrimonio» solo en la web**: las demos, el panel
+y las invitaciones dicen siempre «boda» (`convertirTexto(t, clave, { web })`). Bautismo/bautizo en demos e invitaciones
+nuevas según el país (`diceBautizo`, `datos.bautizo`); el cliente lo cambia con la frase de la portada.
+
+**Traducciones** (`scripts/sitio/i18n/`): `fuente.json` (español) + `<idioma>.json` (en, pt, fr, it, de, nl) para las
+páginas, y `js-*.json` para lo que arma el JavaScript (selector de modelos, cookies y panel). Portugal sale del
+portugués de Brasil (`aPortugal` en `i18n.mjs`). Después de cambiar textos: `npm run sitio`, `npm run sitio:i18n` (suma
+los textos nuevos y dice cuántos faltan) y traducir los números que falten.

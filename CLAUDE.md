@@ -37,6 +37,7 @@ lo personaliza en el panel y paga al publicar. Ver `README.md` (carpetas y cómo
 | Caducidad por plan | `src/vencimiento.js` |
 | Contacto (formulario único) | `src/rutas/contacto.js`, `public/comun/js/contacto.js` |
 | Web nueva / sitio viejo | `src/sitio/nuevo.js`, `src/sitio/legado.js`, `public/sitio/` |
+| Países, idiomas, variantes del español, hreflang | `src/sitio/variantes.js`, `scripts/sitio/variantes.mjs`, `scripts/sitio/i18n/`, `docs/etapa-2-web.md` §10 |
 | Elegir modelo + Personalizar (para las páginas) | `public/sitio/web/js/crear-invitacion.js` |
 | Páginas de la web nueva (se generan: `npm run sitio`) | `scripts/sitio/contenido.mjs`, `scripts/sitio/construir.mjs` |
 | Profesionales: tablero, créditos, marca, equipo | `src/rutas/empresa.js`, `src/pro/`, `public/empresa/`, `docs/empresas.md` |

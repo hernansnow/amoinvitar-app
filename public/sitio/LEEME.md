@@ -1,7 +1,7 @@
 # Web nueva (etapa 2)
 
-Las páginas de la web nueva van en esta carpeta y se ven en la raíz del dominio:
-`public/sitio/bodas.html` → `/bodas`, `public/sitio/index.html` → `/`.
+Las páginas de la web nueva se generan con `npm run sitio` en `t/<clave de texto>/` y el Worker las sirve en la raíz
+(`/bodas`) y en cada carpeta de país (`/es/bodas`, `/ar/bodas`…). Ver `docs/etapa-2-web.md`, sección 10.
 
 **Antes de crear o cambiar páginas, leer `docs/etapa-2-web.md`.** Resumen:
 
