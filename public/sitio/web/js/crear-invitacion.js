@@ -26,10 +26,10 @@
     { slug: 'empresarial', tipo: 'empresarial', nombre: 'Empresarial / Corporativo', pagina: 'empresarial' }
   ];
   // Save The Date: en estos eventos (la web Classic/Soft y la foto, solo boda y 15)
-  var CON_STD = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'infantil', 'babyshower', 'graduacion'];
+  var CON_STD = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'infantil', 'babyshower'];
   var CON_FOTO = ['boda', '15'];
   // README (ronda 40): la Save The Date con foto también en bautismo, comunión y cumpleaños
-  var FOTO_STD = ['boda', '15', 'bautismo', 'comunion', 'cumple', 'graduacion'];
+  var FOTO_STD = ['boda', '15', 'bautismo', 'comunion', 'cumple'];
 
   // Orden de los modelos como en las páginas de cada evento (los que no están, después)
   var ORDEN = {

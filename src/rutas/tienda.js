@@ -63,7 +63,7 @@ function validarPedido(p) {
   const simple = { 'compromiso-web': 'compromiso', 'std-web': 'std-classic' }[producto];
   const tipoValido = TIPOS_EVENTO.some((t) => t.id === p.tipo) ? p.tipo : 'boda';
   if (!disponibleSuelto(producto, tipoValido)) throw new HttpError(400, 'Esta opción no está disponible para ese tipo de evento');
-  const tipo = producto === 'agradecimiento' || producto === 'std-tarjeta' || (producto === 'std-foto' && ['bautismo', 'comunion', 'cumple', 'graduacion'].includes(tipoValido)) ? tipoValido : simple ? (['boda', '15'].includes(p.tipo) ? p.tipo : 'boda') : 'save-the-date';
+  const tipo = producto === 'agradecimiento' || producto === 'std-tarjeta' || (producto === 'std-foto' && ['bautismo', 'comunion', 'cumple'].includes(tipoValido)) ? tipoValido : simple ? (['boda', '15'].includes(p.tipo) ? p.tipo : 'boda') : 'save-the-date';
   // La tarjeta Save The Date es la de un modelo: arranca con el primero que la tiene para ese evento
   const modelo = producto === 'std-tarjeta' ? (MODELOS.find((m) => CON_TARJETA_STD.has(m.id) && m.eventos.includes(tipo))?.id || 'garden')
     : simple && producto === 'compromiso-web' && tipo === '15' ? 'party' : simple || null;
@@ -634,7 +634,7 @@ const SUELTOS = ['std-tarjeta', 'std-foto', 'agradecimiento', 'std-web', 'std-ta
 export const STD_SOLO_BODA_15 = new Set(['std-web', 'std-foto']);
 export const EVENTOS_TARJETA_STD = new Set(['boda', '15', 'cumple', 'infantil', 'bautismo', 'comunion', 'babyshower', 'revelacion']);
 export function disponibleSuelto(producto, tipo) {
-  if (producto === 'std-foto') return ['boda', '15', 'bautismo', 'comunion', 'cumple', 'graduacion'].includes(tipo);
+  if (producto === 'std-foto') return ['boda', '15', 'bautismo', 'comunion', 'cumple'].includes(tipo);
   if (STD_SOLO_BODA_15.has(producto)) return tipo === 'boda' || tipo === '15';
   if (producto === 'std-tarjeta') return EVENTOS_TARJETA_STD.has(tipo);
   return true;
