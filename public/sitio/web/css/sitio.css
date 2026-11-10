@@ -828,3 +828,4 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .gal-grilla img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(0, 0, 0, .2); display: block; }
 
 .planes.tres .plan-card h3 { line-height: 1.4; min-height: 2.8em; }
+.portada:not(.alb-hero) .escena { margin-bottom: 5%; }

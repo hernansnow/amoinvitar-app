@@ -209,7 +209,7 @@ function funciones(E) {
 ${E.corp ? '' : '<p class="centro" style="margin-top:28px"><a class="btn btn-verde" href="/precios">Ver qué incluye cada plan</a></p>'}</div></section>`;
 }
 
-const celda = (v) => (v === true ? `<span class="si">${ic('check')}<span class="sr">Incluido</span></span>` : v === false ? '<span class="no" aria-label="No incluido">—</span>' : `<small>${esc(v)}</small>`);
+const celda = (v) => (v === true ? `<span class="si">${ic('check')}<span class="sr">Incluido</span></span>` : v === false ? '<span class="no" aria-label="No incluido">—</span>' : `<small>${String(v).includes('data-eur') ? v : esc(v)}</small>`);
 function planes(E) {
   const cards = C.PLANES.map((p) => `<article class="plan-card rev${p.destacado ? ' destacado' : ''}">${p.destacado ? '<span class="cinta">Más elegido</span>' : ''}<h3>${p.nombre}</h3>${p.id === 'gratis' ? '' : `<span class="promo-cinta" data-promo-de="${p.id}" hidden></span>`}<p class="precio" data-precio="${p.id}">${p.id === 'gratis' ? '0 €' : '&nbsp;'}</p><p class="precio-s">${p.id === 'gratis' ? 'Sin tarjeta, sin pagar nada' : `Pago único<span data-iva> · IVA incluido</span>`}</p><ul>${p.items.map((t, i) => `<li${i === 0 && t.startsWith('Todo') ? ' class="todo"' : ''}>${ic('check')}<span>${esc(t)}</span></li>`).join('')}</ul><a class="btn ${p.destacado ? 'btn-verde' : 'btn-borde'}" href="/crear-invitacion?paquete=${p.id}">${p.boton}</a></article>`).join('');
   const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v) => `<td>${celda(v)}</td>`).join('')}</tr>`).join('');
