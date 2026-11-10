@@ -1,7 +1,7 @@
 // README (ronda 32) · Arma las páginas de la web nueva (public/sitio/*.html) con las mismas piezas en todas.
 //   npm run sitio        → vuelve a generar las páginas (los textos están en scripts/sitio/contenido.mjs)
 // Las páginas generadas se suben al repositorio (el Worker sirve archivos, no genera nada).
-import { writeFileSync, readFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as C from './contenido.mjs';
@@ -10,6 +10,9 @@ import { PAISES, CLAVES } from '../../src/sitio/variantes.js';
 import { convertir } from './variantes.mjs';
 import { LANG } from '../../src/sitio/variantes.js';
 import { IDIOMAS, cargaMapa, traducir } from './i18n.mjs';
+// README (ronda 41): clave PÚBLICA de Cloudflare Turnstile para el formulario de contacto (se escribe en scripts/sitio/turnstile-sitekey.txt)
+const TS_ARCHIVO = join(dirname(fileURLToPath(import.meta.url)), 'turnstile-sitekey.txt');
+const TS_CLAVE = (existsSync(TS_ARCHIVO) ? readFileSync(TS_ARCHIVO, 'utf8') : '').trim();
 const MAPAS = Object.fromEntries(IDIOMAS.map((l) => [l, cargaMapa(l)]));
 import { rmSync } from 'node:fs';
 
@@ -305,7 +308,7 @@ function contacto(E) {
   return `<section class="seccion alt" id="contacto"><div class="caja contacto">
   <div class="rev">${E.sinTitulo ? '' : `<span class="sobre" style="font:600 13px/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--verde);display:block;margin-bottom:12px">Contacto</span><h2 style="font-size:clamp(28px,4vw,42px)">¿Hablamos de ${E.id === 'index' || E.id === 'otros' ? 'tu evento' : E.tuEvento}?</h2><p>Cuéntanos qué necesitas y te respondemos en el día. También puedes escribirnos por WhatsApp.</p>`}
   <div class="contacto-datos"><a href="${C.WHATSAPP}" target="_blank" rel="noopener"><span class="ic">${ic('wa')}</span>WhatsApp</a><a href="mailto:${C.EMAIL}?subject=${encodeURIComponent('Consulta desde la web de Amo Invitar!')}"><span class="ic">${ic('mail')}</span>${C.EMAIL}</a></div></div>
-  <form class="tarjeta formu rev" data-contacto>
+  <form class="tarjeta formu rev" data-contacto${TS_CLAVE ? ` data-turnstile="${TS_CLAVE}"` : ''}>
     <div class="dos"><label>Nombre<input name="nombre" required minlength="2" autocomplete="name"></label><label>Email<input name="email" type="email" required autocomplete="email"></label></div>
     <div class="dos"><label>WhatsApp<input name="telefono" type="tel" autocomplete="tel" placeholder="Con código de país"></label><label>Evento<select name="evento" required>${opts}</select></label></div>
     <label>Mensaje<textarea name="mensaje" rows="4" required placeholder="Fecha, lugar, cantidad de invitados, ¿ya tienes un diseño en mente?"></textarea></label>
