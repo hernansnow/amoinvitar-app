@@ -4,10 +4,11 @@
 // Los archivos están en public/sitio/t/<clave>/<página>.html (los genera npm run sitio, una vez por clave de texto) y acá se
 // completa cada uno para su país: título con el país, descripción con sus ciudades, canonical, hreflang, links con la carpeta.
 //
-// Idioma automático (README ronda 42): a una persona (no a los buscadores) que entra sin haber elegido país se la lleva a la
-// carpeta del país de su IP (Estados Unidos: /us/en/ si el navegador está en inglés). Lo que elige en el selector queda en la
-// cookie ai_sede y manda sobre la IP. Los países sin carpeta se quedan en la raíz neutra. Los buscadores ven cada dirección
-// tal cual (sin redirecciones), con sus hreflang: así no hay contenido duplicado.
+// Idioma automático (README ronda 42/43): solo en las páginas de la raíz (sin carpeta). A una persona (no a los buscadores)
+// se la lleva a la carpeta del país que eligió en el selector (cookie ai_elegida) o, si nunca eligió, a la del país de su IP
+// (Estados Unidos: /us/en/ si el navegador está en inglés). Una dirección con carpeta (/ar/…) se muestra siempre tal cual,
+// la escriba a mano o venga de Google. Los países sin carpeta se quedan en la raíz neutra. Los buscadores ven cada
+// dirección tal cual (sin redirecciones), con sus hreflang: así no hay contenido duplicado.
 //
 // Las rutas de la app (/panel, /tienda, /modelos, /comun, /api…) van antes y no se pisan, y las carpetas de las invitaciones
 // viejas de los clientes tampoco (PROTEGIDAS): la web nueva nunca sirve nada ahí.
@@ -88,7 +89,7 @@ function zona(sede) {
 const PIE_ZONA = { es: 'Invitaciones digitales', en: 'Digital invitations', pt: 'Convites digitais', fr: 'Invitations numériques', it: 'Inviti digitali', de: 'Digitale Einladungen', nl: 'Digitale uitnodigingen' };
 
 // Completa la página guardada para la carpeta de un país
-function componer(html, sede, pagina, { legal = false } = {}) {
+function componer(html, sede, pagina, { legal = false, monedaRaiz = '' } = {}) {
   const url = urlDe(sede, pagina);
   const sufijo = ` | Amo Invitar!${sede.nombre ? ` – ${sede.nombre}` : ''}`;
   const z = zona(sede);
@@ -107,13 +108,15 @@ function componer(html, sede, pagina, { legal = false } = {}) {
     .replace(/\{\{OGL\}\}/g, ogLocale(sede.lang))
     .replace(/\{\{R\}\}/g, sede.carpeta)
     .replace(/\{\{MON\}\}/g, sede.carpeta ? sede.moneda : '')
+    .replace('{{BANDERA}}', sede.pais ? sede.pais.toLowerCase() : 'globo')
+    .replace('{{MONEDA}}', sede.carpeta ? sede.moneda : esc(monedaRaiz))
     .replace('<p class="pie-zona">{{ZONA}}</p>', pieZona ? `<p class="pie-zona">${esc(pieZona)}</p>` : '')
     .replace('data-raiz="{{R}}/"', `data-raiz="${sede.carpeta}/"`);
 }
 
-// La carpeta que prefiere esta persona: la que eligió (cookie ai_sede) o la del país de su IP. null: sin preferencia
+// La carpeta que prefiere esta persona: la que eligió en el selector (cookie ai_elegida) o la del país de su IP. null: sin preferencia
 function preferida(request) {
-  const elegida = getCookie(request, 'ai_sede');
+  const elegida = getCookie(request, 'ai_elegida');
   if (elegida === 'raiz') return NEUTRA;
   if (elegida && sedeDeCarpeta(elegida)) return sedeDeCarpeta(elegida);
   const pais = request.cf?.country || request.headers.get('cf-ipcountry') || '';
@@ -144,6 +147,8 @@ export async function sitioNuevo(env, request, url) {
     const r = await env.ASSETS.fetch(new Request(new URL(`/sitio${url.pathname}${url.search}`, url.origin), request));
     return r.status === 404 ? null : r;
   }
+  // README (ronda 43): la tienda vieja de WordPress (/store/…, /ar/store/…) se cerró: a los precios del país
+  if (/^(store|tienda-vieja)(\/|$)/.test(pagina0)) return ir(`${sede.carpeta}/precios`);
   // Nombres viejos y la demo vieja de cada país
   const primera = pagina0.split('/')[0];
   if (primera in REDIRECCIONES && pagina0 === primera) return ir(`${sede.carpeta}/${REDIRECCIONES[primera]}${url.search}`);
@@ -170,7 +175,7 @@ export async function sitioNuevo(env, request, url) {
   const headers = new Headers({ 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-cache' });
   if (persona && !legal && !url.searchParams.has('sin-redireccion')) {
     const pref = preferida(request);
-    if (pref && pref.carpeta !== sede.carpeta) {
+    if (sede === NEUTRA && pref && pref.carpeta) {
       const h = new Headers({ location: new URL(`${pref.carpeta}/${pagina0 === 'index' ? '' : pagina0}${url.search}`, url.origin).href, 'cache-control': 'private, no-store', vary: 'Cookie' });
       for (const c of cookiesSede(pref, request)) h.append('set-cookie', c);
       return new Response(null, { status: 302, headers: h });
@@ -178,5 +183,5 @@ export async function sitioNuevo(env, request, url) {
     if (getCookie(request, 'ai_sede') !== (sede.carpeta || 'raiz') && (sede.carpeta || pref)) for (const c of cookiesSede(sede, request)) headers.append('set-cookie', c);
   }
   if (!principal) { headers.set('x-robots-tag', 'noindex, nofollow'); headers.set('cache-control', 'private, no-store'); }
-  return new Response(request.method === 'HEAD' ? null : componer(html, sede, pagina0, { legal }), { status: 200, headers });
+  return new Response(request.method === 'HEAD' ? null : componer(html, sede, pagina0, { legal, monedaRaiz: /^[A-Z]{3}$/.test(getCookie(request, 'cur') || '') ? getCookie(request, 'cur') : '' }), { status: 200, headers });
 }

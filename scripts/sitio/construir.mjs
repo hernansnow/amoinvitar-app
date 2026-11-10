@@ -30,7 +30,7 @@ function head(P) {
   const url = '{{URL}}';
   const faq = P.faq ? `,{"@type":"FAQPage","mainEntity":[${P.faq.map(([q, a]) => `{"@type":"Question","name":${JSON.stringify(q)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(a.replace(/<[^>]+>/g, ''))}}}`).join(',')}]}` : '';
   return `<!DOCTYPE html>
-<html lang="es" class="sin-js"${P.cabFija ? ' data-cab-fija' : ''} data-clave="es" data-raiz="{{R}}/" data-carpeta="{{R}}" data-moneda="{{MON}}">
+<html lang="es" class="sin-js"${P.cabFija ? ' data-cab-fija' : ''} data-clave="es" data-raiz="{{R}}/" data-carpeta="{{R}}" data-mon="{{MON}}">
 <head>
 <!-- README (ronda 32): página generada con scripts/sitio/construir.mjs. No editar a mano: cambiar los textos en scripts/sitio/ y correr npm run sitio -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
@@ -83,7 +83,7 @@ function cabecera(P) {
       <a href="/contacto" aria-label="Contacto"${actual('contacto')}>${ic('mail')}</a>
     </nav>
     <div class="cab-acciones">
-      <div class="moneda" data-moneda><button class="moneda-boton" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Elegir tu país (moneda e idioma)"><img data-bandera src="/web/img/flags/es.svg" alt="" width="22" height="15"><span>EUR</span>${ic('chevron')}</button><div class="moneda-lista" role="menu" aria-label="País"></div></div>
+      <div class="moneda" data-moneda><button class="moneda-boton" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Elegir tu país (moneda e idioma)"><img data-bandera src="/web/img/flags/{{BANDERA}}.svg" alt="" width="22" height="15"><span>{{MONEDA}}</span>${ic('chevron')}</button><div class="moneda-lista" role="menu" aria-label="País"></div></div>
       <a class="mi-panel" href="/mi-cuenta">${ic('user-check')} Mi panel</a>
       <a class="btn btn-claro btn-crear" href="/crear-invitacion">Crear invitación</a>
       <button class="hamb" type="button" data-abrir-menu aria-label="Abrir el menú" aria-expanded="false" aria-controls="cajon">${ic('menu')}</button>
@@ -660,7 +660,8 @@ paginaProfesionales();
 for (const f of ['public/entrar/index.html', 'public/mi-cuenta/index.html']) {
   const ruta = join(RAIZ, '..', '..', f);
   let h = readFileSync(ruta, 'utf8');
-  const bloque = `<!--cab-->${sprite()}${cabecera({ slug: 'cuenta' })}<!--/cab-->`;
+  // README (ronda 43): en la cuenta, el botón del país arranca con el globo; sitio.js pone el país elegido
+  const bloque = `<!--cab-->${sprite()}${cabecera({ slug: 'cuenta' }).replace('{{BANDERA}}', 'globo').replace('{{MONEDA}}', '')}<!--/cab-->`;
   h = h.replace(/<!--cab-->[\s\S]*?<!--\/cab-->/, bloque);
   writeFileSync(ruta, h);
 }
@@ -700,11 +701,11 @@ console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} vers
   console.log('Sitemap:', urls.length, 'direcciones');
 }
 
-// README (ronda 42): la lista del selector de país (alfabética) sale de src/sitio/variantes.js: [código, nombre, moneda, carpeta]
+// README (ronda 42/43): la lista del selector de país (alfabética) sale de src/sitio/variantes.js: [código, nombre, moneda, carpeta, clave de texto]
 {
   const f = join(dirname(fileURLToPath(import.meta.url)), '../../public/sitio/web/js/sitio.js');
   const js = readFileSync(f, 'utf8');
-  const filas = [['', 'Internacional', 'EUR', ''], ...SEDES.filter((x) => x.carpeta).map((x) => [x.pais, PAISES.find((p) => p[0] === x.pais)[1] + (x.carpeta.split('/').length > 2 ? ' (English)' : ''), x.moneda, x.carpeta])]
+  const filas = [['', 'Internacional', 'EUR', '', 'es'], ...SEDES.filter((x) => x.carpeta).map((x) => [x.pais, PAISES.find((p) => p[0] === x.pais)[1] + (x.carpeta.split('/').length > 2 ? ' (English)' : ''), x.moneda, x.carpeta, x.clave])]
     .sort((a, b) => (!a[0] ? -1 : !b[0] ? 1 : a[1].localeCompare(b[1], 'es')));
   const lista = '  var LISTA_PAISES = ' + JSON.stringify(filas).replace(/\],\[/g, '], [').replace(/"/g, "'") + ';';
   const n = js.replace(/  var LISTA_PAISES = \[[\s\S]*?\]\];/, () => lista);
@@ -779,4 +780,21 @@ ${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n
 })();
 `;
   writeFileSync(join(aqui, '../../public/comun/js/regional.js'), salida);
+}
+
+// README (ronda 43) · Versión en los css y js de la web (?v=…): al publicar un cambio, el navegador y la caché de Cloudflare
+// piden el archivo nuevo en lugar de seguir usando el viejo.
+{
+  const { createHash } = await import('node:crypto');
+  const pub = join(RAIZ, '..');
+  const version = (ruta) => { const f = ruta.startsWith('/web/') ? join(RAIZ, ruta) : join(pub, ruta); return existsSync(f) ? createHash('md5').update(readFileSync(f)).digest('hex').slice(0, 8) : null; };
+  const RE = /((?:src|href)="|sc\.src = '|l\.href = ')(\/(?:web\/(?:js|css)\/[\w.-]+\.(?:js|css)|comun\/js\/(?:regional|contacto)\.js))(?:\?v=[\w]+)?/g;
+  const poner = (h) => h.replace(RE, (m, a, ruta) => { const v = version(ruta); return v ? `${a}${ruta}?v=${v}` : m; });
+  const todos = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? todos(join(dir, e.name)) : e.name.endsWith('.html') ? [join(dir, e.name)] : []));
+  // sitio.js primero: lleva la versión de crear-invitacion.js y su propia versión cambia con eso
+  for (const f of [join(RAIZ, 'web/js/sitio.js'), ...todos(join(RAIZ, 't')), join(pub, 'mi-cuenta/index.html'), join(pub, 'entrar/index.html'), join(pub, 'panel/index.html')]) {
+    if (!existsSync(f)) continue;
+    const h = readFileSync(f, 'utf8'), n = poner(h);
+    if (n !== h) writeFileSync(f, n);
+  }
 }

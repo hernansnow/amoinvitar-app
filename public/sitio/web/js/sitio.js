@@ -27,8 +27,8 @@
       var slug = b.getAttribute('data-medida'), titulo = b.getAttribute('data-titulo') || '', producto = b.getAttribute('data-producto') || '';
       function ir() { window.AmoCrear.medida(slug, titulo, producto); }
       if (window.AmoCrear) return ir();
-      if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css'; d.head.appendChild(l); }
-      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
+      if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css?v=a9d90ba8'; d.head.appendChild(l); }
+      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js?v=9e817bd8'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
     });
   });
 
@@ -175,12 +175,18 @@
   /* README (ronda 42): el selector es de PAÍS y lleva a su carpeta (/es/, /ar/, /us/en/…): cada país trae su idioma y su moneda.
      Lo elegido queda en la cookie ai_sede (el Worker la respeta y no vuelve a llevar a la del país de la IP).
      LISTA_PAISES: [código, nombre, moneda, carpeta] (la arma npm run sitio desde src/sitio/variantes.js) */
-  var LISTA_PAISES = [['','Internacional','EUR',''], ['DE','Alemania','EUR','/de'], ['AR','Argentina','ARS','/ar'], ['AU','Australia','AUD','/au'], ['AT','Austria','EUR','/at'], ['BE','Bélgica','EUR','/be'], ['BO','Bolivia','BOB','/bo'], ['BR','Brasil','BRL','/br'], ['CA','Canadá','CAD','/ca'], ['CL','Chile','CLP','/cl'], ['CO','Colombia','COP','/co'], ['CR','Costa Rica','CRC','/cr'], ['CU','Cuba','USD','/cu'], ['EC','Ecuador','USD','/ec'], ['SV','El Salvador','USD','/sv'], ['ES','España','EUR','/es'], ['US','Estados Unidos','USD','/us'], ['US','Estados Unidos (English)','USD','/us/en'], ['FR','Francia','EUR','/fr'], ['GT','Guatemala','GTQ','/gt'], ['HT','Haití','HTG','/ht'], ['HN','Honduras','HNL','/hn'], ['IE','Irlanda','EUR','/ie'], ['IT','Italia','EUR','/it'], ['MX','México','MXN','/mx'], ['NI','Nicaragua','NIO','/ni'], ['NZ','Nueva Zelanda','NZD','/nz'], ['NL','Países Bajos','EUR','/nl'], ['PA','Panamá','USD','/pa'], ['PY','Paraguay','PYG','/py'], ['PE','Perú','PEN','/pe'], ['PT','Portugal','EUR','/pt'], ['PR','Puerto Rico','USD','/pr'], ['GB','Reino Unido','GBP','/gb'], ['DO','República Dominicana','DOP','/do'], ['VC','San Vicente y las Granadinas','XCD','/vc'], ['CH','Suiza','CHF','/ch'], ['UY','Uruguay','UYU','/uy'], ['VE','Venezuela','USD','/ve']];
-  var CARPETA = d.documentElement.getAttribute('data-carpeta') || '';
+  var LISTA_PAISES = [['','Internacional','EUR','','es'], ['DE','Alemania','EUR','/de','de'], ['AR','Argentina','ARS','/ar','es-ar'], ['AU','Australia','AUD','/au','en'], ['AT','Austria','EUR','/at','de'], ['BE','Bélgica','EUR','/be','fr'], ['BO','Bolivia','BOB','/bo','es'], ['BR','Brasil','BRL','/br','pt-br'], ['CA','Canadá','CAD','/ca','en'], ['CL','Chile','CLP','/cl','es-cl'], ['CO','Colombia','COP','/co','es-cl'], ['CR','Costa Rica','CRC','/cr','es-cr'], ['CU','Cuba','USD','/cu','es-bz'], ['EC','Ecuador','USD','/ec','es-bz'], ['SV','El Salvador','USD','/sv','es-cr'], ['ES','España','EUR','/es','es-es'], ['US','Estados Unidos','USD','/us','es-bz'], ['US','Estados Unidos (English)','USD','/us/en','en'], ['FR','Francia','EUR','/fr','fr'], ['GT','Guatemala','GTQ','/gt','es-cr'], ['HT','Haití','HTG','/ht','fr'], ['HN','Honduras','HNL','/hn','es-cr'], ['IE','Irlanda','EUR','/ie','en'], ['IT','Italia','EUR','/it','it'], ['MX','México','MXN','/mx','es-mx'], ['NI','Nicaragua','NIO','/ni','es-cr'], ['NZ','Nueva Zelanda','NZD','/nz','en'], ['NL','Países Bajos','EUR','/nl','nl'], ['PA','Panamá','USD','/pa','es-bz'], ['PY','Paraguay','PYG','/py','es-py'], ['PE','Perú','PEN','/pe','es-pe'], ['PT','Portugal','EUR','/pt','pt-pt'], ['PR','Puerto Rico','USD','/pr','es-bz'], ['GB','Reino Unido','GBP','/gb','en'], ['DO','República Dominicana','DOP','/do','es-bz'], ['VC','San Vicente y las Granadinas','XCD','/vc','en'], ['CH','Suiza','CHF','/ch','de'], ['UY','Uruguay','UYU','/uy','es-ar'], ['VE','Venezuela','USD','/ve','es-bz']];
+  // README (ronda 43): en la web, la carpeta de la página; fuera de la web (Mi cuenta, Entrar), la última elegida o vista
+  var EN_WEB = d.documentElement.hasAttribute('data-carpeta');
+  var sedeCookie = getCookie('ai_sede'); if (sedeCookie === 'raiz') sedeCookie = '';
+  var CARPETA = EN_WEB ? d.documentElement.getAttribute('data-carpeta') || '' : sedeCookie;
   function irAPais(carpeta) {
     var x = LISTA_PAISES.filter(function (y) { return y[3] === carpeta; })[0]; if (!x) return;
-    ['ai_sede=' + encodeURIComponent(x[3] || 'raiz'), 'cur=' + x[2]].concat(x[0] ? ['pais_sel=' + x[0]] : []).forEach(function (c) { d.cookie = c + '; Path=/; Max-Age=31536000; SameSite=Lax'; });
-    var resto = location.pathname.indexOf(CARPETA) === 0 ? location.pathname.slice(CARPETA.length) : location.pathname;
+    var s = 'Path=/; Max-Age=31536000; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
+    ['ai_elegida=' + encodeURIComponent(x[3] || 'raiz'), 'ai_sede=' + encodeURIComponent(x[3] || 'raiz'), 'cur=' + x[2], 'idioma=' + x[4]].concat(x[0] ? ['pais_sel=' + x[0]] : []).forEach(function (c) { d.cookie = c + '; ' + s; });
+    // Fuera de la web (cuenta, panel) solo cambia el idioma: se vuelve a cargar la misma página
+    if (!EN_WEB) { location.reload(); return; }
+    var resto = location.pathname.indexOf(CARPETA + '/') === 0 || location.pathname === CARPETA ? location.pathname.slice(CARPETA.length) : location.pathname;
     location.href = x[3] + (resto || '/') + location.search + location.hash;
   }
   function nombreMoneda(c) {
@@ -280,7 +286,7 @@
     d.addEventListener('click', function (e) { if (!$mon.contains(e.target)) cerrarMoneda(); });
   }
   // La moneda es la del país de la carpeta; en la raíz, la elegida antes o la del país de la IP
-  if ($mon || $('[data-precio],[data-pais]')) cargaCatalogo(d.documentElement.getAttribute('data-moneda') || getCookie('cur') || '');
+  if ($mon || $('[data-precio],[data-pais]')) cargaCatalogo(d.documentElement.getAttribute('data-mon') || getCookie('cur') || '');
 })();
 /* README (ronda 40): con «reducir movimiento» los videos de la portada quedan quietos */
 (function () { try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelectorAll('.escena video').forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); }); } catch (e) {} })();
