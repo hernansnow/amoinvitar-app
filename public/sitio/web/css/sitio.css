@@ -829,3 +829,7 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 
 .planes.tres .plan-card h3 { line-height: 1.4; min-height: 2.8em; }
 .portada:not(.alb-hero) .escena { margin-bottom: 5%; }
+
+.gal-grilla img.marco { box-shadow: none; border-radius: 0; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .3)); }
+
+.ej-marco.ej-phone { background: none; box-shadow: none; border-radius: 0; overflow: visible; } .ej-marco.ej-phone img { filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .28)); }

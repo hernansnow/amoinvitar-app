@@ -26,10 +26,10 @@
     { slug: 'empresarial', tipo: 'empresarial', nombre: 'Empresarial / Corporativo', pagina: 'empresarial' }
   ];
   // Save The Date: en estos eventos (la web Classic/Soft y la foto, solo boda y 15)
-  var CON_STD = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'infantil', 'babyshower'];
+  var CON_STD = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'infantil', 'babyshower', 'graduacion'];
   var CON_FOTO = ['boda', '15'];
   // README (ronda 40): la Save The Date con foto también en bautismo, comunión y cumpleaños
-  var FOTO_STD = ['boda', '15', 'bautismo', 'comunion', 'cumple'];
+  var FOTO_STD = ['boda', '15', 'bautismo', 'comunion', 'cumple', 'graduacion'];
 
   // Orden de los modelos como en las páginas de cada evento (los que no están, después)
   var ORDEN = {
@@ -133,7 +133,9 @@
         // README (ronda 41): captura real de cada modelo y evento dentro del marco del celular (n_<modelo>-<evento>.jpg)
         std.push({ id: m.id, nombre: m.nombre, etiqueta: 'Save The Date', imgs: [IMG + 'n_' + m.id + '-' + t + '.jpg', img], demo: APP + '/demo/' + m.id + '?evento=' + t, link: { producto: 'std-web', modelo: m.id, evento: t }, precio: precioProducto(c, 'std-web'), fijo: true });
       });
-      std.push({ id: 'std-web-medida', nombre: 'Web a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-web-a-medida.png', IMG + 'p_a-medida.jpg'], link: { producto: 'std-web-medida', evento: t }, precio: precioProducto(c, 'std-web-medida'), ejemplos: RAIZ + 'ejemplos-a-medida#std-web' });
+      // README (ronda 42): «Ver ejemplos» abre la galería acá mismo (sin ir a otra página)
+      var EJ = IMG.replace(/ci\/$/, 'ejemplos/');
+      std.push({ id: 'std-web-medida', nombre: 'Web a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-web-a-medida.png', IMG + 'p_a-medida.jpg'], link: { producto: 'std-web-medida', evento: t }, precio: precioProducto(c, 'std-web-medida'), galeria: ['point', 'rama', 'pau-mike', 'maca-mauri', 'mariana-josh'].map(function (n) { return EJ + 'stdw-' + n + '-marco.webp'; }) });
       // Tarjeta del modelo: arranca con el primer diseño del evento que tiene tarjeta (en el panel se cambia)
       var conTarjeta = CON_STD.indexOf(t) < 0 ? [] : c.modelos.filter(function (m) { return m.eventos.indexOf(t) >= 0 && (c.tarjetaStd || []).indexOf(m.id) >= 0; });
       if (conTarjeta.length) {
@@ -147,7 +149,7 @@
         var fotos = mf.length ? mf.map(function (x) { return IMG + x.f; }) : (t === '15' ? serie('std-15-foto', 5) : serie('std-foto', 5));
         std.push({ id: 'std-foto', nombre: 'Foto', etiqueta: 'Save The Date', imgs: [IMG + 'col-foto-' + t + '.jpg', fotos[0]], galeria: fotos, link: { producto: 'std-foto', diseno: 'f1', evento: t }, precio: precioProducto(c, 'std-foto'), fijo: true });
       }
-      std.push({ id: 'std-tarjeta-medida', nombre: 'Tarjeta a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-tarjeta-a-medida.jpg', IMG + 'p_a-medida.jpg'], link: { producto: 'std-tarjeta-medida', evento: t }, precio: precioProducto(c, 'std-tarjeta-medida'), ejemplos: RAIZ + 'ejemplos-a-medida#std-tarjeta' });
+      std.push({ id: 'std-tarjeta-medida', nombre: 'Tarjeta a medida', etiqueta: 'Save The Date', medida: true, imgs: [IMG + 'p_std-tarjeta-a-medida.jpg', IMG + 'p_a-medida.jpg'], link: { producto: 'std-tarjeta-medida', evento: t }, precio: precioProducto(c, 'std-tarjeta-medida'), galeria: ['natalia-daniel', 'alma-15', 'degasa', 'rama', 'jime-feli', 'maria-15', 'rosa-pablo', 'flor-andy', 'marcela-rober'].map(function (n) { return EJ + 'stdt-' + n + '.webp'; }) });
       tabs.push({ id: 'std', nombre: 'Save The Date', items: std });
     }
 
@@ -208,9 +210,12 @@
     var alternar = function () { completa = !completa; pintarVista(); };
     vista.classList.toggle('ci-completa', completa);
     vista.replaceChildren(el('div', { class: 'ci-vista-caja' + (completa ? ' ci-full' : '') },
-      el('button', { type: 'button', class: 'ci-x', 'aria-label': 'Cerrar', onclick: function () { completa = false; vista.close(); } }, '×'),
+      // README (ronda 42): pantalla completa a la izquierda, enfrentada a la X (mismo estilo); ya en pantalla completa, la X pasa a ser «salir»
+      completa
+        ? el('button', { type: 'button', class: 'ci-x ci-salir', 'aria-label': 'Salir de pantalla completa', onclick: alternar }, '⤡ Salir')
+        : el('button', { type: 'button', class: 'ci-x', 'aria-label': 'Cerrar', onclick: function () { completa = false; vista.close(); } }, '×'),
+      !completa && it.demo ? el('button', { type: 'button', class: 'ci-x ci-pantalla', 'aria-label': 'Ver a pantalla completa', onclick: alternar }, '⤢') : null,
       el('p', { class: 'ci-vista-nombre', text: it.nombre }),
-      it.demo ? el('button', { type: 'button', class: 'ci-pantalla', 'aria-label': completa ? 'Salir de pantalla completa' : 'Ver a pantalla completa', onclick: alternar }, completa ? '⤡ Salir' : '⤢ Pantalla completa') : null,
       marco,
       el('div', { class: 'ci-vista-botones' },
         varios ? el('button', { type: 'button', class: 'ci-flecha', 'aria-label': 'Modelo anterior', onclick: mover(-1) }, '‹') : null,
@@ -283,7 +288,7 @@
   // ── Pestañas y tarjetas ────────────────────────────────────────────
   function tarjeta(it, lista, i, ev) {
     var precioTxt = it.desde ? 'desde ' + it.desde : (it.precio ? (it.fijo || it.medida ? it.precio : 'desde ' + it.precio) : '');
-    var ver = function () { if (it.medida) { if (it.ejemplos) location.href = it.ejemplos; else personalizar(it, ev); } else verDiseno(lista, i, ev); };
+    var ver = function () { if (it.medida) { if (it.galeria) verDiseno(lista, i, ev); else if (it.ejemplos) location.href = it.ejemplos; else personalizar(it, ev); } else verDiseno(lista, i, ev); };
     return el('div', { class: 'ci-item' + (it.medida ? ' ci-medida' : '') },
       el('button', { type: 'button', class: 'ci-mini', 'aria-label': (it.medida ? 'Ver ejemplos de ' : 'Ver diseño ') + it.nombre, onclick: ver },
         imagen(it.imgs, it.nombre), it.gratis ? el('span', { class: 'ci-gratis', text: 'Gratis' }) : null),
@@ -291,7 +296,7 @@
       el('h4', { class: 'ci-nombre', text: it.nombre }),
       precioTxt ? el('p', { class: 'ci-precio', text: precioTxt }) : null,
       el('button', { type: 'button', class: 'ci-btn ci-btn-borde', onclick: function () { personalizar(it, ev); } }, it.medida ? 'Comenzar' : 'Personalizar'),
-      it.medida && !it.ejemplos ? null : el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: ver }, it.medida ? 'Ver ejemplos' : (it.galeria ? 'Ver diseños' : 'Ver diseño')));
+      it.medida && !it.ejemplos && !it.galeria ? null : el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: ver }, it.medida ? 'Ver ejemplos' : (it.galeria ? 'Ver diseños' : 'Ver diseño')));
   }
 
   function montar(caja) {

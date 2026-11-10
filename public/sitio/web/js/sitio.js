@@ -40,7 +40,7 @@
       m.innerHTML = '<div class="gal-caja"><button type="button" class="gal-x" aria-label="Cerrar">&times;</button><h3></h3><div class="gal-grilla"></div></div>';
       m.querySelector('h3').textContent = b.getAttribute('data-titulo') || 'Ejemplos';
       var g = m.querySelector('.gal-grilla');
-      lista.forEach(function (x) { var f = d.createElement('figure'), i = d.createElement('img'); i.src = x.img; i.alt = x.t || ''; i.loading = 'lazy'; f.appendChild(i); g.appendChild(f); });
+      lista.forEach(function (x) { var f = d.createElement('figure'), i = d.createElement('img'); i.src = x.img; i.alt = x.t || ''; i.loading = 'lazy'; if (x.marco) i.className = 'marco'; f.appendChild(i); g.appendChild(f); });
       m.querySelector('.gal-x').addEventListener('click', function () { m.close(); });
       m.addEventListener('click', function (e) { if (e.target === m) m.close(); });
       m.addEventListener('close', function () { m.remove(); });
@@ -71,7 +71,7 @@
 
   /* ---------- Portadas: la invitación real se escala al tamaño del dispositivo ---------- */
   var ifr = $$('.escena iframe[data-w]');
-  function escala() { ifr.forEach(function (f) { var w = +f.getAttribute('data-w'), h = +f.getAttribute('data-h'), p = f.parentNode; var k = p.clientWidth / w; f.style.width = w + 'px'; f.style.height = h + 'px'; f.style.transform = 'scale(' + k + ')'; }); }
+  function escala() { ifr.forEach(function (f) { var w = +f.getAttribute('data-w'), h = +f.getAttribute('data-h'), p = f.parentNode; var k = p.clientWidth / w; f.style.width = w + 'px'; f.style.height = (p.clientHeight ? Math.ceil(p.clientHeight / k) : h) + 'px'; /* README (ronda 42): la invitación llena toda la pantalla del dispositivo, sin margen abajo */ f.style.transform = 'scale(' + k + ')'; }); }
   if (ifr.length) { escala(); window.addEventListener('resize', escala); window.addEventListener('load', escala); }
 
   /* ---------- Encabezado: transparente arriba, blanco al bajar ---------- */

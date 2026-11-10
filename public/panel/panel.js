@@ -1232,6 +1232,7 @@ const FRASES = {
   comunion: { evento: 'Mi primera comunión', exclama: '¡Mi primera comunión!', invitamos: 'Te invito a celebrar mi primera comunión' },
   cumple: { evento: 'Mi cumpleaños', exclama: '¡Mi cumpleaños!', invitamos: 'Te invito a celebrar mi cumpleaños' },
   infantil: { evento: 'Mi cumpleaños', exclama: '¡Mi cumple!', invitamos: 'Te invito a celebrar mi cumpleaños' },
+  graduacion: { evento: 'Mi graduación', exclama: '¡Me gradúo!', invitamos: 'Te invito a celebrar mi graduación' },
   babyshower: { evento: 'Baby shower', exclama: '¡Baby shower!', invitamos: 'Te invitamos a celebrar\nla llegada del bebé' },
   revelacion: { evento: 'Revelación', exclama: '¿Niño o niña?', invitamos: 'Te invitamos a descubrir\nsi es niño o niña' },
 };

@@ -24,23 +24,23 @@
     "ejemplos": [
       {
         "nombre": "Point · 15 años",
-        "img": "/web/img/ejemplos/stdw-point.webp"
+        "img": "/web/img/ejemplos/stdw-point-marco.webp"
       },
       {
         "nombre": "Rama",
-        "img": "/web/img/ejemplos/stdw-rama.webp"
+        "img": "/web/img/ejemplos/stdw-rama-marco.webp"
       },
       {
         "nombre": "Pau y Mike",
-        "img": "/web/img/ejemplos/stdw-pau-mike.webp"
+        "img": "/web/img/ejemplos/stdw-pau-mike-marco.webp"
       },
       {
         "nombre": "Maca y Mauri",
-        "img": "/web/img/ejemplos/stdw-maca-mauri.webp"
+        "img": "/web/img/ejemplos/stdw-maca-mauri-marco.webp"
       },
       {
         "nombre": "Mariana y Josh",
-        "img": "/web/img/ejemplos/stdw-mariana-josh.webp"
+        "img": "/web/img/ejemplos/stdw-mariana-josh-marco.webp"
       }
     ]
   },
