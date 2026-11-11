@@ -1,0 +1,34 @@
+<tt xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+    <head>
+        <styling></styling>
+        <layout></layout>
+    </head>
+    <body>
+        <div>
+            <p begin="00:00:00.119" end="00:00:03.629">
+                <span>Amo Invitar. Invitaciones digitales con envío ilimitado.</span>
+            </p>
+            <p begin="00:00:04.289" end="00:00:07.619">
+                <span>Agenda digital, incluyendo el horario y ubicación en Maps.</span>
+            </p>
+            <p begin="00:00:07.889" end="00:00:12.029">
+                <span>Con la lista de asistentes, cada invitado puede tener una invitación personalizada</span>
+            </p>
+            <p begin="00:00:12.119" end="00:00:13.919">
+                <span>con su nombre y vases adicionales.</span>
+            </p>
+            <p begin="00:00:14.130" end="00:00:18.570">
+                <span>Además, incluyen música de fondo y envío de canciones, cuenta regresiva, dress</span>
+            </p>
+            <p begin="00:00:18.630" end="00:00:23.279">
+                <span>code, menú, alojamiento, traslado, álbum de fotos, Instagram wall, regalos,</span>
+            </p>
+            <p begin="00:00:23.399" end="00:00:27.901">
+                <span>itinerario y mucho más. Todo administrado desde el panel privado exclusivo.</span>
+            </p>
+            <p begin="00:00:28.289" end="00:00:32.459">
+                <span>Invitar nunca fue tan fácil y divertido. Amoinvitar.com.</span>
+            </p>
+        </div>
+    </body>
+</tt>
