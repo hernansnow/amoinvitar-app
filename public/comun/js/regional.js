@@ -24,7 +24,7 @@ const reemplaza = (t, tabla) => {
 
 // tú → vos (presente: «tienes» → «tenés»; imperativos con pronombre; pronombres)
 const VOS_PRESENTE = {
-  abres: 'abrís', aceptas: 'aceptás', activas: 'activás', armas: 'armás', compras: 'comprás', dedicas: 'dedicás', 'envíala': 'enviala', 'envíalo': 'envialo', 'envíanos': 'envianos', administras: 'administrás', agregas: 'agregás', apruebas: 'aprobás', bloqueas: 'bloqueás',
+  abres: 'abrís', aceptas: 'aceptás', confirmas: 'confirmás', deseas: 'deseás', 'confírmanos': 'confirmanos', 'confírmame': 'confirmame', 'acompáñame': 'acompañame', 'personalízala': 'personalizala', activas: 'activás', armas: 'armás', compras: 'comprás', dedicas: 'dedicás', 'envíala': 'enviala', 'envíalo': 'envialo', 'envíanos': 'envianos', administras: 'administrás', agregas: 'agregás', apruebas: 'aprobás', bloqueas: 'bloqueás',
   borras: 'borrás', buscas: 'buscás', cambias: 'cambiás', cargas: 'cargás', compartes: 'compartís', comprometes: 'comprometés',
   consideras: 'considerás', contratas: 'contratás', controlas: 'controlás', corriges: 'corregís', creas: 'creás',
   decides: 'decidís', declaras: 'declarás', defines: 'definís', dejas: 'dejás', descargas: 'descargás', diseñas: 'diseñás',
@@ -51,7 +51,7 @@ const VOS_IMPERATIVO = {
   escanea: 'escaneá', escribe: 'escribí', espera: 'esperá', exporta: 'exportá', gestiona: 'gestioná', guarda: 'guardá', haz: 'hacé',
   indica: 'indicá', ingresa: 'ingresá', invita: 'invitá', mira: 'mirá', organiza: 'organizá', paga: 'pagá', personaliza: 'personalizá',
   pide: 'pedí', pon: 'poné', prueba: 'probá', proyecta: 'proyectá', publica: 'publicá', recibe: 'recibí', revisa: 'revisá',
-  selecciona: 'seleccioná', cambia: 'cambiá', encuentra: 'encontrá', entrega: 'entregá', escoge: 'escogé', pasa: 'pasá', resuelve: 'resolvé', aprovecha: 'aprovechá', comienza: 'comenzá', sigue: 'seguí', sube: 'subí', suma: 'sumá', ten: 'tené', toca: 'tocá', 
+  selecciona: 'seleccioná', confirma: 'confirmá', reserva: 'reservá', prepara: 'prepará', mira: 'mirá', cambia: 'cambiá', encuentra: 'encontrá', entrega: 'entregá', escoge: 'escogé', pasa: 'pasá', resuelve: 'resolvé', aprovecha: 'aprovechá', comienza: 'comenzá', sigue: 'seguí', sube: 'subí', suma: 'sumá', ten: 'tené', toca: 'tocá', 
 };
 const RE_IMPERATIVO = new RegExp(`(^\\s*|[.!?¡¿:;,·—–(]\\s*|(?<![\\p{L}])[yo]\\s+)(${Object.keys(VOS_IMPERATIVO).join('|')})(?![\\p{L}])`, 'giu');
 // Lo que no es un verbo aunque lo parezca (y los nombres de las variantes del idioma en el panel)
@@ -79,7 +79,7 @@ const T_BAUT = { bautismo: 'bautizo', bautismos: 'bautizos' };
 const T_ES = {
   celular: 'móvil', celulares: 'móviles', computadora: 'ordenador', computadoras: 'ordenadores', bautismo: 'bautizo', bautismos: 'bautizos',
   lindo: 'bonito', linda: 'bonita', lindos: 'bonitos', lindas: 'bonitas', livianas: 'ligeras', liviano: 'ligero', liviana: 'ligera',
-  costo: 'coste', costos: 'costes', video: 'vídeo', videos: 'vídeos', 'solo ustedes las vean': 'solo vosotros las veáis',
+  costo: 'coste', costos: 'costes', 'suene a ustedes': 'suene a vosotros', 'son ustedes': 'sois vosotros', video: 'vídeo', videos: 'vídeos', 'solo ustedes las vean': 'solo vosotros las veáis',
 };
 const T_CL = { bautismo: 'bautizo', bautismos: 'bautizos', computadora: 'computador', computadoras: 'computadores' };
 // México: «XV años» (como se escribe allá)

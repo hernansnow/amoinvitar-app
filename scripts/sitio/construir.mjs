@@ -6,6 +6,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as C from './contenido.mjs';
 import { PROFESIONALES as PRO } from '../../src/catalogo.js';
+import { MODELOS } from '../../src/modelos.js';
+import { IDEAS } from './ideas.mjs';
 import { PAISES, CLAVES, SEDES } from '../../src/sitio/variantes.js';
 import { convertir } from './variantes.mjs';
 import { LANG } from '../../src/sitio/variantes.js';
@@ -328,12 +330,12 @@ function disenos(E) {
 function pie() {
   const ev = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'babyshower', 'graduacion', 'empresarial', 'otros'].map((id) => C.EVENTOS.find((e) => e.id === id));
   const redes = `<div class="pie-redes"><a href="https://www.instagram.com/AmoInvitar/" target="_blank" rel="noopener" aria-label="Instagram">${ic('instagram')}</a><a href="https://www.facebook.com/AmoInvitar" target="_blank" rel="noopener" aria-label="Facebook">${ic('facebook')}</a><a href="https://www.youtube.com/@AmoInvitar" target="_blank" rel="noopener" aria-label="YouTube">${ic('youtube')}</a><a href="${C.WHATSAPP}" target="_blank" rel="noopener" aria-label="WhatsApp">${ic('wa')}</a></div>`;
-  const lista = (t, arr) => `<div class="pie-col pc-${t.toLowerCase().replace(/\s+/g, '')}"><h2>${t}</h2><ul>${arr.map(([h, x, ext]) => `<li><a href="${h}"${ext ? ' target="_blank" rel="noopener"' : ''}>${x}</a></li>`).join('')}</ul></div>`;
+  const lista = (t, arr) => `<div class="pie-col pc-${t.toLowerCase().replace(/\s+/g, '')}"><h2>${t}</h2><ul>${arr.map(([h, x, ext, soloEs]) => `<li${soloEs ? ' data-solo-es' : ''}><a href="${h}"${ext ? ' target="_blank" rel="noopener"' : ''}>${x}</a></li>`).join('')}</ul></div>`;
   return `<footer class="pie"><div class="caja">
   <div class="pie-grid">
     <div class="pie-marca"><a class="logo" href="/" aria-label="Amo Invitar!"><img src="/web/img/logo-pie.svg" alt="Amo Invitar!" width="170" height="37" loading="lazy"></a><p>Invitaciones digitales interactivas y originales para bodas y eventos.</p>${redes}</div>
     <div class="pie-links">
-      <div class="pie-bloque">${lista('Invitaciones', ev.map((e) => [`/${e.pagina}`, esc(e.id === 'boda' ? 'Bodas' : e.nombre)]))}${lista('Recursos', [['/crear-invitacion', 'Crear invitación'], ['/#como-funciona', 'Cómo funciona'], ['/#funciones', 'Funciones'], ['/precios', 'Planes y precios'], ['/album', 'Álbum QR'], ['/profesionales', 'Para profesionales'], ['/#faq', 'Preguntas frecuentes'], ['/#nosotros', 'Nosotros'], ['/contacto', 'Contacto']])}</div>
+      <div class="pie-bloque">${lista('Invitaciones', ev.map((e) => [`/${e.pagina}`, esc(e.id === 'boda' ? 'Bodas' : e.nombre)]))}${lista('Recursos', [['/crear-invitacion', 'Crear invitación'], ['/#como-funciona', 'Cómo funciona'], ['/#funciones', 'Funciones'], ['/disenos', 'Modelos'], ['/precios', 'Planes y precios'], ['/album', 'Álbum QR'], ['/ideas', 'Ideas y frases', 0, 1], ['/profesionales', 'Para profesionales'], ['/#faq', 'Preguntas frecuentes'], ['/#nosotros', 'Nosotros'], ['/contacto', 'Contacto']])}</div>
       <div class="pie-bloque">${lista('Tu cuenta', [['/mi-cuenta', 'Mi panel'], ['/entrar', 'Entrar']])}${lista('Productos', [['https://amofotear.com', 'Amo Fotear', 1], ['https://albunear.com', 'Albunear', 1], ['https://snowproducciones.com.ar', 'Snow Producciones', 1]])}</div>
     </div>
   </div>
@@ -376,7 +378,7 @@ const SLUG_CREAR = { boda: 'boda', 15: '15-anos', bautismo: 'bautismo', comunion
 const CABECERA_SIMPLE = new Set(['crear-invitacion', 'precios', 'contacto', 'ejemplos-a-medida']);
 // README (ronda 42): links internos de la web con la carpeta del país ({{R}} → '' en la raíz, '/ar', '/us/en'…). Las páginas
 // legales (/info/…), el panel, la cuenta y las demos son las mismas para todos y no llevan carpeta.
-const SLUGS_WEB = ['bodas', 'mis15', 'bautismo', 'comunion', 'cumple', 'baby-shower', 'graduacion', 'empresarial', 'eventos', 'album', 'precios', 'contacto', 'crear-invitacion', 'ejemplos-a-medida', 'profesionales'];
+const SLUGS_WEB = ['disenos', 'invitacion', 'ideas', 'bodas', 'mis15', 'bautismo', 'comunion', 'cumple', 'baby-shower', 'graduacion', 'empresarial', 'eventos', 'album', 'precios', 'contacto', 'crear-invitacion', 'ejemplos-a-medida', 'profesionales'];
 const RE_LINK = new RegExp(`href="/(?=(?:${SLUGS_WEB.join('|')})(?:[-?#"/]|$)|#|")`, 'g');
 const prefijar = (h) => h.replace(RE_LINK, 'href="{{R}}/');
 // FAQ de los datos estructurados con las preguntas ya traducidas (se leen de la página)
@@ -399,9 +401,17 @@ const escribe = (slug, P, cuerpo) => {
   h = h.replace(/(?<![\p{L}])([Dd])e el (?=[a-záéíóúñ])/gu, '$1el '); // «de el bautismo» → «del bautismo»
   h = prefijar(h);
   PAGINAS.push(slug);
-  const claves = slug.startsWith('info/') ? ['es'] : CLAVES;
+  const claves = slug.startsWith('info/') ? ['es'] : P.soloEspanol ? CLAVES.filter((c) => c.startsWith('es')) : CLAVES;
+  if (P.soloEspanol) SOLO_ES.add(slug);
   for (const c of claves) {
     let x = c === 'es' ? h : TRADUCIDAS.has(c) ? faqDeLaPagina(traducir(h, MAPAS[c], LANG[c] || c)) : convertir(h, c);
+    if (!c.startsWith('es')) x = x.replace(/<li data-solo-es>[\s\S]*?<\/li>/g, '');
+    // README (ronda 43): título armado por partes (ficha de modelo): cada parte se traduce por separado
+    if (P.tituloPartes && TRADUCIDAS.has(c)) {
+      const tr = (t) => MAPAS[c].get(t) || t;
+      const t2 = esc(`${tr(P.tituloPartes[0])} ${P.tituloPartes[1]} · ${tr(P.tituloPartes[2])}`);
+      x = x.replace(/<title>[^<]*<\/title>/, `<title>${t2}</title>`).replace(/(<meta property="og:title" content=")[^"]*"/, `$1${t2}"`);
+    }
     x = x.replace('data-clave="es"', `data-clave="${c}"`);
     const dest = join(RAIZ, 't', c, slug + '.html');
     mkdirSync(dirname(dest), { recursive: true });
@@ -410,6 +420,7 @@ const escribe = (slug, P, cuerpo) => {
   }
 };
 const BASE = {};
+const SOLO_ES = new Set();
 // Se borran las páginas de la corrida anterior (y las del sistema de variantes por cookie, ronda 40) para que no queden viejas
 for (const x of ['v', 't', 'info']) rmSync(join(RAIZ, x), { recursive: true, force: true });
 for (const f of readdirSync(RAIZ)) if (f.endsWith('.html')) rmSync(join(RAIZ, f));
@@ -656,6 +667,68 @@ function paginaProfesionales() {
 }
 paginaProfesionales();
 
+// ── README (ronda 43): ficha de cada modelo (/invitacion-<modelo>) y catálogo (/disenos) ──
+// El texto propio de cada modelo está en scripts/sitio/modelos-fichas.json. La demo de cada evento se ve en el idioma y
+// con los lugares del país de quien la mira.
+{
+  const FICHAS = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'modelos-fichas.json'), 'utf8'));
+  const PUB = join(RAIZ, '..');
+  const NOMBRE_EV = { boda: 'Boda', 15: '15 años', bautismo: 'Bautismo', comunion: 'Comunión', cumple: 'Cumpleaños', infantil: 'Cumpleaños infantil', graduacion: 'Graduación', babyshower: 'Baby shower', revelacion: 'Revelación de género', navidad: 'Navidad' };
+  const PAGINA_EV = { boda: 'bodas', 15: 'mis15', bautismo: 'bautismo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', babyshower: 'baby-shower', revelacion: 'baby-shower', navidad: 'eventos' };
+  const lista = MODELOS.filter((m) => FICHAS[m.id] && !m.simple && !m.std);
+  const imgDe = (m, ev) => [`modelos/${m.id}/tienda-${ev}.jpg`, `modelos/${m.id}/miniatura.jpg`].find((f) => existsSync(join(PUB, f)));
+  const miniatura = (m) => imgDe(m, 'boda') || imgDe(m, m.eventos[0]) || m.eventos.map((e) => imgDe(m, e)).find(Boolean);
+  const tarjetaModelo = (m) => `<a class="evento-card rev" href="/invitacion-${m.id}"><img src="/${miniatura(m)}" alt="${esc(m.nombre)}" loading="lazy" width="560" height="420"><div><h3>${esc(m.nombre)}</h3><p>${esc(FICHAS[m.id].estilo)} ${ic('flecha')}</p></div></a>`;
+  const GEN = { ...GENERICO, id: 'otros' };
+  for (const m of lista) {
+    const f = FICHAS[m.id];
+    const P = { titulo: `Invitación digital ${m.nombre} · ${f.estilo}`, tituloPartes: ['Invitación digital', m.nombre, f.estilo], descripcion: f.texto, evento: null };
+    const cards = m.eventos.map((ev) => {
+      const nom = m.nombres?.[ev] && m.nombres[ev] !== m.nombre ? ` · ${esc(m.nombres[ev])}` : '';
+      const demo = `/demo/${m.id}?evento=${ev}&paquete=deluxe`;
+      const img = imgDe(m, ev) || miniatura(m);
+      return `<article class="mf-card rev"><img src="/${img}" alt="${esc(m.nombre)}" loading="lazy" width="560" height="420"><div class="mf-txt"><h3><a href="/${PAGINA_EV[ev] || 'eventos'}">${esc(NOMBRE_EV[ev] || ev)}</a>${nom}</h3><div class="fila-btn"><a class="btn btn-borde" href="${demo}" data-video="${demo}">${ic('play')} Ver demo</a><a class="btn btn-verde" href="/tienda/?empezar=1&amp;producto=invitacion&amp;modelo=${m.id}&amp;evento=${ev}">Personalizar</a></div></div></article>`;
+    }).join('');
+    const otros = lista.filter((x) => x !== m && x.eventos.some((e) => m.eventos.includes(e))).slice(0, 6);
+    escribe(`invitacion-${m.id}`, P, [
+      cabeceraSimple('Modelo de invitación', `Invitación digital <em>${esc(m.nombre)}</em>`, esc(f.texto)),
+      `<section class="seccion" id="eventos-del-modelo"><div class="caja">${titulo('', 'Elige tu <em>evento</em>', 'Mira la demo con los textos y lugares de tu país, y personalízala en minutos. Pagas solo al publicar.')}<div class="mf-grid">${cards}</div></div></section>`,
+      confianza(), funciones(GEN), comoFunciona(GEN, false),
+      `<section class="seccion alt" id="otros-modelos"><div class="caja">${titulo('Más diseños', 'Otros <em>modelos</em>', '')}<div class="eventos">${otros.map(tarjetaModelo).join('')}</div><p class="centro" style="margin-top:28px"><a class="btn btn-verde" href="/disenos">Ver todos los modelos</a></p></div></section>`,
+      llamada(GEN), contacto(GEN),
+    ].join('\n'));
+  }
+  const P = { titulo: 'Modelos de invitaciones digitales', descripcion: 'Todos los modelos de invitaciones digitales para bodas, 15 años, bautismos, comuniones, cumpleaños y más. Mira cada demo y personalízala.', cabFija: true };
+  escribe('disenos', P, [
+    cabeceraSimple('Catálogo', 'Modelos de <em>invitaciones</em>', 'Cada modelo se adapta a distintos eventos. Entra en el que te guste para ver sus demos y personalizarlo.'),
+    `<section class="seccion" id="modelos"><div class="caja"><div class="eventos">${lista.map(tarjetaModelo).join('')}</div></div></section>`,
+    llamada(GEN), contacto(GEN),
+  ].join('\n'));
+}
+
+// ── README (ronda 43): artículos «Ideas» (solo en español: scripts/sitio/ideas.mjs) ──
+{
+  const GEN = { ...GENERICO, id: 'otros' };
+  const SLUG_EV = { boda: 'bodas', 15: 'mis15', bautismo: 'bautismo' };
+  for (const a of IDEAS) {
+    const P = { titulo: a.titulo, descripcion: a.descripcion, cabFija: true, soloEspanol: true };
+    const otras = IDEAS.filter((x) => x !== a).map((x) => `<li><a href="/ideas/${x.slug}">${esc(x.h1)}</a></li>`).join('');
+    escribe(`ideas/${a.slug}`, P, [
+      cabeceraSimple('Ideas', esc(a.h1), esc(a.lead)),
+      `<section class="seccion"><div class="caja"><article class="legal-txt ideas-txt">${a.cuerpo}
+<p class="fila-btn"><a class="btn btn-verde" href="/crear-invitacion">Crear mi invitación</a><a class="btn btn-borde" href="/${SLUG_EV[a.evento] || ''}">Ver modelos</a></p>
+<h2>Más ideas</h2><ul>${otras}</ul></article></div></section>`,
+      llamada(GEN),
+    ].join('\n'));
+  }
+  const P = { titulo: 'Ideas y frases para invitaciones', descripcion: 'Frases para invitaciones de boda, 15 años y bautismo, qué poner en una invitación y cuándo enviar el Save The Date.', cabFija: true, soloEspanol: true };
+  escribe('ideas', P, [
+    cabeceraSimple('Ideas', 'Ideas y frases para tu <em>invitación</em>', 'Textos, consejos y tiempos para armar una invitación que todos quieran abrir.'),
+    `<section class="seccion"><div class="caja"><div class="ideas-lista">${IDEAS.map((a) => `<a class="ideas-item rev" href="/ideas/${a.slug}"><h2>${esc(a.h1)}</h2><p>${esc(a.lead)}</p><span>Leer ${ic('flecha')}</span></a>`).join('')}</div></div></section>`,
+    llamada(GEN),
+  ].join('\n'));
+}
+
 // README (ronda 36): «Entrar» y «Mis invitaciones» llevan la misma barra superior que la web (entre marcadores)
 for (const f of ['public/entrar/index.html', 'public/mi-cuenta/index.html']) {
   const ruta = join(RAIZ, '..', '..', f);
@@ -691,7 +764,7 @@ console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} vers
 {
   const hoy = new Date().toISOString().slice(0, 10);
   const indexables = PAGINAS.filter((x) => !x.startsWith('info/'));
-  const urls = SEDES.flatMap((sd) => indexables.map((x) => `${C.SITIO}${sd.carpeta}/${x === 'index' ? '' : x}`));
+  const urls = SEDES.flatMap((sd) => indexables.filter((x) => !SOLO_ES.has(x) || sd.clave.startsWith('es')).map((x) => `${C.SITIO}${sd.carpeta}/${x === 'index' ? '' : x}`));
   writeFileSync(join(RAIZ, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${hoy}</lastmod></url>`).join('\n')}\n</urlset>\n`);
   // Lo que no tiene que salir en Google: la app (panel, cuenta, tienda, api), las invitaciones de los clientes y las legales.
   // Las demos sí se pueden rastrear (se ven en las páginas), pero no se listan.

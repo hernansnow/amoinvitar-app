@@ -835,3 +835,24 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .gal-grilla img.marco { box-shadow: none; border-radius: 0; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .3)); }
 
 .ej-marco.ej-phone { background: none; box-shadow: none; border-radius: 0; overflow: visible; } .ej-marco.ej-phone img { filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .28)); }
+
+/* README (ronda 43): ficha de cada modelo (eventos con demo y Personalizar) y sección Ideas */
+.mf-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+@media (min-width: 640px) { .mf-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 980px) { .mf-grid { grid-template-columns: repeat(3, 1fr); } }
+.mf-card { background: #fff; border-radius: var(--radio); overflow: hidden; box-shadow: var(--sombra-s); display: flex; flex-direction: column; }
+.mf-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.mf-txt { padding: 16px 18px 18px; }
+.mf-txt h3 { margin: 0 0 12px; font-size: 21px; }
+.mf-txt h3 a { color: inherit; text-decoration: none; }
+.mf-txt .fila-btn { gap: 10px; }
+.mf-txt .btn { flex: 1 1 auto; justify-content: center; }
+.ideas-lista { display: grid; gap: 16px; max-width: 860px; margin: 0 auto; }
+.ideas-item { display: block; background: #fff; border-radius: var(--radio); padding: 22px 24px; box-shadow: var(--sombra-s); color: var(--tinta); text-decoration: none; }
+.ideas-item h2 { font-size: clamp(21px, 2.6vw, 27px); margin: 0 0 6px; }
+.ideas-item p { margin: 0 0 10px; }
+.ideas-item span { color: var(--verde); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.ideas-txt h2 { margin-top: 1.6em; }
+.ideas-frases { list-style: none; padding: 0; display: grid; gap: 10px; }
+.ideas-frases li { background: var(--crema, #f7f3ec); border-left: 3px solid var(--verde); padding: 12px 16px; border-radius: 6px; font-style: italic; }
+.ideas-txt .fila-btn { margin-top: 28px; }

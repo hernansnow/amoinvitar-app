@@ -171,3 +171,13 @@ nuevas según el país (`diceBautizo`, `datos.bautizo`); el cliente lo cambia co
 páginas, y `js-*.json` para lo que arma el JavaScript (selector de modelos, cookies y panel). Portugal sale del
 portugués de Brasil (`aPortugal` en `i18n.mjs`). Después de cambiar textos: `npm run sitio`, `npm run sitio:i18n` (suma
 los textos nuevos y dice cuántos faltan) y traducir los números que falten.
+
+**Ronda 43**
+- El idioma automático solo actúa en la raíz: una dirección con carpeta (`/ar/…`) se muestra siempre tal cual. Manda lo
+  elegido en el selector (cookie `ai_elegida`); si nunca se eligió, la IP. En Mi cuenta y Entrar el selector cambia el
+  idioma y recarga la página (el panel toma la cookie `idioma`).
+- Los css y js de la web llevan `?v=<hash>` (lo pone `npm run sitio`): después de publicar, nadie se queda con uno viejo.
+- La tienda vieja de WordPress (`/store/…`, `/<país>/store/…`) redirige (301) a los precios del país.
+- Fichas de modelo: `/invitacion-<modelo>` (texto en `scripts/sitio/modelos-fichas.json`) y catálogo `/disenos`.
+- Artículos «Ideas» (`scripts/sitio/ideas.mjs`): `/ideas` y `/ideas/<tema>`, solo en español (raíz y carpetas en
+  español, con su variante); en las carpetas de otros idiomas redirigen a la raíz.
