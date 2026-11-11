@@ -12,6 +12,7 @@ import { PAISES, CLAVES, SEDES } from '../../src/sitio/variantes.js';
 import { convertir } from './variantes.mjs';
 import { LANG } from '../../src/sitio/variantes.js';
 import { IDIOMAS, ARCHIVO, cargaMapa, traducir, aPortugal, aBritanico } from './i18n.mjs';
+import { aPluralEs, aPluralOtro, pluralizarHtml } from './plural.mjs';
 // README (ronda 41): clave PÚBLICA de Cloudflare Turnstile para el formulario de contacto (se escribe en scripts/sitio/turnstile-sitekey.txt)
 const TS_ARCHIVO = join(dirname(fileURLToPath(import.meta.url)), 'turnstile-sitekey.txt');
 const TS_CLAVE = (existsSync(TS_ARCHIVO) ? readFileSync(TS_ARCHIVO, 'utf8') : '').trim();
@@ -406,6 +407,11 @@ const escribe = (slug, P, cuerpo) => {
   if (P.soloEspanol) SOLO_ES.add(slug);
   for (const c of claves) {
     let x = c === 'es' ? h : TRADUCIDAS.has(c) ? faqDeLaPagina(traducir(h, MAPAS[c], LANG[c] || c)) : convertir(h, c);
+    // README (ronda 44): /bodas le habla a la pareja (ustedes; en España, vosotros; en los otros idiomas, el plural)
+    if (P.plural) {
+      if (c.startsWith('es')) { const hp = pluralizarHtml(h, (t) => aPluralEs(t, c === 'es-es' ? 'vosotros' : 'ustedes')); x = c === 'es' ? hp : convertir(hp, c); }
+      else x = pluralizarHtml(x, (t) => aPluralOtro(t, c.split('-')[0]));
+    }
     if (!c.startsWith('es')) x = x.replace(/<li data-solo-es>[\s\S]*?<\/li>/g, '');
     // README (ronda 43): título armado por partes (ficha de modelo): cada parte se traduce por separado
     if (P.tituloPartes && TRADUCIDAS.has(c)) {
@@ -472,7 +478,7 @@ for (const E0 of C.EVENTOS) {
   if (E0.id === 'empresarial') continue; // README (ronda 39): el corporativo tiene su propia página (más abajo)
   const E = { ...E0, contactoEvento: OTRAS_ES[E0.id] };
   const pt = PORTADAS[E.id];
-  const P = { titulo: pt.t, descripcion: pt.d, widget: true, evento: E.id };
+  const P = { titulo: pt.t, descripcion: pt.d, widget: true, evento: E.id, plural: E.id === 'boda' }; // README (ronda 44): /bodas, a la pareja
   escribe(E.pagina, P, [
     portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES[E.id], demo: demoDe(E.id) }),
     confianza(), disenos(E), funciones(E), comoFunciona(E, false), planes(E), juntos(), faq(E, P), testimonios(), llamada(E), contacto(E),
