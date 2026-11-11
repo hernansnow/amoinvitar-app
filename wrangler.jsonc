@@ -64,6 +64,8 @@
   //   3) Descomentá esto con el id que te devuelve y publicá. Borrá key.pem de la computadora después.
   // "mtls_certificates": [{ "binding": "AEAT_CERT", "certificate_id": "REEMPLAZAR_CON_EL_ID" }],
 
+  // README (ronda 44): las variables que se carguen a mano en el panel de Cloudflare no se borran al publicar
+  "keep_vars": true,
   "vars": {
     // Mientras convivan los dos sistemas: lo que no es del sistema nuevo se manda al sitio de siempre
     "ORIGEN_ANTIGUO": "https://amoinvitar.com",
@@ -85,6 +87,9 @@
     // "1" al superar 10.000 € de ventas a particulares de otros países de la UE (IVA de cada país)
     "VAT_OSS": "",
     // "1" activa la factura de Stripe además del recibo
-    "STRIPE_INVOICES": ""
+    "STRIPE_INVOICES": "",
+    // README (ronda 44): identificadores públicos (no son secretos; los secretos van con wrangler secret put)
+    "GOOGLE_CLIENT_ID": "993867605078-mrcd5a5hlouiq3sofhltrhqj5f8ldrcr.apps.googleusercontent.com",
+    "PAYPAL_CLIENT_ID": "BAAJhLK8O9q8YWJXvWn8Jo9zrydYXq55J5TKTvOv4ob5CwhUYenN8fs1Srocu-80FzJvXHDPNdeJpS9Gdw"
   }
 }

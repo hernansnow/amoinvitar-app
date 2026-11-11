@@ -205,7 +205,7 @@ function comoFunciona(E, esIndex) {
 function eventos() {
   const orden = ['boda', '15', 'bautismo', 'comunion', 'cumple', 'babyshower', 'graduacion', 'empresarial', 'otros'];
   const cards = orden.map((id) => C.EVENTOS.find((e) => e.id === id)).map((e) => `<a class="evento-card rev" href="/${e.pagina}"><img src="/web/img/eventos/${e.img}" alt="Invitaciones digitales de ${esc(e.nombre.toLowerCase())}" loading="lazy" width="560" height="420"><div><h3>${esc(e.nombre)}</h3><p>${esc(e.corto)} ${ic('flecha')}</p></div></a>`).join('');
-  return `<section class="seccion alt" id="eventos"><div class="caja">${titulo('Para cada ocasión', '¿Qué <em>celebramos</em>?', 'Elige tu ocasión y mira diseños pensados para ella. Los personalizas en minutos y los ves terminados antes de pagar.')}<div class="eventos">${cards}</div></div></section>`;
+  return `<section class="seccion alt" id="eventos"><div class="caja">${titulo('Para cada ocasión', '¿Qué <em>celebramos</em>?', 'Elige tu evento y mira diseños pensados para él. Los personalizas en minutos y los ves terminados antes de pagar.')}<div class="eventos">${cards}</div></div></section>`;
 }
 
 function funciones(E) {
@@ -225,7 +225,7 @@ function planes(E) {
   const medida = `<div class="medida rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones a medida">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => `<img src="/web/img/medida/banner-a-medida-${n}.webp" alt="Invitación a medida, ejemplo ${n}" ${n === 1 ? '' : 'loading="lazy" '}width="1000" height="667">`).join('')}</div><div><span class="desde">Invitación a medida</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><button type="button" class="btn btn-claro" data-medida="${slugMedida}">Comenzar diseño a medida</button></div></div></div>`;
   // README (ronda 41): orden pedido (precios.png): título y aviso → planes → invitación a medida → precios en euros y pago seguro (todo en una sección) → comparar → profesionales
   return [
-    sec('planes', 'alt', `${E.sinTitulo ? '' : titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébalo gratis, míralo terminado y paga solo cuando decidas publicarlo. Sin suscripciones ni sorpresas.')}
+    sec('planes', 'alt', `${E.sinTitulo ? '' : titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébala gratis, mírala terminada y paga solo cuando decidas publicarla. Sin suscripciones ni sorpresas.')}
   <div class="aviso-pago rev">${ic('eye')}<span>Diséñala y mírala terminada — <strong>pagas solo al publicar</strong></span></div>
   <div class="planes">${cards}</div>
   <div class="bloque-medida">${medida}</div>
@@ -394,7 +394,8 @@ const TRADUCIDAS = new Set(IDIOMAS);
 // carpeta de país que usa esa clave. Las legales, solo en español neutro (se ven en /info/… para todos).
 const escribe = (slug, P, cuerpo) => {
   P.slug = slug;
-  if (CABECERA_SIMPLE.has(slug) || slug.startsWith('info/')) P.cabFija = true;
+  // README (ronda 44): las fichas de modelo (/invitacion-*) llevan la misma cabecera que /precios (sin foto detrás, se lee el menú)
+  if (CABECERA_SIMPLE.has(slug) || slug.startsWith('info/') || slug.startsWith('invitacion-')) P.cabFija = true;
   let h = pagina(P, cuerpo);
   if (P.evento === 'empresarial') h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, 'href="#crear" data-medida="empresarial" data-titulo="Diseño corporativo a medida"');
   else if (P.evento && SLUG_CREAR[P.evento]) h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, (m, q) => `href="/crear-invitacion-para-${SLUG_CREAR[P.evento]}${q || ''}"`);
@@ -412,6 +413,8 @@ const escribe = (slug, P, cuerpo) => {
       const t2 = esc(`${tr(P.tituloPartes[0])} ${P.tituloPartes[1]} · ${tr(P.tituloPartes[2])}`);
       x = x.replace(/<title>[^<]*<\/title>/, `<title>${t2}</title>`).replace(/(<meta property="og:title" content=")[^"]*"/, `$1${t2}"`);
     }
+    // README (ronda 44): en los títulos, la palabra en Dantina (<em>) empieza en mayúscula también después de traducir
+    x = x.replace(/<(h[1-3])\b[^>]*>[\s\S]*?<\/\1>/g, (m) => m.replace(/<em>(\s*)(\p{Ll})/gu, (z, a, l) => `<em>${a}${l.toUpperCase()}`));
     x = x.replace('data-clave="es"', `data-clave="${c}"`);
     const dest = join(RAIZ, 't', c, slug + '.html');
     mkdirSync(dirname(dest), { recursive: true });

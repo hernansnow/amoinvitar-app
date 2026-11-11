@@ -54,6 +54,8 @@ const VOS_IMPERATIVO = {
 const RE_IMPERATIVO = new RegExp(`(^\\s*|[.!?¡¿:;,·—–(]\\s*|(?<![\\p{L}])[yo]\\s+)(${Object.keys(VOS_IMPERATIVO).join('|')})(?![\\p{L}])`, 'giu');
 // Lo que no es un verbo aunque lo parezca (y los nombres de las variantes del idioma en el panel)
 const VOS_ARREGLOS = { 'sin descargás': 'sin descargas', 'español neutro (vos)': 'Español neutro (tú)', 'español de españa (vos / vosotros)': 'Español de España (tú / vosotros)', 'las comprás': 'las compras', 'sus comprás': 'sus compras', 'y publicá una invitación': 'y publica una invitación', 'cambiá solo el diseño': 'cambia solo el diseño', 'organizás o fotografías': 'organizás o fotografiás' };
+// README (ronda 44): frases que se escriben enteras (antes de las reglas)
+const FRASE_AR = { 'pruébala gratis, mírala terminada y paga solo cuando decidas publicarla': 'Probala gratis, mirala terminada y pagá por Mercado Pago o transferencia solo cuando decidas publicarla' };
 function aVos(t) {
   t = reemplaza(t, VOS_PRESENTE);
   t = t.replace(RE_IMPERATIVO, (m, a, v) => a + mayus(v, VOS_IMPERATIVO[v.toLowerCase()]));
@@ -78,6 +80,8 @@ const T_ES = {
   celular: 'móvil', celulares: 'móviles', computadora: 'ordenador', computadoras: 'ordenadores', bautismo: 'bautizo', bautismos: 'bautizos',
   lindo: 'bonito', linda: 'bonita', lindos: 'bonitos', lindas: 'bonitas', livianas: 'ligeras', liviano: 'ligero', liviana: 'ligera',
   costo: 'coste', costos: 'costes', 'suene a ustedes': 'suene a vosotros', 'son ustedes': 'sois vosotros', video: 'vídeo', videos: 'vídeos', 'solo ustedes las vean': 'solo vosotros las veáis',
+  // README (ronda 44): en España, el subtítulo de precios a la pareja (vosotros)
+  'pruébala gratis, mírala terminada y paga solo cuando decidas publicarla': 'Probadla gratis, miradla terminada y pagad solo cuando decidáis publicarla',
 };
 const T_CL = { bautismo: 'bautizo', bautismos: 'bautizos', computadora: 'computador', computadoras: 'computadores' };
 // México: «XV años» (como se escribe allá)
@@ -88,7 +92,7 @@ const ZONAS = {
   'es-bz': (t) => reemplaza(t, T_BAUT),
   'es-mx': (t) => xv(reemplaza(t, T_BAUT)),
   'es-es': (t) => reemplaza(t, T_ES),
-  'es-ar': (t, web) => aVos(web ? boda(t, 'casamiento', 'casamientos') : t),
+  'es-ar': (t, web) => aVos(web ? boda(reemplaza(t, FRASE_AR), 'casamiento', 'casamientos') : t),
   'es-py': (t) => aVos(t),
   'es-cr': (t) => aVos(reemplaza(t, T_BAUT)),
   'es-cl': (t, web) => reemplaza(web ? boda(t, 'matrimonio', 'matrimonios') : t, T_CL),

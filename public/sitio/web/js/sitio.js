@@ -166,7 +166,7 @@
   /* ---------- País, moneda, precios y medios de pago ---------- */
   var PAISES = { AR: 'Argentina', BO: 'Bolivia', BR: 'Brasil', CL: 'Chile', CO: 'Colombia', CR: 'Costa Rica', CU: 'Cuba', DO: 'República Dominicana', EC: 'Ecuador', SV: 'El Salvador', ES: 'España', US: 'Estados Unidos', GT: 'Guatemala', HN: 'Honduras', MX: 'México', NI: 'Nicaragua', PA: 'Panamá', PY: 'Paraguay', PE: 'Perú', PR: 'Puerto Rico', UY: 'Uruguay', VE: 'Venezuela' };
   var ZONA_EURO = ['ES', 'PT', 'FR', 'DE', 'IT', 'AT', 'BE', 'NL', 'IE', 'LU', 'FI', 'GR', 'SK', 'SI', 'EE', 'LV', 'LT', 'MT', 'CY', 'HR', 'AD', 'MC', 'SM', 'VA'];
-  var CON_TRANSFER = ['AR', 'UY'].concat(ZONA_EURO);
+  var CON_TRANSFER = ['AR', 'UY', 'ES']; // README (ronda 44): transferencia solo en Argentina, Uruguay y España
   var NOMBRE_MONEDA = { ARS: 'pesos argentinos', USD: 'dólares', EUR: 'euros', MXN: 'pesos mexicanos', COP: 'pesos colombianos', CLP: 'pesos chilenos', PEN: 'soles', UYU: 'pesos uruguayos', PYG: 'guaraníes', BOB: 'bolivianos', CRC: 'colones', GBP: 'libras esterlinas', BRL: 'reales' };
   var $mon = $('[data-moneda]');
 
@@ -211,7 +211,8 @@
   function lista(a) { return a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : a.join(''); }
 
   function pintaPrecios(c) {
-    var ar = c.pais === 'AR' || c.moneda === 'ARS', m = medios(c), nombre = PAISES[c.pais];
+    // README (ronda 44): la nota sigue el idioma de la PÁGINA (no el país de la IP): voseo solo en las páginas rioplatenses
+    var ar = (d.documentElement.getAttribute('data-clave') || '') === 'es-ar', m = medios(c), nombre = PAISES[c.pais];
     // País en el título de la portada
     $$('[data-pais]').forEach(function (e) { if (nombre) e.textContent = (e.getAttribute('data-pais') || 'en') + ' ' + nombre; });
     // Precios
@@ -257,11 +258,13 @@
       });
     } else $$('[data-nota-precios]').forEach(function (e) {
       e.innerHTML = ar
-        ? 'Precios en pesos argentinos.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + '  No esperes más, diseñá tu invitación hoy mismo sin pagar nada.' + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>(*) Solo disponible en algunos modelos.</small>')
+        ? 'Precios en ' + (c.moneda === 'ARS' ? 'pesos' : nombreMoneda(c.moneda)) + '.' + (m.nombres.length ? ' Podés pagar con ' + lista(m.nombres) + '.' : '') + '  No esperes más, diseñá tu invitación hoy mismo sin pagar nada.' + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>(*) Solo disponible en algunos modelos.</small>')
         : 'Precios en ' + nombreMoneda(c.moneda) + '. ' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada.' + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>(*) Solo disponible en algunos modelos.</small>');
     });
     $$('[data-pago-iconos]').forEach(function (e) { e.innerHTML = m.logos.map(logo).join('') + m.extra; });
-    $$('[data-iva]').forEach(function (e) { e.textContent = c.moneda === 'EUR' ? ' · IVA incluido' : ''; });
+    // README (ronda 44): «IVA incluido» solo si el precio lo lleva (lo dice la tienda según el país de quien mira)
+    var conIva = c.iva === undefined ? c.moneda === 'EUR' : c.iva;
+    $$('[data-iva]').forEach(function (e) { e.hidden = !conIva; }); // el texto ya viene traducido en la página
     // Selector de país (la moneda y el idioma salen del país)
     if ($mon) {
       var actual = LISTA_PAISES.filter(function (y) { return y[3] === CARPETA; })[0];

@@ -206,7 +206,7 @@ function invoiceBlock(env, inv) {
     <tbody><tr><td>${escapeHtml(inv.concept)}</td><td>${money(inv.base)}</td><td>${inv.vat_rate ? `${inv.vat_rate} % · ${money(inv.vat)}` : '—'}</td><td>${money(inv.total)}</td></tr></tbody></table>
   <div class="tot"><p>Base imponible: <b>${money(inv.base)}</b></p><p>IVA ${inv.vat_rate || 0} %: <b>${money(inv.vat)}</b></p><p class="big">Total: <b>${money(inv.total)}</b></p></div>
   ${eurLine}
-  <p class="small">Forma de pago / Payment: ${escapeHtml(METHOD[inv.method] || inv.method)} · Pagado / Paid${inv.vat_rate ? ' · IVA incluido' : ''}</p>
+  <p class="small">Pagado / Paid${inv.vat_rate ? ' · IVA incluido / VAT included' : ''}</p>
   ${inv.note ? `<p class="small">${escapeHtml(inv.note)}</p>` : ''}
   <p class="hash">Huella: ${escapeHtml(inv.hash)}</p>
 </article>`;

@@ -1,13 +1,13 @@
 // Medios de pago: Stripe (tarjetas, Apple Pay, Google Pay), Mercado Pago y transferencia bancaria.
 //  - Argentina: solo Mercado Pago (tarjetas, saldo, cuotas) y transferencia. Nada de Stripe.
-//  - Transferencia: solo para Argentina, Uruguay, España y los países del euro, y en la misma moneda
+//  - Transferencia: solo para Argentina, Uruguay y España (README ronda 44), y en la misma moneda
 //    que el resto de los medios (si hay una cuenta cargada para esa moneda en TRANSFER_INFO).
 //  - Resto del mundo: Stripe y PayPal, en la moneda elegida por el visitante.
 import { HttpError } from './util.js';
 import { PAYPAL_CURRENCIES } from './paypal.js';
 
 export const EUROZONE = ['ES', 'PT', 'FR', 'DE', 'IT', 'AT', 'BE', 'NL', 'IE', 'LU', 'FI', 'GR', 'SK', 'SI', 'EE', 'LV', 'LT', 'MT', 'CY', 'HR', 'AD', 'MC', 'SM', 'VA'];
-export const TRANSFER_COUNTRIES = ['AR', 'UY', ...EUROZONE];
+export const TRANSFER_COUNTRIES = ['AR', 'UY', 'ES'];
 
 // Monedas en las que cobra cada medio (si la elegida no está, se usa la primera)
 export const METHOD_CURRENCIES = {
