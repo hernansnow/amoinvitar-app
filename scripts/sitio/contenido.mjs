@@ -4,7 +4,8 @@
 export const SITIO = 'https://amoinvitar.com';
 export const WHATSAPP = 'https://wa.me/message/57HQCKAMGELDG1';
 export const EMAIL = 'hola@amoinvitar.com';
-export const VIDEO = 'https://player.vimeo.com/video/1220158519?color=FF9278&title=0&byline=0&portrait=0&dnt=1';
+// README (ronda 45): el tráiler es propio (public/comun/video), en 3 resoluciones y con subtítulos en cada idioma
+export const VIDEO = '/comun/video/trailer-720.mp4';
 
 // ── Íconos (trazo de 24×24) ─────────────────────────────────────────────
 export const ICONOS = {

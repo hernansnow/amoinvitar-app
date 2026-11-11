@@ -259,6 +259,11 @@
       var fs = parseFloat(getComputedStyle(f).fontSize);
       for (var i = 0; i < 25 && dosLineas() && fs > 10; i++) { fs *= 0.95; f.style.fontSize = fs.toFixed(1) + 'px'; }
     });
+    // README (ronda 45): en todos los modelos, la frase de la portada con rayitas (date-line…) de más de 15 letras va sin rayitas
+    document.querySelectorAll('[class*="date-line"]').forEach(function (f) {
+      var tx = f.textContent.replace(/\s+/g, ' ').trim();
+      f.classList.toggle('ai-sin-linea', tx.length > 15 && !/\d/.test(tx));
+    });
     // La frase sobre la cinta (Cinema y Luxury): si no entra (una traducción más larga), se achica
     document.querySelectorAll('.ai-cinta-texto').forEach(function (t) {
       t.style.fontSize = '';

@@ -310,14 +310,15 @@ export function canciones({ t, v }) {
 
 // ── Álbum de fotos (Albunear) en un modal ─────────────────────────────
 export function albumQr({ t, v }) {
-  const src = v.album.url;
+  // README (ronda 45): una sola ventana: Albunear embebido (sin su marco ni su scroll propio) y el modal sin scroll
+  const src = v.album.url && /albunear\.com\/demo/.test(v.album.url) && !/[?&]embed=/.test(v.album.url) ? `${v.album.url}&embed=1` : v.album.url;
   if (!src) return '';
   return `
 <div class="modal fade" id="qr" tabindex="-1" role="dialog" aria-label="${esc(t('album.titulo'))}" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-    <div class="modal-content">
-      <div class="modal-header py-2"><button type="button" class="close" data-dismiss="modal" aria-label="${esc(t('boton.cerrar'))}"><span aria-hidden="true">&times;</span></button></div>
-      <div class="modal-body p-0"><iframe data-src="${esc(src)}" src="about:blank" loading="lazy" title="${esc(t('album.titulo'))}" width="100%" frameborder="0" style="display:block; height:90vh; min-height:400px;"></iframe></div>
+  <div class="modal-dialog modal-dialog-centered ai-qr-dialogo" role="document">
+    <div class="modal-content ai-qr-contenido">
+      <button type="button" class="close ai-qr-x" data-dismiss="modal" aria-label="${esc(t('boton.cerrar'))}"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body p-0 ai-qr-cuerpo"><iframe data-src="${esc(src)}" src="about:blank" loading="lazy" title="${esc(t('album.titulo'))}" width="100%" frameborder="0" scrolling="no"></iframe></div>
     </div>
   </div>
 </div>`;

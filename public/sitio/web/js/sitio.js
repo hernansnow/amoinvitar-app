@@ -50,7 +50,28 @@
 
   /* ---------- Video en una ventana propia (sin salir a Vimeo) ---------- */
   var dv = null;
+  // README (ronda 45): el tráiler propio (.mp4 vertical): resolución según la pantalla y subtítulos del idioma de la página
+  // (activados solo si la página no está en español)
+  var dvv;
+  function abreTrailer(url) {
+    var base = url.replace(/-(720|1080|chico)\.mp4$/, '');
+    var alto = (window.innerHeight || 800) * (window.devicePixelRatio || 1);
+    var src = base + (alto > 1500 ? '-1080' : alto > 700 ? '-720' : '-chico') + '.mp4';
+    var l = (d.documentElement.getAttribute('lang') || 'es').slice(0, 2), IDI = ['es', 'en', 'pt', 'fr', 'it', 'de', 'nl'];
+    if (IDI.indexOf(l) < 0) l = 'en';
+    var NOM = { es: 'Español', en: 'English', pt: 'Português', fr: 'Français', it: 'Italiano', de: 'Deutsch', nl: 'Nederlands' };
+    if (!dvv) {
+      dvv = d.createElement('dialog'); dvv.className = 'dialogo-video dv-vertical'; dvv.setAttribute('aria-label', 'Video');
+      d.body.appendChild(dvv);
+      dvv.addEventListener('click', function (e) { if (e.target === dvv || e.target.classList.contains('dv-caja') || e.target.classList.contains('dv-x')) dvv.close(); });
+      dvv.addEventListener('close', function () { var v = dvv.querySelector('video'); if (v) v.pause(); });
+    }
+    dvv.innerHTML = '<div class="dv-caja"><div class="dv-marco"><button type="button" class="dv-x" aria-label="Cerrar">&times;</button><video controls playsinline autoplay preload="auto" poster="' + base + '-poster.jpg" src="' + src + '">'
+      + IDI.map(function (x) { return '<track kind="subtitles" srclang="' + x + '" label="' + NOM[x] + '" src="' + base.replace(/trailer$/, 'trailer-' + x) + '.vtt"' + (x === l && l !== 'es' ? ' default' : '') + '>'; }).join('') + '</video></div></div>';
+    if (dvv.showModal) dvv.showModal(); else window.open(src, '_blank');
+  }
   function abreVideo(url) {
+    if (/\.mp4$/.test(url)) { abreTrailer(url); return; }
     if (!dv) {
       dv = d.createElement('dialog'); dv.className = 'dialogo-video'; dv.setAttribute('aria-label', 'Video');
       dv.innerHTML = '<div class="dv-caja"><div class="dv-marco"><button type="button" class="dv-x" aria-label="Cerrar">&times;</button><iframe allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Video de Amo Invitar!"></iframe></div></div>';

@@ -860,3 +860,8 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .ideas-frases { list-style: none; padding: 0; display: grid; gap: 10px; }
 .ideas-frases li { background: var(--crema, #f7f3ec); border-left: 3px solid var(--verde); padding: 12px 16px; border-radius: 6px; font-style: italic; }
 .ideas-txt .fila-btn { margin-top: 28px; }
+
+/* README (ronda 45): tráiler propio, vertical */
+.dialogo-video.dv-vertical .dv-marco { aspect-ratio: 9 / 16; width: min(92vw, calc(88vh * 9 / 16)); height: auto; max-height: 88vh; background: #000; }
+.dialogo-video.dv-vertical video { width: 100%; height: 100%; display: block; object-fit: contain; background: #000; }
+.dialogo-video.dv-vertical video::cue { font-size: 15px; line-height: 1.35; background: rgba(0,0,0,.6); }

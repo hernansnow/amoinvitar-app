@@ -398,6 +398,10 @@ function faqDeLaPagina(h) {
   return h.replace(/\{"@type":"FAQPage","mainEntity":\[[\s\S]*?\]\}(?=\]\}<\/script>)/, () => `{"@type":"FAQPage","mainEntity":[${lista}]}`);
 }
 const TRADUCIDAS = new Set(IDIOMAS);
+// README (ronda 45): mensaje de WhatsApp ya escrito, por idioma (en español sigue el link corto de WhatsApp Business)
+const WA_MSJ = { en: 'Hi! I’d like some information about Amo Invitar! digital invitations.', pt: 'Olá! Gostaria de saber mais sobre os convites digitais da Amo Invitar!',
+  fr: 'Bonjour ! J’aimerais avoir des informations sur les invitations numériques d’Amo Invitar!', it: 'Ciao! Vorrei informazioni sugli inviti digitali di Amo Invitar!',
+  de: 'Hallo! Ich hätte gern Infos zu den digitalen Einladungen von Amo Invitar!', nl: 'Hallo! Ik wil graag meer weten over de digitale uitnodigingen van Amo Invitar!' };
 // Cada página se escribe una vez por clave de texto (public/sitio/t/<clave>/<página>.html); el Worker la sirve en cada
 // carpeta de país que usa esa clave. Las legales, solo en español neutro (se ven en /info/… para todos).
 const escribe = (slug, P, cuerpo) => {
@@ -437,6 +441,10 @@ const escribe = (slug, P, cuerpo) => {
     } else x = x.replace(/<!--\/?op-->/g, '');
     // README (ronda 44): en inglés (Estados Unidos, Canadá, internacional), el pie también enlaza a Sweet 16
     if (c === 'en') x = x.replace('<li><a href="{{R}}/mis15">Quinceañera</a></li>', (m) => `${m}<li><a href="{{R}}/sweet16">Sweet 16</a></li>`);
+    // README (ronda 45): WhatsApp en los otros idiomas: al número, con el mensaje ya escrito en el idioma de la página
+    if (TRADUCIDAS.has(c)) x = x.split('https://wa.me/message/57HQCKAMGELDG1').join(`https://wa.me/34621326549?text=${encodeURIComponent(WA_MSJ[ARCHIVO[c]] || WA_MSJ.en)}`);
+    // README (ronda 45): y el menú de arriba, antes de 15 años
+    if (c === 'en') x = x.replace(/<a href="\{\{R\}\}\/mis15"( aria-current="page")?>Quinceañera<\/a>/g, (m) => `<a href="{{R}}/sweet16">Sweet 16</a>${m}`);
     // README (ronda 44): el álbum de muestra de Albunear («Mejor juntos») en el idioma de la página
     x = x.replace(/(src="https:\/\/albunear\.com\/demo\?[^"]*?)"/g, `$1&amp;lang=${c.slice(0, 2)}"`);
     x = x.replace('data-clave="es"', `data-clave="${c}"`);
@@ -796,6 +804,7 @@ const SOLO_EN = new Set(['sweet16']);
   let cab = h.slice(0, i0).replace(/(<title>|content="|"name":"|"description":")([^<"]*)/g, (m, a, t) => a + S16(t));
   let main = S16(h.slice(i0, i1)).replace(/evento=15(&amp;|&)/g, 'evento=15$1sweet16=1$1').replace(/data-evento="15"/g, 'data-evento="15" data-sweet16="1"');
   cab = cab.replace(/data-evento="15"/, 'data-evento="15" data-sweet16="1"');
+  cab = cab.replace(/<a href="\{\{R\}\}\/sweet16">/g, '<a href="{{R}}/sweet16" aria-current="page">').replace(/(\/mis15") aria-current="page"/g, '$1');
   writeFileSync(join(RAIZ, 't', 'en', 'sweet16.html'), cab + main + h.slice(i1));
   PAGINAS.push('sweet16');
 }
