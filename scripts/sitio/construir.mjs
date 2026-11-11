@@ -278,8 +278,15 @@ function testimonios() {
   <div class="t-lado"><p class="t-desde"><span>Desde</span><b>2005</b></p><p class="t-k">El mismo equipo detrás de</p><ul class="t-marcas"><li><a href="https://albunear.com" target="_blank" rel="noopener"><img src="/web/img/albunear-white.svg" alt="Albunear" width="3246" height="1016" loading="lazy"></a><span>Álbum colaborativo QR</span></li><li><a href="https://amofotear.com" target="_blank" rel="noopener"><img src="/web/img/amofotear.svg" alt="Amo Fotear" width="7000" height="3944" loading="lazy"></a><span>Foto y video</span></li><li><a href="https://snowproducciones.com.ar" target="_blank" rel="noopener"><img src="/web/img/snow-tight.svg" alt="Snow Producciones" width="1945" height="772" loading="lazy"></a><span>Servicios audiovisuales</span></li></ul></div>
   <div class="t-premio">${ic('award')}<p><strong>Ganadores de los Wedding Awards</strong>Cinco años seguidos, gracias a las opiniones de las parejas en <img src="/web/img/casamientos-white.svg" alt="casamientos.com.ar" loading="lazy"></p></div></div>
   ${titulo('Opiniones', 'Algunos <em>testimonios</em>', 'Lo que dicen nuestros clientes.')}</div>
-  <div class="opiniones">${filas.map((f) => `<div class="op-fila"><div class="op-pista"><div class="op-set">${f.map(opinionCard).join('')}</div></div></div>`).join('')}</div>
+  <!--op--><div class="opiniones">${filas.map((f) => `<div class="op-fila"><div class="op-pista"><div class="op-set">${f.map(opinionCard).join('')}</div></div></div>`).join('')}</div><!--/op-->
 </section>`;
+}
+// README (ronda 44): en los otros idiomas, una selección de testimonios traducidos (en español van todos, tal cual los escribieron)
+const OP_TR = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'opiniones-traducidas.json'), 'utf8'));
+function opinionesEn(l) {
+  const lista = Object.keys(OP_TR).filter((k) => /^\d+$/.test(k)).map((k) => ({ ...opiniones[k], t: OP_TR[k].t[l] || '', x: OP_TR[k].x[l] })).filter((r) => r.x);
+  const filas = [[], []]; lista.forEach((r, i) => filas[Math.floor(i / 2) % 2].push(r));
+  return `<div class="opiniones">${filas.map((f) => `<div class="op-fila"><div class="op-pista"><div class="op-set">${f.map(opinionCard).join('')}</div></div></div>`).join('')}</div>`;
 }
 
 function faq(E, P, lista) {
@@ -421,6 +428,13 @@ const escribe = (slug, P, cuerpo) => {
     }
     // README (ronda 44): en los títulos, la palabra en Dantina (<em>) empieza en mayúscula también después de traducir
     x = x.replace(/<(h[1-3])\b[^>]*>[\s\S]*?<\/\1>/g, (m) => m.replace(/<em>(\s*)(\p{Ll})/gu, (z, a, l) => `<em>${a}${l.toUpperCase()}`));
+    // README (ronda 44): testimonios traducidos (con el aviso de que algunos se tradujeron del español)
+    if (TRADUCIDAS.has(c)) {
+      const l = ARCHIVO[c];
+      x = x.replace(/<!--op-->[\s\S]*?<!--\/op-->/, () => opinionesEn(l));
+      const sub = MAPAS[c].get('Lo que dicen nuestros clientes.');
+      if (sub && OP_TR.subtitulo[l]) x = x.split(`<p>${sub}</p>`).join(`<p>${OP_TR.subtitulo[l]}</p>`);
+    } else x = x.replace(/<!--\/?op-->/g, '');
     // README (ronda 44): en inglés (Estados Unidos, Canadá, internacional), el pie también enlaza a Sweet 16
     if (c === 'en') x = x.replace('<li><a href="{{R}}/mis15">Quinceañera</a></li>', (m) => `${m}<li><a href="{{R}}/sweet16">Sweet 16</a></li>`);
     // README (ronda 44): el álbum de muestra de Albunear («Mejor juntos») en el idioma de la página
