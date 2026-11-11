@@ -1717,7 +1717,7 @@ function pintarModelo() {
     el('span', { class: 'btn-modelo-txt' }, el('strong', {}, actual.nombre), tipo ? el('small', { class: 'btn-modelo-tipo' }, tipo) : null), el('small', {}, 'cambiar ▾')));
   // Celular: debajo de "Paso 1 de 26" → "Rockabilly Boda - Cambiar"
   movil.hidden = false;
-  movil.replaceChildren(`${actual.nombre}${tipo ? ` ${tipo}` : ''} - `, el('button', { type: 'button', class: 'btn-link', onclick: elegirModelo }, 'Cambiar'));
+  movil.replaceChildren(el('span', {}, actual.nombre), ' ', tipo ? el('span', {}, tipo) : '', ' - ', el('button', { type: 'button', class: 'btn-link', onclick: elegirModelo }, 'Cambiar'));
 }
 function elegirModelo() {
   // Toda la tarjeta (imagen, nombre y botón) elige el modelo

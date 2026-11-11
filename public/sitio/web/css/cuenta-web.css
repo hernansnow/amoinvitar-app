@@ -12,3 +12,7 @@ main .btn.btn-sec:hover { background: var(--verde); color: #fff; }
 main .btn-google { background: #fff; color: #1c1c1c; border-color: #dcdcdc; text-transform: none; letter-spacing: 0; font-size: 16px; }
 main .btn-google:hover { background: #fafafa; color: #1c1c1c; border-color: #bbb; }
 .cab .btn-crear { background: var(--verde); color: #fff; }
+/* README (ronda 46): Eliminar con borde rojo y sin relleno (el de confirmar, dentro del diálogo, sigue lleno) */
+main .btn.btn-borrar { background: transparent; color: #b3261e; border: 1.5px solid #b3261e; }
+main .btn.btn-borrar:hover:not(:disabled) { background: #fbeceb; color: #b3261e; border-color: #b3261e; }
+#del-si.btn.btn-borrar { background: #b3261e; color: #fff; }

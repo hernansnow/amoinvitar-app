@@ -179,11 +179,12 @@ export async function sitioNuevo(env, request, url) {
   if (soloIngles(pagina0) && sede.clave !== 'en') return ir(`${sede.carpeta}/mis15${url.search}`);
   if (pagina0 === 'crear-invitacion-para-sweet16' && sede.clave !== 'en') return ir(`${sede.carpeta}/crear-invitacion-para-15-anos${url.search}`);
   // Las legales son las mismas para todos (en /info/…)
-  if (pagina0.startsWith('info/') && sede !== NEUTRA) return ir(`/${pagina0}${url.search}`);
+  // README (ronda 46): las legales en español son las mismas para todos (/info/…); en los otros idiomas, en la carpeta del país
+  if (pagina0.startsWith('info/') && sede !== NEUTRA && sede.clave.startsWith('es')) return ir(`/${pagina0}${url.search}`);
   // /crear-invitacion-para-<evento> es la misma página que /crear-invitacion (con el evento ya elegido)
   const archivo = /^crear-invitacion-para-[a-z0-9-]+$/.test(pagina0) ? 'crear-invitacion' : pagina0;
   const legal = archivo.startsWith('info/');
-  const r = await env.ASSETS.fetch(new Request(new URL(`/sitio/t/${legal ? 'es' : sede.clave}/${archivo}.html`, url.origin), request));
+  const r = await env.ASSETS.fetch(new Request(new URL(`/sitio/t/${legal && sede.clave.startsWith('es') ? 'es' : sede.clave}/${archivo}.html`, url.origin), request));
   let html = r.status === 200 ? await r.text() : null;
   if (html == null && r.status >= 300 && r.status < 400) { // Assets redirige «x.html» → «x»
     const r2 = await env.ASSETS.fetch(new Request(new URL(r.headers.get('location'), url.origin), request));

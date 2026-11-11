@@ -730,7 +730,8 @@ function vistaAccesos() {
   };
   cargar();
   return [tarjeta('Accesos',
-    ctx.el('p', { class: 'ayuda' }, `Quiénes pueden editar y administrar la invitación, cada uno con su mail (entran con un link por correo o con Google, sin contraseña).${ctx.S.evento.tipo === 'boda' ? ' Se puede sumar a la pareja' : ''} y hasta 3 administradores: wedding planner, organizador, un familiar…`),
+    ctx.el('p', { class: 'ayuda' }, 'Quiénes pueden editar y administrar la invitación, cada uno con su mail (entran con un link por correo o con Google, sin contraseña).', ' ', // README (ronda 46): frases completas para poder traducirlas
+       ctx.S.evento.tipo === 'boda' ? 'Se puede sumar a la pareja y hasta 3 administradores: wedding planner, organizador, un familiar…' : 'Se pueden sumar hasta 3 administradores: wedding planner, organizador, un familiar…'),
     caja)];
 }
 

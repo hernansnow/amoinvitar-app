@@ -1,0 +1,17 @@
+{
+ "etiqueta": "Rechtliches",
+ "actualizado": "Zuletzt aktualisiert:",
+ "fecha6": "6. November 2026",
+ "fecha10": "10. November 2026",
+ "prevalece": "Dies ist eine Übersetzung zu deiner Information. Bei Abweichungen gilt die spanische Fassung.",
+ "otros": "Weitere rechtliche Texte:",
+ "corto": { "aviso-legal": "Impressum", "politica-de-privacidad": "Datenschutz", "politica-de-cookies": "Cookies", "terminos-y-condiciones": "AGB", "politica-de-devoluciones": "Rückerstattung", "rgpd": "DSGVO" },
+ "paginas": {
+  "aviso-legal": ["Impressum", "Wer hinter Amo Invitar! steht und die Bedingungen für die Nutzung der Website."],
+  "politica-de-privacidad": ["Datenschutzerklärung", "Welche Daten wir verarbeiten, wozu, mit wem wir sie teilen und welche Rechte du hast."],
+  "politica-de-cookies": ["Cookie-Richtlinie", "Welche Cookies wir verwenden und wie du darüber entscheiden kannst."],
+  "terminos-y-condiciones": ["Allgemeine Geschäftsbedingungen", "Die Bedingungen für die Buchung unserer Leistungen."],
+  "politica-de-devoluciones": ["Rückerstattungsrichtlinie", "Wann du eine Bestellung stornieren und dein Geld zurückbekommen kannst."],
+  "rgpd": ["Deine Rechte (DSGVO)", "So machst du deine Rechte an deinen personenbezogenen Daten geltend."]
+ }
+}
