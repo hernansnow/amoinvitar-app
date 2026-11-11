@@ -113,6 +113,8 @@ function repetir(doc, v) {
     lista.forEach((item, i) => {
       const copia = muestras[i % muestras.length].cloneNode(true);
       copia.removeAttribute('data-repetir');
+      // README (ronda 44): marca del itinerario (sus paradas van con solo la primera letra en mayúscula, en todos los modelos)
+      if (ruta === 'itinerario.items') copia.classList.add('ai-it');
       if (activa) copia.classList.toggle('active', i === 0);
       llenarItem(copia, item, ++contador);
       muestras[0].before(copia);

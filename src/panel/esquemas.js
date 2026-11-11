@@ -196,7 +196,8 @@ function pasosInvitacion({ tipo, modelo }) {
           { id: 'textos.portada.antetitulo', tipo: 'texto', etiqueta: 'Título (primera línea)', max: 20, base: 'portada.antetitulo', ancho: 'mitad' },
           { id: 'textos.portada.titulo', tipo: 'texto', etiqueta: 'Título (en grande)', max: 16, base: 'portada.titulo', ancho: 'mitad' },
         // README (ronda 30): "Subtítulo"; en baby shower y revelación no se cambia (revelación tiene su "Frase de la portada")
-        ] : ['babyshower', 'revelacion'].includes(tipo) ? [] : [{ id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Subtítulo', max: 15, base: 'portada.subtitulo', ancho: 'mitad', ayuda: tipo === 'boda' ? 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' : 'La frase debajo de los nombres.' }]),
+        // README (ronda 44): subtítulo hasta 26 letras (para «WE'RE GETTING MARRIED!» y otros idiomas; con más de 15 se quitan las rayitas)
+        ] : ['babyshower', 'revelacion'].includes(tipo) ? [] : [{ id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Subtítulo', max: 26, base: 'portada.subtitulo', ancho: 'mitad', ayuda: tipo === 'boda' ? 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' : 'La frase debajo de los nombres.' }]),
         // Segunda línea de la portada en los diseños que la traen (la edad, la promoción…)
         ...(modelo.sepiaPortada ? [{ id: 'portada.color', tipo: 'switch', estilo: 'check', etiqueta: 'Portada en color', detalle: 'este diseño la muestra en sepia', si: siFotos('portada') }] : []),
         ...(modelo.ciudadPortada ? [{ id: 'portada.ciudad', tipo: 'texto', etiqueta: 'Ciudad (junto a la fecha)', max: 18, ancho: 'mitad', ayuda: 'Por ejemplo "Miami". Vacío, no se muestra.' }] : []),

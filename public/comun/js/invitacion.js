@@ -251,6 +251,8 @@
     document.querySelectorAll('.ai-frase').forEach(function (f) {
       f.classList.remove('ai-sin-linea'); f.style.fontSize = '';
       if (!f.offsetParent) return;
+      // README (ronda 44): con más de 15 letras («WE'RE GETTING MARRIED!», «WIR HEIRATEN!»…) va siempre sin rayitas
+      if (f.textContent.trim().length > 15) f.classList.add('ai-sin-linea');
       var dosLineas = function () { return medidas(f).lineas > 1; };
       if (!dosLineas()) return;
       f.classList.add('ai-sin-linea');

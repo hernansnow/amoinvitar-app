@@ -415,6 +415,8 @@ const escribe = (slug, P, cuerpo) => {
     }
     // README (ronda 44): en los títulos, la palabra en Dantina (<em>) empieza en mayúscula también después de traducir
     x = x.replace(/<(h[1-3])\b[^>]*>[\s\S]*?<\/\1>/g, (m) => m.replace(/<em>(\s*)(\p{Ll})/gu, (z, a, l) => `<em>${a}${l.toUpperCase()}`));
+    // README (ronda 44): el álbum de muestra de Albunear («Mejor juntos») en el idioma de la página
+    x = x.replace(/(src="https:\/\/albunear\.com\/demo\?[^"]*?)"/g, `$1&amp;lang=${c.slice(0, 2)}"`);
     x = x.replace('data-clave="es"', `data-clave="${c}"`);
     const dest = join(RAIZ, 't', c, slug + '.html');
     mkdirSync(dirname(dest), { recursive: true });

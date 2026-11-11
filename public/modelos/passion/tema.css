@@ -10,3 +10,6 @@
   --fuente-titulos: 'Great Vibes', cursive;
   --fuente-texto: 'Jost', sans-serif;
 }
+
+/* README (ronda 44): «¿Te perdiste algo?» mucho más chico (la letra manuscrita es muy grande) */
+html body .ai-perdiste-chico { font-size: 1.15rem !important; line-height: 1.6 !important; }

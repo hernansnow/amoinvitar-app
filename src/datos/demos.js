@@ -4,6 +4,7 @@
 // del diccionario del tipo de evento, así la demo siempre habla como el país.
 import { LUGARES_PAIS } from './lugares-pais.js';
 import { formatoPais, horaTexto } from '../textos/regional.js';
+import { nombresDemo, PERSONAS, ITINERARIO_IDIOMAS, IDIOMAS_DEMO } from './demos-idiomas.js';
 
 const EN = (variante) => variante === 'en';
 
@@ -45,6 +46,9 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas, pais }) {
   const lugar = (clave, k) => (P ? { nombre: P[k][0], direccion: P[k][1], foto: LUGARES[clave].foto } : LUGARES[clave]);
   const cfg = POR_TIPO[tipo] || POR_TIPO.boda;
   const en = EN(variante);
+  // README (ronda 44): en otros idiomas (pt, fr, it, de, nl, ca) la demo usa sus nombres, roles e itinerario
+  const idi = IDIOMAS_DEMO.includes(variante) ? variante : null;
+  const P_ = (k, es) => (idi ? PERSONAS[k][idi] : es);
   const fotosDe = `${rutas.modelo}/demo/${tipo}`;
   const comun = (p) => `${rutas.comun}/${p}`;
   const archivos = modelo.demo?.[tipo] || {};
@@ -62,7 +66,7 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas, pais }) {
     id: `demo-${modelo.id}-${tipo}`,
     tipo, modelo: modelo.id, paquete, variante,
     zonaHoraria: P?.tz || 'America/Argentina/Buenos_Aires', pais: String(pais || '').toUpperCase() || undefined,
-    nombres: archivos.nombres || cfg.nombres,
+    nombres: nombresDemo(archivos.nombres || cfg.nombres, idi),
     ceremonia: cfg.ceremonia
       ? { modo: 'separada', tipo: cfg.ceremonia, inicio: `${cfg.fecha || '2027-09-12'}T${hora[0]}`, fin: `${cfg.fecha || '2027-09-12'}T${hora[0].replace(/^(\d\d)/, (h) => String(+h + 1).padStart(2, '0'))}`, ...lugar('iglesia', 'iglesia'), foto: comun(LUGARES.iglesia.foto) }
       : { modo: 'sin' },
@@ -76,26 +80,27 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas, pais }) {
     },
     musica: { archivo: comun(`audio/demo-${tipo}.mp3`) },
     rsvp: { cierre: '2027-08-10', acompanantes: 2, preguntas: { comida: true, alcohol: true, ninos: tipo === 'boda', traslado: true } },
-    dresscode: { fotos: [1, 2, 3, 4, 5, 6].map((n) => comun(`img/demo-dress${n}.jpg`)) },
+    // README (ronda 44): en las demos se ven también los colores de referencia (blanco, azul y crema); en el panel empiezan vacíos
+    dresscode: { evitar: ['#ffffff', '#2f5d9b', '#efe4cc'], fotos: [1, 2, 3, 4, 5, 6].map((n) => comun(`img/demo-dress${n}.jpg`)) },
     hospedaje: {
       items: P ? P.hoteles : [
         { nombre: 'Hilton', direccion: 'Ruta 21, Km. 60.5', link: 'https://www.hilton.com/' },
         { nombre: 'Sheraton', direccion: 'Av. Principal 321', link: 'https://www.marriott.com/' },
       ],
     },
-    bus: { paradas: [{ detalle: P ? `${P.bus} - ${horaTexto(17, '00', formatoPais(pais, variante), variante)}` : en ? '432 Independencia Ave. - 5:00 PM' : 'Av. Independencia 432 - 17:00hs' }, {}] },
-    itinerario: (ITINERARIO[tipo] || ITINERARIO.boda).map(([h, icono, es, eng]) => ({ hora: en ? h : `${h}${variante === 'es-ar' || variante === 'es-cr' ? 'hs' : ' h'}`, icono, texto: en ? eng : es })),
+    bus: { paradas: [{ detalle: P ? `${P.bus} - ${horaTexto(17, '00', formatoPais(pais, variante), variante)}` : idi ? '432 Independencia Ave. - 5:00 PM' : 'Av. Independencia 432 - 17:00hs' }, {}] },
+    itinerario: (ITINERARIO[tipo] || ITINERARIO.boda).map(([h, icono, es, eng]) => ({ hora: idi ? h : `${h}${variante === 'es-ar' || variante === 'es-cr' ? 'hs' : ' h'}`, icono, texto: idi ? ITINERARIO_IDIOMAS[eng]?.[idi] || eng : es })),
     testigos: cfg.testigos
       ? [
-        { nombre: 'Juan Fernández', rol: en ? "GROOM'S BROTHER" : 'HERMANO DEL NOVIO', foto: comun('img/demo-testigo1.jpg') },
-        { nombre: 'Marcela García', rol: en ? "BRIDE'S BEST FRIEND" : 'MEJOR AMIGA DE LA NOVIA', foto: comun('img/demo-testigo2.jpg') },
+        { nombre: P_('hombre', 'Juan Fernández'), rol: P_('rolHermano', 'HERMANO DEL NOVIO'), foto: comun('img/demo-testigo1.jpg') },
+        { nombre: P_('mujer', 'Marcela García'), rol: P_('rolAmigaNovia', 'MEJOR AMIGA DE LA NOVIA'), foto: comun('img/demo-testigo2.jpg') },
       ]
       : tipo === 'cumple' ? [
-        { nombre: 'Juan Fernández', rol: en ? 'BEST FRIEND' : 'MEJOR AMIGO', foto: comun('img/demo-testigo1.jpg') },
-        { nombre: 'Marcela García', rol: en ? 'BEST FRIEND' : 'MEJOR AMIGA', foto: comun('img/demo-testigo2.jpg') },
+        { nombre: P_('hombre', 'Juan Fernández'), rol: P_('rolAmigo', 'MEJOR AMIGO'), foto: comun('img/demo-testigo1.jpg') },
+        { nombre: P_('mujer', 'Marcela García'), rol: P_('rolAmiga', 'MEJOR AMIGA'), foto: comun('img/demo-testigo2.jpg') },
       ] : [
-        { nombre: 'Juan Fernández', rol: en ? 'GODFATHER' : 'PADRINO', foto: comun('img/demo-testigo1.jpg') },
-        { nombre: 'Marcela García', rol: en ? 'GODMOTHER' : 'MADRINA', foto: comun('img/demo-testigo2.jpg') },
+        { nombre: P_('hombre', 'Juan Fernández'), rol: P_('rolPadrino', 'PADRINO'), foto: comun('img/demo-testigo1.jpg') },
+        { nombre: P_('mujer', 'Marcela García'), rol: P_('rolMadrina', 'MADRINA'), foto: comun('img/demo-testigo2.jpg') },
       ],
     album: { url: 'https://albunear.com/demo' },
     // Playlist de muestra (en la demo la lista viene escrita; en una invitación se lee de Spotify)
@@ -106,10 +111,10 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas, pais }) {
     ] },
     regalos: {
       cuentas: [
-        { etiqueta: P ? P.banco[0] : en ? 'IBAN' : 'Alias', dato: P ? P.banco[1] : en ? 'XX00 0000 0000 0000' : 'XXX-XXX-XXX' },
-        { etiqueta: en ? 'Account holder' : 'Titular', dato: 'Juan Fulano', copiable: false },
+        { etiqueta: P ? P.banco[0] : idi ? 'IBAN' : 'Alias', dato: P ? P.banco[1] : idi ? 'XX00 0000 0000 0000' : 'XXX-XXX-XXX' },
+        { etiqueta: P_('titularEtiqueta', 'Titular'), dato: P_('titular', 'Juan Fulano'), copiable: false },
       ],
-      lista: { etiqueta: en ? 'Registry' : 'Lista', dato: '000000-00', link: 'https://amoinvitar.com/' },
+      lista: { etiqueta: P_('lista', 'Lista'), dato: '000000-00', link: 'https://amoinvitar.com/' },
     },
     redes: { instagram: 'https://www.instagram.com/amoinvitar/', facebook: 'https://www.facebook.com/amoinvitar' },
     acceso: {},

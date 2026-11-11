@@ -1259,7 +1259,8 @@ function varsTarjeta(o = {}) {
   // README (ronda 42): «bautizo» si la invitación se creó en un país donde se dice así (o si la frase de la portada lo dice)
   const sub = datos.textos?.portada?.subtitulo || '';
   if (S.evento.tipo === 'bautismo' && (/bautiz/i.test(sub) || (datos.bautizo && !/bautism/i.test(sub)))) f = Object.fromEntries(Object.entries(f).map(([k, x]) => [k, x.replace(/bautismo/g, 'bautizo')]));
-  const cierre = datos.rsvp?.cierre ? datos.rsvp.cierre.split('-').reverse().join('/') : '';
+  // README (ronda 44): en Estados Unidos, mes/día/año
+  const cierre = datos.rsvp?.cierre ? (([ca, cm, cd]) => (MDY ? `${cm}/${cd}/${ca}` : `${cd}/${cm}/${ca}`))(datos.rsvp.cierre.split('-')) : '';
   return {
     iso, horaIso: hora, nombres: [nA, nB].filter(Boolean).join(' & '), a: nA || '', b: nB || '',
     fecha: iso ? (MDY ? `${m} · ${d} · ${a}` : `${d} · ${m} · ${a}`) : '', fechaCorta: iso ? `${d} ${mes.slice(0, 3).toUpperCase()} ${a}` : '',

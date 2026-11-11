@@ -37,7 +37,8 @@ function hora(p, variante, fmt) {
   return variante === 'es-ar' || variante === 'es-cr' ? `${p.hh}:${p.mm}hs` : `${p.hh}:${p.mm} h`;
 }
 
-const fechaPuntos = (p) => (p ? `${p.d} • ${p.m} • ${p.a}` : '');
+// README (ronda 44): en Estados Unidos y Puerto Rico, mes • día • año
+const fechaPuntos = (p, fmt) => (p ? (fmt?.fecha === 'MDY' ? `${p.m} • ${p.d} • ${p.a}` : `${p.d} • ${p.m} • ${p.a}`) : '');
 const fechaCirculos = (p, fmt) => (p ? (fmt?.fecha === 'MDY' ? `${p.m} ◦ ${p.d} ◦ ${p.a}` : `${p.d} ◦ ${p.m} ◦ ${p.a}`) : '');
 
 function fechaHora(fh, variante, fmt) {
@@ -152,6 +153,22 @@ function respuestaPrevia(r) {
   const o = { creado: r.creado };
   for (const k of CAMPOS_RESPUESTA) if (r[k] != null && r[k] !== '') o[k] = String(r[k]);
   return o;
+}
+
+// README (ronda 44): el álbum QR de las demos es el de Albunear armado para la demo (como en la web 2.0): el diseño de
+// Albunear del modelo (o el más parecido por colores), los nombres y la foto de la demo, el evento y el idioma.
+const ALBUNEAR_TEMA = { amanecer: 'soft', cars: 'confeti', esmeralda: 'natural', estilo: 'hojas', luxury: 'rosas', marino: 'noche', monster: 'confeti',
+  oro: 'black', peppa: 'confeti', revelacion: 'soft', rosa: 'rosas', style: 'rosas', civil: 'white', compromiso: 'soft', party: 'confeti', pedida: 'rosas',
+  'std-classic': 'white', 'std-soft': 'soft' };
+const ALBUNEAR_EVENTO = { 15: 'quince', bautismo: 'bautismo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion',
+  babyshower: 'babyshower', revelacion: 'babyshower', navidad: 'navidad' };
+function albumDemo(e, modelo, variante) {
+  const slug = (x) => String(x || '').trim().toLowerCase().replace(/\s+/g, '-');
+  const nombres = [e.nombres?.a, e.nombres?.b].filter(Boolean).map(slug).join('-y-');
+  const id = [ALBUNEAR_TEMA[modelo.id] || modelo.id, nombres, ALBUNEAR_EVENTO[e.tipo]].filter(Boolean).join('+');
+  const portada = e.fotos?.portada?.[0]?.url || e.fotos?.album || '';
+  const abs = (u) => (/^https?:/.test(u) ? u : `https://app.amoinvitar.com${u.startsWith('/') ? '' : '/'}${u}`);
+  return `https://albunear.com/demo-amoinvitar?id=${encodeURIComponent(id).replace(/%2B/g, '+')}${portada ? `&portada=${encodeURIComponent(abs(portada))}` : ''}&lang=${String(variante || 'es').slice(0, 2)}`;
 }
 
 export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false, invitado = null, marca = null }) {
@@ -318,7 +335,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     fechas,
     // Video de portada (modelos con video): el MP4 que subió el cliente
     portada: { color: !!(modelo.sepiaPortada && e.portada?.color), hayFoto: hayFotoPortada || demo, ciudad: String(e.portada?.ciudad ?? (demo ? 'Miami' : '')).slice(0, 30), video: modelo.videoPortada && fotosOn('portada') && e.portada?.tipo === 'video' ? (e.portada?.video || '') : '', poster: portada[0]?.url || '' },
-    fecha: { puntos: fechaPuntos(principal), iso: principal ? `${principal.a}-${principal.m}-${principal.d}` : '' },
+    fecha: { puntos: fechaPuntos(principal, F), iso: principal ? `${principal.a}-${principal.m}-${principal.d}` : '' },
     cuenta: {
       activa: !!incluye.cuenta && !!principal && e.portada?.cuenta !== false,
       // Apagada: Premium y Deluxe usan la portada de Basic (sin cuenta regresiva)
@@ -397,7 +414,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     itinerario: { items: itinerario },
     testigos: { items: (e.testigos || []).filter((x) => x.nombre || x.foto).map((x) => ({ ...x, foto: fotosOn('testigos') ? x.foto || '' : '', estilo: encuadreZoom(PROP.testigo, x.fotoPos, x.fotoZoom) })) },
     // Álbum de Albunear (el Classic incluido en Deluxe) o un link propio
-    album: { url: (e.album?.origen === 'albunear' ? e.album?.albunear : e.album?.url) || '' },
+    album: { url: demo ? albumDemo(e, modelo, variante) : (e.album?.origen === 'albunear' ? e.album?.albunear : e.album?.url) || '' },
     // Premium: hashtag de Instagram (por defecto los nombres y el año, como #SofiyAle2027)
     hashtag: (() => {
       const limpio = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9]/g, '');

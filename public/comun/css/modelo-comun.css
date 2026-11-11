@@ -127,3 +127,7 @@ html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2 .circle-singleline2 
 html[data-modelo="std-classic"] [data-ajustar].ai-nombres-2 { margin-top: .2em !important; margin-bottom: .3em !important; }
 
 [data-ajustar].ai-nombres-3 > .ai-esp { display: none !important; }
+
+/* README (ronda 44): paradas del itinerario: nunca en mayúsculas, solo la primera letra (todos los modelos) */
+html body .ai-it h1, html body .ai-it h2, html body .ai-it h3, html body .ai-it h4, html body .ai-it h5, html body .ai-it h6 { text-transform: lowercase !important; font-variant: normal !important; }
+html body .ai-it h1::first-letter, html body .ai-it h2::first-letter, html body .ai-it h3::first-letter, html body .ai-it h4::first-letter, html body .ai-it h5::first-letter, html body .ai-it h6::first-letter { text-transform: uppercase !important; }
