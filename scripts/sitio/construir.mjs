@@ -465,7 +465,7 @@ for (const f of readdirSync(RAIZ)) if (f.endsWith('.html')) rmSync(join(RAIZ, f)
   const P = { titulo: 'Invitaciones digitales para bodas y eventos', descripcion: 'Invitaciones digitales con RSVP para bodas, 15 años, bautismos y eventos: se envían por WhatsApp, confirman con un clic y tú ves la lista. Prueba gratis.' };
   const E = { ...GENERICO };
   escribe('index', P, [
-    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(0,0,0,.1),rgba(126,114,91,.6));--hero-g:linear-gradient(rgba(78,156,135,.3),rgba(0,0,0,.3))`, etiqueta: '', h1: 'Invitaciones digitales', panelImg: '/web/img/hero-panel-captura.webp', lead: 'La web de tu evento. Tus invitados abren, disfrutan y responden con un clic. Tú ves quién viene, organizas mesas y descargas la lista final desde un solo panel: es como tener un <strong>planner digital</strong>. Lista en minutos y sin pagar hasta que te encante.', demo: '/demo/garden?evento=boda&paquete=deluxe&limpia=1' }),
+    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(24,58,50,.42),rgba(52,46,36,.55) 55%,rgba(66,56,40,.82));--hero-g:linear-gradient(rgba(34,82,70,.5),rgba(20,30,26,.5) 55%,rgba(0,0,0,.6))`, etiqueta: '{{ETQ_PAIS}}', h1: 'Invitaciones digitales', panelImg: '/web/img/hero-panel-captura.webp', lead: 'La web de tu evento. Tus invitados abren, disfrutan y responden con un clic. Tú ves quién viene, organizas mesas y descargas la lista final desde un solo panel: es como tener un <strong>planner digital</strong>. Lista en minutos y sin pagar hasta que te encante.', demo: '/demo/garden?evento=boda&paquete=deluxe&limpia=1' }),
     confianza(), comoFunciona(E, true), eventos(), funciones(E), planes(E), faq(E, P), testimonios(), nosotros(), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -473,18 +473,23 @@ for (const f of readdirSync(RAIZ)) if (f.endsWith('.html')) rmSync(join(RAIZ, f)
 // Páginas de cada evento
 // Imagen de portada de cada página y su degradado, como en la web original
 const IMG_EV = (f) => `url(/web/img/eventos/${f})`;
-const fondoDe = (img, g, { m = img, gm = g } = {}) => `--hero-d:${img};--hero-m:${m};--hero-gd:${g};--hero-g:${gm}`;
+// README (ronda 45): pm = encuadre en el celular (por defecto, centrado)
+const fondoDe = (img, g, { m = img, gm = g, pm = '' } = {}) => `--hero-d:${img};--hero-m:${m};--hero-gd:${g};--hero-g:${gm}${pm ? `;--hero-pm:${pm}` : ''}`;
+const G3 = (a, b, c) => `linear-gradient(rgba(${a}),rgba(${b}) 55%,rgba(${c}))`;
 const G = (a, b) => `linear-gradient(rgba(${a}),rgba(${b}))`;
 const HEROES = {
-  boda: fondoDe(IMG_EV('hero-bodas-desk.jpg'), G('0,0,0,.2', '0,0,0,.8')),
-  15: fondoDe(IMG_EV('hero-15-desk.jpg'), G('0,0,0,.2', '0,0,0,.8'), { m: IMG_EV('hero-15.jpg') }),
-  bautismo: fondoDe(IMG_EV('hero-bautismo.jpg'), G('0,0,0,.2', '175,141,80,.6')),
+  // README (ronda 45): fotos nuevas (escritorio y celular, centradas) y degradados con colores de cada foto para que el texto se lea
+  boda: fondoDe(IMG_EV('hero-boda-desk.webp'), G3('38,26,18,.38', '38,26,18,.5', '28,19,13,.82'), { m: IMG_EV('hero-boda-movil.webp') }),
+  15: fondoDe(IMG_EV('hero-mis15-desk.webp'), G3('30,8,42,.3', '30,8,42,.45', '22,6,30,.8'), { m: IMG_EV('hero-mis15-movil.webp') }),
+  sweet16: fondoDe(IMG_EV('hero-sweet16-desk.webp'), G3('12,12,46,.3', '12,12,46,.45', '8,8,32,.8'), { m: IMG_EV('hero-sweet16-movil.webp') }),
+  bautismo: fondoDe(IMG_EV('hero-bautismo-desk.webp'), G3('70,34,22,.4', '70,34,22,.5', '52,24,15,.82'), { m: IMG_EV('hero-bautismo-movil.webp') }),
   comunion: fondoDe(IMG_EV('hero-comunion.jpg'), G('0,0,0,.4', '187,143,107,.6')),
-  cumple: fondoDe(IMG_EV('hero-cumple.jpg'), G('0,0,0,.4', '55,176,191,.6')),
-  babyshower: fondoDe(IMG_EV('hero-infantiles.jpg'), G('0,0,0,.2', '244,67,54,.2')),
+  cumple: fondoDe(IMG_EV('hero-cumple.jpg'), G3('14,62,72,.5', '14,62,72,.5', '10,45,54,.82'), { pm: '42% 50%' }), // en el celular, los globos al centro
+  babyshower: fondoDe(IMG_EV('hero-baby-shower-desk.webp'), G3('16,36,66,.3', '40,40,80,.4', '60,26,62,.72'), { m: IMG_EV('hero-baby-shower-movil.webp') }),
   graduacion: fondoDe(IMG_EV('hero-graduacion.jpg'), G('0,0,0,.4', '154,121,53,.6')),
-  empresarial: fondoDe(IMG_EV('hero-empresarial.jpg'), G('0,0,0,.6', '187,143,107,.8')),
-  otros: fondoDe(IMG_EV('hero-eventos.jpg'), G('0,0,0,.4', '126,114,91,.6')),
+  empresarial: fondoDe(IMG_EV('hero-empresarial.jpg'), G3('26,20,15,.62', '40,30,22,.66', '74,54,38,.86')),
+  otros: fondoDe(IMG_EV('hero-eventos.jpg'), G3('30,26,20,.55', '40,35,27,.6', '62,54,41,.85')),
+  profesionales: fondoDe(IMG_EV('hero-profesionales-desk.webp'), G3('16,36,31,.45', '16,36,31,.55', '10,26,22,.82'), { m: IMG_EV('hero-profesionales-movil.webp') }),
 };
 const PORTADAS = {
   boda: { etiqueta: 'Invitación + web', h1: 'Toda tu boda en un link', lead: 'Compartes por WhatsApp, tus invitados confirman asistencia con un clic, tú gestionas y descargas la lista. Además, van a agendar la fecha, ver el mapa, elegir menú, conocer el código de vestimenta, regalos, mesa asignada, sugerir canciones, álbum QR y mucho más.', t: 'Invitaciones de boda digitales con RSVP', d: 'Invitación de boda digital con web: confirman asistencia con un clic, ven mapa, menú y dress code, y tú organizas mesas y lista. Prueba gratis.' },
@@ -587,7 +592,7 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
     ['¿Y si organizo muchos eventos al año?', '<p>Mira las <a href="/profesionales">cuentas profesionales</a>: un panel con todos tus eventos, equipo y créditos con precio mayorista.</p>'],
   ];
   escribe('empresarial', P, [
-    portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES.empresarial, demo: urlDemo('aquasalud') + '.html', sinGratis: true, ticks: ['100% a medida', 'Con la identidad de tu marca'], demoVer: urlDemo('aquasalud') }),
+    portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES.empresarial, panelImg: '/web/img/hero-panel-captura.webp', demo: urlDemo('aquasalud') + '.html', sinGratis: true, ticks: ['100% a medida', 'Con la identidad de tu marca'], demoVer: urlDemo('aquasalud') }),
     confianza(), identidad, comoFunciona(E, false), muestras, funciones(E), precio, faq(E, P, preg), testimonios(), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -665,7 +670,7 @@ paginaAlbum();
 function paginaProfesionales() {
   const E = { ...GENERICO, id: 'index' };
   const P = { scripts: ['/web/js/profesionales.js'], titulo: 'Invitaciones digitales para profesionales', descripcion: 'Para wedding planners, fotógrafos y salones: panel con todos tus eventos, equipo, créditos a precio mayorista, marca blanca y dominio propio.' };
-  const hero = `<section class="portada" id="inicio"><div class="caja portada-centro"><span class="etiqueta">Para profesionales</span><h1>Invitaciones digitales para tus clientes, con tu marca</h1><p class="lead" style="margin-inline:auto">Wedding planners, fotógrafos, salones y agencias: administra todos tus eventos en un solo panel, suma a tu equipo y entrega invitaciones que se sienten tuyas.</p><div class="fila-btn" style="justify-content:center"><a class="btn btn-claro btn-grande" href="#contacto">Quiero mi cuenta</a><a class="btn btn-borde-claro btn-grande" href="#niveles">Ver los niveles</a></div></div></section>`;
+  const hero = `<section class="portada" id="inicio" style="${HEROES.profesionales}"><div class="caja portada-centro"><span class="etiqueta">Para profesionales</span><h1>Invitaciones digitales para tus clientes, con tu marca</h1><p class="lead" style="margin-inline:auto">Wedding planners, fotógrafos, salones y agencias: administra todos tus eventos en un solo panel, suma a tu equipo y entrega invitaciones que se sienten tuyas.</p><div class="fila-btn" style="justify-content:center"><a class="btn btn-claro btn-grande" href="#contacto">Quiero mi cuenta</a><a class="btn btn-borde-claro btn-grande" href="#niveles">Ver los niveles</a></div></div></section>`;
   const nivel = (n, o) => `<article class="plan-card rev${o.destacado ? ' destacado' : ''}">${o.destacado ? '<span class="cinta">Marca blanca</span>' : ''}<h3>${PRO[n].nombre}</h3><p class="precio">${PRO[n].pase ? `${eur(PRO[n].pase)} <small style="font-size:.4em;color:var(--suave)">/ año</small>` : '0 €'}</p><p class="precio-s">${o.ideal}</p><ul>${o.items.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul><a class="btn ${o.destacado ? 'btn-verde' : 'btn-borde'}" href="#contacto" data-nivel="${PRO[n].nombre}">${o.boton}</a></article>`;
   const niveles = `<section class="seccion" id="niveles"><div class="caja">${titulo('Niveles', 'Elige cómo <em>trabajar</em>', 'Empieza sin costo fijo y pasa a Studio cuando tu volumen lo pida.')}
   <div class="planes dos">${nivel('pro', { ideal: 'Ideal para fotógrafos y organizadores independientes. Sin costo fijo.', boton: 'Empezar con Pro', items: [`Hasta ${PRO.pro.administradores} usuarios administradores`, 'Panel con todos tus eventos', `Créditos sueltos (${eur(PRO.credito)}) o packs chicos`, 'Tu logo junto al pie de Amo Invitar', 'Tus invitaciones en amoinvitar.com/…', 'Tus clientes pueden publicar si les das acceso de administrador'] })}${nivel('studio', { destacado: true, ideal: 'Ideal para salones de eventos medianos y agencias.', boton: 'Hablar con nosotros', items: [`Hasta ${PRO.studio.administradores} usuarios administradores`, '<strong>Marca blanca:</strong> sin el pie de Amo Invitar; tu logo, tu texto o sin pie', 'Panel sin la marca de Amo Invitar ni links a otros productos', 'Dominio propio: invitaciones.tusalon.com (*)', `Packs exclusivos: hasta ${dto(PRO.studio.packs[3].precio, PRO.studio.packs[3].creditos)} % de descuento`, 'Tus clientes pueden publicar si les das acceso de administrador'] })}</div>
@@ -804,6 +809,7 @@ const SOLO_EN = new Set(['sweet16']);
   let cab = h.slice(0, i0).replace(/(<title>|content="|"name":"|"description":")([^<"]*)/g, (m, a, t) => a + S16(t));
   let main = S16(h.slice(i0, i1)).replace(/evento=15(&amp;|&)/g, 'evento=15$1sweet16=1$1').replace(/data-evento="15"/g, 'data-evento="15" data-sweet16="1"');
   cab = cab.replace(/data-evento="15"/, 'data-evento="15" data-sweet16="1"');
+  main = main.split(HEROES[15]).join(HEROES.sweet16); // README (ronda 45): su propia portada
   cab = cab.replace(/<a href="\{\{R\}\}\/sweet16">/g, '<a href="{{R}}/sweet16" aria-current="page">').replace(/(\/mis15") aria-current="page"/g, '$1');
   writeFileSync(join(RAIZ, 't', 'en', 'sweet16.html'), cab + main + h.slice(i1));
   PAGINAS.push('sweet16');
