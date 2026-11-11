@@ -15,7 +15,7 @@ export const IDIOMAS = Object.keys(ARCHIVO).filter((l) => existsSync(join(AQUI, 
 const norm = (t) => t.replace(/\s+/g, ' ').trim();
 const leer = (f) => (existsSync(join(AQUI, f)) ? JSON.parse(readFileSync(join(AQUI, f), 'utf8')) : {});
 
-// Portugués de Brasil → de Portugal (las palabras que cambian; «você» se mantiene, como en la mayoría de las marcas de allá)
+// Portugués de Brasil → de Portugal (las palabras que cambian). README (ronda 44): con «tu» (tu/teu, podes, cria…), más cercano y joven
 const PT = {
   celular: 'telemóvel', celulares: 'telemóveis', tela: 'ecrã', telas: 'ecrãs', equipe: 'equipa', equipes: 'equipas', arquivo: 'ficheiro',
   arquivos: 'ficheiros', cadastro: 'registo', cadastre: 'registe', cadastrar: 'registar', registro: 'registo', registros: 'registos',
@@ -24,16 +24,81 @@ const PT = {
   planejamento: 'planeamento', planeje: 'planeie', 'cardápio': 'menu', 'bebê': 'bebé', 'bebês': 'bebés', 'chá de bebê': 'baby shower',
   'câmera': 'câmara', gerenciar: 'gerir', gerencie: 'gira', gerenciamento: 'gestão', gerencia: 'gere', senha: 'palavra-passe', senhas: 'palavras-passe',
   excluir: 'eliminar', exclua: 'elimine', salvar: 'guardar', salve: 'guarde', 'pôster': 'póster', 'econômico': 'económico', 'gênero': 'género',
-  'prêmio': 'prémio', 'prêmios': 'prémios', 'acadêmico': 'académico', 'ônus': 'ónus', 'tênis': 'ténis', 'você mesmo': 'você próprio',
+  'prêmio': 'prémio', 'prêmios': 'prémios', 'acadêmico': 'académico', 'ônus': 'ónus', 'tênis': 'ténis', 'você mesmo': 'tu próprio',
+  conosco: 'connosco', cadastros: 'registos', curtem: 'adoram', curtir: 'aproveitar', 'seção': 'secção', 'seções': 'secções', controle: 'controlo', ingresso: 'bilhete', ingressos: 'bilhetes',
+  baixa: 'descarrega', baixam: 'descarregam', 'ótimo': 'ótimo', 'time': 'equipa', compartilhar: 'partilhar', compartilhe: 'partilhe', compartilha: 'partilha', compartilhado: 'partilhado', compartilhada: 'partilhada',
 };
 const RE_PT = new RegExp(`(?<![\\p{L}])(${Object.keys(PT).sort((a, b) => b.length - a.length).join('|')})(?![\\p{L}])`, 'giu');
+// «você» → «tu»: el verbo pasa a la segunda persona y el pronombre se cae («Você pode» → «Podes»)
+const TU_IRREG = { tem: 'tens', 'vê': 'vês', pode: 'podes', quer: 'queres', vai: 'vais', faz: 'fazes', 'é': 'és', 'está': 'estás', fez: 'fizeste', der: 'deres',
+  enviou: 'enviaste', 'pôde': 'pudeste', 'dá': 'dás', diz: 'dizes', traz: 'trazes', sabe: 'sabes', consegue: 'consegues' };
+const aTuVerbo = (v) => {
+  const l = v.toLowerCase();
+  if (TU_IRREG[l]) return TU_IRREG[l];
+  if (/rá$/.test(l)) return l + 's';                    // verá → verás
+  if (/ou$/.test(l)) return l.replace(/ou$/, 'aste');   // escolheu… (pocos)
+  if (/[ae]$/.test(l)) return l + 's';                  // paga → pagas, decide → decides
+  if (/[aei]r$/.test(l)) return l + 'es';               // (quando) você testar → testares
+  return null;
+};
+const PRON = '(?:os|as|o|a|nos|me|se|lhe|lhes)';
+const TU_IMP = { crie: 'cria', veja: 'vê', encontre: 'encontra', escolha: 'escolhe', personalize: 'personaliza', experimente: 'experimenta', pague: 'paga',
+  partilhe: 'partilha', conte: 'conta', abra: 'abre', ative: 'ativa', complete: 'completa', selecione: 'seleciona', 'peça': 'pede', receba: 'recebe',
+  escreva: 'escreve', adicione: 'adiciona', comece: 'começa', descarregue: 'descarrega', organize: 'organiza', descubra: 'descobre', teste: 'testa',
+  envie: 'envia', monte: 'monta', prepare: 'prepara', fale: 'fala', acesse: 'acede', clique: 'clica', toque: 'toca', use: 'usa', aproveite: 'aproveita',
+  confira: 'vê', deixe: 'deixa', gira: 'gere', guarde: 'guarda', registe: 'regista', elimine: 'elimina', planeie: 'planeia', diga: 'diz', mande: 'manda',
+  convide: 'convida', mostre: 'mostra', faça: 'faz', escaneie: 'digitaliza', suba: 'carrega', some: 'soma', reserve: 'reserva', informe: 'indica', indique: 'indica', preencha: 'preenche',
+  escolha: 'escolhe', defina: 'define', carregue: 'carrega', adicione: 'adiciona', edite: 'edita', baixe: 'descarrega' };
+const RE_TU_IMP = new RegExp(`(^\\s*|[.!?:;,·—–(]\\s*|(?<![\\p{L}])(?:e|ou)\\s+)(${Object.keys(TU_IMP).join('|')})(?![\\p{L}])`, 'giu');
+const may1 = (o, n) => (o[0] !== o[0].toLowerCase() ? n[0].toUpperCase() + n.slice(1) : n);
+export function aTu(t) {
+  let x = String(t);
+  // «Você (não/já/também/só) (os) pode» → «(Não/Já…) (os) podes»
+  x = x.replace(new RegExp(`(?<![\\p{L}])(você)\\s+((?:não|já|também|só|ainda|sempre)\\s+)?(${PRON}\\s+)?(\\p{L}+)(?![\\p{L}])`, 'giu'), (m, p, adv, pr, v) => {
+    const n = aTuVerbo(v);
+    if (!n) return m;
+    const pr2 = pr ? pr.replace(/^se(\s)/i, 'te$1') : '';
+    const out = `\u0002${adv || ''}${pr2}${n}`; // marca: esta frase le habla a «tu» con un verbo conjugado
+    return p[0] === 'V' ? out.replace(/^(\u0002)?(.)/, (z, mk, c) => (mk || '') + c.toUpperCase()) : out;
+  });
+  // «ajudamos você» → «ajudamos-te»; «para você» → «para ti»; «com você» → «contigo»
+  x = x.replace(/(?<![\p{L}])(\p{L}+mos|poupa|leva|ajuda|acompanha|orienta)\s+você(?![\p{L}])/giu, '$1-te');
+  x = x.replace(/(?<![\p{L}])com você(?![\p{L}])/giu, (m) => may1(m, 'contigo'));
+  x = x.replace(/(?<![\p{L}])(para|de|por|sem|a|até|entre)\s+você(?![\p{L}])/giu, '$1 ti');
+  x = x.replace(/(?<![\p{L}])você(?![\p{L}])/giu, (m) => may1(m, 'tu'));
+  // Imperativos (de «você» a «tu»)
+  x = x.replace(RE_TU_IMP, (m, a, v) => a + may1(v, TU_IMP[v.toLowerCase()]));
+  // Verbos encadenados después de uno de «tu»: «vês quem vem, organiza mesas e descarrega» → «organizas… e descarregas»
+  x = x.split(/(?<=[.!?:])\s+/).map((f) => {
+    if (!f.includes('\u0002') || /cada (pessoa|convidad)/i.test(f)) return f;
+    return f.replace(/((?:,|\be|\bnão)\s+)(organiza|descarrega|edita|paga|vê|gere|adiciona|recebe|escolhe|personaliza|guarda|administra|cria|decide|monta|partilha|envia|controla|acompanha|exporta|corrige|muda)(?![\p{L}])/giu,
+      (m, a, v) => a + (v.toLowerCase() === 'vê' ? 'vês' : v + 's'));
+  }).join(' ');
+  // Futuro de subjuntivo: «quando quiser» → «quando quiseres»
+  x = x.replace(/(?<![\p{L}])(que|se|quando|como|onde|enquanto|que mais)\s+(quiser|puder|precisar|gostar|preferir|desejar|escolher|tiver|fizer|decidir)(?![\p{L}])/giu, (m, a, v) => `${a} ${v}es`);
+  // Posesivos: seu → teu (menos lo que es de cada invitado o de ellos: «Deixam seus recados»)
+  x = x.split(/(?<=[.!?])\s+/).map((f) => (/cada (pessoa|convidad)/i.test(f) ? f
+    : f.replace(/(?<![\p{L}])(\p{L}+\s+)?(seu|sua|seus|suas)(?![\p{L}])/giu, (m, ant, p) => (ant && /m\s+$/.test(ant) && !/^(com|sem|em)\s/i.test(ant) ? m
+      : (ant || '') + may1(p, { seu: 'teu', sua: 'tua', seus: 'teus', suas: 'tuas' }[p.toLowerCase()]))))).join(' ');
+  // En Portugal el posesivo lleva artículo: «teu convite» → «o teu convite», «de teu» → «do teu», «com teu» → «com o teu»
+  const ART = { teu: 'o', tua: 'a', teus: 'os', tuas: 'as', meu: 'o', minha: 'a', meus: 'os', minhas: 'as' };
+  const CONTR = { de: { o: 'do', a: 'da', os: 'dos', as: 'das' }, em: { o: 'no', a: 'na', os: 'nos', as: 'nas' }, por: { o: 'pelo', a: 'pela', os: 'pelos', as: 'pelas' }, a: { o: 'ao', a: 'à', os: 'aos', as: 'às' } };
+  x = x.replace(/(?<![\p{L}])(?:(\p{L}+)(\s+))?(teu|tua|teus|tuas|meu|minha|meus|minhas)(?=\s+\p{L}|\s*$)/giu, (m, ant, sp, p) => {
+    const art = ART[p.toLowerCase()], a = (ant || '').toLowerCase();
+    if (/^(o|a|os|as|do|da|dos|das|no|na|nos|nas|ao|à|aos|às|pelo|pela|pelos|pelas|um|uma|este|esta|esse|essa)$/.test(a)) return m;
+    if (CONTR[a]) return `${may1(ant, CONTR[a][art])}${sp}${p.toLowerCase()}`;
+    return ant ? `${ant}${sp}${art} ${p.toLowerCase()}` : `${may1(p, art)} ${p.toLowerCase()}`;
+  });
+  return x.replace(/\u0002/g, '');
+}
 const INF = (v) => v.replace(/ando$/, 'ar').replace(/endo$/, 'er').replace(/indo$/, 'ir');
 export function aPortugal(t) {
   return String(t)
     .replace(RE_PT, (m) => { const n = PT[m.toLowerCase()]; return m[0] !== m[0].toLowerCase() ? n[0].toUpperCase() + n.slice(1) : n; })
     .replace(/(?<![\p{L}])em um(?![\p{L}])/gu, 'num').replace(/(?<![\p{L}])em uma(?![\p{L}])/gu, 'numa').replace(/(?<![\p{L}])Em um(?![\p{L}])/gu, 'Num')
     // gerúndio → «a» + infinitivo: «estão confirmando» → «estão a confirmar»
-    .replace(/(?<![\p{L}])(estou|está|estão|estamos|ficam|fica|continua|continuam)\s+(\p{L}+(?:ando|endo|indo))(?![\p{L}])/giu, (m, a, v) => `${a} a ${INF(v)}`);
+    .replace(/(?<![\p{L}])(estou|está|estão|estamos|ficam|fica|continua|continuam)\s+(\p{L}+(?:ando|endo|indo))(?![\p{L}])/giu, (m, a, v) => `${a} a ${INF(v)}`)
+    .replace(/^[\s\S]*$/, (z) => aTu(z));
 }
 
 // README (ronda 44): inglés británico (Reino Unido, Irlanda, Australia, Nueva Zelanda) a partir del inglés: ortografía y palabras

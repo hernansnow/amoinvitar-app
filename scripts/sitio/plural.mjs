@@ -126,7 +126,18 @@ const PT_IMP = { crie: 'criem', veja: 'vejam', encontre: 'encontrem', escolha: '
   'peça': 'peçam', receba: 'recebam', escreva: 'escrevam', adicione: 'adicionem', comece: 'comecem', gerencie: 'gerenciem', baixe: 'baixem', descarregue: 'descarreguem',
   organize: 'organizem', descubra: 'descubram', teste: 'testem', crie: 'criem', mostre: 'mostrem', envie: 'enviem', monte: 'montem', prepare: 'preparem' };
 const RE_PT_IMP = reImp(PT_IMP, 'e');
-const PT = { 'você': 'vocês', teu: 'vosso', tua: 'vossa', teus: 'vossos', tuas: 'vossas', contigo: 'convosco' };
+const PT = { 'você': 'vocês', teu: 'vosso', tua: 'vossa', teus: 'vossos', tuas: 'vossas', contigo: 'convosco', ti: 'vocês',
+  // Portugal (tu): las formas de «tu» pasan a «vocês»
+  podes: 'podem', tens: 'têm', 'vês': 'veem', pagas: 'pagam', decides: 'decidem', recebes: 'recebem', crias: 'criam', partilhas: 'partilham', geres: 'gerem',
+  envias: 'enviam', montas: 'montam', organizas: 'organizam', escolhes: 'escolhem', sabes: 'sabem', precisas: 'precisam', guardas: 'guardam',
+  administras: 'administram', personalizas: 'personalizam', queres: 'querem', vais: 'vão', 'és': 'são', 'estás': 'estão', fazes: 'fazem', descarregas: 'descarregam',
+  'verás': 'verão', 'terás': 'terão', consegues: 'conseguem', controlas: 'controlam', acompanhas: 'acompanham', compras: 'compram', usas: 'usam', abres: 'abrem' };
+// Imperativos de «tu» (Portugal) → «vocês»
+const PT_TU_IMP = { cria: 'criem', 'vê': 'vejam', encontra: 'encontrem', escolhe: 'escolham', personaliza: 'personalizem', experimenta: 'experimentem', paga: 'paguem',
+  partilha: 'partilhem', conta: 'contem', abre: 'abram', ativa: 'ativem', completa: 'completem', seleciona: 'selecionem', pede: 'peçam', recebe: 'recebam',
+  escreve: 'escrevam', adiciona: 'adicionem', 'começa': 'comecem', descarrega: 'descarreguem', organiza: 'organizem', descobre: 'descubram', testa: 'testem',
+  envia: 'enviem', monta: 'montem', prepara: 'preparem', fala: 'falem', gere: 'giram', guarda: 'guardem', convida: 'convidem', mostra: 'mostrem' };
+const RE_PT_TU_IMP = reImp(PT_TU_IMP, 'e');
 const RE_PT = tablaRe(PT);
 
 export function aPluralOtro(t, idioma) {
@@ -138,6 +149,8 @@ export function aPluralOtro(t, idioma) {
     // «vocês gerenciam e baixa» → «… e baixam»
     t = t.replace(/(vocês\s+\p{L}+m\s+e\s+)(\p{L}+)(?![\p{L}])/giu, (m, a, v) => a + (PT_VERBO[v.toLowerCase()] || v));
     t = imperativos(t, RE_PT_IMP, PT_IMP, 0);
+    t = imperativos(t, RE_PT_TU_IMP, PT_TU_IMP, 0);
+    t = t.replace(/(?<![\p{L}])(\p{L}+)-te(?![\p{L}])/gu, '$1-vos');
     return reemplaza(t, PT, RE_PT, 0);
   }
   return t;
