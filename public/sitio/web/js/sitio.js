@@ -28,7 +28,7 @@
       function ir() { window.AmoCrear.medida(slug, titulo, producto); }
       if (window.AmoCrear) return ir();
       if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css?v=a9d90ba8'; d.head.appendChild(l); }
-      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js?v=9e817bd8'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
+      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js?v=da3d08fb'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
     });
   });
 

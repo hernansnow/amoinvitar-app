@@ -91,12 +91,14 @@ const PIE_ZONA = { es: 'Invitaciones digitales', en: 'Digital invitations', pt: 
 // Completa la página guardada para la carpeta de un país
 // README (ronda 43): los artículos de /ideas/ están solo en español (sus hreflang, solo entre las carpetas en español)
 const soloEspanol = (pagina) => /^ideas(\/|$)/.test(pagina);
+// README (ronda 44): Sweet 16 solo en inglés (Estados Unidos, Canadá e internacional)
+const soloIngles = (pagina) => pagina === 'sweet16';
 function componer(html, sede, pagina, { legal = false, monedaRaiz = '' } = {}) {
   const url = urlDe(sede, pagina);
   const sufijo = ` | Amo Invitar!${sede.nombre ? ` – ${sede.nombre}` : ''}`;
   const z = zona(sede);
   const alternos = legal ? `<link rel="canonical" href="${url}">` : [`<link rel="canonical" href="${url}">`,
-    ...SEDES.filter((s) => !soloEspanol(pagina) || s.clave.startsWith('es')).map((s) => `<link rel="alternate" hreflang="${s.lang}" href="${urlDe(s, pagina)}">`),
+    ...SEDES.filter((s) => (!soloEspanol(pagina) || s.clave.startsWith('es')) && (!soloIngles(pagina) || s.clave === 'en')).map((s) => `<link rel="alternate" hreflang="${s.lang}" href="${urlDe(s, pagina)}">`),
     `<link rel="alternate" hreflang="x-default" href="${urlDe(NEUTRA, pagina)}">`].join('\n');
   const pieZona = z ? `${PIE_ZONA[idiomaDe(sede)] || PIE_ZONA.es} · ${z}` : '';
   return html
@@ -159,6 +161,7 @@ export async function sitioNuevo(env, request, url) {
   if (primera in REDIRECCIONES && pagina0 === primera) return ir(`${sede.carpeta}/${REDIRECCIONES[primera]}${url.search}`);
   if (sede !== NEUTRA) { const d = demoVieja(pagina0); if (d) return ir(d); }
   if (soloEspanol(pagina0) && !sede.clave.startsWith('es')) return ir(`/${pagina0}${url.search}`);
+  if (soloIngles(pagina0) && sede.clave !== 'en') return ir(`${sede.carpeta}/mis15${url.search}`);
   // Las legales son las mismas para todos (en /info/…)
   if (pagina0.startsWith('info/') && sede !== NEUTRA) return ir(`/${pagina0}${url.search}`);
   // /crear-invitacion-para-<evento> es la misma página que /crear-invitacion (con el evento ya elegido)

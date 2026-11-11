@@ -110,7 +110,7 @@
         // Dentro de un grupo (Cumpleaños → infantil, Baby shower → revelación): el tipo propio del diseño
         var real = (m.propios || m.eventos).indexOf(t) >= 0 ? t : (t === 'cumple' ? 'infantil' : t === 'babyshower' ? 'revelacion' : t);
         invit.push({ id: m.id, nombre: (m.nombres && m.nombres[real]) || (m.nombres && m.nombres[t]) || m.nombre, gratis: m.gratis, desde: m.gratis ? cero(c) : desdeBasic(c), imgs: miniaturas(m, real),
-          demo: APP + '/demo/' + m.id + '?evento=' + encodeURIComponent(real) + '&paquete=deluxe', link: { producto: 'invitacion', modelo: m.id, evento: real }, dos: t === 'boda' });
+          demo: APP + '/demo/' + m.id + '?evento=' + encodeURIComponent(real) + '&paquete=deluxe' + (real === '15' && document.querySelector('[data-sweet16]') ? '&sweet16=1' : ''), link: { producto: 'invitacion', modelo: m.id, evento: real }, dos: t === 'boda' });
       });
     }
     // README (ronda 39): en Cumpleaños los infantiles se reparten entre los de adultos (no quedan todos al final)

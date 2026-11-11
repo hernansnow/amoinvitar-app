@@ -12,3 +12,5 @@ export const claveVisitante = (request) => { const c = getCookie(request, 'idiom
 export const varianteVisitante = (request) => IDIOMA_INVITACION[claveVisitante(request)] || varianteDePais(paisVisitante(request));
 // ¿Bautizo (true) o bautismo (false)? Para las demos y para lo que se completa solo en una invitación nueva
 export const bautizoVisitante = (request) => diceBautizo(paisVisitante(request));
+// README (ronda 44): ¿«Sweet 16» en lugar de «Sweet 15»? En inglés, en Estados Unidos y Canadá
+export const sweet16Visitante = (request) => ['US', 'CA'].includes(String(paisVisitante(request)).toUpperCase()) && varianteVisitante(request) === 'en';

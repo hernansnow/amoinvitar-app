@@ -15,7 +15,7 @@
 
 import { diccionario, varianteDePais, VARIANTES, esPlural } from './textos/index.js';
 import { formatoPais, paisDeZona } from './textos/regional.js';
-import { paisVisitante, claveVisitante, varianteVisitante, bautizoVisitante } from './sitio/visitante.js';
+import { paisVisitante, claveVisitante, varianteVisitante, bautizoVisitante, sweet16Visitante } from './sitio/visitante.js';
 import { armarVista } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
@@ -88,7 +88,10 @@ const variante = (v) => (VARIANTES.includes(v) ? v : 'es');
 const conTextosModelo = (dic, modelo, varnt) => (modelo?.textosDemo && String(varnt).startsWith('es') ? { ...dic, ...modelo.textosDemo } : dic);
 // "Confirmar asistencia" en vez de "CONFIRMAR ASISTENCIA" (modelo.textosCaso: { clave: 'oracion' }), sin tocar las etiquetas
 const aOracion = (html) => { let primera = true; return html.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, tx) => { if (tag) return tag; const t = tx.toLocaleLowerCase(); if (!primera || !t.trim()) return t; primera = false; return t.replace(/\p{L}/u, (l) => l.toLocaleUpperCase()); }); };
-function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null, { bautizo } = {}) {
+// README (ronda 44): «Sweet 16» (Estados Unidos y Canadá): los textos de 15 años en inglés, con 16
+const aSweet16 = (t) => t.replace(/Sweet 15/g, 'Sweet 16').replace(/SWEET 15/g, 'SWEET 16').replace(/\b15th\b/g, '16th').replace(/\bQuincea[ñn]era\b/gi, 'Sweet 16')
+  .replace(/\bquince\b/g, 'Sweet 16').replace(/\bmy 15\b/gi, (m) => m.replace('15', 'Sweet 16'));
+function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null, { bautizo, sweet16 } = {}) {
   const d = { ...conTextosModelo(diccionario(tipo, varnt), modelo, varnt), ...propios };
   for (const [k, caso] of Object.entries(modelo?.textosCaso || {})) if (caso === 'oracion' && d[k] && !(k in propios)) d[k] = aOracion(String(d[k]));
   // Un prefijo propio del diseño (Travel: "Tripulación – Testigos"); si el cliente escribe su título, va el suyo entero
@@ -104,6 +107,7 @@ function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null, { bau
       for (const k of Object.keys(d)) if (typeof d[k] === 'string' && !(k in propios)) d[k] = cambiar(d[k]);
     }
   }
+  if (tipo === '15' && sweet16 && String(varnt).startsWith('en')) for (const k of Object.keys(d)) if (typeof d[k] === 'string' && !(k in propios)) d[k] = aSweet16(d[k]);
   return (k) => String(d[k] ?? '').replaceAll('{nombres}', nombres);
 }
 const nombresDe = (n = {}) => [n.a, n.b].filter(Boolean).join(' & ');
@@ -166,7 +170,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     evento = structuredClone(evento);
     for (const [ruta, val] of Object.entries(aplanar(evento.traducciones?.[v.slice(0, 2)] || {}))) if (typeof val === 'string' && val.trim()) escribirRuta(evento, ruta, val);
   }
-  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres), modelo, { bautizo: evento.bautizo });
+  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres), modelo, { bautizo: evento.bautizo, sweet16: evento.sweet16 });
   const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
   vista.idiomas = { lista: idiomas, actual: v, banderas: Object.fromEntries(idiomas.map((x) => [x.slice(0, 2), banderaDe(x.slice(0, 2), evento)])) };
@@ -256,6 +260,7 @@ async function demo(env, url, request, idModelo) {
   const rutas = { comun: '/comun', modelo: `/modelos/${idModelo}` };
   const ev = eventoDemo({ tipo, variante: v, paquete, modelo, rutas, pais }); // README (ronda 40): lugares, horas y fechas como en ese país
   if (tipo === 'bautismo' && v.startsWith('es')) ev.bautizo = q.get('pais') ? undefined : bautizoVisitante(request);
+  if (tipo === '15' && v === 'en' && (q.get('sweet16') === '1' || (!q.get('pais') && sweet16Visitante(request)))) ev.sweet16 = true; // README (ronda 44)
   if (q.get('sobre') === 'no') ev.portada = { ...(ev.portada || {}), sobre: false }; // &sobre=no: la ventana de bienvenida
   // Solo en la compu (npm run local): &prueba={json} pisa datos de la demo para revisar casos (nombres largos, secciones apagadas…)
   if (env.MODO_LOCAL && q.get('prueba')) {
@@ -735,8 +740,10 @@ async function apiPanel(env, request, url, partes) {
     const v = variante(ev.datos.variante);
     const dic0 = conTextosModelo(diccionario(ev.tipo, v), ev.modelo ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null, v);
     // README (ronda 42): los textos de ejemplo del panel dicen «bautizo» si la invitación se creó en un país donde se dice así
-    const dic = ev.tipo === 'bautismo' && ev.datos.bautizo && !/bautism/i.test(ev.datos.textos?.portada?.subtitulo || '')
+    const dic1 = ev.tipo === 'bautismo' && ev.datos.bautizo && !/bautism/i.test(ev.datos.textos?.portada?.subtitulo || '')
       ? Object.fromEntries(Object.entries(dic0).map(([k, x]) => [k, typeof x === 'string' ? x.replace(/(bauti)(smo)/gi, (m, a, b) => a + (b === b.toUpperCase() ? 'ZO' : 'zo')) : x])) : dic0;
+    // README (ronda 44): Sweet 16 (Estados Unidos y Canadá, en inglés)
+    const dic = ev.tipo === '15' && ev.datos.sweet16 && String(v).startsWith('en') ? Object.fromEntries(Object.entries(dic1).map(([k, x]) => [k, typeof x === 'string' ? aSweet16(x) : x])) : dic1;
     return json({
       evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, tipoNombre: nombreTipo(ev.tipo), modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
       esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
@@ -818,7 +825,7 @@ async function apiPanel(env, request, url, partes) {
     if (ev.estado === 'publicado' && antes?.simple && !admin) return json({ error: 'La invitación ya está publicada y no se puede cambiar. Escríbenos por WhatsApp.' }, 400);
     // README (ronda 22): entre un modelo simple y uno completo el panel arranca de nuevo; quedan los nombres y la fecha
     if (!!antes?.simple !== !!elegido.simple) {
-      const d = ev.datos, quedan = { nombres: d.nombres, variante: d.variante, bautizo: d.bautizo, zonaHoraria: d.zonaHoraria, idiomas: d.idiomas, extras: d.extras, acceso: d.acceso,
+      const d = ev.datos, quedan = { nombres: d.nombres, variante: d.variante, bautizo: d.bautizo, sweet16: d.sweet16, zonaHoraria: d.zonaHoraria, idiomas: d.idiomas, extras: d.extras, acceso: d.acceso,
         celebracion: d.celebracion && { fecha: d.celebracion.fecha, hora: d.celebracion.hora }, ceremonia: d.ceremonia && { fecha: d.ceremonia.fecha, hora: d.ceremonia.hora } };
       ev.datos = JSON.parse(JSON.stringify(quedan));
     }

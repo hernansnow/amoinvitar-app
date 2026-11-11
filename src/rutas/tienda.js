@@ -24,7 +24,7 @@ import { almacenD1 } from '../almacen.js';
 import { RECUERDO, PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, PROFESIONALES, precioPedido, comprable } from '../catalogo.js';
 import { MODELOS, TIPOS_EVENTO, CON_TARJETA_STD, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
-import { varianteVisitante, bautizoVisitante } from '../sitio/visitante.js';
+import { varianteVisitante, bautizoVisitante, sweet16Visitante } from '../sitio/visitante.js';
 import { diceBautizo } from '../sitio/variantes.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
 import { ZONAS } from '../datos/zonas.js';
@@ -612,7 +612,7 @@ export async function empezar(request, env) {
     estado: 'borrador', clave: randomId(16), empresaId: null, slug: null,
     datos: {
       // README (ronda 42): idioma y bautismo/bautizo del país que eligió en la web (o el de su IP)
-      variante: varianteVisitante(request), zonaHoraria: zona, acceso: { modo: 'abierta' }, extras: [], secciones, ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}),
+      variante: varianteVisitante(request), zonaHoraria: zona, acceso: { modo: 'abierta' }, extras: [], secciones, ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}), ...(tipo === '15' && sweet16Visitante(request) ? { sweet16: true } : {}),
       nombres: bb ? { a, b: bb } : { a }, celebracion: fecha ? { fecha, inicio: fecha } : {},
       planElegido: gratisPosible ? 'gratis' : null,
       // README (ronda 28): los modelos con plan gratis arrancan gratis (sin galería ni cuenta regresiva); al prender
@@ -653,7 +653,7 @@ async function empezarProducto(request, env, b, producto) {
   if (!a) throw new HttpError(400, 'Falta el nombre');
   const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';
   let modelo = null;
-  const datos = { variante: varianteVisitante(request), ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
+  const datos = { variante: varianteVisitante(request), ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}), ...(tipo === '15' && sweet16Visitante(request) ? { sweet16: true } : {}), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
     celebracion: fecha ? { fecha, inicio: fecha } : {}, std: { ...(fecha ? { fecha } : {}) } };
   if (producto === 'std-tarjeta') {
     // Sin diseño elegido (desde la tienda): el primero con tarjeta para ese evento

@@ -421,6 +421,8 @@ const escribe = (slug, P, cuerpo) => {
     }
     // README (ronda 44): en los títulos, la palabra en Dantina (<em>) empieza en mayúscula también después de traducir
     x = x.replace(/<(h[1-3])\b[^>]*>[\s\S]*?<\/\1>/g, (m) => m.replace(/<em>(\s*)(\p{Ll})/gu, (z, a, l) => `<em>${a}${l.toUpperCase()}`));
+    // README (ronda 44): en inglés (Estados Unidos, Canadá, internacional), el pie también enlaza a Sweet 16
+    if (c === 'en') x = x.replace('<li><a href="{{R}}/mis15">Quinceañera</a></li>', (m) => `${m}<li><a href="{{R}}/sweet16">Sweet 16</a></li>`);
     // README (ronda 44): el álbum de muestra de Albunear («Mejor juntos») en el idioma de la página
     x = x.replace(/(src="https:\/\/albunear\.com\/demo\?[^"]*?)"/g, `$1&amp;lang=${c.slice(0, 2)}"`);
     x = x.replace('data-clave="es"', `data-clave="${c}"`);
@@ -768,6 +770,22 @@ ${cuerpo}
 <p class="legal-otros">Otros textos legales: <a href="/info/aviso-legal">Aviso legal</a> · <a href="/info/politica-de-privacidad">Privacidad</a> · <a href="/info/politica-de-cookies">Cookies</a> · <a href="/info/terminos-y-condiciones">Términos</a> · <a href="/info/politica-de-devoluciones">Devoluciones</a> · <a href="/info/rgpd">RGPD</a></p></article></div></section>`);
 }
 
+// ── README (ronda 44): Sweet 16 (Estados Unidos y Canadá, en inglés): la página de 15 años dicha como allá ──
+// Sale de la de 15 años en inglés; la de 15 años sigue igual en todos lados. Solo existe en las versiones en inglés (en).
+const SOLO_EN = new Set(['sweet16']);
+{
+  const f = join(RAIZ, 't', 'en', 'mis15.html');
+  const h = readFileSync(f, 'utf8');
+  const i0 = h.indexOf('<main'), i1 = h.indexOf('</main>');
+  const S16 = (t) => t.replace(/quinceañera (invitations?|invitation)/gi, (m, x) => `Sweet 16 ${x}`).replace(/\b([Yy])our quince\b/g, '$1our Sweet 16')
+    .replace(/(>|")Quinceañera(<|")/g, '$1Sweet 16$2').replace(/\b15th birthday\b/g, '16th birthday').replace(/\bquince\b/g, 'Sweet 16');
+  let cab = h.slice(0, i0).replace(/(<title>|content="|"name":"|"description":")([^<"]*)/g, (m, a, t) => a + S16(t));
+  let main = S16(h.slice(i0, i1)).replace(/evento=15(&amp;|&)/g, 'evento=15$1sweet16=1$1').replace(/data-evento="15"/g, 'data-evento="15" data-sweet16="1"');
+  cab = cab.replace(/data-evento="15"/, 'data-evento="15" data-sweet16="1"');
+  writeFileSync(join(RAIZ, 't', 'en', 'sweet16.html'), cab + main + h.slice(i1));
+  PAGINAS.push('sweet16');
+}
+
 console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} versiones de texto (${CLAVES.join(', ')}) · ${SEDES.length} carpetas`);
 
 // README (ronda 42) · Sitemap y robots: todas las páginas de cada carpeta de país (los hreflang van en cada página, los pone el Worker).
@@ -775,7 +793,7 @@ console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} vers
 {
   const hoy = new Date().toISOString().slice(0, 10);
   const indexables = PAGINAS.filter((x) => !x.startsWith('info/'));
-  const urls = SEDES.flatMap((sd) => indexables.filter((x) => !SOLO_ES.has(x) || sd.clave.startsWith('es')).map((x) => `${C.SITIO}${sd.carpeta}/${x === 'index' ? '' : x}`));
+  const urls = SEDES.flatMap((sd) => indexables.filter((x) => (!SOLO_ES.has(x) || sd.clave.startsWith('es')) && (!SOLO_EN.has(x) || sd.clave === 'en')).map((x) => `${C.SITIO}${sd.carpeta}/${x === 'index' ? '' : x}`));
   writeFileSync(join(RAIZ, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${hoy}</lastmod></url>`).join('\n')}\n</urlset>\n`);
   // Lo que no tiene que salir en Google: la app (panel, cuenta, tienda, api), las invitaciones de los clientes y las legales.
   // Las demos sí se pueden rastrear (se ven en las páginas), pero no se listan.
