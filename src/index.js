@@ -16,6 +16,7 @@
 import { diccionario, varianteDePais, VARIANTES, esPlural } from './textos/index.js';
 import { formatoPais, paisDeZona } from './textos/regional.js';
 import { paisVisitante, claveVisitante, varianteVisitante, bautizoVisitante, sweet16Visitante } from './sitio/visitante.js';
+import { traducirEstaticos, traducePrefijo } from './textos/estaticos.js';
 import { armarVista } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
@@ -95,7 +96,7 @@ function traductor(tipo, varnt, propios = {}, nombres = '', modelo = null, { bau
   const d = { ...conTextosModelo(diccionario(tipo, varnt), modelo, varnt), ...propios };
   for (const [k, caso] of Object.entries(modelo?.textosCaso || {})) if (caso === 'oracion' && d[k] && !(k in propios)) d[k] = aOracion(String(d[k]));
   // Un prefijo propio del diseño (Travel: "Tripulación – Testigos"); si el cliente escribe su título, va el suyo entero
-  for (const [k, pre] of Object.entries(modelo?.textosPrefijo || {})) if (d[k] && !(k in propios)) d[k] = `${pre}${d[k]}`;
+  for (const [k, pre] of Object.entries(modelo?.textosPrefijo || {})) if (d[k] && !(k in propios)) d[k] = `${traducePrefijo(pre, varnt)}${d[k]}`; // README (ronda 44): en el idioma de la invitación
   // Bautismo o Bautizo: la demo usa el del país; la invitación, el que eligió el cliente en la frase de la portada
   // (así el botón Agendar, el pie y los demás textos dicen lo mismo)
   // README (ronda 42): sin frase propia, manda el país (datos.bautizo: lo que se dice donde se creó la invitación o donde se mira la demo)
@@ -179,7 +180,8 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     vista.paquete.incluye = { ...vista.paquete.incluye, sobre: false };
     vista.sobre = { activo: false }; vista.bienvenidaModal = { activa: false };
   }
-  return html(await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]), 200, {
+  // README (ronda 44): los textos fijos en español de algunos modelos, en el idioma de la invitación
+  return html(traducirEstaticos(await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]), v), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
     'x-robots-tag': 'noindex',
     ...(demo ? { vary: 'cf-ipcountry, Cookie' } : {}),
