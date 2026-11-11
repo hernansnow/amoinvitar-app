@@ -86,18 +86,18 @@ function zona(sede) {
     default: return `En ${/a$/.test(n) && n !== 'Panamá' ? 'toda' : 'todo'} ${n}: ${c}.`;
   }
 }
-// README (ronda 45): etiqueta de la portada principal: «Invitaciones digitales en Argentina» (con la preposición de cada idioma)
-function etiquetaPais(sede) {
+// README (ronda 46): el título de la portada principal lleva el país: «Invitaciones digitales en Argentina» (con la preposición de cada idioma)
+function enPais(sede) {
   const n = sede.nombre;
   if (!n) return '';
   switch (idiomaDe(sede)) {
-    case 'en': return `Digital invitations in ${['United States', 'United Kingdom'].includes(n) ? 'the ' + n : n}`;
-    case 'pt': return `Convites digitais ${n === 'Brasil' ? 'no Brasil' : `em ${n}`}`;
-    case 'fr': return `Invitations numériques ${{ Canada: 'au Canada' }[n] || `en ${n}`}`;
-    case 'it': return `Inviti digitali in ${n}`;
-    case 'de': return `Digitale Einladungen ${n === 'Schweiz' ? 'in der Schweiz' : `in ${n}`}`;
-    case 'nl': return `Digitale uitnodigingen in ${n}`;
-    default: return `Invitaciones digitales en ${n}`;
+    case 'en': return ` in ${['United States', 'United Kingdom'].includes(n) ? 'the ' + n : n}`;
+    case 'pt': return n === 'Brasil' ? ' no Brasil' : ` em ${n}`;
+    case 'fr': return ` ${{ Canada: 'au Canada' }[n] || `en ${n}`}`;
+    case 'it': return n === 'Svizzera' ? ' in Svizzera' : ` in ${n}`;
+    case 'de': return n === 'Schweiz' ? ' in der Schweiz' : ` in ${n}`;
+    case 'nl': return ` in ${n}`;
+    default: return ` en ${n}`;
   }
 }
 const PIE_ZONA = { es: 'Invitaciones digitales', en: 'Digital invitations', pt: 'Convites digitais', fr: 'Invitations numériques', it: 'Inviti digitali', de: 'Digitale Einladungen', nl: 'Digitale uitnodigingen' };
@@ -120,7 +120,7 @@ function componer(html, sede, pagina, { legal = false, monedaRaiz = '' } = {}) {
     .replace('</title>', `${esc(sufijo)}</title>`)
     .replace(/(<meta property="og:title" content=")([^"]*)"/, (m, a, t) => `${a}${t}${esc(sufijo)}"`)
     .replace(/(<meta name="description" content=")([^"]*)"/, (m, a, t) => `${a}${t}${z ? ' ' + esc(z) : ''}"`)
-    .replace(/<span class="etiqueta">\{\{ETQ_PAIS\}\}<\/span>/, () => (etiquetaPais(sede) ? `<span class="etiqueta">${esc(etiquetaPais(sede))}</span>` : ''))
+    .replace('{{EN_PAIS}}', () => esc(enPais(sede)))
     .replace('<!--alternos-->', alternos)
     .replace(/\{\{URL\}\}/g, url)
     .replace(/\{\{LANG\}\}/g, sede.lang)

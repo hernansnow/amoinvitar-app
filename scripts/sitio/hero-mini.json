@@ -1,0 +1,98 @@
+{
+ "/web/img/eventos/hero-15-desk.jpg": {
+  "c": "#4a3925",
+  "d": "data:image/webp;base64,UklGRtoAAABXRUJQVlA4IM4AAABQBQCdASogABYAPt1gqE4opaOiMBgIARAbiWwAtOgv+UkBMaq8HiMxHSDUPJFQUdNOxkAA/vXO7bK8U4fCxbIZ2ARF1vTcNcbC0WuIG1EOZrD8Wtf/2Ah8BLh3lxZMuyKH6cCDHmDD8KLGOJavYCdAGG/TFMaiqJZqqzisw8Dimfey6bpJkUNkjDwBBLB3herM2cpA9Mu3JJ69V3Wa0uBlbhqGc8CZMObCTW08uabQ+OZHx3U2usd1o7tv66T4hKZ+lhZyKk5WntpkqEOAAA=="
+ },
+ "/web/img/eventos/hero-15.jpg": {
+  "c": "#4e2f1e",
+  "d": "data:image/webp;base64,UklGRg4BAABXRUJQVlA4IAIBAACQBgCdASogACAAPt1kqU+opaOiKAqpEBuJagC2+zBHUe8M81B/kN7b7jA7sUl7qyFv/dLHp0tTlgXzgG8AAP78xCp/thXDbQ4ObwDmIZXzVHNovJDci4R0hy/4rNgQgo3wOLAzoLF4gxE0v67wItqqRlLmYnRGevtKVKaeduR/8Njd5+c74i7vocdOya0ziynsiu+skKHHD0m7mPt3vaQRh2D8nWNEIOJBRyu/Tkfoanbxp48SzEFMFH4VnMco8QIo7VJpBPnbGEemT/F0fA4PdRwASUgmPorlFQojAOzwABFb8Xr1LGWvCBlV8dEQgM3JbElszNPgMLTytO2YsfaAAAA="
+ },
+ "/web/img/eventos/hero-baby-shower-desk.webp": {
+  "c": "#4a4461",
+  "d": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAwAwCdASogABYAPt1irU6opaSjKAqpEBuJQBWGZfhEMkPwAP7r6t8dvCVRBM/crjbBcMoX20QSMGYmvUyczHnE1PHgiQWuCRjmPsQb0AAAAA=="
+ },
+ "/web/img/eventos/hero-baby-shower-movil.webp": {
+  "c": "#4b4461",
+  "d": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAACwAwCdASogADAAPt1orlErpamnJWmZcBuJQBA4yfgGr0gw3qNbYAD+7djrzbX+bKqs/+uwalj7g0YyieQoPNrgjo19lcCWW1o4BylgOH86RJexAM0Q3Mgui4QAAA=="
+ },
+ "/web/img/eventos/hero-bautismo-desk.webp": {
+  "c": "#885b44",
+  "d": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAADwBACdASogABYAPs1WoUynpSMiN/qoAPAZiUAPFICKzWqA7YiLTZ4G1GSggVeZWGAA/gzDgX32aFEsWNx/vX0wJ/8m9RERgwu6iDbGl3qSWLRE0BBXiul9crwjhd980tK9Vh2hpzq29lvWPP5oQDD+f1Q761+fQ8qd/C8jDW/aTXgO12FfuLzgAAA="
+ },
+ "/web/img/eventos/hero-bautismo-movil.webp": {
+  "c": "#855b45",
+  "d": "data:image/webp;base64,UklGRsQAAABXRUJQVlA4ILgAAAAwBgCdASogADAAPtlaokyoJSMiMBqtUQAbCUAVS4fCrXpaavmPlr4c9JDAnGyq5GCri+ZchR5Is/XQAP7jE39c0VC8xiwNdoHTQXrri5oAB92dop/ocqq+/UsWW339rT0lqvrsOgCFu6cyBLQ4ZyhWNaGkW9dOIuuoqPIp7P+piLUqcVv4ugWvi4cKc9mhNV//GOnMA/WulYQqjc5t0WsYJif02WlF9eVr/vMBCaelbCt3g9DcUAAA"
+ },
+ "/web/img/eventos/hero-bautismo.jpg": {
+  "c": "#b49c81",
+  "d": "data:image/webp;base64,UklGRvAAAABXRUJQVlA4IOQAAADwBQCdASogABIAPt1eqE4opSOiMBgIARAbiUATpmMM4DizGqD9DMU25EauwRbek8qsND0a8spwcADMzn77zjH6dK/DcxdvhTqxCYsgub3pmkoTJphovgUWcH0fjS/VZv3BKNxPEPJos7ELLaB1nwyRRbAMGKNWWOLqzsp+WSDXsXGf462M9aO+vpvABUugB5x1fAyJI0BVce2uTUwkkzVrFb1GmhmjT7r4Z3Hdu9Pho2gh5e9RTWsNlKCL945bQ1e1lgVf93Sk4v/nJu9HYe5IGVI4nV8UVQb28JXt5sC27IAAAAA="
+ },
+ "/web/img/eventos/hero-boda-desk.webp": {
+  "c": "#615242",
+  "d": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAACwBACdASogABYAPt1iqE4opaOiMBgIARAbiWUAtOgVRJKHRxQh3/QoaSpFWRCgAP7kS9qg7egUDA2UBoMXGMwogyMhqHragt13XzISUndJw252NPW5N+uuqNJxu02BBGfGkZnpl03Ohp6Gwy4tqNCX7n17pzNBcDusg+8namrvAAAA"
+ },
+ "/web/img/eventos/hero-boda-movil.webp": {
+  "c": "#4f4235",
+  "d": "data:image/webp;base64,UklGRs4AAABXRUJQVlA4IMIAAAAQBgCdASogADAAPtFYpkyoJSOiMBqtUQAaCWcAwNxda/iKFMdsMp6S9yXzZWKjnsc/JjoihdLdsAAA/ukQ/8IIGjR4KGEZQLm8HK3ZO/pPlq3tAPOjem0ElLD6qzvQi2lWfyjX2gG/VeI+Vt1aBrf1rw3H0pQUu0hjVFKBIB2FpyLgFeSPxbUxeVjxQcWBlPpSRd2gRNWOd8gjvOoqVQu4LS8DSCEmXtBN3OjF58XRYVcrk8ep+cQquPeZkAKboyAAAA=="
+ },
+ "/web/img/eventos/hero-bodas-desk.jpg": {
+  "c": "#b4ae9f",
+  "d": "data:image/webp;base64,UklGRvIAAABXRUJQVlA4IOYAAACQBgCdASogADAAPt1mqk+opaOiKqgBEBuJZQDGBYxuZIj93h//SvaHyvsNviOUu761myS190/34bOYzYAAAP70zZlYXhBsXrPFJzj0Ux+ZXsv0403Fw97g+s7ATW5OTImTaAns3aaLDfyPHLsALRaPxFM1Ln6OFK7SV+GMs2nMlQwINPlJsOD0D8GaQUNpSfJYNm/GbTufCZElsvHBdGJjMZfOVNYj31WMzEXYlq0M1bPv74khdjdRQ9PrydTX7uHfX7XXgpesfSsSIrAUa2UwSsIwAptXIY9li+VNbDdRyswohh6EAA=="
+ },
+ "/web/img/eventos/hero-comunion.jpg": {
+  "c": "#c0a78e",
+  "d": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADQAwCdASogABYAPt1orFEopaQiqAgBEBuJZQDGfBZmHiJW3xiJvgAA/uK2MPUtKtGIpD5n2NoSA1a9zcr/OD71pitVRRQvkH/MuCas5TPcyAEqa04kZTxCAxUEoWepYDjYoAAA"
+ },
+ "/web/img/eventos/hero-cumple.jpg": {
+  "c": "#60cbd9",
+  "d": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAACwBACdASogABYAPt1epUyopSOiMAgBEBuJbACdMoR00CawmN3nlfaKqe0TgF0AAPxciqyE6ysBqLlRo6CEpDqDyf1ZFYmnckNIVwrHlSv+6dyOBtw7qX/f9HFB4sWI4PH51aznYcJRzBTfKlzior/4row85ilnsvgxu+bH704DWJFW8d4zZqtZvzsR4AAA"
+ },
+ "/web/img/eventos/hero-empresarial.jpg": {
+  "c": "#635444",
+  "d": "data:image/webp;base64,UklGRi4BAABXRUJQVlA4ICIBAADwBgCdASogABYAPt1apkyopSOiMAgBEBuJZgCdMzBpBMxHFfNXwHcIDYPv+6YE2s/2/kVnbq0O7YpkCttu94AAAP6qmiS6B67IrpbcLtpMFahLCxxGKY1vylZa2toRpfrbu9IIsidpVPaHCDquJBTvJS4XCLqQzVZvMeHwH1HrqqglhH8VUH7M6DW1G3JpTxIwzLlJDx8W3mTQ0Ztnioyc+QZzzJSfiKreRmGrD0Y2mvRwCN67vNTrGaRsPJq+oQRiYw6vn8+N3I1IhMhhXi6I6/QkPZpd8Y5S63aBOChUwkB4AOHsIi0SzOjk0kXpUhDmdK1yiLXyqF9Fpl8IKZFA8xyRwzDWlFI7zpN+xu0uBFOBIGDBSG3xcKtE0mchhIAAAA=="
+ },
+ "/web/img/eventos/hero-eventos.jpg": {
+  "c": "#533c26",
+  "d": "data:image/webp;base64,UklGRhgBAABXRUJQVlA4IAwBAADQBgCdASogABYAPt1aqU6opKOiMBgIARAbiUATpmaIG9uIO574WXuxpH48rbzgGpRrYhcN2rnHb6+QGi6YTAAA/va+p0IV8VoOGAXlFjZbR1VOhOYDt/UYA3KF980Lbr3ISwyXHNEjwO4o7/YJr3qkodfKKq/41QHtYYVIUIk3ACStqrxYrkQ3J1yUSdvxCp6PWj7b+61yoEi6vnughWlQzyoB9jPsKQKe3NIAR8bklePRR2Vl8pT8Op9wRdV9xHQcQfSuSVv8dhHyksm5WnBiHqOJeWkfI8BWGioPc5hFM+v4Z8BYDKpNj5rAtncIT6cBBWxYE2LVoUBHYJxxpCOkrzt1FbQepFmEAAAA"
+ },
+ "/web/img/eventos/hero-graduacion.jpg": {
+  "c": "#856e47",
+  "d": "data:image/webp;base64,UklGRrQAAABXRUJQVlA4IKgAAACwBQCdASogABIAPt1apEyopSOiMAgBEBuJaACsOUE8DhAAlHMlVo6x8LVG5829ZybpvWVw5CAA/KODvC1ZuOMwIso2jqGDZu3I8u2VA7wgV359d7xwx2ePfrr6oK2ZQ2+66wcpWTmr/PlMOedB1yhuvwIV7g51Nb89l6F3QkPb4+9fnIBlSeqQNcSkHLrsdsC8l/XsqQigVaed4gkcGjzuwVdWbBAAAAA="
+ },
+ "/web/img/eventos/hero-infantiles.jpg": {
+  "c": "#685e4d",
+  "d": "data:image/webp;base64,UklGRiYBAABXRUJQVlA4IBoBAADwBwCdASogABYAPt1eqE6opKOiMBgIARAbiWwAsR7jdQe6XIdsCMxtgLtA9ADpXAFyNYp5qjecf1f97Kd2XuSOgbiTuXkQTYAA/unW7x2b3Zx5ElEDgUYNaNtdcSqU+tSb29uv2Ta8K6Inpg5sY6/2zxHfNB5tLy89rQD+i+HIyHwPRhd9ZXLhOTQcqkjTabPbpOq/hbrFdz2C5gA2aHzaZ8RetNVYCTZLoYmaLw+UPxHAVGs18jMlk4Tn85nVgjYIzs68sE5F8JLy/BKJSSai+gapOdb+Wm6FHwy7XIc8iHUMdUaoRB1pi+FiBSy0k0uk9bmMrnN7pvN+sqrGDZ/i/IH8ZJwb2rgLJse+mh7jpKGNc3jt+oEAAAA="
+ },
+ "/web/img/eventos/hero-mis15-desk.webp": {
+  "c": "#2d092b",
+  "d": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAADQBACdASogABYAPtVYo0yoJSMiN/VYAQAaiWNmqTYcwUZZZq+Yr/0vChXmpb2JAAD+8MY5rvdIn8DKuMv9y2kYWzeFGFOsXTgoex3ulhiFbxNrmv08IxQQU8gN6sNmblNsCl5VHZxAFes7iOdY7I+z7WJapjUjDHTGpZDsm9pSAAAA"
+ },
+ "/web/img/eventos/hero-mis15-movil.webp": {
+  "c": "#2c092b",
+  "d": "data:image/webp;base64,UklGRvIAAABXRUJQVlA4IOYAAABQBQCdASogADAAPt1cqEyopSQiKrgN+RAbiWNl0IgwqKAoUASjTzli+w3IRtI5XsG2koAA/vQdpgKXV9qCPgTP2GJPdmsL1kshdcAslb135V+EZl083UhapOD1oAsGE2oTT9bon+/HggUNpGJbHy+zjqeGUbYczmZGOmX0UedSJ4KFxxPBzA0Vy51cvs7oy8JZoiZ1220R1Abab89pCo2/srdRxstRK2kSwQ9tWs9KGPm/nSi1QPfZJ5bIm8tEzGttr5jH+JtrLGLbi7mTd4nBTI25gHM0+O2oEWJ/R6cU3i4xcAAAAA=="
+ },
+ "/web/img/eventos/hero-profesionales-desk.webp": {
+  "c": "#283c38",
+  "d": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACwBACdASogABYAPt1gpkyopiOiMBgMARAbiWcAyFwZMDAYynb2y9a4IokdQ2bwAP7u44ewoIJ7VNj3VOezklHEs1JWi4PKntwXlaTs4wkDEsijvBYB5UT9R1s+DSSs1o3OuZHAAAA="
+ },
+ "/web/img/eventos/hero-profesionales-movil.webp": {
+  "c": "#2b403b",
+  "d": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAwBQCdASogADAAPt1oqVEopaOipWsxEBuJZ2tyXCcGrbEjbJyZxNaQrN/nY8cVgFJjwAD+73xwaZHAevs/C/mppIiYDvu76XX3QDuQJHAwcG+tc1UEI/7Z43sX0EUY8eXjowAA"
+ },
+ "/web/img/eventos/hero-sweet16-desk.webp": {
+  "c": "#1a173e",
+  "d": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADwBACdASogABYAPt1co00opSMiMBgMARAbiWMAyjLfAaioCCr7tZUKMmcG4/UT/AAA/vDEEg8xyGvWhFxIhP2cwKnPVhUsbf9VTfziTqZlGQfnzdnSIShNAzXCXwI6nmAbXeq8wAA="
+ },
+ "/web/img/eventos/hero-sweet16-movil.webp": {
+  "c": "#1f1c40",
+  "d": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAABwBQCdASogADAAPt1Yo0yopKMiNVQMARAbiWUAvGg5X0iiXF2OOxh1poJ4dW/TrAA+04ZAAP71bpUNvYZ8r8TwJn7Df2btHLZq62rimpTj/WZQaSfkDp7UyLGDlFnPoF/EaFP3wKrHUqJJ6v5BdFrdnlPOEJKxOy2aObM5j+lrWXyFqCsuVeLpEAA="
+ },
+ "/web/img/hero-desktop.jpg": {
+  "c": "#6d8370",
+  "d": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAACQAwCdASogABYAPtVaoUyoJSMiMAwBABqJQBkTABVuYXHJIm4AAOzzu5/5eWA6F8qrj8O7kmAeZGwzJ+QHXRk5i1qst7/bHAAvsG4QN0LHW/Lt7q+j7UouiCUj0HwAAAA="
+ },
+ "/web/img/hero-movil.jpg": {
+  "c": "#75816e",
+  "d": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAABwBACdASogADAAPtlco0yoJaMiMAqpABsJQBibAbTkYbzFINsxKpwGEe3oRADsjFtqpdtPRGlLJjyfOIpCd5mGnCu+beaITwtlddii/g2JfpanBDo4sJ+k7bNVDlKyYpRVIaJZQzS9iXaLf+YP/DrqUl8hK+K3kS5f8Ui/WpKuTn5C5xu7Q8UBkAAAAA=="
+ }
+}

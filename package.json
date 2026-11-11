@@ -8,6 +8,7 @@
     "sitio": "node scripts/sitio/construir.mjs",
     "sitio:i18n": "node scripts/sitio/i18n-pendientes.mjs",
     "panel:i18n": "node scripts/sitio/i18n-panel.mjs",
+    "sitio:mini": "node scripts/sitio/hero-mini.mjs",
     "dev": "wrangler dev",
     "deploy": "wrangler d1 migrations apply amoinvitar --remote && wrangler deploy",
     "db:local": "wrangler d1 migrations apply amoinvitar --local"

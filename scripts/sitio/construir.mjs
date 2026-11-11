@@ -21,6 +21,11 @@ import { rmSync } from 'node:fs';
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '../../public/sitio');
 const opiniones = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'opiniones.json'), 'utf8'));
+// README (ronda 46): debajo de cada foto, su color y una copia diminuta (scripts/sitio/hero-mini.json) mientras carga
+const HERO_MINI = existsSync(join(dirname(fileURLToPath(import.meta.url)), 'hero-mini.json')) ? JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'hero-mini.json'), 'utf8')) : {};
+const miniDe = (img) => HERO_MINI[(/url\(([^)]+)\)/.exec(img) || [])[1]] || null;
+const fondoDe = (img, g, { m = img, gm = g, pm = '' } = {}) => { const a = miniDe(img), b = miniDe(m);
+  return `--hero-d:${img};--hero-m:${m};--hero-gd:${g};--hero-g:${gm}${pm ? `;--hero-pm:${pm}` : ''}${a ? `;--hero-dt:url(${a.d});--hero-cd:${a.c}` : ''}${b ? `;--hero-mt:url(${b.d});--hero-c:${b.c}` : ''}`; };
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const ic = (n, extra = '') => `<svg class="icono${extra ? ' ' + extra : ''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 
@@ -472,7 +477,7 @@ for (const f of readdirSync(RAIZ)) if (f.endsWith('.html')) rmSync(join(RAIZ, f)
   const P = { titulo: 'Invitaciones digitales para bodas y eventos', descripcion: 'Invitaciones digitales con RSVP para bodas, 15 años, bautismos y eventos: se envían por WhatsApp, confirman con un clic y tú ves la lista. Prueba gratis.' };
   const E = { ...GENERICO };
   escribe('index', P, [
-    portada({ fondo: `--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(24,58,50,.42),rgba(52,46,36,.55) 55%,rgba(66,56,40,.82));--hero-g:linear-gradient(rgba(34,82,70,.5),rgba(20,30,26,.5) 55%,rgba(0,0,0,.6))`, etiqueta: '{{ETQ_PAIS}}', h1: 'Invitaciones digitales', panelImg: '/web/img/hero-panel-captura.webp', lead: 'La web de tu evento. Tus invitados abren, disfrutan y responden con un clic. Tú ves quién viene, organizas mesas y descargas la lista final desde un solo panel: es como tener un <strong>planner digital</strong>. Lista en minutos y sin pagar hasta que te encante.', demo: '/demo/garden?evento=boda&paquete=deluxe&limpia=1' }),
+    portada({ fondo: `${fondoDe('url(/web/img/hero-desktop.jpg)', '', { m: 'url(/web/img/hero-movil.jpg)' }).replace(/--hero-(gd|g):;/g, '')};--hero-d:url(/web/img/hero-desktop.jpg);--hero-m:url(/web/img/hero-movil.jpg);--hero-gd:linear-gradient(rgba(24,58,50,.42),rgba(52,46,36,.55) 55%,rgba(66,56,40,.82));--hero-g:linear-gradient(rgba(34,82,70,.5),rgba(20,30,26,.5) 55%,rgba(0,0,0,.6))`, etiqueta: '', h1: 'Invitaciones digitales<span class="h1-pais">{{EN_PAIS}}</span>', panelImg: '/web/img/hero-panel-captura.webp', lead: 'La web de tu evento. Tus invitados abren, disfrutan y responden con un clic. Tú ves quién viene, organizas mesas y descargas la lista final desde un solo panel: es como tener un <strong>planner digital</strong>. Lista en minutos y sin pagar hasta que te encante.', demo: '/demo/garden?evento=boda&paquete=deluxe&limpia=1' }),
     confianza(), comoFunciona(E, true), eventos(), funciones(E), planes(E), faq(E, P), testimonios(), nosotros(), llamada(E), contacto(E),
   ].join('\n'));
 }
@@ -481,7 +486,7 @@ for (const f of readdirSync(RAIZ)) if (f.endsWith('.html')) rmSync(join(RAIZ, f)
 // Imagen de portada de cada página y su degradado, como en la web original
 const IMG_EV = (f) => `url(/web/img/eventos/${f})`;
 // README (ronda 45): pm = encuadre en el celular (por defecto, centrado)
-const fondoDe = (img, g, { m = img, gm = g, pm = '' } = {}) => `--hero-d:${img};--hero-m:${m};--hero-gd:${g};--hero-g:${gm}${pm ? `;--hero-pm:${pm}` : ''}`;
+
 const G3 = (a, b, c) => `linear-gradient(rgba(${a}),rgba(${b}) 55%,rgba(${c}))`;
 const G = (a, b) => `linear-gradient(rgba(${a}),rgba(${b}))`;
 const HEROES = {
@@ -853,6 +858,9 @@ console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} vers
   const lista = '  var LISTA_PAISES = ' + JSON.stringify(filas).replace(/\],\[/g, '], [').replace(/"/g, "'") + ';';
   const n = js.replace(/  var LISTA_PAISES = \[[\s\S]*?\]\];/, () => lista);
   if (n !== js) writeFileSync(f, n);
+  // README (ronda 46): la misma lista para el selector del panel
+  const sel = join(dirname(fileURLToPath(import.meta.url)), '../../public/comun/js/selector-pais.js');
+  writeFileSync(sel, readFileSync(sel, 'utf8').replace(/var LISTA = \[[\s\S]*?\];/, () => `var LISTA = ${JSON.stringify(filas)};`));
 }
 
 // README (ronda 40/42): el mismo conversor, para el navegador (public/comun/js/regional.js): textos que arma el JavaScript,
