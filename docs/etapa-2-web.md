@@ -181,3 +181,11 @@ los textos nuevos y dice cuántos faltan) y traducir los números que falten.
 - Fichas de modelo: `/invitacion-<modelo>` (texto en `scripts/sitio/modelos-fichas.json`) y catálogo `/disenos`.
 - Artículos «Ideas» (`scripts/sitio/ideas.mjs`): `/ideas` y `/ideas/<tema>`, solo en español (raíz y carpetas en
   español, con su variante); en las carpetas de otros idiomas redirigen a la raíz.
+
+## Ronda 44
+- Selector de país: un país por fila, idiomas como botones (US es/en, CA en/fr, CH de/fr/it, BE fr/nl); «Internacional» al final y en USD; `/en/` es la internacional en inglés. Sin Haití ni San Vicente (301 a la raíz). Visitas sin carpeta: a la versión del idioma del navegador (`sedePorIdioma`).
+- `en-gb` (Reino Unido, Irlanda, Australia, Nueva Zelanda) sale del inglés con `aBritanico` (scripts/sitio/i18n.mjs); `pt-pt` pasa a «tu» con `aTu`.
+- /bodas en plural: `scripts/sitio/plural.mjs` (ustedes / vosotros en España / voi, ihr, jullie, vocês). Se activa con `P.plural`.
+- Sweet 16: página `sweet16` solo en `en` (la generan a partir de mis15); `datos.sweet16` en invitaciones de 15 creadas en inglés desde US/CA.
+- Testimonios: en español todos; en otros idiomas, la selección de `scripts/sitio/opiniones-traducidas.json`.
+- Invitaciones: `src/textos/estaticos.js` traduce los textos fijos en español de los modelos; `src/datos/demos-idiomas.js`, nombres/roles/itinerario de las demos por idioma.
