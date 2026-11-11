@@ -1088,7 +1088,9 @@ body.suelta .previa, body.suelta #btn-ojo, body.suelta .modo-vista, body.suelta 
 /* README (ronda 46): selector de país e idioma en la barra (solo la bandera; abierto, como en la web) */
 .sel-pais { position: relative; display: inline-flex; }
 .sel-pais-boton { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.55); background: transparent; cursor: pointer; padding: 0; }
-.sel-pais-boton img { width: 20px; height: 14px; object-fit: cover; border-radius: 2px; display: block; }
+/* README (ronda 47): bandera redonda que llena el círculo (como el botón de idioma de la invitación) */
+.sel-pais-boton { overflow: hidden; border: 2px solid rgba(255,255,255,.85); }
+.sel-pais-boton img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
 .sel-pais-lista { position: absolute; right: 0; top: calc(100% + 8px); width: 270px; max-height: 360px; overflow: auto; background: #fff; border: 1px solid #e3e6e4; border-radius: 14px; box-shadow: 0 12px 34px rgba(0,0,0,.16); padding: 6px; display: none; z-index: 60; }
 .sel-pais.abierta .sel-pais-lista { display: block; }
 .sel-pais-lista > button { display: flex; justify-content: space-between; align-items: center; width: 100%; text-align: left; font: 400 15px/1.2 Jost, system-ui, sans-serif; border: 0; background: none; padding: 9px 10px; border-radius: 8px; cursor: pointer; color: #1c1c1c; }
@@ -1097,5 +1099,6 @@ body.suelta .previa, body.suelta #btn-ojo, body.suelta .modo-vista, body.suelta 
 .sel-pais-lista .pa { display: inline-flex; align-items: center; gap: 10px; }
 .sel-pais-lista .pa img { width: 22px; height: 15px; object-fit: cover; border-radius: 2px; }
 .sel-pais-idiomas { position: sticky; bottom: -6px; display: flex; gap: 6px; flex-wrap: wrap; margin: 6px -6px -6px; padding: 8px; background: #fff; border-top: 1px solid #e3e6e4; }
-.sel-pais-idiomas .idi { flex: 1; font: 500 14px Jost, system-ui, sans-serif; padding: 8px 10px; border: 0; border-radius: 8px; background: #f3f3f1; cursor: pointer; }
+.sel-pais-idiomas .idi { flex: 1; font: 500 14px Jost, system-ui, sans-serif; padding: 8px 10px; border: 0; border-radius: 8px; background: #f3f3f1; color: #1c1c1c; cursor: pointer; }
 .sel-pais-idiomas .idi.on { background: #4e9c87; color: #fff; }
+.btn-modelo.fijo { cursor: default; min-width: 0; } /* README (ronda 47): ya publicada, sin «cambiar» */

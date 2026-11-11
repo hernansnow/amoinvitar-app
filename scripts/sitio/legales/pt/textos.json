@@ -1,17 +1,42 @@
 {
  "etiqueta": "Informação legal",
  "actualizado": "Última atualização:",
- "fecha6": "6 de novembro de 2026",
+ "fecha6": "11 de novembro de 2026",
  "fecha10": "10 de novembro de 2026",
  "prevalece": "Esta é uma tradução para a sua comodidade. Em caso de qualquer divergência, prevalece a versão em espanhol.",
  "otros": "Outros textos legais:",
- "corto": { "aviso-legal": "Aviso legal", "politica-de-privacidad": "Privacidade", "politica-de-cookies": "Cookies", "terminos-y-condiciones": "Termos", "politica-de-devoluciones": "Devoluções", "rgpd": "RGPD" },
+ "corto": {
+  "aviso-legal": "Aviso legal",
+  "politica-de-privacidad": "Privacidade",
+  "politica-de-cookies": "Cookies",
+  "terminos-y-condiciones": "Termos",
+  "politica-de-devoluciones": "Devoluções",
+  "rgpd": "RGPD"
+ },
  "paginas": {
-  "aviso-legal": ["Aviso legal", "Quem está por trás da Amo Invitar! e as condições para usar o site."],
-  "politica-de-privacidad": ["Política de privacidade", "Quais dados tratamos, para quê, com quem os compartilhamos e quais são os seus direitos."],
-  "politica-de-cookies": ["Política de cookies", "Quais cookies usamos e como você pode decidir sobre eles."],
-  "terminos-y-condiciones": ["Termos e condições", "As condições de contratação dos nossos serviços."],
-  "politica-de-devoluciones": ["Política de devoluções e reembolsos", "Quando você pode cancelar um pedido e recuperar o seu dinheiro."],
-  "rgpd": ["Seus direitos (RGPD)", "Como exercer seus direitos sobre seus dados pessoais."]
+  "aviso-legal": [
+   "Aviso legal",
+   "Quem está por trás da Amo Invitar! e as condições para usar o site."
+  ],
+  "politica-de-privacidad": [
+   "Política de privacidade",
+   "Quais dados tratamos, para quê, com quem os compartilhamos e quais são os seus direitos."
+  ],
+  "politica-de-cookies": [
+   "Política de cookies",
+   "Quais cookies usamos e como você pode decidir sobre eles."
+  ],
+  "terminos-y-condiciones": [
+   "Termos e condições",
+   "As condições de contratação dos nossos serviços."
+  ],
+  "politica-de-devoluciones": [
+   "Política de devoluções e reembolsos",
+   "Quando você pode cancelar um pedido e recuperar o seu dinheiro."
+  ],
+  "rgpd": [
+   "Seus direitos (RGPD)",
+   "Como exercer seus direitos sobre seus dados pessoais."
+  ]
  }
 }

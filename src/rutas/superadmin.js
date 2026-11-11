@@ -13,9 +13,9 @@ import { requiereAdmin } from './admin.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { almacenD1 } from '../almacen.js';
 import { crearUsuario } from '../lib/auth.js';
-import { getRates, DESCUENTO_PAIS, COUNTRY_CURRENCY, CONFIG, cargarConfig, olvidarConfig, PLANES_PROMO } from '../lib/fx.js';
+import { getRates, DESCUENTO_PAIS, COUNTRY_CURRENCY, CURRENCIES, CONFIG, cargarConfig, olvidarConfig, PLANES_PROMO, fijosVigentes } from '../lib/fx.js';
 import { getState, setState } from '../lib/verifactu.js';
-import { EXTRAS, PAQUETES } from '../catalogo.js';
+import { EXTRAS, PAQUETES, listaPrecios, clavesFijas, PRECIOS_ORIGINALES } from '../catalogo.js';
 import { sendEmail, mailFactura, mailPedidoListo } from '../lib/email.js';
 import { issueInvoice, getInvoice, invoiceUrl, invoicesEnabled } from '../lib/facturas.js';
 import { verifactuMode, sendPending } from '../lib/verifactu.js';
@@ -344,7 +344,10 @@ export async function precios(request, env) {
   if (request.method === 'GET') {
     olvidarConfig(); await cargarConfig(env);
     return json({ descuentos: CONFIG.descuentos ?? DESCUENTO_PAIS, porDefecto: DESCUENTO_PAIS, personalizado: !!CONFIG.descuentos, promos: CONFIG.promos,
-      paises: Object.keys(COUNTRY_CURRENCY).sort(), categorias: CATEGORIAS_PROMO, planes: PLANES_PROMO });
+      paises: Object.keys(COUNTRY_CURRENCY).sort(), categorias: CATEGORIAS_PROMO, planes: PLANES_PROMO,
+      // README (ronda 47): precios base (en euros, IVA incluido) y países con precio fijo en su moneda
+      base: listaPrecios(), basePersonalizada: !!CONFIG.base, fijos: fijosVigentes(), fijosPersonalizados: !!CONFIG.fijos,
+      clavesFijas: clavesFijas(), monedaDePais: COUNTRY_CURRENCY, monedas: CURRENCIES });
   }
   const b = await readJson(request);
   let actual = {};
@@ -360,6 +363,32 @@ export async function precios(request, env) {
     actual.descuentos = d;
   }
   if (b.restaurar) delete actual.descuentos;
+  // README (ronda 47): precios base. Solo se guardan los que cambian respecto del catálogo
+  if (b.base && typeof b.base === 'object') {
+    const o = {};
+    for (const [k, v] of Object.entries(b.base)) {
+      const n = Math.round(Number(v) * 100) / 100;
+      if (!(k in PRECIOS_ORIGINALES) || v === '' || v == null || !(n >= 0) || n > 100000) continue;
+      if (n !== PRECIOS_ORIGINALES[k]) o[k] = n;
+    }
+    if (Object.keys(o).length) actual.base = o; else delete actual.base;
+  }
+  if (b.restaurarBase) delete actual.base;
+  // Países con precio fijo en su moneda (como Argentina)
+  if (b.fijos && typeof b.fijos === 'object') {
+    const validas = new Set(clavesFijas().map((x) => x.clave));
+    const f = {};
+    for (const [k, v] of Object.entries(b.fijos)) {
+      const pais = String(k).toUpperCase().trim();
+      const moneda = String(v?.moneda || COUNTRY_CURRENCY[pais] || '').toUpperCase();
+      if (!/^[A-Z]{2}$/.test(pais) || !CURRENCIES.includes(moneda)) continue;
+      const precios = {};
+      for (const [c, x] of Object.entries(v?.precios || {})) { const n = Math.round(Number(x) * 100) / 100; if (validas.has(c) && x !== '' && n > 0 && n < 1e9) precios[c] = n; }
+      if (Object.keys(precios).length) f[pais] = { moneda, precios };
+    }
+    actual.fijos = f;
+  }
+  if (b.restaurarFijos) delete actual.fijos;
   if (Array.isArray(b.promos)) {
     actual.promos = b.promos.slice(0, 60).map((p) => ({
       id: str(p.id, 20) || randomId(5),
@@ -375,6 +404,6 @@ export async function precios(request, env) {
   }
   await setState(env, 'config_precios', JSON.stringify(actual));
   olvidarConfig();
-  await registrar(env, u, 'precios.guardar', null, { descuentos: b.descuentos ? Object.keys(b.descuentos).length : undefined, promos: Array.isArray(b.promos) ? b.promos.length : undefined, restaurar: !!b.restaurar });
+  await registrar(env, u, 'precios.guardar', null, { descuentos: b.descuentos ? Object.keys(b.descuentos).length : undefined, promos: Array.isArray(b.promos) ? b.promos.length : undefined, restaurar: !!b.restaurar, base: b.base ? Object.keys(b.base).length : undefined, fijos: b.fijos ? Object.keys(b.fijos) : undefined });
   return json({ ok: true });
 }

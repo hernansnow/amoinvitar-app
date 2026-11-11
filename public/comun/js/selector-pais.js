@@ -12,12 +12,21 @@
     var grupo = function (y) { return y[0] || 'INT'; }, g = actual ? grupo(actual) : 'INT';
     var flag = function (y) { return '/web/img/flags/' + (y && y[0] ? y[0].toLowerCase() : 'globo') + '.svg'; };
     caja.className = 'sel-pais';
-    caja.innerHTML = '<button type="button" class="sel-pais-boton" aria-haspopup="menu" aria-expanded="false" aria-label="Elegir tu país (moneda e idioma)" title="' + (actual ? actual[1] + ' · ' + actual[5] : '') + '"><img src="' + flag(actual) + '" alt="" width="22" height="15"></button>'
+    caja.innerHTML = '<button type="button" class="sel-pais-boton" aria-haspopup="menu" aria-expanded="false" aria-label="Elegir tu país (moneda e idioma)" title="' + (actual ? actual[1] + ' · ' + actual[5] : '') + '"><img src="' + flag(actual) + '" alt="" width="38" height="38"></button>'
       + '<div class="sel-pais-lista" role="menu">' + LISTA.filter(function (y) { return y[6]; }).map(function (y) {
         return '<button type="button" role="menuitemradio" aria-checked="' + (grupo(y) === g) + '" data-p="' + y[3] + '"><span class="pa"><img src="' + flag(y) + '" alt="" width="22" height="15">' + y[1] + '</span><small>' + y[2] + '</small></button>';
       }).join('') + (function () { var ids = LISTA.filter(function (y) { return grupo(y) === g; }); return ids.length > 1 ? '<div class="sel-pais-idiomas">' + ids.map(function (y) { return '<button type="button" class="idi' + (actual && y[3] === actual[3] ? ' on' : '') + '" data-p="' + y[3] + '">' + y[5] + '</button>'; }).join('') + '</div>' : ''; })() + '</div>';
     var boton = caja.querySelector('.sel-pais-boton');
-    boton.addEventListener('click', function (e) { e.stopPropagation(); var v = !caja.classList.contains('abierta'); caja.classList.toggle('abierta', v); boton.setAttribute('aria-expanded', v); });
+    // README (ronda 47): el desplegable se ubica dentro de la pantalla (en el celular el botón queda lejos del borde derecho)
+    var lista = caja.querySelector('.sel-pais-lista');
+    function ubicar() {
+      var r = boton.getBoundingClientRect(), w = Math.min(290, innerWidth - 16);
+      lista.style.position = 'fixed'; lista.style.width = w + 'px'; lista.style.right = 'auto';
+      lista.style.left = Math.max(8, Math.min(r.right - w, innerWidth - w - 8)) + 'px';
+      lista.style.top = (r.bottom + 8) + 'px'; lista.style.maxHeight = Math.max(200, innerHeight - r.bottom - 24) + 'px';
+    }
+    addEventListener('resize', function () { if (caja.classList.contains('abierta')) ubicar(); });
+    boton.addEventListener('click', function (e) { e.stopPropagation(); var v = !caja.classList.contains('abierta'); if (v) ubicar(); caja.classList.toggle('abierta', v); boton.setAttribute('aria-expanded', v); });
     d.addEventListener('click', function (e) { if (!caja.contains(e.target)) { caja.classList.remove('abierta'); boton.setAttribute('aria-expanded', 'false'); } });
     caja.addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('[data-p]'); if (!b) return;

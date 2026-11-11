@@ -117,3 +117,46 @@ export const PROFESIONALES = {
     packs: [{ creditos: 10, precio: 170 }, { creditos: 25, precio: 375 }, { creditos: 50, precio: 650 }, { creditos: 100, precio: 1100 }],
   },
 };
+
+// ── README (ronda 47): precios base editables desde /admin (Precios y promos) ──
+// Se guardan en app_state['config_precios'].base como { 'grupo.id': euros } y se aplican sobre estos mismos objetos
+// (src/lib/fx.js → cargarConfig). Sin nada guardado valen los de arriba (PRECIOS_ORIGINALES).
+const GRUPOS_PRECIO = [
+  ['paquete', 'Invitación web', PAQUETES, (id) => NOMBRES_PAQUETE[id]],
+  ['medida', 'Diseño a medida', A_MEDIDA, (id) => (id === 'empresarial' ? 'Invitación para empresas' : 'Diseño a medida personalizado')],
+  ['extra', 'Complemento de la invitación', EXTRAS, (id) => EXTRAS[id].nombre],
+  ['producto', 'Producto suelto', PRODUCTOS, (id) => PRODUCTOS[id].nombre],
+  ['recuerdo', 'Recuerdo', RECUERDO, (id) => RECUERDO[id].nombre],
+];
+const leerPrecio = (grupo, obj, id) => (grupo === 'medida' ? obj[id].deluxe : obj[id].precio);
+export const PRECIOS_ORIGINALES = Object.fromEntries(GRUPOS_PRECIO.flatMap(([g, , obj]) => Object.keys(obj).filter((id) => !(g === 'paquete' && id === 'gratis')).map((id) => [`${g}.${id}`, leerPrecio(g, obj, id)])));
+export function listaPrecios() {
+  return GRUPOS_PRECIO.flatMap(([g, grupo, obj, nombre]) => Object.keys(obj).filter((id) => !(g === 'paquete' && id === 'gratis'))
+    .map((id) => ({ clave: `${g}.${id}`, id, grupo, nombre: nombre(id), precio: leerPrecio(g, obj, id), original: PRECIOS_ORIGINALES[`${g}.${id}`] })));
+}
+export function aplicarPrecios(base = {}) {
+  for (const [g, , obj] of GRUPOS_PRECIO) {
+    for (const id of Object.keys(obj)) {
+      const k = `${g}.${id}`;
+      if (!(k in PRECIOS_ORIGINALES)) continue;
+      const v = Number(base?.[k]);
+      const p = v >= 0 && v <= 100000 && base?.[k] !== '' && base?.[k] != null ? v : PRECIOS_ORIGINALES[k];
+      if (g === 'medida') { obj[id].premium = p; obj[id].deluxe = p; } else obj[id].precio = p;
+    }
+  }
+}
+// Precio en euros de una clave de precio (la que usa priceIn): el plan, el complemento, el producto o 'a-medida'
+export function precioEurDe(clave) {
+  if (clave === 'a-medida') return A_MEDIDA.personalizado.deluxe;
+  return PAQUETES[clave]?.precio ?? EXTRAS[clave]?.precio ?? PRODUCTOS[clave]?.precio ?? RECUERDO[clave]?.precio ?? A_MEDIDA[clave]?.deluxe ?? null;
+}
+// Lo que se puede fijar por país (precio propio en su moneda, sin conversión)
+export function clavesFijas() {
+  const v = new Map();
+  for (const id of ['basic', 'premium', 'deluxe']) v.set(id, `Plan ${NOMBRES_PAQUETE[id]}`);
+  v.set('a-medida', 'Diseño a medida');
+  for (const [id, e] of Object.entries(EXTRAS)) v.set(id, e.nombre);
+  for (const [id, p] of Object.entries(PRODUCTOS)) if (!v.has(id)) v.set(id, p.nombre);
+  for (const [id, r] of Object.entries(RECUERDO)) v.set(id, r.nombre);
+  return [...v].map(([clave, nombre]) => ({ clave, nombre }));
+}

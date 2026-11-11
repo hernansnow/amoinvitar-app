@@ -13,6 +13,7 @@
 //
 // Lo que no reconoce se pide al hosting actual (las invitaciones viejas siguen igual).
 
+import { cargarConfig } from './lib/fx.js';
 import { diccionario, varianteDePais, VARIANTES, esPlural } from './textos/index.js';
 import { formatoPais, paisDeZona } from './textos/regional.js';
 import { paisVisitante, claveVisitante, varianteVisitante, bautizoVisitante, sweet16Visitante } from './sitio/visitante.js';
@@ -807,6 +808,8 @@ async function apiPanel(env, request, url, partes) {
   // Cambiar de modelo (el mismo tipo de evento); lo cargado queda igual
   if (accion === 'modelo' && request.method === 'POST') {
     const { modelo } = await request.json();
+    // README (ronda 47): el modelo se elige solo antes de publicar (y pagar); después se sigue editando todo lo demás
+    if (!admin && ev.estado && ev.estado !== 'borrador') return json({ error: 'La invitación ya está publicada: el modelo ya no se puede cambiar. Todo lo demás se puede seguir editando.' }, 400);
     // Save The Date suelta a diseño a medida (la tarjeta o la web)
     if (modelo === 'a-medida' && ['std-tarjeta', 'std-foto', 'std-web'].includes(ev.producto)) {
       if (ev.estado === 'publicado' && !admin) return json({ error: 'Ya está publicada. Escríbenos por WhatsApp.' }, 400);
@@ -1213,6 +1216,8 @@ export default {
     const [p0, p1] = partes;
     tienda.opcionesTienda.esquemaDe = (ev) => esquemaDe(env, url, ev);
     tienda.opcionesTienda.publicar = publicarEvento;
+    // README (ronda 47): precios base y precios fijos por país editados en /admin (caché corta), antes de calcular cualquier precio
+    if (p0 === 'api' || p0 === 'panel' || p0 === 'tienda') await cargarConfig(env);
     // README (ronda 38): dominio propio de una empresa Studio (invitaciones.tusalon.com). Ahí solo se sirven las invitaciones
     // de esa empresa (y lo que necesitan para verse y responder); nada de la web ni del panel de Amo Invitar!.
     const host = (env.MODO_LOCAL && request.headers.get('x-host')) || url.hostname;

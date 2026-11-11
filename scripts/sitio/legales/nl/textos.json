@@ -1,17 +1,42 @@
 {
  "etiqueta": "Juridische informatie",
  "actualizado": "Laatst bijgewerkt:",
- "fecha6": "6 november 2026",
+ "fecha6": "11 november 2026",
  "fecha10": "10 november 2026",
  "prevalece": "Dit is een vertaling voor je gemak. Bij verschillen geldt de Spaanse versie.",
  "otros": "Andere juridische teksten:",
- "corto": { "aviso-legal": "Juridische kennisgeving", "politica-de-privacidad": "Privacy", "politica-de-cookies": "Cookies", "terminos-y-condiciones": "Voorwaarden", "politica-de-devoluciones": "Terugbetaling", "rgpd": "AVG" },
+ "corto": {
+  "aviso-legal": "Juridische kennisgeving",
+  "politica-de-privacidad": "Privacy",
+  "politica-de-cookies": "Cookies",
+  "terminos-y-condiciones": "Voorwaarden",
+  "politica-de-devoluciones": "Terugbetaling",
+  "rgpd": "AVG"
+ },
  "paginas": {
-  "aviso-legal": ["Juridische kennisgeving", "Wie er achter Amo Invitar! zit en de voorwaarden voor het gebruik van de website."],
-  "politica-de-privacidad": ["Privacybeleid", "Welke gegevens we verwerken, waarvoor, met wie we ze delen en wat je rechten zijn."],
-  "politica-de-cookies": ["Cookiebeleid", "Welke cookies we gebruiken en hoe je daarover kunt beslissen."],
-  "terminos-y-condiciones": ["Algemene voorwaarden", "De voorwaarden voor het afnemen van onze diensten."],
-  "politica-de-devoluciones": ["Terugbetalingsbeleid", "Wanneer je een bestelling kunt annuleren en je geld terugkrijgt."],
-  "rgpd": ["Je rechten (AVG)", "Zo oefen je je rechten over je persoonsgegevens uit."]
+  "aviso-legal": [
+   "Juridische kennisgeving",
+   "Wie er achter Amo Invitar! zit en de voorwaarden voor het gebruik van de website."
+  ],
+  "politica-de-privacidad": [
+   "Privacybeleid",
+   "Welke gegevens we verwerken, waarvoor, met wie we ze delen en wat je rechten zijn."
+  ],
+  "politica-de-cookies": [
+   "Cookiebeleid",
+   "Welke cookies we gebruiken en hoe je daarover kunt beslissen."
+  ],
+  "terminos-y-condiciones": [
+   "Algemene voorwaarden",
+   "De voorwaarden voor het afnemen van onze diensten."
+  ],
+  "politica-de-devoluciones": [
+   "Terugbetalingsbeleid",
+   "Wanneer je een bestelling kunt annuleren en je geld terugkrijgt."
+  ],
+  "rgpd": [
+   "Je rechten (AVG)",
+   "Zo oefen je je rechten over je persoonsgegevens uit."
+  ]
  }
 }

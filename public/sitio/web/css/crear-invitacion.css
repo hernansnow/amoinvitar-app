@@ -149,3 +149,7 @@ dialog.ci-completa { width: 100vw; height: 100dvh; max-width: none; max-height: 
   .ci-tabs-caja { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); width: 100vw; max-width: 100vw; }
   .ci-tabs-caja .ci-tabs { padding-left: 16px; padding-right: 16px; scroll-padding-inline: 16px; }
 }
+/* README (ronda 47): íconos de pantalla completa / salir */
+.ci-x.ci-pantalla svg { display: block; }
+.ci-x.ci-salir { display: inline-flex; align-items: center; gap: 6px; }
+.ci-x.ci-salir svg { display: block; }

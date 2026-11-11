@@ -1,17 +1,42 @@
 {
  "etiqueta": "Legal information",
  "actualizado": "Last updated:",
- "fecha6": "November 6, 2026",
+ "fecha6": "November 11, 2026",
  "fecha10": "November 10, 2026",
  "prevalece": "This is a translation for your convenience. In case of any discrepancy, the Spanish version prevails.",
  "otros": "Other legal texts:",
- "corto": { "aviso-legal": "Legal notice", "politica-de-privacidad": "Privacy", "politica-de-cookies": "Cookies", "terminos-y-condiciones": "Terms", "politica-de-devoluciones": "Refunds", "rgpd": "GDPR" },
+ "corto": {
+  "aviso-legal": "Legal notice",
+  "politica-de-privacidad": "Privacy",
+  "politica-de-cookies": "Cookies",
+  "terminos-y-condiciones": "Terms",
+  "politica-de-devoluciones": "Refunds",
+  "rgpd": "GDPR"
+ },
  "paginas": {
-  "aviso-legal": ["Legal notice", "Who is behind Amo Invitar! and the conditions for using the website."],
-  "politica-de-privacidad": ["Privacy policy", "What data we process, why, who we share it with and what your rights are."],
-  "politica-de-cookies": ["Cookie policy", "Which cookies we use and how you can decide about them."],
-  "terminos-y-condiciones": ["Terms and conditions", "The conditions for purchasing our services."],
-  "politica-de-devoluciones": ["Refund and returns policy", "When you can cancel an order and get your money back."],
-  "rgpd": ["Your rights (GDPR)", "How to exercise your rights over your personal data."]
+  "aviso-legal": [
+   "Legal notice",
+   "Who is behind Amo Invitar! and the conditions for using the website."
+  ],
+  "politica-de-privacidad": [
+   "Privacy policy",
+   "What data we process, why, who we share it with and what your rights are."
+  ],
+  "politica-de-cookies": [
+   "Cookie policy",
+   "Which cookies we use and how you can decide about them."
+  ],
+  "terminos-y-condiciones": [
+   "Terms and conditions",
+   "The conditions for purchasing our services."
+  ],
+  "politica-de-devoluciones": [
+   "Refund and returns policy",
+   "When you can cancel an order and get your money back."
+  ],
+  "rgpd": [
+   "Your rights (GDPR)",
+   "How to exercise your rights over your personal data."
+  ]
  }
 }

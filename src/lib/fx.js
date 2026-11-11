@@ -2,6 +2,7 @@
 // Los precios de lista están en EUROS (src/catalogo.js); acá se pasan a la moneda del visitante.
 // Basado en el de Albunear.
 import { now } from './util.js';
+import { aplicarPrecios, precioEurDe } from '../catalogo.js';
 
 export const COUNTRY_CURRENCY = {
   ES: 'EUR', PT: 'EUR', FR: 'EUR', DE: 'EUR', IT: 'EUR', AT: 'EUR', BE: 'EUR', NL: 'EUR', IE: 'EUR', LU: 'EUR', FI: 'EUR', GR: 'EUR', AD: 'EUR', MC: 'EUR',
@@ -31,7 +32,11 @@ export const DESCUENTO_PAIS = {
 // Europa fuera de la UE: el mismo precio que en la UE (en euros con IVA, o su equivalente)
 // README (ronda 36): los descuentos por país y las promociones se editan en /admin/ (pestaña Precios y promos) y se guardan en
 // app_state['config_precios']; acá se leen (con caché corta) y quedan en CONFIG. Sin configuración vale DESCUENTO_PAIS.
-export const CONFIG = { descuentos: null, promos: [] };
+// README (ronda 47): también los precios base (CONFIG.base) y los países con precio fijo en su moneda (CONFIG.fijos:
+// { AR: { moneda: 'ARS', precios: { basic: 25000, … } } }). Sin fijos guardados vale FIJOS_ORIGINALES (Argentina).
+export const FIJOS_ORIGINALES = { AR: { moneda: 'ARS', precios: { ...PRICE_OVERRIDES.ARS } } };
+export const CONFIG = { descuentos: null, promos: [], base: null, fijos: null };
+export const fijosVigentes = () => CONFIG.fijos ?? FIJOS_ORIGINALES;
 let cfgLeida = 0;
 export async function cargarConfig(env) {
   if (Date.now() - cfgLeida < 20000) return;
@@ -41,6 +46,9 @@ export async function cargarConfig(env) {
     const c = row?.value ? JSON.parse(row.value) : {};
     CONFIG.descuentos = c.descuentos && typeof c.descuentos === 'object' ? c.descuentos : null;
     CONFIG.promos = Array.isArray(c.promos) ? c.promos : [];
+    CONFIG.base = c.base && typeof c.base === 'object' ? c.base : null;
+    CONFIG.fijos = c.fijos && typeof c.fijos === 'object' ? c.fijos : null;
+    aplicarPrecios(CONFIG.base || {});
   } catch { /* sin tabla o sin configuración: valen los descuentos de siempre */ }
 }
 export const olvidarConfig = () => { cfgLeida = 0; };
@@ -157,10 +165,23 @@ export function priceIn(clave, eur, currency, rates, country, env, opciones = {}
   const europa = isEU(country) || EUROPA_OTROS.includes(country);
   const sinIva = !europa || opciones.sinIva;
   const base = (sinIva ? eur / (1 + HOME_VAT / 100) : eur) * (1 - descuentoPais(country) / 100);
-  const fijo = country === 'AR' ? PRICE_OVERRIDES[currency]?.[clave] : undefined;
+  const fp = fijosVigentes()[country];
+  const fijo = fp && fp.moneda === currency ? Number(fp.precios?.[clave]) || undefined : undefined;
   const enMoneda = currency === 'EUR' ? base : (base / r('EUR')) * r(currency);
   // En euros con IVA (Europa) el precio queda tal cual; si se convierte o se saca el IVA, se redondea
-  let amount = fijo ?? (currency === 'EUR' && !sinIva ? Math.round(enMoneda * 100) / 100 : nice(enMoneda));
+  let amount = currency === 'EUR' && !sinIva ? Math.round(enMoneda * 100) / 100 : nice(enMoneda);
+  // README (ronda 47): con precio fijo, ese precio para el plan/producto; si el importe trae algo más (complementos) se suma
+  // convertido; si es menos (pagar la diferencia), la parte proporcional del precio fijo
+  if (fijo != null) {
+    const pe = precioEurDe(clave);
+    if (!pe || Math.abs(eur - pe) < 0.005) amount = fijo;
+    else if (eur > pe) amount = fijo + nice((((eur - pe) / (sinIva ? 1 + HOME_VAT / 100 : 1)) * (1 - descuentoPais(country) / 100) / r('EUR')) * r(currency));
+    else {
+      // Pasar de un plan a otro: la diferencia entre los dos precios fijos (si el plan anterior también tiene precio fijo)
+      const desde = ['basic', 'premium', 'deluxe'].find((p) => p !== clave && Number(fp.precios?.[p]) > 0 && Math.abs(pe - precioEurDe(p) - eur) < 0.005);
+      amount = desde ? Math.max(0, fijo - Number(fp.precios[desde])) : nice(fijo * eur / pe);
+    }
+  }
   const vatRate = isEU(country) && !opciones.sinIva ? vatRateFor(country, env) : 0;
   const vat = vatRate ? Math.round((amount - amount / (1 + vatRate / 100)) * 100) / 100 : 0;
   const minor = isZeroDecimal(currency) ? Math.round(amount) : Math.round(amount * 100);

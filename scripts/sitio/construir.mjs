@@ -193,7 +193,7 @@ function comoFunciona(E, esIndex) {
       <div class="rev">
         <p>No es solo una invitación digital: es <strong>un sitio web de ${esIndex ? 'tu boda o evento' : t}</strong>, personalizado ${E.corp ? 'con la identidad de tu marca y ' : ''}con un atractivo diseño, que envías por WhatsApp${E.corp ? ' o email' : ''} fácilmente. Los invitados hacen clic y tienen toda la información del evento, confirman asistencia y participan activamente.</p>
         <p>Y lo más importante: desde el <strong>panel privado</strong> vas a administrar las respuestas, exportarlas, organizar las mesas, la llegada de los invitados el día del evento y mucho más.</p>
-        ${E.corp ? checks(['Diseño 100% a medida con tu identidad.', '3 cambios de diseño hasta que lo apruebes.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.']) : checks(['Diseño de catálogo o estilo 100% a medida.', 'Puedes cambiar el diseño siempre, incluso publicada.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.'])}
+        ${E.corp ? checks(['Diseño 100% a medida con tu identidad.', '3 cambios de diseño hasta que lo apruebes.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.']) : checks(['Diseño de catálogo o estilo 100% a medida.', 'Puedes hacer cambios siempre, incluso publicada.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.'])}
         <div class="fila-btn"><a class="btn btn-verde btn-grande" href="/crear-invitacion">Crear invitación ${ic('flecha')}</a><a class="enlace-video" href="${C.VIDEO}" data-video="${C.VIDEO}" target="_blank" rel="noopener">${ic('play')} Ver video</a></div>
         ${E.corp ? '' : `<p class="nota-pago">${ic('shield')}<span><strong>Solo pagas al publicar.</strong> Si el modelo es gratis, tienes tu link y no pagas nada.</span></p>`}
       </div>
@@ -430,7 +430,8 @@ const escribe = (slug, P, cuerpo) => {
       else x = pluralizarHtml(x, (t) => aPluralOtro(t, c.split('-')[0]));
     }
     if (!c.startsWith('es')) x = x.replace(/<li data-solo-es>[\s\S]*?<\/li>/g, '');
-    if (TRADUCIDAS.has(c) && existsSync(join(DIR_LEG_, ARCHIVO[c], 'textos.json'))) x = x.replace(/href="\/info\//g, 'href="{{R}}/info/'); // README (ronda 46)
+    // README (ronda 46/47): los links a las legales van a la carpeta del país (el Worker elige el idioma según el país)
+    x = x.replace(/href="\/info\//g, 'href="{{R}}/info/');
     // README (ronda 43): título armado por partes (ficha de modelo): cada parte se traduce por separado
     if (P.tituloPartes && TRADUCIDAS.has(c)) {
       const tr = (t) => MAPAS[c].get(t) || t;
@@ -811,7 +812,7 @@ const legalHtml = (slug, titulo, sub, cuerpo, T) => `<section class="cabecera-si
 <section class="seccion"><div class="caja"><article class="legal-txt"><p class="legal-fecha">${T.actualizado} ${slug === 'terminos-y-condiciones' ? T.fecha6 : T.fecha10}</p>${T.prevalece ? `\n<p class="legal-aviso"><em>${T.prevalece}</em></p>` : ''}
 ${cuerpo}
 <p class="legal-otros">${T.otros} ${LEGALES.map(([s2]) => `<a href="/info/${s2}">${T.corto[s2]}</a>`).join(' · ')}</p></article></div></section>`;
-const T_ES = { etiqueta: 'Información legal', actualizado: 'Última actualización:', fecha6: '6 de noviembre de 2026', fecha10: '10 de noviembre de 2026', otros: 'Otros textos legales:',
+const T_ES = { etiqueta: 'Información legal', actualizado: 'Última actualización:', fecha6: '11 de noviembre de 2026', fecha10: '10 de noviembre de 2026', otros: 'Otros textos legales:',
   corto: { 'aviso-legal': 'Aviso legal', 'politica-de-privacidad': 'Privacidad', 'politica-de-cookies': 'Cookies', 'terminos-y-condiciones': 'Términos', 'politica-de-devoluciones': 'Devoluciones', rgpd: 'RGPD' } };
 for (const [slug, titulo, sub] of LEGALES) {
   const cuerpo = readFileSync(join(DIR_LEG, slug + '.html'), 'utf8');
@@ -830,6 +831,24 @@ for (const [slug, titulo, sub] of LEGALES) {
     const dest = join(RAIZ, 't', c, 'info', slug + '.html');
     mkdirSync(dirname(dest), { recursive: true });
     writeFileSync(dest, x);
+  }
+}
+// README (ronda 47): en las legales, en lugar del país y la moneda, solo el idioma (cada uno lleva a la misma página en ese idioma)
+{
+  const IDI = [['es', 'Español', ''], ['en', 'English', '/en'], ['pt', 'Português', '/br'], ['fr', 'Français', '/fr'], ['it', 'Italiano', '/it'], ['de', 'Deutsch', '/de'], ['nl', 'Nederlands', '/nl']];
+  for (const c of ['es', ...IDIOMAS]) {
+    const dir = join(RAIZ, 't', c, 'info');
+    if (!existsSync(dir)) continue;
+    const l = c === 'es' ? 'es' : ARCHIVO[c];
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.html'))) {
+      const slug = f.replace(/\.html$/, '');
+      const actual = IDI.find((x) => x[0] === l) || IDI[0];
+      const menu = `<details class="moneda idioma-legal"><summary class="moneda-boton" aria-label="Idioma · Language">${ic('globe')}<span>${actual[1]}</span>${ic('chevron')}</summary><div class="moneda-lista" role="menu">${
+        IDI.filter((x) => x[0] === 'es' || existsSync(join(DIR_LEG, x[0], slug + '.html'))).map((x) => `<a role="menuitemradio" aria-checked="${x[0] === l}" href="${x[2]}/info/${slug}" lang="${x[0]}">${x[1]}</a>`).join('')}</div></details>`;
+      const h = readFileSync(join(dir, f), 'utf8');
+      const n = h.replace(/<div class="moneda" data-moneda>[\s\S]*?<div class="moneda-lista"[^>]*><\/div><\/div>/, () => menu);
+      if (n !== h) writeFileSync(join(dir, f), n);
+    }
   }
 }
 

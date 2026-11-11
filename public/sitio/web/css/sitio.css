@@ -865,3 +865,12 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .dialogo-video.dv-vertical .dv-marco { aspect-ratio: 9 / 16; width: min(92vw, calc(88vh * 9 / 16)); height: auto; max-height: 88vh; background: #000; }
 .dialogo-video.dv-vertical video { width: 100%; height: 100%; display: block; object-fit: contain; background: #000; }
 .dialogo-video.dv-vertical video::cue { font-size: 15px; line-height: 1.35; background: rgba(0,0,0,.6); }
+/* README (ronda 47): selector de idioma de las páginas legales (sin país ni moneda) */
+.idioma-legal summary { list-style: none; }
+.idioma-legal summary::-webkit-details-marker { display: none; }
+.idioma-legal[open] .moneda-lista { display: block; }
+.idioma-legal .moneda-lista a { display: block; font: 400 15px/1.2 var(--sans); padding: 9px 10px; border-radius: 8px; color: #1c1c1c; text-decoration: none; }
+.idioma-legal .moneda-lista a:hover, .idioma-legal .moneda-lista a[aria-checked="true"] { background: var(--verde-claro); }
+.idioma-legal .moneda-lista { width: 180px; }
+/* README (ronda 47): Profesionales · «Cómo funciona» sin los números (en el celular quedaban flotando a la izquierda) */
+#como-trabajan .paso-num { display: none; }

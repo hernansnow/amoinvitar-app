@@ -1713,6 +1713,13 @@ function pintarModelo() {
   if (!actual || S.evento.producto === 'std-tarjeta') { caja.hidden = true; movil.hidden = true; return; }
   const tipo = S.evento.tipoNombre || '';
   // Escritorio: el modelo y, chico, el tipo de evento
+  // README (ronda 47): ya publicada, el modelo queda fijo: solo se muestra su nombre (sin «cambiar»)
+  if (S.evento.estado && S.evento.estado !== 'borrador') {
+    caja.replaceChildren(el('div', { class: 'btn-modelo fijo', title: 'El modelo se elige antes de publicar' }, el('span', { class: 'btn-modelo-txt' }, el('strong', {}, actual.nombre), tipo ? el('small', { class: 'btn-modelo-tipo' }, tipo) : null)));
+    movil.hidden = false;
+    movil.replaceChildren(el('span', {}, actual.nombre), ' ', tipo ? el('span', {}, tipo) : '');
+    return;
+  }
   caja.replaceChildren(el('button', { type: 'button', class: 'btn-modelo', onclick: elegirModelo },
     el('span', { class: 'btn-modelo-txt' }, el('strong', {}, actual.nombre), tipo ? el('small', { class: 'btn-modelo-tipo' }, tipo) : null), el('small', {}, 'cambiar ▾')));
   // Celular: debajo de "Paso 1 de 26" → "Rockabilly Boda - Cambiar"

@@ -189,3 +189,18 @@ los textos nuevos y dice cuántos faltan) y traducir los números que falten.
 - Sweet 16: página `sweet16` solo en `en` (la generan a partir de mis15); `datos.sweet16` en invitaciones de 15 creadas en inglés desde US/CA.
 - Testimonios: en español todos; en otros idiomas, la selección de `scripts/sitio/opiniones-traducidas.json`.
 - Invitaciones: `src/textos/estaticos.js` traduce los textos fijos en español de los modelos; `src/datos/demos-idiomas.js`, nombres/roles/itinerario de las demos por idioma.
+
+## Ronda 47 · Antes de mudar (pendientes y orden)
+
+- **Workers viejos de redirección por IP** (los del sitio viejo, con rutas en `amoinvitar.com/*`): el Worker nuevo ya hace
+  esa redirección (cookie `ai_elegida`/`ai_sede` o, la primera vez, país por IP e idioma del navegador → `/ar/`, `/us/en/`…;
+  `src/sitio/nuevo.js`). Cloudflare no admite dos Workers con la misma ruta: el día de la mudanza, **antes** de apuntar las
+  rutas al Worker nuevo, se **quitan las rutas** de los Workers viejos (no se borran: si hay que volver atrás, se les
+  vuelven a poner). Revisar si redirigían a carpetas del sitio viejo (`/en/`, `/pt/`…) que ahora usa la web nueva.
+- **Dominio propio de Studio** (`src/pro/dominios.js`): necesita Cloudflare for SaaS en la zona `amoinvitar.com`
+  (registro `dominios.amoinvitar.com` con proxy como *fallback origin*), una ruta del Worker para los *custom hostnames* y los
+  secretos `CF_API_TOKEN` (permiso «SSL and Certificates: Edit» de la zona) y `CF_ZONE_ID`. Se configura **después** de la
+  mudanza: una ruta comodín en la zona antes de mover el dominio taparía el sitio de Hostinger. Sin el token, el dominio se
+  da de alta a mano en Cloudflare y se marca activo desde /admin/.
+- **Precios** (ronda 47): /admin → Precios y promos → «Precios base» y «Países con precio fijo» (se guardan en
+  `app_state['config_precios']`; sin nada guardado valen `src/catalogo.js` y Argentina en `src/lib/fx.js`).

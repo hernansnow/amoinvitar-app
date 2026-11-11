@@ -62,6 +62,8 @@
   .marcas { display: flex; flex-wrap: wrap; gap: 6px 14px; } .marcas label { display: flex; flex-direction: row; gap: 6px; align-items: center; color: var(--tinta); } .marcas input { width: auto; }
   dialog.ancho { max-width: 640px; }
   .chico { font-size: 13px; color: var(--suave); }
+  .precios-base .fila { flex-wrap: nowrap; } .precios-base .fila > span:first-child { flex: 1; }
+  .precios-base { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); column-gap: 24px; } /* README (ronda 47) */
 </style>
 </head>
 <body>
@@ -434,6 +436,43 @@
     var v = el('div'), d = VISTAS.precios;
     v.append(el('h2', {}, 'Precios y promociones'));
     if (!d) { cargaVista('precios', '/api/admin/precios'); return append(v, vacio('Cargando…')); }
+    var recargar = function () { VISTAS.precios = null; return Promise.resolve().then(pinta); };
+    // — README (ronda 47): precios base (euros, IVA español incluido) —
+    var entradas = {}, grupos = {};
+    (d.base || []).forEach(function (x) { (grupos[x.grupo] = grupos[x.grupo] || []).push(x); });
+    var cajaBase = el('div', {}, Object.keys(grupos).map(function (g) {
+      return el('div', { class: 'grupo' }, [el('h3', {}, g), el('div', { class: 'precios-base' }, grupos[g].map(function (x) {
+        var i = el('input', { type: 'number', min: '0', step: '0.5', value: x.precio, style: 'width:90px' }); entradas[x.clave] = i;
+        return el('label', { class: 'fila', style: 'gap:8px;align-items:center;justify-content:space-between;margin:4px 0' }, [el('span', {}, x.nombre + (x.precio !== x.original ? ' (antes ' + x.original + ' €)' : '')), el('span', { style: 'white-space:nowrap' }, [i, ' €'])]);
+      }))]);
+    }));
+    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Precios base'), el('p', { class: 'meta' }, 'Precio de lista en euros, con el IVA español incluido (lo que paga Europa). El resto del mundo sale de acá: se saca el IVA, se aplica el descuento del país y se pasa a su moneda, salvo los países con precio fijo (más abajo). Los cambios se ven en la web, la tienda y el panel en menos de un minuto. ' + (d.basePersonalizada ? 'Estás usando tus propios precios.' : 'Hoy rigen los precios del catálogo.')), cajaBase,
+      el('div', { class: 'fila', style: 'gap:8px;margin-top:10px;flex-wrap:wrap' }, [
+        btn('Guardar precios base', '', function (b) { var o = {}; Object.keys(entradas).forEach(function (k) { o[k] = entradas[k].value; }); accion(b, '/api/admin/precios', { base: o }, 'Precios guardados', recargar); }),
+        d.basePersonalizada ? btn('Volver a los del catálogo', 'sec', function (b) { if (confirm('¿Volver a los precios originales del catálogo?')) accion(b, '/api/admin/precios', { restaurarBase: true }, 'Restaurados', recargar); }) : null])]));
+    // — Países con precio fijo en su moneda (como Argentina) —
+    var cajaFijos = el('div'), filasFijas = [];
+    function paisFijo(cod, f) {
+      f = f || { moneda: '', precios: {} };
+      var pais = el('input', { value: cod || '', maxlength: 2, list: 'dl-paises', placeholder: 'AR', style: 'width:70px;text-transform:uppercase' });
+      var mon = el('select', {}, d.monedas.map(function (m) { var o = el('option', { value: m }, m); if (m === (f.moneda || d.monedaDePais[cod] || 'USD')) o.selected = true; return o; }));
+      pais.addEventListener('change', function () { var m = d.monedaDePais[pais.value.trim().toUpperCase()]; if (m) mon.value = m; });
+      var ins = {};
+      var t = el('div', { class: 'tarjeta', style: 'margin:10px 0' }, [
+        el('div', { class: 'fila', style: 'gap:10px;align-items:center;flex-wrap:wrap' }, [el('label', {}, ['País ', pais]), el('label', {}, ['Moneda ', mon]), btn('Quitar país', 'mal', function () { filasFijas.splice(filasFijas.indexOf(t), 1); t.remove(); })]),
+        el('p', { class: 'meta' }, 'Lo que quede vacío se calcula como en el resto del mundo (con el descuento del país).'),
+        el('div', { class: 'precios-base' }, d.clavesFijas.map(function (c) {
+          var i = el('input', { type: 'number', min: '0', step: '1', value: (f.precios || {})[c.clave] || '', placeholder: '—', style: 'width:110px' }); ins[c.clave] = i;
+          return el('label', { class: 'fila', style: 'gap:8px;align-items:center;justify-content:space-between;margin:4px 0' }, [el('span', {}, c.nombre), i]);
+        }))]);
+      t._v = function () { var p = {}; Object.keys(ins).forEach(function (k) { if (ins[k].value !== '') p[k] = ins[k].value; }); return [pais.value.trim().toUpperCase(), { moneda: mon.value, precios: p }]; };
+      filasFijas.push(t); cajaFijos.append(t);
+    }
+    Object.keys(d.fijos || {}).sort().forEach(function (k) { paisFijo(k, d.fijos[k]); });
+    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Países con precio fijo'), el('p', { class: 'meta' }, 'Precio propio en la moneda del país, sin convertir desde el euro (por ejemplo, Argentina en pesos). Se usa cuando el visitante está en ese país y paga en esa moneda. Si el pedido suma complementos sin precio fijo, esos se suman convertidos. ' + (d.fijosPersonalizados ? 'Estás usando tu propia lista.' : 'Hoy rige la lista original (Argentina).')), cajaFijos,
+      el('div', { class: 'fila', style: 'gap:8px;margin-top:10px;flex-wrap:wrap' }, [btn('+ Agregar país', 'sec', function () { paisFijo('', null); }),
+        btn('Guardar precios fijos', '', function (b) { var o = {}; filasFijas.forEach(function (t) { var x = t._v(); if (x[0]) o[x[0]] = x[1]; }); accion(b, '/api/admin/precios', { fijos: o }, 'Precios fijos guardados', recargar); }),
+        d.fijosPersonalizados ? btn('Volver a la lista original', 'sec', function (b) { if (confirm('¿Volver a la lista original (solo Argentina)?')) accion(b, '/api/admin/precios', { restaurarFijos: true }, 'Restaurados', recargar); }) : null])]));
     // — Descuento por país —
     var filas = el('div', { class: 'grupo' }), lista = Object.keys(d.descuentos).sort().map(function (k) { return [k, d.descuentos[k]]; });
     var dl = el('datalist', { id: 'dl-paises' }, d.paises.map(function (c) { return el('option', { value: c }); }));

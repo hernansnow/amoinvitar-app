@@ -212,6 +212,10 @@
     ajustaCelular();
   }
   var completa = false; // vista previa a pantalla completa (se mantiene al pasar de un modelo al otro)
+  // README (ronda 47): íconos dibujados (las flechas ⤢ ⤡ se veían raras y chicas en el celular)
+  var ICO_AMPLIAR = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICO_SALIR = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function conIcono(b, svg, texto) { b.innerHTML = svg + (texto ? '<span>' + texto + '</span>' : ''); return b; }
   function pintarVista() {
     var it = actual.lista[actual.i];
     var marco;
@@ -228,9 +232,9 @@
     vista.replaceChildren(el('div', { class: 'ci-vista-caja' + (completa ? ' ci-full' : '') },
       // README (ronda 42): pantalla completa a la izquierda, enfrentada a la X (mismo estilo); ya en pantalla completa, la X pasa a ser «salir»
       completa
-        ? el('button', { type: 'button', class: 'ci-x ci-salir', 'aria-label': 'Salir de pantalla completa', onclick: alternar }, '⤡ Salir')
+        ? conIcono(el('button', { type: 'button', class: 'ci-x ci-salir', 'aria-label': 'Salir de pantalla completa', onclick: alternar }), ICO_SALIR, tr('Salir'))
         : el('button', { type: 'button', class: 'ci-x', 'aria-label': 'Cerrar', onclick: function () { completa = false; vista.close(); } }, '×'),
-      !completa && it.demo ? el('button', { type: 'button', class: 'ci-x ci-pantalla', 'aria-label': 'Ver a pantalla completa', onclick: alternar }, '⤢') : null,
+      !completa && it.demo ? conIcono(el('button', { type: 'button', class: 'ci-x ci-pantalla', 'aria-label': 'Ver a pantalla completa', title: 'Ver a pantalla completa', onclick: alternar }), ICO_AMPLIAR) : null,
       el('p', { class: 'ci-vista-nombre', text: it.nombre }),
       marco,
       el('div', { class: 'ci-vista-botones' },
