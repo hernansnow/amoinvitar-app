@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const fuente = JSON.parse(readFileSync(join(AQUI, 'i18n/fuente.json'), 'utf8'));
 // clave de la web → archivo de traducción
-export const ARCHIVO = { en: 'en', 'pt-br': 'pt', 'pt-pt': 'pt', fr: 'fr', it: 'it', de: 'de', nl: 'nl' };
+export const ARCHIVO = { en: 'en', 'en-gb': 'en', 'pt-br': 'pt', 'pt-pt': 'pt', fr: 'fr', it: 'it', de: 'de', nl: 'nl' };
 export const IDIOMAS = Object.keys(ARCHIVO).filter((l) => existsSync(join(AQUI, `i18n/${ARCHIVO[l]}.json`)));
 const norm = (t) => t.replace(/\s+/g, ' ').trim();
 const leer = (f) => (existsSync(join(AQUI, f)) ? JSON.parse(readFileSync(join(AQUI, f), 'utf8')) : {});
@@ -36,13 +36,29 @@ export function aPortugal(t) {
     .replace(/(?<![\p{L}])(estou|está|estão|estamos|ficam|fica|continua|continuam)\s+(\p{L}+(?:ando|endo|indo))(?![\p{L}])/giu, (m, a, v) => `${a} a ${INF(v)}`);
 }
 
+// README (ronda 44): inglés británico (Reino Unido, Irlanda, Australia, Nueva Zelanda) a partir del inglés: ortografía y palabras
+const GB = { color: 'colour', colors: 'colours', colored: 'coloured', colorful: 'colourful', favorite: 'favourite', favorites: 'favourites', favor: 'favour',
+  honor: 'honour', honored: 'honoured', behavior: 'behaviour', center: 'centre', centers: 'centres', centered: 'centred', gray: 'grey', catalog: 'catalogue',
+  catalogs: 'catalogues', jewelry: 'jewellery', traveling: 'travelling', traveler: 'traveller', travelers: 'travellers', canceled: 'cancelled', canceling: 'cancelling',
+  labeled: 'labelled', modeling: 'modelling', 'cell phone': 'mobile', 'cell phones': 'mobiles', cellphone: 'mobile', cellphones: 'mobiles', mom: 'mum', moms: 'mums',
+  'zip code': 'postcode', 'check out': 'check out', license: 'licence', 'math': 'maths', fulfill: 'fulfil', enrollment: 'enrolment' };
+const RE_GB = new RegExp(`(?<![\\p{L}])(${Object.keys(GB).sort((a, b) => b.length - a.length).join('|')})(?![\\p{L}])`, 'giu');
+// -ize / -ization → -ise / -isation (customize, personalize, organize, realize, recognize, apologize, memorize, finalize, optimize, prioritize…)
+const RE_IZE = /(?<![\p{L}])(custom|personal|organ|real|recogn|apolog|memor|final|optim|priorit|synchron|summar|categor|author|util|minim|maxim|special|visual|emphas|characteri)(iz)(e|es|ed|ing|ation|ations|er|ers)(?![\p{L}])/giu;
+export function aBritanico(t) {
+  return String(t)
+    .replace(RE_GB, (m) => { const n = GB[m.toLowerCase()]; return m[0] !== m[0].toLowerCase() ? n[0].toUpperCase() + n.slice(1) : n; })
+    .replace(RE_IZE, (m, a, z, b) => a + (z === 'IZ' ? 'IS' : 'is') + b)
+    .replace(/(?<![\p{L}])(analy)z(e|es|ed|ing)(?![\p{L}])/giu, '$1s$2');
+}
+
 export function cargaMapa(clave) {
   const tr = leer(`i18n/${ARCHIVO[clave]}.json`);
   const propio = clave === 'pt-pt' ? leer('i18n/pt-pt.json') : {};
   const m = new Map();
   for (const [i, v0] of Object.entries(tr)) {
     if (fuente[i] == null || !v0) continue;
-    const v = propio[i] || (clave === 'pt-pt' ? aPortugal(v0) : v0);
+    const v = propio[i] || (clave === 'pt-pt' ? aPortugal(v0) : clave === 'en-gb' ? aBritanico(v0) : v0);
     m.set(fuente[i], v);
   }
   return m;

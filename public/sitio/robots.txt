@@ -19,6 +19,8 @@ Disallow: /evento/
 Disallow: /info/
 Disallow: /email/
 Disallow: /sitio/
+Disallow: /en/email/
+Disallow: /en/info/
 Disallow: /de/email/
 Disallow: /de/info/
 Disallow: /ar/email/
@@ -55,8 +57,6 @@ Disallow: /fr/email/
 Disallow: /fr/info/
 Disallow: /gt/email/
 Disallow: /gt/info/
-Disallow: /ht/email/
-Disallow: /ht/info/
 Disallow: /hn/email/
 Disallow: /hn/info/
 Disallow: /ie/email/
@@ -85,8 +85,6 @@ Disallow: /gb/email/
 Disallow: /gb/info/
 Disallow: /do/email/
 Disallow: /do/info/
-Disallow: /vc/email/
-Disallow: /vc/info/
 Disallow: /ch/email/
 Disallow: /ch/info/
 Disallow: /uy/email/
@@ -95,6 +93,14 @@ Disallow: /ve/email/
 Disallow: /ve/info/
 Disallow: /us/en/email/
 Disallow: /us/en/info/
+Disallow: /ca/fr/email/
+Disallow: /ca/fr/info/
+Disallow: /ch/fr/email/
+Disallow: /ch/fr/info/
+Disallow: /ch/it/email/
+Disallow: /ch/it/info/
+Disallow: /be/nl/email/
+Disallow: /be/nl/info/
 
 User-agent: facebookexternalhit
 Allow: /

@@ -11,7 +11,7 @@ import { IDEAS } from './ideas.mjs';
 import { PAISES, CLAVES, SEDES } from '../../src/sitio/variantes.js';
 import { convertir } from './variantes.mjs';
 import { LANG } from '../../src/sitio/variantes.js';
-import { IDIOMAS, ARCHIVO, cargaMapa, traducir, aPortugal } from './i18n.mjs';
+import { IDIOMAS, ARCHIVO, cargaMapa, traducir, aPortugal, aBritanico } from './i18n.mjs';
 // README (ronda 41): clave PÚBLICA de Cloudflare Turnstile para el formulario de contacto (se escribe en scripts/sitio/turnstile-sitekey.txt)
 const TS_ARCHIVO = join(dirname(fileURLToPath(import.meta.url)), 'turnstile-sitekey.txt');
 const TS_CLAVE = (existsSync(TS_ARCHIVO) ? readFileSync(TS_ARCHIVO, 'utf8') : '').trim();
@@ -781,8 +781,11 @@ console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} vers
 {
   const f = join(dirname(fileURLToPath(import.meta.url)), '../../public/sitio/web/js/sitio.js');
   const js = readFileSync(f, 'utf8');
-  const filas = [['', 'Internacional', 'EUR', '', 'es'], ...SEDES.filter((x) => x.carpeta).map((x) => [x.pais, PAISES.find((p) => p[0] === x.pais)[1] + (x.carpeta.split('/').length > 2 ? ' (English)' : ''), x.moneda, x.carpeta, x.clave])]
-    .sort((a, b) => (!a[0] ? -1 : !b[0] ? 1 : a[1].localeCompare(b[1], 'es')));
+  // README (ronda 44): [código, nombre, moneda, carpeta, clave, idioma, principal]. Internacional al final; cada país una vez
+  // en la lista (su idioma principal) y sus otros idiomas como botones debajo
+  const IDIOMA = { es: 'Español', en: 'English', fr: 'Français', de: 'Deutsch', it: 'Italiano', nl: 'Nederlands', pt: 'Português' };
+  const filas = SEDES.map((x) => [x.pais, x.pais ? PAISES.find((p) => p[0] === x.pais)[1] : 'Internacional', x.moneda, x.carpeta, x.clave, IDIOMA[x.clave.split('-')[0]], x.carpeta.split('/').length > 2 || x.carpeta === '/en' ? 0 : 1])
+    .sort((a, b) => (!a[0] !== !b[0] ? (!a[0] ? 1 : -1) : a[1].localeCompare(b[1], 'es') || b[6] - a[6]));
   const lista = '  var LISTA_PAISES = ' + JSON.stringify(filas).replace(/\],\[/g, '], [').replace(/"/g, "'") + ';';
   const n = js.replace(/  var LISTA_PAISES = \[[\s\S]*?\]\];/, () => lista);
   if (n !== js) writeFileSync(f, n);
@@ -799,7 +802,7 @@ console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} vers
     const archivo = join(aqui, `i18n/js-${ARCHIVO[l]}.json`);
     if (!existsSync(archivo)) continue;
     const tr = JSON.parse(readFileSync(archivo, 'utf8'));
-    DICT[l] = {}; for (const [i, v] of Object.entries(tr)) if (jsFuente[i] && v) DICT[l][jsFuente[i].trim()] = (l === 'pt-pt' ? aPortugal(v) : v).replace(/^\s+|\s+$/g, '');
+    DICT[l] = {}; for (const [i, v] of Object.entries(tr)) if (jsFuente[i] && v) DICT[l][jsFuente[i].trim()] = (l === 'pt-pt' ? aPortugal(v) : l === 'en-gb' ? aBritanico(v) : v).replace(/^\s+|\s+$/g, '');
   }
   // Comienzos de frase que el JavaScript completa (desde 29 €, Ver ejemplos de bodas…): [es, en, pt, fr, it, de, nl]
   const PREF = [['desde ', 'from ', 'a partir de ', 'à partir de ', 'da ', 'ab ', 'vanaf '],
@@ -809,7 +812,7 @@ console.log('Páginas generadas:', PAGINAS.join(', '), `· ${CLAVES.length} vers
     ['Ver más funciones (', 'Show more features (', 'Ver mais funções (', 'Voir plus de fonctions (', 'Mostra altre funzioni (', 'Weitere Funktionen (', 'Meer functies ('],
     ['Puedes pagar con ', 'You can pay with ', 'Você pode pagar com ', 'Vous pouvez payer par ', 'Puoi pagare con ', 'Sie können bezahlen mit ', 'Je kunt betalen met '],
     ['Podés pagar con ', 'You can pay with ', 'Você pode pagar com ', 'Vous pouvez payer par ', 'Puoi pagare con ', 'Sie können bezahlen mit ', 'Je kunt betalen met ']];
-  const COL = { en: 1, 'pt-br': 2, 'pt-pt': 2, fr: 3, it: 4, de: 5, nl: 6 };
+  const COL = { en: 1, 'en-gb': 1, 'pt-br': 2, 'pt-pt': 2, fr: 3, it: 4, de: 5, nl: 6 };
   const NOMBRES_PAIS = Object.fromEntries(PAISES.map((x) => [x[1], x[0]]));
   const salida = `/* Generado por scripts/sitio/construir.mjs desde scripts/sitio/variantes.mjs (README ronda 40/42): no editar a mano */
 (function () {

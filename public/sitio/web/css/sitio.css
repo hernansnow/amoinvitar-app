@@ -746,6 +746,10 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .moneda-lista { width: 270px; }
 .moneda-lista .pa { display: inline-flex; align-items: center; gap: 10px; }
 .moneda-lista .pa img { width: 22px; height: 15px; object-fit: cover; border-radius: 2px; }
+/* README (ronda 44): idiomas del país elegido, fijos al pie de la lista */
+.moneda-idiomas { position: sticky; bottom: -6px; display: flex; gap: 6px; flex-wrap: wrap; margin: 6px -6px -6px; padding: 8px; background: #fff; border-top: 1px solid var(--linea); }
+.moneda-lista .moneda-idiomas button.idi { width: auto; flex: 1; justify-content: center; font-size: 14px; padding: 8px 10px; background: #f3f3f1; }
+.moneda-lista .moneda-idiomas button.idi.on { background: var(--verde, #2f8f63); color: #fff; }
 
 /* README (ronda 39): aviso «Diséñala y mírala…» en una sola línea en el celular; secciones de precios */
 @media (max-width: 600px) { .aviso-pago { flex-wrap: nowrap; justify-content: flex-start; text-align: left; padding: 12px 14px; font-size: 14.5px; gap: 8px; } .aviso-pago .icono { flex: none; } }

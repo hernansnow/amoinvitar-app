@@ -15,7 +15,7 @@
 //   es-cr  vos centroamericano: vos · boda · bautizo (Costa Rica, Nicaragua, Guatemala, Honduras, El Salvador)
 //   es-cl  matrimonio · bautizo · computador (Chile, Colombia)
 //   es-pe  matrimonio · bautizo (Perú)
-//   en · pt-br · pt-pt · fr · it · de · nl   traducciones (scripts/sitio/i18n/)
+//   en · en-gb · pt-br · pt-pt · fr · it · de · nl   traducciones (scripts/sitio/i18n/; en-gb y pt-pt salen del en y del pt con reglas)
 // «casamiento / matrimonio» se usa SOLO en la web: en las demos, el panel y las invitaciones siempre «boda».
 //
 // [código ISO, nombre (selector, en español), moneda, clave, hreflang, nombre del país en su idioma (títulos), ciudades]
@@ -45,28 +45,35 @@ export const PAISES = [
   ['DE', 'Alemania', 'EUR', 'de', 'de-DE', 'Deutschland', 'Berlin, München, Hamburg und Köln'],
   ['AT', 'Austria', 'EUR', 'de', 'de-AT', 'Österreich', 'Wien, Graz, Salzburg und Innsbruck'],
   ['CH', 'Suiza', 'CHF', 'de', 'de-CH', 'Schweiz', 'Zürich, Basel, Bern und Luzern'],
-  ['AU', 'Australia', 'AUD', 'en', 'en-AU', 'Australia', 'Sydney, Melbourne, Brisbane and Perth'],
+  ['AU', 'Australia', 'AUD', 'en-gb', 'en-AU', 'Australia', 'Sydney, Melbourne, Brisbane and Perth'],
   ['CA', 'Canadá', 'CAD', 'en', 'en-CA', 'Canada', 'Toronto, Vancouver, Montreal and Calgary'],
-  ['IE', 'Irlanda', 'EUR', 'en', 'en-IE', 'Ireland', 'Dublin, Cork, Galway and Limerick'],
-  ['NZ', 'Nueva Zelanda', 'NZD', 'en', 'en-NZ', 'New Zealand', 'Auckland, Wellington, Christchurch and Queenstown'],
-  ['GB', 'Reino Unido', 'GBP', 'en', 'en-GB', 'United Kingdom', 'London, Manchester, Edinburgh and Birmingham'],
-  ['VC', 'San Vicente y las Granadinas', 'XCD', 'en', 'en-VC', 'St Vincent', 'Kingstown, Bequia and the Grenadines'],
+  ['IE', 'Irlanda', 'EUR', 'en-gb', 'en-IE', 'Ireland', 'Dublin, Cork, Galway and Limerick'],
+  ['NZ', 'Nueva Zelanda', 'NZD', 'en-gb', 'en-NZ', 'New Zealand', 'Auckland, Wellington, Christchurch and Queenstown'],
+  ['GB', 'Reino Unido', 'GBP', 'en-gb', 'en-GB', 'United Kingdom', 'London, Manchester, Edinburgh and Birmingham'],
   ['BR', 'Brasil', 'BRL', 'pt-br', 'pt-BR', 'Brasil', 'São Paulo, Rio de Janeiro, Belo Horizonte e Brasília'],
   ['PT', 'Portugal', 'EUR', 'pt-pt', 'pt-PT', 'Portugal', 'Lisboa, Porto, Braga e Faro'],
   ['FR', 'Francia', 'EUR', 'fr', 'fr-FR', 'France', 'Paris, Lyon, Marseille et Bordeaux'],
   ['BE', 'Bélgica', 'EUR', 'fr', 'fr-BE', 'Belgique', 'Bruxelles, Liège, Namur et Charleroi'],
-  ['HT', 'Haití', 'HTG', 'fr', 'fr-HT', 'Haïti', 'Port-au-Prince, Cap-Haïtien et Jacmel'],
   ['IT', 'Italia', 'EUR', 'it', 'it-IT', 'Italia', 'Roma, Milano, Firenze e Napoli'],
   ['NL', 'Países Bajos', 'EUR', 'nl', 'nl-NL', 'Nederland', 'Amsterdam, Rotterdam, Den Haag en Utrecht'],
 ].sort((a, b) => a[1].localeCompare(b[1], 'es'));
 
-// Estados Unidos tiene además la versión en inglés: /us/en/ (la de /us/ es en español, como en el sitio viejo)
-export const SECUNDARIAS = [['US', 'en', 'en-US', 'United States', 'Miami, Los Angeles, New York, Houston and Chicago']];
+// Países con más de un idioma: la carpeta del país va en su idioma principal y los otros en /<país>/<idioma>/
+// README (ronda 44): en el selector, estos idiomas son botones debajo de la lista (Español · English · Français…)
+export const SECUNDARIAS = [
+  ['US', 'en', 'en-US', 'United States', 'Miami, Los Angeles, New York, Houston and Chicago'],
+  ['CA', 'fr', 'fr-CA', 'Canada', 'Montréal, Québec, Gatineau et Laval'],
+  ['CH', 'fr', 'fr-CH', 'Suisse', 'Genève, Lausanne, Neuchâtel et Fribourg'],
+  ['CH', 'it', 'it-CH', 'Svizzera', 'Lugano, Bellinzona e Locarno'],
+  ['BE', 'nl', 'nl-BE', 'België', 'Antwerpen, Gent, Brugge en Leuven'],
+];
 
 // Una «sede» es cada versión de la web: la raíz neutra, cada carpeta de país y las secundarias (/us/en/)
 //   { pais, carpeta ('' | '/ar' | '/us/en'), clave, lang, nombre (en su idioma), ciudades, moneda }
-export const NEUTRA = { pais: '', carpeta: '', clave: 'es', lang: 'es', nombre: '', ciudades: '', moneda: 'EUR' };
-export const SEDES = [NEUTRA,
+// README (ronda 44): la versión internacional (sin país) va en dólares; /en/ es la internacional en inglés
+export const NEUTRA = { pais: '', carpeta: '', clave: 'es', lang: 'es', nombre: '', ciudades: '', moneda: 'USD' };
+export const NEUTRA_EN = { pais: '', carpeta: '/en', clave: 'en', lang: 'en', nombre: '', ciudades: '', moneda: 'USD' };
+export const SEDES = [NEUTRA, NEUTRA_EN,
   ...PAISES.map(([pais, , moneda, clave, lang, nombre, ciudades]) => ({ pais, carpeta: `/${pais.toLowerCase()}`, clave, lang, nombre, ciudades, moneda })),
   ...SECUNDARIAS.map(([pais, clave, lang, nombre, ciudades]) => ({ pais, carpeta: `/${pais.toLowerCase()}/${clave}`, clave, lang, nombre, ciudades, moneda: PAISES.find((p) => p[0] === pais)[2] })),
 ];
@@ -78,13 +85,19 @@ export function sedeDePais(pais, idiomaNavegador = '') {
   return sec || SEDES.find((s) => s.pais === p && s.carpeta.split('/').length === 2) || null;
 }
 export const sedeDeCarpeta = (carpeta) => SEDES.find((s) => s.carpeta === carpeta) || null;
+// README (ronda 44): visitas de países sin carpeta: la versión en el idioma de su navegador (si la hay)
+const POR_IDIOMA = { en: '/en', fr: '/fr', de: '/de', it: '/it', nl: '/nl', 'pt-br': '/br', pt: '/pt' };
+export function sedePorIdioma(idiomaNavegador = '') {
+  const l = String(idiomaNavegador).toLowerCase().split(',')[0].trim();
+  return sedeDeCarpeta(POR_IDIOMA[l.slice(0, 5)] || POR_IDIOMA[l.slice(0, 2)] || '') || null;
+}
 export const claveDePais = (pais) => sedeDePais(pais)?.clave || 'es';
 // Atributo lang de la página
 export const LANG = Object.fromEntries(CLAVES.map((c) => [c, c === 'es' ? 'es' : (SEDES.find((s) => s.clave === c)?.lang || c)]));
 // og:locale (es_ES, en_GB…)
 export const ogLocale = (lang) => (lang === 'es' ? 'es_LA' : lang.replace('-', '_'));
 // Idioma de las invitaciones (src/textos) para el panel y las demos de quien navega en otro idioma
-export const IDIOMA_INVITACION = { en: 'en', 'pt-br': 'pt', 'pt-pt': 'pt', fr: 'fr', it: 'it', de: 'de', nl: 'nl' };
+export const IDIOMA_INVITACION = { en: 'en', 'en-gb': 'en', 'pt-br': 'pt', 'pt-pt': 'pt', fr: 'fr', it: 'it', de: 'de', nl: 'nl' };
 // ¿En este país se dice «bautizo»? (en Argentina, Uruguay, Paraguay y Bolivia, «bautismo»; en lo neutro también)
 const BAUTISMO = new Set(['AR', 'UY', 'PY', 'BO']);
 export const diceBautizo = (pais) => { const s = sedeDePais(pais); return !!s && s.clave.startsWith('es') && !BAUTISMO.has(String(pais).toUpperCase()); };

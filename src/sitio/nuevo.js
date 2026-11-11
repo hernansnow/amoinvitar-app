@@ -20,7 +20,7 @@
 //   - siempre fuera de amoinvitar.com: "noindex" (los buscadores no la indexan).
 // En amoinvitar.com (el dominio principal) se ve siempre, sin clave.
 import { getCookie, cookie, isSecureRequest } from '../lib/util.js';
-import { SEDES, NEUTRA, sedeDePais, sedeDeCarpeta, ogLocale } from './variantes.js';
+import { SEDES, NEUTRA, sedeDePais, sedeDeCarpeta, sedePorIdioma, ogLocale } from './variantes.js';
 import { MODELOS } from '../modelos.js';
 
 const SITIO = 'https://amoinvitar.com';
@@ -79,8 +79,8 @@ function zona(sede) {
   switch (idiomaDe(sede)) {
     case 'en': return `Across ${n === 'United States' || n === 'United Kingdom' ? 'the ' + n : n}: ${c}.`;
     case 'pt': return `${n === 'Brasil' ? 'Em todo o Brasil' : `Em todo ${n}`}: ${c}.`;
-    case 'fr': return `Partout ${n === 'Belgique' ? 'en Belgique' : n === 'Haïti' ? 'en Haïti' : 'en France'} : ${c}.`;
-    case 'it': return `In tutta Italia: ${c}.`;
+    case 'fr': return `Partout ${{ Belgique: 'en Belgique', Suisse: 'en Suisse', Canada: 'au Canada' }[n] || 'en France'} : ${c}.`;
+    case 'it': return `${n === 'Svizzera' ? 'In tutta la Svizzera' : 'In tutta Italia'}: ${c}.`;
     case 'de': return `${n === 'Schweiz' ? 'In der ganzen Schweiz' : `In ganz ${n}`}: ${c}.`;
     case 'nl': return `In heel ${n}: ${c}.`;
     default: return `En ${/a$/.test(n) && n !== 'Panamá' ? 'toda' : 'todo'} ${n}: ${c}.`;
@@ -109,9 +109,9 @@ function componer(html, sede, pagina, { legal = false, monedaRaiz = '' } = {}) {
     .replace(/\{\{LANG\}\}/g, sede.lang)
     .replace(/\{\{OGL\}\}/g, ogLocale(sede.lang))
     .replace(/\{\{R\}\}/g, sede.carpeta)
-    .replace(/\{\{MON\}\}/g, sede.carpeta ? sede.moneda : '')
+    .replace(/\{\{MON\}\}/g, sede.moneda) // README (ronda 44): Internacional, en dólares
     .replace('{{BANDERA}}', sede.pais ? sede.pais.toLowerCase() : 'globo')
-    .replace('{{MONEDA}}', sede.carpeta ? sede.moneda : esc(monedaRaiz))
+    .replace('{{MONEDA}}', sede.moneda)
     .replace('<p class="pie-zona">{{ZONA}}</p>', pieZona ? `<p class="pie-zona">${esc(pieZona)}</p>` : '')
     .replace('data-raiz="{{R}}/"', `data-raiz="${sede.carpeta}/"`);
 }
@@ -122,7 +122,8 @@ function preferida(request) {
   if (elegida === 'raiz') return NEUTRA;
   if (elegida && sedeDeCarpeta(elegida)) return sedeDeCarpeta(elegida);
   const pais = request.cf?.country || request.headers.get('cf-ipcountry') || '';
-  return sedeDePais(pais, request.headers.get('accept-language') || '');
+  const al = request.headers.get('accept-language') || '';
+  return sedeDePais(pais, al) || sedePorIdioma(al);
 }
 // Cookies que recuerdan el país (las usan las demos, el panel y la tienda)
 function cookiesSede(sede, request) {
@@ -149,6 +150,8 @@ export async function sitioNuevo(env, request, url) {
     const r = await env.ASSETS.fetch(new Request(new URL(`/sitio${url.pathname}${url.search}`, url.origin), request));
     return r.status === 404 ? null : r;
   }
+  // README (ronda 44): Haití y San Vicente ya no tienen carpeta: a la versión internacional
+  { const hv = /^\/(ht|vc)(\/.*)?$/.exec(url.pathname); if (hv) return ir(`${hv[2] || '/'}${url.search}`); }
   // README (ronda 43): la tienda vieja de WordPress (/store/…, /ar/store/…) se cerró: a los precios del país
   if (/^(store|tienda-vieja)(\/|$)/.test(pagina0)) return ir(`${sede.carpeta}/precios`);
   // Nombres viejos y la demo vieja de cada país
