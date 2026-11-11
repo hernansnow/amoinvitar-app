@@ -43,7 +43,7 @@ function acceso(env, request, url) {
 }
 
 // Páginas que se unificaron o cambiaron de nombre (también dentro de cada carpeta de país)
-const REDIRECCIONES = { infantiles: 'cumple', 'crear-invitacion-para-infantil': 'crear-invitacion-para-cumpleanos', 'crear-invitacion-para-empresarial': 'empresarial' };
+const REDIRECCIONES = { 'crear-invitacion-sweet16': 'crear-invitacion-para-sweet16', infantiles: 'cumple', 'crear-invitacion-para-infantil': 'crear-invitacion-para-cumpleanos', 'crear-invitacion-para-empresarial': 'empresarial' };
 
 // /ar/bodas → { sede: Argentina, pagina: 'bodas' } · /us/en/ → { sede: Estados Unidos en inglés, pagina: 'index' }
 function partir(pathname) {
@@ -177,6 +177,7 @@ export async function sitioNuevo(env, request, url) {
   if (sede !== NEUTRA) { const d = demoVieja(pagina0); if (d) return ir(d); }
   if (soloEspanol(pagina0) && !sede.clave.startsWith('es')) return ir(`/${pagina0}${url.search}`);
   if (soloIngles(pagina0) && sede.clave !== 'en') return ir(`${sede.carpeta}/mis15${url.search}`);
+  if (pagina0 === 'crear-invitacion-para-sweet16' && sede.clave !== 'en') return ir(`${sede.carpeta}/crear-invitacion-para-15-anos${url.search}`);
   // Las legales son las mismas para todos (en /info/…)
   if (pagina0.startsWith('info/') && sede !== NEUTRA) return ir(`/${pagina0}${url.search}`);
   // /crear-invitacion-para-<evento> es la misma página que /crear-invitacion (con el evento ya elegido)

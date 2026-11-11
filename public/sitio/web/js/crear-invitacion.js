@@ -15,6 +15,7 @@
 
   var EVENTOS = [
     { slug: 'boda', tipo: 'boda', nombre: 'Boda', dos: true, pagina: 'bodas' },
+    { slug: 'sweet16', tipo: '15', nombre: 'Sweet 16', pagina: 'sweet16', sweet16: true }, // README (ronda 46): solo en inglés (se quita abajo en los demás)
     { slug: '15-anos', tipo: '15', nombre: '15 años', pagina: 'mis15' },
     { slug: 'bautismo', tipo: 'bautismo', nombre: 'Bautismo', pagina: 'bautismo' },
     { slug: 'comunion', tipo: 'comunion', nombre: 'Comunión', pagina: 'comunion' },
@@ -72,7 +73,22 @@
     return e;
   }
   var clave = function (s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ''); };
-  function evento(slugOTipo) { return EVENTOS.filter(function (e) { return e.slug === slugOTipo || e.tipo === slugOTipo; })[0] || null; }
+  var LG = (document.documentElement.getAttribute('lang') || 'es').slice(0, 2);
+  if (LG !== 'en') EVENTOS = EVENTOS.filter(function (e) { return !e.sweet16; });
+  // README (ronda 46): títulos de la sección en el idioma de la página
+  var TIT = { es: ['<em>Diseños</em> para {e}', '¿Qué <em>Celebramos</em>?', 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Elige, personaliza y mira tu invitación lista antes de pagar.', 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.'],
+    en: ['<em>Designs</em> for {e}', 'What are we <em>Celebrating</em>?', 'We have styles for every taste—find yours! Choose, customize and see your invitation ready before paying.', 'Tap the type of event to see its designs, customize them and get started.'],
+    pt: ['<em>Designs</em> para {e}', 'O que vamos <em>Celebrar</em>?', 'Temos estilos para todos os gostos, encontre o seu! Escolha, personalize e veja seu convite pronto antes de pagar.', 'Toque no tipo de evento para ver os designs, personalizá-los e começar.'],
+    fr: ['<em>Designs</em> pour {e}', 'Que <em>Célébrons</em>-nous ?', 'Des styles pour tous les goûts, trouvez le vôtre ! Choisissez, personnalisez et voyez votre invitation prête avant de payer.', 'Touchez le type d’événement pour voir ses designs, les personnaliser et commencer.'],
+    it: ['<em>Design</em> per {e}', 'Cosa <em>Festeggiamo</em>?', 'Abbiamo stili per tutti i gusti: trova il tuo! Scegli, personalizza e guarda il tuo invito pronto prima di pagare.', 'Tocca il tipo di evento per vedere i suoi design, personalizzarli e iniziare.'],
+    de: ['<em>Designs</em> für {e}', 'Was <em>Feiern</em> wir?', 'Stile für jeden Geschmack – finde deinen! Wähle, gestalte und sieh dir deine fertige Einladung an, bevor du zahlst.', 'Tippe auf die Art des Events, um seine Designs zu sehen, sie anzupassen und loszulegen.'],
+    nl: ['<em>Ontwerpen</em> voor {e}', 'Wat <em>Vieren</em> we?', 'Stijlen voor elke smaak, vind de jouwe! Kies, personaliseer en bekijk je uitnodiging klaar voordat je betaalt.', 'Tik op het soort evenement om de ontwerpen te zien, ze te personaliseren en te beginnen.'] }[LG] || null;
+  var tr = function (t) { return window.AI_REGIONAL && LG !== 'es' ? AI_REGIONAL.traduce(t) : t; };
+  // Por slug; por tipo, el evento común (Sweet 16 comparte el tipo «15»: solo se elige por su slug o en su página)
+  function evento(slugOTipo) {
+    var s16 = slugOTipo === '15' && document.body && document.body.hasAttribute('data-sweet16');
+    return EVENTOS.filter(function (e) { return e.slug === slugOTipo; })[0] || EVENTOS.filter(function (e) { return e.tipo === slugOTipo && !!e.sweet16 === s16; })[0] || EVENTOS.filter(function (e) { return e.tipo === slugOTipo; })[0] || null;
+  }
   // Imagen con alternativas: si una no está, prueba la siguiente
   function imagen(lista, alt) {
     var i = 0, img = el('img', { src: lista[0], alt: alt || '', loading: 'lazy' });
@@ -269,7 +285,18 @@
       ['a', 'b', 'fecha'].forEach(function (k) { var x = f.elements[k]; if (x && x.value.trim()) q.set(k, x.value.trim()); });
       var b = f.querySelector('[type=submit]'); b.disabled = true; b.textContent = 'Un momento…';
       try { if (window.gtag) gtag('event', 'crear_invitacion', { modelo: it.id, evento: ev.tipo }); } catch (er) { /* sin analítica */ }
-      location.href = APP + '/tienda/?' + q.toString();
+      // README (ronda 46): se arma el borrador acá mismo y se abre el panel (ya no se pasa por la tienda)
+      var mismo = !APP || APP.replace(/\/+$/, '') === location.origin;
+      if (!mismo) { location.href = APP + '/tienda/?' + q.toString(); return; }
+      var d = { producto: q.get('producto') || 'invitacion', tipo: q.get('evento') || 'boda', modelo: q.get('modelo') || undefined, diseno: q.get('diseno') || undefined,
+        nombres: { a: (q.get('a') || '').slice(0, 20), b: (q.get('b') || '').slice(0, 20) }, fecha: q.get('fecha') || '', sweet16: !!(ev.sweet16 || document.body.hasAttribute('data-sweet16')) };
+      fetch(APP + '/api/tienda/empezar', { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(d) })
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Error'); return j; }); })
+        .then(function (r) {
+          try { var lista = JSON.parse(localStorage.getItem('ai-borradores') || '[]'); lista.unshift({ id: r.id, clave: r.clave, nombres: [d.nombres.a, d.nombres.b].filter(Boolean).join(' & '), modelo: d.modelo || d.producto, tipo: d.tipo, t: Date.now() }); localStorage.setItem('ai-borradores', JSON.stringify(lista.slice(0, 10))); } catch (x) { /* sin almacenamiento */ }
+          location.href = APP + r.panel;
+        })
+        .catch(function (er) { b.disabled = false; b.textContent = tr('Comenzar a personalizar'); var m = f.querySelector('.ci-error') || f.insertBefore(el('p', { class: 'ci-error ci-nota' }), b); m.textContent = er.message; });
     });
     form.replaceChildren(f);
     abrir(form);
@@ -341,8 +368,8 @@
     var subtitulo = document.querySelector('#disenos .titulo p');
     function pintarCabecera() {
       if (!conSelector) return;
-      if (ev) { cab.replaceChildren(); if (titulo && grid.length) titulo.innerHTML = '<em>Diseños</em> para ' + (ev.nombre || '').toLowerCase(); if (subtitulo && grid.length) subtitulo.textContent = 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Elige, personaliza y mira tu invitación lista antes de pagar.'; return; }
-      if (titulo && grid.length) titulo.innerHTML = '¿Qué <em>Celebramos</em>?'; if (subtitulo && grid.length) subtitulo.textContent = 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.';
+      if (ev) { cab.replaceChildren(); if (titulo && grid.length) titulo.innerHTML = TIT ? TIT[0].replace('{e}', ev.sweet16 ? 'Sweet 16' : tr(ev.nombre || '').toLowerCase()) : '<em>Diseños</em> para ' + (ev.nombre || '').toLowerCase(); if (subtitulo && grid.length) subtitulo.textContent = 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Elige, personaliza y mira tu invitación lista antes de pagar.'; return; }
+      if (titulo && grid.length) titulo.innerHTML = TIT ? TIT[1] : '¿Qué <em>Celebramos</em>?'; if (subtitulo && grid.length) subtitulo.textContent = TIT ? TIT[3] : 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.';
       cab.replaceChildren(el('div', { class: 'ci-eventos' }, (grid.length ? grid : opciones.map(function (e) { return { slug: e.slug, nombre: e.nombre, img: '' }; })).map(function (g) {
         return el('button', { type: 'button', class: 'ci-evento', style: g.img ? 'background-image:url(' + g.img + ')' : null, onclick: function () { if (g.slug === 'empresarial') { location.href = RAIZ + 'empresarial'; return; } ev = evento(g.slug); tabActiva = 'web'; cambiarUrl(); pintarCabecera(); pintar(); otro.hidden = false; try { caja.scrollIntoView({ block: 'start' }); } catch (e) { /* sin scroll */ } } },
           el('span', { text: g.nombre }));
@@ -370,6 +397,9 @@
         avisaFlecha(); if (ya) centrar(tabs.querySelector('.activa'));
         ya = true;
         document.querySelectorAll('[data-ci-desde]').forEach(function (x) { var d = desdeBasic(c); if (d) x.textContent = d; });
+        // README (ronda 46): desde la ficha de un modelo (?modelo=garden) se abre directo su cuadro «Personalizar»
+        var pm = new URLSearchParams(location.search).get('modelo');
+        if (pm && !window.__ciModelo) { window.__ciModelo = 1; var it0 = tab.items.filter(function (x) { return x.id === pm; })[0]; if (it0) personalizar(it0, ev); }
       }).catch(function () {
         grilla.replaceChildren(el('p', { class: 'ci-vacio' }, 'No pudimos cargar los modelos. ', el('a', { href: 'https://wa.me/message/57HQCKAMGELDG1', target: '_blank', rel: 'noopener', text: 'Escríbenos por WhatsApp' }), ' y te ayudamos.'));
       });

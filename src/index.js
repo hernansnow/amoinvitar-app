@@ -1312,6 +1312,15 @@ export default {
     // Archivos de public/ (páginas, estilos, imágenes)
     // README (ronda 36): la página «Tienda» ya no existe como portada: el camino es modelos → panel desde la web.
     // Se conserva solo para los flujos que la usan por dentro (?empezar, ?producto, ?cancelado) y /tienda/gracias.
+    // README (ronda 46): un pago cancelado vuelve al panel de la invitación (no a la tienda vieja)
+    if (request.method === 'GET' && /^\/tienda\/?(index\.html)?$/.test(url.pathname) && url.searchParams.has('cancelado')) {
+      try {
+        const p = await env.DB.prepare('SELECT evento_id FROM pedidos WHERE id = ?').bind(url.searchParams.get('cancelado')).first();
+        const ev = p?.evento_id ? await almacenDe(env).evento(p.evento_id) : null;
+        if (ev) return Response.redirect(new URL(`/panel/${ev.id}?k=${encodeURIComponent(ev.clave)}&pago=cancelado`, url.origin).href, 302);
+      } catch (e) { console.error('cancelado', e); }
+      return Response.redirect(new URL('/mi-cuenta', url.origin).href, 302);
+    }
     if (request.method === 'GET' && /^\/tienda\/?(index\.html)?$/.test(url.pathname) && !['empezar', 'producto', 'cancelado'].some((k) => url.searchParams.has(k))) {
       return Response.redirect(new URL('/crear-invitacion' + (url.searchParams.get('paquete') ? `?paquete=${encodeURIComponent(url.searchParams.get('paquete'))}` : ''), url.origin).href, 302);
     }

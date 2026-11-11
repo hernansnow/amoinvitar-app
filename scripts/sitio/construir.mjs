@@ -440,11 +440,18 @@ const escribe = (slug, P, cuerpo) => {
       if (sub && OP_TR.subtitulo[l]) x = x.split(`<p>${sub}</p>`).join(`<p>${OP_TR.subtitulo[l]}</p>`);
     } else x = x.replace(/<!--\/?op-->/g, '');
     // README (ronda 44): en inglés (Estados Unidos, Canadá, internacional), el pie también enlaza a Sweet 16
-    if (c === 'en') x = x.replace('<li><a href="{{R}}/mis15">Quinceañera</a></li>', (m) => `${m}<li><a href="{{R}}/sweet16">Sweet 16</a></li>`);
+    // README (ronda 46): Sweet 16 en inglés, antes de 15 años: en el menú, el pie, las tarjetas de eventos, el selector de crear
+    // invitación y, en cada modelo con 15 años, como una tarjeta aparte
+    if (c === 'en') {
+      x = x.replace(/<div class="menu-ev-lista">[\s\S]*?<\/div>/g, (b) => b.replace(/<a href="\{\{R\}\}\/mis15"( aria-current="page")?>/, (m) => `<a href="{{R}}/sweet16">Sweet 16</a>${m}`));
+      x = x.replace(/<li><a href="\{\{R\}\}\/mis15">([^<]*)<\/a><\/li>/g, (m) => `<li><a href="{{R}}/sweet16">Sweet 16</a></li>${m}`);
+      x = x.replace(/<a class="evento-card rev" href="\{\{R\}\}\/mis15">[\s\S]*?<\/a>/g, (m) => m.replace('/mis15', '/sweet16').replace(/boton-15\.jpg/, 'boton-sweet16.jpg').replace(/alt="[^"]*"/, 'alt="Digital Sweet 16 invitations"').replace(/<h3>[^<]*<\/h3>/, '<h3>Sweet 16</h3>') + m);
+      x = x.replace(/data-grid='([^']*)'/, (m, j) => { try { const g = JSON.parse(j.replace(/&#39;/g, "'")); const i = g.findIndex((e) => e.slug === '15-anos'); if (i >= 0) g.splice(i, 0, { slug: 'sweet16', nombre: 'Sweet 16', img: '/web/img/eventos/boton-sweet16.jpg' }); return `data-grid='${JSON.stringify(g).replace(/'/g, '&#39;')}'`; } catch (e) { return m; } });
+      x = x.replace(/<article class="mf-card rev">(?:(?!<\/article>)[\s\S])*?href="\{\{R\}\}\/mis15"[\s\S]*?<\/article>/g, (m) => m.replace(/<h3><a href="\{\{R\}\}\/mis15">[^<]*<\/a>/, '<h3><a href="{{R}}/sweet16">Sweet 16</a>')
+        .replace(/(\/demo\/[a-z0-9-]+\?evento=15)(&amp;)/g, '$1$2sweet16=1$2').replace(/crear-invitacion-para-15-anos\?/g, 'crear-invitacion-para-sweet16?').replace(/alt="([^"·]*)·[^"]*"/, 'alt="$1· Sweet 16"') + m);
+    }
     // README (ronda 45): WhatsApp en los otros idiomas: al número, con el mensaje ya escrito en el idioma de la página
     if (TRADUCIDAS.has(c)) x = x.split('https://wa.me/message/57HQCKAMGELDG1').join(`https://wa.me/34621326549?text=${encodeURIComponent(WA_MSJ[ARCHIVO[c]] || WA_MSJ.en)}`);
-    // README (ronda 45): y el menú de arriba, antes de 15 años
-    if (c === 'en') x = x.replace(/<a href="\{\{R\}\}\/mis15"( aria-current="page")?>Quinceañera<\/a>/g, (m) => `<a href="{{R}}/sweet16">Sweet 16</a>${m}`);
     // README (ronda 44): el álbum de muestra de Albunear («Mejor juntos») en el idioma de la página
     x = x.replace(/(src="https:\/\/albunear\.com\/demo\?[^"]*?)"/g, `$1&amp;lang=${c.slice(0, 2)}"`);
     x = x.replace('data-clave="es"', `data-clave="${c}"`);
@@ -714,6 +721,8 @@ paginaProfesionales();
   const FICHAS = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'modelos-fichas.json'), 'utf8'));
   const PUB = join(RAIZ, '..');
   const NOMBRE_EV = { boda: 'Boda', 15: '15 años', bautismo: 'Bautismo', comunion: 'Comunión', cumple: 'Cumpleaños', infantil: 'Cumpleaños infantil', graduacion: 'Graduación', babyshower: 'Baby shower', revelacion: 'Revelación de género', navidad: 'Navidad' };
+  // README (ronda 46): «Personalizar» va a crear invitación con el modelo ya elegido (abre el cuadro de nombres y fecha)
+  const SLUG_EV_CREAR = { boda: 'boda', 15: '15-anos', bautismo: 'bautismo', comunion: 'comunion', cumple: 'cumpleanos', infantil: 'infantil', graduacion: 'graduacion', babyshower: 'baby-shower', revelacion: 'baby-shower', navidad: 'navidad' };
   const PAGINA_EV = { boda: 'bodas', 15: 'mis15', bautismo: 'bautismo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', babyshower: 'baby-shower', revelacion: 'baby-shower', navidad: 'eventos' };
   const lista = MODELOS.filter((m) => FICHAS[m.id] && !m.simple && !m.std);
   const imgDe = (m, ev) => [`modelos/${m.id}/tienda-${ev}.jpg`, `modelos/${m.id}/miniatura.jpg`].find((f) => existsSync(join(PUB, f)));
@@ -727,7 +736,7 @@ paginaProfesionales();
       const nom = m.nombres?.[ev] && m.nombres[ev] !== m.nombre ? ` · ${esc(m.nombres[ev])}` : '';
       const demo = `/demo/${m.id}?evento=${ev}&paquete=deluxe`;
       const img = imgDe(m, ev) || miniatura(m);
-      return `<article class="mf-card rev"><img src="/${img}" alt="${esc(m.nombre)}" loading="lazy" width="560" height="420"><div class="mf-txt"><h3><a href="/${PAGINA_EV[ev] || 'eventos'}">${esc(NOMBRE_EV[ev] || ev)}</a>${nom}</h3><div class="fila-btn"><a class="btn btn-borde" href="${demo}" data-video="${demo}">${ic('play')} Ver demo</a><a class="btn btn-verde" href="/tienda/?empezar=1&amp;producto=invitacion&amp;modelo=${m.id}&amp;evento=${ev}">Personalizar</a></div></div></article>`;
+      return `<article class="mf-card rev"><img src="/${img}" alt="${esc(m.nombre)}" loading="lazy" width="560" height="420"><div class="mf-txt"><h3><a href="/${PAGINA_EV[ev] || 'eventos'}">${esc(NOMBRE_EV[ev] || ev)}</a>${nom}</h3><div class="fila-btn"><a class="btn btn-borde" href="${demo}" data-video="${demo}">${ic('play')} Ver demo</a><a class="btn btn-verde" href="/crear-invitacion-para-${SLUG_EV_CREAR[ev] || ev}?modelo=${m.id}">Personalizar</a></div></div></article>`;
     }).join('');
     const otros = lista.filter((x) => x !== m && x.eventos.some((e) => m.eventos.includes(e))).slice(0, 6);
     escribe(`invitacion-${m.id}`, P, [
