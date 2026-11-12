@@ -215,4 +215,8 @@ los textos nuevos y dice cuántos faltan) y traducir los números que falten.
   nuevo o cambiado y borra del bucket lo que se borró en Hostinger).
 - En el repo amoinvitar-v2.0 hay carpetas que NO están en Hostinger (plantillas `++base-…`, y `evento/sabri`, `evento/hernan`,
   `evento/degasa`, `evento/baltazar`, `evento/abi-y-lolo`, `evento/acude`, `evento/60-anos-en-la-cancha`, `save-the-date/std …`,
-  `panel/+demo…`): no se subieron. Confirmar si se borraron a propósito.
+  `panel/+demo…`): no se subieron. Confirmado: se borraron a propósito; lo de Hostinger es lo correcto.
+- Los paneles viejos también abren en `<dominio>/panel/<ruta vieja>` (sin subdominio): si la ruta no es un panel nuevo
+  (`/panel/ev_…`), el Worker la busca en la carpeta `panel/` del bucket.
+- Los PHP sin reemplazo (`email/correo.php`, `email/email.php`) solo los usaban las páginas de la web vieja, que la web nueva
+  reemplaza; ninguna invitación de cliente los usa.
