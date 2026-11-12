@@ -1,0 +1,106 @@
+[
+ {
+  "pattern": "amoinvitar.com",
+  "script": "country-besed-redirection"
+ },
+ {
+  "pattern": "amoinvitar.com/mis15",
+  "script": "country-besed-redirection-15"
+ },
+ {
+  "pattern": "amoinvitar.com/eventos",
+  "script": "country-besed-redirection-eventos"
+ },
+ {
+  "pattern": "amoinvitar.com/bodas",
+  "script": "country-besed-redirection-boda"
+ },
+ {
+  "pattern": "www.amoinvitar.com",
+  "script": "country-besed-redirection"
+ },
+ {
+  "pattern": "amoinvitar.com/graduacion",
+  "script": "country-besed-redirection-graduacion"
+ },
+ {
+  "pattern": "www.amoinvitar.com/graduacion",
+  "script": "country-besed-redirection-graduacion"
+ },
+ {
+  "pattern": "www.amoinvitar.com/store/",
+  "script": "country-besed-redirection-store-ar"
+ },
+ {
+  "pattern": "www.amoinvitar.com/eventos",
+  "script": "country-besed-redirection-eventos"
+ },
+ {
+  "pattern": "www.amoinvitar.com/mis15",
+  "script": "country-besed-redirection-15"
+ },
+ {
+  "pattern": "www.amoinvitar.com/bodas",
+  "script": "country-besed-redirection-boda"
+ },
+ {
+  "pattern": "amoinvitar.com/infantiles",
+  "script": "country-besed-redirection-infantiles"
+ },
+ {
+  "pattern": "www.amoinvitar.com/infantiles",
+  "script": "country-besed-redirection-infantiles"
+ },
+ {
+  "pattern": "amoinvitar.com/comunion",
+  "script": "country-besed-redirection-comunion"
+ },
+ {
+  "pattern": "www.amoinvitar.com/comunion",
+  "script": "country-besed-redirection-comunion"
+ },
+ {
+  "pattern": "amoinvitar.com/cumple",
+  "script": "country-besed-redirection-cumple"
+ },
+ {
+  "pattern": "www.amoinvitar.com/cumple",
+  "script": "country-besed-redirection-cumple"
+ },
+ {
+  "pattern": "amoinvitar.com/bautismo",
+  "script": "country-besed-redirection-bautismo"
+ },
+ {
+  "pattern": "www.amoinvitar.com/bautismo",
+  "script": "country-besed-redirection-bautismo"
+ },
+ {
+  "pattern": "amoinvitar.com/empresarial",
+  "script": "country-besed-redirection-empresa"
+ },
+ {
+  "pattern": "www.amoinvitar.com/empresarial",
+  "script": "country-besed-redirection-empresa"
+ },
+ {
+  "pattern": "www.amoinvitar.com/contacto",
+  "script": "country-besed-redirection-contacto"
+ },
+ {
+  "pattern": "amoinvitar.com/contacto",
+  "script": "country-besed-redirection-contacto"
+ },
+ {
+  "pattern": "amoinvitar.com/precios",
+  "script": "country-besed-redirection-precios"
+ },
+ {
+  "pattern": "amoinvitar.com/store/",
+  "script": null
+ },
+ {
+  "pattern": "amoinvitar.com/album",
+  "script": "country-besed-redirection-album"
+ }
+]

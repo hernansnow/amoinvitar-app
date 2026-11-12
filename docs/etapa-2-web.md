@@ -220,3 +220,14 @@ los textos nuevos y dice cuántos faltan) y traducir los números que falten.
   (`/panel/ev_…`), el Worker la busca en la carpeta `panel/` del bucket.
 - Los PHP sin reemplazo (`email/correo.php`, `email/email.php`) solo los usaban las páginas de la web vieja, que la web nueva
   reemplaza; ninguna invitación de cliente los usa.
+
+## Ronda 48 · Rutas de los workers viejos y script de mudanza
+
+- En la zona amoinvitar.com hay 26 rutas de los workers viejos `country-besed-redirection*` (portada, /bodas, /mis15, /eventos,
+  /graduacion, /infantiles, /comunion, /cumple, /bautismo, /empresarial, /contacto, /precios, /album, /store/ — con y sin www;
+  `amoinvitar.com/store/` sin worker). Copia en `docs/rutas-workers-viejos.json`. Redirigían por país a las carpetas viejas
+  (/ar/, /es/…); el Worker nuevo ya lo hace solo.
+- Son rutas exactas: en Cloudflare la ruta más específica gana, así que si quedaran, le ganarían a `amoinvitar.com/*`.
+- `node scripts/mudanza.mjs estado | mudar | volver`: `mudar` quita las 26 y pone `amoinvitar.com/*`, `www.amoinvitar.com/*`
+  y `panel.amoinvitar.com/*` → amoinvitar-app; `volver` hace lo contrario. Se usan **rutas** (no «dominio personalizado»)
+  para no tocar los DNS: siguen apuntando a Hostinger y volver atrás es inmediato. Los workers viejos no se borran.
