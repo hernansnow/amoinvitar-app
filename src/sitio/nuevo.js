@@ -212,6 +212,9 @@ export async function sitioNuevo(env, request, url) {
     }
     if (getCookie(request, 'ai_sede') !== (sede.carpeta || 'raiz') && (sede.carpeta || pref)) for (const c of cookiesSede(sede, request)) headers.append('set-cookie', c);
   }
+  // README (ronda 50): miniatura al compartir de /crear-invitacion-para-<evento>: la del evento
+  const ogEv = { boda: 'bodas', '15-anos': 'mis15', sweet16: 'sweet16', bautismo: 'bautismo', comunion: 'comunion', cumpleanos: 'cumple', 'baby-shower': 'baby-shower', graduacion: 'graduacion', navidad: 'eventos' }[(pagina0.match(/^crear-invitacion-para-(.+)$/) || [])[1]];
+  if (ogEv) html = html.replace(/(<meta property="og:image" content="[^"]*\/web\/img\/og\/)general\.jpg"/, `$1${ogEv}.jpg"`);
   if (!principal) { headers.set('x-robots-tag', 'noindex, nofollow'); headers.set('cache-control', 'private, no-store'); }
   return new Response(request.method === 'HEAD' ? null : componer(html, sede, pagina0, { legal, monedaRaiz: /^[A-Z]{3}$/.test(getCookie(request, 'cur') || '') ? getCookie(request, 'cur') : '' }), { status: 200, headers });
 }

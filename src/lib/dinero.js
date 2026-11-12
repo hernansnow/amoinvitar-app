@@ -49,7 +49,8 @@ export function formatMoney(amount, currency) {
   // es-ES no agrupa los números de 4 cifras (1500): lo forzamos para que se lea igual en todos lados
   if (m.locale === 'es-ES' && /^\d{4}(,\d+)?$/.test(n)) n = n.replace(/^(\d)(\d{3})/, '$1.$2');
   if (m.after) return `${n} ${m.sym}`;
-  return m.space ? `${m.sym} ${n}` : `${m.sym}${n}`;
+  // README (ronda 50): sin espacio entre el símbolo y la cifra (con espacio, el renglón se cortaba ahí en las columnas de planes)
+  return `${m.sym}${n}`;
 }
 
 // Nombre completo en plural y en el idioma del visitante: "pesos argentinos", "libras esterlinas", "euros"

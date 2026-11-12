@@ -27,7 +27,7 @@
       var slug = b.getAttribute('data-medida'), titulo = b.getAttribute('data-titulo') || '', producto = b.getAttribute('data-producto') || '';
       function ir() { window.AmoCrear.medida(slug, titulo, producto); }
       if (window.AmoCrear) return ir();
-      if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css?v=a51bc667'; d.head.appendChild(l); }
+      if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css?v=19596bcb'; d.head.appendChild(l); }
       var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js?v=997075bc'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
     });
   });
@@ -254,7 +254,7 @@
     });
     // «0 €» del plan Gratis, con la moneda del visitante (se toma el formato del plan Basic)
     var pb = (c.paquetes || []).filter(function (p) { return p.id === 'basic'; })[0];
-    if (pb && pb.precio && pb.precio.texto) { var cero = pb.precio.texto.replace(/[\d.,\s]+/, function (m) { return '0' + (/\s$/.test(m) ? ' ' : ''); }); $$('[data-precio="gratis"]').forEach(function (e) { e.textContent = cero; }); }
+    if (pb && pb.precio && pb.precio.texto) { var cero = pb.precio.texto.replace(/\d[\d.,\s]*/, function (m) { return '0' + (/\s$/.test(m) ? ' ' : ''); }); $$('[data-precio="gratis"]').forEach(function (e) { e.textContent = cero; }); }
     if (c.aMedida) $$('[data-precio="medida"]').forEach(function (e) { e.textContent = c.aMedida.texto; });
     // README (ronda 41): precio de un producto suelto (Save The Date a medida…)
     $$('[data-prod]').forEach(function (e) { var p = (c.productos || []).filter(function (x) { return x.id === e.getAttribute('data-prod'); })[0]; if (p && p.precio && p.precio.texto) e.textContent = p.precio.texto; });
@@ -274,6 +274,18 @@
     $$('[data-precio="medida"]').forEach(function (e) { conPromo(e, cat === 'empresarial' ? 'empresarial' : 'a-medida'); });
     $$('[data-prod]').forEach(function (e) { conPromo(e, e.getAttribute('data-prod')); });
     window.AI_PROMOS = { mejor: mejorPromo };
+    // README (ronda 50): en las columnas de planes y en «Invitación a medida», el símbolo de la moneda va más chico
+    $$('.plan-card .precio, .precio-m').forEach(function (e) {
+      var w = d.createTreeWalker(e, NodeFilter.SHOW_TEXT), ns = [], n;
+      while ((n = w.nextNode())) if (!(n.parentNode.classList && n.parentNode.classList.contains('mon'))) ns.push(n);
+      ns.forEach(function (t) {
+        var m = /^(\s*)([^\d\s−-]+?)\s?(\d[\d.,]*)(\s*)$/.exec(t.nodeValue) || /^(\s*)()(\d[\d.,]*)\s?([^\d\s]+)(\s*)$/.exec(t.nodeValue);
+        if (!m) return;
+        var f = d.createDocumentFragment(), s = d.createElement('span'); s.className = 'mon';
+        if (m[2]) { s.textContent = m[2]; f.append(m[1], s, m[3] + m[4]); } else { s.textContent = m[4]; f.append(m[1] + m[3] + '\u00a0', s, m[5]); }
+        t.parentNode.replaceChild(f, t);
+      });
+    });
     // Texto de abajo, con la lógica de Albunear: moneda y medios del país
     // README (ronda 42): en las páginas traducidas, la nota va en el idioma de la página
     var IDI = { en: 'en', 'en-gb': 'en', 'pt-br': 'pt', 'pt-pt': 'pt', fr: 'fr', it: 'it', de: 'de', nl: 'nl' }[d.documentElement.getAttribute('data-clave') || 'es'];

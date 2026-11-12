@@ -57,7 +57,7 @@ gtag('consent','default',{analytics_storage:aiConsent.analitica?'granted':'denie
 <link rel="manifest" href="https://amoinvitar.com/site.webmanifest">
 <meta property="og:type" content="website"><meta property="og:locale" content="{{OGL}}"><meta property="og:site_name" content="Amo Invitar!">
 <meta property="og:title" content="${esc(P.titulo)}"><meta property="og:description" content="${esc(P.descripcion)}"><meta property="og:url" content="${url}">
-<meta property="og:image" content="https://amoinvitar.com/images/banner-invitacion.jpg"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="${ogDe(P.slug)}"><meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"${C.SITIO}/#organization","name":"Amo Invitar!","url":"${C.SITIO}/","logo":"${C.SITIO}/logo.png","sameAs":["https://www.facebook.com/AmoInvitar","https://www.instagram.com/AmoInvitar/","https://www.youtube.com/@AmoInvitar"]},{"@type":"WebPage","@id":"${url}#webpage","url":"${url}","name":${JSON.stringify(P.titulo)},"description":${JSON.stringify(P.descripcion)},"inLanguage":"{{LANG}}","isPartOf":{"@id":"${C.SITIO}/#website"}},{"@type":"WebSite","@id":"${C.SITIO}/#website","url":"${C.SITIO}/","name":"Amo Invitar!","publisher":{"@id":"${C.SITIO}/#organization"}}${faq}]}</script>
 <link rel="preload" href="/web/fonts/jost-35841fe7.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/web/css/sitio.css">
@@ -410,6 +410,13 @@ const WA_MSJ = { en: 'Hi! I’d like some information about Amo Invitar! digital
   de: 'Hallo! Ich hätte gern Infos zu den digitalen Einladungen von Amo Invitar!', nl: 'Hallo! Ik wil graag meer weten over de digitale uitnodigingen van Amo Invitar!' };
 // Cada página se escribe una vez por clave de texto (public/sitio/t/<clave>/<página>.html); el Worker la sirve en cada
 // carpeta de país que usa esa clave. Las legales, solo en español neutro (se ven en /info/… para todos).
+// README (ronda 50): miniatura al compartir el link, una por página (como en la web vieja). Están en public/sitio/web/img/og/.
+// Sin una propia (precios, contacto, legales, diseños…), la general.
+const OG_PROPIA = { profesionales: 'pro', 'ejemplos-a-medida': 'a-medida', ideas: 'ideas' };
+function ogDe(slug = '') {
+  const base = slug.startsWith('ideas/') ? 'ideas' : slug.startsWith('invitacion-') ? 'modelo-' + slug.slice(11) : OG_PROPIA[slug] || slug;
+  return `${C.SITIO}/web/img/og/${existsSync(join(RAIZ, 'web/img/og', base + '.jpg')) ? base : 'general'}.jpg`;
+}
 const escribe = (slug, P, cuerpo) => {
   P.slug = slug;
   // README (ronda 44): las fichas de modelo (/invitacion-*) llevan la misma cabecera que /precios (sin foto detrás, se lee el menú)
@@ -870,7 +877,7 @@ const SOLO_EN = new Set(['sweet16']);
   let main = S16(h.slice(i0, i1)).replace(/evento=15(&amp;|&)/g, 'evento=15$1sweet16=1$1').replace(/data-evento="15"/g, 'data-evento="15" data-sweet16="1"');
   cab = cab.replace(/data-evento="15"/, 'data-evento="15" data-sweet16="1"');
   main = main.split(HEROES[15]).join(HEROES.sweet16); // README (ronda 45): su propia portada
-  cab = cab.replace(/<a href="\{\{R\}\}\/sweet16">/g, '<a href="{{R}}/sweet16" aria-current="page">').replace(/(\/mis15") aria-current="page"/g, '$1');
+  cab = cab.replace(/<a href="\{\{R\}\}\/sweet16">/g, '<a href="{{R}}/sweet16" aria-current="page">').replace(/(\/mis15") aria-current="page"/g, '$1'); cab = cab.replace('/web/img/og/mis15.jpg', '/web/img/og/sweet16.jpg'); // README (ronda 50)
   writeFileSync(join(RAIZ, 't', 'en', 'sweet16.html'), cab + main + h.slice(i1));
   PAGINAS.push('sweet16');
 }
