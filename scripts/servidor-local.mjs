@@ -7,7 +7,10 @@ import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import worker from '../src/index.js';
+import { register } from 'node:module';
+// README (ronda 52): el Worker importa «cloudflare:workers» (src/socios.js); en la compu se usa un reemplazo
+register('./ganchos-local.mjs', import.meta.url);
+const { default: worker } = await import('../src/index.js');
 import { d1Local, r2Local } from './d1-local.mjs';
 
 const PUBLICO = fileURLToPath(new URL('../public/', import.meta.url));
@@ -29,7 +32,9 @@ const env = {
   DB: d1Local(process.env.BASE || ':memory:'), MEDIA: r2Local(),
   // Albunear de prueba (en Cloudflare es el enlace interno con el Worker de Albunear)
   ALBUNEAR: { albumDeluxe: async (id) => ({ codigo: 'PRUEBA12', crear: 'https://albunear.com/crear?regalo=PRUEBA12',
-    album: process.env.ALBUM_CREADO ? { link: 'https://albunear.com/a/prueba', panel: `https://albunear.com/panel/album?id=${id}`, plan: 'classic', estado: 'active' } : null }) },
+    album: process.env.ALBUM_CREADO ? { link: 'https://albunear.com/a/prueba', panel: `https://albunear.com/panel/album?id=${id}`, plan: 'classic', estado: 'active' } : null }),
+    // README (ronda 52): crear el álbum Classic ya armado y entrar a su panel (acá devuelve lo recibido, para revisarlo)
+    crearAlbum: async (d) => { env.ULTIMO_ALBUM = d; return { album: { link: 'https://albunear.com/a/prueba', panel: 'https://albunear.com/panel/album?id=prueba', plan: 'classic', estado: 'active' }, entrar: 'https://albunear.com/auth/verify?t=PRUEBA' }; } },
   ASSETS: { fetch: async (u) => (await estatico(new URL(typeof u === 'string' || u instanceof URL ? u : u.url).pathname)) || new Response('', { status: 404 }) },
 };
 const puerto = Number(process.env.PORT || 8787);
@@ -39,6 +44,8 @@ http.createServer(async (req, res) => {
   const cuerpo = req.method === 'GET' || req.method === 'HEAD' ? undefined : await new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); });
   // Solo en la compu: correr las tareas diarias (avisos de vencimiento, créditos…) y ver los últimos mails «enviados»
   if (url.pathname === '/__tareas') { const esperar = []; await worker.scheduled({ cron: '0 4 * * *' }, env, { waitUntil: (p) => esperar.push(p) }); await Promise.all(esperar); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true, mails: env.ULTIMOS_MAILS.length })); }
+  // README (ronda 52): probar la puerta interna para Albunear (Socios) sin el otro Worker: POST /__socios?m=<método> { … }
+  if (url.pathname === '/__socios') { const { Socios } = await import('../src/socios.js'); let out; try { out = await new Socios({}, env)[url.searchParams.get('m')](JSON.parse(String(cuerpo || '{}'))); } catch (e) { out = { error: e.message }; } res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(out)); }
   if (url.pathname === '/__mails') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(env.ULTIMOS_MAILS)); }
   const request = new Request(url, { method: req.method, headers: req.headers, body: cuerpo, duplex: 'half' });
   // Como en Cloudflare (run_worker_first): todo pasa por el Worker, que sirve los archivos con ASSETS

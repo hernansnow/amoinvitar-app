@@ -611,6 +611,21 @@ function vistaMesas() {
 // servidor a Albunear); pasar a Platinum cuesta solo la diferencia. Con un link propio, la pestaña no aparece.
 const albumActivo = () => ctx.datos.secciones?.album === true;
 const albumPropio = () => ctx.datos.album?.origen === 'propio';
+// README (ronda 52): crear el álbum Classic (si falta) ya armado con el evento y entrar directo a su panel de Albunear
+async function entrarAlbunear() {
+  const w = window.open('', '_blank');
+  try {
+    const x = await ctx.api('/albunear', { method: 'POST', body: '{}' });
+    ctx.datos.secciones = { ...(ctx.datos.secciones || {}), album: true, instagram: false };
+    ctx.datos.album = { ...(ctx.datos.album || {}), origen: 'albunear', ...(x.album?.link ? { albunear: x.album.link } : {}) };
+    if (w) w.location = x.entrar; else location.href = x.entrar;
+    ctx.redibujar();
+  } catch (e) {
+    w?.close();
+    if (e.datos?.entrar) { ctx.aviso(e.message, true); setTimeout(() => { location.href = e.datos.entrar; }, 1800); return; }
+    ctx.aviso(e.message, true);
+  }
+}
 function vistaAlbum() {
   const caja = ctx.el('section', { class: 'ad-tarjeta ad-albunear' }, ctx.el('p', { class: 'ayuda' }, 'Cargando…'));
   const logo = ctx.el('img', { src: '/comun/img/albunear.svg', alt: 'Albunear', class: 'ad-alb-logo', width: 160, height: 50 });
@@ -621,16 +636,7 @@ function vistaAlbum() {
     const pie = ctx.el('p', { class: 'ad-alb-pie' }, 'No es obligatorio usar el álbum de Albunear: se puede sumar el link de otro proveedor en la sección "Álbum de fotos QR" de la invitación.');
     if (!albumActivo() && deluxe) {
       // Deluxe sin activar: se activa la sección con Albunear y se abre la creación del álbum (con el regalo)
-      const activar = async () => {
-        const w = window.open('', '_blank');
-        try {
-          await ctx.api('/album', { method: 'POST', body: JSON.stringify({ activo: true }) });
-          ctx.datos.secciones = { ...(ctx.datos.secciones || {}), album: true, instagram: false };
-          ctx.datos.album = { ...(ctx.datos.album || {}), origen: 'albunear' };
-          if (w) w.location = r.crear; else location.href = r.crear;
-          ctx.aviso('Álbum activado en la invitación'); ctx.redibujar();
-        } catch (e) { w?.close(); ctx.aviso(e.message, true); }
-      };
+      const activar = entrarAlbunear; // README (ronda 52): se crea ya armado (evento, nombres, fecha y estilo) y se entra a su panel
       caja.replaceChildren(logo, ctx.el('h2', {}, 'Álbum de fotos compartido'),
         ctx.el('p', { class: 'ad-alb-texto' }, 'Tu invitación Deluxe incluye el álbum QR Classic, totalmente gratis. ¡Activarlo para comenzar!'),
         ctx.el('p', { class: 'ad-alb-nota' }, 'Con Albunear los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y ustedes las tienen todas en un solo lugar.'),
@@ -648,10 +654,10 @@ function vistaAlbum() {
     const creado = r.album;
     caja.replaceChildren(...[logo, ctx.el('h2', {}, 'Álbum de fotos (Albunear)'),
       ctx.el('p', { class: 'ayuda' }, creado ? 'Las fotos y videos que suben los invitados se ven y se descargan desde el panel de Albunear.'
-        : deluxe ? 'La invitación Deluxe incluye el álbum Classic de Albunear sin cargo. Al crearlo con este botón, el regalo ya va aplicado y el álbum aparece solo en la invitación. Para pasar después a Platinum se paga solo la diferencia.'
+        : deluxe ? 'La invitación Deluxe incluye el álbum Classic de Albunear sin cargo. Con este botón se crea ya armado (tipo de evento, nombres, fecha y el estilo que combina con tu invitación) y entras directo a su panel. Para pasar después a Platinum se paga solo la diferencia.'
           : 'Crear el álbum en Albunear (hay planes gratis) y después pegar su link en la sección "Álbum de fotos QR" de la invitación.'),
       ctx.el('div', { class: 'ad-botones' },
-        creado ? enlace('Abrir el panel de Albunear', creado.panel, 'btn btn-albunear') : enlace(deluxe ? 'Crear el álbum Classic' : 'Abrir Albunear', r.crear, 'btn btn-albunear'),
+        creado || deluxe ? boton(creado ? 'Abrir el panel de Albunear' : 'Crear el álbum Classic', entrarAlbunear, 'btn btn-albunear') : enlace('Abrir Albunear', r.crear, 'btn btn-albunear'),
         creado ? enlace('Ver el álbum', creado.link, 'btn btn-sec') : null),
       deluxe && !r.conectado ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para activar el Classic incluido, escribir a hola@amoinvitar.com con el código de esta invitación.') : null,
       creado && creado.plan !== 'platinum' && deluxe ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para pasar a Platinum (fotos originales, 2 años, diseños exclusivos), desde el panel de Albunear se paga solo la diferencia.') : null,

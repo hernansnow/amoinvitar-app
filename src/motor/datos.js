@@ -157,7 +157,7 @@ function respuestaPrevia(r) {
 
 // README (ronda 44): el álbum QR de las demos es el de Albunear armado para la demo (como en la web 2.0): el diseño de
 // Albunear del modelo (o el más parecido por colores), los nombres y la foto de la demo, el evento y el idioma.
-const ALBUNEAR_TEMA = { amanecer: 'soft', cars: 'confeti', esmeralda: 'natural', estilo: 'hojas', luxury: 'rosas', marino: 'noche', monster: 'confeti',
+export const ALBUNEAR_TEMA = { amanecer: 'soft', cars: 'confeti', esmeralda: 'natural', estilo: 'hojas', luxury: 'rosas', marino: 'noche', monster: 'confeti',
   oro: 'black', peppa: 'confeti', revelacion: 'soft', rosa: 'rosas', style: 'rosas', civil: 'white', compromiso: 'soft', party: 'confeti', pedida: 'rosas',
   'std-classic': 'white', 'std-soft': 'soft' };
 const ALBUNEAR_EVENTO = { 15: 'quince', bautismo: 'bautismo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion',
@@ -167,7 +167,7 @@ function albumDemo(e, modelo, variante) {
   const nombres = [e.nombres?.a, e.nombres?.b].filter(Boolean).map(slug).join('-y-');
   const id = [ALBUNEAR_TEMA[modelo.id] || modelo.id, nombres, ALBUNEAR_EVENTO[e.tipo]].filter(Boolean).join('+');
   const portada = e.fotos?.portada?.[0]?.url || e.fotos?.album || '';
-  const abs = (u) => (/^https?:/.test(u) ? u : `https://app.amoinvitar.com${u.startsWith('/') ? '' : '/'}${u}`);
+  const abs = (u) => (/^https?:/.test(u) ? u : `https://amoinvitar.com${u.startsWith('/') ? '' : '/'}${u}`);
   return `https://albunear.com/demo-amoinvitar?id=${encodeURIComponent(id).replace(/%2B/g, '+')}${portada ? `&portada=${encodeURIComponent(abs(portada))}` : ''}&lang=${String(variante || 'es').slice(0, 2)}`;
 }
 

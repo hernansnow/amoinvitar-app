@@ -75,7 +75,7 @@
     // "PANEL_VIEJO_HOST": "panel.amoinvitar.com",
     // README (ronda 48): "1" abre la web, la tienda y el panel al público (sin el cartel «Muy pronto» de PREVIEW_KEY). Día de la mudanza.
     "ABIERTO": "1",
-    "SITE_URL": "https://app.amoinvitar.com",
+    "SITE_URL": "https://amoinvitar.com", // README (ronda 52): dominio principal (mails, pagos y links de vuelta)
     "MAIL_FROM": "Amo Invitar <hola@amoinvitar.com>",
     "SUPPORT_EMAIL": "hola@amoinvitar.com",
     // WhatsApp de Amo Invitar para el botón "Necesito ayuda" del panel (con código de país, sin +)

@@ -26,7 +26,7 @@ export async function infoRecuerdo(ev, precioTexto) {
 const AVISOS = [30, 7, 1];
 export async function avisosVencimiento(env) {
   const { results } = await env.DB.prepare(`SELECT id, clave_panel, datos, vence, producto, paquete FROM eventos WHERE estado = 'publicado' AND empresa_id IS NULL`).all();
-  const base = String(env.SITE_URL || 'https://app.amoinvitar.com').replace(/\/$/, '');
+  const base = String(env.SITE_URL || 'https://amoinvitar.com').replace(/\/$/, '');
   const ahora = Date.now();
   for (const r of results || []) {
     try {

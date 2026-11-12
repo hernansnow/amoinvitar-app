@@ -18,7 +18,7 @@ import { diccionario, varianteDePais, VARIANTES, esPlural } from './textos/index
 import { formatoPais, paisDeZona } from './textos/regional.js';
 import { paisVisitante, claveVisitante, varianteVisitante, bautizoVisitante, sweet16Visitante } from './sitio/visitante.js';
 import { traducirEstaticos, traducePrefijo } from './textos/estaticos.js';
-import { armarVista } from './motor/datos.js';
+import { armarVista, ALBUNEAR_TEMA } from './motor/datos.js';
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
@@ -27,7 +27,7 @@ import { puertaHTML } from './componentes/puerta.js';
 import { mesaHTML } from './componentes/mesa.js';
 import { checkinHTML } from './componentes/checkin.js';
 import { avisoRespuesta } from './avisos.js';
-import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA , aplicarTipoAcceso } from './panel/esquemas.js';
+import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA, FIJOS_VINCULO, aplicarTipoAcceso } from './panel/esquemas.js';
 import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento, CON_TARJETA_STD } from './modelos.js';
 import { MODELOS_GRATIS, A_MEDIDA, PRODUCTOS, LIMITE_INVITADOS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
@@ -777,6 +777,8 @@ async function apiPanel(env, request, url, partes) {
     const { datos } = await request.json();
     if (esquema.cerrada) return json({ error: esquema.simple || esquema.std ? 'Ya está publicada: no se puede modificar. Para un cambio, escríbenos por WhatsApp.' : 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escríbenos por WhatsApp.' }, 403);
     // Publicada: los nombres y la fecha quedan como estaban (evita reciclar la invitación para otro evento)
+    // README (ronda 52): invitación incluida con un álbum de Albunear: los nombres y la fecha del álbum no cambian
+    if (ev.datos.vinculo?.albunear && !admin && datos) for (const ruta of FIJOS_VINCULO) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
     if (ev.estado === 'publicado' && !admin && datos) for (const ruta of FIJOS_PUBLICADA) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
     // Los campos de cada idioma (bandera, traducciones) dependen de los idiomas que llegan ahora
     const conIdiomas = datos?.idiomas ? await esquemaDe(env, url, ev, { ...ev.datos, idiomas: datos.idiomas, variante: datos.variante ?? ev.datos.variante }, { admin }) : esquema;
@@ -786,6 +788,8 @@ async function apiPanel(env, request, url, partes) {
     if (ev.datos.admin) limpio.admin = ev.datos.admin; // lo de la administración se guarda aparte
     if (ev.datos.empresa) limpio.empresa = ev.datos.empresa; // crédito usado y permisos del cliente (empresas)
     if (ev.datos.recuerdo) limpio.recuerdo = ev.datos.recuerdo; // lo comprado en «Recuerdo» y los avisos enviados
+    if (ev.datos.vinculo) limpio.vinculo = ev.datos.vinculo; // README (ronda 52): de qué álbum de Albunear viene
+    if (ev.datos.albunear) limpio.albunear = ev.datos.albunear; // README (ronda 52): el álbum Classic creado desde acá
     for (const clase of ['std', 'agradecimiento']) {
       const prev = ev.datos[clase]?.tarjeta;
       if (prev?.generada && !admin) limpio[clase] = ev.datos[clase];
@@ -1029,6 +1033,34 @@ async function apiPanel(env, request, url, partes) {
       await almacen.guardarEvento(ev);
     }
     return json({ incluido, crear: r?.crear || 'https://albunear.com/empezar', album: r?.album || null, conectado: !!r });
+  }
+  // README (ronda 52): POST /albunear → crea en Albunear el álbum Classic incluido en Deluxe (una sola vez), con el tipo de
+  // evento, los nombres, la fecha y el estilo de la invitación, y devuelve un link de un solo uso que entra al panel del
+  // álbum con la cuenta del dueño. Solo con la cuenta del dueño iniciada (el link del panel solo no alcanza).
+  if (accion === 'albunear' && request.method === 'POST') {
+    if (ev.paquete !== 'deluxe' && !admin) return json({ error: 'El álbum Classic va incluido con la invitación Deluxe.' }, 402);
+    const usuario = await usuarioActual(request, env);
+    const conAcceso = usuario && (usuario.esAdmin || await almacen.tieneAcceso(ev.id, usuario.id));
+    if (!conAcceso) return json({ error: 'Para abrir el álbum, entra con tu cuenta (la del mail con el que compraste la invitación).', entrar: `/entrar?siguiente=${encodeURIComponent(`/panel/${ev.id}?k=${ev.clave}`)}` }, 401);
+    if (!env.ALBUNEAR?.crearAlbum) return json({ error: 'Albunear no responde en este momento. Prueba en un rato.' }, 503);
+    const d = ev.datos;
+    const fecha = d.celebracion?.fecha || d.ceremonia?.fecha || '';
+    if (!/^\d{4}-\d{2}-\d{2}/.test(fecha)) return json({ error: 'Primero carga la fecha del evento.' }, 400);
+    // El dueño (si entra un administrador de Amo Invitar!, el álbum igual queda a nombre del cliente)
+    const email = usuario.esAdmin ? ((await almacen.accesos(ev.id)).find((a) => a.rol === 'cliente')?.email || usuario.email) : usuario.email;
+    const TIPO_ALB = { boda: 'boda', 15: 'quince', bautismo: 'bautizo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', empresarial: 'corporativo' };
+    let r;
+    try {
+      r = await env.ALBUNEAR.crearAlbum({ evento: ev.id, email, tipo: TIPO_ALB[ev.tipo] || 'otro', nombre1: d.nombres?.a || '', nombre2: d.nombres?.b || '',
+        fecha: fecha.slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais: paisVisitante(request) || null, lang: String(d.variante || 'es').slice(0, 2) });
+    } catch (e) { console.error('albunear', e); return json({ error: 'No se pudo crear el álbum en Albunear. Prueba en un rato.' }, 502); }
+    // El álbum pasa a la invitación (sección «Álbum de fotos QR» con Albunear, en lugar de Instagram Wall)
+    if (r?.album?.link) {
+      ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
+      ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, instagram: false };
+      await almacen.guardarEvento(ev);
+    }
+    return json({ entrar: r?.entrar, album: r?.album || null });
   }
   // El interruptor "Activar" de la pestaña Álbum: prende la sección con el álbum de Albunear (reemplaza Instagram Wall)
   if (accion === 'album' && request.method === 'POST') {
@@ -1358,3 +1390,6 @@ export default {
     return html('No encontrado', 404);
   },
 };
+
+// README (ronda 52): puerta interna para Albunear (service binding, entrypoint «Socios»): invitación incluida en el álbum Platinum
+export { Socios } from './socios.js';

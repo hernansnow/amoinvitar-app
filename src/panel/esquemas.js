@@ -749,7 +749,7 @@ export function complementos(esquema, datos) {
 }
 
 // Cada paso con su nivel (para los avisos Basic / Premium / Deluxe / Complemento del menú)
-function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false, motivoCerrada = null }) {
+function anotar(pasos, { vinculo = false, modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false, motivoCerrada = null }) {
   return pasos.map((paso) => ({
     ...paso,
     nivel: paso.complemento ? 'complemento' : paso.nivelPaso || (paso.seccion ? paqueteMinimo(modelo, paso.seccion) : 'basic'),
@@ -759,6 +759,7 @@ function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicad
       if (admin) return c;
       if (paso.id === 'diseno' && disenoEnviado && c.tipo !== 'nota') return { ...c, cerrado: 'El pedido de diseño ya se envió al equipo.' };
       if (cerrada && !['nota', 'linkStd'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
+      if (vinculo && !publicada && FIJOS_VINCULO.includes(c.id)) return { ...c, cerrado: MOTIVO_VINCULO, pedirCambio: true };
       if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'La invitación ya está publicada: los nombres y la fecha se cambian pidiéndolo por WhatsApp.', pedirCambio: true };
       return c;
     }),
@@ -770,6 +771,9 @@ function anotar(pasos, { modelo, gratis = false, disenoEnviado = false, publicad
 // fijos al publicarla (se cambian pidiéndolo por WhatsApp). Todo lo demás se puede corregir
 // hasta unos días después del evento. El superusuario edita siempre, sin restricciones.
 export const FIJOS_PUBLICADA = ['nombres.a', 'nombres.b', 'ceremonia.fecha', 'celebracion.fecha'];
+// README (ronda 52): la invitación incluida con un álbum Platinum de Albunear trae los nombres y la fecha del álbum: quedan fijos
+export const FIJOS_VINCULO = ['nombres.a', 'nombres.b', 'celebracion.fecha'];
+const MOTIVO_VINCULO = 'Vienen de tu álbum de Albunear (tu invitación incluida es para este evento): no se pueden cambiar. Si hay un error, escríbenos por WhatsApp.';
 export const DIAS_EDICION_TRAS_EVENTO = 7;
 export function edicionCerrada(datos, ahora = new Date()) {
   const f = datos.celebracion?.fecha || String(datos.celebracion?.inicio || '').slice(0, 10) || datos.ceremonia?.fecha;
@@ -898,7 +902,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
         ...(producto === 'std-tarjeta' ? [{ id: 'std.activarMedida', tipo: 'activarMedida', etiqueta: 'Diseño a medida', sinEtiqueta: true, convertir: true, extra: 'std-tarjeta-medida',
           texto: '¿Quieres un diseño a medida? Actívalo para enviarnos tu idea y estilo, así diseñamos la tarjeta de tus sueños.', boton: 'Activar diseño a medida' }] : []),
       ] }];
-    return { producto, tipo, paquete, suelta: true, sinAdmin: true, sinNiveles: true, pasos: anotar(pasos, { modelo, gratis: false, publicada, admin }) };
+    return { producto, tipo, paquete, suelta: true, sinAdmin: true, sinNiveles: true, pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo, gratis: false, publicada, admin }) };
   }
   if (PRODUCTOS_STD[producto] && !(modelo?.simple || modelo?.std)) {
     const bloqueada = medidaBloqueada(datos) && !admin;
@@ -910,7 +914,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     const pasos = m.std ? pasosStdWeb({ tipo, modelo: m, datos }) : pasosSimple({ tipo, modelo: m, datos });
     const cerrada = publicada && !admin;
     return { producto, tipo, paquete, publicada, simple: !!m.simple, std: !!m.std, sinAdmin: !!m.std, sinNiveles: true, cerrada,
-      pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, motivoCerrada: 'Ya está publicada: no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.' }) };
+      pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, motivoCerrada: 'Ya está publicada: no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.' }) };
   }
   const base = pasosInvitacion({ tipo, modelo: m });
   // Sin lista de invitados en el modelo (a medida, etc.), la seguridad va sola antes del idioma
@@ -940,7 +944,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     if (p) p.campos = p.campos.map((c) => (c.id.startsWith('std.medida.') || c.id === 'std.tipo' ? { ...c, cerrado: 'Ya enviaste la idea al equipo de diseño.' } : c));
   }
   // README (ronda 29): el diseño a medida ya trae todo (Deluxe): sin insignias de plan
-  return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}), pasos: anotar(pasos, { modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
+  return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}), pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
 }
 const MOTIVO_ENVIADA = 'Ya enviaste tu proyecto al equipo de diseño: no se puede modificar hasta que el diseño esté listo.';
 // Enviado al equipo y todavía sin el diseño listo

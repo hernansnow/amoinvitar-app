@@ -561,8 +561,10 @@ export async function estadoPlan(env, request, ev, esquema) {
   const texto = (clave, e) => (e ? formatMoney(priceIn(clave, e, moneda, rates, pais, env).amount, moneda) : 'Gratis');
   const secciones = esquema.pasos.filter((p) => p.seccion && !p.complemento && !p.obligatoria && seccionActivaDe(p, ev.datos)).map((p) => ({ id: p.id, titulo: p.titulo, nivel: p.nivel }));
   return {
-    plan, nombre: NOMBRES_PAQUETE[plan], precio: texto(plan, precioPaquete(plan)), pagado, gratisPosible,
-    promo: promoPanel(env, ev, { item: PLANES_PROMO.includes(plan) ? plan : null, clave: plan, eurLista: precioPaquete(plan), eurPagar: eurPlan, eurTotal: eur, moneda, rates, pais }),
+    // README (ronda 52): Basic incluido con el álbum Platinum de Albunear: «Incluido» en lugar del precio
+    plan, nombre: NOMBRES_PAQUETE[plan], precio: ev.datos.vinculo?.incluido === plan ? 'Incluido' : texto(plan, precioPaquete(plan)), pagado, gratisPosible,
+    ...(ev.datos.vinculo?.albunear ? { incluidoCon: 'Albunear Platinum' } : {}),
+    promo: ev.datos.vinculo?.incluido === plan ? null : promoPanel(env, ev, { item: PLANES_PROMO.includes(plan) ? plan : null, clave: plan, eurLista: precioPaquete(plan), eurPagar: eurPlan, eurTotal: eur, moneda, rates, pais }),
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: precioExtra(x) ? texto(x, precioExtra(x)) : `Incluida en ${NOMBRES_PAQUETE[plan]}`, pagado: !extrasAPagar.includes(x) })),
     aPagar: { eur, eurPlan, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,

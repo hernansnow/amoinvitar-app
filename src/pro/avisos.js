@@ -26,7 +26,7 @@ export async function avisosCreditos(env) {
     g.dias = Math.min(g.dias, dias);
     porEmpresa.set(l.empresa_id, g);
   }
-  const base = String(env.SITE_URL || 'https://app.amoinvitar.com').replace(/\/$/, '');
+  const base = String(env.SITE_URL || 'https://amoinvitar.com').replace(/\/$/, '');
   for (const [empresaId, g] of porEmpresa) {
     try {
       const { results: duenios } = await env.DB.prepare("SELECT u.email FROM miembros m JOIN usuarios u ON u.id = m.usuario_id WHERE m.empresa_id = ? AND m.rol = 'duenio'").bind(empresaId).all();

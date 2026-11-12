@@ -10,7 +10,7 @@ export async function avisosCierre(env) {
   const { results } = await env.DB.prepare(`SELECT id, clave_panel, datos FROM eventos
     WHERE estado = 'publicado' AND json_extract(datos, '$.rsvp.cierre') IS NOT NULL`).all();
   const hoy = Date.parse(new Date().toISOString().slice(0, 10));
-  const base = String(env.SITE_URL || 'https://app.amoinvitar.com').replace(/\/$/, '');
+  const base = String(env.SITE_URL || 'https://amoinvitar.com').replace(/\/$/, '');
   for (const ev of results) {
     try {
       const d = JSON.parse(ev.datos);
@@ -43,7 +43,7 @@ async function mailsDe(env, id) {
   return [...new Set(results.map((m) => String(m.email || '').toLowerCase()).filter(Boolean))];
 }
 const nombresDe = (d) => [d.nombres?.a, d.nombres?.b].filter(Boolean).join(' & ') || 'la invitación';
-const linkPanel = (env, id, clave) => `${String(env.SITE_URL || 'https://app.amoinvitar.com').replace(/\/$/, '')}/panel/${id}?k=${clave}#admin`;
+const linkPanel = (env, id, clave) => `${String(env.SITE_URL || 'https://amoinvitar.com').replace(/\/$/, '')}/panel/${id}?k=${clave}#admin`;
 const fila = (d) => ({ nombre: String(d.nombre || 'Sin nombre').slice(0, 80), asiste: d.asiste === 'Si', personas: d.personas, mensaje: String(d.mensaje || '').slice(0, 300) });
 
 export async function avisoRespuesta(env, ev, datos) {
