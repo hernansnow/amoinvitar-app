@@ -1850,7 +1850,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
     ...plan.complementos.map((x) => el('li', {}, el('span', {}, x.nombre, x.pagado ? ' (ya pagado)' : ''), el('span', {}, x.precio))),
   ];
   // Descuento de la promo (solo sobre el plan o el producto; los complementos van a precio de lista)
-  const lineaPromo = plan.promo?.descuento ? el('li', { class: 'linea-promo' }, el('span', {}, `Descuento · ${plan.promo.nombre} (−${plan.promo.porcentaje} %)`), el('span', {}, plan.promo.descuento)) : null;
+  const lineaPromo = plan.promo?.descuento ? el('li', { class: 'linea-promo' }, el('span', {}, plan.promo.nombre ? `Descuento · ${plan.promo.nombre} (−${plan.promo.porcentaje} %)` : `Descuento (−${plan.promo.porcentaje} %)`), el('span', {}, plan.promo.descuento)) : null;
   if (lineaPromo) lineas.push(lineaPromo);
   const secciones = el('ul', { class: 'lista-secciones' }, plan.secciones.map((x) => el('li', {}, x.titulo, insigniaNivel(x.nivel))));
   const partes = [

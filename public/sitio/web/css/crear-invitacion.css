@@ -153,3 +153,5 @@ dialog.ci-completa { width: 100vw; height: 100dvh; max-width: none; max-height: 
 .ci-x.ci-pantalla svg { display: block; }
 .ci-x.ci-salir { display: inline-flex; align-items: center; gap: 6px; }
 .ci-x.ci-salir svg { display: block; }
+
+.ci-promo-mini { background: #e8523f; box-shadow: 0 3px 10px rgba(232, 82, 63, .45); } /* README (ronda 49) */

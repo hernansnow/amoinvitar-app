@@ -74,7 +74,7 @@
     // viejos, en este subdominio (también hay que agregarlo en "routes" al mudar):
     // "PANEL_VIEJO_HOST": "panel.amoinvitar.com",
     // README (ronda 48): "1" abre la web, la tienda y el panel al público (sin el cartel «Muy pronto» de PREVIEW_KEY). Día de la mudanza.
-    "ABIERTO": "0",
+    "ABIERTO": "1",
     "SITE_URL": "https://app.amoinvitar.com",
     "MAIL_FROM": "Amo Invitar <hola@amoinvitar.com>",
     "SUPPORT_EMAIL": "hola@amoinvitar.com",

@@ -334,10 +334,12 @@
     var ver = function () { if (it.medida) { if (it.galeria) verDiseno(lista, i, ev); else if (it.ejemplos) location.href = it.ejemplos; else personalizar(it, ev); } else verDiseno(lista, i, ev); };
     return el('div', { class: 'ci-item' + (it.medida ? ' ci-medida' : '') },
       el('button', { type: 'button', class: 'ci-mini', 'aria-label': (it.medida ? 'Ver ejemplos de ' : 'Ver diseño ') + it.nombre, onclick: ver },
-        imagen(it.imgs, it.nombre), it.gratis ? el('span', { class: 'ci-gratis', text: 'Gratis' }) : null),
+        imagen(it.imgs, it.nombre), it.gratis ? el('span', { class: 'ci-gratis', text: 'Gratis' }) : null,
+        // README (ronda 49): el descuento va arriba a la derecha de la miniatura, como «Gratis»
+        promo ? el('span', { class: 'ci-gratis ci-promo-mini', text: '−' + promo.p.porcentaje + ' %' }) : null),
       it.etiqueta ? el('small', { class: 'ci-etiqueta', text: it.etiqueta }) : null,
       el('h4', { class: 'ci-nombre', text: it.nombre }),
-      promo ? (function () { var p = el('p', { class: 'ci-precio' }); p.innerHTML = (/^desde /.test(precioTxt) ? tr('desde') + ' ' : '') + '<s class="tachado">' + promo.x.antes + '</s> <span class="promo-precio">' + promo.x.texto + '</span><span class="ci-promo">−' + promo.p.porcentaje + ' %</span>'; return p; })()
+      promo ? (function () { var p = el('p', { class: 'ci-precio' }); p.innerHTML = (/^desde /.test(precioTxt) ? tr('desde') + ' ' : '') + '<s class="tachado">' + promo.x.antes + '</s> <span class="promo-precio">' + promo.x.texto + '</span>'; return p; })()
         : precioTxt ? el('p', { class: 'ci-precio', text: precioTxt }) : null,
       el('button', { type: 'button', class: 'ci-btn ci-btn-borde', onclick: function () { personalizar(it, ev); } }, it.medida ? 'Comenzar' : 'Personalizar'),
       it.medida && !it.ejemplos && !it.galeria ? null : el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: ver }, it.medida ? 'Ver ejemplos' : (it.galeria ? 'Ver diseños' : 'Ver diseño')));

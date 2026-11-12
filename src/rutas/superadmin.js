@@ -392,7 +392,7 @@ export async function precios(request, env) {
   if (Array.isArray(b.promos)) {
     actual.promos = b.promos.slice(0, 60).map((p) => ({
       id: str(p.id, 20) || randomId(5),
-      nombre: str(p.nombre, 80) || 'Promoción',
+      nombre: str(p.nombre, 80), // README (ronda 49): puede quedar vacío (sin nombre, la cinta muestra solo el porcentaje)
       porcentaje: Math.min(90, Math.max(0, Math.round(Number(p.porcentaje) * 100) / 100 || 0)),
       activa: !!p.activa,
       paises: [...new Set([].concat(p.paises || []).map((x) => String(x).toUpperCase().trim()).filter((x) => /^[A-Z]{2}$/.test(x)))],
