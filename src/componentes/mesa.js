@@ -30,6 +30,7 @@ ${estilos.map((h) => `<link rel="stylesheet" href="${esc(h)}">`).join('\n')}
   main { max-width: 380px; width: 100%; }
   .icono { display: block; width: 200px; max-width: 70%; height: auto; margin: 0 auto 1rem; }
   .de { margin: 0 0 .25rem; font-family: var(--fuente-titulos, 'Great Vibes'), cursive; font-size: 2.6rem; line-height: 1.15; color: var(--color-principal, #212529); overflow-wrap: anywhere; }
+  .de.alta { font-size: 2.3rem; line-height: 1.9; margin: .9rem 0 1.3rem; } /* README (ronda 51): Dantina */
   h1 { font-size: 1.1rem; text-transform: uppercase; font-weight: 800; letter-spacing: .08em; margin: 0 0 1rem; }
   hr { width: 66%; margin: 0 auto 1.2rem; border: 0; border-top: 1px solid #212529; }
   input { display: block; width: 100%; font: inherit; font-size: 1.05rem; text-align: center; padding: .6rem .8rem; border: 1px solid #212529; border-radius: 999px; }
@@ -44,7 +45,7 @@ ${estilos.map((h) => `<link rel="stylesheet" href="${esc(h)}">`).join('\n')}
 </style></head>
 <body><main>
   ${ICONO_MESA}
-  <p class="de">${esc(nombres)}</p>
+  <p class="de" data-nombres>${esc(nombres)}</p><script>(function(e){if(e&&/dantina/i.test(getComputedStyle(e).fontFamily))e.classList.add('alta')})(document.querySelector('[data-nombres]'))</script>
   <h1>${esc(t('mesa.titulo'))}</h1>
   <hr>
   ${activa ? `<label for="q" class="visually-hidden" hidden>${esc(t('mesa.placeholder'))}</label>

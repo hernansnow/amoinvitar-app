@@ -42,11 +42,13 @@ ${estilos.map((h) => `<link rel="stylesheet" href="${esc(h)}">`).join('\n')}
   .error { color: #dc3545; font-size: .875rem; margin: .5rem 0 0; }
   .bloqueado { margin: 0; }
   footer { margin-top: 40px; }
+  /* README (ronda 51): Dantina (trazos muy altos): más aire arriba y abajo de los nombres */
+  h1.alta { font-size: 2.3rem; line-height: 1.9; margin: .9rem 0 1.3rem; }
 </style></head>
 <body><main>
   <img class="icono" src="/comun/img/icon-login-pin.png" width="200" height="45" alt="">
   <p class="de">${esc(t('acceso.de'))}</p>
-  <h1>${esc(nombres)}</h1>
+  <h1 data-nombres>${esc(nombres)}</h1><script>(function(e){if(e&&/dantina/i.test(getComputedStyle(e).fontFamily))e.classList.add('alta')})(document.querySelector('[data-nombres]'))</script>
   <hr>
   ${cuerpo}
   <footer>${logo}</footer>

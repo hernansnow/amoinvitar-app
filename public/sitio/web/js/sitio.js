@@ -277,7 +277,7 @@
     // README (ronda 50): en las columnas de planes y en «Invitación a medida», el símbolo de la moneda va más chico
     $$('.plan-card .precio, .precio-m').forEach(function (e) {
       var w = d.createTreeWalker(e, NodeFilter.SHOW_TEXT), ns = [], n;
-      while ((n = w.nextNode())) if (!(n.parentNode.classList && n.parentNode.classList.contains('mon'))) ns.push(n);
+      while ((n = w.nextNode())) if (!(n.parentNode.classList && n.parentNode.classList.contains('mon')) && !n.parentNode.closest('.tachado')) ns.push(n); // README (ronda 51): el tachado queda entero
       ns.forEach(function (t) {
         var m = /^(\s*)([^\d\s−-]+?)\s?(\d[\d.,]*)(\s*)$/.exec(t.nodeValue) || /^(\s*)()(\d[\d.,]*)\s?([^\d\s]+)(\s*)$/.exec(t.nodeValue);
         if (!m) return;

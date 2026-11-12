@@ -889,5 +889,4 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .precio-m .promo-precio { color: inherit; white-space: nowrap; }
 /* README (ronda 50): símbolo de la moneda más chico en las columnas de planes y en «Invitación a medida» */
 .plan-card .precio .mon, .precio-m .mon { font-size: .55em; font-weight: 500; vertical-align: .35em; margin: 0 .06em; }
-.plan-card .precio .tachado .mon, .precio-m .tachado .mon { vertical-align: .2em; }
 .plan-card .precio .promo-precio, .plan-card .precio .tachado { white-space: nowrap; }

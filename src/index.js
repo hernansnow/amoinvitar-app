@@ -429,8 +429,9 @@ async function invitadosCSV(env, request, url) {
 async function estilosModelo(env, ev, url) {
   let m = null; try { m = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); } catch { /* sin modelo */ }
   if (!m) return [];
-  if (Array.isArray(m.acceso?.css)) return m.acceso.css;
-  return [m.tarjetas?.fuentes?.css, `/modelos/${ev.modelo}/tema.css`].filter(Boolean);
+  // README (ronda 51): con su hoja de fuentes (catalogo.css: Dantina y las demás), si no, la letra de los nombres no cargaba
+  if (Array.isArray(m.acceso?.css)) return [...new Set([...(m.tarjetas?.fuentes?.css || []), ...m.acceso.css])];
+  return [...[].concat(m.tarjetas?.fuentes?.css || []), `/modelos/${ev.modelo}/tema.css`]; // README (ronda 51): la lista de hojas, no un arreglo adentro
 }
 
 // ── Buscá tu mesa (QR de la entrada) ──────────────────────────────────
