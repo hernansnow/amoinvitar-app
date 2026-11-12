@@ -184,7 +184,7 @@ function pasos(E) {
 // README (ronda 37): franja de confianza justo debajo de la portada (respuestas a las 4 dudas de quien llega)
 function confianza() {
   const it = [['shield', 'Pagas solo al publicar', 'Diséñala y mírala terminada sin pagar.'], ['phone', 'Sin apps ni registros', 'Tus invitados abren el link y listo.'], ['wa', 'Soporte humano', 'Te ayudamos por WhatsApp, en el día.'], ['award', 'Acompañándote desde 2005', 'en bodas y eventos.']];
-  return `<section class="confianza"><div class="caja"><ul>${it.map(([i, t, p]) => `<li class="rev">${ic(i)}<div><b>${t}</b><span>${p}</span></div></li>`).join('')}</ul></div></section>`;
+  return `<section class="confianza" id="ventajas"><div class="caja"><ul>${it.map(([i, t, p]) => `<li class="rev">${ic(i)}<div><b>${t}</b><span>${p}</span></div></li>`).join('')}</ul></div></section>`;
 }
 
 function comoFunciona(E, esIndex) {
@@ -228,10 +228,10 @@ function planes(E) {
   const filas = C.TABLA.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v) => `<td>${celda(v)}</td>`).join('')}</tr>`).join('');
   const sec = (id, clase, cuerpo) => `<section class="seccion${clase ? ' ' + clase : ''}" id="${id}"><div class="caja">${cuerpo}</div></section>`;
   const slugMedida = (typeof SLUG_CREAR !== 'undefined' && SLUG_CREAR[E.id]) || '';
-  const medida = `<div class="medida rev"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones a medida">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => `<img src="/web/img/medida/banner-a-medida-${n}.webp" alt="Invitación a medida, ejemplo ${n}" ${n === 1 ? '' : 'loading="lazy" '}width="1000" height="667">`).join('')}</div><div><span class="desde">Invitación a medida</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><button type="button" class="btn btn-claro" data-medida="${slugMedida}">Comenzar diseño a medida</button></div></div></div>`;
+  const medida = `<div class="medida rev" id="a-medida"><div class="med-slider" data-slider aria-label="Ejemplos de invitaciones a medida">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => `<img src="/web/img/medida/banner-a-medida-${n}.webp" alt="Invitación a medida, ejemplo ${n}" ${n === 1 ? '' : 'loading="lazy" '}width="1000" height="667">`).join('')}</div><div><span class="desde">Invitación a medida</span><h3>Una invitación única, creada desde cero</h3><p class="precio-m"><span data-precio="medida">140 €</span></p>${checks(['Diseño 100% a medida, con tu estilo, tus colores y tu historia.', 'Incluye todo lo del plan Deluxe.', 'Te acompañamos en cada detalle, de la idea a la publicación.'])}<div class="fila-btn"><button type="button" class="btn btn-claro" data-medida="${slugMedida}">Comenzar diseño a medida</button></div></div></div>`;
   // README (ronda 41): orden pedido (precios.png): título y aviso → planes → invitación a medida → precios en euros y pago seguro (todo en una sección) → comparar → profesionales
   return [
-    sec('planes', 'alt', `${E.sinTitulo ? '' : titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébala gratis, mírala terminada y paga solo cuando decidas publicarla. Sin suscripciones ni sorpresas.')}
+    sec('planes', 'alt', `<span id="precios"></span>${E.sinTitulo ? '' : titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Pruébala gratis, mírala terminada y paga solo cuando decidas publicarla. Sin suscripciones ni sorpresas.')}
   <div class="aviso-pago rev">${ic('eye')}<span>Diséñala y mírala terminada — <strong>pagas solo al publicar</strong></span></div>
   <div class="planes">${cards}</div>
   <div class="bloque-medida">${medida}</div>
@@ -313,7 +313,7 @@ function nosotros() {
 }
 
 function llamada(E) {
-  return `<section class="seccion" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¿Listo para que ${E.id === 'otros' || E.id === 'index' ? 'tu evento' : E.tuEvento} sea el comentario de todos?</h2>
+  return `<section class="seccion" id="empezar" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¿Listo para que ${E.id === 'otros' || E.id === 'index' ? 'tu evento' : E.tuEvento} sea el comentario de todos?</h2>
 <p>Elige un diseño, personalízalo en minutos y míralo terminado antes de pagar. ¿Quieres algo único? Lo creamos a medida, desde cero.</p>
 <div class="fila-btn"><a class="btn btn-claro btn-grande" href="/crear-invitacion">Crear invitación ${ic('flecha')}</a></div>
 <p class="mini"><span>${ic('leaf')} Sin papel ni imprenta. Más sostenible.</span><span>${ic('shield')} Solo pagas al publicar. Si el modelo es gratis, tienes tu link y no pagas nada.</span></p></div></div></section>`;
@@ -336,7 +336,7 @@ function contacto(E) {
 
 function disenos(E) {
   const attr = E.grid ? `data-grid='${JSON.stringify(E.grid).replace(/'/g, '&#39;')}'` : !E.widget ? '' : E.widget.includes(',') ? `data-eventos="${E.widget}"` : `data-evento="${E.widget}"`;
-  return `<section class="seccion disenos" id="disenos"><div class="caja">${titulo(E.grid ? '' : 'Modelos', E.tituloDisenos || `<em>Diseños</em> para ${E.tuEvento}`, E.grid ? 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.' : 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Elige, personaliza y mira tu invitación lista antes de pagar.')}
+  return `<section class="seccion disenos" id="disenos"><span id="modelos"></span><div class="caja">${titulo(E.grid ? '' : 'Modelos', E.tituloDisenos || `<em>Diseños</em> para ${E.tuEvento}`, E.grid ? 'Toca el tipo de evento y verás sus diseños para verlos, personalizarlos y empezar.' : 'Tenemos estilos para todos los gustos, ¡encuentra el tuyo! Elige, personaliza y mira tu invitación lista antes de pagar.')}
 <div class="ci-widget" ${attr}></div></div></section>`;
 }
 
@@ -597,7 +597,7 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
   const GAL_WEB = [{ img: '/web/img/ejemplos/stdw-point-marco.webp', t: 'Point', marco: 1 }, { img: '/web/img/ejemplos/stdw-rama-marco.webp', t: 'Rama', marco: 1 }];
   const GAL_TAR = [{ img: '/web/img/ejemplos/stdt-degasa.webp', t: 'Degasa' }, { img: '/web/img/ejemplos/stdt-rama.webp', t: 'Rama' }];
   const tarjetaPlan = (nombre, precio, items, botones, destacado) => `<article class="plan-card${destacado ? ' destacado' : ''} rev"><h3>${nombre}</h3><p class="precio" ${precio}></p><p class="precio-s">Pago único<span data-iva> · IVA incluido</span></p><ul>${items.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul><div class="plan-botones">${botones}</div></article>`;
-  const precio = `<section class="seccion" id="precio"><div class="caja">${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones ni sorpresas.')}
+  const precio = `<section class="seccion" id="precio"><span id="precios"></span><div class="caja">${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones ni sorpresas.')}
   <div class="planes tres">
   ${tarjetaPlan('Invitación Web Deluxe · Corporativo', 'data-precio="medida">140 €', ['Diseño 100% a medida con la identidad de tu marca', 'Acceso VIP restringido', 'Todas las secciones y funciones', 'Lista de invitados con nombre y link personalizado', 'Confirmación de asistencia (RSVP)', 'Panel privado con organizador'],
     `<a class="btn btn-verde" href="/crear-invitacion">Crear invitación</a><a class="btn btn-borde" href="${urlDemo('snow')}" data-video="${urlDemo('snow')}" target="_blank" rel="noopener">Ver ejemplo</a>`, true)}
@@ -686,7 +686,7 @@ function paginaAlbum() {
   const pasos = `<section class="seccion" id="como-funciona"><div class="caja">${titulo('Así de simple', '¿Cómo <em>funciona</em>?', 'Para bodas, 15 años, cumpleaños, bautismos, comuniones, graduaciones y eventos corporativos.')}<div class="alb-cards">${ALB_PASOS.map(([h, p], i) => `<article class="alb-card rev"><span class="alb-icon">${ALB_ICONOS[i]}</span><span class="alb-num">${i + 1}</span><h3>${h}</h3><p>${p}</p></article>`).join('')}</div></div></section>`;
   const comp = `<section class="seccion alt" id="comparativa"><div class="caja">${titulo('Compara', 'Albunear <em>vs</em> otras opciones', '')}<div class="comparar-caja"><table class="comparar" style="--cols:5"><thead><tr><th scope="col"><span class="sr">Función</span></th><th scope="col" class="col-d">Albunear</th><th scope="col">Otros servicios QR</th><th scope="col">WhatsApp</th><th scope="col">Google Fotos</th><th scope="col">Cabina clásica</th></tr></thead><tbody>${ALB_COMP.map((r) => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map((v, i) => `<td${i === 0 ? ' class="col-d"' : ''}>${MARCA[v]}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="planes-nota" style="margin-top:14px"><small>Parcial: depende del servicio o está limitado.</small></p></div></section>`;
   const func = `<section class="seccion" id="funciones-album"><div class="caja">${titulo('Todo incluido', 'Funciones <em>destacadas</em>', '')}<div class="funciones tres">${ALB_FUNC.map(([i, t, p]) => `<article class="funcion rev"><div class="ic">${ic(i)}</div><h3>${t}</h3><p>${p}</p></article>`).join('')}</div></div></section>`;
-  const cta = `<section class="seccion" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¡Deja de perseguir a los invitados para que te envíen las fotos!</h2><p>Si quieres tener las fotos de tus invitados sin apps que solo complican las cosas a quien no se lleva bien con la tecnología, ni tener que crear grupos de WhatsApp, tu mejor opción es el álbum privado de Albunear.</p><div class="fila-btn"><a class="btn btn-claro btn-grande" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/demo" target="_blank" rel="noopener">Ver demo</a></div></div></div></section>`;
+  const cta = `<section class="seccion" id="empezar" style="padding-block:clamp(40px,6vw,80px)"><div class="caja"><div class="llamada rev"><h2>¡Deja de perseguir a los invitados para que te envíen las fotos!</h2><p>Si quieres tener las fotos de tus invitados sin apps que solo complican las cosas a quien no se lleva bien con la tecnología, ni tener que crear grupos de WhatsApp, tu mejor opción es el álbum privado de Albunear.</p><div class="fila-btn"><a class="btn btn-claro btn-grande" href="https://albunear.com/#precios" target="_blank" rel="noopener">Crear mi álbum</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/empezar?plan=free" target="_blank" rel="noopener">Probar gratis</a><a class="btn btn-borde-claro btn-grande" href="https://albunear.com/demo" target="_blank" rel="noopener">Ver demo</a></div></div></div></section>`;
   const albumFaq = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'album-faq.json'), 'utf8'));
   P.cabFija = true;
   escribe('album', P, [hero, pasos, juntos(true), comp, func, faq(E, P, albumFaq), cta, contacto({ ...E, id: 'index' })].join('\n'));
