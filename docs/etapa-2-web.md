@@ -204,3 +204,15 @@ los textos nuevos y dice cuántos faltan) y traducir los números que falten.
   da de alta a mano en Cloudflare y se marca activo desde /admin/.
 - **Precios** (ronda 47): /admin → Precios y promos → «Precios base» y «Países con precio fijo» (se guardan en
   `app_state['config_precios']`; sin nada guardado valen `src/catalogo.js` y Argentina en `src/lib/fx.js`).
+
+## Ronda 48 · Copia de Hostinger en R2 (hecho el 12/11/2026)
+
+- Bucket `amoinvitar-legado` creado y copiado desde Hostinger con rclone (terminal SSH de Hostinger, de servidor a servidor):
+  32.140 archivos, 2,4 GB, sin errores. Origen: `~/domains/amoinvitar.com/public_html` (sin PHP, PSD, ocultos ni apps-script).
+- `LEGADO` activo en `wrangler.jsonc` (por ahora solo se ve en app.amoinvitar.com; amoinvitar.com sigue en Hostinger).
+- La tabla `legado_canciones` se crea sola al primer uso (no hace falta aplicar la migración 0004 a mano).
+- Para actualizar la copia antes de la mudanza: volver a correr el `rclone sync` en la terminal de Hostinger (sube solo lo
+  nuevo o cambiado y borra del bucket lo que se borró en Hostinger).
+- En el repo amoinvitar-v2.0 hay carpetas que NO están en Hostinger (plantillas `++base-…`, y `evento/sabri`, `evento/hernan`,
+  `evento/degasa`, `evento/baltazar`, `evento/abi-y-lolo`, `evento/acude`, `evento/60-anos-en-la-cancha`, `save-the-date/std …`,
+  `panel/+demo…`): no se subieron. Confirmar si se borraron a propósito.

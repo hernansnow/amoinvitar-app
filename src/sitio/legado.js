@@ -89,7 +89,18 @@ async function entregar(env, request, encontrado) {
 // ── Reemplazos de los PHP ──
 // a-musica.php: cada invitación vieja guardaba las canciones sugeridas en canciones.txt de su carpeta. Ahora van a D1
 // (tabla legado_canciones) y lista-canciones.php las muestra junto con las que ya estaban en el .txt del bucket.
+// README (ronda 48): la tabla se crea sola la primera vez (la misma de migrations/0004_legado.sql)
+let tablaLista = false;
+async function tablaCanciones(env) {
+  if (tablaLista) return;
+  await env.DB.batch([
+    env.DB.prepare('CREATE TABLE IF NOT EXISTS legado_canciones (id INTEGER PRIMARY KEY AUTOINCREMENT, carpeta TEXT NOT NULL, texto TEXT NOT NULL, creado TEXT NOT NULL)'),
+    env.DB.prepare('CREATE INDEX IF NOT EXISTS legado_canciones_carpeta ON legado_canciones (carpeta)'),
+  ]);
+  tablaLista = true;
+}
 async function sugerirCancion(env, request, carpeta) {
+  await tablaCanciones(env);
   const f = await request.formData().catch(() => null);
   const texto = String(f?.get('fname') || '').trim().slice(0, 300);
   if (texto) await env.DB.prepare('INSERT INTO legado_canciones (carpeta, texto, creado) VALUES (?, ?, ?)').bind(carpeta, texto, new Date().toISOString()).run();
@@ -98,6 +109,7 @@ async function sugerirCancion(env, request, carpeta) {
 }
 async function listaCanciones(env, carpeta) {
   const viejo = await env.LEGADO.get(`${carpeta}/canciones.txt`).then((o) => (o ? o.text() : '')).catch(() => '');
+  await tablaCanciones(env);
   const { results } = await env.DB.prepare('SELECT texto FROM legado_canciones WHERE carpeta = ? ORDER BY id').bind(carpeta).all();
   const todas = [...viejo.split('\n'), ...results.map((r) => r.texto)].map((x) => x.trim()).filter(Boolean);
   const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
