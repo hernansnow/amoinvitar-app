@@ -28,7 +28,7 @@
       function ir() { window.AmoCrear.medida(slug, titulo, producto); }
       if (window.AmoCrear) return ir();
       if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css?v=c5f43729'; d.head.appendChild(l); }
-      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js?v=f51ff104'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
+      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js?v=7c564517'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
     });
   });
 
@@ -260,6 +260,19 @@
     $$('[data-prod]').forEach(function (e) { var p = (c.productos || []).filter(function (x) { return x.id === e.getAttribute('data-prod'); })[0]; if (p && p.precio && p.precio.texto) e.textContent = p.precio.texto; });
     // README (ronda 41): precios de profesionales en la moneda del visitante
     $$('[data-eur]').forEach(function (e) { var v = c.pro && c.pro[e.getAttribute('data-eur')]; if (v) e.textContent = v; });
+    // README (ronda 48): la promo también en el diseño a medida / corporativo y en los productos sueltos (Save The Date, simple),
+    // con el precio de lista tachado, el precio con descuento y la cinta roja con el porcentaje
+    function mejorPromo(k) { var m = null; promos.forEach(function (pr) { if (pr.precios[k] && (!m || pr.porcentaje > m.porcentaje)) m = pr; }); return m; }
+    function conPromo(e, k) {
+      var pr = mejorPromo(k); if (!pr) return;
+      var x = pr.precios[k];
+      e.innerHTML = '<s class="tachado">' + x.antes + '</s> <span class="promo-precio">' + x.texto + '</span>';
+      var p = e.parentNode;
+      if (p && !p.querySelector('.promo-cinta')) { var b = d.createElement('span'); b.className = 'promo-cinta promo-cinta-suelta'; b.textContent = '−' + pr.porcentaje + ' % · ' + pr.nombre; p.insertBefore(b, e); }
+    }
+    $$('[data-precio="medida"]').forEach(function (e) { conPromo(e, cat === 'empresarial' ? 'empresarial' : 'a-medida'); });
+    $$('[data-prod]').forEach(function (e) { conPromo(e, e.getAttribute('data-prod')); });
+    window.AI_PROMOS = { mejor: mejorPromo };
     // Texto de abajo, con la lógica de Albunear: moneda y medios del país
     // README (ronda 42): en las páginas traducidas, la nota va en el idioma de la página
     var IDI = { en: 'en', 'en-gb': 'en', 'pt-br': 'pt', 'pt-pt': 'pt', fr: 'fr', it: 'it', de: 'de', nl: 'nl' }[d.documentElement.getAttribute('data-clave') || 'es'];

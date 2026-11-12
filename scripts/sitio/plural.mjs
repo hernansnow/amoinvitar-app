@@ -41,6 +41,7 @@ const ES_IMP = {
   descarga: ['descarguen', 'descargad'], 'diseña': ['diseñen', 'diseñad'], empieza: ['empiecen', 'empezad'], gestiona: ['gestionen', 'gestionad'],
   organiza: ['organicen', 'organizad'], reserva: ['reserven', 'reservad'], haz: ['hagan', 'haced'], escribe: ['escriban', 'escribid'],
   agrega: ['agreguen', 'agregad'], publica: ['publiquen', 'publicad'], ahorra: ['ahorren', 'ahorrad'],
+  ingresa: ['ingresen', 'introducid'], compara: ['comparen', 'comparad'], // README (ronda 48)
 };
 const RE_ES = tablaRe(ES);
 const RE_ES_IMP = reImp(ES_IMP, 'y|o');
@@ -66,9 +67,17 @@ const YO = { puedo: 'podemos', pago: 'pagamos', 'envío': 'enviamos', veo: 'vemo
 const RE_YO = tablaRe(YO);
 const preguntas = (t) => t.replace(/¿[^?]*\?/g, (q) => q.replace(RE_YO, (m) => mayus(m, YO[m.toLowerCase()]))
   .replace(/nuestro(\s+)(invitaci[oó]n|boda|fiesta|lista|p[aá]gina)/giu, 'nuestra$1$2'));
+// README (ronda 48): con «ustedes», «su boda» suena a la boda de otro: en estas frases va «la boda» (en España, «vuestra boda»)
+const FRASES_LA = [
+  [/^(\s*)para tu boda(\s*)$/, ['$1para la boda$2', '$1para vuestra boda$2']],
+  [/lo que hace que tu boda se organice solo?\./, ['lo que hace que la boda se organice sola.', 'lo que hace que vuestra boda se organice sola.']],
+  [/¿Hablamos de tu boda\?/, ['¿Hablamos de la boda?', '¿Hablamos de vuestra boda?']],
+  [/¿Listo para que tu boda/, ['¿Listos para que su boda', '¿Listos para que vuestra boda']],
+];
 export function aPluralEs(t, modo) {
   const i = modo === 'vosotros' ? 1 : 0;
   for (const [re, v] of FRASES_ES) t = t.replace(re, v[i]);
+  for (const [re, v] of FRASES_LA) t = t.replace(re, v[i]);
   t = preguntas(t);
   t = posesivo(t, i);
   // «tu» al final de un trozo (lo que sigue es un enlace): «con tu <a>propio video</a>»

@@ -1188,6 +1188,8 @@ async function media(env, partes) {
 // Las invitaciones publicadas, las demos y los avisos de las pasarelas siguen funcionando.
 const SIEMPRE_ABIERTO = /^\/(empresa-demos\/|api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/mesa|mesa\/|api\/puerta|puerta\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
 function proximamente(request, env, url) {
+  // README (ronda 48): ABIERTO = '1' (wrangler.jsonc) abre todo al público: se pone el día de la mudanza
+  if (String(env.ABIERTO || '') === '1') return null;
   const clave = String(env.PREVIEW_KEY || '').trim();
   if (!clave) return null;
   const q = url.searchParams.get('preview');
@@ -1269,6 +1271,7 @@ export default {
         if (p1 === 'admin' && partes[2] === 'consultas') return await sa.consultas(request, env, partes[3], partes[4]);
         if (p1 === 'admin' && partes[2] === 'registro') return await sa.registro(request, env);
         if (p1 === 'admin' && partes[2] === 'precios') return await sa.precios(request, env);
+        if (p1 === 'admin' && partes[2] === 'limpieza') return await sa.limpieza(request, env); // README (ronda 48)
         if (p1 === 'admin' && partes[2] === 'resumen') return await consola.resumen(request, env);
         if (p1 === 'admin' && partes[2] === 'pro') return await consola.accionPro(request, env, partes);
         if (p1 === 'admin' && partes[2] === 'medidas' && partes[3] && partes[4]) return await consola.medida(request, env, partes[3], partes[4]);

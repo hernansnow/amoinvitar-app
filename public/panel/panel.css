@@ -1102,3 +1102,9 @@ body.suelta .previa, body.suelta #btn-ojo, body.suelta .modo-vista, body.suelta 
 .sel-pais-idiomas .idi { flex: 1; font: 500 14px Jost, system-ui, sans-serif; padding: 8px 10px; border: 0; border-radius: 8px; background: #f3f3f1; color: #1c1c1c; cursor: pointer; }
 .sel-pais-idiomas .idi.on { background: #4e9c87; color: #fff; }
 .btn-modelo.fijo { cursor: default; min-width: 0; } /* README (ronda 47): ya publicada, sin «cambiar» */
+/* README (ronda 48): el botón del país/idioma, 40 % más chico (38 → 23 px), en el celular y en la computadora */
+.sel-pais-boton { width: 23px; height: 23px; border-width: 1.5px; }
+/* README (ronda 48): precios con promo */
+.tachado { text-decoration: line-through; opacity: .7; font-weight: 400; }
+.precio-promo { font-weight: 600; }
+.lista-precios .linea-promo { color: #b3261e; font-weight: 500; }

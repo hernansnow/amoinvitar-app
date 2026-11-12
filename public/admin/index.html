@@ -188,9 +188,35 @@
 
   // ══ Pedidos ══
   var FILTROS = { pedidos: {}, eventos: {}, usuarios: {} }, PAG = { pedidos: 0, eventos: 0, usuarios: 0 };
+  // README (ronda 48): limpieza antes de abrir (pedidos de prueba, sus facturas y la numeración)
+  function tarjetaLimpieza() {
+    var caja = el('details', { class: 'tarjeta' }, [el('summary', {}, el('strong', {}, 'Limpieza antes de abrir: borrar pedidos de prueba y reiniciar la numeración de facturas'))]);
+    caja.addEventListener('toggle', function () {
+      if (!caja.open || caja._listo) return; caja._listo = true;
+      api('/api/admin/limpieza').then(function (d) {
+        var marcas = d.pedidos.map(function (p) { var c = el('input', { type: 'checkbox', value: p.id }); c.checked = true; var det = {}; try { det = JSON.parse(p.detalle || '{}'); } catch (e) {}
+          return el('label', { style: 'display:flex;gap:8px;align-items:baseline;margin:3px 0' }, [c, el('span', {}, '#' + p.numero + ' · ' + (p.creado ? new Date(p.creado > 1e12 ? p.creado : p.creado * 1000).toISOString().slice(0, 10) : '') + ' · ' + (p.email || '') + ' · ' + p.estado + ' · ' + (p.medio || '') + ' · ' + (p.importe || 0) + ' ' + (p.moneda || '') + ' · ' + (det.nombre || p.tipo || ''))]); });
+        var inv = el('input', { type: 'checkbox' }), rei = el('input', { type: 'checkbox' }); rei.checked = true;
+        var conf = el('input', { placeholder: 'Escribir BORRAR para confirmar', style: 'max-width:260px' });
+        caja.append(
+          el('p', { class: 'meta' }, d.pedidos.length + ' pedidos · ' + d.facturas.length + ' facturas (' + d.facturas.map(function (x) { return x.number; }).join(', ') + ') · numeración: ' + (d.numeracion.map(function (x) { return x.series + x.year + ' va por ' + x.n; }).join(', ') || 'sin empezar')),
+          el('p', { class: 'meta' }, 'Están todos marcados: desmarcá los que sean reales. Se borran los pedidos marcados y sus facturas. No se puede deshacer.'),
+          el('div', { style: 'max-height:320px;overflow:auto;border:1px solid #e3e6e4;border-radius:10px;padding:8px' }, marcas),
+          el('label', { style: 'display:flex;gap:8px;margin-top:8px' }, [inv, 'Borrar también la invitación de cada pedido (si ningún otro pedido la usa)']),
+          el('label', { style: 'display:flex;gap:8px' }, [rei, 'Reiniciar la numeración: la próxima factura será AI' + new Date().getFullYear() + '-00001 (solo si no queda ninguna factura de ese año)']),
+          el('div', { class: 'fila', style: 'gap:8px;margin-top:8px;flex-wrap:wrap' }, [conf, btn('Borrar los marcados', 'mal', function (b) {
+            var ids = marcas.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
+            if (conf.value.trim() !== 'BORRAR') return aviso('Escribí BORRAR para confirmar', true);
+            accion(b, '/api/admin/limpieza', { pedidos: ids, invitaciones: inv.checked, reiniciar: rei.checked, confirmo: 'BORRAR' }, 'Limpieza hecha', function (r) { aviso('Borrados: ' + r.pedidos + ' pedidos, ' + r.facturas + ' facturas, ' + r.invitaciones + ' invitaciones' + (r.reiniciada ? ' · numeración reiniciada' : '')); VISTAS.pedidos = null; return Promise.resolve().then(pinta); });
+          })]));
+      }).catch(function (e) { caja.append(el('p', { class: 'meta' }, e.message)); });
+    });
+    return caja;
+  }
   function vistaPedidos() {
     var v = el('div'), f = FILTROS.pedidos;
     v.append(el('h2', {}, 'Pedidos'));
+    v.append(tarjetaLimpieza());
     v.append(buscador(f, [{ n: 'q', l: 'Buscar', ph: 'mail, n.º de pedido, cupón o evento', ancho: true }, { n: 'estado', l: 'Estado', op: [['', 'Todos'], ['pendiente', 'Pendientes'], ['pagado', 'Pagados'], ['cancelado', 'Cancelados'], ['reembolsado', 'Reembolsados']] },
       { n: 'medio', l: 'Medio', op: [['', 'Todos'], ['stripe', 'Tarjeta'], ['paypal', 'PayPal'], ['mercadopago', 'Mercado Pago'], ['transferencia', 'Transferencia'], ['gratis', 'Gratis'], ['cupon', 'Cupón'], ['admin', 'Administración']] }],
       function (r) { FILTROS.pedidos = r; PAG.pedidos = 0; VISTAS.pedidos = null; pinta(); }));
@@ -494,22 +520,28 @@
         paises = el('input', { value: (p.paises || []).join(', '), placeholder: 'Vacío = todos los países. Ej.: ES, AR, MX' }), desde = el('input', { type: 'date', value: p.desde || '' }), hasta = el('input', { type: 'date', value: p.hasta || '' }),
         activa = el('input', { type: 'checkbox' }); activa.checked = !!p.activa;
       var cats = d.categorias.map(function (k) { var c = el('input', { type: 'checkbox', value: k }); c.checked = (p.categorias || []).indexOf(k) > -1; return el('label', {}, [c, NOMBRE_CAT[k] || k]); });
-      var pls = d.planes.map(function (k) { var c = el('input', { type: 'checkbox', value: k }); c.checked = (p.planes || []).indexOf(k) > -1; return el('label', {}, [c, k[0].toUpperCase() + k.slice(1)]); });
+      // README (ronda 48): a qué se aplica (sin marcar nada: los tres planes, como antes). Los complementos nunca llevan promo
+      var NOMBRE_ITEM = { basic: 'Plan Basic', premium: 'Plan Premium', deluxe: 'Plan Deluxe', 'a-medida': 'Diseño a medida', empresarial: 'Invitación corporativa',
+        'std-web': 'Save The Date web', 'std-web-medida': 'Save The Date web a medida', 'std-tarjeta': 'Save The Date tarjeta', 'std-foto': 'Save The Date con foto',
+        'std-tarjeta-medida': 'Save The Date tarjeta a medida', 'compromiso-web': 'Invitación simple (civil, compromiso, pedida, party)', agradecimiento: 'Tarjeta de agradecimiento' };
+      var marcados = (p.aplica && p.aplica.length) ? p.aplica : (p.planes || []);
+      var pls = (d.items || d.planes).map(function (k) { var c = el('input', { type: 'checkbox', value: k }); c.checked = marcados.indexOf(k) > -1; return el('label', {}, [c, NOMBRE_ITEM[k] || k]); });
       var t = el('div', { class: 'tarjeta', style: 'margin:10px 0' }, [
         el('div', { class: 'dos' }, [el('label', {}, ['Nombre', nombre]), el('label', {}, ['Descuento (%)', pct])]),
         el('label', {}, ['Países', paises]),
         el('div', { class: 'dos' }, [el('label', {}, ['Desde (opcional)', desde]), el('label', {}, ['Hasta (opcional)', hasta])]),
         el('div', { class: 'grupo' }, [el('h3', {}, 'Categorías (sin marcar: todas)'), el('div', { class: 'marcas' }, cats)]),
-        el('div', { class: 'grupo' }, [el('h3', {}, 'Planes (sin marcar: todos los de pago)'), el('div', { class: 'marcas' }, pls)]),
+        el('div', { class: 'grupo' }, [el('h3', {}, 'Se aplica a (sin marcar: los tres planes de pago). Los complementos no llevan descuento.'), el('div', { class: 'marcas' }, pls)]),
         el('div', { class: 'fila', style: 'gap:12px;align-items:center;flex-wrap:wrap' }, [el('label', { style: 'display:flex;gap:6px;align-items:center' }, [activa, 'Activa (se ve en toda la web)']), btn('Quitar promoción', 'mal', function () { tarjetas.splice(tarjetas.indexOf(t), 1); t.remove(); })])]);
       t._v = function () {
         return { id: p.id, nombre: nombre.value, porcentaje: pct.value, activa: activa.checked, paises: paises.value.split(/[ ,;]+/).filter(Boolean), desde: desde.value, hasta: hasta.value,
-          categorias: cats.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked; }).map(function (c) { return c.value; }), planes: pls.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked; }).map(function (c) { return c.value; }) };
+          categorias: cats.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked; }).map(function (c) { return c.value; }), aplica: pls.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked; }).map(function (c) { return c.value; }),
+          planes: pls.map(function (l) { return l.firstChild; }).filter(function (c) { return c.checked && ['basic', 'premium', 'deluxe'].indexOf(c.value) > -1; }).map(function (c) { return c.value; }) };
       };
       tarjetas.push(t); cont.append(t);
     }
     (d.promos || []).forEach(tarjetaPromo);
-    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Promociones'), el('p', { class: 'meta' }, 'Descuento automático sobre el precio de lista: los clientes ven el precio tachado y el precio con promoción en toda la web, y se cobra con el descuento al comprar (se suma a un cupón, si lo usan). Aplica a invitaciones web con plan de pago. Para que valga en una categoría, esa página (por ejemplo Bodas) lo muestra; las páginas generales solo muestran las promociones sin categoría.'),
+    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Promociones'), el('p', { class: 'meta' }, 'Descuento automático sobre el precio de lista: los clientes ven el precio tachado y el precio con promoción en toda la web, y se cobra con el descuento al comprar (se suma a un cupón, si lo usan). Se aplica a lo que marques (planes, diseño a medida, corporativo, Save The Date, invitación simple); los complementos (idioma, cambios de diseño, tarjetas dentro de la invitación…) van siempre a precio de lista. Para que valga en una categoría, esa página (por ejemplo Bodas) lo muestra; las páginas generales solo muestran las promociones sin categoría.'),
       cont, el('div', { class: 'fila', style: 'gap:8px;margin-top:10px;flex-wrap:wrap' }, [btn('+ Nueva promoción', 'sec', function () { tarjetaPromo(null); }),
         btn('Guardar promociones', '', function (b) { accion(b, '/api/admin/precios', { promos: tarjetas.map(function (t) { return t._v(); }) }, 'Promociones guardadas', function () { VISTAS.precios = null; return Promise.resolve().then(pinta); }); })])]));
     return v;

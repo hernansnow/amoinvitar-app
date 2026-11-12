@@ -63,9 +63,20 @@ export function promosVigentes(pais, ahora = Date.now()) {
     && (!p.desde || Date.parse(p.desde) <= ahora) && (!p.hasta || Date.parse(p.hasta) + 86400000 > ahora));
 }
 // La mejor promo (mayor porcentaje) que alcanza a un plan de una categoría; categoria null = página sin categoría
+// README (ronda 48): además de los planes, una promo puede alcanzar al diseño a medida, al corporativo, a las Save The Date y a
+// los modelos simples (nunca a los complementos). «aplica» guarda la lista; las promos de antes (solo «planes») siguen igual.
+export const PROMO_ITEMS = [...PLANES_PROMO, 'a-medida', 'empresarial', 'std-web', 'std-web-medida', 'std-tarjeta', 'std-foto', 'std-tarjeta-medida', 'compromiso-web', 'agradecimiento'];
+export const aplicaDe = (p) => (p.aplica?.length ? p.aplica : p.planes?.length ? p.planes : PLANES_PROMO);
+// La clave de promo de un pedido: el plan, 'a-medida' / 'empresarial' o el producto suelto (null: no lleva promo)
+export function claveDePromo(pedido) {
+  if (!pedido) return null;
+  if (pedido.producto === 'invitacion') return PLANES_PROMO.includes(pedido.paquete) ? pedido.paquete : null;
+  if (pedido.producto === 'a-medida') return pedido.aMedida === 'empresarial' ? 'empresarial' : 'a-medida';
+  return PROMO_ITEMS.includes(pedido.producto) ? pedido.producto : null;
+}
 export function promoPara({ pais, plan, categoria }) {
-  if (!PLANES_PROMO.includes(plan)) return null;
-  const ok = promosVigentes(pais).filter((p) => (!p.planes?.length || p.planes.includes(plan)) && (!p.categorias?.length || (categoria && p.categorias.includes(categoria))));
+  if (!PROMO_ITEMS.includes(plan)) return null;
+  const ok = promosVigentes(pais).filter((p) => aplicaDe(p).includes(plan) && (!p.categorias?.length || (categoria && p.categorias.includes(categoria))));
   return ok.sort((a, b) => b.porcentaje - a.porcentaje)[0] || null;
 }
 

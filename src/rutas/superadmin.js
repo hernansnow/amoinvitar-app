@@ -13,7 +13,7 @@ import { requiereAdmin } from './admin.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { almacenD1 } from '../almacen.js';
 import { crearUsuario } from '../lib/auth.js';
-import { getRates, DESCUENTO_PAIS, COUNTRY_CURRENCY, CURRENCIES, CONFIG, cargarConfig, olvidarConfig, PLANES_PROMO, fijosVigentes } from '../lib/fx.js';
+import { getRates, DESCUENTO_PAIS, COUNTRY_CURRENCY, CURRENCIES, CONFIG, cargarConfig, olvidarConfig, PLANES_PROMO, PROMO_ITEMS, fijosVigentes } from '../lib/fx.js';
 import { getState, setState } from '../lib/verifactu.js';
 import { EXTRAS, PAQUETES, listaPrecios, clavesFijas, PRECIOS_ORIGINALES } from '../catalogo.js';
 import { sendEmail, mailFactura, mailPedidoListo } from '../lib/email.js';
@@ -344,7 +344,7 @@ export async function precios(request, env) {
   if (request.method === 'GET') {
     olvidarConfig(); await cargarConfig(env);
     return json({ descuentos: CONFIG.descuentos ?? DESCUENTO_PAIS, porDefecto: DESCUENTO_PAIS, personalizado: !!CONFIG.descuentos, promos: CONFIG.promos,
-      paises: Object.keys(COUNTRY_CURRENCY).sort(), categorias: CATEGORIAS_PROMO, planes: PLANES_PROMO,
+      paises: Object.keys(COUNTRY_CURRENCY).sort(), categorias: CATEGORIAS_PROMO, planes: PLANES_PROMO, items: PROMO_ITEMS,
       // README (ronda 47): precios base (en euros, IVA incluido) y países con precio fijo en su moneda
       base: listaPrecios(), basePersonalizada: !!CONFIG.base, fijos: fijosVigentes(), fijosPersonalizados: !!CONFIG.fijos,
       clavesFijas: clavesFijas(), monedaDePais: COUNTRY_CURRENCY, monedas: CURRENCIES });
@@ -398,6 +398,7 @@ export async function precios(request, env) {
       paises: [...new Set([].concat(p.paises || []).map((x) => String(x).toUpperCase().trim()).filter((x) => /^[A-Z]{2}$/.test(x)))],
       categorias: [].concat(p.categorias || []).filter((x) => CATEGORIAS_PROMO.includes(x)),
       planes: [].concat(p.planes || []).filter((x) => PLANES_PROMO.includes(x)),
+      aplica: [].concat(p.aplica || []).filter((x) => PROMO_ITEMS.includes(x)), // README (ronda 48)
       desde: /^\d{4}-\d{2}-\d{2}$/.test(p.desde || '') ? p.desde : '',
       hasta: /^\d{4}-\d{2}-\d{2}$/.test(p.hasta || '') ? p.hasta : '',
     })).filter((p) => p.porcentaje > 0);
@@ -406,4 +407,47 @@ export async function precios(request, env) {
   olvidarConfig();
   await registrar(env, u, 'precios.guardar', null, { descuentos: b.descuentos ? Object.keys(b.descuentos).length : undefined, promos: Array.isArray(b.promos) ? b.promos.length : undefined, restaurar: !!b.restaurar, base: b.base ? Object.keys(b.base).length : undefined, fijos: b.fijos ? Object.keys(b.fijos) : undefined });
   return json({ ok: true });
+}
+
+// ── README (ronda 48) · Limpieza antes de abrir: borra los pedidos de prueba (y sus facturas, y si se pide, sus invitaciones)
+// y vuelve a empezar la numeración de las facturas (AI<año>-00001) cuando ya no queda ninguna factura de ese año.
+//   GET  /api/admin/limpieza → pedidos, facturas y numeración actual
+//   POST /api/admin/limpieza { pedidos: [ids], invitaciones: bool, reiniciar: bool, confirmo: 'BORRAR' }
+export async function limpieza(request, env) {
+  const u = await entrar(request, env);
+  const q = consulta(env);
+  try { await env.DB.prepare('SELECT 1 FROM invoices LIMIT 1').first(); } catch { /* sin facturas todavía */ }
+  const facturas = async () => { try { return await q('SELECT id, number, order_id, year, series, total, currency FROM invoices ORDER BY year, seq'); } catch { return []; } };
+  const numeracion = async () => { try { return await q('SELECT series, year, n FROM invoice_seq ORDER BY year'); } catch { return []; } };
+  if (request.method === 'GET') {
+    return json({ pedidos: await q('SELECT id, numero, creado, email, estado, medio, importe, moneda, tipo, evento_id, detalle FROM pedidos ORDER BY creado DESC LIMIT 500'),
+      facturas: await facturas(), numeracion: await numeracion() });
+  }
+  const b = await readJson(request);
+  if (b.confirmo !== 'BORRAR') throw new HttpError(400, 'Falta confirmar (escribir BORRAR)');
+  const ids = [...new Set([].concat(b.pedidos || []).map((x) => str(x, 40)).filter(Boolean))].slice(0, 500);
+  let pedidos = 0, invitaciones = 0, borradas = 0;
+  const alm = almacenD1(env);
+  for (const id of ids) {
+    const p = await env.DB.prepare('SELECT id, evento_id, tipo FROM pedidos WHERE id = ?').bind(id).first();
+    if (!p) continue;
+    try { borradas += (await env.DB.prepare('DELETE FROM invoices WHERE order_id = ?').bind(id).run()).meta.changes || 0; } catch { /* sin tabla */ }
+    await env.DB.prepare('DELETE FROM pedidos WHERE id = ?').bind(id).run();
+    pedidos++;
+    // La invitación del pedido (solo si la creó ese pedido y ningún otro pedido la usa)
+    if (b.invitaciones && p.evento_id) {
+      const otro = await env.DB.prepare('SELECT 1 FROM pedidos WHERE evento_id = ? LIMIT 1').bind(p.evento_id).first();
+      if (!otro && await alm.evento(p.evento_id)) { await alm.eliminarEvento(p.evento_id); invitaciones++; }
+    }
+  }
+  // Numeración: se reinicia solo si no queda ninguna factura de esa serie y año (si no, quedaría un hueco o un número repetido)
+  let reiniciada = false;
+  if (b.reiniciar) {
+    for (const r of await numeracion()) {
+      const queda = await env.DB.prepare('SELECT 1 FROM invoices WHERE series = ? AND year = ? LIMIT 1').bind(r.series, r.year).first().catch(() => null);
+      if (!queda) { await env.DB.prepare('DELETE FROM invoice_seq WHERE series = ? AND year = ?').bind(r.series, r.year).run(); reiniciada = true; }
+    }
+  }
+  await registrar(env, u, 'limpieza', null, { pedidos, facturas: borradas, invitaciones, reiniciada });
+  return json({ ok: true, pedidos, facturas: borradas, invitaciones, reiniciada });
 }

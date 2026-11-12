@@ -1654,8 +1654,8 @@ function pintarPlan() {
   const cambiarPlan = pl.gratisPosible && !pl.pagado
     ? el('button', { type: 'button', class: 'btn-link chico', onclick: () => pasarAGratis(pl.plan !== 'gratis') }, pl.plan === 'gratis' ? 'Ver planes pagos' : 'Pasar a plan gratis') : null;
   $('#caja-plan').replaceChildren(...[el('button', { type: 'button', class: 'plan-resumen', onclick: () => mostrarResumen(false) },
-    el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ` ${pl.plan === 'gratis' ? '' : pl.precio}`), extra ? el('small', {}, extra) : null), cambiarPlan].filter(Boolean));
-  $('#plan-mini').replaceChildren(...[el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ` ${pl.plan === 'gratis' ? '' : pl.precio}`), extra ? el('small', {}, extra) : null].filter(Boolean));
+    el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ' ', ...precioConPromo(pl)), extra ? el('small', {}, extra) : null), cambiarPlan].filter(Boolean));
+  $('#plan-mini').replaceChildren(...[el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ' ', ...precioConPromo(pl)), extra ? el('small', {}, extra) : null].filter(Boolean));
   $('#plan-mini').onclick = () => mostrarResumen(false);
   document.body.classList.toggle('suelta', !!S.esquema?.suelta);
   pintarMedida(); if (typeof pintarPublicar === "function" && S.evento) pintarPublicar();
@@ -1837,18 +1837,27 @@ new MutationObserver(() => { clearTimeout(ponerTooltips.t); ponerTooltips.t = se
 ponerTooltips();
 
 // Resumen: secciones elegidas, plan y complementos. Al publicar, también el pago.
+// README (ronda 48): con una promo vigente, el precio de lista tachado y el precio con descuento
+function precioConPromo(pl) {
+  if (pl.plan === 'gratis' && !pl.producto) return [''];
+  if (!pl.promo) return [pl.precio];
+  return [el('s', { class: 'tachado' }, pl.promo.antes), ' ', el('span', { class: 'precio-promo' }, pl.promo.texto)];
+}
 async function mostrarResumen(paraPagar, plan = S.plan) {
   if (!plan) return;
   const lineas = [
-    el('li', {}, el('span', {}, plan.producto ? '' : 'Plan ', el('strong', {}, plan.nombre)), el('span', {}, plan.plan === 'gratis' ? 'Gratis' : plan.precio)),
+    el('li', {}, el('span', {}, plan.producto ? '' : 'Plan ', el('strong', {}, plan.nombre)), el('span', {}, plan.plan === 'gratis' && !plan.producto ? 'Gratis' : plan.promo ? el('s', { class: 'tachado' }, plan.promo.antes) : plan.precio)),
     ...plan.complementos.map((x) => el('li', {}, el('span', {}, x.nombre, x.pagado ? ' (ya pagado)' : ''), el('span', {}, x.precio))),
   ];
+  // Descuento de la promo (solo sobre el plan o el producto; los complementos van a precio de lista)
+  const lineaPromo = plan.promo?.descuento ? el('li', { class: 'linea-promo' }, el('span', {}, `Descuento · ${plan.promo.nombre} (−${plan.promo.porcentaje} %)`), el('span', {}, plan.promo.descuento)) : null;
+  if (lineaPromo) lineas.push(lineaPromo);
   const secciones = el('ul', { class: 'lista-secciones' }, plan.secciones.map((x) => el('li', {}, x.titulo, insigniaNivel(x.nivel))));
   const partes = [
     plan.producto ? null : el('p', { class: 'ayuda' }, 'Secciones elegidas (además de portada, lugar y fecha, confirmación y cierre):'), plan.producto ? null : secciones,
     el('ul', { class: 'lista-precios' }, lineas),
     plan.pagado ? el('p', { class: 'ayuda' }, `Ya pagado: plan ${NOMBRE_NIVEL[plan.pagado]}. Se paga solo la diferencia.`) : null,
-    el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? plan.aPagar.texto : 'Gratis')),
+    el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? (plan.promo?.total || plan.aPagar.texto) : 'Gratis')),
   ];
   if (!paraPagar) { abrirModal(plan.producto ? plan.nombre : 'Tu invitación', ...partes.filter(Boolean), el('p', { class: 'ayuda' }, 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
   // Pago: mail (si no entró con su cuenta), cupón y medio de pago
@@ -1868,6 +1877,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
       medios.replaceChildren(...(r.medios || []).map((m, i) => el('label', { class: 'opcion' }, el('input', { type: 'radio', name: 'medio', value: m.id, checked: i === 0 }),
         el('span', {}, ({ stripe: 'Tarjeta', mercadopago: 'Mercado Pago', paypal: 'PayPal', transfer: 'Transferencia' })[m.id] || m.id, el('small', {}, m.antes ? `${m.texto} (antes ${m.antes})` : m.texto)))));
       if (r.medios?.length) total.lastChild.textContent = r.medios[0].texto;
+      if (lineaPromo && r.medios?.[0]?.descuentoPromo) lineaPromo.lastChild.textContent = `−${r.medios[0].descuentoPromo}`;
       else if (r.gratis) total.lastChild.textContent = 'Gratis';
     } catch { error.textContent = 'No se pudo calcular el total. Revisar la conexión.'; }
   };

@@ -426,7 +426,12 @@ const escribe = (slug, P, cuerpo) => {
     let x = c === 'es' ? h : TRADUCIDAS.has(c) ? faqDeLaPagina(traducir(h, MAPAS[c], LANG[c] || c)) : convertir(h, c);
     // README (ronda 44): /bodas le habla a la pareja (ustedes; en España, vosotros; en los otros idiomas, el plural)
     if (P.plural) {
-      if (c.startsWith('es')) { const hp = pluralizarHtml(h, (t) => aPluralEs(t, c === 'es-es' ? 'vosotros' : 'ustedes')); x = c === 'es' ? hp : convertir(hp, c); }
+      if (c.startsWith('es')) {
+        const hp = pluralizarHtml(h, (t) => aPluralEs(t, c === 'es-es' ? 'vosotros' : 'ustedes')); x = c === 'es' ? hp : convertir(hp, c);
+        // README (ronda 48): «de el casamiento» → «del casamiento»; «el casamiento se organice solo»; con «vos», «¿Están listos…?»
+        x = x.replace(/(?<![\p{L}])([Dd])e el (?=[a-záéíóúñ])/gu, '$1el ').replace(/(casamiento|matrimonio) se organice sola/g, '$1 se organice solo');
+        if (['es-ar', 'es-py', 'es-cr'].includes(c)) x = x.replace(/¿Listos para que/g, '¿Están listos para que');
+      }
       else x = pluralizarHtml(x, (t) => aPluralOtro(t, c.split('-')[0]));
     }
     if (!c.startsWith('es')) x = x.replace(/<li data-solo-es>[\s\S]*?<\/li>/g, '');

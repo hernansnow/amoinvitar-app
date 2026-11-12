@@ -231,3 +231,15 @@ los textos nuevos y dice cuántos faltan) y traducir los números que falten.
 - `node scripts/mudanza.mjs estado | mudar | volver`: `mudar` quita las 26 y pone `amoinvitar.com/*`, `www.amoinvitar.com/*`
   y `panel.amoinvitar.com/*` → amoinvitar-app; `volver` hace lo contrario. Se usan **rutas** (no «dominio personalizado»)
   para no tocar los DNS: siguen apuntando a Hostinger y volver atrás es inmediato. Los workers viejos no se borran.
+
+## Ronda 48 · Día de la mudanza (orden)
+
+1. Google Cloud → Credenciales → el cliente OAuth de `GOOGLE_CLIENT_ID`: agregar en «URIs de redireccionamiento autorizados»
+   `https://amoinvitar.com/auth/google/vuelta` (y en «Orígenes de JavaScript» `https://amoinvitar.com`). El login con Google arma la
+   vuelta con el dominio en el que está la persona (`src/lib/auth.js`).
+2. Última copia de Hostinger: volver a correr el `~/rclone sync` en la terminal SSH de Hostinger.
+3. `wrangler.jsonc`: `"ABIERTO": "1"` (saca el cartel «Muy pronto» de `PREVIEW_KEY`) y publicar.
+4. `node scripts/mudanza.mjs mudar` (necesita «Workers Routes: Edit» en el token). Purgar la caché de Cloudflare.
+5. `SITE_URL` sigue en `https://app.amoinvitar.com` (mails, pagos y webhooks no cambian). Cambiarla a `https://amoinvitar.com` más
+   adelante, con las direcciones de vuelta de Stripe, Mercado Pago, PayPal y Resend.
+6. Si algo falla: `node scripts/mudanza.mjs volver` (todo vuelve a Hostinger) y, si hace falta, `"ABIERTO": "0"`.

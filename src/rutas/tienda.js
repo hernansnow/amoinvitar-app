@@ -9,7 +9,7 @@
 //
 // Los precios de lista están en euros (src/catalogo.js) y se cobran en la moneda del visitante.
 import { json, readJson, isEmail, str, randomId, now, HttpError, getCookie, cookie, isSecureRequest } from '../lib/util.js';
-import { CURRENCIES, currencyForCountry, getRates, priceIn, isZeroDecimal, promoPara, promosVigentes, categoriaDeTipo, PLANES_PROMO, cargarConfig, paisFiscal, convertirSimple } from '../lib/fx.js';
+import { CURRENCIES, currencyForCountry, getRates, priceIn, isZeroDecimal, promoPara, promosVigentes, categoriaDeTipo, PLANES_PROMO, claveDePromo, aplicaDe, cargarConfig, paisFiscal, convertirSimple } from '../lib/fx.js';
 import { formatMoney } from '../lib/dinero.js';
 import { methodsFor, transferInfo, createMpPreference, findMpApproved, getMpPayment } from '../lib/pagos.js';
 import { createCheckoutSession, retrieveCheckoutSession, verifyWebhook } from '../lib/stripe.js';
@@ -98,18 +98,40 @@ function aplicarCupon(precio, c, rates) {
 // README (ronda 36): promoción automática (admin → Precios y promos): solo invitaciones web con plan de pago, por país, categoría y plan
 export async function promoDe(env, request, pedido, pais) {
   await cargarConfig(env);
-  if (!pedido || pedido.producto !== 'invitacion') return null;
-  return promoPara({ pais: pais || paisReal(request), plan: pedido.paquete, categoria: categoriaDeTipo(pedido.tipo) });
+  const clave = claveDePromo(pedido);
+  if (!clave) return null;
+  return promoPara({ pais: pais || paisReal(request), plan: clave, categoria: categoriaDeTipo(pedido.tipo) });
 }
-async function opciones(env, request, { eur, clave, moneda, cupon, promo = null, sinIva = false, pais = paisReal(request) }) {
+// README (ronda 48): la clave de precio de un pedido (para los precios fijos por país): el plan, 'a-medida' o el producto
+const clavePrecio = (pedido) => (pedido.producto === 'invitacion' ? pedido.paquete : pedido.producto === 'a-medida' ? 'a-medida' : pedido.producto);
+// README (ronda 48): la parte del pedido que la promo descuenta (el plan o el producto; los complementos, no)
+export function eurConPromo(pedido) {
+  if (!pedido) return 0;
+  if (pedido.producto === 'invitacion') return PAQUETES[pedido.paquete]?.precio || 0;
+  if (pedido.producto === 'a-medida') return A_MEDIDA[pedido.aMedida || 'personalizado']?.deluxe || 0;
+  return PRODUCTOS[pedido.producto]?.precio || 0;
+}
+// Resta un importe (ya en la moneda) a un precio y recalcula el IVA y los centavos
+function restar(precio, off) {
+  if (!off) return { ...precio, discount: 0 };
+  const cero = isZeroDecimal(precio.currency);
+  const amount = Math.max(0, cero || precio.amount >= 1000 ? Math.round(precio.amount - off) : Math.round((precio.amount - off) * 100) / 100);
+  const vat = precio.vatRate ? Math.round((amount - amount / (1 + precio.vatRate / 100)) * 100) / 100 : 0;
+  return { ...precio, amount, vat, minor: cero ? Math.round(amount) : Math.round(amount * 100), discount: precio.amount - amount, before: precio.amount };
+}
+async function opciones(env, request, { eur, clave, moneda, cupon, promo = null, eurPromo = null, sinIva = false, pais = paisReal(request) }) {
   const rates = await getRates(env);
   // Empresa de la UE con IVA válido: sin IVA
   const medios = eur > 0 ? methodsFor(env, pais, moneda) : [];
   const conPrecio = medios.map((m) => {
     const lista0 = priceIn(clave, eur, m.currency, rates, pais, env, { sinIva });
-    const conPromo = promo ? aplicarCupon(lista0, { clase: 'porcentaje', valor: promo.porcentaje }, rates) : lista0;
+    // README (ronda 48): la promo descuenta solo el plan o el producto (eurPromo), no los complementos
+    const base = promo ? priceIn(clave, Math.min(eur, eurPromo ?? eur), m.currency, rates, pais, env, { sinIva }) : null;
+    const offPromo = base ? Math.round(base.amount * Math.min(100, Math.max(0, promo.porcentaje))) / 100 : 0;
+    const conPromo = promo ? restar(lista0, isZeroDecimal(m.currency) || lista0.amount >= 1000 ? Math.round(offPromo) : offPromo) : lista0;
     const pr = aplicarCupon(conPromo, cupon, rates);
-    return { id: m.id, moneda: m.currency, importe: pr.amount, texto: formatMoney(pr.amount, m.currency), iva: pr.vat, ivaTasa: pr.vatRate, antes: lista0.amount && pr.amount < lista0.amount ? formatMoney(lista0.amount, m.currency) : null, minor: pr.minor };
+    return { id: m.id, moneda: m.currency, importe: pr.amount, texto: formatMoney(pr.amount, m.currency), iva: pr.vat, ivaTasa: pr.vatRate, antes: lista0.amount && pr.amount < lista0.amount ? formatMoney(lista0.amount, m.currency) : null, minor: pr.minor,
+      descuentoPromo: conPromo.discount ? formatMoney(conPromo.discount, m.currency) : null };
   });
   const lista = priceIn(clave, eur, moneda, rates, pais, env, { sinIva });
   return { pais, rates, medios: conPrecio, lista: { importe: lista.amount, texto: formatMoney(lista.amount, moneda) } };
@@ -146,8 +168,15 @@ export async function catalogo(request, env) {
     tarjetaStd: [...CON_TARJETA_STD],
     aMedida: precio('a-medida', A_MEDIDA.personalizado.premium),
     // Promociones vigentes en este país: cada una con el precio de cada plan ya descontado (la web tacha el precio de lista)
-    promos: promosVigentes(pais).map((p) => ({ id: p.id, nombre: p.nombre, porcentaje: p.porcentaje, categorias: p.categorias || [], planes: p.planes?.length ? p.planes : PLANES_PROMO,
-      precios: Object.fromEntries(PLANES_PROMO.filter((k) => !p.planes?.length || p.planes.includes(k)).map((k) => { const l = priceIn(k, PAQUETES[k].precio, moneda, rates, pais, env); const d = aplicarCupon(l, { clase: 'porcentaje', valor: p.porcentaje }, rates); return [k, { antes: formatMoney(l.amount, moneda), texto: formatMoney(d.amount, moneda) }]; })) })),
+    // README (ronda 48): cada promo trae el precio de lista y el precio con descuento de todo lo que alcanza (planes, a medida,
+    // corporativo, Save The Date, modelos simples). La clave de los productos es su id; 'a-medida' y 'empresarial' para los a medida.
+    promos: promosVigentes(pais).map((p) => { const ap = aplicaDe(p); return { id: p.id, nombre: p.nombre, porcentaje: p.porcentaje, categorias: p.categorias || [], planes: ap.filter((k) => PLANES_PROMO.includes(k)), aplica: ap,
+      precios: Object.fromEntries(ap.map((k) => {
+        const eurK = PAQUETES[k]?.precio ?? (k === 'a-medida' ? A_MEDIDA.personalizado.deluxe : k === 'empresarial' ? A_MEDIDA.empresarial.deluxe : PRODUCTOS[k]?.precio);
+        if (!eurK) return null;
+        const l = priceIn(PAQUETES[k] ? k : k === 'empresarial' ? 'a-medida' : k, eurK, moneda, rates, pais, env); const d = aplicarCupon(l, { clase: 'porcentaje', valor: p.porcentaje }, rates);
+        return [k, { antes: formatMoney(l.amount, moneda), texto: formatMoney(d.amount, moneda) }];
+      }).filter(Boolean)) }; }),
   }, 200, origenSitio(request));
 }
 
@@ -169,8 +198,8 @@ export async function cotizar(request, env) {
   const rc = await inversion(env, request, b.factura);
   const pais = paisDe(request, b);
   const promo = await promoDe(env, request, pedido, pais);
-  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda: monedaPedida(request, b.moneda), cupon, promo, sinIva: !!rc, pais });
-  return json({ pais, paisIp: paisIp(request), pedido, eur, gratis: eur === 0, medios: o.medios, lista: o.lista, cupon: cupon ? { codigo: cupon.codigo } : null, promo: promo ? { nombre: promo.nombre, porcentaje: promo.porcentaje } : null, errorCupon,
+  const o = await opciones(env, request, { eur, clave: clavePrecio(pedido), moneda: monedaPedida(request, b.moneda), cupon, promo, eurPromo: borrador?.eurPromo ?? (b.mejora && !borrador && !rec ? eur : eurConPromo(pedido)), sinIva: !!rc, pais });
+  return json({ pais, paisIp: paisIp(request), pedido, eur, gratis: eur === 0, medios: o.medios, lista: o.lista, cupon: cupon ? { codigo: cupon.codigo } : null, promo: promo ? { nombre: promo.nombre, porcentaje: promo.porcentaje, descuento: o.medios[0]?.descuentoPromo || null } : null, errorCupon,
     empresa: rc ? { valida: true, nombre: rc.name || '', direccion: rc.address || '' } : null });
 }
 
@@ -195,7 +224,7 @@ export async function comprar(request, env) {
   const rc = await inversion(env, request, b.factura);
   const pais = paisDe(request, b);
   const promo = await promoDe(env, request, pedido, pais);
-  const o = await opciones(env, request, { eur, clave: pedido.paquete, moneda, cupon, promo, sinIva: !!rc, pais });
+  const o = await opciones(env, request, { eur, clave: clavePrecio(pedido), moneda, cupon, promo, eurPromo: borrador?.eurPromo ?? (b.mejora && !borrador && !rec ? eur : eurConPromo(pedido)), sinIva: !!rc, pais });
   // Administradores: pueden crear cualquier invitación sin pagar, para probar (no genera factura)
   const sinPagar = !!(b.sinPagar && usuario?.esAdmin);
   const elegido = sinPagar ? null : o.medios.find((m) => m.id === b.medio) || o.medios[0];
@@ -497,6 +526,19 @@ export async function pagoPendiente(env, eventoId) {
 const precioPaquete = (p) => (p === 'gratis' ? 0 : PAQUETES[p]?.precio || 0);
 
 // Lo que pide el panel para mostrar el plan, los complementos y lo que falta pagar
+// README (ronda 48): la promo vigente para lo que se muestra en el panel: el precio de lista, el precio con descuento y cuánto
+// se descuenta de lo que falta pagar (solo el plan o el producto; los complementos, no)
+function promoPanel(env, ev, { item, clave, eurLista, eurPagar, eurTotal, moneda, rates, pais }) {
+  const promo = item ? promoPara({ pais, plan: item, categoria: categoriaDeTipo(ev.tipo) }) : null;
+  if (!promo || !eurLista) return null;
+  const cero = isZeroDecimal(moneda);
+  const redondo = (n) => (cero || n >= 1000 ? Math.round(n) : Math.round(n * 100) / 100);
+  const lista = priceIn(clave, eurLista, moneda, rates, pais, env).amount;
+  const off = eurPagar ? redondo(priceIn(clave, eurPagar, moneda, rates, pais, env).amount * promo.porcentaje / 100) : 0;
+  const total = priceIn(clave, eurTotal, moneda, rates, pais, env).amount;
+  return { nombre: promo.nombre, porcentaje: promo.porcentaje, antes: formatMoney(lista, moneda), texto: formatMoney(redondo(lista * (1 - promo.porcentaje / 100)), moneda),
+    descuento: off ? `−${formatMoney(off, moneda)}` : null, total: off ? formatMoney(Math.max(0, total - off), moneda) : null };
+}
 export async function estadoPlan(env, request, ev, esquema) {
   if (ev.producto !== 'invitacion') return estadoProducto(env, request, ev, esquema);
   const m = buscarModelo(ev.modelo);
@@ -520,8 +562,9 @@ export async function estadoPlan(env, request, ev, esquema) {
   const secciones = esquema.pasos.filter((p) => p.seccion && !p.complemento && !p.obligatoria && seccionActivaDe(p, ev.datos)).map((p) => ({ id: p.id, titulo: p.titulo, nivel: p.nivel }));
   return {
     plan, nombre: NOMBRES_PAQUETE[plan], precio: texto(plan, precioPaquete(plan)), pagado, gratisPosible,
+    promo: promoPanel(env, ev, { item: PLANES_PROMO.includes(plan) ? plan : null, clave: plan, eurLista: precioPaquete(plan), eurPagar: eurPlan, eurTotal: eur, moneda, rates, pais }),
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: precioExtra(x) ? texto(x, precioExtra(x)) : `Incluida en ${NOMBRES_PAQUETE[plan]}`, pagado: !extrasAPagar.includes(x) })),
-    aPagar: { eur, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
+    aPagar: { eur, eurPlan, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
     secciones,
     // Precio de cada tarjeta con este plan (para mostrarlo en los selectores del panel)
     preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'agradecimiento', 'video-portada', 'idioma', 'diseno'].map((x) => [x, precioExtra(x) ? `+${texto(x, precioExtra(x))}` : formatMoney(0, moneda)])),
@@ -537,8 +580,8 @@ async function estadoProducto(env, request, ev, esquema) {
   const medida = ev.producto === 'a-medida';
   // README (ronda 29): las Save The Date a medida también pasan por el equipo de diseño antes del pago
   const enviable = medida || ['std-tarjeta-medida', 'std-web-medida'].includes(ev.producto);
-  const clave = medida ? (ev.aMedida || 'personalizado') : ev.producto;
-  const base = medida ? (A_MEDIDA[clave]?.deluxe || 0) : (PRODUCTOS[ev.producto]?.precio || 0);
+  const clave = medida ? 'a-medida' : ev.producto; // README (ronda 48): clave de precio (precios fijos por país)
+  const base = medida ? (A_MEDIDA[ev.aMedida || 'personalizado']?.deluxe || 0) : (PRODUCTOS[ev.producto]?.precio || 0);
   const pagado = ev.paquete !== 'borrador';
   const elegidos = medida ? complementos(esquema, ev.datos).filter((x) => EXTRAS[x]) : [];
   const ya = ev.datos.extras || [];
@@ -546,11 +589,12 @@ async function estadoProducto(env, request, ev, esquema) {
   const eur = (pagado ? 0 : base) + extrasAPagar.reduce((t, x) => t + (EXTRAS[x]?.precio || 0), 0);
   const moneda = monedaPedida(request), rates = await getRates(env), pais = paisReal(request);
   const texto = (k, e) => (e ? formatMoney(priceIn(k, e, moneda, rates, pais, env).amount, moneda) : 'Gratis');
-  const nombre = medida ? (clave === 'empresarial' ? 'Invitación para empresas' : 'Invitación con diseño a medida') : ev.producto === 'compromiso-web' ? 'Plan simple' : (PRODUCTOS[ev.producto]?.nombre || ev.producto);
+  const nombre = medida ? (ev.aMedida === 'empresarial' ? 'Invitación para empresas' : 'Invitación con diseño a medida') : ev.producto === 'compromiso-web' ? 'Plan simple' : (PRODUCTOS[ev.producto]?.nombre || ev.producto);
   return {
     producto: true, plan: medida ? 'deluxe' : 'basic', nombre, precio: texto(clave, base), pagado: pagado ? (medida ? 'deluxe' : 'basic') : null, gratisPosible: false,
+    promo: promoPanel(env, ev, { item: claveDePromo({ producto: ev.producto, aMedida: ev.aMedida }), clave, eurLista: base, eurPagar: pagado ? 0 : base, eurTotal: eur, moneda, rates, pais }),
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: texto(x, EXTRAS[x]?.precio || 0), pagado: !extrasAPagar.includes(x) })),
-    aPagar: { eur, texto: texto(clave, eur), plan: pagado ? null : texto(clave, base), extras: extrasAPagar },
+    aPagar: { eur, eurBase: pagado ? 0 : base, texto: texto(clave, eur), plan: pagado ? null : texto(clave, base), extras: extrasAPagar },
     secciones: [],
     preciosExtras: Object.fromEntries(['std-tarjeta-medida', 'std-web-medida', 'idioma'].map((x) => [x, `+${texto(x, EXTRAS[x]?.precio || 0)}`])),
     activar: !pagado,
@@ -569,12 +613,12 @@ export async function validarBorrador(env, request, b, { esquemaDe }) {
   if (!permitido) throw new HttpError(403, 'Sin permiso para esta invitación');
   const est = await estadoPlan(env, request, ev, await esquemaDe(ev));
   if (est.medida && !est.medida.aprobado) throw new HttpError(409, 'El equipo de diseño todavía no aprobó tu proyecto. Te avisaremos por mail.');
-  if (est.producto) return { evento: ev, eur: est.aPagar.eur, pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: est.plan, aMedida: ev.aMedida || null, extras: est.aPagar.extras, nombre: est.nombre } };
+  if (est.producto) return { evento: ev, eur: est.aPagar.eur, eurPromo: est.aPagar.eurBase || 0, pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: est.plan, aMedida: ev.aMedida || null, extras: est.aPagar.extras, nombre: est.nombre } };
   const m = buscarModelo(ev.modelo);
   const tipoNombre = TIPOS_EVENTO.find((t) => t.id === ev.tipo)?.nombre || ev.tipo;
   const extras = est.aPagar.extras.map((x) => EXTRAS[x]?.nombre || x);
   return {
-    evento: ev, eur: est.aPagar.eur,
+    evento: ev, eur: est.aPagar.eur, eurPromo: est.aPagar.eurPlan || 0,
     pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: est.plan, extras: est.aPagar.extras,
       nombre: `Invitación ${tipoNombre} · ${m ? nombreModelo(m, ev.tipo) : ev.modelo} ${NOMBRES_PAQUETE[est.plan]}${extras.length ? ` + ${extras.join(', ')}` : ''}` },
   };

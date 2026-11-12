@@ -317,15 +317,28 @@
   } };
 
   // ── Pestañas y tarjetas ────────────────────────────────────────────
+  // README (ronda 48): promo vigente (admin → Precios y promos) para una tarjeta de la grilla: los modelos van «desde» el plan Basic;
+  // las Save The Date, la invitación simple y el diseño a medida, con su propio producto
+  function promoDe(it) {
+    var c = catalogo; if (!c || !c.promos || !c.promos.length || it.gratis) return null;
+    var cat = (document.body && document.body.getAttribute('data-evento')) || '';
+    var pr = it.link && it.link.producto;
+    var k = pr && pr !== 'invitacion' ? (pr === 'a-medida' && cat === 'empresarial' ? 'empresarial' : pr) : (it.medida ? (cat === 'empresarial' ? 'empresarial' : 'a-medida') : 'basic');
+    var m = null;
+    c.promos.forEach(function (p) { if ((!p.categorias.length || (cat && p.categorias.indexOf(cat) > -1)) && p.precios[k] && (!m || p.porcentaje > m.porcentaje)) m = p; });
+    return m ? { p: m, x: m.precios[k] } : null;
+  }
   function tarjeta(it, lista, i, ev) {
     var precioTxt = it.desde ? 'desde ' + it.desde : (it.precio ? (it.fijo || it.medida ? it.precio : 'desde ' + it.precio) : '');
+    var promo = precioTxt ? promoDe(it) : null;
     var ver = function () { if (it.medida) { if (it.galeria) verDiseno(lista, i, ev); else if (it.ejemplos) location.href = it.ejemplos; else personalizar(it, ev); } else verDiseno(lista, i, ev); };
     return el('div', { class: 'ci-item' + (it.medida ? ' ci-medida' : '') },
       el('button', { type: 'button', class: 'ci-mini', 'aria-label': (it.medida ? 'Ver ejemplos de ' : 'Ver diseño ') + it.nombre, onclick: ver },
         imagen(it.imgs, it.nombre), it.gratis ? el('span', { class: 'ci-gratis', text: 'Gratis' }) : null),
       it.etiqueta ? el('small', { class: 'ci-etiqueta', text: it.etiqueta }) : null,
       el('h4', { class: 'ci-nombre', text: it.nombre }),
-      precioTxt ? el('p', { class: 'ci-precio', text: precioTxt }) : null,
+      promo ? (function () { var p = el('p', { class: 'ci-precio' }); p.innerHTML = (/^desde /.test(precioTxt) ? tr('desde') + ' ' : '') + '<s class="tachado">' + promo.x.antes + '</s> <span class="promo-precio">' + promo.x.texto + '</span><span class="ci-promo">−' + promo.p.porcentaje + ' %</span>'; return p; })()
+        : precioTxt ? el('p', { class: 'ci-precio', text: precioTxt }) : null,
       el('button', { type: 'button', class: 'ci-btn ci-btn-borde', onclick: function () { personalizar(it, ev); } }, it.medida ? 'Comenzar' : 'Personalizar'),
       it.medida && !it.ejemplos && !it.galeria ? null : el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: ver }, it.medida ? 'Ver ejemplos' : (it.galeria ? 'Ver diseños' : 'Ver diseño')));
   }

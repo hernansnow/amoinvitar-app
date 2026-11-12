@@ -874,3 +874,16 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .idioma-legal .moneda-lista { width: 180px; }
 /* README (ronda 47): Profesionales · «Cómo funciona» sin los números (en el celular quedaban flotando a la izquierda) */
 #como-trabajan .paso-num { display: none; }
+/* README (ronda 48): precio con promo legible sobre fondos oscuros o de color: en la portada sigue blanco; en «Comparen
+   todos los planes», cinta roja con letra blanca como en los paquetes */
+.portada .tachado, .portada .promo-precio { color: inherit; }
+.portada .tachado { opacity: .8; font-size: .85em; }
+.comparar .tachado { color: inherit; opacity: .75; font-size: .9em; }
+.comparar .promo-precio { display: inline-block; background: #e8523f; color: #fff; padding: 3px 8px; border-radius: 99px; margin-top: 3px; letter-spacing: .04em; }
+.promo-cinta-suelta { display: inline-block; background: #e8523f; color: #fff; font: 600 11.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; padding: 6px 10px; border-radius: 99px; margin: 0 8px 8px 0; vertical-align: middle; }
+.ci-precio .tachado { color: var(--suave); font-size: .9em; }
+.ci-precio .promo-precio { color: #c2412f; font-weight: 600; }
+.ci-promo { display: inline-block; background: #e8523f; color: #fff; font: 600 10.5px/1 var(--sans); letter-spacing: .06em; padding: 4px 7px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
+.precio-m .promo-cinta-suelta { display: table; margin: 0 0 10px; }
+.precio-m .tachado { color: inherit; opacity: .6; }
+.precio-m .promo-precio { color: inherit; white-space: nowrap; }
