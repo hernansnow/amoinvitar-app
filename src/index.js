@@ -1053,7 +1053,12 @@ async function apiPanel(env, request, url, partes) {
     try {
       r = await env.ALBUNEAR.crearAlbum({ evento: ev.id, email, tipo: TIPO_ALB[ev.tipo] || 'otro', nombre1: d.nombres?.a || '', nombre2: d.nombres?.b || '',
         fecha: fecha.slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais: paisVisitante(request) || null, lang: String(d.variante || 'es').slice(0, 2) });
-    } catch (e) { console.error('albunear', e); return json({ error: 'No se pudo crear el álbum en Albunear. Prueba en un rato.' }, 502); }
+    } catch (e) {
+      // Si Albunear todavía no tiene la puerta nueva (o falla), el camino de siempre: crear el álbum con el código de regalo
+      console.error('albunear', e);
+      try { const g = await env.ALBUNEAR.albumDeluxe(ev.id); if (g?.album?.panel || g?.crear) return json({ entrar: g.album?.panel || g.crear, album: g.album || null }); } catch (e2) { console.error('albunear', e2); }
+      return json({ error: 'No se pudo crear el álbum en Albunear. Prueba en un rato.' }, 502);
+    }
     // El álbum pasa a la invitación (sección «Álbum de fotos QR» con Albunear, en lugar de Instagram Wall)
     if (r?.album?.link) {
       ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
