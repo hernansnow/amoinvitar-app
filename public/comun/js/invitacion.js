@@ -48,11 +48,19 @@
   function isoGuiones(x) { return x.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, '$1-$2-$3T$4:$5:$6Z'); }
   // README (ronda 74): en el celular, Google con su editor de eventos (se adapta al celular; antes abría la versión de
   // computadora) y Apple / otros con el .ics que sirve el servidor (el iPhone abre «Agregar evento» de su app)
+  var ANDROID = /Android/i.test(navigator.userAgent);
   var MOVIL = window.matchMedia && window.matchMedia('(max-width: 700px), (pointer: coarse)').matches;
   function enlaces(c) {
     var q = encodeURIComponent, det = c.descripcion + '\n' + location.href.split('#')[0];
     var ics = '/api/agendar.ics?' + ['t=' + q(c.titulo), 'i=' + q(c.inicio), 'f=' + q(c.fin || c.inicio), 'l=' + q(c.lugar || ''), 'd=' + q(det)].join('&');
     var google = 'https://calendar.google.com/calendar/' + (MOVIL ? 'r/eventedit' : 'render') + '?' + (MOVIL ? '' : 'action=TEMPLATE&') + 'text=' + q(c.titulo) + '&dates=' + c.inicio + '/' + (c.fin || c.inicio) + '&details=' + q(det) + '&location=' + q(c.lugar);
+    // README (ronda 75): Android: Google Calendar con un link «intent» a su app, en la misma pestaña (en una pestaña nueva
+    // Chrome cerraba el aviso «abrir con la app» y quedaba la web); si no tiene la app, la web. Apple no va en Android.
+    if (ANDROID) {
+      var web = google;
+      google = 'intent://' + google.replace(/^https:\/\//, '') + '#Intent;scheme=https;package=com.google.android.calendar;S.browser_fallback_url=' + q(web) + ';end';
+      return [[tx2.google, google, 'app'], [tx2.outlook, 'https://outlook.live.com/calendar/0/action/compose?subject=' + q(c.titulo) + (c.todoElDia ? '&allday=true&startdt=' + c.inicio.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') + '&enddt=' + c.fin.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') : '&startdt=' + isoGuiones(c.inicio) + '&enddt=' + isoGuiones(c.fin || c.inicio)) + '&location=' + q(c.lugar) + '&body=' + q(det), false], [tx2.otro, ics, true]];
+    }
     return [
       [tx2.google, google, false],
       [tx2.apple, ics, true],
@@ -85,7 +93,7 @@
         var a = document.createElement('a');
         a.textContent = x[0]; a.href = x[1]; a.setAttribute('role', 'menuitem');
         // El .ics se abre en la misma pestaña (el sistema lo pasa a su app de calendario); Google y Outlook, en otra
-        if (!x[2]) { a.target = '_blank'; a.rel = 'noopener'; }
+        if (x[2] === false) { a.target = '_blank'; a.rel = 'noopener'; }
         a.addEventListener('click', function () { setTimeout(cerrarMenu, 50); });
         m.appendChild(a);
       });
