@@ -19,6 +19,7 @@ import { formatoPais, paisDeZona } from './textos/regional.js';
 import { paisVisitante, claveVisitante, varianteVisitante, bautizoVisitante, sweet16Visitante } from './sitio/visitante.js';
 import { traducirEstaticos, traducePrefijo } from './textos/estaticos.js';
 import { armarVista, ALBUNEAR_TEMA } from './motor/datos.js';
+import { propioDe, rutaPropia, leerPropio, servirPropio, conExtrasPropios, adminPropio } from './propio.js'; // README (ronda 57)
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
@@ -71,11 +72,13 @@ async function archivo(env, ruta, origen, tipo = 'text') {
 const modeloJSON = async (env, id, origen, tipo) => (id && /^[a-z0-9-]+$/.test(id) ? conEvento(await archivo(env, `/modelos/${id}/modelo.json`, origen, 'json'), tipo) : null);
 // El diseño de cada tipo de evento y paquete: index-<tipo>-<paquete>.html → index-<tipo>.html (Deluxe del evento)
 // → index-<paquete>.html → index.html. Así un modelo trae su versión de boda, de 15, de cumpleaños…
-async function plantillaDe(env, id, tipo, paquete, origen) {
-  const leer = (f) => archivo(env, `/modelos/${id}/${f}`, origen);
+async function plantillaDe(env, id, tipo, paquete, origen, propio = null) {
+  // README (ronda 57): con diseño propio, el HTML subido con ese nombre gana (y si eligió una plantilla fija, esa)
+  const leer = async (f) => (propio ? await leerPropio(env, propio.ev, f) : null) || archivo(env, `/modelos/${id}/${f}`, origen);
+  if (propio?.plantilla) { const fija = await leer(propio.plantilla); if (fija) return fija; }
   if (paquete === 'deluxe') return (await leer(`index-${tipo}.html`)) || leer('index.html');
-  const propio = await leer(`index-${tipo}-${paquete}.html`);
-  if (propio) return propio;
+  const delPaquete = await leer(`index-${tipo}-${paquete}.html`);
+  if (delPaquete) return delPaquete;
   // El evento tiene su diseño pero no este paquete: su Deluxe (no el de boda, que trae otros adornos)
   return (await leer(`index-${tipo}.html`)) || (await leer(`index-${paquete}.html`)) || leer('index.html');
 }
@@ -156,14 +159,19 @@ function idiomaPedido(url, datos) {
   return todos.find((x) => x.slice(0, 2) === q.slice(0, 2)) || todos[0];
 }
 
-async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false, prueba = false } = {}) {
-  const modelo = await modeloJSON(env, evento.modelo, url.origin, evento.tipo);
+async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false, prueba = false, forzarPropio = false } = {}) {
+  // README (ronda 57): diseño propio (carpeta de la invitación sobre la del modelo base). En a medida/corporativo,
+  // el modelo base es el punto de partida del diseño.
+  const propio = demo ? null : propioDe(evento, forzarPropio);
+  if (propio) evento = { ...evento, modelo: propio.base };
+  const propioMj = propio ? await leerPropio(env, evento.id, 'modelo.json', 'json') : null;
+  const modelo = propioMj ? conEvento(propioMj, evento.tipo) : await modeloJSON(env, evento.modelo, url.origin, evento.tipo);
   // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html.
   // Los otros eventos: index-15.html, index-15-premium.html… (ver plantillaDe)
   // README (ronda 28): Basic trae cuenta regresiva (Gratis no): con la cuenta, la portada es la del diseño con su cuenta
   if (evento.paquete === 'gratis') evento = { ...evento, paquete: 'basic', gratis: true };
   const conCuenta = evento.paquete === 'basic' && !evento.gratis && evento.portada?.cuenta !== false;
-  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, conCuenta ? 'premium' : evento.paquete, url.origin);
+  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, conCuenta ? 'premium' : evento.paquete, url.origin, propio ? { ev: evento.id, plantilla: propio.plantilla } : null);
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
   const idiomas = demo ? [variante(evento.variante)] : idiomasDe(evento);
   const v = demo ? variante(evento.variante) : idiomaPedido(url, evento);
@@ -173,7 +181,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     for (const [ruta, val] of Object.entries(aplanar(evento.traducciones?.[v.slice(0, 2)] || {}))) if (typeof val === 'string' && val.trim()) escribirRuta(evento, ruta, val);
   }
   const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres), modelo, { bautizo: evento.bautizo, sweet16: evento.sweet16 });
-  const rutas = { comun: '/comun', modelo: `/modelos/${evento.modelo}`, api: '/api' };
+  const rutas = { comun: '/comun', modelo: propio ? rutaPropia(evento.id, propio) : `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
   vista.idiomas = { lista: idiomas, actual: v, banderas: Object.fromEntries(idiomas.map((x) => [x.slice(0, 2), banderaDe(x.slice(0, 2), evento)])) };
   vista.prueba = prueba;
@@ -182,7 +190,7 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     vista.sobre = { activo: false }; vista.bienvenidaModal = { activa: false };
   }
   // README (ronda 44): los textos fijos en español de algunos modelos, en el idioma de la invitación
-  return html(traducirEstaticos(await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]), v), 200, {
+  return html(conExtrasPropios(traducirEstaticos(await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]), v), propio), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
     'x-robots-tag': 'noindex',
     ...(demo ? { vary: 'cf-ipcountry, Cookie' } : {}),
@@ -210,7 +218,7 @@ async function renderGuardado(plantilla, vista, t, origen, extra) {
 
 // ── Dominio propio (README ronda 38) ─────────────────────────────────
 const HOST_PROPIO = /^(www\.)?amoinvitar\.com$|^(app|panel)\.amoinvitar\.com$|^localhost$|^127\.|\.workers\.dev$/i;
-const PERMITIDO_EN_DOMINIO = /^\/(acceso|comun|modelos|media|mesa|puerta|std)\//;
+const PERMITIDO_EN_DOMINIO = /^\/(acceso|comun|modelos|media|mesa|puerta|std|propio)\//;
 const API_EN_DOMINIO = /^\/api\/(rsvp|invitados\.csv|mesa|puerta)(\/|$)/;
 const noExiste = () => html('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>No encontrado</title><body style="font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;color:#444"><p>Esta página no existe.</p>', 404, { 'x-robots-tag': 'noindex' });
 // Devuelve una respuesta si hay que cortar acá; null para seguir con el resto
@@ -427,11 +435,15 @@ async function invitadosCSV(env, request, url) {
 // tema.css (las variables --fuente-titulos, --fuente-texto, --color-principal). Un modelo puede fijarlas
 // en modelo.json → "acceso": { "css": [...] }.
 async function estilosModelo(env, ev, url) {
-  let m = null; try { m = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); } catch { /* sin modelo */ }
+  // README (ronda 57): con diseño propio activo, el modelo base y sus archivos propios (tema.css subido, etc.)
+  const pp = propioDe(ev.datos);
+  const mid = pp?.base || ev.modelo;
+  let m = null; try { m = (pp && await leerPropio(env, ev.id, 'modelo.json', 'json')) || await modeloJSON(env, mid, url.origin, ev.tipo); } catch { /* sin modelo */ }
   if (!m) return [];
+  const propia = (x) => (pp ? String(x).replace(`/modelos/${mid}/`, `${rutaPropia(ev.id, pp)}/`) : x);
   // README (ronda 51): con su hoja de fuentes (catalogo.css: Dantina y las demás), si no, la letra de los nombres no cargaba
-  if (Array.isArray(m.acceso?.css)) return [...new Set([...(m.tarjetas?.fuentes?.css || []), ...m.acceso.css])];
-  return [...[].concat(m.tarjetas?.fuentes?.css || []), `/modelos/${ev.modelo}/tema.css`]; // README (ronda 51): la lista de hojas, no un arreglo adentro
+  if (Array.isArray(m.acceso?.css)) return [...new Set([...(m.tarjetas?.fuentes?.css || []), ...m.acceso.css])].map(propia);
+  return [...[].concat(m.tarjetas?.fuentes?.css || []), `/modelos/${mid}/tema.css`].map(propia); // README (ronda 51): la lista de hojas, no un arreglo adentro
 }
 
 // ── Buscá tu mesa (QR de la entrada) ──────────────────────────────────
@@ -790,6 +802,7 @@ async function apiPanel(env, request, url, partes) {
     if (ev.datos.recuerdo) limpio.recuerdo = ev.datos.recuerdo; // lo comprado en «Recuerdo» y los avisos enviados
     if (ev.datos.vinculo) limpio.vinculo = ev.datos.vinculo; // README (ronda 52): de qué álbum de Albunear viene
     if (ev.datos.albunear) limpio.albunear = ev.datos.albunear; // README (ronda 52): el álbum Classic creado desde acá
+    if (ev.datos.propio) limpio.propio = ev.datos.propio; // README (ronda 57): el diseño propio lo maneja el administrador
     for (const clase of ['std', 'agradecimiento']) {
       const prev = ev.datos[clase]?.tarjeta;
       if (prev?.generada && !admin) limpio[clase] = ev.datos[clase];
@@ -1158,17 +1171,20 @@ async function crearEvento(env, request, url) {
 async function vistaPrevia(env, url, request, id) {
   const ev = await eventoConClave(env, request, url, id);
   if (!ev) return html('Sin permiso', 403);
-  if (!ev.modelo) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
+  // README (ronda 57): ?propio=1 → el administrador ve el diseño propio aunque todavía no esté activo
+  const forzarPropio = url.searchParams.get('propio') === '1' && !!(await usuarioActual(request, env).catch(() => null))?.esAdmin;
+  const pp = propioDe(ev.datos, forzarPropio);
+  if (!ev.modelo && !pp) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo);
-  const evento = conFotosDeMuestra({ ...paraMotor(ev), paquete: await planVista(env, url, ev) }, mj);
+  const mj = await modeloJSON(env, pp?.base || ev.modelo, url.origin, ev.tipo);
+  const evento = conFotosDeMuestra({ ...paraMotor(ev), modelo: pp?.base || ev.modelo, paquete: await planVista(env, url, ev) }, mj);
   // Con lista de invitados se ve como la ve el primero de la lista (o un ejemplo)
   let invitado = null;
   if (usaLista(ev.datos)) {
     const lista = await almacenDe(env).invitados(ev.id).catch(() => []);
     invitado = lista[0] || { codigo: 'ejemplo', nombre: 'Nombre del invitado', pases: 1, mesa: '1' };
   }
-  return pagina(env, url, evento, { marca: await marcaEfectiva(env, empresa), sinSobre: true, prueba: true, invitado });
+  return pagina(env, url, evento, { marca: await marcaEfectiva(env, empresa), sinSobre: true, prueba: true, invitado, forzarPropio });
 }
 
 // Vista previa del panel: donde el cliente todavía no subió fotos van las fotos de la demo
@@ -1273,6 +1289,8 @@ export default {
     }
     try {
       const M = request.method;
+      // README (ronda 57): archivos del diseño propio de una invitación (lo subido, o el del modelo base)
+      if (p0 === 'propio') { const r = await servirPropio(env, url); if (r) return r; }
       if (p0 === 'auth') {
         if (p1 === 'enlace' && M === 'POST') return await cuenta.pedirEnlace(request, env);
         if (p1 === 'enlace') return await cuenta.entrarConEnlace(request, env);
@@ -1310,6 +1328,7 @@ export default {
         if (p1 === 'admin' && partes[2] === 'registro') return await sa.registro(request, env);
         if (p1 === 'admin' && partes[2] === 'precios') return await sa.precios(request, env);
         if (p1 === 'admin' && partes[2] === 'limpieza') return await sa.limpieza(request, env); // README (ronda 48)
+        if (p1 === 'admin' && partes[2] === 'propio' && partes[3]) return await adminPropio(request, env, partes[3], partes[4]); // README (ronda 57)
         if (p1 === 'admin' && partes[2] === 'resumen') return await consola.resumen(request, env);
         if (p1 === 'admin' && partes[2] === 'pro') return await consola.accionPro(request, env, partes);
         if (p1 === 'admin' && partes[2] === 'medidas' && partes[3] && partes[4]) return await consola.medida(request, env, partes[3], partes[4]);

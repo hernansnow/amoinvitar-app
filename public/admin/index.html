@@ -308,7 +308,7 @@
     var rec = function () { VISTAS.eventos = null; $('#dlg').close(); return Promise.resolve().then(pinta); };
     var c = el('div', { style: 'display:grid;gap:4px' });
     c.append(el('div', { class: 'meta' }, e.tipo + ' · ' + (e.modelo || '—') + ' · ' + (e.empresa ? 'Empresa: ' + e.empresa + ' · ' : '') + 'Clientes: ' + (e.clientes || 'sin cliente')));
-    c.append(el('div', { class: 'fila', style: 'margin:6px 0' }, [el('a', { class: 'b', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Abrir el panel (como administrador)'), e.link ? el('a', { class: 'b sec', href: e.link, target: '_blank', rel: 'noopener' }, 'Ver la invitación') : null]));
+    c.append(el('div', { class: 'fila', style: 'margin:6px 0' }, [el('a', { class: 'b', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Abrir el panel (como administrador)'), el('a', { class: 'b sec', href: '/admin/diseno.html?id=' + e.id, target: '_blank', rel: 'noopener' }, 'Diseño propio (colores, imágenes, a medida)'), e.link ? el('a', { class: 'b sec', href: e.link, target: '_blank', rel: 'noopener' }, 'Ver la invitación') : null]));
     var plan = el('select', { style: 'width:auto' }, PAQ.concat(['borrador']).map(function (k) { return el('option', { value: k }, k); })); plan.value = e.paquete;
     c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Plan'), el('div', { class: 'fila', style: 'margin:0' }, [plan, btn('Cambiar plan', '', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/plan', { paquete: plan.value }, 'Plan cambiado', rec); })]), el('p', { class: 'chico', style: 'margin:0' }, 'Sin cobrar. Cambia lo que incluye y cuánto dura online (Gratis 15 días, Basic 3 meses, Premium 6, Deluxe 12 desde la fecha del evento).')]));
     var venc = el('input', { type: 'date', style: 'width:auto', value: e.venceManual ? e.venceManual.slice(0, 10) : '' });
@@ -441,7 +441,7 @@
       var ba = btn('Aprobar proyecto', '', function (b) { accion(b, '/api/admin/medidas/' + m.id + '/aprobar', { parte: m.parte }, 'Aprobado: se avisó al cliente', refrescarTodo); });
       var bl = btn('Marcar listo', 'sec', function (b) { accion(b, '/api/admin/medidas/' + m.id + '/lista', { parte: m.parte }, 'Marcado como listo', refrescarTodo); });
       return [el('div', {}, [el('strong', {}, m.nombres || m.id), el('div', { class: 'meta' }, m.producto + ' · ' + m.tipo + (m.parte === 'std' ? ' · Save The Date' : ''))]), fecha(m.enviado), tag(m.listo ? 'Listo' : m.aprobado ? 'Aprobado · en diseño' : 'Por aprobar', m.listo || m.aprobado ? '' : 'aviso'),
-        el('div', { class: 'acciones' }, [el('a', { class: 'b sec', href: '/panel/' + m.id, target: '_blank', rel: 'noopener' }, 'Abrir panel'), !m.aprobado ? ba : null, m.aprobado && !m.listo ? bl : null])];
+        el('div', { class: 'acciones' }, [el('a', { class: 'b sec', href: '/panel/' + m.id, target: '_blank', rel: 'noopener' }, 'Abrir panel'), m.parte !== 'std' ? el('a', { class: 'b', href: '/admin/diseno.html?id=' + m.id, target: '_blank', rel: 'noopener' }, 'Diseño propio') : null, !m.aprobado ? ba : null, m.aprobado && !m.listo ? bl : null])];
     })));
     return v;
   }

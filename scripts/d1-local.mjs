@@ -30,7 +30,10 @@ export function d1Local(archivo = ':memory:', carpeta = new URL('../migrations/'
 export function r2Local() {
   const m = new Map();
   return {
-    async put(clave, cuerpo, op = {}) { m.set(clave, { datos: new Uint8Array(await new Response(cuerpo).arrayBuffer()), httpMetadata: op.httpMetadata || {} }); },
-    async get(clave) { const o = m.get(clave); return o ? { body: o.datos, httpMetadata: o.httpMetadata } : null; },
+    async put(clave, cuerpo, op = {}) { m.set(clave, { datos: new Uint8Array(await new Response(cuerpo).arrayBuffer()), httpMetadata: op.httpMetadata || {}, subido: new Date() }); },
+    async get(clave) { const o = m.get(clave); return o ? { body: o.datos, httpMetadata: o.httpMetadata, size: o.datos.byteLength } : null; },
+    // README (ronda 57): listar y borrar (diseño propio)
+    async list({ prefix = '' } = {}) { return { objects: [...m].filter(([k]) => k.startsWith(prefix)).map(([key, o]) => ({ key, size: o.datos.byteLength, uploaded: o.subido })), truncated: false }; },
+    async delete(claves) { for (const k of [].concat(claves)) m.delete(k); },
   };
 }

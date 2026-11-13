@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Diseño propio · Consola</title>
+<link rel="stylesheet" href="/comun/fonts/google/jost.css">
+<!-- README (ronda 57): diseño propio de una invitación (colores, tipografía, imágenes, HTML; a medida y corporativo) -->
+<style>
+  :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --aviso: #b7791f; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 Jost, system-ui, sans-serif; color: var(--tinta); background: #f6f9f8; }
+  header { background: #fff; border-bottom: 1px solid var(--linea); padding: 14px 20px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 5; }
+  header h1 { font-size: 19px; margin: 0; font-weight: 500; }
+  header .meta { margin: 0; }
+  main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 80px; display: grid; gap: 16px; }
+  .tarjeta { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 18px; }
+  .tarjeta h2 { font-size: 17px; font-weight: 600; margin: 0 0 10px; }
+  .meta { color: var(--suave); font-size: 13.5px; margin: 4px 0; }
+  .fila { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
+  .b { font: 500 14px/1 Jost, sans-serif; border: 1px solid var(--verde); background: var(--verde); color: #fff; border-radius: 999px; padding: 10px 16px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .b.sec { background: #fff; color: var(--verde-2); }
+  .b.mal { background: #fff; color: var(--rojo); border-color: var(--rojo); }
+  .b:disabled { opacity: .5; cursor: default; }
+  label.campo { display: grid; gap: 4px; font-size: 13.5px; color: var(--suave); }
+  select, input[type=text], textarea { font: 14px/1.4 Jost, system-ui, sans-serif; border: 1px solid var(--linea); border-radius: 10px; padding: 9px 11px; background: #fff; color: var(--tinta); width: 100%; }
+  textarea { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; min-height: 150px; resize: vertical; }
+  .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px) { .dos { grid-template-columns: 1fr; } }
+  .tag { display: inline-block; font-size: 12px; border-radius: 999px; padding: 3px 10px; background: var(--claro); color: var(--verde-2); }
+  .tag.aviso { background: #fdf3e2; color: var(--aviso); }
+  .tag.mal { background: #fbe9e7; color: var(--rojo); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
+  th { color: var(--suave); font-weight: 500; }
+  td.acc { white-space: nowrap; text-align: right; }
+  td.acc button, td.acc a { font: 13px Jost, sans-serif; background: none; border: 0; color: var(--verde-2); cursor: pointer; padding: 2px 6px; }
+  td.acc button.quitar { color: var(--rojo); }
+  .muestras { display: flex; gap: 6px; flex-wrap: wrap; }
+  .muestra { width: 34px; height: 34px; border-radius: 8px; border: 1px solid rgba(0,0,0,.12); position: relative; cursor: pointer; }
+  .muestra span { position: absolute; top: 36px; left: 0; font-size: 10.5px; color: var(--suave); white-space: nowrap; }
+  .soltar { border: 2px dashed var(--linea); border-radius: 12px; padding: 22px; text-align: center; color: var(--suave); }
+  .soltar.encima { border-color: var(--verde); background: var(--claro); }
+  .registro { font: 12.5px/1.5 ui-monospace, Menlo, monospace; background: #f6f9f8; border-radius: 10px; padding: 10px; max-height: 220px; overflow: auto; white-space: pre-wrap; margin: 8px 0 0; }
+  .aviso-caja { background: #fdf3e2; border-radius: 10px; padding: 10px 12px; color: #6b4b12; font-size: 13.5px; }
+  .ok-caja { background: var(--claro); border-radius: 10px; padding: 10px 12px; color: var(--verde-2); font-size: 13.5px; }
+  details summary { cursor: pointer; color: var(--verde-2); }
+  #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--tinta); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 14px; display: none; z-index: 9; }
+  .vacio { color: var(--suave); font-size: 13.5px; }
+</style>
+</head>
+<body>
+<header><a href="/admin/" class="b sec">← Consola</a><h1 id="titulo">Diseño propio</h1><p class="meta" id="sub"></p></header>
+<main id="main"><p class="vacio">Cargando…</p></main>
+<div id="toast"></div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var id = new URLSearchParams(location.search).get('id') || '';
+  var clave = ''; try { clave = sessionStorage.getItem('ai_admin') || ''; } catch (e) { /* sin almacenamiento */ }
+  var D = null, ARCH = null;
+  function el(tag, at, hijos) {
+    var e = document.createElement(tag);
+    Object.keys(at || {}).forEach(function (k) { var v = at[k]; if (v == null || v === false) return; if (k === 'text') e.textContent = v; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v); else if (k === 'html') e.innerHTML = v; else e.setAttribute(k, v === true ? '' : v); });
+    [].concat(hijos == null ? [] : hijos).forEach(function (h) { if (h != null && h !== false) e.append(h.nodeType ? h : String(h)); });
+    return e;
+  }
+  function toast(t, mal) { var x = $('#toast'); x.textContent = t; x.style.background = mal ? '#b3392c' : '#1e2a26'; x.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(function () { x.style.display = 'none'; }, 3200); }
+  function api(ruta, op) {
+    op = op || {};
+    var h = Object.assign({}, clave ? { 'x-admin': clave } : {}, op.headers || {});
+    if (op.json !== undefined) { h['content-type'] = 'application/json'; op.body = JSON.stringify(op.json); }
+    return fetch(ruta, { method: op.method || 'GET', headers: h, body: op.body, credentials: 'same-origin' }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || ('Error ' + r.status)); return j; });
+    });
+  }
+  var API = '/api/admin/propio/' + encodeURIComponent(id);
+  var kb = function (n) { return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; };
+
+  // ── ZIP: armar (sin compresión) y leer (deflate con DecompressionStream) ─────
+  var CRC = (function () { var t = []; for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  function crc32(u) { var c = 0xFFFFFFFF; for (var i = 0; i < u.length; i++) c = CRC[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+  function armarZip(archivos) { // [{ruta, datos: Uint8Array}]
+    var enc = new TextEncoder(), partes = [], central = [], off = 0;
+    archivos.forEach(function (a) {
+      var nom = enc.encode(a.ruta), crc = crc32(a.datos), tam = a.datos.length;
+      var lh = new DataView(new ArrayBuffer(30));
+      lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+      lh.setUint32(14, crc, true); lh.setUint32(18, tam, true); lh.setUint32(22, tam, true); lh.setUint16(26, nom.length, true);
+      partes.push(new Uint8Array(lh.buffer), nom, a.datos);
+      var ch = new DataView(new ArrayBuffer(46));
+      ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true);
+      ch.setUint32(16, crc, true); ch.setUint32(20, tam, true); ch.setUint32(24, tam, true); ch.setUint16(28, nom.length, true); ch.setUint32(42, off, true);
+      central.push(new Uint8Array(ch.buffer), nom);
+      off += 30 + nom.length + tam;
+    });
+    var tamC = central.reduce(function (t, x) { return t + x.length; }, 0);
+    var fin = new DataView(new ArrayBuffer(22));
+    fin.setUint32(0, 0x06054b50, true); fin.setUint16(8, archivos.length, true); fin.setUint16(10, archivos.length, true); fin.setUint32(12, tamC, true); fin.setUint32(16, off, true);
+    return new Blob(partes.concat(central, [new Uint8Array(fin.buffer)]), { type: 'application/zip' });
+  }
+  async function leerZip(buf) {
+    var dv = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder();
+    var e = -1; for (var i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 66000); i--) if (dv.getUint32(i, true) === 0x06054b50) { e = i; break; }
+    if (e < 0) throw new Error('No parece un .zip');
+    var n = dv.getUint16(e + 10, true), p = dv.getUint32(e + 16, true), out = [];
+    for (var k = 0; k < n; k++) {
+      var metodo = dv.getUint16(p + 10, true), comp = dv.getUint32(p + 20, true), lnom = dv.getUint16(p + 28, true), lext = dv.getUint16(p + 30, true), lcom = dv.getUint16(p + 32, true), loc = dv.getUint32(p + 42, true);
+      var nombre = dec.decode(u8.subarray(p + 46, p + 46 + lnom));
+      p += 46 + lnom + lext + lcom;
+      if (/\/$/.test(nombre) || /(^|\/)(__MACOSX|\.DS_Store|Thumbs\.db)/.test(nombre)) continue;
+      var ini = loc + 30 + dv.getUint16(loc + 26, true) + dv.getUint16(loc + 28, true), crudo = u8.subarray(ini, ini + comp), datos;
+      if (metodo === 0) datos = crudo.slice();
+      else if (metodo === 8) datos = new Uint8Array(await new Response(new Blob([crudo]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+      else throw new Error('Compresión no soportada en ' + nombre);
+      out.push({ ruta: nombre, datos: datos });
+    }
+    return out;
+  }
+  // Si todo viene adentro de una carpeta (kit-ev_xxx/…), se le quita esa primera carpeta
+  function sinCarpetaComun(lista) {
+    var primeras = lista.map(function (a) { return a.ruta.split('/')[0]; });
+    var unica = primeras.every(function (x, i) { return x === primeras[0] && lista[i].ruta.indexOf('/') > 0; });
+    if (unica && primeras.length) lista.forEach(function (a) { a.ruta = a.ruta.slice(primeras[0].length + 1); });
+    return lista;
+  }
+  function descargar(blob, nombre) { var a = el('a', { href: URL.createObjectURL(blob), download: nombre }); document.body.append(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 3000); }
+  async function hash(u8) { var h = await crypto.subtle.digest('SHA-256', u8); return Array.from(new Uint8Array(h)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join(''); }
+
+  var LEEME = [
+    'DISEÑO PROPIO · Amo Invitar! (kit de la invitación)',
+    '',
+    'Esta carpeta es el diseño ACTUAL de la invitación: el modelo base más lo que ya se subió.',
+    'Editá lo que quieras y volvé a subir (el .zip entero o solo lo que cambiaste) desde la consola → Diseño propio.',
+    '',
+    'CÓMO FUNCIONA',
+    '- Lo que subís con la MISMA ruta reemplaza al archivo del modelo (img/separador.png, estilo.css, index.html…).',
+    '- Lo que no subís sigue saliendo del modelo base. Lo nuevo (img/mi-fondo.jpg) se suma y lo podés usar en HTML y CSS.',
+    '- Al subir, la consola saltea los archivos que no cambiaron (si dejás marcada esa opción).',
+    '',
+    'ARCHIVOS',
+    '- index*.html: plantillas. index.html = Deluxe de boda; index-premium.html / index-basic.html = esos planes;',
+    '  index-15.html, index-cumple.html, index-bautismo.html… = otros eventos (y -premium / -basic).',
+    '  Se usa la que corresponde al evento y al plan de la invitación; en la consola podés fijar una para todo.',
+    '- estilo.css, tema.css: estilos del modelo. tema.css trae las variables (--color-principal, --fuente-titulos…).',
+    '- img/: imágenes del diseño (fondos, separadores, íconos, PNG…).',
+    '- modelo.json: datos del modelo (secciones por plan, paleta, fotos de muestra). Solo tocarlo si sabés lo que hace.',
+    '- Las fuentes y scripts comunes se cargan con ../../comun/… : esas rutas se dejan como están.',
+    '',
+    'MARCAS QUE NO HAY QUE BORRAR (llenan los datos que el cliente carga en su panel)',
+    '- data-t="clave": texto traducible (títulos, botones).   - data-campo / data-campo-html="ruta": dato del panel.',
+    '- data-si="ruta": se muestra solo si el dato existe.     - data-repetir="lista": se repite por cada elemento.',
+    '- data-seccion="id": la sección que el cliente prende o apaga.  - data-componente="…": bloques armados por la app.',
+    '- data-i="campo": campo dentro de un elemento repetido.',
+    'Podés mover, envolver y cambiar clases y estilos libremente: lo importante es que la marca siga en el elemento.',
+    '',
+    'FUENTES: subí los archivos (.woff2) en fonts/ y declaralos con @font-face en estilo.css, o usá Google Fonts',
+    'desde la consola (campo «HTML extra en el <head>»).',
+  ].join('\r\n');
+
+  async function descargarKit(b) {
+    var p = D.propio, base = $('#base').value || (p && p.base) || D.evento.modelo;
+    if (!base) return toast('Elegí primero el modelo base', true);
+    b.disabled = true; var txt = b.textContent;
+    try {
+      if (!ARCH) ARCH = await fetch('/modelos/archivos.json').then(function (r) { return r.json(); });
+      var lista = (ARCH[base] || []).map(function (x) { return x[0]; });
+      var subidos = (D.archivos || []).map(function (a) { return a.ruta; });
+      subidos.forEach(function (r) { if (lista.indexOf(r) < 0) lista.push(r); });
+      // Lo actual: con diseño propio guardado, la ruta propia (subido o modelo); si no, el modelo base
+      var raiz = p && p.base === base && D.ruta ? D.ruta : '/modelos/' + base;
+      var archivos = [], i = 0;
+      for (var k = 0; k < lista.length; k++) {
+        b.textContent = 'Armando… ' + (++i) + '/' + lista.length;
+        var r = await fetch(raiz + '/' + lista[k].split('/').map(encodeURIComponent).join('/'));
+        if (r.ok) archivos.push({ ruta: lista[k], datos: new Uint8Array(await r.arrayBuffer()) });
+      }
+      archivos.push({ ruta: 'LEEME.txt', datos: new TextEncoder().encode(LEEME) });
+      descargar(armarZip(archivos.map(function (a) { return { ruta: 'kit-' + id + '/' + a.ruta, datos: a.datos }; })), 'kit-' + id + '-' + base + '.zip');
+      toast('Kit descargado: ' + archivos.length + ' archivos');
+    } catch (e) { toast(e.message, true); }
+    b.disabled = false; b.textContent = txt;
+  }
+
+  async function subir(lista, soloCambios) {
+    var reg = $('#registro'); reg.hidden = false; reg.textContent = '';
+    var log = function (t) { reg.textContent += t + '\n'; reg.scrollTop = reg.scrollHeight; };
+    var base = (D.propio && D.propio.base) || $('#base').value || D.evento.modelo;
+    if (!base) return toast('Elegí primero el modelo base y guardá', true);
+    if (!D.propio) await api(API, { method: 'POST', json: { base: base } });
+    var raiz = D.ruta || ('/propio/' + id + '~0~' + base);
+    var subidos = 0, iguales = 0, malos = 0;
+    for (var i = 0; i < lista.length; i++) {
+      var a = lista[i];
+      if (/(^|\/)(LEEME\.txt|archivos\.json)$/i.test(a.ruta)) continue;
+      try {
+        if (soloCambios) {
+          var r = await fetch(raiz + '/' + a.ruta.split('/').map(encodeURIComponent).join('/'));
+          if (r.ok) { var ant = new Uint8Array(await r.arrayBuffer()); if (ant.length === a.datos.length && await hash(ant) === await hash(a.datos)) { iguales++; continue; } }
+        }
+        await api(API + '/archivo?ruta=' + encodeURIComponent(a.ruta), { method: 'PUT', body: a.datos, headers: { 'content-type': 'application/octet-stream' } });
+        subidos++; log('✔ ' + a.ruta + ' (' + kb(a.datos.length) + ')');
+      } catch (e) { malos++; log('✘ ' + a.ruta + ': ' + e.message); }
+    }
+    log('— Subidos: ' + subidos + (iguales ? ' · sin cambios (salteados): ' + iguales : '') + (malos ? ' · con error: ' + malos : ''));
+    toast('Listo: ' + subidos + ' archivos subidos');
+    await cargar(true);
+  }
+  async function recibir(archivosInput, carpeta) {
+    var lista = [];
+    for (var i = 0; i < archivosInput.length; i++) {
+      var f = archivosInput[i], buf = await f.arrayBuffer();
+      if (/\.zip$/i.test(f.name)) { lista = lista.concat(sinCarpetaComun(await leerZip(buf))); continue; }
+      var ruta = f.webkitRelativePath || f.name;
+      if (!f.webkitRelativePath && carpeta) ruta = carpeta.replace(/^\/+|\/+$/g, '') + '/' + f.name;
+      lista.push({ ruta: ruta, datos: new Uint8Array(buf) });
+    }
+    if (archivosInput.length && archivosInput[0].webkitRelativePath) sinCarpetaComun(lista);
+    if (!lista.length) return;
+    await subir(lista, $('#solo-cambios').checked);
+  }
+
+  // Del pedido del cliente: variables de color y la tipografía elegida, listas para pegar en el CSS extra
+  function cssDelPedido() {
+    var d = (D.pedido && D.pedido.diseno) || {}, css = [], head = [];
+    var cols = ((d.paleta && d.paleta.colores) || []).map(function (c) { return typeof c === 'string' ? c : c && c.color; }).filter(Boolean);
+    if (d.paleta && d.paleta.modo === 'cambiar' && cols.length) {
+      css.push(':root {', '  /* colores pedidos por el cliente */');
+      if (cols[0]) css.push('  --color-principal: ' + cols[0] + ';');
+      if (cols[1]) css.push('  --color-secundario: ' + cols[1] + ';');
+      if (cols[2]) css.push('  --color-suave: ' + cols[2] + ';');
+      cols.forEach(function (c, i) { css.push('  --propio-' + (i + 1) + ': ' + c + ';'); });
+      css.push('}');
+    }
+    var fuente = d.tipografia && d.tipografia.modo === 'cambiar' && (d.tipografia.otra || d.tipografia.nombre);
+    if (fuente) {
+      head.push('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fuente).replace(/%20/g, '+') + '&display=swap">');
+      css.push(':root { --fuente-titulos: "' + fuente + '", cursive; }');
+    }
+    return { css: css.join('\n'), head: head.join('\n') };
+  }
+
+  function pintar() {
+    var e = D.evento, p = D.propio || {}, medida = e.producto === 'a-medida';
+    $('#titulo').textContent = 'Diseño propio · ' + (e.nombres || e.id);
+    $('#sub').textContent = e.tipo + ' · ' + (e.modelo || (medida ? (e.aMedida === 'empresarial' ? 'corporativo a medida' : 'a medida') : '—')) + ' · plan ' + e.paquete + ' · ' + e.estado;
+    var main = $('#main'); main.replaceChildren();
+    var vista = '/vista/' + e.id + '?k=' + encodeURIComponent(e.clave) + '&propio=1';
+    var publica = e.slug ? '/' + e.tipo + '/' + e.slug : null;
+
+    // Estado
+    main.append(el('section', { class: 'tarjeta' }, [
+      el('h2', { text: 'Estado' }),
+      el('div', { class: 'fila' }, [
+        p.base ? el('span', { class: 'tag' + (p.activo ? '' : ' aviso'), text: p.activo ? 'Activo: la invitación usa este diseño' : 'Sin activar: solo se ve en la vista previa' }) : el('span', { class: 'tag aviso', text: 'Sin diseño propio todavía' }),
+        p.actualizado ? el('span', { class: 'meta', text: 'Última modificación: ' + new Date(p.actualizado).toLocaleString('es') }) : null,
+      ]),
+      el('div', { class: 'fila' }, [
+        el('a', { class: 'b', href: vista, target: '_blank', rel: 'noopener' }, 'Vista previa con el diseño propio'),
+        el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel del cliente'),
+        publica ? el('a', { class: 'b sec', href: publica, target: '_blank', rel: 'noopener' }, 'Invitación publicada') : null,
+      ]),
+      el('div', { class: 'fila' }, [
+        p.base && !p.activo ? el('button', { class: 'b', onclick: function (ev) { activar(ev.target, true); } }, medida ? 'Activar, marcar «Lista» y publicar' : 'Activar en la invitación') : null,
+        p.activo ? el('button', { class: 'b sec', onclick: function (ev) { activar(ev.target, false); } }, 'Desactivar (vuelve el diseño del modelo)') : null,
+        p.base ? el('button', { class: 'b mal', onclick: borrarTodo }, 'Borrar todo el diseño propio') : null,
+      ]),
+      medida ? el('p', { class: 'meta', text: 'Diseño a medida / corporativo: elegí el modelo base más parecido, descargá el kit, transformalo y subilo. Al activarlo se marca «Lista» y, si tiene link, se publica.' }) : null,
+    ]));
+
+    // Pedido del cliente
+    var d = (D.pedido && D.pedido.diseno) || null, cajaPedido = el('section', { class: 'tarjeta' }, [el('h2', { text: 'Lo que pidió el cliente' })]);
+    if (d && ((d.paleta && d.paleta.modo === 'cambiar') || (d.tipografia && d.tipografia.modo === 'cambiar'))) {
+      var cols = ((d.paleta && d.paleta.colores) || []).map(function (c) { return typeof c === 'string' ? c : c && c.color; });
+      if (d.paleta && d.paleta.modo === 'cambiar') cajaPedido.append(el('p', { class: 'meta', text: 'Colores (tocá uno para copiarlo):' }), el('div', { class: 'muestras', style: 'margin-bottom:22px' }, cols.map(function (c, i) {
+        return c ? el('div', { class: 'muestra', style: 'background:' + c, title: c, onclick: function () { navigator.clipboard && navigator.clipboard.writeText(c); toast('Copiado ' + c); } }, el('span', { text: (i + 1) + ') ' + c })) : el('div', { class: 'muestra', title: 'quitar', style: 'background:repeating-linear-gradient(45deg,#fff,#fff 4px,#eee 4px,#eee 8px)' }, el('span', { text: (i + 1) + ') quitar' }));
+      })), d.paleta.notas ? el('p', { text: 'Notas: ' + d.paleta.notas }) : null);
+      if (d.tipografia && d.tipografia.modo === 'cambiar') cajaPedido.append(el('p', { text: 'Tipografía: ' + [d.tipografia.nombre, d.tipografia.otra && ('otra: ' + d.tipografia.otra)].filter(Boolean).join(' · ') }));
+      cajaPedido.append(el('div', { class: 'fila' }, el('button', { class: 'b sec', onclick: function () { var x = cssDelPedido(); if (x.css) $('#css').value = (x.css + '\n\n' + $('#css').value).trim(); if (x.head) $('#head').value = (x.head + '\n' + $('#head').value).trim(); toast('Agregado al CSS extra: guardá para aplicarlo'); } }, 'Pasar colores y tipografía al CSS extra')));
+    } else if (D.pedido && D.pedido.medida) {
+      cajaPedido.append(el('details', {}, [el('summary', { text: 'Ver la idea que mandó para el diseño a medida' }), el('pre', { class: 'registro', text: JSON.stringify(D.pedido.medida, null, 2) })]));
+    } else cajaPedido.append(el('p', { class: 'vacio', text: 'No pidió cambios de diseño desde el panel.' }));
+    main.append(cajaPedido);
+
+    // Ajustes
+    var base = el('select', { id: 'base' }, [el('option', { value: '', text: '— Elegí el modelo base —' })].concat(D.modelos.map(function (m) {
+      return el('option', { value: m.id, text: m.nombre + (m.eventos.indexOf(e.tipo) >= 0 ? '' : '  (no es de ' + e.tipo + ')') });
+    })));
+    base.value = p.base || e.modelo || '';
+    var plantillas = (ARCH && ARCH[base.value] ? ARCH[base.value].map(function (x) { return x[0]; }) : []).concat((D.archivos || []).map(function (a) { return a.ruta; })).filter(function (r, i, a) { return /\.html$/.test(r) && a.indexOf(r) === i; });
+    var plantilla = el('select', { id: 'plantilla' }, [el('option', { value: '', text: 'La que corresponde al evento y al plan (recomendado)' })].concat(plantillas.map(function (r) { return el('option', { value: r, text: r }); })));
+    plantilla.value = p.plantilla || '';
+    main.append(el('section', { class: 'tarjeta' }, [
+      el('h2', { text: 'Ajustes del diseño' }),
+      el('div', { class: 'dos' }, [
+        el('label', { class: 'campo' }, ['Modelo base (punto de partida)', base]),
+        el('label', { class: 'campo' }, ['Plantilla HTML', plantilla]),
+      ]),
+      el('p', { class: 'meta', text: 'Cambiar el modelo base no borra lo subido: los archivos con la misma ruta siguen reemplazando a los del nuevo modelo.' }),
+      el('div', { class: 'dos', style: 'margin-top:10px' }, [
+        el('label', { class: 'campo' }, ['CSS extra (va al final: gana sobre todo el CSS del modelo)', el('textarea', { id: 'css', spellcheck: 'false', placeholder: '.text-eucalipto { color: #8a5a44 !important; }\n:root { --color-principal: #8a5a44; }' }, p.css || '')]),
+        el('label', { class: 'campo' }, ['HTML extra en el <head> (fuentes de Google, <script>, <meta>…)', el('textarea', { id: 'head', spellcheck: 'false', placeholder: '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap">' }, p.head || '')]),
+      ]),
+      el('label', { class: 'campo', style: 'margin-top:10px' }, ['Notas internas (qué se cambió, para la próxima vez)', el('textarea', { id: 'notas', style: 'min-height:70px;font-family:inherit' }, p.notas || '')]),
+      el('div', { class: 'fila' }, [el('button', { class: 'b', onclick: function (ev) { guardar(ev.target); } }, 'Guardar ajustes'), el('span', { class: 'meta', text: 'Para ver los cambios: Guardar y abrir la vista previa.' })]),
+    ]));
+    base.addEventListener('change', function () { cargarArchivos().then(pintarPlantillas); });
+
+    // Archivos
+    var entrada = el('input', { type: 'file', multiple: true, accept: '*/*', hidden: true, onchange: function () { recibir(this.files, $('#carpeta').value); this.value = ''; } });
+    var entradaCarpeta = el('input', { type: 'file', multiple: true, webkitdirectory: true, hidden: true, onchange: function () { recibir(this.files); this.value = ''; } });
+    var zona = el('div', { class: 'soltar' }, ['Soltá acá un .zip, una carpeta o archivos sueltos', el('div', { class: 'fila', style: 'justify-content:center' }, [
+      el('button', { class: 'b', onclick: function () { entrada.click(); } }, 'Subir .zip o archivos'),
+      el('button', { class: 'b sec', onclick: function () { entradaCarpeta.click(); } }, 'Subir una carpeta'),
+    ])]);
+    zona.addEventListener('dragover', function (ev) { ev.preventDefault(); zona.classList.add('encima'); });
+    zona.addEventListener('dragleave', function () { zona.classList.remove('encima'); });
+    zona.addEventListener('drop', function (ev) { ev.preventDefault(); zona.classList.remove('encima'); recibir(ev.dataTransfer.files, $('#carpeta').value); });
+    var filas = (D.archivos || []).map(function (a) {
+      var ver = D.ruta ? D.ruta + '/' + a.ruta.split('/').map(encodeURIComponent).join('/') : null;
+      return el('tr', {}, [el('td', { text: a.ruta }), el('td', { text: kb(a.tam) }), el('td', { text: a.fecha ? new Date(a.fecha).toLocaleString('es') : '' }),
+        el('td', { class: 'acc' }, [ver ? el('a', { href: ver, target: '_blank', rel: 'noopener' }, 'ver') : null, el('button', { class: 'quitar', onclick: function () { quitar(a.ruta); } }, 'quitar')])]);
+    });
+    main.append(el('section', { class: 'tarjeta' }, [
+      el('h2', { text: 'Archivos del diseño' }),
+      el('div', { class: 'fila' }, [el('button', { class: 'b', onclick: function (ev) { descargarKit(ev.target); } }, 'Descargar kit (.zip)'), el('span', { class: 'meta', text: 'El diseño actual completo (modelo base + lo subido), con un LEEME.txt.' })]),
+      zona, entrada, entradaCarpeta,
+      el('div', { class: 'fila' }, [
+        el('label', { style: 'display:flex;gap:6px;align-items:center' }, [el('input', { type: 'checkbox', id: 'solo-cambios', checked: true }), 'Subir solo los que cambiaron (saltea los iguales)']),
+        el('label', { class: 'campo', style: 'flex:1;min-width:220px' }, ['Archivos sueltos van a la carpeta (vacío = raíz; p. ej. img)', el('input', { type: 'text', id: 'carpeta', placeholder: 'img' })]),
+      ]),
+      el('pre', { class: 'registro', id: 'registro', hidden: true }),
+      el('h2', { text: 'Subidos (' + (D.archivos || []).length + ')', style: 'margin-top:16px' }),
+      filas.length ? el('table', {}, [el('thead', {}, el('tr', {}, [el('th', { text: 'Archivo' }), el('th', { text: 'Tamaño' }), el('th', { text: 'Fecha' }), el('th', {})])), el('tbody', {}, filas)])
+        : el('p', { class: 'vacio', text: 'Todavía no se subió nada: la invitación usa los archivos del modelo base.' }),
+    ]));
+  }
+  function pintarPlantillas() {
+    var sel = $('#plantilla'), base = $('#base').value, actual = sel.value;
+    var lista = (ARCH && ARCH[base] ? ARCH[base].map(function (x) { return x[0]; }) : []).concat((D.archivos || []).map(function (a) { return a.ruta; })).filter(function (r, i, a) { return /\.html$/.test(r) && a.indexOf(r) === i; });
+    sel.replaceChildren(el('option', { value: '', text: 'La que corresponde al evento y al plan (recomendado)' }));
+    lista.forEach(function (r) { sel.append(el('option', { value: r, text: r })); });
+    sel.value = lista.indexOf(actual) >= 0 ? actual : '';
+  }
+  function cargarArchivos() { return ARCH ? Promise.resolve() : fetch('/modelos/archivos.json').then(function (r) { return r.json(); }).then(function (a) { ARCH = a; }).catch(function () { ARCH = {}; }); }
+
+  async function guardar(b) {
+    b.disabled = true;
+    try {
+      await api(API, { method: 'POST', json: { base: $('#base').value || undefined, plantilla: $('#plantilla').value, css: $('#css').value, head: $('#head').value, notas: $('#notas').value } });
+      toast('Guardado'); await cargar(true);
+    } catch (e) { toast(e.message, true); }
+    b.disabled = false;
+  }
+  async function activar(b, si) {
+    b.disabled = true;
+    try {
+      await api(API, { method: 'POST', json: { activo: si, base: $('#base').value || undefined } });
+      var e = D.evento;
+      if (si && e.producto === 'a-medida') {
+        try { await api('/api/admin/medidas/' + e.id + '/lista', { method: 'POST', json: { parte: 'medida' } }); } catch (x) { /* ya estaba lista o no se envió */ }
+        if (e.estado !== 'publicado') {
+          if (e.slug) await api('/api/admin/eventos/' + e.id + '/estado', { method: 'POST', json: { estado: 'publicado' } });
+          else toast('Activado. Falta el link (slug) para publicarla: cargalo en el panel', true);
+        }
+      }
+      toast(si ? 'Activado en la invitación' : 'Desactivado'); await cargar(true);
+    } catch (x) { toast(x.message, true); }
+    b.disabled = false;
+  }
+  async function quitar(ruta) {
+    if (!confirm('¿Quitar ' + ruta + '? Vuelve a usarse el del modelo base (si existe).')) return;
+    try { await api(API + '/archivo?ruta=' + encodeURIComponent(ruta), { method: 'DELETE' }); toast('Quitado'); await cargar(true); } catch (e) { toast(e.message, true); }
+  }
+  async function borrarTodo() {
+    if (prompt('Se borran todos los archivos subidos y los ajustes. Escribí BORRAR para confirmar.') !== 'BORRAR') return;
+    try { await api(API, { method: 'DELETE' }); toast('Diseño propio borrado'); await cargar(true); } catch (e) { toast(e.message, true); }
+  }
+  async function cargar(conservar) {
+    var css = conservar && $('#css') ? null : null;
+    D = await api(API);
+    await cargarArchivos();
+    pintar();
+    return css;
+  }
+  if (!/^ev_[a-z0-9]+$/i.test(id)) { $('#main').replaceChildren(el('p', { class: 'aviso-caja', text: 'Falta la invitación (?id=ev_…). Entrá desde la consola → Invitaciones → la invitación → «Diseño propio».' })); return; }
+  cargar().catch(function (e) { $('#main').replaceChildren(el('p', { class: 'aviso-caja', text: e.message + (/permiso/i.test(e.message) ? ' — Entrá a la consola con tu cuenta de administrador (o la clave) y volvé a abrir esta página.' : '') })); });
+})();
+</script>
+</body>
+</html>
