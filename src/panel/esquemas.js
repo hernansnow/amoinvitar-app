@@ -582,6 +582,8 @@ const pasoPublicar = (tipo) => ({
     { id: 'vista.compartir', tipo: 'vistaCompartir', etiqueta: 'Vista previa' },
     // La arma el panel (1200×630) cada vez que cambian la foto, los nombres o el switch
     { id: 'miniatura.generada', tipo: 'foto', oculto: true },
+    // README (ronda 58): con qué datos se armó (foto, encuadre, nombres, fecha): si cambian, se vuelve a armar
+    { id: 'miniatura.firma', tipo: 'texto', oculto: true, max: 2000 },
   ],
 });
 

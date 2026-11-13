@@ -202,18 +202,32 @@ async function quizasMiniatura() {
   const pos = datos.miniatura?.foto ? datos.miniatura?.fotoPos || '50% 50%' : portada?.posPc || portada?.pos;
   const conTexto = !!datos.miniatura?.conTexto;
   const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ');
-  const fecha = (datos.celebracion?.inicio || datos.std?.fecha || '').slice(0, 10).split('-').reverse().join(' • ');
-  const firma = JSON.stringify([foto, pos, conTexto, nombres, fecha]);
-  if (firma === firmaMiniatura || !nombres) return;
+  const fecha = (datos.celebracion?.fecha || datos.celebracion?.inicio || datos.std?.fecha || '').slice(0, 10).split('-').reverse().join(' • ');
+  const firma = firmaDeMiniatura();
+  // README (ronda 58): también se compara con la firma guardada (si cambió la fecha o los nombres, se vuelve a armar)
+  if (!firma || firma === firmaMiniatura || firma === datos.miniatura?.firma) return;
   firmaMiniatura = firma;
   // Foto sola sin nombres: alcanza con la foto, no hace falta armar nada
-  if (foto && !conTexto && !datos.miniatura?.foto) { escribir(datos, 'miniatura.generada', ''); pintarMiniatura(); return; }
+  if (foto && !conTexto && !datos.miniatura?.foto) { escribir(datos, 'miniatura.generada', ''); escribir(datos, 'miniatura.firma', firma); pintarMiniatura(); return; }
   try {
     const blob = await armarMiniatura({ foto, pos, nombres, fecha, conTexto, estilo: S.modelo?.miniatura });
     const url = await subirArchivo(new File([blob], 'miniatura.jpg', { type: 'image/jpeg' }));
     escribir(datos, 'miniatura.generada', url);
+    escribir(datos, 'miniatura.firma', firma);
   } catch (e) { console.warn('miniatura', e); }
   pintarMiniatura();
+}
+// README (ronda 58): la fecha sale de «Fecha del evento» (celebracion.fecha); antes se tomaba celebracion.inicio, que el
+// servidor recalcula recién al guardar, y la miniatura quedaba con la fecha anterior
+function firmaDeMiniatura() {
+  if (!S.esquema.pasos.some((p) => p.campos.some((c) => c.id === 'miniatura.generada'))) return null;
+  const portada = (datos.fotos?.portada || [])[0];
+  const conFotoPortada = datos.fotosOn?.portada !== false;
+  const foto = datos.miniatura?.foto || (conFotoPortada ? portada?.url : '') || datos.fotos?.rsvp || (datos.fotos?.galeria || [])[0]?.url || '';
+  const pos = datos.miniatura?.foto ? datos.miniatura?.fotoPos || '50% 50%' : portada?.posPc || portada?.pos;
+  const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ');
+  const fecha = (datos.celebracion?.fecha || datos.celebracion?.inicio || datos.std?.fecha || '').slice(0, 10).split('-').reverse().join(' • ');
+  return nombres ? JSON.stringify([foto, pos || null, !!datos.miniatura?.conTexto, nombres, fecha]) : null;
 }
 // Lo que se ve al compartir: la armada (con o sin nombres) o, si no hace falta armarla, la foto
 const fuenteMiniatura = () => datos.miniatura?.generada || datos.miniatura?.foto || (datos.fotosOn?.portada !== false ? datos.fotos?.portada?.[0]?.url : '') || (S.evento.modelo ? `/modelos/${S.evento.modelo}/miniatura.jpg` : '');
@@ -2097,6 +2111,8 @@ function recordarBorrador() {
   if (!S.evento.modelo) { $('#btn-ojo').hidden = true; $('#previa').remove(); document.body.classList.add('sin-previa'); }
   pintarPublicar();
   estado(S.evento.estado === 'publicado' ? 'Publicada' : 'Guardado ✓');
+  // README (ronda 58): miniatura para compartir desactualizada (otra fecha, otros nombres…) → se rearma y se guarda
+  { const f = !S.esquema?.cerrada && firmaDeMiniatura(); if (f && f !== datos.miniatura?.firma && (datos.miniatura?.generada || datos.miniatura?.conTexto || !(datos.fotos?.portada || []).length)) { clearTimeout(guardarTimer); guardarTimer = setTimeout(guardar, 1500); } }
   // Publicada: el panel abre en la administración (siempre se puede volver a editar)
   const hash = location.hash.slice(1);
   if (hash === 'recuerdo' && S.recuerdo) window.__seccionAdmin = 'recuerdo'; // desde el mail de aviso de vencimiento

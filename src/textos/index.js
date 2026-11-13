@@ -517,6 +517,28 @@ EVENTOS.navidad = derivado('babyshower', {
   },
 });
 
+// README (ronda 58): evento corporativo (invitaciones a medida de empresas). Antes tomaba los textos de boda
+// («Invitación ❤ Boda | Acme»): título, descripción y textos generales neutros
+EVENTOS.empresarial = derivado('boda', {
+  plural: true,
+  es: {
+    'meta.titulo': 'Invitación | {nombres}', 'evento.nombre': 'Evento', 'evento.descripcion': 'Te esperamos en nuestro evento',
+    'meta.descripcion': '¡Te esperamos!', 'portada.subtitulo': 'TE INVITAMOS', 'bienvenida.texto': '¡Queremos invitarte a nuestro evento!',
+    'celebracion.sola': 'Evento', 'celebracion.titulo': 'Evento', 'bus.destinoTexto': '¡El evento!', 'pie.titulo': '¡Te esperamos!',
+    'pie.texto': 'Será un gusto contar con tu presencia.', 'testigos.titulo': 'Anfitriones',
+    'regalos.texto': 'Tu presencia es lo más importante para nosotros.',
+  },
+  'es-ar': { 'pie.texto': 'Va a ser un gusto contar con tu presencia.' },
+  'es-es': {},
+  en: {
+    'meta.titulo': 'Invitation | {nombres}', 'evento.nombre': 'Event', 'evento.descripcion': 'Join us at our event',
+    'meta.descripcion': 'We look forward to seeing you!', 'portada.subtitulo': 'YOU ARE INVITED', 'bienvenida.texto': 'We would love to invite you to our event!',
+    'celebracion.sola': 'Event', 'celebracion.titulo': 'Event', 'bus.destinoTexto': 'The event!', 'pie.titulo': 'We look forward to seeing you!',
+    'pie.texto': 'It will be a pleasure to have you with us.', 'testigos.titulo': 'Hosts',
+    'regalos.texto': 'Your presence is what matters most to us.',
+  },
+});
+
 // Qué variante usa cada país
 const PAISES = {
   AR: 'es-ar', UY: 'es-ar', PY: 'es-ar',
@@ -542,5 +564,13 @@ export function diccionario(tipo, variante) {
   const capas = v === 'en' || otro
     ? [BASE.es, BASE.en, ev.es, ev.en, otro?.base, ...(ev.de ? [otro?.eventos?.[EVENTOS[ev.de].de || ev.de], otro?.eventos?.[ev.de]] : []), otro?.eventos?.[tipo in EVENTOS ? tipo : 'boda'], NUEVOS[v]?.[tipo]]
     : [BASE.es, v === 'es-cr' ? BASE['es-ar'] : null, BASE[v], ev.es, v === 'es-cr' ? ev['es-ar'] : null, ev[v]];
-  return Object.assign({}, ...capas.filter(Boolean));
+  const d = Object.assign({}, ...capas.filter(Boolean));
+  // README (ronda 58): corporativo en los demás idiomas: título y nombre del evento neutros (no los de boda)
+  if (tipo === 'empresarial' && otro) Object.assign(d, CORPORATIVO[v.slice(0, 2)] || {});
+  return d;
 }
+const CORPORATIVO = {
+  pt: { 'meta.titulo': 'Convite | {nombres}', 'evento.nombre': 'Evento' }, fr: { 'meta.titulo': 'Invitation | {nombres}', 'evento.nombre': 'Événement' },
+  it: { 'meta.titulo': 'Invito | {nombres}', 'evento.nombre': 'Evento' }, de: { 'meta.titulo': 'Einladung | {nombres}', 'evento.nombre': 'Veranstaltung' },
+  nl: { 'meta.titulo': 'Uitnodiging | {nombres}', 'evento.nombre': 'Evenement' }, ca: { 'meta.titulo': 'Invitació | {nombres}', 'evento.nombre': 'Esdeveniment' },
+};
