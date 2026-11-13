@@ -734,8 +734,8 @@ textarea { min-height: 96px; line-height: 1.4; }
 
 /* ── Editar / Administración ───────────────────────────────────────── */
 .modos { display: flex; gap: 4px; padding: 6px 14px; background: var(--tarjeta); border-bottom: 1px solid var(--borde); }
-.modos button { border: 0; background: none; padding: 7px 14px; border-radius: 999px; font-weight: 600; color: var(--suave); cursor: pointer; }
-.modos button[aria-pressed="true"] { background: color-mix(in srgb, var(--acento) 14%, #fff); color: var(--acento); }
+.modos > button { border: 0; background: none; padding: 7px 14px; border-radius: 999px; font-weight: 600; color: var(--suave); cursor: pointer; }
+.modos > button[aria-pressed="true"] { background: color-mix(in srgb, var(--acento) 14%, #fff); color: var(--acento); }
 body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea-pasos { display: none !important; }
 .admin { flex: 1; min-height: 0; overflow: auto; background: var(--fondo); padding: 18px clamp(12px, 3vw, 32px) 60px; }
 .admin > * { max-width: 1100px; margin-left: auto; margin-right: auto; }
@@ -831,7 +831,7 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-asientos { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
 .ad-croquis { overflow: auto; background: #fff; border-radius: 12px; }
 .ad-croquis svg { display: block; width: 100%; max-width: 640px; height: auto; margin: 0 auto; }
-@media (max-width: 1023px) { .modos { padding: 6px 12px; } .modos button { flex: 1; } }
+@media (max-width: 1023px) { .modos { padding: 6px 12px; } .modos > button { flex: 1; } }
 /* Enviar en tanda */
 .ad-tanda { display: grid; gap: 10px; text-align: center; padding: 4px 0 6px; }
 .ad-tanda-barra { height: 6px; border-radius: 999px; background: var(--borde); position: relative; overflow: hidden; }
@@ -1111,3 +1111,45 @@ body.suelta .previa, body.suelta #btn-ojo, body.suelta .modo-vista, body.suelta 
 .tachado { text-decoration: line-through; opacity: .7; font-weight: 400; }
 .precio-promo { font-weight: 600; }
 .lista-precios .linea-promo { color: #b3261e; font-weight: 500; }
+
+/* ── README (ronda 68) ── */
+/* Computadora: «Vista previa», pantalla completa y celular/computadora en la barra blanca, a la derecha */
+.vista-controles { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.vista-rotulo { font-size: .85rem; color: var(--texto); white-space: nowrap; }
+.vista-controles + .btn-mis-invitaciones { margin-left: 16px; }
+@media (min-width: 1024px) { .vista-controles.solo-escritorio { display: flex !important; } }
+body.modo-admin .vista-controles { display: none !important; }
+body.modo-admin .vista-controles + .btn-mis-invitaciones { margin-left: auto; }
+/* Celular: botón flotante sobre la vista de la invitación; el panel, al subir, lo tapa */
+.btn-vista-flotante { position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; align-items: center; gap: 8px; border: 0; border-radius: 999px;
+  background: #1f2421; color: #fff; padding: 8px 12px 8px 16px; font: inherit; font-size: .85rem; font-weight: 500; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 0, 0, .25); }
+.btn-vista-flotante svg { width: 22px; height: 22px; }
+body.ver-previa .btn-vista-flotante, body.modo-admin .btn-vista-flotante { display: none !important; }
+/* Barra verde sin desbordarse: la caja del plan se achica antes de empujar los botones afuera */
+@media (min-width: 1024px) {
+  .barra { min-width: 0; }
+  .barra .acciones { flex: none; }
+  .barra .caja-plan { flex: 0 1 auto; min-width: 0; overflow: hidden; }
+  .barra .plan-resumen, .barra .plan-resumen > span { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .barra .titulo strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+/* Tablet y computadoras chicas: logo reducido, sin la palabra «Plan:», precio tachado más chico y todo más compacto */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .marca .logo-largo { display: none; }
+  .marca .logo-corto { display: block; width: 34px; height: auto; }
+  .barra { gap: 8px; padding-left: 8px; padding-right: 10px; }
+  .barra .marca { padding-right: 10px; margin-right: 0; }
+  .barra .titulo { max-width: 170px; min-width: 90px; }
+  .btn-modelo { min-width: 0; gap: 8px; padding: 6px 10px; }
+  .btn-modelo strong { font-size: .95rem; }
+  .barra .caja-plan { padding: 4px 10px; }
+  .barra .plan-rotulo { display: none; }
+  .barra .plan-resumen { font-size: .84rem; }
+  .barra .plan-resumen .tachado { font-size: .8em; }
+  .barra .acciones { gap: 6px; }
+  .barra #btn-publicar { padding-left: 14px; padding-right: 14px; }
+}
+
+/* README (ronda 68): la ayuda (?) con el mismo aro que el botón de WhatsApp, en el celular y en la computadora */
+.barra #btn-manual, .barra .btn-ayuda { border: 1.5px solid rgba(255, 255, 255, .75); }
+@media (min-width: 1024px) { .barra #btn-manual { background: transparent; } .barra #btn-manual:hover { background: rgba(255, 255, 255, .16); } }

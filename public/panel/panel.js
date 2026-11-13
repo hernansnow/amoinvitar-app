@@ -1694,7 +1694,7 @@ function pintarPlan() {
   const cambiarPlan = pl.gratisPosible && !pl.pagado
     ? el('button', { type: 'button', class: 'btn-link chico', onclick: () => pasarAGratis(pl.plan !== 'gratis') }, pl.plan === 'gratis' ? 'Ver planes pagos' : 'Pasar a plan gratis') : null;
   $('#caja-plan').replaceChildren(...[el('button', { type: 'button', class: 'plan-resumen', onclick: () => mostrarResumen(false) },
-    el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ' ', ...precioConPromo(pl)), extra ? el('small', {}, extra) : null), cambiarPlan].filter(Boolean));
+    el('span', {}, pl.producto ? '' : el('span', { class: 'plan-rotulo' }, 'Plan: '), el('strong', {}, pl.nombre), ' ', ...precioConPromo(pl)), extra ? el('small', {}, extra) : null), cambiarPlan].filter(Boolean));
   $('#plan-mini').replaceChildren(...[el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ' ', ...precioConPromo(pl)), extra ? el('small', {}, extra) : null].filter(Boolean));
   $('#plan-mini').onclick = () => mostrarResumen(false);
   document.body.classList.toggle('suelta', !!S.esquema?.suelta);
@@ -2169,7 +2169,7 @@ function ponerModo(m) {
   const admin = m === 'admin';
   document.body.classList.toggle('modo-admin', admin);
   $('#admin').hidden = !admin;
-  document.querySelectorAll('#modos button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === m)));
+  document.querySelectorAll('#modos > button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === m)));
   if (admin) {
     history.replaceState(null, '', '#admin');
     montarAdmin($('#admin'), { S, datos, api, el, aviso, abrirModal,
@@ -2180,4 +2180,4 @@ function ponerModo(m) {
       guardarInvitados: async () => { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: S.invitados }) }); S.invitados = r.invitados; } });
   } else if (pasoActual) { history.replaceState(null, '', `#${pasoActual.id}`); requestAnimationFrame(escalarPrevia); }
 }
-document.querySelectorAll('#modos button').forEach((b) => b.addEventListener('click', () => ponerModo(b.dataset.modo)));
+document.querySelectorAll('#modos > button').forEach((b) => b.addEventListener('click', () => ponerModo(b.dataset.modo)));
