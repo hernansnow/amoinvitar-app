@@ -68,10 +68,11 @@ export async function achicarFoto(archivo, lado = 1800) {
   if (!/^image\/(jpeg|png|webp)$/.test(archivo.type)) throw new Error('Formato no permitido');
   const bmp = await createImageBitmap(archivo);
   const escala = Math.min(1, lado / Math.max(bmp.width, bmp.height));
-  if (escala === 1 && archivo.size < 900 * 1024 && archivo.type !== 'image/png') return archivo;
+  // README (ronda 64): una foto ya chica y liviana se sube tal cual; si no, se achica y se recomprime
+  if (escala === 1 && archivo.size < 300 * 1024 && archivo.type !== 'image/png') return archivo;
   const c = document.createElement('canvas');
   c.width = Math.round(bmp.width * escala); c.height = Math.round(bmp.height * escala);
   c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
   const tipo = archivo.type === 'image/png' && /logo/i.test(archivo.name) ? 'image/png' : 'image/jpeg';
-  return new Promise((ok) => c.toBlob((b) => ok(new File([b], archivo.name.replace(/\.\w+$/, tipo === 'image/png' ? '.png' : '.jpg'), { type: tipo })), tipo, 0.84));
+  return new Promise((ok) => c.toBlob((b) => ok(new File([b], archivo.name.replace(/\.\w+$/, tipo === 'image/png' ? '.png' : '.jpg'), { type: tipo })), tipo, 0.8));
 }

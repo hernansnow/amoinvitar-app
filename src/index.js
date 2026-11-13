@@ -704,7 +704,8 @@ async function sugerirSlug(env, almacen, ev, pedido) {
 }
 
 const TIPOS_ARCHIVO = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png', 'audio/mpeg': 'mp3', 'video/mp4': 'mp4' };
-const MAX_MB = { mp3: 12, mp4: 40 };
+// README (ronda 64): las fotos llegan achicadas desde el panel; más de 2 MB es una foto sin achicar
+const MAX_MB = { mp3: 12, mp4: 40, jpg: 2, png: 2, webp: 2 };
 
 // Playlist de Spotify: se lee la lista de canciones una vez por link
 async function leerSpotify(datos) {

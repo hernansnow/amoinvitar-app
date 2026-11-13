@@ -62,6 +62,7 @@
   .reemp .cant { border: 0; background: none; cursor: pointer; text-align: left; padding: 2px 0; font: inherit; font-size: 12px; color: var(--suave); }
   .reemp .cant:hover { color: inherit; text-decoration: underline; }
   .reemp-grupo.abierto { grid-column: 1 / -1; }
+  .tag-sobre { font-size: 13px; color: var(--suave); cursor: help; }
   .usos { margin: 4px 0 10px 36px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr)); gap: 2px 18px; }
   .uso { display: flex; align-items: center; gap: 7px; font-size: 12.5px; padding: 3px 4px; border-radius: 6px; }
   .uso.activo { background: var(--claro); }
@@ -476,10 +477,13 @@
           coloresCss(t).forEach(function (u) { colores[u.hex] = (colores[u.hex] || 0) + 1; u.clave = archivos[i] + '|' + u.clave; u.archivo = archivos[i]; (usos[u.hex] = usos[u.hex] || []).push(u); });
         } else { var antes = {}; contarColores(t, antes); Object.keys(antes).forEach(function (c) { colores[c] = (colores[c] || 0) + antes[c]; enHtml[c] = (enHtml[c] || 0) + antes[c]; }); }
       }
+      // README (ronda 65): los colores del sobre de apertura (modelo.json → sobre.colores) van en la página armada
+      var sobre = {};
+      Object.keys((mj.sobre && mj.sobre.colores) || {}).forEach(function (k) { var c = aHex(mj.sobre.colores[k]); if (!c) return; sobre[c] = (sobre[c] ? sobre[c] + ', ' : '') + k; colores[c] = (colores[c] || 0) + 1; enHtml[c] = (enHtml[c] || 0) + 1; });
       // Las fuentes de títulos y texto que declara el modelo, aunque estén en otro CSS
       var tf = (mj.tarjetas && mj.tarjetas.fuentes) || {};
       [tf.titulos, tf.texto, tf.serif].filter(Boolean).forEach(function (f) { fuentes[f] = fuentes[f] || 1; });
-      DETECTADO = { base: base, paleta: (mj.paleta || []).map(aHex), colores: colores, usos: usos, enHtml: enHtml, fuentes: fuentes, titulos: tf.titulos || null };
+      DETECTADO = { base: base, paleta: (mj.paleta || []).map(aHex), colores: colores, usos: usos, enHtml: enHtml, sobre: sobre, fuentes: fuentes, titulos: tf.titulos || null };
       est.textContent = Object.keys(colores).length + ' colores y ' + Object.keys(fuentes).length + ' fuentes en el modelo ' + base + '. Elegí solo los que quieras cambiar (los demás quedan igual).';
       pintarReemplazos();
     } catch (e) { est.textContent = 'No se pudieron leer los colores del modelo: ' + e.message; }
@@ -503,9 +507,10 @@
     if (ph) lista.append(el('div', { class: 'nota', text: '+ ' + ph + ' en la página (HTML): cambian con el color del grupo.' }));
     if (abiertos) grupo.classList.add('abierto');
     var activo = !!hacia, sw = el('div', { class: 'sw', style: 'background:' + desde, title: desde });
+    var deSobre = DETECTADO && DETECTADO.sobre && DETECTADO.sobre[desde];
     var picker = el('input', { type: 'color', value: hacia || desde });
     var txt = el('input', { type: 'text', value: hacia || '', placeholder: 'sin cambio', spellcheck: 'false' });
-    var fila = el('div', { class: 'reemp' + (activo ? ' activo' : ''), 'data-desde': desde }, [sw, el('code', { text: desde }), us.length ? el('button', { class: 'cant', type: 'button', title: 'Ver y cambiar cada uso por separado', onclick: function () { lista.hidden = !lista.hidden; grupo.classList.toggle('abierto', !lista.hidden); } }, '×' + (cant || us.length) + ' ▾') : el('span', { class: 'cant', text: cant ? '×' + cant : '' }), el('span', { class: 'fl', text: '→' }), picker, txt,
+    var fila = el('div', { class: 'reemp' + (activo ? ' activo' : ''), 'data-desde': desde }, [sw, el('code', { text: desde, title: deSobre ? 'Color del sobre de apertura: ' + deSobre : null }), deSobre ? el('span', { class: 'tag-sobre', title: 'Sobre de apertura: ' + deSobre, text: '✉' }) : null, us.length ? el('button', { class: 'cant', type: 'button', title: 'Ver y cambiar cada uso por separado', onclick: function () { lista.hidden = !lista.hidden; grupo.classList.toggle('abierto', !lista.hidden); } }, '×' + (cant || us.length) + ' ▾') : el('span', { class: 'cant', text: cant ? '×' + cant : '' }), el('span', { class: 'fl', text: '→' }), picker, txt,
       el('button', { class: 'b sec', style: 'padding:6px 9px', title: 'Sin cambio', onclick: function () { txt.value = ''; picker.value = desde; fila.classList.remove('activo'); } }, '✕')]);
     picker.addEventListener('input', function () { txt.value = picker.value; fila.classList.add('activo'); });
     txt.addEventListener('input', function () { var h = aHex(txt.value); if (h) picker.value = h; fila.classList.toggle('activo', !!h); });
@@ -535,7 +540,7 @@
     var p = D.propio || {}, guardados = {}; (p.colores || []).forEach(function (x) { guardados[aHex(x[0])] = x[1]; });
     var c = DETECTADO.colores, lista = Object.keys(c).sort(function (x, y) { return c[y] - c[x]; });
     // Primero los de la paleta del modelo y los ya cambiados
-    var prim = DETECTADO.paleta.concat(Object.keys(guardados)).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+    var prim = DETECTADO.paleta.concat(Object.keys(DETECTADO.sobre || {}), Object.keys(guardados)).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
     lista = prim.concat(lista.filter(function (x) { return prim.indexOf(x) < 0; })).slice(0, 60);
     $('#lista-colores').replaceChildren.apply($('#lista-colores'), lista.map(function (x) { return filaColor(x, guardados[x] || '', c[x] || 0); }));
     $('#lista-fuentes').replaceChildren();

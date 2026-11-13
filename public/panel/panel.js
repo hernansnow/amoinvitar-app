@@ -475,20 +475,24 @@ function encuadrePortada({ url, pos, posPc, alCambiar }) {
     el('p', { class: 'ayuda' }, esTactil ? 'Mantener apretado y arrastrar: el punto mueve los dos recortes; cada marco, solo el suyo.' : 'Arrastrar el punto para mover los dos recortes a la vez, o cada marco por separado.'));
 }
 
-async function subirVarias(input, cuantas) {
+// README (ronda 64): cada foto se achica a la medida del lugar donde se ve (lado mayor, en px); solo se guarda esa versión
+const LADO_FOTO = { 'fotos.portada': 1600, 'fotos.principal': 1600, 'fotos.extra': 1600, 'fotos.galeria': 1000, 'fotos.historia': 800, 'fotos.rsvp': 800,
+  'fotos.instagram': 800, 'dresscode.fotos': 800, 'ceremonia.foto': 800, 'celebracion.foto': 800, foto: 500 };
+const ladoDe = (c) => (c?.tipo === 'fotoCompartir' ? 1200 : LADO_FOTO[c?.id] || 1600);
+async function subirVarias(input, cuantas, lado) {
   const urls = [];
   for (const a of [...input.files].slice(0, cuantas)) {
-    try { urls.push(await subirArchivo(await achicarFoto(a))); } catch (e) { aviso(e.message || 'No se pudo subir la foto', true); }
+    try { urls.push(await subirArchivo(await achicarFoto(a, lado))); } catch (e) { aviso(e.message || 'No se pudo subir la foto', true); }
   }
   return urls;
 }
 
-function botonSubir({ texto, multiple, alSubir, cuantas, proporcion, clase = '' }) {
+function botonSubir({ texto, multiple, alSubir, cuantas, proporcion, clase = '', lado = 1600 }) {
   const input = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', multiple });
   const boton = el('label', { class: `agregar ${clase}`, style: proporcion ? `aspect-ratio:${proporcionCSS(proporcion)}` : null }, input, el('span', { class: 'con-ico', html: `${icono('camara')}` }, String(texto).replace(/^＋\s*/, '')));
   input.addEventListener('change', async () => {
     boton.classList.add('subiendo'); boton.lastChild.lastChild.textContent = 'Subiendo…';
-    alSubir(await subirVarias(input, cuantas));
+    alSubir(await subirVarias(input, cuantas, lado));
   });
   return boton;
 }
@@ -506,7 +510,7 @@ function campoFoto(c, valor, alCambiar, { pos, alPos, zoom, alZoom } = {}) {
       caja.append(el('div', { class: `con-quitar${c.sinRecorte ? ' tal-cual' : ''}` }, vista,
         el('button', { type: 'button', class: 'quitar', 'aria-label': 'Quitar foto', onclick: () => { alCambiar(''); alPos?.(undefined); alZoom?.(undefined); dibujar(''); } }, '✕')));
     } else if (!c.bloqueado && !c.cerrado) {
-      caja.append(botonSubir({ texto: '＋ Subir foto', multiple: false, cuantas: 1, proporcion: c.sinRecorte ? null : (c.proporcion || '4:3'),
+      caja.append(botonSubir({ lado: ladoDe(c), texto: '＋ Subir foto', multiple: false, cuantas: 1, proporcion: c.sinRecorte ? null : (c.proporcion || '4:3'),
         alSubir: (urls) => { if (urls[0]) { alPos?.(undefined); alZoom?.(undefined); alCambiar(urls[0]); } dibujar(urls[0] || ''); } }));
     }
   };
@@ -533,7 +537,7 @@ function campoFotos(c, valor, alCambiar) {
       caja.append(el('div', { class: 'con-quitar' }, vista, quitar, mover));
     });
     if (lista.length < (c.max || 12) && !c.bloqueado && !c.cerrado) {
-      caja.append(botonSubir({ texto: `＋ Agregar (${lista.length}/${c.max || 12})`, multiple: true, cuantas: (c.max || 12) - lista.length, proporcion: prop,
+      caja.append(botonSubir({ lado: ladoDe(c), texto: `＋ Agregar (${lista.length}/${c.max || 12})`, multiple: true, cuantas: (c.max || 12) - lista.length, proporcion: prop,
         alSubir: (urls) => { lista.push(...urls.map((url) => ({ url }))); dibujar(); emitir(); } }));
     }
   };
@@ -554,7 +558,7 @@ function fotosEnPestanas(c, lista, alCambiar) {
     const tabs = max > 1 ? el('div', { class: 'pestanas', role: 'tablist' }, Array.from({ length: max }, (_, i) => el('button', {
       type: 'button', role: 'tab', class: 'pestana', 'aria-selected': String(i === activa), title: lista[i] ? 'Con foto' : 'Sin foto',
       onclick: () => { activa = Math.min(i, lista.length); dibujar(); } }, `Foto ${i + 1}`))) : null;
-    const subir = botonSubir({ texto: f ? `Cambiar foto${n}` : `Cargar foto${n}`, multiple: false, cuantas: 1, clase: 'cargar',
+    const subir = botonSubir({ lado: ladoDe(c), texto: f ? `Cambiar foto${n}` : `Cargar foto${n}`, multiple: false, cuantas: 1, clase: 'cargar',
       alSubir: (urls) => { if (urls[0]) { const k = Math.min(activa, lista.length); lista[k] = { url: urls[0] }; activa = k; emitir(); } dibujar(); } });
     const quitar = f && !c.bloqueado ? el('button', { type: 'button', class: 'btn-link quitar-foto', onclick: () => {
       lista.splice(activa, 1); activa = Math.min(activa, Math.max(0, lista.length - 1)); emitir(); dibujar(); }, html: `${icono('quitar', 15)}<span>Quitar esta foto</span>` }) : null;
@@ -769,7 +773,7 @@ function campoZona(c, valor, alCambiar, idHtml, dis) {
 // Foto para compartir: el botón para subirla; se encuadra directo en la vista previa de abajo
 function campoFotoCompartir(c, valor, alCambiar) {
   const caja = el('div', { class: 'foto-compartir' });
-  caja.append(botonSubir({ texto: valor ? 'Cambiar foto' : 'Subir foto', multiple: false, cuantas: 1, clase: 'btn-cargar-foto',
+  caja.append(botonSubir({ lado: ladoDe(c), texto: valor ? 'Cambiar foto' : 'Subir foto', multiple: false, cuantas: 1, clase: 'btn-cargar-foto',
     alSubir: (urls) => { if (urls[0]) { escribir(datos, `${c.id}Pos`, undefined); alCambiar(urls[0], { rearmar: true }); } } }));
   return caja;
 }
