@@ -49,7 +49,7 @@
   #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--tinta); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 14px; display: none; z-index: 9; }
   .vacio { color: var(--suave); font-size: 13.5px; }
   /* README (ronda 59): reemplazo de colores y tipografías */
-  .reemplazos { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 6px 18px; }
+  .reemplazos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr)); gap: 6px 18px; }
   .reemp { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid #eef3f1; font-size: 13.5px; }
   .reemp .sw { width: 28px; height: 28px; border-radius: 7px; border: 1px solid rgba(0,0,0,.15); flex: none; }
   .reemp code { font-size: 12.5px; min-width: 66px; }
@@ -62,13 +62,29 @@
   .reemp .cant { border: 0; background: none; cursor: pointer; text-align: left; padding: 2px 0; font: inherit; font-size: 12px; color: var(--suave); }
   .reemp .cant:hover { color: inherit; text-decoration: underline; }
   .reemp-grupo.abierto { grid-column: 1 / -1; }
-  .usos { margin: 4px 0 10px 36px; display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 2px 18px; }
+  .usos { margin: 4px 0 10px 36px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr)); gap: 2px 18px; }
   .uso { display: flex; align-items: center; gap: 7px; font-size: 12.5px; padding: 3px 4px; border-radius: 6px; }
   .uso.activo { background: var(--claro); }
   .uso .donde { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .uso .donde b { font-weight: 600; }
   .uso input[type=color] { width: 28px; height: 24px; padding: 0; border: 1px solid var(--linea); border-radius: 6px; background: #fff; flex: none; }
   .uso input[type=text] { width: 84px; padding: 4px 6px; font-size: 12.5px; }
+  /* README (ronda 62): en el celular nada se sale del marco */
+  .reemp, .uso { min-width: 0; }
+  .reemp-grupo { min-width: 0; }
+  @media (max-width: 600px) {
+    .reemp { flex-wrap: wrap; gap: 6px; }
+    .reemp input[type=text] { width: 80px; }
+    .reemp code { min-width: 0; font-size: 12px; }
+    .reemp .cant { min-width: 0; }
+    .reemp .fl { display: none; }
+    .usos { margin-left: 0; }
+    .uso { flex-wrap: wrap; }
+    .uso .donde { flex-basis: 100%; white-space: normal; overflow-wrap: anywhere; }
+    .fuente-fila { grid-template-columns: 1fr 22px 1fr; }
+    .fuente-fila > :nth-child(4) { grid-column: 1 / 2; }
+    .fuente-fila > :nth-child(5) { grid-column: 2 / 4; }
+  }
   .usos .nota { grid-column: 1 / -1; color: var(--suave); font-size: 12px; padding: 2px 4px; }
   .fuente-fila { display: grid; grid-template-columns: 1fr 26px 1fr 110px 1.3fr; gap: 8px; align-items: center; margin: 6px 0; }
   .fuente-fila .tam { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--suave); }
