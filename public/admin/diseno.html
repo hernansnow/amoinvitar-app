@@ -58,7 +58,9 @@
   .reemp input[type=text] { width: 92px; padding: 6px 8px; font-size: 13px; }
   .reemp.activo { background: var(--claro); border-radius: 8px; padding-left: 6px; }
   .reemp .fl { font-size: 18px; color: var(--suave); }
-  .fuente-fila { display: grid; grid-template-columns: 1fr 26px 1fr 1fr; gap: 8px; align-items: center; margin: 6px 0; }
+  .fuente-fila { display: grid; grid-template-columns: 1fr 26px 1fr 110px 1.3fr; gap: 8px; align-items: center; margin: 6px 0; }
+  .fuente-fila .tam { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--suave); }
+  .fuente-fila .tam input { width: 64px; }
   @media (max-width: 760px) { .fuente-fila { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -413,15 +415,18 @@
     var c = aHex(prompt('Código del color del modelo que querés cambiar (por ejemplo #73527f):') || ''); if (!c) return;
     if (!$('#lista-colores [data-desde="' + c + '"]')) $('#lista-colores').prepend(filaColor(c, '', 0));
   }
-  function filaFuente(desde, hacia) {
+  function filaFuente(desde, hacia, escala) {
     var dl = 'cat-fuentes';
     if (!$('#' + dl)) document.body.append(el('datalist', { id: dl }, (CATALOGO || []).map(function (f) { return el('option', { value: f }); })));
     var a = el('input', { type: 'text', value: desde, placeholder: 'Fuente del modelo', spellcheck: 'false' });
     var b = el('input', { type: 'text', value: hacia, placeholder: 'Nueva fuente (sin cambio)', list: dl, spellcheck: 'false' });
-    var muestra = el('span', { style: 'font-size:22px;white-space:nowrap;overflow:hidden', text: 'Ana & Juan' });
-    var pinta = function () { muestra.style.fontFamily = '"' + (b.value || a.value) + '"'; };
-    b.addEventListener('input', pinta); pinta();
-    var f = el('div', { class: 'fuente-fila' }, [a, el('span', { class: 'fl', text: '→', style: 'text-align:center' }), b, muestra]);
+    // README (ronda 60): tamaño de la fuente (100 % = igual; Amsterdam Four, por ejemplo, va bien cerca de 70 %)
+    var tam = el('input', { type: 'number', min: '30', max: '250', step: '5', value: escala || 100, title: 'Tamaño de la fuente (%)' });
+    var muestra = el('span', { style: 'white-space:nowrap;overflow:hidden', text: 'Ana & Juan' });
+    var original = el('span', { style: 'white-space:nowrap;overflow:hidden;opacity:.45;font-size:22px', text: 'Ana & Juan' });
+    var pinta = function () { muestra.style.fontFamily = '"' + (b.value || a.value) + '"'; muestra.style.fontSize = (22 * (Number(tam.value) || 100) / 100) + 'px'; original.style.fontFamily = '"' + a.value + '"'; };
+    b.addEventListener('input', pinta); tam.addEventListener('input', pinta); a.addEventListener('input', pinta); pinta();
+    var f = el('div', { class: 'fuente-fila' }, [a, el('span', { class: 'fl', text: '→', style: 'text-align:center' }), b, el('label', { class: 'tam' }, [tam, '%']), el('div', { style: 'display:grid;line-height:1.2' }, [original, muestra])]);
     $('#lista-fuentes').append(f);
     if (!$('#css-catalogo')) document.head.append(el('link', { id: 'css-catalogo', rel: 'stylesheet', href: '/comun/fonts/catalogo/catalogo.css' }));
   }
@@ -433,10 +438,10 @@
     lista = prim.concat(lista.filter(function (x) { return prim.indexOf(x) < 0; })).slice(0, 60);
     $('#lista-colores').replaceChildren.apply($('#lista-colores'), lista.map(function (x) { return filaColor(x, guardados[x] || '', c[x] || 0); }));
     $('#lista-fuentes').replaceChildren();
-    var fg = {}; (p.fuentes || []).forEach(function (x) { fg[x[0]] = x[1]; });
+    var fg = {}, fe = {}; (p.fuentes || []).forEach(function (x) { fg[x[0]] = x[1] === x[0] ? '' : x[1]; fe[x[0]] = x[2] || 100; });
     var fs = Object.keys(DETECTADO.fuentes).sort(function (x, y) { return (DETECTADO.fuentes[y] - DETECTADO.fuentes[x]); });
     Object.keys(fg).forEach(function (f) { if (fs.indexOf(f) < 0) fs.unshift(f); });
-    fs.forEach(function (f) { filaFuente(f, fg[f] || ''); });
+    fs.forEach(function (f) { filaFuente(f, fg[f] || '', fe[f] || 100); });
   }
   // Lo que pidió el cliente: la paleta original del modelo → los colores que eligió (mismo orden); la fuente de títulos → la suya
   function cargarPedido() {
@@ -463,9 +468,12 @@
   async function guardarReemplazos(b) {
     var colores = [], fuentes = [];
     Array.prototype.forEach.call(document.querySelectorAll('#lista-colores .reemp'), function (f) { var h = aHex(f.querySelectorAll('input')[1].value); if (h && h !== f.dataset.desde) colores.push([f.dataset.desde, h]); });
-    Array.prototype.forEach.call(document.querySelectorAll('#lista-fuentes .fuente-fila'), function (f) { var ins = f.querySelectorAll('input'); if (ins[0].value.trim() && ins[1].value.trim()) fuentes.push([ins[0].value.trim(), ins[1].value.trim()]); });
+    Array.prototype.forEach.call(document.querySelectorAll('#lista-fuentes .fuente-fila'), function (f) {
+      var ins = f.querySelectorAll('input'), de = ins[0].value.trim(), a = ins[1].value.trim(), esc = Number(ins[2].value) || 100;
+      if (de && (a || esc !== 100)) fuentes.push([de, a || de, esc]);
+    });
     b.disabled = true;
-    try { await api(API, { method: 'POST', json: { colores: colores, fuentes: fuentes, base: $('#base').value || undefined } }); toast('Guardado: ' + colores.length + ' colores y ' + fuentes.length + ' fuentes'); await cargar(true); }
+    try { var r = await api(API, { method: 'POST', json: { colores: colores, fuentes: fuentes, base: $('#base').value || undefined } }); toast(r.aviso || ('Guardado: ' + colores.length + ' colores y ' + fuentes.length + ' fuentes'), !!r.aviso); await cargar(true); }
     catch (e) { toast(e.message, true); }
     b.disabled = false;
   }

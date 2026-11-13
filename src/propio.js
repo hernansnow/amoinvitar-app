@@ -114,9 +114,10 @@ export function recolorear(texto, p) {
         return alfa ? `rgba(${R}, ${G}, ${B}${alfa.replace(/\s+$/, '')})` : `rgb(${R}, ${G}, ${B})`;
       });
   }
-  const fuentes = (p.fuentes || []).filter(([d, h]) => d && h && String(d).trim() && String(d).trim() !== String(h).trim());
+  // README (ronda 60): con tamaño distinto de 100 % va la copia de la fuente con size-adjust («Amsterdam Four AI70»)
+  const fuentes = (p.fuentes || []).map(([d, h, e]) => [String(d || '').trim(), nombreFuente(h || d, e)]).filter(([d, h]) => d && h && d !== h);
   if (fuentes.length) {
-    const lista = new Map(fuentes.map(([d, h]) => [String(d).trim().toLowerCase(), String(h).trim()]));
+    const lista = new Map(fuentes.map(([d, h]) => [d.toLowerCase(), h]));
     const nombres = [...lista.keys()].map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).sort((x, y) => y.length - x.length);
     const re = new RegExp(`(["']?)\\b(${nombres.join('|')})\\b\\1`, 'gi');
     t = t.replace(re, (m, q, n) => `${q || '"'}${lista.get(n.toLowerCase())}${q || '"'}`);
@@ -124,12 +125,42 @@ export function recolorear(texto, p) {
   return t;
 }
 const RECOLOREABLE = /\.(css|svg)$/i;
+const escalaDe = (e) => { const n = Math.round(Number(e)); return Number.isFinite(n) && n >= 30 && n <= 250 ? n : 100; };
+export const nombreFuente = (f, e) => { const n = String(f || '').trim(); return n && escalaDe(e) !== 100 ? `${n} AI${escalaDe(e)}` : n; };
+// Copia de cada @font-face de la fuente con otro nombre y size-adjust (el tamaño cambia en toda la invitación)
+async function caraEscalada(env, origen, base, fuente, escala) {
+  const fuentesCss = ['/comun/fonts/catalogo/catalogo.css', `/modelos/${base}/estilo.css`, `/modelos/${base}/tema.css`];
+  const caras = [];
+  for (const ruta of fuentesCss) {
+    const r = await env.ASSETS.fetch(new URL(ruta, origen)).catch(() => null);
+    if (!r?.ok) continue;
+    const css = await r.text();
+    for (const m of css.match(/@font-face\s*\{[^}]*\}/gi) || []) {
+      const fam = (/font-family\s*:\s*['"]?([^;'"]+)/i.exec(m) || [])[1];
+      if (!fam || fam.trim().toLowerCase() !== fuente.toLowerCase()) continue;
+      // Las direcciones relativas (url('x.woff2')) pasan a ser absolutas desde el CSS de donde salen
+      const abs = m.replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi, (u, q, src) => (/^(data:|https?:|\/)/i.test(src) ? u : `url('${new URL(src, new URL(ruta, origen)).pathname}')`));
+      caras.push(abs.replace(/font-family\s*:[^;]+;?/i, `font-family: '${nombreFuente(fuente, escala)}';`).replace(/\}\s*$/, ` size-adjust: ${escala}%; }`));
+    }
+    if (caras.length) break;
+  }
+  return caras.join('\n');
+}
+export async function carasEscaladas(env, origen, base, fuentes) {
+  const out = [], sinCara = [];
+  for (const [d, h, e] of fuentes) {
+    if (escalaDe(e) === 100) continue;
+    const css = await caraEscalada(env, origen, base, h || d, escalaDe(e));
+    if (css) out.push(css); else sinCara.push(h || d);
+  }
+  return { css: out.join('\n'), sinCara };
+}
 
 // Lo extra en la página armada: HTML en el <head> y el CSS propio al final del <head>
 export function conExtrasPropios(html, p) {
   if (!p) return html;
   html = recolorear(html, p); // README (ronda 59): colores y fuentes del HTML (estilos en línea y <style>)
-  const extra = `${(p.fuentes || []).length ? '\n<link rel="stylesheet" href="/comun/fonts/catalogo/catalogo.css">' : ''}${p.head ? `\n<!-- diseño propio -->\n${p.head}\n` : ''}${p.css ? `<style id="estilo-propio">\n${String(p.css).replace(/<\/style/gi, '<\\/style')}\n</style>\n` : ''}`;
+  const extra = `${(p.fuentes || []).length ? '\n<link rel="stylesheet" href="/comun/fonts/catalogo/catalogo.css">' : ''}${p.carasFuentes ? `\n<style id="fuentes-propias">\n${p.carasFuentes}\n</style>` : ''}${p.head ? `\n<!-- diseño propio -->\n${p.head}\n` : ''}${p.css ? `<style id="estilo-propio">\n${String(p.css).replace(/<\/style/gi, '<\\/style')}\n</style>\n` : ''}`;
   if (!extra) return html;
   return /<\/head>/i.test(html) ? html.replace(/<\/head>/i, `${extra}</head>`) : extra + html;
 }
@@ -205,9 +236,17 @@ export async function adminPropio(request, env, id, sub) {
     // README (ronda 59): [[desde, hacia], …]
     const pares = (x, n, max) => (Array.isArray(x) ? x : []).filter((v) => Array.isArray(v) && v[0] && v[1]).slice(0, n).map(([d, h]) => [String(d).slice(0, max), String(h).slice(0, max)]);
     if (b.colores !== undefined) c.colores = pares(b.colores, 120, 30).map(([d, h]) => [aHex(d), aHex(h)]).filter(([d, h]) => d && h);
-    if (b.fuentes !== undefined) c.fuentes = pares(b.fuentes, 20, 60).map(([d, h]) => [d.replace(/["';{}<>]/g, '').trim(), h.replace(/["';{}<>]/g, '').trim()]).filter(([d, h]) => d && h);
+    let sinCara = [];
+    if (b.fuentes !== undefined) {
+      // README (ronda 60): [desde, hacia, tamaño %]; sin «hacia», la misma fuente con otro tamaño
+      const limpia = (x) => String(x || '').replace(/["';{}<>]/g, '').trim().slice(0, 60);
+      c.fuentes = (Array.isArray(b.fuentes) ? b.fuentes : []).slice(0, 20).map((v) => (Array.isArray(v) ? [limpia(v[0]), limpia(v[1]) || limpia(v[0]), escalaDe(v[2])] : null))
+        .filter((v) => v && v[0] && (v[0] !== v[1] || v[2] !== 100));
+      const r = await carasEscaladas(env, url.origin, c.base || p?.base || ev.modelo, c.fuentes);
+      c.carasFuentes = r.css; sinCara = r.sinCara;
+    }
     if (c.activo && !(c.base || p?.base || ev.modelo)) throw new HttpError(400, 'Falta elegir el modelo base');
-    return json({ ok: true, propio: await guardar(c) });
+    return json({ ok: true, propio: await guardar(c), ...(sinCara.length ? { aviso: `No encontré el archivo de ${sinCara.join(', ')} para cambiarle el tamaño: usá una fuente del catálogo o ajustalo en el CSS extra.` } : {}) });
   }
   if (request.method === 'DELETE') {
     for (const a of await listar(env, id)) await env.MEDIA.delete(PREFIJO(id) + a.ruta);
