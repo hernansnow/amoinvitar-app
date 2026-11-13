@@ -22,6 +22,9 @@ cualquier ajuste puntual de una invitación. Consola → Invitaciones → la inv
 - «Usar estos colores y tipografía» carga lo que pidió el cliente: la paleta original del modelo (modelo.json → paleta) →
   los colores que eligió en el mismo orden, y la fuente de títulos → la suya.
 - Las imágenes PNG/JPG no se recolorean: se suben con el mismo nombre.
+- (README ronda 63) Un archivo que se llama igual que uno del modelo va solo a la carpeta de ese (subir la carpeta `img`
+  entera o imágenes sueltas ya no las deja en la raíz). En «Subidos» cada archivo dice si reemplaza al del modelo, si
+  es nuevo o si quedó en otra carpeta («mover ahí» / «Mover todos a su carpeta»).
 - **Cada uso por separado** (README ronda 61): el «×N ▾» de cada color abre la lista de lugares del CSS donde aparece
   (propiedad · selector, p. ej. `color · .text-lila-fuerte`), cada uno con su propio color. Vacío = sigue al color del
   grupo; lo que se pone ahí gana sobre el grupo (poner el mismo color original lo deja como estaba). Se guarda en

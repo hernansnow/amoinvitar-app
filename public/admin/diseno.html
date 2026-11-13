@@ -226,6 +226,30 @@
     b.disabled = false; b.textContent = txt;
   }
 
+  // README (ronda 63): un archivo que se llama igual que uno del modelo va a la misma carpeta que ese
+  // (subir la carpeta img entera o imágenes sueltas sin carpeta las dejaba en la raíz y no reemplazaban nada)
+  function rutasModelo(base) { return (ARCH && ARCH[base] ? ARCH[base].map(function (x) { return x[0]; }) : []); }
+  function rutaDelModelo(ruta, base) {
+    var todas = rutasModelo(base);
+    if (!todas.length || todas.indexOf(ruta) >= 0) return null;
+    var nom = ruta.split('/').pop().toLowerCase();
+    var igual = todas.filter(function (r) { return r.split('/').pop().toLowerCase() === nom; });
+    return igual.length === 1 ? igual[0] : null;
+  }
+  async function moverA(de, a) {
+    try {
+      var r = await fetch(D.ruta + '/' + de.split('/').map(encodeURIComponent).join('/'));
+      if (!r.ok) throw new Error('No se pudo leer ' + de);
+      await api(API + '/archivo?ruta=' + encodeURIComponent(a), { method: 'PUT', body: new Uint8Array(await r.arrayBuffer()), headers: { 'content-type': 'application/octet-stream' } });
+      await api(API + '/archivo?ruta=' + encodeURIComponent(de), { method: 'DELETE' });
+      return true;
+    } catch (e) { toast(e.message, true); return false; }
+  }
+  async function moverTodos() {
+    var base = (D.propio && D.propio.base) || D.evento.modelo, n = 0;
+    for (var i = 0; i < (D.archivos || []).length; i++) { var a = D.archivos[i], dest = rutaDelModelo(a.ruta, base); if (dest && await moverA(a.ruta, dest)) n++; }
+    toast(n + ' archivos movidos a su carpeta'); await cargar(true);
+  }
   async function subir(lista, soloCambios) {
     var reg = $('#registro'); reg.hidden = false; reg.textContent = '';
     var log = function (t) { reg.textContent += t + '\n'; reg.scrollTop = reg.scrollHeight; };
@@ -234,9 +258,12 @@
     if (!D.propio) await api(API, { method: 'POST', json: { base: base } });
     var raiz = D.ruta || ('/propio/' + id + '~0~' + base);
     var subidos = 0, iguales = 0, malos = 0;
+    await cargarArchivos();
     for (var i = 0; i < lista.length; i++) {
       var a = lista[i];
       if (/(^|\/)(LEEME\.txt|archivos\.json)$/i.test(a.ruta)) continue;
+      var dest = rutaDelModelo(a.ruta, base);
+      if (dest) { log('↪ ' + a.ruta + ' → ' + dest + ' (donde está el del modelo)'); a.ruta = dest; }
       try {
         if (soloCambios) {
           var r = await fetch(raiz + '/' + a.ruta.split('/').map(encodeURIComponent).join('/'));
@@ -373,9 +400,14 @@
     zona.addEventListener('dragover', function (ev) { ev.preventDefault(); zona.classList.add('encima'); });
     zona.addEventListener('dragleave', function () { zona.classList.remove('encima'); });
     zona.addEventListener('drop', function (ev) { ev.preventDefault(); zona.classList.remove('encima'); recibir(ev.dataTransfer.files, $('#carpeta').value); });
+    var bModelo = p.base || e.modelo, delModelo = rutasModelo(bModelo), malUbicados = 0;
     var filas = (D.archivos || []).map(function (a) {
       var ver = D.ruta ? D.ruta + '/' + a.ruta.split('/').map(encodeURIComponent).join('/') : null;
-      return el('tr', {}, [el('td', { text: a.ruta }), el('td', { text: kb(a.tam) }), el('td', { text: a.fecha ? new Date(a.fecha).toLocaleString('es') : '' }),
+      var dest = rutaDelModelo(a.ruta, bModelo); if (dest) malUbicados++;
+      var estado = !delModelo.length ? null : delModelo.indexOf(a.ruta) >= 0 ? el('span', { class: 'meta', text: ' · reemplaza al del modelo' })
+        : dest ? el('span', { style: 'color:#b3392c;font-size:12.5px' }, [' · no reemplaza nada: el del modelo está en ' + dest + ' ', el('button', { class: 'b sec', style: 'padding:2px 8px;font-size:12px', onclick: async function (ev) { ev.target.disabled = true; if (await moverA(a.ruta, dest)) { toast('Movido a ' + dest); await cargar(true); } } }, 'mover ahí')])
+        : el('span', { class: 'meta', text: ' · nuevo (lo usa solo si el HTML/CSS lo nombra)' });
+      return el('tr', {}, [el('td', {}, [a.ruta, estado]), el('td', { text: kb(a.tam) }), el('td', { text: a.fecha ? new Date(a.fecha).toLocaleString('es') : '' }),
         el('td', { class: 'acc' }, [ver ? el('a', { href: ver, target: '_blank', rel: 'noopener' }, 'ver') : null, el('button', { class: 'quitar', onclick: function () { quitar(a.ruta); } }, 'quitar')])]);
     });
     main.append(el('section', { class: 'tarjeta' }, [
@@ -388,6 +420,7 @@
       ]),
       el('pre', { class: 'registro', id: 'registro', hidden: true }),
       el('h2', { text: 'Subidos (' + (D.archivos || []).length + ')', style: 'margin-top:16px' }),
+      malUbicados ? el('p', { class: 'aviso-caja' }, [malUbicados + ' archivos se llaman igual que uno del modelo pero quedaron en otra carpeta, así que la invitación sigue mostrando el del modelo. ', el('button', { class: 'b', onclick: function (ev) { ev.target.disabled = true; moverTodos(); } }, 'Mover todos a su carpeta')]) : null,
       filas.length ? el('table', {}, [el('thead', {}, el('tr', {}, [el('th', { text: 'Archivo' }), el('th', { text: 'Tamaño' }), el('th', { text: 'Fecha' }), el('th', {})])), el('tbody', {}, filas)])
         : el('p', { class: 'vacio', text: 'Todavía no se subió nada: la invitación usa los archivos del modelo base.' }),
     ]));
