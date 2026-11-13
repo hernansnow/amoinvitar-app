@@ -48,6 +48,18 @@
   details summary { cursor: pointer; color: var(--verde-2); }
   #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--tinta); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 14px; display: none; z-index: 9; }
   .vacio { color: var(--suave); font-size: 13.5px; }
+  /* README (ronda 59): reemplazo de colores y tipografías */
+  .reemplazos { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 6px 18px; }
+  .reemp { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid #eef3f1; font-size: 13.5px; }
+  .reemp .sw { width: 28px; height: 28px; border-radius: 7px; border: 1px solid rgba(0,0,0,.15); flex: none; }
+  .reemp code { font-size: 12.5px; min-width: 66px; }
+  .reemp .cant { color: var(--suave); font-size: 12px; min-width: 34px; }
+  .reemp input[type=color] { width: 34px; height: 30px; padding: 0; border: 1px solid var(--linea); border-radius: 7px; background: #fff; flex: none; }
+  .reemp input[type=text] { width: 92px; padding: 6px 8px; font-size: 13px; }
+  .reemp.activo { background: var(--claro); border-radius: 8px; padding-left: 6px; }
+  .reemp .fl { font-size: 18px; color: var(--suave); }
+  .fuente-fila { display: grid; grid-template-columns: 1fr 26px 1fr 1fr; gap: 8px; align-items: center; margin: 6px 0; }
+  @media (max-width: 760px) { .fuente-fila { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -60,7 +72,7 @@
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var id = new URLSearchParams(location.search).get('id') || '';
   var clave = ''; try { clave = sessionStorage.getItem('ai_admin') || ''; } catch (e) { /* sin almacenamiento */ }
-  var D = null, ARCH = null;
+  var D = null, ARCH = null, CATALOGO = null, DETECTADO = null;
   function el(tag, at, hijos) {
     var e = document.createElement(tag);
     Object.keys(at || {}).forEach(function (k) { var v = at[k]; if (v == null || v === false) return; if (k === 'text') e.textContent = v; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v); else if (k === 'html') e.innerHTML = v; else e.setAttribute(k, v === true ? '' : v); });
@@ -278,11 +290,23 @@
         return c ? el('div', { class: 'muestra', style: 'background:' + c, title: c, onclick: function () { navigator.clipboard && navigator.clipboard.writeText(c); toast('Copiado ' + c); } }, el('span', { text: (i + 1) + ') ' + c })) : el('div', { class: 'muestra', title: 'quitar', style: 'background:repeating-linear-gradient(45deg,#fff,#fff 4px,#eee 4px,#eee 8px)' }, el('span', { text: (i + 1) + ') quitar' }));
       })), d.paleta.notas ? el('p', { text: 'Notas: ' + d.paleta.notas }) : null);
       if (d.tipografia && d.tipografia.modo === 'cambiar') cajaPedido.append(el('p', { text: 'Tipografía: ' + [d.tipografia.nombre, d.tipografia.otra && ('otra: ' + d.tipografia.otra)].filter(Boolean).join(' · ') }));
-      cajaPedido.append(el('div', { class: 'fila' }, el('button', { class: 'b sec', onclick: function () { var x = cssDelPedido(); if (x.css) $('#css').value = (x.css + '\n\n' + $('#css').value).trim(); if (x.head) $('#head').value = (x.head + '\n' + $('#head').value).trim(); toast('Agregado al CSS extra: guardá para aplicarlo'); } }, 'Pasar colores y tipografía al CSS extra')));
+      cajaPedido.append(el('div', { class: 'fila' }, el('button', { class: 'b sec', onclick: function () { cargarPedido(); } }, 'Usar estos colores y tipografía (en «Colores y tipografías»)')));
     } else if (D.pedido && D.pedido.medida) {
       cajaPedido.append(el('details', {}, [el('summary', { text: 'Ver la idea que mandó para el diseño a medida' }), el('pre', { class: 'registro', text: JSON.stringify(D.pedido.medida, null, 2) })]));
     } else cajaPedido.append(el('p', { class: 'vacio', text: 'No pidió cambios de diseño desde el panel.' }));
     main.append(cajaPedido);
+    main.append(el('section', { class: 'tarjeta', id: 'sec-colores' }, [
+      el('h2', { text: 'Colores y tipografías' }),
+      el('p', { class: 'meta', text: 'Los modelos escriben sus colores directo en el CSS y el HTML: acá se cambia cada color del modelo por otro (en el CSS, los íconos SVG y la página; las transparencias se conservan) y cada fuente por otra. Las imágenes PNG/JPG no se recolorean: esas se reemplazan subiendo la imagen nueva con el mismo nombre.' }),
+      el('div', { id: 'det-estado', class: 'vacio', text: 'Buscando los colores y fuentes del modelo…' }),
+      el('h2', { text: 'Colores del modelo (de más a menos usados)', style: 'font-size:15px;margin-top:14px' }),
+      el('div', { class: 'reemplazos', id: 'lista-colores' }),
+      el('div', { class: 'fila' }, [el('button', { class: 'b sec', onclick: function () { var x = el('div'); agregarColor(x); } }, '+ Otro color (escribir el código)')]),
+      el('h2', { text: 'Tipografías', style: 'font-size:15px;margin-top:14px' }),
+      el('div', { id: 'lista-fuentes' }),
+      el('div', { class: 'fila' }, [el('button', { class: 'b sec', onclick: function () { filaFuente('', ''); } }, '+ Otra fuente')]),
+      el('div', { class: 'fila' }, [el('button', { class: 'b', onclick: function (ev) { guardarReemplazos(ev.target); } }, 'Guardar colores y tipografías'), el('span', { class: 'meta', text: 'Después: «Vista previa con el diseño propio».' })]),
+    ]));
 
     // Ajustes
     var base = el('select', { id: 'base' }, [el('option', { value: '', text: '— Elegí el modelo base —' })].concat(D.modelos.map(function (m) {
@@ -306,7 +330,8 @@
       el('label', { class: 'campo', style: 'margin-top:10px' }, ['Notas internas (qué se cambió, para la próxima vez)', el('textarea', { id: 'notas', style: 'min-height:70px;font-family:inherit' }, p.notas || '')]),
       el('div', { class: 'fila' }, [el('button', { class: 'b', onclick: function (ev) { guardar(ev.target); } }, 'Guardar ajustes'), el('span', { class: 'meta', text: 'Para ver los cambios: Guardar y abrir la vista previa.' })]),
     ]));
-    base.addEventListener('change', function () { cargarArchivos().then(pintarPlantillas); });
+    base.addEventListener('change', function () { cargarArchivos().then(pintarPlantillas); detectar(); });
+    detectar();
 
     // Archivos
     var entrada = el('input', { type: 'file', multiple: true, accept: '*/*', hidden: true, onchange: function () { recibir(this.files, $('#carpeta').value); this.value = ''; } });
@@ -336,6 +361,113 @@
       filas.length ? el('table', {}, [el('thead', {}, el('tr', {}, [el('th', { text: 'Archivo' }), el('th', { text: 'Tamaño' }), el('th', { text: 'Fecha' }), el('th', {})])), el('tbody', {}, filas)])
         : el('p', { class: 'vacio', text: 'Todavía no se subió nada: la invitación usa los archivos del modelo base.' }),
     ]));
+  }
+  // ── README (ronda 59): colores y tipografías ───────────────────────────
+  var aHex = function (x) { var h = String(x || '').trim().toLowerCase().replace(/^#/, ''); if (/^[0-9a-f]{3}$/.test(h)) h = h.split('').map(function (c) { return c + c; }).join(''); return /^[0-9a-f]{6}$/.test(h) ? '#' + h : null; };
+  function contarColores(texto, cuenta) {
+    String(texto).replace(/#([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![0-9a-z_-])/gi, function (m, h) {
+      var c = aHex(h.length === 8 ? h.slice(0, 6) : h.length === 4 ? h.slice(0, 3) : h); if (c) cuenta[c] = (cuenta[c] || 0) + 1; return m;
+    }).replace(/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/gi, function (m, r, g, b) {
+      var c = '#' + [r, g, b].map(function (n) { return Math.min(255, +n).toString(16).padStart(2, '0'); }).join(''); cuenta[c] = (cuenta[c] || 0) + 1; return m;
+    });
+  }
+  var GENERICAS = /^(inherit|initial|unset|serif|sans-serif|monospace|cursive|fantasy|system-ui|-apple-system|blinkmacsystemfont|segoe ui.*|roboto|helvetica.*|arial|noto.*|apple color emoji|sfmono-regular|menlo|monaco|consolas|liberation mono|courier new|icomoon|fontawesome.*|font awesome.*)$/i;
+  function contarFuentes(texto, cuenta) {
+    String(texto).replace(/font-family\s*:\s*([^;}"]*(?:"[^"]*"[^;}"]*)*)/gi, function (m, v) {
+      v.split(',').forEach(function (f) { f = f.replace(/!important/i, '').replace(/["']/g, '').trim(); if (f && !GENERICAS.test(f) && !/^var\(/.test(f)) cuenta[f] = (cuenta[f] || 0) + 1; }); return m;
+    });
+  }
+  async function detectar() {
+    var base = $('#base') && $('#base').value || (D.propio && D.propio.base) || D.evento.modelo, est = $('#det-estado');
+    if (!base) { est.textContent = 'Elegí el modelo base para ver sus colores.'; return; }
+    try {
+      if (!CATALOGO) CATALOGO = await fetch('/comun/fonts/catalogo/catalogo.css').then(function (r) { return r.text(); }).then(function (t) {
+        var n = {}; t.replace(/font-family\s*:\s*['"]?([^'";]+)/gi, function (m, f) { n[f.trim()] = 1; return m; }); return Object.keys(n).sort();
+      }).catch(function () { return []; });
+      var mj = await fetch('/modelos/' + base + '/modelo.json').then(function (r) { return r.json(); }).catch(function () { return {}; });
+      var archivos = ['estilo.css', 'tema.css', 'index.html', 'index-premium.html'];
+      var colores = {}, fuentes = {};
+      for (var i = 0; i < archivos.length; i++) {
+        var t = await fetch('/modelos/' + base + '/' + archivos[i]).then(function (r) { return r.ok ? r.text() : ''; }).catch(function () { return ''; });
+        contarColores(t, colores); contarFuentes(t, fuentes);
+      }
+      // Las fuentes de títulos y texto que declara el modelo, aunque estén en otro CSS
+      var tf = (mj.tarjetas && mj.tarjetas.fuentes) || {};
+      [tf.titulos, tf.texto, tf.serif].filter(Boolean).forEach(function (f) { fuentes[f] = fuentes[f] || 1; });
+      DETECTADO = { base: base, paleta: (mj.paleta || []).map(aHex), colores: colores, fuentes: fuentes, titulos: tf.titulos || null };
+      est.textContent = Object.keys(colores).length + ' colores y ' + Object.keys(fuentes).length + ' fuentes en el modelo ' + base + '. Elegí solo los que quieras cambiar (los demás quedan igual).';
+      pintarReemplazos();
+    } catch (e) { est.textContent = 'No se pudieron leer los colores del modelo: ' + e.message; }
+  }
+  function filaColor(desde, hacia, cant) {
+    var activo = !!hacia, sw = el('div', { class: 'sw', style: 'background:' + desde, title: desde });
+    var picker = el('input', { type: 'color', value: hacia || desde });
+    var txt = el('input', { type: 'text', value: hacia || '', placeholder: 'sin cambio', spellcheck: 'false' });
+    var fila = el('div', { class: 'reemp' + (activo ? ' activo' : ''), 'data-desde': desde }, [sw, el('code', { text: desde }), el('span', { class: 'cant', text: cant ? '×' + cant : '' }), el('span', { class: 'fl', text: '→' }), picker, txt,
+      el('button', { class: 'b sec', style: 'padding:6px 9px', title: 'Sin cambio', onclick: function () { txt.value = ''; picker.value = desde; fila.classList.remove('activo'); } }, '✕')]);
+    picker.addEventListener('input', function () { txt.value = picker.value; fila.classList.add('activo'); });
+    txt.addEventListener('input', function () { var h = aHex(txt.value); if (h) picker.value = h; fila.classList.toggle('activo', !!h); });
+    return fila;
+  }
+  function agregarColor() {
+    var c = aHex(prompt('Código del color del modelo que querés cambiar (por ejemplo #73527f):') || ''); if (!c) return;
+    if (!$('#lista-colores [data-desde="' + c + '"]')) $('#lista-colores').prepend(filaColor(c, '', 0));
+  }
+  function filaFuente(desde, hacia) {
+    var dl = 'cat-fuentes';
+    if (!$('#' + dl)) document.body.append(el('datalist', { id: dl }, (CATALOGO || []).map(function (f) { return el('option', { value: f }); })));
+    var a = el('input', { type: 'text', value: desde, placeholder: 'Fuente del modelo', spellcheck: 'false' });
+    var b = el('input', { type: 'text', value: hacia, placeholder: 'Nueva fuente (sin cambio)', list: dl, spellcheck: 'false' });
+    var muestra = el('span', { style: 'font-size:22px;white-space:nowrap;overflow:hidden', text: 'Ana & Juan' });
+    var pinta = function () { muestra.style.fontFamily = '"' + (b.value || a.value) + '"'; };
+    b.addEventListener('input', pinta); pinta();
+    var f = el('div', { class: 'fuente-fila' }, [a, el('span', { class: 'fl', text: '→', style: 'text-align:center' }), b, muestra]);
+    $('#lista-fuentes').append(f);
+    if (!$('#css-catalogo')) document.head.append(el('link', { id: 'css-catalogo', rel: 'stylesheet', href: '/comun/fonts/catalogo/catalogo.css' }));
+  }
+  function pintarReemplazos() {
+    var p = D.propio || {}, guardados = {}; (p.colores || []).forEach(function (x) { guardados[aHex(x[0])] = x[1]; });
+    var c = DETECTADO.colores, lista = Object.keys(c).sort(function (x, y) { return c[y] - c[x]; });
+    // Primero los de la paleta del modelo y los ya cambiados
+    var prim = DETECTADO.paleta.concat(Object.keys(guardados)).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+    lista = prim.concat(lista.filter(function (x) { return prim.indexOf(x) < 0; })).slice(0, 60);
+    $('#lista-colores').replaceChildren.apply($('#lista-colores'), lista.map(function (x) { return filaColor(x, guardados[x] || '', c[x] || 0); }));
+    $('#lista-fuentes').replaceChildren();
+    var fg = {}; (p.fuentes || []).forEach(function (x) { fg[x[0]] = x[1]; });
+    var fs = Object.keys(DETECTADO.fuentes).sort(function (x, y) { return (DETECTADO.fuentes[y] - DETECTADO.fuentes[x]); });
+    Object.keys(fg).forEach(function (f) { if (fs.indexOf(f) < 0) fs.unshift(f); });
+    fs.forEach(function (f) { filaFuente(f, fg[f] || ''); });
+  }
+  // Lo que pidió el cliente: la paleta original del modelo → los colores que eligió (mismo orden); la fuente de títulos → la suya
+  function cargarPedido() {
+    var d = (D.pedido && D.pedido.diseno) || {};
+    if (!DETECTADO) return toast('Esperá a que se carguen los colores del modelo', true);
+    var cols = ((d.paleta && d.paleta.modo === 'cambiar' && d.paleta.colores) || []).map(function (c) { return aHex(typeof c === 'string' ? c : c && c.color); });
+    var n = 0, usados = {};
+    DETECTADO.paleta.forEach(function (orig, i) {
+      // Si la paleta repite un color, vale el primero; un color igual al original no es un cambio
+      if (!orig || !cols[i] || usados[orig] || cols[i] === orig) return;
+      usados[orig] = 1;
+      var fila = $('#lista-colores [data-desde="' + orig + '"]') || (function () { var f = filaColor(orig, '', 0); $('#lista-colores').prepend(f); return f; })();
+      var ins = fila.querySelectorAll('input'); ins[0].value = cols[i]; ins[1].value = cols[i]; fila.classList.add('activo'); n++;
+    });
+    var fuente = d.tipografia && d.tipografia.modo === 'cambiar' && (d.tipografia.otra || d.tipografia.nombre);
+    if (fuente && DETECTADO.titulos) {
+      var hecho = false;
+      Array.prototype.forEach.call($('#lista-fuentes').children, function (f) { var ins = f.querySelectorAll('input'); if (ins[0].value === DETECTADO.titulos) { ins[1].value = fuente; ins[1].dispatchEvent(new Event('input')); hecho = true; } });
+      if (!hecho) filaFuente(DETECTADO.titulos, fuente);
+    }
+    $('#sec-colores').scrollIntoView({ behavior: 'smooth' });
+    toast(n + ' colores' + (fuente ? ' y la tipografía' : '') + ' cargados: revisá y tocá «Guardar colores y tipografías»');
+  }
+  async function guardarReemplazos(b) {
+    var colores = [], fuentes = [];
+    Array.prototype.forEach.call(document.querySelectorAll('#lista-colores .reemp'), function (f) { var h = aHex(f.querySelectorAll('input')[1].value); if (h && h !== f.dataset.desde) colores.push([f.dataset.desde, h]); });
+    Array.prototype.forEach.call(document.querySelectorAll('#lista-fuentes .fuente-fila'), function (f) { var ins = f.querySelectorAll('input'); if (ins[0].value.trim() && ins[1].value.trim()) fuentes.push([ins[0].value.trim(), ins[1].value.trim()]); });
+    b.disabled = true;
+    try { await api(API, { method: 'POST', json: { colores: colores, fuentes: fuentes, base: $('#base').value || undefined } }); toast('Guardado: ' + colores.length + ' colores y ' + fuentes.length + ' fuentes'); await cargar(true); }
+    catch (e) { toast(e.message, true); }
+    b.disabled = false;
   }
   function pintarPlantillas() {
     var sel = $('#plantilla'), base = $('#base').value, actual = sel.value;

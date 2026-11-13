@@ -14,6 +14,15 @@ cualquier ajuste puntual de una invitación. Consola → Invitaciones → la inv
 - Sin activar, solo lo ve el administrador en «Vista previa con el diseño propio» (`/vista/<id>?k=…&propio=1`).
 - El cliente sigue editando todo en su panel (textos, fotos, lista…): el HTML conserva las marcas `data-*`.
 
+## Colores y tipografías (README ronda 59)
+- Los modelos escriben sus colores directo en el CSS y el HTML (no usan variables `--color-…`): por eso el cambio de
+  colores se hace en «Colores y tipografías»: cada color del modelo → otro (se aplica en el CSS, los SVG y la página,
+  en #hex, #hex corto, #hex con transparencia, rgb() y rgba(), conservando la transparencia). Igual con las fuentes
+  (se carga el catálogo `/comun/fonts/catalogo/catalogo.css`).
+- «Usar estos colores y tipografía» carga lo que pidió el cliente: la paleta original del modelo (modelo.json → paleta) →
+  los colores que eligió en el mismo orden, y la fuente de títulos → la suya.
+- Las imágenes PNG/JPG no se recolorean: se suben con el mismo nombre.
+
 ## Pasos
 1. Elegir el **modelo base** (en a medida/corporativo, el más parecido) y «Guardar ajustes».
 2. **Descargar kit** (.zip con el diseño actual + LEEME.txt), editar en la compu.

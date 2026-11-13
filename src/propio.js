@@ -66,16 +66,70 @@ export async function servirPropio(env, url) {
   if (!ruta) return new Response('No encontrado', { status: 404 });
   const cab = { 'cache-control': 'public, max-age=31536000, immutable', 'x-robots-tag': 'noindex' };
   const o = env.MEDIA ? await env.MEDIA.get(PREFIJO(id) + ruta).catch(() => null) : null;
-  if (o) return new Response(o.body, { headers: { 'content-type': o.httpMetadata?.contentType || mimeDe(ruta), ...cab } });
-  const r = await env.ASSETS.fetch(new URL(`/modelos/${base}/${ruta}`, url.origin));
-  if (!r.ok) return new Response('No encontrado', { status: 404 });
-  return new Response(r.body, { headers: { 'content-type': r.headers.get('content-type') || mimeDe(ruta), ...cab } });
+  let r = null;
+  if (!o) { r = await env.ASSETS.fetch(new URL(`/modelos/${base}/${ruta}`, url.origin)); if (!r.ok) return new Response('No encontrado', { status: 404 }); }
+  const tipo = o ? o.httpMetadata?.contentType || mimeDe(ruta) : r.headers.get('content-type') || mimeDe(ruta);
+  // README (ronda 59): CSS y SVG con los colores y fuentes cambiados (la versión de la ruta cambia con cada ajuste)
+  if (RECOLOREABLE.test(ruta)) {
+    const ev = await almacenD1(env).evento(id).catch(() => null);
+    const p = ev?.datos?.propio;
+    if (hayCambios(p)) {
+      const texto = await new Response(o ? o.body : r.body).text();
+      return new Response(recolorear(texto, p), { headers: { 'content-type': tipo, ...cab } });
+    }
+  }
+  return new Response(o ? o.body : r.body, { headers: { 'content-type': tipo, ...cab } });
 }
+
+// README (ronda 59): reemplazo de colores y tipografías. Los modelos escriben los colores directo en su CSS y su HTML (no
+// usan variables): propio.colores = [['#73527f', '#2ba4d2'], …] cambia cada color (en #hex, #hex corto, rgb() y rgba(),
+// conservando la transparencia) en el CSS, los SVG y la página armada. propio.fuentes = [['Great Vibes', 'Amsterdam Four'], …]
+// cambia la fuente donde aparezca. Todo en una sola pasada (un cambio no se encadena con otro).
+const aHex = (x) => {
+  let h = String(x || '').trim().toLowerCase().replace(/^#/, '');
+  if (/^[0-9a-f]{3}$/.test(h)) h = h.split('').map((c) => c + c).join('');
+  return /^[0-9a-f]{6}$/.test(h) ? '#' + h : null;
+};
+const rgbDe = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+export function hayCambios(p) { return !!(p && ((p.colores || []).length || (p.fuentes || []).length)); }
+export function recolorear(texto, p) {
+  if (!hayCambios(p) || !texto) return texto;
+  const mapa = new Map();
+  for (const [d, h] of p.colores || []) { const a = aHex(d), b = aHex(h); if (a && b && a !== b) mapa.set(a, b); }
+  let t = String(texto);
+  if (mapa.size) {
+    t = t.replace(/#([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![0-9a-z_-])/gi, (m, h) => {
+      // Con transparencia (#rrggbbaa / #rgba): se cambia el color y se conserva la transparencia
+      const largo = h.length === 8 || h.length === 4;
+      const color = largo ? (h.length === 8 ? h.slice(0, 6) : h.slice(0, 3)) : h;
+      const alfa = largo ? (h.length === 8 ? h.slice(6) : h[3] + h[3]) : '';
+      const nuevo = mapa.get(aHex(color));
+      return nuevo ? nuevo + alfa : m;
+    })
+      .replace(/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*[\d.]+%?\s*)?\)/gi, (m, r, g, b, alfa) => {
+        const k = '#' + [r, g, b].map((n) => Math.min(255, +n).toString(16).padStart(2, '0')).join('');
+        const nuevo = mapa.get(k);
+        if (!nuevo) return m;
+        const [R, G, B] = rgbDe(nuevo);
+        return alfa ? `rgba(${R}, ${G}, ${B}${alfa.replace(/\s+$/, '')})` : `rgb(${R}, ${G}, ${B})`;
+      });
+  }
+  const fuentes = (p.fuentes || []).filter(([d, h]) => d && h && String(d).trim() && String(d).trim() !== String(h).trim());
+  if (fuentes.length) {
+    const lista = new Map(fuentes.map(([d, h]) => [String(d).trim().toLowerCase(), String(h).trim()]));
+    const nombres = [...lista.keys()].map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).sort((x, y) => y.length - x.length);
+    const re = new RegExp(`(["']?)\\b(${nombres.join('|')})\\b\\1`, 'gi');
+    t = t.replace(re, (m, q, n) => `${q || '"'}${lista.get(n.toLowerCase())}${q || '"'}`);
+  }
+  return t;
+}
+const RECOLOREABLE = /\.(css|svg)$/i;
 
 // Lo extra en la página armada: HTML en el <head> y el CSS propio al final del <head>
 export function conExtrasPropios(html, p) {
   if (!p) return html;
-  const extra = `${p.head ? `\n<!-- diseño propio -->\n${p.head}\n` : ''}${p.css ? `<style id="estilo-propio">\n${String(p.css).replace(/<\/style/gi, '<\\/style')}\n</style>\n` : ''}`;
+  html = recolorear(html, p); // README (ronda 59): colores y fuentes del HTML (estilos en línea y <style>)
+  const extra = `${(p.fuentes || []).length ? '\n<link rel="stylesheet" href="/comun/fonts/catalogo/catalogo.css">' : ''}${p.head ? `\n<!-- diseño propio -->\n${p.head}\n` : ''}${p.css ? `<style id="estilo-propio">\n${String(p.css).replace(/<\/style/gi, '<\\/style')}\n</style>\n` : ''}`;
   if (!extra) return html;
   return /<\/head>/i.test(html) ? html.replace(/<\/head>/i, `${extra}</head>`) : extra + html;
 }
@@ -148,6 +202,10 @@ export async function adminPropio(request, env, id, sub) {
     if (b.head !== undefined) c.head = String(b.head).slice(0, 50000);
     if (b.plantilla !== undefined) c.plantilla = b.plantilla ? rutaSegura(b.plantilla) || '' : '';
     if (b.notas !== undefined) c.notas = String(b.notas).slice(0, 5000);
+    // README (ronda 59): [[desde, hacia], …]
+    const pares = (x, n, max) => (Array.isArray(x) ? x : []).filter((v) => Array.isArray(v) && v[0] && v[1]).slice(0, n).map(([d, h]) => [String(d).slice(0, max), String(h).slice(0, max)]);
+    if (b.colores !== undefined) c.colores = pares(b.colores, 120, 30).map(([d, h]) => [aHex(d), aHex(h)]).filter(([d, h]) => d && h);
+    if (b.fuentes !== undefined) c.fuentes = pares(b.fuentes, 20, 60).map(([d, h]) => [d.replace(/["';{}<>]/g, '').trim(), h.replace(/["';{}<>]/g, '').trim()]).filter(([d, h]) => d && h);
     if (c.activo && !(c.base || p?.base || ev.modelo)) throw new HttpError(400, 'Falta elegir el modelo base');
     return json({ ok: true, propio: await guardar(c) });
   }
