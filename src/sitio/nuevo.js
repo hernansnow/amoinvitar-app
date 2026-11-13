@@ -107,6 +107,14 @@ const PIE_ZONA = { es: 'Invitaciones digitales', en: 'Digital invitations', pt: 
 const soloEspanol = (pagina) => /^ideas(\/|$)/.test(pagina);
 // README (ronda 44): Sweet 16 solo en inglés (Estados Unidos, Canadá e internacional)
 const soloIngles = (pagina) => pagina === 'sweet16';
+// README (ronda 55): los enlaces a Albunear van a la carpeta de su país (/ar/, /us/, /en/…): precio, moneda e idioma de ahí.
+// Países que Albunear tiene en su selector (AT y SV solo existen acá: van a su raíz, que detecta sola).
+const PAISES_ALBUNEAR = new Set(['AR', 'AU', 'BE', 'BO', 'BR', 'CA', 'CL', 'CO', 'CR', 'CU', 'DE', 'DO', 'EC', 'ES', 'FR', 'GB', 'GT', 'HN', 'IE', 'IT', 'MX', 'NI', 'NL', 'NZ', 'PA', 'PE', 'PR', 'PT', 'PY', 'UY', 'US', 'VE', 'CH']);
+const carpetaAlbunear = (sede) => (sede.carpeta === '/en' ? '/en' : sede.pais && PAISES_ALBUNEAR.has(sede.pais) ? `/${sede.pais.toLowerCase()}` : '');
+function conAlbunear(html, sede) {
+  const c = carpetaAlbunear(sede);
+  return c ? html.replace(/https:\/\/albunear\.com(?=\/(?:#|demo[?"'#])|["'])/g, (m, off, s) => `https://albunear.com${c}${s[off + m.length] === '/' ? '' : '/'}`) : html;
+}
 function componer(html, sede, pagina, { legal = false, monedaRaiz = '' } = {}) {
   const url = urlDe(sede, pagina);
   const sufijo = ` | Amo Invitar!${sede.nombre ? ` – ${sede.nombre}` : ''}`;
@@ -115,7 +123,7 @@ function componer(html, sede, pagina, { legal = false, monedaRaiz = '' } = {}) {
     ...SEDES.filter((s) => (!soloEspanol(pagina) || s.clave.startsWith('es')) && (!soloIngles(pagina) || s.clave === 'en')).map((s) => `<link rel="alternate" hreflang="${s.lang}" href="${urlDe(s, pagina)}">`),
     `<link rel="alternate" hreflang="x-default" href="${urlDe(NEUTRA, pagina)}">`].join('\n');
   const pieZona = z ? `${PIE_ZONA[idiomaDe(sede)] || PIE_ZONA.es} · ${z}` : '';
-  return html
+  return conAlbunear(html, sede)
     .replace(/<html lang="[^"]*"/, `<html lang="${sede.lang}"`)
     .replace('</title>', `${esc(sufijo)}</title>`)
     .replace(/(<meta property="og:title" content=")([^"]*)"/, (m, a, t) => `${a}${t}${esc(sufijo)}"`)

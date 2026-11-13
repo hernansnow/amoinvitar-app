@@ -3,7 +3,7 @@
 // así que no hace falta ninguna clave compartida.
 //
 // Álbum Platinum de Albunear → Invitación Basic de Amo Invitar! incluida:
-//   invitacion({ album, email, tipo, nombre1, nombre2, fecha, pais })
+//   invitacion({ album, email, tipo, nombre1, nombre2, fecha, pais, sweet16 })
 //     Crea (una sola vez por álbum) el borrador con el tipo de evento, los nombres y la fecha del álbum, ya con el plan
 //     Basic pagado: el cliente elige y cambia el modelo como cualquiera hasta publicar, publica sin pagar y, si suma
 //     secciones de Premium/Deluxe o complementos, paga solo la diferencia (estadoPlan descuenta lo pagado).
@@ -21,7 +21,7 @@ import { randomId } from './lib/util.js';
 
 // Tipo de evento del álbum (Albunear) → tipo de la invitación (Amo Invitar!). «otro» lo elige el cliente
 // (baby shower, revelación, Navidad o cumpleaños). Corporativo no: en Amo Invitar! es siempre a medida.
-export const TIPO_DE_ALBUNEAR = { boda: 'boda', quince: '15', bautizo: 'bautismo', comunion: 'comunion', cumple: 'cumple', graduacion: 'graduacion' };
+export const TIPO_DE_ALBUNEAR = { boda: 'boda', quince: '15', sweet16: '15', bautizo: 'bautismo', comunion: 'comunion', cumple: 'cumple', graduacion: 'graduacion' };
 export const TIPOS_OTRO = ['babyshower', 'revelacion', 'navidad', 'cumple', 'infantil'];
 const clave = (album) => `albunear_inv:${String(album).slice(0, 40)}`;
 const sitio = (env) => String(env.SITE_URL || 'https://amoinvitar.com').replace(/\/$/, '');
@@ -37,7 +37,7 @@ function modeloInicial(tipo) {
   return m.find((x) => !x.gratis && !MODELOS_GRATIS.includes(x.id)) || m[0] || null;
 }
 
-export async function borradorDeAlbum(env, { album, email, tipo, nombre1, nombre2, fecha, pais }, origen) {
+export async function borradorDeAlbum(env, { album, email, tipo, nombre1, nombre2, fecha, pais, sweet16 }, origen) {
   const almacen = almacenD1(env);
   const previo = await leer(env, clave(album));
   let ev = previo ? await almacen.evento(previo) : null;
@@ -62,6 +62,8 @@ export async function borradorDeAlbum(env, { album, email, tipo, nombre1, nombre
         variante: varianteDePais(pais), acceso: { modo: 'abierta' }, extras: [],
         secciones: Object.fromEntries([...todas].map((x) => [x, basicas.has(x)])),
         ...(t === 'bautismo' && diceBautizo(pais) ? { bautizo: true } : {}),
+        // README (ronda 55): álbum Sweet 16 de Albunear (solo EE. UU. y Canadá) → invitación de 15 con textos de Sweet 16
+        ...(t === '15' && sweet16 ? { sweet16: true } : {}),
         nombres: b ? { a, b } : { a }, celebracion: f ? { fecha: f, inicio: f } : {},
         planElegido: 'basic',
         vinculo: { albunear: String(album), incluido: 'basic', desde: new Date().toISOString() },

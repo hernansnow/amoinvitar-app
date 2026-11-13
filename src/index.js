@@ -1062,11 +1062,11 @@ async function apiPanel(env, request, url, partes) {
     if (!/^\d{4}-\d{2}-\d{2}/.test(fecha)) return json({ error: 'Primero carga la fecha del evento.' }, 400);
     // El dueño (si entra un administrador de Amo Invitar!, el álbum igual queda a nombre del cliente)
     const email = usuario.esAdmin ? ((await almacen.accesos(ev.id)).find((a) => a.rol === 'cliente')?.email || usuario.email) : usuario.email;
-    const TIPO_ALB = { boda: 'boda', 15: 'quince', bautismo: 'bautizo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', empresarial: 'corporativo' };
+    const TIPO_ALB = { boda: 'boda', 15: ev.datos?.sweet16 ? 'sweet16' : 'quince', bautismo: 'bautizo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', empresarial: 'corporativo' };
     let r;
     try {
       r = await env.ALBUNEAR.crearAlbum({ evento: ev.id, email, tipo: TIPO_ALB[ev.tipo] || 'otro', nombre1: d.nombres?.a || '', nombre2: d.nombres?.b || '',
-        fecha: fecha.slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais: paisVisitante(request) || null, lang: String(d.variante || 'es').slice(0, 2) });
+        fecha: fecha.slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais: paisVisitante(request) || null, lang: String(d.variante || 'es').slice(0, 5) });
     } catch (e) {
       // Si Albunear todavía no tiene la puerta nueva (o falla), el camino de siempre: crear el álbum con el código de regalo
       console.error('albunear', e);

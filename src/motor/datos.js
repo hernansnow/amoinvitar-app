@@ -179,7 +179,7 @@ function albumDemo(e, modelo, variante) {
   const id = [ALBUNEAR_TEMA[modelo.id] || modelo.id, nombres, ALBUNEAR_EVENTO[e.tipo]].filter(Boolean).join('+');
   const portada = e.fotos?.portada?.[0]?.url || e.fotos?.album || '';
   const abs = (u) => (/^https?:/.test(u) ? u : `https://amoinvitar.com${u.startsWith('/') ? '' : '/'}${u}`);
-  return `https://albunear.com/demo-amoinvitar?id=${encodeURIComponent(id).replace(/%2B/g, '+')}${portada ? `&portada=${encodeURIComponent(abs(portada))}` : ''}&lang=${String(variante || 'es').slice(0, 2)}`;
+  return `https://albunear.com/demo-amoinvitar?id=${encodeURIComponent(id).replace(/%2B/g, '+')}${portada ? `&portada=${encodeURIComponent(abs(portada))}` : ''}&lang=${String(variante || 'es')}`; // README (ronda 55): Albunear entiende la variante completa (es-ar, pt-br…)
 }
 
 export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false, invitado = null, marca = null }) {
