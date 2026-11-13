@@ -416,6 +416,8 @@ export async function confirmar(request, env) {
     transferencia: p.medio === 'transferencia' && p.estado !== 'pagado' ? transferInfo(env, p.moneda) : null,
     panel: mismo && ev ? `/panel/${ev.id}?k=${ev.clave}${p.tipo === 'recuerdo' ? '#recuerdo' : ''}` : null,
     link: p.tipo === 'borrador' && ev?.estado === 'publicado' ? `/${ev.tipo}/${ev.slug}` : null,
+    // README (ronda 73): «Ver la invitación» del comprador entra como dueño (con lista de invitados o PIN no lo bloquea)
+    linkDueno: mismo && p.tipo === 'borrador' && ev?.estado === 'publicado' ? `/acceso/${ev.id}/dueno?k=${ev.clave}` : null,
   });
 }
 

@@ -21,15 +21,14 @@ export function mesaHTML({ t, id, nombres, lang = 'es', activa = true, estilos =
   return `<!DOCTYPE html>
 <html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>${esc(t('mesa.titulo'))} · ${esc(nombres)}</title>
-<link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
+<link rel="stylesheet" href="/comun/fonts/google/abril-fatface+great-vibes+jost.css">
 <link rel="stylesheet" href="/comun/fonts/icomoon/style.css">
-${estilos.map((h) => `<link rel="stylesheet" href="${esc(h)}">`).join('\n')}
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; padding: 48px 20px; font-family: var(--fuente-texto, Jost), system-ui, sans-serif; background: #fff; color: #212529; text-align: center; line-height: 1.5; }
+  body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; padding: 48px 20px; font-family: Jost, system-ui, sans-serif; background: #fff; color: #212529; text-align: center; line-height: 1.5; }
   main { max-width: 380px; width: 100%; }
   .icono { display: block; width: 200px; max-width: 70%; height: auto; margin: 0 auto 1rem; }
-  .de { margin: 0 0 .25rem; font-family: var(--fuente-titulos, 'Great Vibes'), cursive; font-size: 2.6rem; line-height: 1.15; color: var(--color-principal, #212529); overflow-wrap: anywhere; }
+  .de { margin: 0 0 .25rem; font-family: 'Abril Fatface', Georgia, serif; font-size: 2.1rem; line-height: 1.2; color: #000; overflow-wrap: anywhere; }
   .de.alta { font-size: 2.3rem; line-height: 1.9; margin: .9rem 0 1.3rem; } /* README (ronda 51): Dantina */
   h1 { font-size: 1.1rem; text-transform: uppercase; font-weight: 800; letter-spacing: .08em; margin: 0 0 1rem; }
   hr { width: 66%; margin: 0 auto 1.2rem; border: 0; border-top: 1px solid #212529; }

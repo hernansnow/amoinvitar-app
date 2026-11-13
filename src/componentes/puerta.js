@@ -7,8 +7,8 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 // Diseño de la pantalla de acceso de Amo Invitar (el de las invitaciones con lista):
 // ícono del candado con corazón, "Acceso a la invitación de", los nombres, una línea,
 // y el PIN con el botón contorneado.
-// estilos: la tipografía y los colores del modelo (sus fuentes y su tema.css), así la
-// pantalla de acceso se ve como la invitación. Ver estilosModelo() en index.js.
+// README (ronda 73): misma tipografía (Abril Fatface y Jost) y color negro en todos los modelos; «estilos»
+// ya no se usa (en algunos modelos salía otra fuente).
 export function puertaHTML({ t, pantalla, nombres, accion, inv, error, lang = 'es', marca, estilos = [] }) {
   const logo = pieChico(marca, '<img src="/comun/img/amoinvitar-line.svg" alt="Amo Invitar!" width="110" style="filter:invert(1);opacity:.45">');
   const cuerpo = pantalla === 'pin'
@@ -23,16 +23,15 @@ export function puertaHTML({ t, pantalla, nombres, accion, inv, error, lang = 'e
   return `<!DOCTYPE html>
 <html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>${esc(nombres)}</title>
-<link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
+<link rel="stylesheet" href="/comun/fonts/google/abril-fatface+great-vibes+jost.css">
 <link rel="stylesheet" href="/comun/fonts/icomoon/style.css">
-${estilos.map((h) => `<link rel="stylesheet" href="${esc(h)}">`).join('\n')}
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--fuente-texto, Jost), system-ui, sans-serif; background: #fff; color: #212529; text-align: center; line-height: 1.5; }
+  body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: Jost, system-ui, sans-serif; background: #fff; color: #212529; text-align: center; line-height: 1.5; }
   main { max-width: 360px; width: 100%; }
   .icono { display: block; width: 200px; max-width: 70%; height: auto; margin: 0 auto 1rem; }
   .de { margin: 0 0 .5rem; }
-  h1 { font-family: var(--fuente-titulos, 'Great Vibes'), cursive; font-weight: 400; font-size: 2.6rem; line-height: 1.15; color: var(--color-principal, #212529); margin: 0 0 .8rem; overflow-wrap: anywhere; }
+  h1 { font-family: 'Abril Fatface', Georgia, serif; font-weight: 400; font-size: 2.1rem; line-height: 1.2; color: #000; margin: 0 0 .8rem; overflow-wrap: anywhere; }
   hr { width: 66%; margin: 0 auto 1rem; border: 0; border-top: 1px solid #212529; }
   label { display: block; margin-bottom: .5rem; }
   input { display: block; width: 100%; max-width: 180px; margin: 0 auto .5rem; font: inherit; font-size: 1rem; text-align: center; letter-spacing: .3em; padding: .3rem .5rem; border: 1px solid #212529; border-radius: .2rem; }
