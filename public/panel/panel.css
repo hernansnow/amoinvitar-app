@@ -1153,3 +1153,8 @@ body.ver-previa .btn-vista-flotante, body.modo-admin .btn-vista-flotante { displ
 /* README (ronda 68): la ayuda (?) con el mismo aro que el botón de WhatsApp, en el celular y en la computadora */
 .barra #btn-manual, .barra .btn-ayuda { border: 1.5px solid rgba(255, 255, 255, .75); }
 @media (min-width: 1024px) { .barra #btn-manual { background: transparent; } .barra #btn-manual:hover { background: rgba(255, 255, 255, .16); } }
+/* README (ronda 69): vista previa del celular sin «Así se verá» ni la barra Editar invitación / Administración */
+@media (max-width: 1023px) {
+  body.ver-previa .modos, body.ver-previa .previa-barra > strong { display: none !important; }
+  body.ver-previa .previa-barra { justify-content: center; }
+}
