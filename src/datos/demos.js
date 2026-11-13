@@ -40,6 +40,25 @@ const ITINERARIO = {
   cumple: [['20:00', 'tragos', 'Rompiendo el hielo', 'Breaking the ice'], ['21:00', 'cena', 'A cenar se ha dicho', 'Dinner time'], ['22:00', 'disco', '¡Que empiece el baile!', 'Let the dancing begin!'], ['23:00', 'torta3', 'Mordisco al pastel y deseos', 'Cake and wishes'], ['23:30', 'baile', 'Hasta que el cuerpo aguante', 'Dance till we drop'], ['02:00', 'last-call2', 'Despedida', 'Farewell']],
 };
 
+// README (ronda 72): la canción de cada demo, como en los demos originales: en boda y 15 varía según el modelo;
+// cumpleaños, bautismo y comunión comparten la suya; los infantiles y baby shower, una canción infantil
+const MUSICA_BODA = { cinema: 'demo-cinema-boda', minimal: 'demo-cinema-boda', disco: 'demo-disco', rockabilly: 'demo-rock', graffiti: 'demo-15' };
+const MUSICA_15 = {
+  cinema: 'demo-cinema-boda', sky: 'demo-cinema-boda', minimal: 'demo-cinema-boda',
+  euforia: 'demo-cinema-15', rouge: 'demo-cinema-15', sweet: 'demo-cinema-15', white: 'demo-cinema-15',
+  floral: 'demo-boda', travel: 'demo-boda', byn: 'demo-boda', lila: 'demo-boda', luxury: 'demo-boda', natural: 'demo-boda', romantic: 'demo-boda',
+  disco: 'demo-disco', rockabilly: 'demo-rock' };
+export function musicaDemo(tipo, modelo) {
+  if (tipo === 'boda') return MUSICA_BODA[modelo] || 'demo-boda';
+  if (tipo === '15' || tipo === 'sweet16') return MUSICA_15[modelo] || 'demo-15';
+  if (tipo === 'infantil' || tipo === 'babyshower' || tipo === 'revelacion') return 'demo-infantil';
+  if (tipo === 'graduacion') return 'demo-bautismo';
+  if (tipo === 'navidad') return 'demo-navidad';
+  if (tipo === 'empresarial' || tipo === 'corporativo') return 'demo-empresarial';
+  if (['bautismo', 'comunion', 'cumple'].includes(tipo)) return `demo-${tipo}`;
+  return 'demo-boda';
+}
+
 export function eventoDemo({ tipo, variante, paquete, modelo, rutas, pais }) {
   // README (ronda 40): lugares, hoteles y cuenta de regalos del país del visitante (sin país en la lista: Argentina)
   const P = LUGARES_PAIS[String(pais || '').toUpperCase()] || null;
@@ -78,7 +97,7 @@ export function eventoDemo({ tipo, variante, paquete, modelo, rutas, pais }) {
       historia: modelo.fotoHistoria ? `${fotosDe}/inicial.jpg` : '',
       album: `${fotosDe}/${archivos.album || 'instagram.jpg'}`,
     },
-    musica: { archivo: comun(`audio/demo-${tipo}.mp3`) },
+    musica: { archivo: comun(`audio/${musicaDemo(tipo, modelo.id)}.mp3`) },
     rsvp: { cierre: '2027-08-10', acompanantes: 2, preguntas: { comida: true, alcohol: true, ninos: tipo === 'boda', traslado: true } },
     // README (ronda 44): en las demos se ven también los colores de referencia (blanco, azul y crema); en el panel empiezan vacíos
     dresscode: { evitar: ['#ffffff', '#2f5d9b', '#efe4cc'], fotos: [1, 2, 3, 4, 5, 6].map((n) => comun(`img/demo-dress${n}.jpg`)) },
