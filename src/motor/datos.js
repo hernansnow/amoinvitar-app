@@ -274,9 +274,14 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   // Portada: un encuadre para el celular (pos) y otro para la computadora (posPc)
   const portadaSinFoto = `${rutas.modelo}/${modelo.portadaSinFoto || 'img/bg-oliva-2.jpg'}`;
   const portada = (fotosOn('portada') ? fotos.portada || [] : []).slice(0, incluye.fotosPortada)
-    .map((f) => (typeof f === 'string' ? { url: f } : f)).map((f) => ({ url: f.url, pos: f.pos || '50% 50%', estilo: `--pos-pc:${f.posPc || f.pos || '50% 50%'}`,
-      // Foto suelta (<img> en un círculo o marco): el encuadre con object-position
-      estiloImg: `object-fit:cover; object-position:${f.pos || '50% 50%'}` }));
+    .map((f) => (typeof f === 'string' ? { url: f } : f)).map((f) => {
+      // README (ronda 67): zoom del celular y de la computadora (el tamaño lo calcula comun/js/invitacion.js)
+      const z = Number(f.zoom) > 1 ? Math.min(3, Number(f.zoom)) : 0, zpc = Number(f.zoomPc) > 1 ? Math.min(3, Number(f.zoomPc)) : 0;
+      const zoom = z || zpc ? `;--zoom:${z || 1};--zoom-pc:${zpc || 1}` : '';
+      return { url: f.url, pos: f.pos || '50% 50%', estilo: `--pos-pc:${f.posPc || f.pos || '50% 50%'}${zoom}`,
+        // Foto suelta (<img> en un círculo o marco): el encuadre con object-position
+        estiloImg: `object-fit:cover; object-position:${f.pos || '50% 50%'}${z ? `;--zoom:${z};--zoom-pc:${z}` : ''}` };
+    });
   // Con video de portada: una sola caja de foto (el video va adentro; la foto queda de poster)
   if (modelo.videoPortada && fotosOn('portada') && e.portada?.tipo === 'video' && e.portada?.video) {
     portada.splice(1);

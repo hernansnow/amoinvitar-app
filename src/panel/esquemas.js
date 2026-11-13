@@ -1019,7 +1019,7 @@ function limpiarValor(c, v) {
       return c.multiple ? [].concat(v).filter((x) => ok.has(x)) : (ok.has(v) ? v : undefined);
     }
     case 'fotos': return [].concat(v).slice(0, c.max || 12).map((f) => (typeof f === 'string' ? { url: f } : f))
-      .filter((f) => URL_OK.test(f?.url || '')).map((f) => ({ url: f.url, ...(POS_OK.test(f.pos || '') ? { pos: f.pos } : {}), ...((c.dosEncuadres || c.portada) && POS_OK.test(f.posPc || '') ? { posPc: f.posPc } : {}), ...(c.zoom && Number(f.zoom) > 1 && Number(f.zoom) <= 3 ? { zoom: Math.round(f.zoom * 100) / 100 } : {}) }));
+      .filter((f) => URL_OK.test(f?.url || '')).map((f) => ({ url: f.url, ...(POS_OK.test(f.pos || '') ? { pos: f.pos } : {}), ...((c.dosEncuadres || c.portada) && POS_OK.test(f.posPc || '') ? { posPc: f.posPc } : {}), ...((c.zoom || c.portada) && Number(f.zoom) > 1 && Number(f.zoom) <= 3 ? { zoom: Math.round(f.zoom * 100) / 100 } : {}), ...(c.portada && Number(f.zoomPc) > 1 && Number(f.zoomPc) <= 3 ? { zoomPc: Math.round(f.zoomPc * 100) / 100 } : {}) }));
     case 'lista': return [].concat(v).slice(0, c.max || 10).map((item) => {
       const limpio = {};
       for (const sc of c.campos) {

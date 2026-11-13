@@ -413,15 +413,18 @@ function marcoEncuadre({ url, pos, proporcion, etiqueta, redonda = false, zoom =
 const portadaBasic = () => ['gratis', 'basic'].includes(S.plan?.plan) || datos.portada?.cuenta === false;
 // La foto redonda (globo): 1:1 en los dos recortes
 const aspectoPortada = () => (S.modelo?.proporciones?.portada === '1:1' ? { cel: 1, pc: 1 } : portadaBasic() ? { cel: 9 / (19.5 * 0.8), pc: 2 } : { cel: 9 / 19.5, pc: 16 / 10 });
-function encuadrePortada({ url, pos, posPc, alCambiar }) {
+function encuadrePortada({ url, pos, posPc, zoom, zoomPc, alCambiar }) {
   const p = { cel: leerPos(pos), pc: leerPos(posPc || pos) };
+  // README (ronda 67): zoom de cada recorte (1 a 3): el marco se achica sobre la foto
+  const zm = { cel: Math.max(1, Number(zoom) || 1), pc: Math.max(1, Number(zoomPc ?? zoom) || 1) };
+  const soloUno = S.modelo?.proporciones?.portada === '1:1'; // foto redonda (globo): un solo zoom
   const img = el('img', { src: url, alt: '', draggable: 'false' });
   const marcoCel = el('div', { class: 'recorte cel' }, el('span', { class: 'rotulo' }, 'Celular'));
   const marcoPc = el('div', { class: 'recorte pc' }, el('span', { class: 'rotulo' }, 'Computadora'));
   const punto = el('div', { class: 'foco', 'aria-hidden': 'true' });
   const lienzo = el('div', { class: 'lienzo', role: 'application', 'aria-label': 'Encuadre de la portada: arrastrar el punto para mover los dos recortes, o cada recorte por separado' }, img, marcoPc, marcoCel, punto);
   let W = 0, H = 0;
-  const caja = (k) => { const a = aspectoPortada()[k]; return W / H > a ? { w: H * a, h: H } : { w: W, h: W / a }; };
+  const caja = (k) => { const a = aspectoPortada()[k]; const c = W / H > a ? { w: H * a, h: H } : { w: W, h: W / a }; return { w: c.w / zm[k], h: c.h / zm[k] }; };
   const marcoDe = { cel: marcoCel, pc: marcoPc };
   const pintar = () => {
     W = img.clientWidth; H = img.clientHeight;
@@ -441,7 +444,7 @@ function encuadrePortada({ url, pos, posPc, alCambiar }) {
     const x = Math.max(0, Math.min(W - w, cx - w / 2)), y = Math.max(0, Math.min(H - h, cy - h / 2));
     p[k] = [W - w > 1 ? (x / (W - w)) * 100 : 50, H - h > 1 ? (y / (H - h)) * 100 : 50];
   };
-  const emitir = () => alCambiar({ pos: `${Math.round(p.cel[0])}% ${Math.round(p.cel[1])}%`, posPc: `${Math.round(p.pc[0])}% ${Math.round(p.pc[1])}%` });
+  const emitir = () => alCambiar({ pos: `${Math.round(p.cel[0])}% ${Math.round(p.cel[1])}%`, posPc: `${Math.round(p.pc[0])}% ${Math.round(p.pc[1])}%`, zoom: zm.cel > 1 ? zm.cel : undefined, zoomPc: zm.pc > 1 ? zm.pc : undefined });
   let modo = null, inicio = null;
   const local = (pt) => { const r = img.getBoundingClientRect(); return [pt.x - r.left, pt.y - r.top]; };
   arrastrable(lienzo, {
@@ -469,9 +472,26 @@ function encuadrePortada({ url, pos, posPc, alCambiar }) {
   img.addEventListener('load', pintar);
   new ResizeObserver(pintar).observe(lienzo);
   const centrar = el('button', { type: 'button', class: 'btn btn-sec btn-chico', html: `${icono('centrar', 15)}<span>Centrar</span>`, onclick: () => { p.cel = [50, 50]; p.pc = [50, 50]; pintar(); emitir(); } });
+  // − y + de cada recorte; el centro del marco queda en el mismo lugar de la foto
+  const controlZoom = (ks, rotulo) => {
+    const nivel = el('span', { class: 'zoom-nivel' }, `${Math.round(zm[ks[0]] * 100)}%`);
+    const cambiar = (d) => {
+      for (const k of ks) {
+        const a = caja(k), cx = (p[k][0] / 100) * (W - a.w) + a.w / 2, cy = (p[k][1] / 100) * (H - a.h) + a.h / 2;
+        zm[k] = Math.round(Math.max(1, Math.min(3, zm[k] + d)) * 100) / 100;
+        centrarEn(k, cx, cy);
+      }
+      nivel.textContent = `${Math.round(zm[ks[0]] * 100)}%`; pintar(); emitir();
+    };
+    return el('div', { class: 'zoom' }, rotulo ? el('span', { class: 'zoom-rotulo' }, rotulo) : null,
+      el('button', { type: 'button', class: 'btn-zoom', 'aria-label': `Alejar${rotulo ? ` (${rotulo})` : ''}`, onclick: () => cambiar(-0.25) }, '−'), nivel,
+      el('button', { type: 'button', class: 'btn-zoom', 'aria-label': `Acercar${rotulo ? ` (${rotulo})` : ''}`, onclick: () => cambiar(0.25) }, '+'));
+  };
+  if (soloUno) zm.pc = zm.cel;
+  const zooms = el('div', { class: 'zoom-portada' }, soloUno ? controlZoom(['cel', 'pc'], '') : [controlZoom(['cel'], 'Celular'), controlZoom(['pc'], 'Computadora')]);
   return el('div', { class: 'encuadre-portada' },
     el('div', { class: 'encuadre-cabeza' }, el('strong', {}, 'Encuadre de la portada'), centrar),
-    lienzo,
+    lienzo, zooms,
     el('p', { class: 'ayuda' }, esTactil ? 'Mantener apretado y arrastrar: el punto mueve los dos recortes; cada marco, solo el suyo.' : 'Arrastrar el punto para mover los dos recortes a la vez, o cada marco por separado.'));
 }
 
@@ -564,7 +584,7 @@ function fotosEnPestanas(c, lista, alCambiar) {
       lista.splice(activa, 1); activa = Math.min(activa, Math.max(0, lista.length - 1)); emitir(); dibujar(); }, html: `${icono('quitar', 15)}<span>Quitar esta foto</span>` }) : null;
     caja.replaceChildren(...[tabs, el('div', { class: `pestana-cuerpo${max > 1 ? '' : ' sola'}` },
       el('div', { class: 'subir-portada' }, subir, quitar || el('span', { class: 'sin-archivo' }, 'Ninguna foto elegida')),
-      f ? encuadrePortada({ url: f.url, pos: f.pos, posPc: f.posPc, alCambiar: ({ pos, posPc }) => { f.pos = pos; f.posPc = posPc; emitir(); } }) : null)].filter(Boolean));
+      f ? encuadrePortada({ url: f.url, pos: f.pos, posPc: f.posPc, zoom: f.zoom, zoomPc: f.zoomPc, alCambiar: ({ pos, posPc, zoom, zoomPc }) => { f.pos = pos; f.posPc = posPc; if (zoom) f.zoom = zoom; else delete f.zoom; if (zoomPc) f.zoomPc = zoomPc; else delete f.zoomPc; emitir(); } }) : null)].filter(Boolean));
   };
   dibujar();
   return caja;

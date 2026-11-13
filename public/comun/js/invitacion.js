@@ -284,3 +284,60 @@
   addEventListener('resize', refrescarAos);
   if (window.jQuery) jQuery(document).on('refreshed.owl.carousel initialized.owl.carousel', refrescarAos);
 })();
+
+/* README (ronda 67): zoom de la portada. La foto de fondo (o el <img> redondo) lleva --zoom (celular) y --zoom-pc
+   (computadora): el tamaño es el de "cover" multiplicado por el zoom, calculado con la medida real de la caja y de la
+   foto (se recalcula al cambiar el tamaño de la pantalla). El encuadre sigue siendo background-position / object-position. */
+(function () {
+  var cajas = [].slice.call(document.querySelectorAll('[style*="--zoom"]'));
+  if (!cajas.length) return;
+  var pc = window.matchMedia('(min-width: 768px)'), medidas = {};
+  var VACIA = function (w, h) { return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '"/>'); };
+  function urlDe(x) {
+    if (x.tagName === 'IMG') return x.getAttribute('data-zoom-src') || x.currentSrc || x.src;
+    var u = null; (x.getAttribute('style') || '').replace(/url\((['"]?)(.*?)\1\)/g, function (m, q, v) { u = v; return m; });
+    return u;
+  }
+  function medir(u, listo) {
+    var m = medidas[u];
+    if (m && m.w) return listo(m);
+    if (m) return m.esperan.push(listo);
+    m = medidas[u] = { esperan: [listo] };
+    var i = new Image();
+    i.onload = function () { m.w = i.naturalWidth; m.h = i.naturalHeight; m.esperan.forEach(function (f) { f(m); }); };
+    i.src = u;
+  }
+  function aplicar(x) {
+    var u = urlDe(x);
+    if (!u || /^data:/.test(u)) return;
+    medir(u, function (m) {
+      var z = parseFloat(x.style.getPropertyValue(pc.matches ? '--zoom-pc' : '--zoom')) || 1;
+      var cs = getComputedStyle(x), img = x.tagName === 'IMG';
+      if (img && !x.getAttribute('data-zoom-src')) {
+        // El <img> pasa a mostrar la foto de fondo (así conserva su borde y su forma)
+        x.setAttribute('data-zoom-src', u);
+        x.style.backgroundImage = 'url("' + u + '")';
+        x.style.backgroundRepeat = 'no-repeat';
+        x.style.backgroundOrigin = 'content-box';
+        x.style.backgroundClip = 'content-box';
+        x.style.backgroundPosition = x.style.objectPosition || '50% 50%';
+        x.removeAttribute('srcset');
+        x.src = VACIA(m.w, m.h);
+      }
+      var W = x.clientWidth, H = x.clientHeight;
+      if (img) { W -= parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight); H -= parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom); }
+      if (!(W > 0 && H > 0)) return;
+      var s = Math.max(W / m.w, H / m.h) * z, tam = Math.round(m.w * s) + 'px ' + Math.round(m.h * s) + 'px';
+      // Las capas de degradado (oscurecen la foto) siguen cubriendo toda la caja
+      var capas = ((x.style.backgroundImage || '').match(/gradient\(/g) || []).length;
+      x.style.setProperty('background-size', new Array(capas + 1).join('100% 100%, ') + tam, 'important');
+    });
+  }
+  function todas() { cajas.forEach(aplicar); }
+  // Cada caja se recalcula cuando cambia de tamaño (también al aparecer, en los carruseles de portada)
+  if (window.ResizeObserver) { var ro = new ResizeObserver(function (l) { l.forEach(function (e) { aplicar(e.target); }); }); cajas.forEach(function (x) { ro.observe(x); }); }
+  else { var t; addEventListener('resize', function () { clearTimeout(t); t = setTimeout(todas, 120); }); }
+  if (pc.addEventListener) pc.addEventListener('change', todas);
+  if (document.readyState === 'complete') todas(); else addEventListener('load', todas);
+  todas();
+})();

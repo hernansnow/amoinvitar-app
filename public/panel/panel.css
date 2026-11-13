@@ -400,6 +400,9 @@ details.pegar textarea { margin-top: 8px; }
 .zoom { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--suave); }
 .btn-zoom { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--borde); background: #fff; cursor: pointer; color: var(--acento); font-weight: 700; line-height: 1; }
 .zoom-nivel { min-width: 38px; text-align: center; }
+/* README (ronda 67): zoom de la portada (celular y computadora) */
+.zoom-portada { display: flex; flex-wrap: wrap; gap: 8px 22px; justify-content: center; margin: 10px 0 4px; }
+.zoom-rotulo { font-weight: 600; color: var(--tinta, inherit); margin-right: 2px; }
 .item-lista .foto-una.chica { max-width: 130px; }
 
 /* Portada: una pestaña por foto */
