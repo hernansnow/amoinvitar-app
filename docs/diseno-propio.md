@@ -22,6 +22,11 @@ cualquier ajuste puntual de una invitación. Consola → Invitaciones → la inv
 - «Usar estos colores y tipografía» carga lo que pidió el cliente: la paleta original del modelo (modelo.json → paleta) →
   los colores que eligió en el mismo orden, y la fuente de títulos → la suya.
 - Las imágenes PNG/JPG no se recolorean: se suben con el mismo nombre.
+- **Cada uso por separado** (README ronda 61): el «×N ▾» de cada color abre la lista de lugares del CSS donde aparece
+  (propiedad · selector, p. ej. `color · .text-lila-fuerte`), cada uno con su propio color. Vacío = sigue al color del
+  grupo; lo que se pone ahí gana sobre el grupo (poner el mismo color original lo deja como estaba). Se guarda en
+  `propio.puntuales = [['estilo.css|selector|propiedad|n', desde, hacia]]`. Los usos dentro del HTML cambian solo con
+  el grupo. Si se sube un CSS modificado, los usos se cuentan sobre el del modelo base: revisar la vista previa.
 - **Tamaño de cada fuente** (README ronda 60): el % al lado de cada fuente (30–250, 100 = sin cambio). Se crea una
   copia de la fuente con `size-adjust` (p. ej. «Amsterdam Four AI70») y se usa en toda la invitación, sin tocar las
   clases del modelo. Sirve también sin fuente nueva, para achicar o agrandar la original. Si no encuentra el archivo de

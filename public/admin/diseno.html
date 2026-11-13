@@ -58,6 +58,18 @@
   .reemp input[type=text] { width: 92px; padding: 6px 8px; font-size: 13px; }
   .reemp.activo { background: var(--claro); border-radius: 8px; padding-left: 6px; }
   .reemp .fl { font-size: 18px; color: var(--suave); }
+  /* README (ronda 61): cada uso de un color por separado */
+  .reemp .cant { border: 0; background: none; cursor: pointer; text-align: left; padding: 2px 0; font: inherit; font-size: 12px; color: var(--suave); }
+  .reemp .cant:hover { color: inherit; text-decoration: underline; }
+  .reemp-grupo.abierto { grid-column: 1 / -1; }
+  .usos { margin: 4px 0 10px 36px; display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 2px 18px; }
+  .uso { display: flex; align-items: center; gap: 7px; font-size: 12.5px; padding: 3px 4px; border-radius: 6px; }
+  .uso.activo { background: var(--claro); }
+  .uso .donde { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .uso .donde b { font-weight: 600; }
+  .uso input[type=color] { width: 28px; height: 24px; padding: 0; border: 1px solid var(--linea); border-radius: 6px; background: #fff; flex: none; }
+  .uso input[type=text] { width: 84px; padding: 4px 6px; font-size: 12.5px; }
+  .usos .nota { grid-column: 1 / -1; color: var(--suave); font-size: 12px; padding: 2px 4px; }
   .fuente-fila { display: grid; grid-template-columns: 1fr 26px 1fr 110px 1.3fr; gap: 8px; align-items: center; margin: 6px 0; }
   .fuente-fila .tam { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--suave); }
   .fuente-fila .tam input { width: 64px; }
@@ -373,6 +385,25 @@
       var c = '#' + [r, g, b].map(function (n) { return Math.min(255, +n).toString(16).padStart(2, '0'); }).join(''); cuenta[c] = (cuenta[c] || 0) + 1; return m;
     });
   }
+  // README (ronda 61): la misma cuenta que src/propio.js (coloresCss): regla, propiedad y n.º de uso → clave
+  function coloresCss(css) {
+    var out = [], pila = [], vistos = {}, ini = 0, m, sinCom = function (s) { return s.replace(/\/\*[\s\S]*?\*\//g, ''); };
+    var re = /\/\*[\s\S]*?\*\/|[{};]|#([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![0-9a-z_-])|rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*[\d.]+%?\s*)?\)/gi;
+    while ((m = re.exec(css))) {
+      var t = m[0];
+      if (t.indexOf('/*') === 0) continue;
+      if (t === '{') { pila.push(sinCom(css.slice(ini, m.index)).trim().replace(/\s+/g, ' ')); ini = m.index + 1; continue; }
+      if (t === '}') { pila.pop(); ini = m.index + 1; continue; }
+      if (t === ';') { ini = m.index + 1; continue; }
+      var prop = (/^\s*([-\w]+)\s*:/.exec(sinCom(css.slice(ini, m.index))) || [])[1];
+      if (!prop || !pila.length) continue;
+      var regla = pila.join(' » ') + '|' + prop.toLowerCase();
+      vistos[regla] = vistos[regla] === undefined ? 0 : vistos[regla] + 1;
+      var hex = m[1] ? aHex(m[1].length === 8 ? m[1].slice(0, 6) : m[1].length === 4 ? m[1].slice(0, 3) : m[1]) : '#' + [m[2], m[3], m[4]].map(function (n) { return Math.min(255, +n).toString(16).padStart(2, '0'); }).join('');
+      out.push({ hex: hex, clave: regla + '|' + vistos[regla], sel: pila.join(' » '), prop: prop, n: vistos[regla] });
+    }
+    return out;
+  }
   var GENERICAS = /^(inherit|initial|unset|serif|sans-serif|monospace|cursive|fantasy|system-ui|-apple-system|blinkmacsystemfont|segoe ui.*|roboto|helvetica.*|arial|noto.*|apple color emoji|sfmono-regular|menlo|monaco|consolas|liberation mono|courier new|icomoon|fontawesome.*|font awesome.*)$/i;
   function contarFuentes(texto, cuenta) {
     String(texto).replace(/font-family\s*:\s*([^;}"]*(?:"[^"]*"[^;}"]*)*)/gi, function (m, v) {
@@ -388,32 +419,53 @@
       }).catch(function () { return []; });
       var mj = await fetch('/modelos/' + base + '/modelo.json').then(function (r) { return r.json(); }).catch(function () { return {}; });
       var archivos = ['estilo.css', 'tema.css', 'index.html', 'index-premium.html'];
-      var colores = {}, fuentes = {};
+      var colores = {}, fuentes = {}, usos = {}, enHtml = {};
       for (var i = 0; i < archivos.length; i++) {
         var t = await fetch('/modelos/' + base + '/' + archivos[i]).then(function (r) { return r.ok ? r.text() : ''; }).catch(function () { return ''; });
-        contarColores(t, colores); contarFuentes(t, fuentes);
+        contarFuentes(t, fuentes);
+        if (/\.css$/.test(archivos[i])) {
+          coloresCss(t).forEach(function (u) { colores[u.hex] = (colores[u.hex] || 0) + 1; u.clave = archivos[i] + '|' + u.clave; u.archivo = archivos[i]; (usos[u.hex] = usos[u.hex] || []).push(u); });
+        } else { var antes = {}; contarColores(t, antes); Object.keys(antes).forEach(function (c) { colores[c] = (colores[c] || 0) + antes[c]; enHtml[c] = (enHtml[c] || 0) + antes[c]; }); }
       }
       // Las fuentes de títulos y texto que declara el modelo, aunque estén en otro CSS
       var tf = (mj.tarjetas && mj.tarjetas.fuentes) || {};
       [tf.titulos, tf.texto, tf.serif].filter(Boolean).forEach(function (f) { fuentes[f] = fuentes[f] || 1; });
-      DETECTADO = { base: base, paleta: (mj.paleta || []).map(aHex), colores: colores, fuentes: fuentes, titulos: tf.titulos || null };
+      DETECTADO = { base: base, paleta: (mj.paleta || []).map(aHex), colores: colores, usos: usos, enHtml: enHtml, fuentes: fuentes, titulos: tf.titulos || null };
       est.textContent = Object.keys(colores).length + ' colores y ' + Object.keys(fuentes).length + ' fuentes en el modelo ' + base + '. Elegí solo los que quieras cambiar (los demás quedan igual).';
       pintarReemplazos();
     } catch (e) { est.textContent = 'No se pudieron leer los colores del modelo: ' + e.message; }
   }
+  function filaUso(u, desde, hacia) {
+    var picker = el('input', { type: 'color', value: hacia || desde });
+    var txt = el('input', { type: 'text', value: hacia || '', placeholder: 'igual', title: 'Vacío = como el color del grupo', spellcheck: 'false' });
+    var f = el('div', { class: 'uso' + (hacia ? ' activo' : ''), 'data-clave': u.clave, 'data-desde': desde, title: u.archivo + ' · ' + u.sel + ' { ' + u.prop + ' }' + (u.n ? ' (uso ' + (u.n + 1) + ')' : '') }, [
+      el('span', { class: 'donde' }, [el('b', { text: u.prop }), ' · ' + u.sel + (u.n ? ' (' + (u.n + 1) + ')' : '')]), picker, txt,
+      el('button', { class: 'b sec', style: 'padding:3px 7px', title: 'Como el grupo', onclick: function () { txt.value = ''; picker.value = desde; f.classList.remove('activo'); } }, '✕')]);
+    picker.addEventListener('input', function () { txt.value = picker.value; f.classList.add('activo'); });
+    txt.addEventListener('input', function () { var h = aHex(txt.value); if (h) picker.value = h; f.classList.toggle('activo', !!h); });
+    return f;
+  }
   function filaColor(desde, hacia, cant) {
+    var grupo = el('div', { class: 'reemp-grupo' }), us = (DETECTADO && DETECTADO.usos[desde]) || [], ph = (DETECTADO && DETECTADO.enHtml[desde]) || 0;
+    var guard = {}; ((D.propio && D.propio.puntuales) || []).forEach(function (x) { guard[x[0]] = x[2]; });
+    var abiertos = us.some(function (u) { return guard[u.clave]; });
+    var lista = el('div', { class: 'usos', hidden: !abiertos });
+    us.forEach(function (u) { lista.append(filaUso(u, desde, guard[u.clave] || '')); });
+    if (ph) lista.append(el('div', { class: 'nota', text: '+ ' + ph + ' en la página (HTML): cambian con el color del grupo.' }));
+    if (abiertos) grupo.classList.add('abierto');
     var activo = !!hacia, sw = el('div', { class: 'sw', style: 'background:' + desde, title: desde });
     var picker = el('input', { type: 'color', value: hacia || desde });
     var txt = el('input', { type: 'text', value: hacia || '', placeholder: 'sin cambio', spellcheck: 'false' });
-    var fila = el('div', { class: 'reemp' + (activo ? ' activo' : ''), 'data-desde': desde }, [sw, el('code', { text: desde }), el('span', { class: 'cant', text: cant ? '×' + cant : '' }), el('span', { class: 'fl', text: '→' }), picker, txt,
+    var fila = el('div', { class: 'reemp' + (activo ? ' activo' : ''), 'data-desde': desde }, [sw, el('code', { text: desde }), us.length ? el('button', { class: 'cant', type: 'button', title: 'Ver y cambiar cada uso por separado', onclick: function () { lista.hidden = !lista.hidden; grupo.classList.toggle('abierto', !lista.hidden); } }, '×' + (cant || us.length) + ' ▾') : el('span', { class: 'cant', text: cant ? '×' + cant : '' }), el('span', { class: 'fl', text: '→' }), picker, txt,
       el('button', { class: 'b sec', style: 'padding:6px 9px', title: 'Sin cambio', onclick: function () { txt.value = ''; picker.value = desde; fila.classList.remove('activo'); } }, '✕')]);
     picker.addEventListener('input', function () { txt.value = picker.value; fila.classList.add('activo'); });
     txt.addEventListener('input', function () { var h = aHex(txt.value); if (h) picker.value = h; fila.classList.toggle('activo', !!h); });
-    return fila;
+    grupo.append(fila, lista);
+    return grupo;
   }
   function agregarColor() {
     var c = aHex(prompt('Código del color del modelo que querés cambiar (por ejemplo #73527f):') || ''); if (!c) return;
-    if (!$('#lista-colores [data-desde="' + c + '"]')) $('#lista-colores').prepend(filaColor(c, '', 0));
+    if (!$('#lista-colores .reemp[data-desde="' + c + '"]')) $('#lista-colores').prepend(filaColor(c, '', 0));
   }
   function filaFuente(desde, hacia, escala) {
     var dl = 'cat-fuentes';
@@ -453,7 +505,7 @@
       // Si la paleta repite un color, vale el primero; un color igual al original no es un cambio
       if (!orig || !cols[i] || usados[orig] || cols[i] === orig) return;
       usados[orig] = 1;
-      var fila = $('#lista-colores [data-desde="' + orig + '"]') || (function () { var f = filaColor(orig, '', 0); $('#lista-colores').prepend(f); return f; })();
+      var fila = $('#lista-colores .reemp[data-desde="' + orig + '"]') || (function () { $('#lista-colores').prepend(filaColor(orig, '', 0)); return $('#lista-colores .reemp[data-desde="' + orig + '"]'); })();
       var ins = fila.querySelectorAll('input'); ins[0].value = cols[i]; ins[1].value = cols[i]; fila.classList.add('activo'); n++;
     });
     var fuente = d.tipografia && d.tipografia.modo === 'cambiar' && (d.tipografia.otra || d.tipografia.nombre);
@@ -466,14 +518,15 @@
     toast(n + ' colores' + (fuente ? ' y la tipografía' : '') + ' cargados: revisá y tocá «Guardar colores y tipografías»');
   }
   async function guardarReemplazos(b) {
-    var colores = [], fuentes = [];
+    var colores = [], fuentes = [], puntuales = [];
+    Array.prototype.forEach.call(document.querySelectorAll('#lista-colores .uso'), function (f) { var h = aHex(f.querySelectorAll('input')[1].value); if (h) puntuales.push([f.dataset.clave, f.dataset.desde, h]); });
     Array.prototype.forEach.call(document.querySelectorAll('#lista-colores .reemp'), function (f) { var h = aHex(f.querySelectorAll('input')[1].value); if (h && h !== f.dataset.desde) colores.push([f.dataset.desde, h]); });
     Array.prototype.forEach.call(document.querySelectorAll('#lista-fuentes .fuente-fila'), function (f) {
       var ins = f.querySelectorAll('input'), de = ins[0].value.trim(), a = ins[1].value.trim(), esc = Number(ins[2].value) || 100;
       if (de && (a || esc !== 100)) fuentes.push([de, a || de, esc]);
     });
     b.disabled = true;
-    try { var r = await api(API, { method: 'POST', json: { colores: colores, fuentes: fuentes, base: $('#base').value || undefined } }); toast(r.aviso || ('Guardado: ' + colores.length + ' colores y ' + fuentes.length + ' fuentes'), !!r.aviso); await cargar(true); }
+    try { var r = await api(API, { method: 'POST', json: { colores: colores, puntuales: puntuales, fuentes: fuentes, base: $('#base').value || undefined } }); toast(r.aviso || ('Guardado: ' + colores.length + ' colores' + (puntuales.length ? ', ' + puntuales.length + ' usos sueltos' : '') + ' y ' + fuentes.length + ' fuentes'), !!r.aviso); await cargar(true); }
     catch (e) { toast(e.message, true); }
     b.disabled = false;
   }

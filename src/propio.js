@@ -75,7 +75,7 @@ export async function servirPropio(env, url) {
     const p = ev?.datos?.propio;
     if (hayCambios(p)) {
       const texto = await new Response(o ? o.body : r.body).text();
-      return new Response(recolorear(texto, p), { headers: { 'content-type': tipo, ...cab } });
+      return new Response(recolorear(texto, p, ruta), { headers: { 'content-type': tipo, ...cab } });
     }
   }
   return new Response(o ? o.body : r.body, { headers: { 'content-type': tipo, ...cab } });
@@ -91,13 +91,53 @@ const aHex = (x) => {
   return /^[0-9a-f]{6}$/.test(h) ? '#' + h : null;
 };
 const rgbDe = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-export function hayCambios(p) { return !!(p && ((p.colores || []).length || (p.fuentes || []).length)); }
-export function recolorear(texto, p) {
+export function hayCambios(p) { return !!(p && ((p.colores || []).length || (p.fuentes || []).length || (p.puntuales || []).length)); }
+// README (ronda 61): cada color del CSS por separado. Recorre las declaraciones y da, por cada color, su regla
+// (selector, con el @media delante), su propiedad y cuántas veces apareció antes esa misma regla+propiedad. La clave
+// «archivo|selector|propiedad|n» identifica ese uso (el panel de admin usa la misma cuenta, en diseno.html).
+const RE_CSS = /\/\*[\s\S]*?\*\/|[{};]|#([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![0-9a-z_-])|rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*[\d.]+%?\s*)?\)/gi;
+const sinComentarios = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '');
+export function coloresCss(css) {
+  const out = [], pila = [], vistos = {}; let ini = 0, m;
+  const re = new RegExp(RE_CSS.source, 'gi');
+  while ((m = re.exec(css))) {
+    const t = m[0];
+    if (t.startsWith('/*')) continue;
+    if (t === '{') { pila.push(sinComentarios(css.slice(ini, m.index)).trim().replace(/\s+/g, ' ')); ini = m.index + 1; continue; }
+    if (t === '}') { pila.pop(); ini = m.index + 1; continue; }
+    if (t === ';') { ini = m.index + 1; continue; }
+    const prop = (/^\s*([-\w]+)\s*:/.exec(sinComentarios(css.slice(ini, m.index))) || [])[1];
+    if (!prop || !pila.length) continue; // dentro de un selector (#id) no es un color
+    const regla = pila.join(' » ') + '|' + prop.toLowerCase();
+    vistos[regla] = (vistos[regla] ?? -1) + 1;
+    let hex, alfa = '';
+    if (m[1]) { const h = m[1]; hex = aHex(h.length === 8 ? h.slice(0, 6) : h.length === 4 ? h.slice(0, 3) : h); alfa = h.length === 8 ? h.slice(6) : h.length === 4 ? h[3] + h[3] : ''; }
+    else hex = '#' + [m[2], m[3], m[4]].map((n) => Math.min(255, +n).toString(16).padStart(2, '0')).join('');
+    out.push({ i: m.index, fin: m.index + t.length, texto: t, hex, alfa, rgb: !m[1], alfaRgb: m[5] || '', clave: regla + '|' + vistos[regla] });
+  }
+  return out;
+}
+function recolorearCss(css, archivo, mapa, puntuales) {
+  let t = '', desde = 0;
+  for (const c of coloresCss(css)) {
+    const pu = puntuales.get(archivo + '|' + c.clave);
+    const nuevo = pu && pu[0] === c.hex ? pu[1] : mapa.get(c.hex);
+    if (!nuevo) continue;
+    let rep;
+    if (!c.rgb) rep = nuevo + c.alfa;
+    else { const [R, G, B] = rgbDe(nuevo); rep = c.alfaRgb ? `rgba(${R}, ${G}, ${B}${c.alfaRgb.replace(/\s+$/, '')})` : `rgb(${R}, ${G}, ${B})`; }
+    t += css.slice(desde, c.i) + rep; desde = c.fin;
+  }
+  return t + css.slice(desde);
+}
+export function recolorear(texto, p, archivo = '') {
   if (!hayCambios(p) || !texto) return texto;
   const mapa = new Map();
   for (const [d, h] of p.colores || []) { const a = aHex(d), b = aHex(h); if (a && b && a !== b) mapa.set(a, b); }
   let t = String(texto);
-  if (mapa.size) {
+  const puntuales = new Map((p.puntuales || []).map(([k, d, h]) => [String(k), [aHex(d), aHex(h)]]).filter(([, [d, h]]) => d && h));
+  if (/\.css$/i.test(archivo) && (mapa.size || puntuales.size)) t = recolorearCss(t, archivo, mapa, puntuales);
+  else if (mapa.size) {
     t = t.replace(/#([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![0-9a-z_-])/gi, (m, h) => {
       // Con transparencia (#rrggbbaa / #rgba): se cambia el color y se conserva la transparencia
       const largo = h.length === 8 || h.length === 4;
@@ -236,6 +276,9 @@ export async function adminPropio(request, env, id, sub) {
     // README (ronda 59): [[desde, hacia], …]
     const pares = (x, n, max) => (Array.isArray(x) ? x : []).filter((v) => Array.isArray(v) && v[0] && v[1]).slice(0, n).map(([d, h]) => [String(d).slice(0, max), String(h).slice(0, max)]);
     if (b.colores !== undefined) c.colores = pares(b.colores, 120, 30).map(([d, h]) => [aHex(d), aHex(h)]).filter(([d, h]) => d && h);
+    // README (ronda 61): [[archivo|selector|propiedad|n, desde, hacia], …] un uso puntual de un color
+    if (b.puntuales !== undefined) c.puntuales = (Array.isArray(b.puntuales) ? b.puntuales : []).filter((v) => Array.isArray(v) && v[0]).slice(0, 400)
+      .map(([k, d, h]) => [String(k).slice(0, 400), aHex(d), aHex(h)]).filter(([k, d, h]) => k && d && h); // igual al original = ese uso queda como estaba
     let sinCara = [];
     if (b.fuentes !== undefined) {
       // README (ronda 60): [desde, hacia, tamaño %]; sin «hacia», la misma fuente con otro tamaño
