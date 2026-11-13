@@ -223,7 +223,7 @@ body.sin-scroll { overflow: hidden; }
 .ayuda { font-size: .85rem; color: var(--suave); margin: 4px 0 0; }
 .contador { font-size: .75rem; color: var(--suave); text-align: right; margin-top: 2px; }
 .contador.lleno { color: var(--peligro); }
-input[type="text"], input[type="url"], input[type="number"], input[type="date"], input[type="datetime-local"], input[type="time"], select, textarea {
+input[type="text"], input[type="url"], input[type="tel"], input[type="number"], input[type="date"], input[type="datetime-local"], input[type="time"], select, textarea {
   width: 100%; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; background: #fff;
 }
 textarea { min-height: 64px; resize: vertical; }
@@ -502,7 +502,7 @@ details.pegar textarea { margin-top: 8px; }
 
 /* ── Ronda 5 ─────────────────────────────────────────────────────────── */
 /* Campos más altos (en el celular sobre todo) y el contador adentro */
-input[type="text"], input[type="url"], input[type="number"], input[type="date"], input[type="email"], input[type="datetime-local"], input[type="time"], select, textarea { padding: 12px 14px; min-height: 48px; font-size: 16px; border: 1px solid var(--borde); border-radius: 10px; background: #fff; width: 100%; }
+input[type="text"], input[type="url"], input[type="tel"], input[type="number"], input[type="date"], input[type="email"], input[type="datetime-local"], input[type="time"], select, textarea { padding: 12px 14px; min-height: 48px; font-size: 16px; border: 1px solid var(--borde); border-radius: 10px; background: #fff; width: 100%; }
 textarea { min-height: 96px; line-height: 1.4; }
 .con-contador { position: relative; }
 .con-contador input { padding-right: 64px; }
@@ -1158,3 +1158,25 @@ body.ver-previa .btn-vista-flotante, body.modo-admin .btn-vista-flotante { displ
   body.ver-previa .modos, body.ver-previa .previa-barra > strong { display: none !important; }
   body.ver-previa .previa-barra { justify-content: center; }
 }
+
+/* README (ronda 71): lista de invitados angosta (celular o la columna del editor): dos líneas por invitado, sin deslizar */
+.envolver-tabla { container-type: inline-size; }
+@container (max-width: 620px) {
+  .tabla-invitados thead { display: none; }
+  .tabla-invitados, .tabla-invitados tbody { display: block; }
+  .tabla-invitados tr { display: grid; grid-template-columns: minmax(0, 1fr) 54px 54px 30px; gap: 6px; align-items: end; padding: 8px 0; border-bottom: 1px solid var(--borde); }
+  .tabla-invitados td { display: block; padding: 0; border: 0; min-width: 0; }
+  .tabla-invitados td[data-et]::before { content: attr(data-et); display: block; font-size: .68rem; color: var(--suave); margin: 0 0 2px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tabla-invitados input, .tabla-invitados td:first-child input, .tabla-invitados .ancho { min-width: 0; width: 100%; }
+  .tabla-invitados .num { width: 100%; padding-left: 6px; padding-right: 4px; }
+  .tabla-invitados .inv-nombre { grid-column: 1; grid-row: 1; }
+  .tabla-invitados .inv-pases { grid-column: 2; grid-row: 1; }
+  .tabla-invitados .inv-mesa { grid-column: 3; grid-row: 1; }
+  .tabla-invitados .acciones-fila { grid-column: 4; grid-row: 1; align-self: end; padding-bottom: 4px; }
+  .tabla-invitados .inv-familia, .tabla-invitados .inv-tel { grid-column: 1 / 4; }
+  .tabla-invitados .tel { width: 100%; }
+  .tabla-invitados .pin { grid-column: 1 / -1; }
+  .tabla-invitados { width: 100%; }
+  .tabla-invitados tr > * { box-sizing: border-box; }
+}
+@supports (container-type: inline-size) { .envolver-tabla { overflow-x: clip; } }

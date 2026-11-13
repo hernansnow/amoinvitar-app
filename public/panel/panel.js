@@ -929,14 +929,16 @@ function campoInvitados() {
   const dibujar = () => {
     const pinVisible = datos.acceso?.modo === 'pin' && datos.acceso?.pinPorInvitado;
     const filas = lista.map((i, n) => el('tr', {},
-      el('td', {}, el('input', { type: 'text', value: i.nombre, 'aria-label': 'Nombre', oninput: (e) => { i.nombre = e.target.value; guardarLista(); } })),
-      el('td', {}, el('input', { type: 'number', class: 'num', min: 0, max: 50, value: i.pases ?? 0, 'aria-label': 'Pases extra', oninput: (e) => { i.pases = e.target.value; guardarLista(); } })),
-      el('td', {}, el('input', { type: 'text', class: 'num', value: i.mesa ?? '', 'aria-label': 'Mesa', oninput: (e) => { i.mesa = e.target.value; guardarLista(); } })),
-      verFamilias ? el('td', {}, el('input', { type: 'text', class: 'ancho', value: i.integrantes ?? '', placeholder: 'Solo si es familia: Juan, Ana…', 'aria-label': 'Integrantes', oninput: (e) => { i.integrantes = e.target.value; guardarLista(); } })) : null,
-      verTel ? el('td', {}, el('input', { type: 'tel', class: 'tel', value: i.telefono ?? '', placeholder: prefijoEvento()?.ej || '+34 612345678', 'aria-label': 'Teléfono', inputmode: 'tel',
+      // README (ronda 71): en el celular, cada invitado en dos líneas (el título de cada dato va arriba del campo)
+      el('td', { class: 'inv-nombre', 'data-et': 'Nombre' }, el('input', { type: 'text', value: i.nombre, 'aria-label': 'Nombre', oninput: (e) => { i.nombre = e.target.value; guardarLista(); } })),
+      el('td', { class: 'inv-pases', 'data-et': 'Pases' }, el('input', { type: 'number', class: 'num', min: 0, max: 50, value: i.pases ?? 0, 'aria-label': 'Pases extra', oninput: (e) => { i.pases = e.target.value; guardarLista(); } })),
+      el('td', { class: 'inv-mesa', 'data-et': 'Mesa' }, el('input', { type: 'text', class: 'num', value: i.mesa ?? '', 'aria-label': 'Mesa', oninput: (e) => { i.mesa = e.target.value; guardarLista(); } })),
+      verFamilias ? el('td', { class: 'inv-familia', 'data-et': 'Integrantes (familia)' }, el('input', { type: 'text', class: 'ancho', value: i.integrantes ?? '', placeholder: 'Solo si es familia: Juan, Ana…', 'aria-label': 'Integrantes', oninput: (e) => { i.integrantes = e.target.value; guardarLista(); } })) : null,
+      // README (ronda 71): ejemplo que no parece un número real: el código del país y unos
+      verTel ? el('td', { class: 'inv-tel', 'data-et': 'WhatsApp' }, el('input', { type: 'tel', class: 'tel', value: i.telefono ?? '', placeholder: `${prefijoEvento()?.cod || '+1'} 111 111 111`, 'aria-label': 'Teléfono', inputmode: 'tel',
         oninput: (e) => { i.telefono = e.target.value; guardarLista(); },
         onblur: (e) => { const v = telInternacional(e.target.value); if (v !== e.target.value) { e.target.value = v; i.telefono = v; guardarLista(); } } })) : null,
-      pinVisible ? el('td', { class: 'pin', 'data-n': n }, i.pin || '…') : null,
+      pinVisible ? el('td', { class: 'pin', 'data-n': n, 'data-et': 'PIN' }, i.pin || '…') : null,
       el('td', { class: 'acciones-fila' },
         el('button', { type: 'button', class: 'btn-icono', title: 'Quitar', onclick: () => { lista.splice(n, 1); dibujar(); guardarLista(); } }, '✕'))));
     caja.replaceChildren(
