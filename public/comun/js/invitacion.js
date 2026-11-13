@@ -47,21 +47,20 @@
   var tx2 = INV.textos || {};
   function isoGuiones(x) { return x.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, '$1-$2-$3T$4:$5:$6Z'); }
   // README (ronda 74): Apple / otros con el .ics que sirve el servidor (el iPhone abre «Agregar evento» de su app)
-  var ANDROID = /Android/i.test(navigator.userAgent);
-  var MOVIL = window.matchMedia && window.matchMedia('(max-width: 700px), (pointer: coarse)').matches;
+    var MOVIL = window.matchMedia && window.matchMedia('(max-width: 700px), (pointer: coarse)').matches;
   function enlaces(c) {
     var q = encodeURIComponent, det = c.descripcion + '\n' + location.href.split('#')[0];
     var ics = '/api/agendar.ics?' + ['t=' + q(c.titulo), 'i=' + q(c.inicio), 'f=' + q(c.fin || c.inicio), 'l=' + q(c.lugar || ''), 'd=' + q(det)].join('&');
     var outlook = 'https://outlook.live.com/calendar/0/action/compose?subject=' + q(c.titulo) + (c.todoElDia ? '&allday=true&startdt=' + c.inicio.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') + '&enddt=' + c.fin.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') : '&startdt=' + isoGuiones(c.inicio) + '&enddt=' + isoGuiones(c.fin || c.inicio)) + '&location=' + q(c.lugar) + '&body=' + q(det);
     var google = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + q(c.titulo) + '&dates=' + c.inicio + '/' + (c.fin || c.inicio) + '&details=' + q(det) + '&location=' + q(c.lugar);
     // README (ronda 76): como el botón de la página vieja (add-to-calendar-button 1): Google con render?action=TEMPLATE,
-    // abierto con window.open (Android lo pasa a la app de Google Calendar). En Android sin Apple ni el .ics (pide guardar)
-    if (ANDROID) return [[tx2.google, google, false], [tx2.outlook, outlook, false]];
+    // abierto con window.open (Android lo pasa a la app de Google Calendar). README (ronda 77): las cuatro opciones siempre,
+    // cada una con su ícono en negro
     return [
-      [tx2.google, google, false],
-      [tx2.apple, ics, true],
-      [tx2.outlook, outlook, false],
-      [tx2.otro, ics, true]
+      [tx2.google, google, false, 'icon-google'],
+      [tx2.apple, ics, true, 'icon-apple'],
+      [tx2.outlook, outlook, false, 'icon-windows'],
+      [tx2.otro, ics, true, 'icon-calendar-plus-o']
     ];
   }
   var estilo = document.createElement('style');
@@ -70,6 +69,8 @@
     '.agendar-menu a:hover,.agendar-menu a:focus,.agendar-menu button:hover{background:rgba(0,0,0,.06)}' +
     '.agendar-menu .agendar-cancelar{text-align:center;color:#6c757d;margin-top:4px;border-top:1px solid rgba(0,0,0,.08);border-radius:0 0 8px 8px}' +
     '.agendar-menu .agendar-cancelar::first-letter{text-transform:uppercase}' +
+    '.agendar-menu a{display:flex;align-items:center;gap:12px}.agendar-menu .agendar-ico{flex:none;width:20px;font-size:18px;line-height:1;color:#000;text-align:center}' +
+    '.agendar-menu.hoja a{justify-content:flex-start;padding-left:28px}' +
     // Celular: hoja desde abajo, siempre a la vista, con el fondo oscurecido
     '.agendar-fondo{position:fixed;inset:0;z-index:7999;background:rgba(0,0,0,.35)}' +
     '.agendar-menu.hoja{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));top:auto;min-width:0;border-radius:16px;padding:8px}' +
@@ -87,7 +88,8 @@
       m.className = 'agendar-menu' + (MOVIL ? ' hoja' : ''); m.setAttribute('role', 'menu');
       enlaces(cfg).forEach(function (x) {
         var a = document.createElement('a');
-        a.textContent = x[0]; a.href = x[1]; a.setAttribute('role', 'menuitem');
+        var ico = document.createElement('i'); ico.className = 'agendar-ico ' + x[3]; ico.setAttribute('aria-hidden', 'true');
+        a.appendChild(ico); a.appendChild(document.createTextNode(x[0])); a.href = x[1]; a.setAttribute('role', 'menuitem');
         // El .ics se abre en la misma pestaña (el sistema lo pasa a su app de calendario); Google y Outlook, en otra
         // Google y Outlook: con window.open, como el botón viejo (con el link en otra pestaña, Android cerraba el aviso de la app)
         if (x[2] === false) a.addEventListener('click', function (ev) { ev.preventDefault(); var w = window.open(x[1], '_blank'); if (w) w.focus(); else location.href = x[1]; setTimeout(cerrarMenu, 300); });
