@@ -1714,7 +1714,8 @@ function pintarModelo() {
   const tipo = S.evento.tipoNombre || '';
   // Escritorio: el modelo y, chico, el tipo de evento
   // README (ronda 47): ya publicada, el modelo queda fijo: solo se muestra su nombre (sin «cambiar»)
-  if (S.evento.estado && S.evento.estado !== 'borrador') {
+  // README (ronda 56): el administrador de Amo Invitar! sí puede cambiarlo (lo pide el cliente y corresponde)
+  if (S.evento.estado && S.evento.estado !== 'borrador' && !S.esquema?.admin) {
     caja.replaceChildren(el('div', { class: 'btn-modelo fijo', title: 'El modelo se elige antes de publicar' }, el('span', { class: 'btn-modelo-txt' }, el('strong', {}, actual.nombre), tipo ? el('small', { class: 'btn-modelo-tipo' }, tipo) : null)));
     movil.hidden = false;
     movil.replaceChildren(el('span', {}, actual.nombre), ' ', tipo ? el('span', {}, tipo) : '');
