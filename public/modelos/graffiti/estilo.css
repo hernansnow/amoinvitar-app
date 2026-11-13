@@ -4970,3 +4970,5 @@ audio::-webkit-media-controls-play-button:hover {
 .site-blocks-cover > .container > .row:has(> .g-portada-abajo) { align-content: flex-end; }
 .site-blocks-cover > .container > .row:has(> .g-portada-abajo) > .align-self-start { display: none; }
 .g-portada-abajo { margin-bottom: clamp(90px, 13vh, 150px); }
+/* README (ronda 70): con cuenta regresiva, el bloque va abajo, justo encima de la cuenta */
+.g-portada-abajo.g-con-cuenta { margin-bottom: 18px; }
