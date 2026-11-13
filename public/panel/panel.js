@@ -396,7 +396,7 @@ function marcoEncuadre({ url, pos, proporcion, etiqueta, redonda = false, zoom =
     px = lim(px + d[0]); py = lim(py + d[1]); pintar(); guardar();
   });
   if (!alZoom) return marco;
-  // Zoom con − y + (testigos y padrinos)
+  // Zoom con − y + (testigos, padrinos, lugares, historia, galería y dress code)
   const nivel = el('span', { class: 'zoom-nivel' });
   const cambiarZoom = (d) => { z = Math.round(Math.max(1, Math.min(3, z + d)) * 100) / 100; nivel.textContent = `${Math.round(z * 100)}%`; pintar(); alZoom(z > 1 ? z : undefined); };
   nivel.textContent = `${Math.round(z * 100)}%`;
@@ -532,7 +532,7 @@ function campoFotos(c, valor, alCambiar) {
       const quitar = el('button', { type: 'button', class: 'quitar', 'aria-label': 'Quitar foto', onclick: () => { lista.splice(i, 1); dibujar(); emitir(); } }, '✕');
       const mover = i > 0 ? el('button', { type: 'button', class: 'mover', 'aria-label': 'Mover antes', onclick: () => { [lista[i - 1], lista[i]] = [lista[i], lista[i - 1]]; dibujar(); emitir(); } }, '◀') : null;
       const vista = prop
-        ? marcoEncuadre({ url: f.url, pos: f.pos, proporcion: prop, etiqueta: `Foto ${i + 1}`, alSoltar: (p) => { f.pos = p; emitir(); } })
+        ? marcoEncuadre({ url: f.url, pos: f.pos, proporcion: prop, etiqueta: `Foto ${i + 1}`, alSoltar: (p) => { f.pos = p; emitir(); }, zoom: f.zoom, alZoom: c.zoom ? (z) => { if (z) f.zoom = z; else delete f.zoom; emitir(); } : null })
         : el('div', { class: 'foto' }, el('img', { src: f.url, alt: '', loading: 'lazy' }));
       caja.append(el('div', { class: 'con-quitar' }, vista, quitar, mover));
     });
@@ -1444,6 +1444,8 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
     c.pedirCambio && whatsapp() ? el('a', { class: 'btn-link', target: '_blank', rel: 'noopener', href: `${whatsapp()}${encodeURIComponent(` Quiero pedir un cambio en: ${c.etiqueta || c.id}.`)}` }, 'Pedir el cambio por WhatsApp') : null) : null;
   const extra = { ...posicion, desactivado, fijo };
   if (!posicion.pos && (c.tipo === 'foto' && c.encuadre)) { extra.pos = () => leer(datos, `${c.id}Pos`); extra.alPos = (p) => cambio(`${c.id}Pos`, p); }
+  // README (ronda 66): zoom en las fotos con encuadre (lugares, historia)
+  if (c.tipo === 'foto' && c.zoom && !extra.alZoom) { extra.zoom = () => leer(datos, `${c.id}Zoom`); extra.alZoom = (z) => cambio(`${c.id}Zoom`, z); }
   const sinEtiqueta = (c.tipo === 'switch' && !c.opciones) || ['nota', 'botonTextos', 'agregarIdioma', 'revelar'].includes(c.tipo) || c.titulo || c.sinEtiqueta;
   const etiqueta = sinEtiqueta ? null
     : ['texto', 'url', 'area', 'numero', 'fecha', 'fechaHora', 'hora', 'color', 'zona', 'idioma'].includes(c.tipo) || (c.tipo === 'opciones' && !c.multiple && !c.tarjetas && (c.iconos || c.valores.length > 4))

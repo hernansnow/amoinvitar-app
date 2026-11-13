@@ -222,7 +222,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'historia.texto', tipo: 'area', etiqueta: 'Texto', max: 600, base: 'historia.texto' },
         // Diseños con una foto junto a la historia (la "inicial" de Armonía, Lila, Style, Oliva…)
         ...(modelo.fotoHistoria ? [conFotos('historia'),
-          { id: 'fotos.historia', tipo: 'foto', etiqueta: 'Foto', proporcion: modelo.fotoHistoria, encuadre: true, redonda: modelo.fotoHistoria === '1:1', si: siFotos('historia') }] : []),
+          { id: 'fotos.historia', tipo: 'foto', etiqueta: 'Foto', proporcion: modelo.fotoHistoria, encuadre: true, zoom: true, redonda: modelo.fotoHistoria === '1:1', si: siFotos('historia') }] : []),
       ] },
     { id: 'galeria', seccion: 'galeria', titulo: 'Galería de fotos', ayudaSeccion: 'Si no quieres fotos, apagar esta sección.', campos: [
       // En los modelos con la galería dentro de la confirmación va siempre el carrusel
@@ -232,7 +232,7 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'galeria.proporcion', tipo: 'opciones', etiqueta: 'Proporción de la miniatura', tarjetas: 'proporcion', defecto: 'cuadrada', rearmar: true, valores: [
         { v: 'cuadrada', etiqueta: '1:1' }, { v: 'horizontal', etiqueta: 'Horizontal' }, { v: 'vertical', etiqueta: 'Vertical' },
       ] },
-      { id: 'fotos.galeria', tipo: 'fotos', etiqueta: 'Fotos', max: MAX_GALERIA, proporcion: PROPORCION.galeria, proporcionDe: { campo: 'galeria.proporcion', valores: PROPORCION_GALERIA },
+      { id: 'fotos.galeria', tipo: 'fotos', etiqueta: 'Fotos', zoom: true, max: MAX_GALERIA, proporcion: PROPORCION.galeria, proporcionDe: { campo: 'galeria.proporcion', valores: PROPORCION_GALERIA },
         ayuda: 'Arrastrar cada foto para encuadrar la miniatura; al tocarla en la invitación se ve entera. Con una sola foto también queda bien.' },
     ] },
     {
@@ -257,8 +257,8 @@ function pasosInvitacion({ tipo, modelo }) {
         ...lugarCampos('celebracion', { fecha: conCeremonia ? `Fecha de la ${misa ? 'fiesta' : 'celebración'}` : 'Fecha del evento', ejemplo: 'Estancia La Soñada' }),
         { id: 'separador.fotosLugar', tipo: 'nota', estilo: 'linea' },
         { id: 'fotosOn.lugares', tipo: 'switch', etiqueta: 'Incluir fotos', defecto: true, rearmar: true },
-        ...(conCeremonia ? [{ id: 'ceremonia.foto', tipo: 'foto', etiqueta: misa ? 'Foto de la iglesia' : 'Foto de la ceremonia', proporcion: (modelo.proporciones?.lugar || '').replace('/', ':') || PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: [siFotos('lugares'), hayCeremonia] }] : []),
-        { id: 'celebracion.foto', tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: (modelo.proporciones?.lugar || '').replace('/', ':') || PROPORCION.lugar, encuadre: true, paquete: 'premium', ancho: 'mitad', si: siFotos('lugares') },
+        ...(conCeremonia ? [{ id: 'ceremonia.foto', tipo: 'foto', etiqueta: misa ? 'Foto de la iglesia' : 'Foto de la ceremonia', proporcion: (modelo.proporciones?.lugar || '').replace('/', ':') || PROPORCION.lugar, encuadre: true, zoom: true, paquete: 'premium', ancho: 'mitad', si: [siFotos('lugares'), hayCeremonia] }] : []),
+        { id: 'celebracion.foto', tipo: 'foto', etiqueta: 'Foto del lugar', proporcion: (modelo.proporciones?.lugar || '').replace('/', ':') || PROPORCION.lugar, encuadre: true, zoom: true, paquete: 'premium', ancho: 'mitad', si: siFotos('lugares') },
       ],
     },
     // El interruptor no se muestra: la lista se prende eligiendo "Lista de invitados" o "Lista + PIN"
@@ -303,7 +303,7 @@ function pasosInvitacion({ tipo, modelo }) {
     ] },
     { id: 'estilos', seccion: 'estilos', titulo: 'Referencias de estilos', campos: [
       { id: 'dresscode.evitar', tipo: 'colores', etiqueta: 'Colores a evitar (opcional)', max: 4 },
-      { id: 'dresscode.fotos', tipo: 'fotos', etiqueta: 'Fotos de sugerencias de estilo', max: 6, paquete: 'deluxe', proporcion: PROPORCION.dress, porFila: 3 },
+      { id: 'dresscode.fotos', tipo: 'fotos', etiqueta: 'Fotos de sugerencias de estilo', zoom: true, max: 6, paquete: 'deluxe', proporcion: PROPORCION.dress, porFila: 3 },
     ] },
     // Hospedaje y traslado: la ventana (modal) lleva el mismo título que la sección, salvo que se cambie.
     // "Agregar indicaciones": texto libre que va en la ventana antes de la lista de hoteles / del recorrido.
@@ -1019,7 +1019,7 @@ function limpiarValor(c, v) {
       return c.multiple ? [].concat(v).filter((x) => ok.has(x)) : (ok.has(v) ? v : undefined);
     }
     case 'fotos': return [].concat(v).slice(0, c.max || 12).map((f) => (typeof f === 'string' ? { url: f } : f))
-      .filter((f) => URL_OK.test(f?.url || '')).map((f) => ({ url: f.url, ...(POS_OK.test(f.pos || '') ? { pos: f.pos } : {}), ...((c.dosEncuadres || c.portada) && POS_OK.test(f.posPc || '') ? { posPc: f.posPc } : {}) }));
+      .filter((f) => URL_OK.test(f?.url || '')).map((f) => ({ url: f.url, ...(POS_OK.test(f.pos || '') ? { pos: f.pos } : {}), ...((c.dosEncuadres || c.portada) && POS_OK.test(f.posPc || '') ? { posPc: f.posPc } : {}), ...(c.zoom && Number(f.zoom) > 1 && Number(f.zoom) <= 3 ? { zoom: Math.round(f.zoom * 100) / 100 } : {}) }));
     case 'lista': return [].concat(v).slice(0, c.max || 10).map((item) => {
       const limpio = {};
       for (const sc of c.campos) {
@@ -1051,6 +1051,11 @@ export function limpiarDatos(esquema, datos, previos = {}) {
       if (['foto', 'fotoCompartir'].includes(c.tipo) && c.encuadre) {
         const pos = leer(datos, `${c.id}Pos`);
         if (pos !== undefined) escribir(salida, `${c.id}Pos`, POS_OK.test(pos || '') ? pos : undefined);
+      }
+      // README (ronda 66): zoom de la foto (1 a 3)
+      if (c.tipo === 'foto' && c.zoom) {
+        const z = leer(datos, `${c.id}Zoom`);
+        if (z !== undefined) escribir(salida, `${c.id}Zoom`, Number(z) > 1 && Number(z) <= 3 ? Math.round(z * 100) / 100 : undefined);
       }
       if (v === undefined) continue;
       escribir(salida, c.id, limpiarValor(c, v));

@@ -140,6 +140,17 @@ function encuadreZoom(prop, pos, zoom) {
   const c = (p) => Math.round((p + (50 - p) / z) * 100) / 100;
   return `${base};transform:scale(${z});transform-origin:${pos || '50% 50%'};clip-path:circle(${Math.round((50 / z) * 100) / 100}% at ${c(px)}% ${c(py)}%)`;
 }
+// README (ronda 66): zoom en fotos rectangulares (lugares, historia, galería, dress code): se agranda desde el punto
+// elegido y se recorta a la misma caja, así ocupa el mismo lugar en la página
+export function zoomCss(pos, zoom, redonda = false) {
+  const z = Number(zoom);
+  if (!(z > 1 && z <= 3)) return '';
+  const [px, py] = (pos || '50% 50%').split(' ').map((x) => parseFloat(x) || 0);
+  const k = 1 - 1 / z, r = (n) => `${Math.round(n * k * 100) / 100}%`, d = (n) => Math.round(n * 100) / 100;
+  // Foto redonda: el recorte es un círculo; si no, la caja con sus esquinas apenas redondeadas
+  const clip = redonda ? `circle(${d(50 / z)}% at ${d(px + (50 - px) / z)}% ${d(py + (50 - py) / z)}%)` : `inset(${r(py)} ${r(100 - px)} ${r(100 - py)} ${r(px)} round ${d(6 / z)}px)`;
+  return `;transform:scale(${z});transform-origin:${px}% ${py}%;clip-path:${clip}`;
+}
 const urlDe = (f) => (typeof f === 'string' ? f : f?.url || '');
 // Solo boda, 15, bautismo, comunión y graduación tienen ceremonia, misa o acto
 const CON_CEREMONIA = new Set(['boda', '15', 'bautismo', 'comunion', 'graduacion']);
@@ -227,7 +238,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     iconoUnico: modo === 'mismo-lugar' || (e.tipo === 'boda' && modo === 'sin'),
     titulo: tituloCer,
     foto: fotoLugar(cer),
-    fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cer.fotoPos),
+    fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cer.fotoPos) + zoomCss(cer.fotoPos, cer.fotoZoom),
     fechaHora: fechaHora(cerInicio, variante, F),
     fechaLarga: fechaLarga(cerInicio, variante, F),
     lugarTexto: lugarTexto(cer),
@@ -236,7 +247,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   const celebracion = {
     titulo: tituloCel,
     foto: fotoLugar(cel),
-    fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cel.fotoPos),
+    fotoEstilo: encuadre(modelo.proporciones?.lugar || PROP.lugar, cel.fotoPos) + zoomCss(cel.fotoPos, cel.fotoZoom),
     fechaHora: fechaHora(celInicio, variante, F),
     fechaLarga: fechaLarga(celInicio, variante, F),
     lugarTexto: lugarTexto(cel),
@@ -279,7 +290,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   // Galería: cómo se muestra (carrusel, mosaico, grilla, polaroids) y la proporción de todas las fotos
   const tipoGaleria = ['carrusel', 'mosaico', 'grilla', 'polaroids'].includes(e.galeria?.tipo) && !modelo.galeria?.enRsvp ? e.galeria.tipo : 'carrusel';
   const propGaleria = PROP_GALERIA[e.galeria?.proporcion] || PROP.galeria;
-  const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((f) => ({ url: urlDe(f), pos: f?.pos || '50% 50%', estilo: encuadre(propGaleria, f?.pos) }));
+  const galeria = (fotos.galeria || []).slice(0, incluye.fotosGaleria).map((f) => ({ url: urlDe(f), pos: f?.pos || '50% 50%', zoom: zoomCss(f?.pos, f?.zoom), estilo: encuadre(propGaleria, f?.pos) + zoomCss(f?.pos, f?.zoom) }));
   // Publicada sin fotos cargadas: como si se hubiera apagado (sin galería; la confirmación sin foto)
   if (!demo && !galeria.length && 'galeria' in secciones) secciones.galeria = false;
 
@@ -368,7 +379,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       rsvp: fotosOn('rsvp') ? fotos.rsvp || '' : '', rsvpEstilo: '',
       // La foto de la historia (la "inicial" de Armonía, Lila, Style…)
       historia: fotosOn('historia') ? fotos.historia || '' : '',
-      historiaEstilo: modelo.fotoHistoria ? `aspect-ratio:${String(modelo.fotoHistoria).replace(':', '/')};object-fit:cover;object-position:${e.fotos?.historiaPos || '50% 50%'}` : '',
+      historiaEstilo: modelo.fotoHistoria ? `aspect-ratio:${String(modelo.fotoHistoria).replace(':', '/')};object-fit:cover;object-position:${e.fotos?.historiaPos || '50% 50%'}${zoomCss(e.fotos?.historiaPos, e.fotos?.historiaZoom, modelo.fotoHistoria === '1:1')}` : '',
       // Instagram Wall y Álbum QR: la misma foto (van una u otra)
       album: fotosOn('album') ? fotos.instagram || fotos.album || '' : '', albumEstilo: '',
       // Instagram Wall (en Premium antes usaba la foto del álbum)
@@ -394,7 +405,7 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       sugerencias: !!incluye.sugerenciasDress && fotosOn('dresscode') && lleno(e.dresscode?.fotos),
       // Colores a evitar: una fila de círculos
       evitar: (e.dresscode?.evitar || []).filter((c) => /^#[0-9a-f]{6}$/i.test(c)).slice(0, 4).map((c) => ({ color: c, estilo: `background-color:${c}` })),
-      fotos: (e.dresscode?.fotos || []).map((f) => ({ url: urlDe(f), estilo: encuadre(PROP.dress, f?.pos) })),
+      fotos: (e.dresscode?.fotos || []).map((f) => ({ url: urlDe(f), estilo: encuadre(PROP.dress, f?.pos) + zoomCss(f?.pos, f?.zoom) })),
     },
     // El botón de referencias / recorrido va solo si el cliente cargó algo
     // texto = las indicaciones (van en la ventana antes de la lista). La ventana lleva el título de la sección

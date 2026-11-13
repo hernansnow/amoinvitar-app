@@ -231,7 +231,7 @@ export function galeria({ v, t, el }) {
   const fotos = v.fotos.galeria || [];
   if (!fotos.length) return '';
   const items = (clase = '') => fotos.map((f, i) => `
-  <a class="${clase}" href="${esc(f.url)}" data-fancybox="galeria" aria-label="${esc(`${t('galeria.ver') || 'Ver foto'} ${i + 1}`)}"><img src="${esc(f.url)}" alt="" loading="lazy" style="object-position:${esc(f.pos)}"></a>`).join('');
+  <a class="${clase}" href="${esc(f.url)}" data-fancybox="galeria" aria-label="${esc(`${t('galeria.ver') || 'Ver foto'} ${i + 1}`)}"><img src="${esc(f.url)}" alt="" loading="lazy" style="object-position:${esc(f.pos)}${esc(f.zoom || '')}"></a>`).join('');
   const css = `<link rel="stylesheet" href="${v.rutas.comun}/css/galeria.css">`;
   if (g.carrusel) {
     const varias = fotos.length > 1;
