@@ -2003,6 +2003,7 @@ $('#btn-publicar-2').addEventListener('click', () => { verPrevia(false); publica
 // ── Pantallas: vista dividida en el celular, vista sola, panel plegado ──
 function verPrevia(on) {
   document.body.classList.toggle('ver-previa', on);
+  if (!on) dispatchEvent(new Event('panel:salir-previa'));
   if (on && marcos().every((x) => x.src === 'about:blank')) cargarPrevia();
   requestAnimationFrame(escalarPrevia);
 }
@@ -2038,7 +2039,11 @@ $('#btn-volver').addEventListener('click', () => {
   };
   const poner = (px) => { raiz.style.setProperty('--alto-previa', `${Math.max(0, Math.min(maximo(), px))}px`); requestAnimationFrame(escalarPrevia); };
   // Si la pantalla cambia (girar el teléfono, aparece el teclado), que no quede tapada
-  addEventListener('resize', () => { const alto = $('#previa').getBoundingClientRect().height; if (alto > maximo()) poner(alto); });
+  // README (ronda 69): en la vista previa la invitación ocupa toda la pantalla: ahí no se mide (si no, al volver el panel
+  // quedaba tapado y solo se veía la barra del precio); al salir se acomoda
+  const acomodar = () => { if (document.body.classList.contains('ver-previa')) return; const alto = $('#previa').getBoundingClientRect().height; if (alto > maximo()) poner(alto); };
+  addEventListener('resize', acomodar);
+  addEventListener('panel:salir-previa', () => requestAnimationFrame(acomodar));
   let inicio = null;
   const agarre = $('#hoja-cabeza');
   agarre.addEventListener('pointerdown', (e) => {

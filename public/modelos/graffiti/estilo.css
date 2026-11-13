@@ -4965,3 +4965,8 @@ audio::-webkit-media-controls-play-button:hover {
 /* ALL animation types called */
 .invert { filter: invert(100%); }
 
+
+/* README (ronda 69): portada sin cuenta regresiva (y la de Basic): nombre, fecha y subtítulo abajo, con margen */
+.site-blocks-cover > .container > .row:has(> .g-portada-abajo) { align-content: flex-end; }
+.site-blocks-cover > .container > .row:has(> .g-portada-abajo) > .align-self-start { display: none; }
+.g-portada-abajo { margin-bottom: clamp(90px, 13vh, 150px); }
