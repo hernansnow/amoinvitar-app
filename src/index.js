@@ -336,6 +336,24 @@ async function publicada(env, url, request, tipo, slug) {
   return r;
 }
 
+// README (ronda 74): «Agregar al calendario» (Apple y otros): el archivo .ics servido como calendario, así el iPhone
+// abre directo «Agregar evento» de su app y Android lo abre con la app de calendario (antes se armaba en el navegador)
+function agendarICS(url) {
+  const q = (k, max) => String(url.searchParams.get(k) || '').replace(/[\r\n]+/g, ' ').slice(0, max);
+  const fecha = /^\d{8}(T\d{6}Z)?$/;
+  const ini = q('i', 16), fin = q('f', 16) || ini, dia = /^\d{8}$/.test(ini);
+  if (!fecha.test(ini) || !fecha.test(fin)) return new Response('Fecha inválida', { status: 400 });
+  const esc = (x) => x.replace(/([,;\\])/g, '\\$1');
+  const desc = String(url.searchParams.get('d') || '').slice(0, 800).replace(/\r?\n/g, '\\n').replace(/([,;])/g, '\\$1');
+  const ahora = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Amo Invitar//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
+    `UID:${ini}-${crypto.randomUUID()}@amoinvitar.com`, `DTSTAMP:${ahora}`,
+    dia ? `DTSTART;VALUE=DATE:${ini}` : `DTSTART:${ini}`, dia ? `DTEND;VALUE=DATE:${fin}` : `DTEND:${fin}`,
+    `SUMMARY:${esc(q('t', 200))}`, `DESCRIPTION:${desc}`, `LOCATION:${esc(q('l', 300))}`,
+    'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', `DESCRIPTION:${esc(q('t', 200))}`, 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  return new Response(ics, { headers: { 'content-type': 'text/calendar; charset=utf-8', 'content-disposition': 'inline; filename="evento.ics"', 'cache-control': 'public, max-age=3600', 'x-robots-tag': 'noindex' } });
+}
+
 // "Ver la invitación" desde el panel: el dueño entra sin PIN ni link personal
 // (la clave del panel o la sesión lo autorizan; la cookie no dice nada de la clave)
 async function entrarDueno(env, request, url, id) {
@@ -1241,7 +1259,7 @@ async function media(env, partes) {
 // ── Modo "Próximamente": con PREVIEW_KEY cargada, el público ve una página de espera ──
 // Se entra una vez por navegador con ?preview=CLAVE (queda 90 días). Salir: ?preview=salir.
 // Las invitaciones publicadas, las demos y los avisos de las pasarelas siguen funcionando.
-const SIEMPRE_ABIERTO = /^\/(empresa-demos\/|api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/mesa|mesa\/|api\/puerta|puerta\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
+const SIEMPRE_ABIERTO = /^\/(empresa-demos\/|api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/agendar\.ics|api\/mesa|mesa\/|api\/puerta|puerta\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
 function proximamente(request, env, url) {
   // README (ronda 48): ABIERTO = '1' (wrangler.jsonc) abre todo al público: se pone el día de la mudanza
   if (String(env.ABIERTO || '') === '1') return null;
@@ -1337,6 +1355,7 @@ export default {
         if (p1 === 'admin' && partes[2] === 'verifactu' && M === 'POST') return await admin.verifactuEnviar(request, env);
         if (p1 === 'rsvp' && request.method === 'POST') return await rsvp(env, request);
         if (p1 === 'invitados.csv') return await invitadosCSV(env, request, url);
+        if (p1 === 'agendar.ics') return agendarICS(url); // README (ronda 74)
         if (p1 === 'mesa') return await buscarMesa(env, request, url);
         if (p1 === 'puerta') return await apiPuerta(env, request, url);
         if (p1 === 'panel' && partes[2]) return await apiPanel(env, request, url, partes);

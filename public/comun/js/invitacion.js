@@ -46,53 +46,62 @@
   // Botones "Agendar": menú propio (Google, Apple, Outlook, .ics), sin librerías externas
   var tx2 = INV.textos || {};
   function isoGuiones(x) { return x.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, '$1-$2-$3T$4:$5:$6Z'); }
-  function escICS(x) { return String(x || '').replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n'); }
-  function archivoICS(c) {
-    return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Amo Invitar//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
-      'UID:' + c.inicio + '-' + Math.random().toString(36).slice(2) + '@amoinvitar.com',
-      'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''),
-      c.todoElDia ? 'DTSTART;VALUE=DATE:' + c.inicio : 'DTSTART:' + c.inicio, c.todoElDia ? 'DTEND;VALUE=DATE:' + c.fin : 'DTEND:' + (c.fin || c.inicio),
-      'SUMMARY:' + escICS(c.titulo), 'DESCRIPTION:' + escICS(c.descripcion + '\n' + location.href.split('#')[0]), 'LOCATION:' + escICS(c.lugar),
-      'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', 'DESCRIPTION:' + escICS(c.titulo), 'END:VALARM',
-      'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
-  }
+  // README (ronda 74): en el celular, Google con su editor de eventos (se adapta al celular; antes abría la versión de
+  // computadora) y Apple / otros con el .ics que sirve el servidor (el iPhone abre «Agregar evento» de su app)
+  var MOVIL = window.matchMedia && window.matchMedia('(max-width: 700px), (pointer: coarse)').matches;
   function enlaces(c) {
     var q = encodeURIComponent, det = c.descripcion + '\n' + location.href.split('#')[0];
-    var ics = 'data:text/calendar;charset=utf-8,' + q(archivoICS(c));
+    var ics = '/api/agendar.ics?' + ['t=' + q(c.titulo), 'i=' + q(c.inicio), 'f=' + q(c.fin || c.inicio), 'l=' + q(c.lugar || ''), 'd=' + q(det)].join('&');
+    var google = 'https://calendar.google.com/calendar/' + (MOVIL ? 'r/eventedit' : 'render') + '?' + (MOVIL ? '' : 'action=TEMPLATE&') + 'text=' + q(c.titulo) + '&dates=' + c.inicio + '/' + (c.fin || c.inicio) + '&details=' + q(det) + '&location=' + q(c.lugar);
     return [
-      [tx2.google, 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + q(c.titulo) + '&dates=' + c.inicio + '/' + (c.fin || c.inicio) + '&details=' + q(det) + '&location=' + q(c.lugar), false],
+      [tx2.google, google, false],
       [tx2.apple, ics, true],
       [tx2.outlook, 'https://outlook.live.com/calendar/0/action/compose?subject=' + q(c.titulo) + (c.todoElDia ? '&allday=true&startdt=' + c.inicio.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') + '&enddt=' + c.fin.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') : '&startdt=' + isoGuiones(c.inicio) + '&enddt=' + isoGuiones(c.fin || c.inicio)) + '&location=' + q(c.lugar) + '&body=' + q(det), false],
       [tx2.otro, ics, true]
     ];
   }
   var estilo = document.createElement('style');
-  estilo.textContent = '.agendar-menu{position:absolute;z-index:8000;min-width:220px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.18);padding:6px;text-align:left}' +
-    '.agendar-menu a{display:block;padding:10px 14px;border-radius:8px;color:#212529;text-decoration:none;font-size:.95rem}' +
-    '.agendar-menu a:hover,.agendar-menu a:focus{background:rgba(0,0,0,.06)}';
+  estilo.textContent = '.agendar-menu{position:absolute;z-index:8000;min-width:220px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.18);padding:6px;text-align:left;font-family:Jost,system-ui,sans-serif}' +
+    '.agendar-menu a,.agendar-menu button{display:block;width:100%;box-sizing:border-box;padding:10px 14px;border:0;background:none;border-radius:8px;color:#212529;text-decoration:none;font-size:.95rem;text-align:left;font-family:inherit;cursor:pointer}' +
+    '.agendar-menu a:hover,.agendar-menu a:focus,.agendar-menu button:hover{background:rgba(0,0,0,.06)}' +
+    '.agendar-menu .agendar-cancelar{text-align:center;color:#6c757d;margin-top:4px;border-top:1px solid rgba(0,0,0,.08);border-radius:0 0 8px 8px}' +
+    '.agendar-menu .agendar-cancelar::first-letter{text-transform:uppercase}' +
+    // Celular: hoja desde abajo, siempre a la vista, con el fondo oscurecido
+    '.agendar-fondo{position:fixed;inset:0;z-index:7999;background:rgba(0,0,0,.35)}' +
+    '.agendar-menu.hoja{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));top:auto;min-width:0;border-radius:16px;padding:8px}' +
+    '.agendar-menu.hoja a,.agendar-menu.hoja button{padding:14px 16px;font-size:1.05rem;text-align:center}';
   document.head.appendChild(estilo);
-  function cerrarMenu() { var m = document.querySelector('.agendar-menu'); if (m) m.remove(); }
+  function cerrarMenu() { var m = document.querySelector('.agendar-menu'); if (m) m.remove(); var f = document.querySelector('.agendar-fondo'); if (f) f.remove(); }
   [].forEach.call(document.querySelectorAll('[data-agendar]'), function (b) {
     var cfg = INV.calendarios && INV.calendarios[b.getAttribute('data-agendar')];
     if (!cfg) { b.remove(); return; }
     b.setAttribute('aria-haspopup', 'menu');
     b.addEventListener('click', function (e) {
-      e.stopPropagation();
+      e.stopPropagation(); e.preventDefault();
       if (document.querySelector('.agendar-menu')) { cerrarMenu(); return; }
       var m = document.createElement('div');
-      m.className = 'agendar-menu'; m.setAttribute('role', 'menu');
+      m.className = 'agendar-menu' + (MOVIL ? ' hoja' : ''); m.setAttribute('role', 'menu');
       enlaces(cfg).forEach(function (x) {
         var a = document.createElement('a');
         a.textContent = x[0]; a.href = x[1]; a.setAttribute('role', 'menuitem');
-        if (x[2]) a.download = 'evento.ics'; else { a.target = '_blank'; a.rel = 'noopener'; }
+        // El .ics se abre en la misma pestaña (el sistema lo pasa a su app de calendario); Google y Outlook, en otra
+        if (!x[2]) { a.target = '_blank'; a.rel = 'noopener'; }
         a.addEventListener('click', function () { setTimeout(cerrarMenu, 50); });
         m.appendChild(a);
       });
+      if (MOVIL) {
+        var c = document.createElement('button'); c.type = 'button'; c.className = 'agendar-cancelar'; c.textContent = tx2.cerrar || '✕'; c.addEventListener('click', cerrarMenu); m.appendChild(c);
+        var fondo = document.createElement('div'); fondo.className = 'agendar-fondo'; fondo.addEventListener('click', cerrarMenu); document.body.appendChild(fondo);
+        document.body.appendChild(m);
+        return;
+      }
       document.body.appendChild(m);
-      var r = b.getBoundingClientRect();
+      // Computadora: debajo del botón; si no entra abajo, arriba
+      var r = b.getBoundingClientRect(), alto = m.offsetHeight, vh = window.innerHeight;
       var izq = Math.max(8, Math.min(r.left + r.width / 2 - m.offsetWidth / 2, document.documentElement.clientWidth - m.offsetWidth - 8));
+      var arriba = r.bottom + 6 + alto > vh - 8 && r.top - 6 - alto > 8;
       m.style.left = (izq + window.scrollX) + 'px';
-      m.style.top = (r.bottom + window.scrollY + 6) + 'px';
+      m.style.top = ((arriba ? r.top - 6 - alto : r.bottom + 6) + window.scrollY) + 'px';
       m.querySelector('a').focus();
     });
   });
