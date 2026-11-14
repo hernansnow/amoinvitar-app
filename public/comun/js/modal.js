@@ -26,6 +26,8 @@
     abierto = { contenido: contenido, lugar: lugar, display: contenido.style.display, id: selector };
     cuerpo.appendChild(contenido);
     contenido.style.display = 'block';
+    // README (ronda 79): el álbum QR (Albunear) ocupa casi toda la pantalla, con su propio desplazamiento y una sola ✕
+    dialogo.classList.toggle('ai-modal-album', !!contenido.querySelector('.ai-qr-cuerpo'));
     // Iframes (mapa, álbum) que se cargan recién al abrir
     contenido.querySelectorAll('iframe[data-src]').forEach(function (f) { f.src = f.getAttribute('data-src'); f.removeAttribute('data-src'); });
     document.documentElement.classList.add('ai-modal-abierto');

@@ -310,7 +310,8 @@ export function canciones({ t, v }) {
 
 // ── Álbum de fotos (Albunear) en un modal ─────────────────────────────
 export function albumQr({ t, v }) {
-  // README (ronda 45): una sola ventana: Albunear embebido (sin su marco ni su scroll propio) y el modal sin scroll
+  // README (ronda 45): una sola ventana: Albunear embebido (sin su marco) · README (ronda 79): el modal ocupa casi toda la
+  // pantalla y el álbum se desplaza dentro (modal.js le pone .ai-modal-album)
   const src = v.album.url && /albunear\.com\/demo/.test(v.album.url) && !/[?&]embed=/.test(v.album.url) ? `${v.album.url}&embed=1` : v.album.url;
   if (!src) return '';
   return `
@@ -318,7 +319,7 @@ export function albumQr({ t, v }) {
   <div class="modal-dialog modal-dialog-centered ai-qr-dialogo" role="document">
     <div class="modal-content ai-qr-contenido">
       <button type="button" class="close ai-qr-x" data-dismiss="modal" aria-label="${esc(t('boton.cerrar'))}"><span aria-hidden="true">&times;</span></button>
-      <div class="modal-body p-0 ai-qr-cuerpo"><iframe data-src="${esc(src)}" src="about:blank" loading="lazy" title="${esc(t('album.titulo'))}" width="100%" frameborder="0" scrolling="no"></iframe></div>
+      <div class="modal-body p-0 ai-qr-cuerpo"><iframe data-src="${esc(src)}" src="about:blank" loading="lazy" title="${esc(t('album.titulo'))}" width="100%" frameborder="0"></iframe></div>
     </div>
   </div>
 </div>`;
