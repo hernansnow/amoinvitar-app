@@ -520,21 +520,38 @@ function vistaMensajes() {
 function vistaCanciones() {
   const lista = (respuestas || []).filter((r) => r.tipo === 'cancion').map((x) => ({ cancion: x.datos.cancion || '', nombre: x.datos.nombre || '', fecha: x.creado }));
   if (!lista.length) return [tarjeta('Canciones', ctx.el('p', { class: 'ayuda' }, 'Todavía no hay canciones sugeridas.'))];
+  // README (ronda 81): pasar las canciones a Spotify va con Deluxe (el plan que trae la playlist de Spotify en la invitación).
+  // En los otros planes los botones se ven apagados y al tocarlos explican por qué.
+  const deluxe = ctx.S.plan?.plan === 'deluxe';
+  const AVISO = 'La playlist de Spotify viene con el plan Deluxe: con Deluxe se pasan las canciones sugeridas a Spotify y la playlist se muestra en la invitación.';
+  const bloqueado = (texto) => ctx.el('button', { type: 'button', class: 'btn btn-chico btn-sec ad-bloq', 'aria-disabled': 'true', title: AVISO, onclick: () => ctx.aviso(AVISO) }, ctx.el('span', { 'aria-hidden': 'true' }, '🔒 '), ctx.el('span', {}, texto));
+  const spotify = (c) => (deluxe ? enlace('Spotify', `https://open.spotify.com/search/${encodeURIComponent(c.cancion)}`, 'btn btn-chico btn-sec') : bloqueado('Spotify'));
+  const texto = () => lista.map((c) => c.cancion).join('\n');
+  const linkPlaylist = ctx.datos.playlist?.link;
+  const actualizar = async (b) => {
+    b.disabled = true;
+    try { const r = await ctx.api('/playlist', { method: 'POST', body: '{}' }); ctx.aviso(r.cambio ? `Listo: la invitación ya muestra la playlist actualizada (${r.cantidad} canciones).` : 'La invitación ya mostraba la playlist al día.'); }
+    catch (e) { ctx.aviso(e.message, true); } finally { b.disabled = false; }
+  };
   return [tarjeta(`Canciones sugeridas (${lista.length})`,
-    ctx.el('p', { class: 'ayuda' }, 'Con "Spotify" se abre la búsqueda de cada canción para sumarla a una playlist con un toque.'),
+    deluxe ? null : ctx.el('p', { class: 'ad-aviso-plan' }, ctx.el('span', { 'aria-hidden': 'true' }, '🔒 '), ctx.el('span', {}, AVISO)),
+    ctx.el('p', { class: 'ayuda' }, deluxe ? 'Con "Spotify" se abre la búsqueda de cada canción para sumarla a la playlist con un toque. La invitación toma sola las canciones nuevas de la playlist (puede tardar hasta 30 minutos) o al momento con "Actualizar la playlist de la invitación".' : 'Se pueden descargar o copiar todas las canciones.'),
     ctx.el('div', { class: 'ad-botones' },
       boton('Descargar (Excel)', () => descargarCSV('canciones.csv', ['Canción', 'Invitado', 'Fecha'], lista.map((c) => [c.cancion, c.nombre, fechaHora(c.fecha)])), 'btn btn-sec btn-chico'),
-      boton('Copiar la lista', () => copiar(lista.map((c) => c.cancion).join('\n'), 'Lista copiada'), 'btn btn-sec btn-chico')),
-    ctx.el('details', { class: 'ad-plantilla' }, ctx.el('summary', {}, 'Pasar todas a una playlist de Spotify'),
+      boton('Copiar la lista', () => copiar(texto(), 'Lista copiada'), 'btn btn-sec btn-chico'),
+      deluxe && linkPlaylist ? (() => { const b = boton('Actualizar la playlist de la invitación', () => actualizar(b), 'btn btn-chico'); return b; })() : null),
+    deluxe ? ctx.el('details', { class: 'ad-plantilla' }, ctx.el('summary', {}, 'Pasar todas a una playlist de Spotify'),
       ctx.el('ol', { class: 'ad-pasos' },
-        ctx.el('li', {}, 'Tocar "Copiar y abrir TuneMyMusic" (se copian todas las canciones).'),
-        ctx.el('li', {}, 'Allá elegir "Pegar texto" como origen y pegar la lista.'),
-        ctx.el('li', {}, 'Elegir Spotify como destino, entrar con la cuenta propia y listo: queda una playlist nueva.')),
-      ctx.el('div', { class: 'ad-botones' }, boton('Copiar y abrir TuneMyMusic', async () => {
-        await copiar(lista.map((c) => c.cancion).join('\n'), 'Lista copiada'); window.open('https://www.tunemymusic.com/es/transfer', '_blank', 'noopener');
-      }, 'btn btn-chico'))),
+        ctx.el('li', {}, 'Tocar "Copiar y abrir Spotlistr" (se copian todas las canciones).'),
+        ctx.el('li', {}, 'Pegar la lista en el cuadro, buscar y entrar con la cuenta de Spotify.'),
+        ctx.el('li', {}, 'Revisar las canciones encontradas y guardarlas como playlist.'),
+        ctx.el('li', {}, 'Para que sea la de la invitación: pegar el link de esa playlist en Editar invitación → Playlist de Spotify.')),
+      ctx.el('div', { class: 'ad-botones' },
+        boton('Copiar y abrir Spotlistr', async () => { await copiar(texto(), 'Lista copiada'); window.open('https://www.spotlistr.com/search/textbox', '_blank', 'noopener'); }, 'btn btn-chico'),
+        boton('Otra opción: TuneMyMusic', async () => { await copiar(texto(), 'Lista copiada'); window.open('https://www.tunemymusic.com/es/transfer', '_blank', 'noopener'); }, 'btn btn-chico btn-sec')))
+      : ctx.el('div', { class: 'ad-botones' }, bloqueado('Pasar todas a una playlist de Spotify')),
     ctx.el('ul', { class: 'ad-canciones' }, lista.map((c) => ctx.el('li', {}, ctx.el('span', {}, `🎵 ${c.cancion}`, c.nombre ? ctx.el('small', {}, ` · ${c.nombre}`) : null),
-      ctx.el('span', { class: 'ad-acciones' }, ctx.el('small', {}, fechaHora(c.fecha)), enlace('Spotify', `https://open.spotify.com/search/${encodeURIComponent(c.cancion)}`, 'btn btn-chico btn-sec'))))))];
+      ctx.el('span', { class: 'ad-acciones' }, ctx.el('small', {}, fechaHora(c.fecha)), spotify(c))))))];
 }
 
 // Mesas: los invitados de la lista con su número de mesa; croquis con un asiento por persona

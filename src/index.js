@@ -309,7 +309,7 @@ async function saveTheDate(env, url, request, id) {
 }
 
 // ── Invitación publicada (con su seguridad) ───────────────────────────
-async function publicada(env, url, request, tipo, slug) {
+async function publicada(env, url, request, tipo, slug, ctx = null) {
   const almacen = almacenDe(env);
   const ev = await almacen.eventoPorSlug(tipo, slug);
   if (!ev || ev.estado !== 'publicado') return null;
@@ -323,6 +323,11 @@ async function publicada(env, url, request, tipo, slug) {
     const t = traductor(ev.tipo, v, ev.datos.textos);
     return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca, estilos: await estilosModelo(env, ev, url) }),
       acc.pantalla === 'pin' ? 401 : 403, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
+  }
+  const pl = ev.datos.playlist;
+  if (pl?.link && Date.now() - (Number(pl.leidoEn) || 0) > REFRESCO_PLAYLIST && ctx?.waitUntil) {
+    pl.leidoEn = Date.now(); // para no pedirlo dos veces mientras tanto
+    ctx.waitUntil(refrescarPlaylist(env, ev.id).catch((e) => console.error('playlist', e)));
   }
   const evento = paraMotor(ev);
   if (await aforoLleno(almacen, ev)) evento.rsvp = { ...(evento.rsvp || {}), lleno: true };
@@ -733,16 +738,29 @@ const TIPOS_ARCHIVO = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 
 // README (ronda 64): las fotos llegan achicadas desde el panel; más de 2 MB es una foto sin achicar
 const MAX_MB = { mp3: 12, mp4: 40, jpg: 2, png: 2, webp: 2 };
 
-// Playlist de Spotify: se lee la lista de canciones una vez por link
-async function leerSpotify(datos) {
+// Playlist de Spotify: se lee la lista de canciones al cambiar el link (o forzada: para traer las canciones nuevas)
+async function leerSpotify(datos, forzar = false) {
   const pl = datos.playlist;
   if (!pl) return;
-  if (!pl.link) { for (const k of ['pistas', 'cantidad', 'minutos', 'nombre', 'leidoDe']) delete pl[k]; return; }
-  if (pl.leidoDe === pl.link) return;
+  if (!pl.link) { for (const k of ['pistas', 'cantidad', 'minutos', 'nombre', 'leidoDe', 'leidoEn']) delete pl[k]; return; }
+  if (pl.leidoDe === pl.link && !forzar) return;
   const r = await leerPlaylist(pl.link, { fetch: (u, o) => fetch(u, { ...o, signal: AbortSignal.timeout(5000) }) }).catch(() => null);
   if (r) Object.assign(pl, { pistas: r.pistas, cantidad: r.cantidad, minutos: r.minutos, nombre: r.nombre });
-  else for (const k of ['pistas', 'cantidad', 'minutos', 'nombre']) delete pl[k];
-  pl.leidoDe = pl.link;
+  else if (!forzar) for (const k of ['pistas', 'cantidad', 'minutos', 'nombre']) delete pl[k]; // al refrescar, si Spotify no responde queda la lista anterior
+  pl.leidoDe = pl.link; pl.leidoEn = Date.now();
+  return !!r;
+}
+// README (ronda 81): las canciones que se suman a la playlist en Spotify aparecen solas en la invitación: al abrirla, si la
+// lista se leyó hace más de 30 minutos, se vuelve a leer (sin demorar la página) y se guarda solo la playlist
+const REFRESCO_PLAYLIST = 30 * 60 * 1000;
+async function refrescarPlaylist(env, id) {
+  const almacen = almacenDe(env);
+  const ev = await almacen.evento(id);
+  if (!ev?.datos.playlist?.link) return { ok: false };
+  const antes = JSON.stringify(ev.datos.playlist.pistas || []);
+  const ok = await leerSpotify(ev.datos, true);
+  await almacen.guardarEvento(ev);
+  return { ok, cambio: JSON.stringify(ev.datos.playlist.pistas || []) !== antes };
 }
 
 // Link de Google Maps de cada lugar → lo que necesita el mapa (se lee una vez por link)
@@ -836,6 +854,9 @@ async function apiPanel(env, request, url, partes) {
       else if (prev?.generada && limpio[clase]?.tarjeta) Object.assign(limpio[clase].tarjeta, { generada: prev.generada, generadaEn: prev.generadaEn });
     }
     await leerMapas(limpio);
+    // README (ronda 81): con el mismo link, la lista leída de Spotify la manda el servidor (el panel puede traer una vieja)
+    const plAntes = ev.datos.playlist;
+    if (plAntes?.link && limpio.playlist && limpio.playlist.link === plAntes.link) for (const k of ['pistas', 'cantidad', 'minutos', 'nombre', 'leidoDe', 'leidoEn']) { if (k in plAntes) limpio.playlist[k] = plAntes[k]; else delete limpio.playlist[k]; }
     await leerSpotify(limpio);
     if (limpio.slug && limpio.slug !== ev.slug) {
       if (await slugTomado(env, almacen, ev.tipo, limpio.slug, ev.id)) return json({ error: 'slug', ...(await sugerirSlug(env, almacen, ev, limpio.slug)) }, 409);
@@ -1061,6 +1082,14 @@ async function apiPanel(env, request, url, partes) {
     return json({ ok: true });
   }
   if (accion === 'respuestas') return json({ respuestas: await almacen.respuestas(ev.id) });
+  // README (ronda 81): «Actualizar la playlist de la invitación» (trae ya las canciones nuevas de Spotify)
+  if (accion === 'playlist' && request.method === 'POST') {
+    if (!ev.datos.playlist?.link) return json({ error: 'La invitación no tiene una playlist de Spotify.' }, 400);
+    const { ok, cambio } = await refrescarPlaylist(env, ev.id);
+    if (!ok) return json({ error: 'No pudimos leer la playlist en Spotify. Revisar que sea pública y probar de nuevo en unos minutos.' }, 502);
+    const nuevo = await almacen.evento(ev.id);
+    return json({ ok: true, cambio, cantidad: nuevo.datos.playlist?.cantidad || 0, playlist: nuevo.datos.playlist });
+  }
   // Administración: textos de los mensajes de WhatsApp y asientos por mesa
   // Álbum de fotos: con Deluxe viene el Classic de Albunear sin cargo (un código de regalo por invitación,
   // pedido al Worker de Albunear por el enlace interno). Cuando el álbum ya está creado, su link pasa a la invitación.
@@ -1293,7 +1322,7 @@ export default {
     ctx.waitUntil(admin.tareas(controller, env).catch((e) => console.error('[tareas]', e)));
   },
 
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const partes = url.pathname.split('/').filter(Boolean);
     const [p0, p1] = partes;
@@ -1392,7 +1421,7 @@ export default {
       if (p0 === 'acceso' && partes.length === 2 && request.method === 'POST') return await entrarConPin(env, request, p1);
       if (p0 === 'acceso' && partes.length === 3 && partes[2] === 'dueno') return await entrarDueno(env, request, url, p1);
       if (partes.length === 2 && /^[a-z0-9-]+$/.test(p0) && /^[a-z0-9-]+$/.test(p1)) {
-        const r = await publicada(env, url, request, p0, p1);
+        const r = await publicada(env, url, request, p0, p1, ctx);
         if (r) return r;
       }
     } catch (err) {
