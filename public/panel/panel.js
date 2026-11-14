@@ -1672,17 +1672,46 @@ function dibujarPaso() {
 }
 
 // Borrador sin cuenta: invitar a guardarlo con Google (o con el mail) para no perderlo
+// README (ronda 83): «Guardar mi invitación»: sin cuenta, se pide el mail en cualquier paso (con la opción de recibir
+// novedades, sin marcar) y llega el link para volver desde cualquier dispositivo. «Ahora no» la esconde 3 días.
 function banderaGuardar() {
-  if (S.usuario || S.evento.paquete !== 'borrador' || pasoActual !== S.esquema.pasos[0]) return null;
-  try { if (localStorage.getItem(`ai-guardar-${id}`) === 'no') return null; } catch { /* sin almacenamiento */ }
+  if (S.usuario || S.volvio?.contacto || S.evento.paquete !== 'borrador' || S.evento.estado === 'publicado' || S.empresa) return null;
+  try { if (Date.now() - Number(localStorage.getItem(`ai-guardar-${id}`) || 0) < 3 * 86400000) return null; } catch { /* sin almacenamiento */ }
   const siguiente = `${location.pathname}?vincular=1${location.hash}`;
-  const caja = el('div', { class: 'tarjeta guardar-cuenta' },
-    el('p', {}, 'Lo que vas cargando se guarda solo en este navegador. Para seguir desde otro dispositivo, guardar la invitación en una cuenta:'),
+  const mail = el('input', { type: 'email', required: true, autocomplete: 'email', placeholder: 'email@gmail.com', 'aria-label': 'Mail' });
+  const promos = el('input', { type: 'checkbox' });
+  let caja;
+  const enviar = async (e) => {
+    e.preventDefault();
+    const b = caja.querySelector('button[type=submit]'); b.disabled = true;
+    try {
+      const r = await api('/contacto', { method: 'POST', body: JSON.stringify({ email: mail.value, promos: promos.checked, idioma: window.AI_REGIONAL?.clave?.() || 'es' }) });
+      S.volvio = { ...(S.volvio || {}), contacto: true };
+      caja.replaceChildren(el('p', { class: 'guardada' }, '✓ ', el('span', {}, 'Invitación guardada. Llegó un mail a'), ` ${r.contacto.email} `, el('span', {}, 'con el link para volver cuando se quiera.')));
+    } catch (err) { aviso(err.message, true); b.disabled = false; }
+  };
+  caja = el('form', { class: 'tarjeta guardar-cuenta', onsubmit: enviar },
+    el('p', { class: 'guardar-titulo' }, el('strong', {}, 'Guardar mi invitación')),
+    el('p', {}, 'Para no perder lo cargado y seguir desde cualquier celular o computadora, dejar un mail: llega el link para volver.'),
+    el('div', { class: 'guardar-fila' }, mail, el('button', { type: 'submit', class: 'btn' }, 'Guardar')),
+    el('label', { class: 'guardar-promos' }, promos, el('span', {}, 'Quiero recibir novedades y descuentos de Amo Invitar!')),
     el('div', { class: 'botones' },
-      el('a', { class: 'btn btn-google', href: `/auth/google?siguiente=${encodeURIComponent(siguiente)}`, html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.4h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.7Z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3a7.2 7.2 0 0 1-10.8-3.8h-4v3.1A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6h-4a12 12 0 0 0 0 10.8l4-3.1Z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 0 0 1.3 6.6l4 3.1A7.2 7.2 0 0 1 12 4.8Z"/></svg><span>Guardar con Google</span>' }),
-      el('a', { class: 'btn btn-sec', href: `/entrar?siguiente=${encodeURIComponent(siguiente)}` }, 'Con mi mail'),
-      el('button', { type: 'button', class: 'btn-link', onclick: () => { try { localStorage.setItem(`ai-guardar-${id}`, 'no'); } catch { /* nada */ } caja.remove(); } }, 'Ahora no')));
+      el('a', { class: 'btn-link chico', href: `/auth/google?siguiente=${encodeURIComponent(siguiente)}` }, 'O guardarla en una cuenta con Google'),
+      el('button', { type: 'button', class: 'btn-link chico', onclick: () => { try { localStorage.setItem(`ai-guardar-${id}`, String(Date.now())); } catch { /* nada */ } caja.remove(); } }, 'Ahora no')));
   return caja;
+}
+
+// README (ronda 83): al volver al panel después de unos días sin terminarla, un aviso para ofrecer ayuda por WhatsApp
+function ayudaAlVolver() {
+  const wa = whatsapp();
+  if (!wa || S.evento.estado === 'publicado' || (S.volvio?.dias || 0) < 2) return;
+  try { if (sessionStorage.getItem(`ai-volvio-${id}`)) return; sessionStorage.setItem(`ai-volvio-${id}`, '1'); } catch { /* nada */ }
+  const caja = el('div', { class: 'aviso-volvio', role: 'status' },
+    el('p', {}, el('strong', {}, '¡Qué bueno verlos de nuevo!'), ' ', el('span', {}, 'Todo lo cargado sigue guardado. ¿Les ayudamos a terminarla? Con cualquier duda de diseño, textos o fotos, escribirnos y la terminamos juntos.')),
+    el('div', { class: 'botones' },
+      el('a', { class: 'btn btn-wa btn-chico', href: wa, target: '_blank', rel: 'noopener', html: `${ICONO_WA}<span>Escribir por WhatsApp</span>` }),
+      el('button', { type: 'button', class: 'btn-link chico', onclick: () => caja.remove() }, 'Cerrar')));
+  $('#formulario').before(caja);
 }
 
 // ── Plan y precio ─────────────────────────────────────────────────────
@@ -2150,6 +2179,7 @@ function recordarBorrador() {
   if (!S.evento.modelo) { $('#btn-ojo').hidden = true; $('#previa').remove(); document.body.classList.add('sin-previa'); }
   pintarPublicar();
   estado(S.evento.estado === 'publicado' ? 'Publicada' : 'Guardado ✓');
+  ayudaAlVolver();
   // README (ronda 58): miniatura para compartir desactualizada (otra fecha, otros nombres…) → se rearma y se guarda
   { const f = !S.esquema?.cerrada && firmaDeMiniatura(); if (f && f !== datos.miniatura?.firma && (datos.miniatura?.generada || datos.miniatura?.conTexto || !(datos.fotos?.portada || []).length)) { clearTimeout(guardarTimer); guardarTimer = setTimeout(guardar, 1500); } }
   // Publicada: el panel abre en la administración (siempre se puede volver a editar)

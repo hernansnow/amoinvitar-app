@@ -17,6 +17,7 @@ import { getRates, DESCUENTO_PAIS, COUNTRY_CURRENCY, CURRENCIES, CONFIG, cargarC
 import { getState, setState } from '../lib/verifactu.js';
 import { EXTRAS, PAQUETES, listaPrecios, clavesFijas, PRECIOS_ORIGINALES } from '../catalogo.js';
 import { sendEmail, mailFactura, mailPedidoListo, mailBorrador } from '../lib/email.js';
+import { contactoDe, linkBaja, configAuto, guardarConfigAuto, recordatoriosBorradores } from '../borradores.js';
 import { issueInvoice, getInvoice, invoiceUrl, invoicesEnabled } from '../lib/facturas.js';
 import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { cumplirPedido, ordenParaFactura } from './tienda.js';
@@ -218,14 +219,16 @@ export async function eventos(request, env) {
       (SELECT em.nombre FROM empresas em WHERE em.id = e.empresa_id) AS empresa,
       (SELECT COUNT(*) FROM respuestas r WHERE r.evento_id = e.id AND r.tipo = 'rsvp') AS respuestas,
       (SELECT value FROM app_state WHERE key = 'ingreso:' || e.id) AS ingreso,
-      (SELECT value FROM app_state WHERE key = 'mailborrador:' || e.id) AS mails
+      (SELECT value FROM app_state WHERE key = 'mailborrador:' || e.id) AS mails,
+      (SELECT value FROM app_state WHERE key = 'contacto:' || e.id) AS contacto
     FROM eventos e ${donde.length ? 'WHERE ' + donde.join(' AND ') : ''} ORDER BY e.actualizado DESC LIMIT ? OFFSET ?`, ...args, POR_PAGINA + 1, pag * POR_PAGINA);
   const out = rows.slice(0, POR_PAGINA).map((e) => {
     const d = JSON.parse(e.datos || '{}');
     return { id: e.id, producto: e.producto, tipo: e.tipo, modelo: e.modelo, paquete: e.paquete, estado: e.estado, slug: e.slug, nombres: nombresDe(d), fecha: fechaEvento(d) || null,
       vence: venceEvento({ ...e, datos: d }), venceManual: e.vence || null, clientes: e.clientes || '', empresa: e.empresa || null, respuestas: e.respuestas, extras: d.extras || [],
       link: e.estado === 'publicado' && e.slug ? `/${e.tipo}/${e.slug}` : null, actualizado: e.actualizado, creado: e.creado,
-      ingreso: e.ingreso || null, mails: (() => { try { return JSON.parse(e.mails || '[]'); } catch { return []; } })() };
+      ingreso: e.ingreso || null, mails: (() => { try { return JSON.parse(e.mails || '[]'); } catch { return []; } })(),
+      contacto: (() => { try { const c = JSON.parse(e.contacto || 'null'); return c ? { email: c.email, promos: !!c.promos, idioma: c.idioma } : null; } catch { return null; } })() };
   });
   return json({ eventos: out, pagina: pag, hayMas: rows.length > POR_PAGINA, extrasDisponibles: Object.entries(EXTRAS).map(([k, v]) => ({ id: k, nombre: v.nombre })) });
 }
@@ -243,6 +246,9 @@ export async function accionEvento(request, env, id, accion) {
     if (ev.estado === 'publicado') throw new HttpError(409, 'Ya está publicada.');
     const q = consulta(env);
     const clientes = (await q("SELECT u.email FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = ? AND a.rol = 'cliente'", ev.id)).map((x) => x.email).filter(Boolean);
+    // README (ronda 83): sin cuenta, el mail que dejó en «Guardar mi invitación»
+    const ct = await contactoDe(env, ev.id);
+    if (ct?.email && !clientes.includes(ct.email)) clientes.push(ct.email);
     const prueba = b.prueba === true;
     if (prueba && !u?.email) throw new HttpError(400, 'Para la prueba hay que entrar a la consola con el mail de administrador.');
     const para = prueba ? [u.email] : [];
@@ -255,12 +261,12 @@ export async function accionEvento(request, env, id, accion) {
     const sitio = String(env.SITE_URL || 'https://amoinvitar.com').replace(/\/$/, '');
     const url = `${sitio}/panel/${ev.id}?k=${ev.clave}`;
     for (const m of para) {
-      const baja = `${sitio}/baja?e=${encodeURIComponent(m)}&t=${await hmacHex(env.SECRETO_ACCESO || 'solo-para-pruebas-locales', `baja:${m.toLowerCase()}`)}`;
+      const baja = await linkBaja(env, m);
       await sendEmail(env, { to: m, ...mailBorrador(env, { asunto, titulo: titulo || asunto, texto, cupon, notaCupon: str(b.notaCupon, 120), boton: str(b.boton, 40), url, nombres: nombresDe(ev.datos), baja }) });
     }
     if (!prueba) {
       let hist = []; try { hist = JSON.parse((await getState(env, `mailborrador:${ev.id}`)) || '[]'); } catch { /* nada */ }
-      hist.push({ fecha: new Date().toISOString(), asunto, cupon: cupon || null, para });
+      hist.push({ fecha: new Date().toISOString(), asunto, cupon: cupon || null, para, tipo: 'manual' });
       await setState(env, `mailborrador:${ev.id}`, JSON.stringify(hist.slice(-20)));
       await registrar(env, u, 'evento.mail-borrador', objeto, { asunto, cupon: cupon || null, para });
     }
@@ -499,4 +505,15 @@ export async function plantillaBorrador(request, env) {
     texto: 'Vimos que empezaron a armar la invitación de {nombres} y quedó sin terminar.\n\nPara ayudarles a completarla les dejamos un descuento especial. Y si tienen cualquier duda (diseño, textos, fotos o cómo enviarla), pueden respondernos este mail y les ayudamos.',
     cupon: '', notaCupon: 'Válido por tiempo limitado', boton: 'Seguir con mi invitación',
   } });
+}
+
+// README (ronda 83): recordatorios automáticos a borradores (prender/apagar, días y cupón). POST con probar → corre ya
+export async function autoBorradores(request, env) {
+  await entrar(request, env);
+  if (request.method === 'POST') {
+    const b = await readJson(request).catch(() => ({}));
+    if (b.probar === true) return json(await recordatoriosBorradores(env));
+    return json({ ok: true, config: await guardarConfigAuto(env, b) });
+  }
+  return json({ config: await configAuto(env) });
 }

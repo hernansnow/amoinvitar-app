@@ -330,21 +330,43 @@
     api('/api/admin/plantilla-borrador').then(function (r) {
       var p = r.plantilla || {}, c = el('div', { style: 'display:grid;gap:8px' });
       var campo = function (n, l, v, tipo, extra) { var i = tipo === 'texto' ? el('textarea', { name: n, rows: 7 }) : el('input', Object.assign({ name: n }, extra || {})); i.value = v || ''; c.append(el('label', {}, [l, i])); return i; };
-      c.append(el('p', { class: 'meta', style: 'margin:0' }, 'Para: ' + (e.clientes || '—') + ' · {nombres} se cambia por «' + (e.nombres || '') + '». Párrafos separados con una línea en blanco.'));
-      if (e.mails && e.mails.length) c.append(el('p', { class: 'chico', style: 'margin:0' }, 'Ya enviados: ' + e.mails.map(function (m) { return fechaHora(m.fecha) + ' «' + m.asunto + '»' + (m.cupon ? ' (' + m.cupon + ')' : ''); }).join(' · ')));
+      var paraQuien = [e.clientes, e.contacto && e.contacto.email].filter(Boolean).join(', ');
+      c.append(el('p', { class: 'meta', style: 'margin:0' }, 'Para: ' + (paraQuien || '—') + ' · {nombres} se cambia por «' + (e.nombres || '') + '». Párrafos separados con una línea en blanco.'));
+      if (e.mails && e.mails.length) c.append(el('p', { class: 'chico', style: 'margin:0' }, 'Ya enviados: ' + e.mails.map(function (m) { return fechaHora(m.fecha) + (m.tipo && m.tipo.indexOf('auto') === 0 ? ' [automático]' : '') + ' «' + m.asunto + '»' + (m.cupon ? ' (' + m.cupon + ')' : ''); }).join(' · ')));
       var i = { asunto: campo('asunto', 'Asunto', p.asunto), titulo: campo('titulo', 'Título', p.titulo), texto: campo('texto', 'Texto', p.texto, 'texto'),
         cupon: campo('cupon', 'Cupón (opcional, tiene que existir en Cupones)', p.cupon, null, { placeholder: 'VUELVE10' }), notaCupon: campo('notaCupon', 'Nota del cupón', p.notaCupon), boton: campo('boton', 'Texto del botón (abre su panel)', p.boton) };
       var datos = function (extra) { var r = {}; Object.keys(i).forEach(function (k) { r[k] = i[k].value; }); return Object.assign(r, extra || {}); };
       c.append(el('div', { class: 'fila' }, [
         btn('Guardar como plantilla', 'sec', function (b) { accion(b, '/api/admin/plantilla-borrador', datos(), 'Plantilla guardada', function () { return Promise.resolve(); }); }),
         btn('Enviarme una prueba', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/mail-borrador', datos({ prueba: true }), 'Prueba enviada a tu mail', function () { return Promise.resolve(); }); }),
-        btn('Enviar al cliente', '', function (b) { if (confirm('¿Enviar el mail a ' + e.clientes + '?')) accion(b, '/api/admin/eventos/' + e.id + '/mail-borrador', datos(), 'Mail enviado ✓', function () { VISTAS.eventos = null; $('#dlg').close(); return Promise.resolve().then(pinta); }); })]));
+        btn('Enviar al cliente', '', function (b) { if (confirm('¿Enviar el mail a ' + paraQuien + '?')) accion(b, '/api/admin/eventos/' + e.id + '/mail-borrador', datos(), 'Mail enviado ✓', function () { VISTAS.eventos = null; $('#dlg').close(); return Promise.resolve().then(pinta); }); })]));
       ventana('Mail · ' + (e.nombres || e.id), c);
     }).catch(function (err) { aviso(err.message, true); });
+  }
+  // README (ronda 83): recordatorios automáticos a borradores (tarea diaria). Apagados hasta que se prenden acá.
+  function tarjetaAuto() {
+    var caja = el('details', { class: 'grupo', style: 'margin-bottom:14px' }, el('summary', { style: 'cursor:pointer;font-weight:bold' }, 'Recordatorios automáticos a borradores'));
+    api('/api/admin/auto-borradores').then(function (r) {
+      var c = r.config, num = function (n, v) { var i = el('input', { type: 'number', min: 1, max: 60, name: n, style: 'width:80px' }); i.value = v; return i; };
+      var act = el('input', { type: 'checkbox' }); act.checked = !!c.activo;
+      var d1 = num('dias1', c.dias1), d2 = num('dias2', c.dias2), dc = num('diasCupon', c.diasCupon), cup = el('input', { placeholder: 'VUELVE10', style: 'width:140px' }); cup.value = c.cupon || '';
+      var datos = function () { return { activo: act.checked, dias1: d1.value, dias2: d2.value, cupon: cup.value, diasCupon: dc.value }; };
+      caja.append(el('div', { style: 'display:grid;gap:8px;margin-top:10px' }, [
+        el('p', { class: 'meta', style: 'margin:0' }, 'A las invitaciones sin publicar que tienen mail (cuenta o «Guardar mi invitación»), en el idioma del cliente y con link de baja. Una vez por día. Solo borradores con movimiento en los últimos 30 días; nunca dos mails en menos de 3 días.'),
+        el('label', { style: 'display:flex;gap:8px;align-items:center' }, [act, 'Prendidos']),
+        el('div', { class: 'fila', style: 'margin:0;align-items:center;gap:8px' }, ['1.º «¿Seguimos? ¿Te ayudamos?» (sin cupón) a los', d1, 'días sin entrar']),
+        el('div', { class: 'fila', style: 'margin:0;align-items:center;gap:8px' }, ['2.º con el cupón', cup, 'a los', d2, 'días sin entrar · válido por', dc, 'días (va en el texto)']),
+        el('p', { class: 'chico', style: 'margin:0' }, 'Sin cupón no se manda el 2.º. El cupón tiene que existir en Cupones (conviene ponerle vencimiento).'),
+        el('div', { class: 'fila', style: 'margin:0' }, [
+          btn('Guardar', '', function (b) { accion(b, '/api/admin/auto-borradores', datos(), 'Guardado', function () { return Promise.resolve(); }); }),
+          btn('Correr ahora', 'sec', function (b) { accion(b, '/api/admin/auto-borradores', { probar: true }, null, function (r) { aviso(r.apagado ? 'Están apagados: prenderlos y guardar primero.' : 'Enviados: ' + r.enviados); VISTAS.eventos = null; return Promise.resolve().then(pinta); }); })])]));
+    }).catch(function (e) { caja.append(el('p', { class: 'chico' }, e.message)); });
+    return caja;
   }
   function vistaEventos() {
     var v = el('div'), f = FILTROS.eventos;
     v.append(el('h2', {}, 'Invitaciones'));
+    v.append(tarjetaAuto());
     v.append(buscador(f, [{ n: 'q', l: 'Buscar', ph: 'nombres, mail del cliente, link o código', ancho: true }, { n: 'estado', l: 'Estado', op: [['', 'Todos'], ['publicado', 'Publicadas'], ['borrador', 'Borradores'], ['en-diseno', 'En diseño']] }, { n: 'paquete', l: 'Plan', op: [['', 'Todos'], ['gratis', 'Gratis'], ['basic', 'Basic'], ['premium', 'Premium'], ['deluxe', 'Deluxe'], ['borrador', 'Sin plan']] }],
       function (r) { FILTROS.eventos = r; PAG.eventos = 0; VISTAS.eventos = null; pinta(); }));
     var d = VISTAS.eventos;
@@ -352,9 +374,9 @@
     if (!d.eventos.length) return append(v, vacio('No hay invitaciones con esos filtros.'));
     v.append(tabla(['Invitación', 'Cliente', 'Plan', 'Estado', 'Vence', ''], d.eventos.map(function (e) {
       return [el('div', {}, [el('strong', {}, e.nombres || '(sin nombre)'), el('div', { class: 'meta' }, e.tipo + ' · ' + (e.modelo || e.producto)), el('div', { class: 'chico' }, e.id + (e.empresa ? ' · ' + e.empresa : '') + ' · ' + e.respuestas + ' confirmaciones'),
-        el('div', { class: 'chico', title: 'Última vez que el cliente entró a su panel (sin contar al administrador)' }, 'Último ingreso: ' + fechaHora(e.ingreso) + (e.mails && e.mails.length ? ' · ✉ ' + e.mails.length + ' mail' + (e.mails.length > 1 ? 's' : '') + ' (' + fecha(e.mails[e.mails.length - 1].fecha) + ')' : ''))]), e.clientes || '—', tag(e.paquete, e.paquete === 'borrador' ? 'aviso' : ''), tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'), e.fecha ? el('div', {}, [fecha(e.vence), el('div', { class: 'chico' }, 'evento ' + fecha(e.fecha))]) : fecha(e.vence),
+        el('div', { class: 'chico', title: 'Última vez que el cliente entró a su panel (sin contar al administrador)' }, 'Último ingreso: ' + fechaHora(e.ingreso) + (e.mails && e.mails.length ? ' · ✉ ' + e.mails.length + ' mail' + (e.mails.length > 1 ? 's' : '') + ' (' + fecha(e.mails[e.mails.length - 1].fecha) + ')' : ''))]), (e.clientes || (e.contacto ? el('span', { title: 'Dejó su mail en «Guardar mi invitación» (sin cuenta)' + (e.contacto.promos ? ' · acepta novedades' : '') }, e.contacto.email + ' ✎') : '—')), tag(e.paquete, e.paquete === 'borrador' ? 'aviso' : ''), tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'), e.fecha ? el('div', {}, [fecha(e.vence), el('div', { class: 'chico' }, 'evento ' + fecha(e.fecha))]) : fecha(e.vence),
         el('div', { class: 'acciones' }, [btn('Editar', '', function () { fichaEvento(e, d.extrasDisponibles); }), el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel'),
-          e.estado !== 'publicado' && e.clientes ? btn('✉ Mail', 'sec', function () { ventanaMail(e); }) : null])];
+          e.estado !== 'publicado' && (e.clientes || e.contacto) ? btn('✉ Mail', 'sec', function () { ventanaMail(e); }) : null])];
     })));
     v.append(paginas(d.pagina, d.hayMas, function (n) { PAG.eventos = n; VISTAS.eventos = null; pinta(); }));
     return v;

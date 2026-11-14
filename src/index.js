@@ -57,6 +57,7 @@ import { marcaEfectiva, rolEnEmpresa, proDe, paseVigente, usarCredito, devolverC
 import { getCookie, hmacHex } from './lib/util.js';
 import { resolverMapa } from './lib/mapas.js';
 import { leerPlaylist } from './lib/spotify.js';
+import { guardarContacto, contactoDe } from './borradores.js';
 
 const PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
 const cache = new Map();
@@ -808,6 +809,13 @@ async function apiPanel(env, request, url, partes) {
   const esquema = await esquemaDe(env, url, ev, ev.datos, { admin });
 
   // README (ronda 82): la última vez que el cliente entró a su panel (el administrador no cuenta), para la consola
+  // README (ronda 83): días desde el ingreso anterior (para el aviso de ayuda al volver) y el mail que dejó al guardar
+  let ausente = 0, contacto = null;
+  if (!accion && request.method === 'GET') {
+    const previo = await env.DB?.prepare("SELECT value FROM app_state WHERE key = ?").bind(`ingreso:${ev.id}`).first().catch(() => null);
+    if (previo?.value) ausente = Math.floor((Date.now() - Date.parse(previo.value)) / 86400000) || 0;
+    contacto = await contactoDe(env, ev.id);
+  }
   if (!accion && request.method === 'GET' && !admin) {
     await env.DB?.prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = ?3")
       .bind(`ingreso:${ev.id}`, new Date().toISOString(), Date.now()).run().catch(() => {});
@@ -823,6 +831,7 @@ async function apiPanel(env, request, url, partes) {
     return json({
       evento: { id: ev.id, producto: ev.producto, tipo: ev.tipo, tipoNombre: nombreTipo(ev.tipo), modelo: ev.modelo, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, plural: esPlural(ev.tipo) },
       esquema, datos: origenAlbum(aplicarTipoAcceso(structuredClone(ev.datos))), textos: dic, faltan: faltantes(esquema, ev.datos),
+      volvio: { dias: admin ? 0 : ausente, contacto: !!contacto?.email }, // README (ronda 83)
       // Textos de cada idioma adicional (para traducir en el panel)
       textosIdiomas: Object.fromEntries(idiomasDe(ev.datos).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       // README (ronda 40): cómo se escriben las horas y fechas en el país del evento (para las tarjetas y los textos del panel)
@@ -1005,6 +1014,11 @@ async function apiPanel(env, request, url, partes) {
     ev.datos[clase] = { ...(ev.datos[clase] || {}), tarjeta: { ...actual, generada: imagen, generadaEn: new Date().toISOString() } };
     await almacen.guardarEvento(ev);
     return json({ ok: true, url: imagen });
+  }
+  // README (ronda 83): «Guardar mi invitación»: deja su mail (y si quiere novedades) y le llega el link para volver
+  if (accion === 'contacto' && request.method === 'POST') {
+    const c = await guardarContacto(env, ev, await request.json().catch(() => ({})));
+    return json({ ok: true, contacto: { email: c.email } });
   }
   // Guardar el borrador en la cuenta (después de entrar con Google o con el mail)
   if (accion === 'vincular' && request.method === 'POST') {
@@ -1393,6 +1407,7 @@ export default {
         if (p1 === 'admin' && partes[2] === 'facturas' && partes[3] && partes[4] === 'reenviar') return await sa.reenviarFactura(request, env, partes[3]);
         if (p1 === 'admin' && partes[2] === 'cupones') return await sa.cupones(request, env, partes[3], partes[4]);
         if (p1 === 'admin' && partes[2] === 'plantilla-borrador') return await sa.plantillaBorrador(request, env);
+        if (p1 === 'admin' && partes[2] === 'auto-borradores') return await sa.autoBorradores(request, env);
         if (p1 === 'admin' && partes[2] === 'eventos' && !partes[3]) return await sa.eventos(request, env);
         if (p1 === 'admin' && partes[2] === 'eventos' && partes[3] && partes[4]) return await sa.accionEvento(request, env, partes[3], partes[4]);
         if (p1 === 'admin' && partes[2] === 'usuarios') return await sa.usuarios(request, env, partes[3]);
