@@ -3,6 +3,15 @@
 App de invitaciones digitales en un Worker de Cloudflare (D1 + R2 + assets en `public/`). El cliente elige el modelo,
 lo personaliza en el panel y paga al publicar. Ver `README.md` (carpetas y cómo probar) y `docs/`.
 
+## Leer primero
+- **`docs/estado-y-novedades.md`**: qué está publicado, reglas del dueño, cómo están armados los modelos y los textos,
+  todo lo nuevo de las rondas 64–84, cómo probar y qué queda pendiente.
+- Rama de trabajo: `claude/login-tienda` (publicada). Publicar con `npx wrangler deploy` y avisar al dueño que purgue
+  la caché de Cloudflare.
+- Todo texto nuevo va en todos los idiomas (panel: `npm run panel:i18n` + `scripts/sitio/i18n/js-<idioma>.json` +
+  `npm run sitio`; invitaciones: `src/textos`).
+- Nunca pedir claves por el chat; los secretos los carga el dueño. No usar `pkill -f` para reiniciar el servidor local.
+
 ## Antes de tocar algo
 - **Web nueva (etapa 2)**: leer `docs/etapa-2-web.md` antes de crear páginas. Van en `public/sitio/` (se ven en la
   raíz), con sus archivos propios en `public/sitio/web/`. Está oculta en `app.amoinvitar.com` (`?vista=<SITIO_CLAVE>`).
