@@ -8,7 +8,7 @@
 //   GET  /api/admin/usuarios?q=  ·  GET /api/admin/usuarios/<id>
 //   GET  /api/admin/consultas    ·  POST /api/admin/consultas/<id>/estado
 //   GET  /api/admin/registro                                      lo que cambió el administrador
-import { json, readJson, str, randomId, HttpError, now } from '../lib/util.js';
+import { json, readJson, str, randomId, HttpError, now, hmacHex } from '../lib/util.js';
 import { requiereAdmin } from './admin.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { almacenD1 } from '../almacen.js';
@@ -16,7 +16,7 @@ import { crearUsuario } from '../lib/auth.js';
 import { getRates, DESCUENTO_PAIS, COUNTRY_CURRENCY, CURRENCIES, CONFIG, cargarConfig, olvidarConfig, PLANES_PROMO, PROMO_ITEMS, fijosVigentes } from '../lib/fx.js';
 import { getState, setState } from '../lib/verifactu.js';
 import { EXTRAS, PAQUETES, listaPrecios, clavesFijas, PRECIOS_ORIGINALES } from '../catalogo.js';
-import { sendEmail, mailFactura, mailPedidoListo } from '../lib/email.js';
+import { sendEmail, mailFactura, mailPedidoListo, mailBorrador } from '../lib/email.js';
 import { issueInvoice, getInvoice, invoiceUrl, invoicesEnabled } from '../lib/facturas.js';
 import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { cumplirPedido, ordenParaFactura } from './tienda.js';
@@ -216,13 +216,16 @@ export async function eventos(request, env) {
   const rows = await q(`SELECT e.id, e.producto, e.tipo, e.modelo, e.paquete, e.estado, e.slug, e.vence, e.empresa_id, e.creado, e.actualizado, e.datos,
       (SELECT GROUP_CONCAT(u.email, ', ') FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = e.id AND a.rol = 'cliente') AS clientes,
       (SELECT em.nombre FROM empresas em WHERE em.id = e.empresa_id) AS empresa,
-      (SELECT COUNT(*) FROM respuestas r WHERE r.evento_id = e.id AND r.tipo = 'rsvp') AS respuestas
+      (SELECT COUNT(*) FROM respuestas r WHERE r.evento_id = e.id AND r.tipo = 'rsvp') AS respuestas,
+      (SELECT value FROM app_state WHERE key = 'ingreso:' || e.id) AS ingreso,
+      (SELECT value FROM app_state WHERE key = 'mailborrador:' || e.id) AS mails
     FROM eventos e ${donde.length ? 'WHERE ' + donde.join(' AND ') : ''} ORDER BY e.actualizado DESC LIMIT ? OFFSET ?`, ...args, POR_PAGINA + 1, pag * POR_PAGINA);
   const out = rows.slice(0, POR_PAGINA).map((e) => {
     const d = JSON.parse(e.datos || '{}');
     return { id: e.id, producto: e.producto, tipo: e.tipo, modelo: e.modelo, paquete: e.paquete, estado: e.estado, slug: e.slug, nombres: nombresDe(d), fecha: fechaEvento(d) || null,
       vence: venceEvento({ ...e, datos: d }), venceManual: e.vence || null, clientes: e.clientes || '', empresa: e.empresa || null, respuestas: e.respuestas, extras: d.extras || [],
-      link: e.estado === 'publicado' && e.slug ? `/${e.tipo}/${e.slug}` : null, actualizado: e.actualizado };
+      link: e.estado === 'publicado' && e.slug ? `/${e.tipo}/${e.slug}` : null, actualizado: e.actualizado, creado: e.creado,
+      ingreso: e.ingreso || null, mails: (() => { try { return JSON.parse(e.mails || '[]'); } catch { return []; } })() };
   });
   return json({ eventos: out, pagina: pag, hayMas: rows.length > POR_PAGINA, extrasDisponibles: Object.entries(EXTRAS).map(([k, v]) => ({ id: k, nombre: v.nombre })) });
 }
@@ -235,6 +238,34 @@ export async function accionEvento(request, env, id, accion) {
   if (!ev) throw new HttpError(404, 'No existe esa invitación');
   const b = await readJson(request).catch(() => ({}));
   const objeto = `${ev.id} · ${nombresDe(ev.datos)}`;
+  // README (ronda 82): mail a quien dejó la invitación sin terminar (solo a los mails con cuenta y que no se dieron de baja)
+  if (accion === 'mail-borrador') {
+    if (ev.estado === 'publicado') throw new HttpError(409, 'Ya está publicada.');
+    const q = consulta(env);
+    const clientes = (await q("SELECT u.email FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = ? AND a.rol = 'cliente'", ev.id)).map((x) => x.email).filter(Boolean);
+    const prueba = b.prueba === true;
+    if (prueba && !u?.email) throw new HttpError(400, 'Para la prueba hay que entrar a la consola con el mail de administrador.');
+    const para = prueba ? [u.email] : [];
+    if (!prueba) for (const m of clientes) if (!(await getState(env, `baja:${m.toLowerCase()}`))) para.push(m);
+    if (!para.length) throw new HttpError(409, clientes.length ? 'El cliente se dio de baja de estos mails.' : 'Esta invitación no tiene un mail (se armó sin cuenta).');
+    const asunto = str(b.asunto, 140), titulo = str(b.titulo, 120), texto = str(b.texto, 3000);
+    if (!asunto || !texto) throw new HttpError(400, 'Faltan el asunto o el texto.');
+    const cupon = str(b.cupon, 40).toUpperCase();
+    if (cupon && !(await env.DB.prepare('SELECT 1 FROM cupones WHERE codigo = ? AND activo = 1').bind(cupon).first())) throw new HttpError(400, `No existe un cupón activo «${cupon}». Se crea en la pestaña Cupones.`);
+    const sitio = String(env.SITE_URL || 'https://amoinvitar.com').replace(/\/$/, '');
+    const url = `${sitio}/panel/${ev.id}?k=${ev.clave}`;
+    for (const m of para) {
+      const baja = `${sitio}/baja?e=${encodeURIComponent(m)}&t=${await hmacHex(env.SECRETO_ACCESO || 'solo-para-pruebas-locales', `baja:${m.toLowerCase()}`)}`;
+      await sendEmail(env, { to: m, ...mailBorrador(env, { asunto, titulo: titulo || asunto, texto, cupon, notaCupon: str(b.notaCupon, 120), boton: str(b.boton, 40), url, nombres: nombresDe(ev.datos), baja }) });
+    }
+    if (!prueba) {
+      let hist = []; try { hist = JSON.parse((await getState(env, `mailborrador:${ev.id}`)) || '[]'); } catch { /* nada */ }
+      hist.push({ fecha: new Date().toISOString(), asunto, cupon: cupon || null, para });
+      await setState(env, `mailborrador:${ev.id}`, JSON.stringify(hist.slice(-20)));
+      await registrar(env, u, 'evento.mail-borrador', objeto, { asunto, cupon: cupon || null, para });
+    }
+    return json({ ok: true, para, prueba });
+  }
   if (accion === 'plan') {
     const nuevo = str(b.paquete, 20);
     if (!Object.keys(PAQUETES).includes(nuevo) && nuevo !== 'borrador') throw new HttpError(400, 'Paquete desconocido');
@@ -450,4 +481,22 @@ export async function limpieza(request, env) {
   }
   await registrar(env, u, 'limpieza', null, { pedidos, facturas: borradas, invitaciones, reiniciada });
   return json({ ok: true, pedidos, facturas: borradas, invitaciones, reiniciada });
+}
+
+// README (ronda 82): plantilla del mail a borradores (la última que se guardó en la consola)
+export async function plantillaBorrador(request, env) {
+  await entrar(request, env);
+  if (request.method === 'POST') {
+    const b = await readJson(request).catch(() => ({}));
+    const p = { asunto: str(b.asunto, 140), titulo: str(b.titulo, 120), texto: str(b.texto, 3000), cupon: str(b.cupon, 40).toUpperCase(), notaCupon: str(b.notaCupon, 120), boton: str(b.boton, 40) };
+    await setState(env, 'plantilla_borrador', JSON.stringify(p));
+    return json({ ok: true, plantilla: p });
+  }
+  let p = null; try { p = JSON.parse((await getState(env, 'plantilla_borrador')) || 'null'); } catch { /* nada */ }
+  return json({ plantilla: p || {
+    asunto: 'Su invitación {nombres} está casi lista',
+    titulo: '¡Falta muy poco!',
+    texto: 'Vimos que empezaron a armar la invitación de {nombres} y quedó sin terminar.\n\nPara ayudarles a completarla les dejamos un descuento especial. Y si tienen cualquier duda (diseño, textos, fotos o cómo enviarla), pueden respondernos este mail y les ayudamos.',
+    cupon: '', notaCupon: 'Válido por tiempo limitado', boton: 'Seguir con mi invitación',
+  } });
 }

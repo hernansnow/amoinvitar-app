@@ -198,6 +198,10 @@ function pasosInvitacion({ tipo, modelo }) {
         // README (ronda 30): "Subtítulo"; en baby shower y revelación no se cambia (revelación tiene su "Frase de la portada")
         // README (ronda 44): subtítulo hasta 26 letras (para «WE'RE GETTING MARRIED!» y otros idiomas; con más de 15 se quitan las rayitas)
         ] : ['babyshower', 'revelacion'].includes(tipo) ? [] : [{ id: 'textos.portada.subtitulo', tipo: 'texto', etiqueta: 'Subtítulo', max: 26, base: 'portada.subtitulo', ancho: 'mitad', ayuda: tipo === 'boda' ? 'Por ejemplo "¡Nos casamos!", "Nuestra boda"…' : 'La frase debajo de los nombres.' }]),
+        // README (ronda 82): con la historia apagada (siempre en Gratis y Basic) la invitación muestra un saludo corto en su
+        // lugar: se edita acá, sin título y hasta 50 letras. Al prender la historia, el campo se va (va la historia).
+        { id: 'textos.bienvenida.texto', tipo: 'texto', etiqueta: 'Mensaje de bienvenida', max: 50, base: 'bienvenida.texto', si: { campo: 'secciones.historia', es: false },
+          ayuda: 'Una frase corta que va en lugar de la historia (sin título). Con la sección Historia prendida, va la historia.' },
         // Segunda línea de la portada en los diseños que la traen (la edad, la promoción…)
         ...(modelo.sepiaPortada ? [{ id: 'portada.color', tipo: 'switch', estilo: 'check', etiqueta: 'Portada en color', detalle: 'este diseño la muestra en sepia', si: siFotos('portada') }] : []),
         ...(modelo.ciudadPortada ? [{ id: 'portada.ciudad', tipo: 'texto', etiqueta: 'Ciudad (junto a la fecha)', max: 18, ancho: 'mitad', ayuda: 'Por ejemplo "Miami". Vacío, no se muestra.' }] : []),

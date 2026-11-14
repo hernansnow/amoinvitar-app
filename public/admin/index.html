@@ -8,6 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
 <link rel="stylesheet" href="/comun/fonts/google/jost.css">
 <style>
+  [hidden] { display: none !important; } /* README (ronda 82): el botón «Aceptar» oculto en las ventanas de fichas */
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; }
   * { box-sizing: border-box; }
   body { margin: 0; font: 16px/1.5 Jost, system-ui, sans-serif; color: var(--tinta); background: #f6f9f8; }
@@ -323,6 +324,24 @@
     c.append(el('div', { class: 'grupo' }, [el('h3', { style: 'color:#b3392c' }, 'Zona de riesgo'), el('div', { class: 'fila', style: 'margin:0' }, btn('Eliminar la invitación', 'mal', function (b) { if (confirm('Se borra TODO de esta invitación (datos, invitados, respuestas). No se puede deshacer. ¿Seguir?')) accion(b, '/api/admin/eventos/' + e.id + '/eliminar', { confirmo: true }, 'Eliminada', rec); }))]));
     ventana((e.nombres || e.id) + ' · ' + e.id, c);
   }
+  // README (ronda 82): mail a quien dejó la invitación sin terminar (texto editable, cupón opcional, prueba a mí primero)
+  var fechaHora = function (iso) { if (!iso) return '—'; var d = new Date(iso); return isNaN(d) ? '—' : d.toLocaleDateString('es-ES') + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }); };
+  function ventanaMail(e) {
+    api('/api/admin/plantilla-borrador').then(function (r) {
+      var p = r.plantilla || {}, c = el('div', { style: 'display:grid;gap:8px' });
+      var campo = function (n, l, v, tipo, extra) { var i = tipo === 'texto' ? el('textarea', { name: n, rows: 7 }) : el('input', Object.assign({ name: n }, extra || {})); i.value = v || ''; c.append(el('label', {}, [l, i])); return i; };
+      c.append(el('p', { class: 'meta', style: 'margin:0' }, 'Para: ' + (e.clientes || '—') + ' · {nombres} se cambia por «' + (e.nombres || '') + '». Párrafos separados con una línea en blanco.'));
+      if (e.mails && e.mails.length) c.append(el('p', { class: 'chico', style: 'margin:0' }, 'Ya enviados: ' + e.mails.map(function (m) { return fechaHora(m.fecha) + ' «' + m.asunto + '»' + (m.cupon ? ' (' + m.cupon + ')' : ''); }).join(' · ')));
+      var i = { asunto: campo('asunto', 'Asunto', p.asunto), titulo: campo('titulo', 'Título', p.titulo), texto: campo('texto', 'Texto', p.texto, 'texto'),
+        cupon: campo('cupon', 'Cupón (opcional, tiene que existir en Cupones)', p.cupon, null, { placeholder: 'VUELVE10' }), notaCupon: campo('notaCupon', 'Nota del cupón', p.notaCupon), boton: campo('boton', 'Texto del botón (abre su panel)', p.boton) };
+      var datos = function (extra) { var r = {}; Object.keys(i).forEach(function (k) { r[k] = i[k].value; }); return Object.assign(r, extra || {}); };
+      c.append(el('div', { class: 'fila' }, [
+        btn('Guardar como plantilla', 'sec', function (b) { accion(b, '/api/admin/plantilla-borrador', datos(), 'Plantilla guardada', function () { return Promise.resolve(); }); }),
+        btn('Enviarme una prueba', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/mail-borrador', datos({ prueba: true }), 'Prueba enviada a tu mail', function () { return Promise.resolve(); }); }),
+        btn('Enviar al cliente', '', function (b) { if (confirm('¿Enviar el mail a ' + e.clientes + '?')) accion(b, '/api/admin/eventos/' + e.id + '/mail-borrador', datos(), 'Mail enviado ✓', function () { VISTAS.eventos = null; $('#dlg').close(); return Promise.resolve().then(pinta); }); })]));
+      ventana('Mail · ' + (e.nombres || e.id), c);
+    }).catch(function (err) { aviso(err.message, true); });
+  }
   function vistaEventos() {
     var v = el('div'), f = FILTROS.eventos;
     v.append(el('h2', {}, 'Invitaciones'));
@@ -332,8 +351,10 @@
     if (!d) { cargaVista('eventos', '/api/admin/eventos?' + q(Object.assign({ pagina: PAG.eventos }, f))); return append(v, vacio('Cargando…')); }
     if (!d.eventos.length) return append(v, vacio('No hay invitaciones con esos filtros.'));
     v.append(tabla(['Invitación', 'Cliente', 'Plan', 'Estado', 'Vence', ''], d.eventos.map(function (e) {
-      return [el('div', {}, [el('strong', {}, e.nombres || '(sin nombre)'), el('div', { class: 'meta' }, e.tipo + ' · ' + (e.modelo || e.producto)), el('div', { class: 'chico' }, e.id + (e.empresa ? ' · ' + e.empresa : '') + ' · ' + e.respuestas + ' confirmaciones')]), e.clientes || '—', tag(e.paquete, e.paquete === 'borrador' ? 'aviso' : ''), tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'), e.fecha ? el('div', {}, [fecha(e.vence), el('div', { class: 'chico' }, 'evento ' + fecha(e.fecha))]) : fecha(e.vence),
-        el('div', { class: 'acciones' }, [btn('Editar', '', function () { fichaEvento(e, d.extrasDisponibles); }), el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel')])];
+      return [el('div', {}, [el('strong', {}, e.nombres || '(sin nombre)'), el('div', { class: 'meta' }, e.tipo + ' · ' + (e.modelo || e.producto)), el('div', { class: 'chico' }, e.id + (e.empresa ? ' · ' + e.empresa : '') + ' · ' + e.respuestas + ' confirmaciones'),
+        el('div', { class: 'chico', title: 'Última vez que el cliente entró a su panel (sin contar al administrador)' }, 'Último ingreso: ' + fechaHora(e.ingreso) + (e.mails && e.mails.length ? ' · ✉ ' + e.mails.length + ' mail' + (e.mails.length > 1 ? 's' : '') + ' (' + fecha(e.mails[e.mails.length - 1].fecha) + ')' : ''))]), e.clientes || '—', tag(e.paquete, e.paquete === 'borrador' ? 'aviso' : ''), tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'), e.fecha ? el('div', {}, [fecha(e.vence), el('div', { class: 'chico' }, 'evento ' + fecha(e.fecha))]) : fecha(e.vence),
+        el('div', { class: 'acciones' }, [btn('Editar', '', function () { fichaEvento(e, d.extrasDisponibles); }), el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel'),
+          e.estado !== 'publicado' && e.clientes ? btn('✉ Mail', 'sec', function () { ventanaMail(e); }) : null])];
     })));
     v.append(paginas(d.pagina, d.hayMas, function (n) { PAG.eventos = n; VISTAS.eventos = null; pinta(); }));
     return v;

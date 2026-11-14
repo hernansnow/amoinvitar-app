@@ -28,7 +28,7 @@ const sitio = (env) => String(env.SITE_URL || 'https://amoinvitar.com').replace(
 
 // README (ronda 39): los mails usan el verde principal del sitio (#4e9c87) en botones y links
 const enlaces = (h) => String(h).replace(/<a (?![^>]*style=)/g, '<a style="color:#4e9c87;font-weight:bold;text-decoration:underline" ');
-function plantilla(env, { titulo, lineas, boton, url, pie }) {
+function plantilla(env, { titulo, lineas, boton, url, pie, destacado, baja }) {
   lineas = (lineas || []).map(enlaces); pie = pie ? enlaces(pie) : pie;
   const s = sitio(env);
   const html = `<!doctype html><html><body style="margin:0;background:#f1efe9;font-family:Helvetica,Arial,sans-serif;color:#1f2421">
@@ -37,13 +37,17 @@ function plantilla(env, { titulo, lineas, boton, url, pie }) {
 <tr><td style="padding-bottom:22px"><img src="${s}/comun/img/amoinvitar-email.png" width="150" height="32" alt="Amo Invitar!" style="display:block;border:0"></td></tr>
 <tr><td style="font-size:22px;font-weight:bold;color:#2f6f5f;padding-bottom:12px">${escapeHtml(titulo)}</td></tr>
 ${lineas.map((l) => `<tr><td style="font-size:16px;line-height:1.55;padding-bottom:12px">${l}</td></tr>`).join('')}
+${destacado ? `<tr><td style="padding:6px 0 18px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef6f3;border:2px dashed #4e9c87;border-radius:14px"><tr><td align="center" style="padding:18px 12px">
+<div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#2f6f5f;padding-bottom:6px">${escapeHtml(destacado.rotulo)}</div>
+<div style="font-size:28px;font-weight:bold;letter-spacing:3px;color:#1f2421;font-family:'Courier New',monospace">${escapeHtml(destacado.codigo)}</div>
+${destacado.nota ? `<div style="font-size:13px;color:#6b706c;padding-top:6px">${escapeHtml(destacado.nota)}</div>` : ''}</td></tr></table></td></tr>` : ''}
 ${boton ? `<tr><td style="padding:12px 0 22px"><a href="${escapeHtml(url)}" style="display:inline-block;background:#4e9c87;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:999px">${escapeHtml(boton)}</a></td></tr>
 <tr><td style="font-size:13px;color:#6b706c;line-height:1.5;padding-bottom:12px">Si el botón no funciona, copiar este link en el navegador:<br><a href="${escapeHtml(url)}" style="color:#4e9c87;word-break:break-all">${escapeHtml(url)}</a></td></tr>` : ''}
 ${pie ? `<tr><td style="font-size:13px;color:#6b706c;padding-bottom:12px">${pie}</td></tr>` : ''}
 <tr><td style="font-size:13px;color:#6b706c;border-top:1px solid #f1efe9;padding-top:16px">El equipo de Amo Invitar!<br>${escapeHtml(env.SUPPORT_EMAIL || 'hola@amoinvitar.com')}</td></tr>
-</table></td></tr></table></body></html>`;
+</table>${baja ? `<p style="font-size:12px;color:#8a8f8b;margin:14px 0 0">Si no se quieren recibir más mails como este: <a href="${escapeHtml(baja)}" style="color:#8a8f8b">darse de baja</a>.</p>` : ''}</td></tr></table></body></html>`;
   const quitar = (x) => x.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
-  const text = [titulo, '', ...lineas.map(quitar), '', boton ? `${boton}: ${url}` : '', pie ? quitar(pie) : '', '', 'El equipo de Amo Invitar!'].join('\n');
+  const text = [titulo, '', ...lineas.map(quitar), destacado ? `\n${destacado.rotulo}: ${destacado.codigo}${destacado.nota ? ` (${destacado.nota})` : ''}\n` : '', boton ? `${boton}: ${url}` : '', pie ? quitar(pie) : '', '', 'El equipo de Amo Invitar!', baja ? `\nPara no recibir más mails como este: ${baja}` : ''].join('\n');
   return { html, text };
 }
 
@@ -249,3 +253,16 @@ export const mailCompraProPagada = (env, { numero, producto, url, urlFactura }) 
     boton: 'Abrir el tablero', url,
   }),
 });
+
+// README (ronda 82): mail de la consola a quien dejó una invitación sin terminar (texto editable, cupón opcional y baja)
+// {nombres} en el asunto o el texto se cambia por los nombres de la invitación.
+export const mailBorrador = (env, { asunto, titulo, texto, cupon, notaCupon, boton, url, nombres, baja }) => {
+  const poner = (x) => String(x || '').replaceAll('{nombres}', nombres || '');
+  const lineas = poner(texto).split(/\n{2,}/).map((p) => escapeHtml(p.trim()).replace(/\n/g, '<br>')).filter(Boolean);
+  return {
+    subject: poner(asunto),
+    ...plantilla(env, { titulo: poner(titulo), lineas, boton: boton || 'Seguir con mi invitación', url,
+      destacado: cupon ? { rotulo: 'Código de descuento', codigo: cupon, nota: notaCupon } : null, baja,
+      pie: '¿Alguna duda? Se puede responder este mail o escribirnos por WhatsApp y les ayudamos a terminarla.' }),
+  };
+};

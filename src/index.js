@@ -54,7 +54,7 @@ import * as profesionales from './rutas/profesionales.js';
 import * as sa from './rutas/superadmin.js';
 import * as empresaApi from './rutas/empresa.js';
 import { marcaEfectiva, rolEnEmpresa, proDe, paseVigente, usarCredito, devolverCredito } from './pro/empresa.js';
-import { getCookie } from './lib/util.js';
+import { getCookie, hmacHex } from './lib/util.js';
 import { resolverMapa } from './lib/mapas.js';
 import { leerPlaylist } from './lib/spotify.js';
 
@@ -215,6 +215,16 @@ async function renderGuardado(plantilla, vista, t, origen, extra) {
   const out = renderizar(plantilla, vista, t, { origen });
   if (clave) try { await cache.put(clave, new Response(out, { headers: { 'cache-control': 'public, max-age=604800', 'content-type': 'text/html; charset=utf-8' } })); } catch { /* nada */ }
   return out;
+}
+
+async function bajaMails(env, url) {
+  const e = String(url.searchParams.get('e') || '').trim().toLowerCase().slice(0, 200);
+  const ok = e && url.searchParams.get('t') === await hmacHex(secretoDe(env), `baja:${e}`);
+  if (ok) await env.DB.prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = ?3").bind(`baja:${e}`, new Date().toISOString(), Date.now()).run();
+  const msg = ok ? 'Listo: no van a llegar más mails de recordatorios ni promociones. Los avisos de los pedidos y de la invitación siguen llegando.' : 'El link no es válido.';
+  return html(`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Amo Invitar!</title></head>
+<body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#f1efe9;font-family:Helvetica,Arial,sans-serif;color:#1f2421;padding:20px">
+<main style="max-width:420px;background:#fff;border-radius:18px;padding:32px;text-align:center"><img src="/comun/img/amoinvitar-email.png" width="150" height="32" alt="Amo Invitar!"><p style="font-size:17px;line-height:1.5">${msg}</p><a href="/" style="color:#4e9c87;font-weight:bold">Ir a Amo Invitar!</a></main></body></html>`, ok ? 200 : 400, { 'cache-control': 'no-store', 'x-robots-tag': 'noindex' });
 }
 
 // ── Dominio propio (README ronda 38) ─────────────────────────────────
@@ -797,6 +807,11 @@ async function apiPanel(env, request, url, partes) {
   }
   const esquema = await esquemaDe(env, url, ev, ev.datos, { admin });
 
+  // README (ronda 82): la última vez que el cliente entró a su panel (el administrador no cuenta), para la consola
+  if (!accion && request.method === 'GET' && !admin) {
+    await env.DB?.prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = ?3")
+      .bind(`ingreso:${ev.id}`, new Date().toISOString(), Date.now()).run().catch(() => {});
+  }
   if (!accion && request.method === 'GET') {
     const v = variante(ev.datos.variante);
     const dic0 = conTextosModelo(diccionario(ev.tipo, v), ev.modelo ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null, v);
@@ -1296,7 +1311,7 @@ async function media(env, partes) {
 // ── Modo "Próximamente": con PREVIEW_KEY cargada, el público ve una página de espera ──
 // Se entra una vez por navegador con ?preview=CLAVE (queda 90 días). Salir: ?preview=salir.
 // Las invitaciones publicadas, las demos y los avisos de las pasarelas siguen funcionando.
-const SIEMPRE_ABIERTO = /^\/(empresa-demos\/|api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/agendar\.ics|api\/mesa|mesa\/|api\/puerta|puerta\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
+const SIEMPRE_ABIERTO = /^\/(baja$|empresa-demos\/|api\/(stripe|mp)\/webhook|api\/rsvp|api\/invitados\.csv|api\/agendar\.ics|api\/mesa|mesa\/|api\/puerta|puerta\/|acceso\/|factura\/|media\/|comun\/|modelos\/|demo\/|favicon)/;
 function proximamente(request, env, url) {
   // README (ronda 48): ABIERTO = '1' (wrangler.jsonc) abre todo al público: se pone el día de la mudanza
   if (String(env.ABIERTO || '') === '1') return null;
@@ -1377,6 +1392,7 @@ export default {
         if (p1 === 'admin' && partes[2] === 'pedidos' && partes[3] && partes[4] && partes[4] !== 'cobrado') return await sa.accionPedido(request, env, partes[3], partes[4]);
         if (p1 === 'admin' && partes[2] === 'facturas' && partes[3] && partes[4] === 'reenviar') return await sa.reenviarFactura(request, env, partes[3]);
         if (p1 === 'admin' && partes[2] === 'cupones') return await sa.cupones(request, env, partes[3], partes[4]);
+        if (p1 === 'admin' && partes[2] === 'plantilla-borrador') return await sa.plantillaBorrador(request, env);
         if (p1 === 'admin' && partes[2] === 'eventos' && !partes[3]) return await sa.eventos(request, env);
         if (p1 === 'admin' && partes[2] === 'eventos' && partes[3] && partes[4]) return await sa.accionEvento(request, env, partes[3], partes[4]);
         if (p1 === 'admin' && partes[2] === 'usuarios') return await sa.usuarios(request, env, partes[3]);
@@ -1399,6 +1415,8 @@ export default {
         if (p1 === 'eventos' && request.method === 'POST') return await crearEvento(env, request, url);
         return json({ error: 'no encontrado' }, 404);
       }
+      // README (ronda 82): baja de los mails de la consola (link firmado al pie de cada mail)
+      if (p0 === 'baja' && partes.length === 1) return await bajaMails(env, url);
       if (p0 === 'media') return await media(env, partes);
       if (p0 === 'recuerdo' && partes.length === 3 && ['pdf', 'web'].includes(partes[2])) return await descargaRecuerdo(env, request, url, partes[1], partes[2]);
       if (p0 === 'factura' && p1) return await admin.facturaCliente(request, env, p1);
