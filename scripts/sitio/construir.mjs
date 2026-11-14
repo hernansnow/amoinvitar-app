@@ -821,10 +821,10 @@ const LEGALES = [
 // fijos en legales/<idioma>/textos.json). Llevan el aviso de que, ante cualquier diferencia, vale la versión en español.
 const DIR_LEG = join(dirname(fileURLToPath(import.meta.url)), 'legales');
 const legalHtml = (slug, titulo, sub, cuerpo, T) => `<section class="cabecera-simple"><div class="caja"><span class="etiqueta">${T.etiqueta}</span><h1>${titulo}</h1><p class="lead">${sub}</p></div></section>
-<section class="seccion"><div class="caja"><article class="legal-txt"><p class="legal-fecha">${T.actualizado} ${slug === 'terminos-y-condiciones' ? T.fecha6 : T.fecha10}</p>${T.prevalece ? `\n<p class="legal-aviso"><em>${T.prevalece}</em></p>` : ''}
+<section class="seccion"><div class="caja"><article class="legal-txt"><p class="legal-fecha">${T.actualizado} ${slug === 'terminos-y-condiciones' ? T.fecha6 : slug === 'politica-de-privacidad' ? (T.fechaPriv || T.fecha10) : T.fecha10}</p>${T.prevalece ? `\n<p class="legal-aviso"><em>${T.prevalece}</em></p>` : ''}
 ${cuerpo}
 <p class="legal-otros">${T.otros} ${LEGALES.map(([s2]) => `<a href="/info/${s2}">${T.corto[s2]}</a>`).join(' · ')}</p></article></div></section>`;
-const T_ES = { etiqueta: 'Información legal', actualizado: 'Última actualización:', fecha6: '11 de noviembre de 2026', fecha10: '10 de noviembre de 2026', otros: 'Otros textos legales:',
+const T_ES = { etiqueta: 'Información legal', actualizado: 'Última actualización:', fecha6: '11 de noviembre de 2026', fecha10: '10 de noviembre de 2026', fechaPriv: '14 de noviembre de 2026', otros: 'Otros textos legales:',
   corto: { 'aviso-legal': 'Aviso legal', 'politica-de-privacidad': 'Privacidad', 'politica-de-cookies': 'Cookies', 'terminos-y-condiciones': 'Términos', 'politica-de-devoluciones': 'Devoluciones', rgpd: 'RGPD' } };
 for (const [slug, titulo, sub] of LEGALES) {
   const cuerpo = readFileSync(join(DIR_LEG, slug + '.html'), 'utf8');
