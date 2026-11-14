@@ -329,7 +329,10 @@ async function publicada(env, url, request, tipo, slug) {
   let invitado = acc.invitado;
   if (invitado) {
     // Cuándo abrió su link (el dueño mirando no cuenta) y lo que ya respondió, para poder cambiarlo
-    if (!acc.dueno) await almacen.visita(ev.id, invitado.codigo).catch(() => {});
+    // README (ronda 80): tampoco suman los ingresos de quien tiene acceso al panel (dueños, pareja, organizador) ni del administrador
+    const u = acc.dueno ? null : await usuarioActual(request, env).catch(() => null);
+    const delEquipo = acc.dueno || (u && (u.esAdmin || await almacen.tieneAcceso(ev.id, u.id).catch(() => false)));
+    if (!delEquipo) await almacen.visita(ev.id, invitado.codigo).catch(() => {});
     invitado = { ...invitado, respuesta: await almacen.respuestaDe(ev.id, invitado.codigo).catch(() => null), pase: !!ev.datos.admin?.checkin };
   }
   const r = await pagina(env, url, evento, { invitado, marca });

@@ -379,6 +379,8 @@ function vistaRespuestas() {
   const mesaDe = new Map((st.lista || []).map((i) => [i.codigo, i.mesa]));
   // En el celular, cada respuesta es una tarjeta (como en el panel anterior): nombre y estado arriba,
   // y debajo los datos en dos columnas
+  // README (ronda 80): cuántas veces abrió su link quien todavía no respondió (no cuentan los dueños ni el administrador)
+  const ingresos = (f) => (!f.fecha && f.invitado?.codigo ? ctx.el('small', { class: 'ad-ingresos', title: f.invitado.ultima ? `Última vez: ${fechaHora(f.invitado.ultima)}` : '' }, 'Ingresos:', ` ${Number(f.invitado.visitas) || 0}`) : null);
   const tarjetaResp = (f, cols) => {
     const dato = (l, v) => (v === '' || v == null ? null : ctx.el('div', { class: 'ad-dato' }, ctx.el('small', {}, l), ctx.el('span', {}, String(v))));
     const mesa = f.invitado?.mesa || mesaDe.get(f.datos.inv);
@@ -394,7 +396,7 @@ function vistaRespuestas() {
       ].filter(Boolean)),
       f.datos.mensaje ? ctx.el('p', { class: 'ad-resp-msg' }, `💬 “${f.datos.mensaje}”`) : null,
       f.datos.prueba ? ctx.el('span', { class: 'ad-prueba' }, 'Prueba ', ctx.el('button', { type: 'button', class: 'btn-link', onclick: () => borrar(f.id) }, 'Borrar')) : null,
-      !f.fecha && f.invitado?.codigo ? enlace('Recordar', wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), f.invitado), f.invitado.telefono), 'btn btn-chico btn-wa') : null);
+      !f.fecha && f.invitado?.codigo ? ctx.el('div', { class: 'ad-resp-pie' }, enlace('Recordar', wa(armarTexto(admin().textoRecordatorio || TEXTO_RECORDATORIO(), f.invitado), f.invitado.telefono), 'btn btn-chico btn-wa'), ingresos(f)) : null);
   };
   const visibles = () => {
     const q = buscar.value.trim().toLowerCase();
@@ -408,7 +410,7 @@ function vistaRespuestas() {
       ctx.el('tbody', {}, visibles().map((f) => ctx.el('tr', { class: `fila-${f.estado}` },
         ctx.el('td', {}, ctx.el('strong', {}, f.nombre), f.acomp.length ? ctx.el('small', {}, `${f.familia ? 'Van' : 'Con'}: ${f.acomp.join(', ')}`) : null,
           f.datos.prueba ? ctx.el('span', { class: 'ad-prueba' }, 'Prueba ', ctx.el('button', { type: 'button', class: 'btn-link', onclick: () => borrar(f.id) }, 'Borrar')) : null),
-        ctx.el('td', {}, ctx.el('span', { class: `ad-estado ${f.estado}` }, ESTADO[f.estado])),
+        ctx.el('td', {}, ctx.el('span', { class: `ad-estado ${f.estado}` }, ESTADO[f.estado]), ingresos(f)),
         ctx.el('td', {}, f.estado === 'si' ? String(f.personas) + (f.ninos ? ` + ${f.ninos} niños` : '') : '—'),
         ctx.el('td', {}, f.invitado?.mesa || mesaDe.get(f.datos.inv) || ''),
         cols.map(([k]) => ctx.el('td', {}, f.datos[k] || '')),

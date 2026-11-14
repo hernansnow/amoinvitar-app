@@ -1192,3 +1192,8 @@ body.ver-previa .btn-vista-flotante, body.modo-admin .btn-vista-flotante { displ
 
 /* README (ronda 78): «Activar álbum QR gratis», llamativo (color de Albunear) */
 .btn-alb-activar { display: block; width: 100%; margin: 6px 0 4px; font-weight: 700; box-shadow: 0 4px 14px rgba(128, 118, 96, .35); }
+
+/* README (ronda 80): «Ingresos: N» de los que no respondieron */
+.ad-resp-pie { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.ad-ingresos { font-size: .78rem; color: var(--suave, #6b7280); white-space: nowrap; }
+td .ad-ingresos { display: block; margin-top: 4px; }
