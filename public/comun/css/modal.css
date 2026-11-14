@@ -82,8 +82,10 @@
 
 /* README (ronda 79): álbum QR a pantalla casi completa; el iframe se desplaza solo y queda una única ✕ (la del modal) */
 .ai-modal.ai-modal-album { width: min(520px, calc(100vw - 16px)); height: calc(100dvh - 16px); max-height: calc(100dvh - 16px); }
-.ai-modal-album .ai-modal-tarjeta { height: 100%; max-height: none; padding: 0; overflow: hidden; }
+.ai-modal-album .ai-modal-tarjeta { box-sizing: border-box; height: 100%; max-height: none; padding: 44px 0 0; overflow: hidden; background: #fff; }
 .ai-modal-album .ai-modal-cuerpo, .ai-modal-album .ai-modal-cuerpo > .modal-content, .ai-modal-album .ai-qr-cuerpo { height: 100% !important; }
 .ai-modal-album .ai-qr-cuerpo iframe { display: block; width: 100%; height: 100%; border: 0; }
 .ai-modal-album .ai-qr-x { display: none !important; }
-.ai-modal-album .ai-modal-cerrar { background: rgba(255, 255, 255, .92); box-shadow: 0 2px 8px rgba(0, 0, 0, .18); }
+/* Cabecera blanca con la ✕: no pisa el selector de idioma ni la ayuda del álbum */
+.ai-modal-album .ai-modal-cerrar { top: 4px; right: 8px; width: 36px; height: 36px; background: rgba(0, 0, 0, .06); box-shadow: none; }
+.ai-modal-album .ai-qr-cuerpo iframe { border-radius: 0 0 20px 20px; }
