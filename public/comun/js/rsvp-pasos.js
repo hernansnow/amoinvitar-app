@@ -29,6 +29,58 @@ document.addEventListener('DOMContentLoaded', function () {
   function reiniciar() {
     r = vacio(); paso = 0;
     if (invitado && invitado.respuesta) resumen(); else dibujar();
+    tarjeta();
+  }
+  // README (ronda 78): si ya respondió, el botón dice «Cambiar mi respuesta»; si confirmó y el anfitrión activó el pase,
+  // la tarjeta del invitado (nombre, pases, mesa) pasa a ser su pase: al tocarla se abre el QR
+  function tarjeta() {
+    var x = invitado && invitado.respuesta;
+    if (!x) return;
+    document.querySelectorAll('[data-rsvp="boton"]').forEach(function (b) {
+      var abierto = b.dataset.textoAbierto, cerrado = b.dataset.textoCerrado;
+      var sinTags = function (x) { return String(x || '').replace(/<[^>]*>/g, '').trim(); };
+      if (!abierto || (cerrado && sinTags(b.innerHTML) === sinTags(cerrado))) return; // cerrado: queda como está
+      var icono = (abierto.match(/^\s*<i[^>]*><\/i>\s*/) || [''])[0];
+      var plano = abierto.replace(/<[^>]*>/g, '').trim();
+      var txt = t('textCambiar', 'Cambiar mi respuesta');
+      b.innerHTML = icono + (plano && plano === plano.toLocaleUpperCase() ? txt.toLocaleUpperCase() : txt);
+      b.dataset.cambiado = '1';
+    });
+    var bi = document.getElementById('bloque-invitado');
+    if (!bi || x.asiste !== 'Si' || !invitado.pase || !invitado.codigo || bi.querySelector('.rp-pase-tarjeta')) return;
+    bi.replaceChildren(h('button', { type: 'button', class: 'rp-pase-tarjeta', onclick: paseFlotante }, [
+      h('span', { class: 'rp-pase-icono', 'aria-hidden': 'true' }, '🎟️'),
+      h('span', { class: 'rp-pase-txt' }, [h('strong', {}, t('textPase', 'Mi pase de entrada')), h('span', {}, invitado.nombre)]),
+      h('span', { class: 'rp-pase-ver', 'aria-hidden': 'true' }, 'QR'),
+    ]));
+    bi.style.display = 'block';
+  }
+  function qrEn(caja) {
+    var link = location.origin + location.pathname + '?inv=' + encodeURIComponent(invitado.codigo);
+    var pintar = function () {
+      var q = window.qrcode(0, 'M'); q.addData(link); q.make();
+      var n = q.getModuleCount(), d = '';
+      for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) if (q.isDark(y, x)) d += 'M' + (x + 2) + ',' + (y + 2) + 'h1v1h-1z';
+      caja.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + (n + 4) + ' ' + (n + 4) + '" width="220" height="220" shape-rendering="crispEdges" role="img" aria-label="QR"><rect width="100%" height="100%" fill="#fff"/><path d="' + d + '" fill="#111"/></svg>';
+    };
+    if (window.qrcode) pintar();
+    else { var s = document.createElement('script'); s.src = '/comun/js/qrcode.js'; s.onload = pintar; document.head.appendChild(s); }
+  }
+  // El pase en una ventana propia, encima de la invitación
+  function paseFlotante() {
+    var caja = h('div', { class: 'rp-qr' }, '…');
+    var esc = function (e) { if (e.key === 'Escape') cerrar(); };
+    var capa;
+    var cerrar = function () { capa.remove(); document.removeEventListener('keydown', esc); };
+    capa = h('div', { class: 'rp-pase-capa', role: 'dialog', 'aria-modal': 'true', onclick: function (e) { if (e.target === capa) cerrar(); } }, [
+      h('div', { class: 'rp-pase-caja rp-pase' }, [
+        h('button', { type: 'button', class: 'rp-pase-cerrar', 'aria-label': t('textVolver', 'Volver'), onclick: cerrar }, '×'),
+        h('p', { class: 'rp-pregunta' }, t('textPase', 'Mi pase de entrada')), h('p', { class: 'rp-hola' }, invitado.nombre), datosInvitado(), caja,
+        h('p', { class: 'rp-ayuda' }, t('textPaseAyuda')),
+      ]),
+    ]);
+    document.body.appendChild(capa); document.addEventListener('keydown', esc);
+    qrEn(caja);
   }
   // Familia o grupo con un solo link: cada integrante dice si va
   function integrantes() { return invitado && invitado.integrantes && invitado.integrantes.length > 1 ? invitado.integrantes : null; }
@@ -65,18 +117,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   // Pase de entrada: el QR de su link personal, para que lo escaneen en la puerta
   function mostrarPase() {
-    var link = location.origin + location.pathname + '?inv=' + encodeURIComponent(invitado.codigo);
     var caja = h('div', { class: 'rp-qr' }, '…');
     form.replaceChildren(h('div', { class: 'rp-listo rp-pase' }, [h('p', { class: 'rp-pregunta' }, t('textPase', 'Mi pase de entrada')), h('p', { class: 'rp-hola' }, invitado.nombre), datosInvitado(), caja,
       h('p', { class: 'rp-ayuda' }, t('textPaseAyuda')), h('button', { type: 'button', class: 'rp-atras', onclick: reiniciar }, '← ' + t('textVolver', 'Volver'))]));
-    var pintar = function () {
-      var q = window.qrcode(0, 'M'); q.addData(link); q.make();
-      var n = q.getModuleCount(), d = '';
-      for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) if (q.isDark(y, x)) d += 'M' + (x + 2) + ',' + (y + 2) + 'h1v1h-1z';
-      caja.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + (n + 4) + ' ' + (n + 4) + '" width="220" height="220" shape-rendering="crispEdges" role="img" aria-label="QR"><rect width="100%" height="100%" fill="#fff"/><path d="' + d + '" fill="#111"/></svg>';
-    };
-    if (window.qrcode) pintar();
-    else { var s = document.createElement('script'); s.src = '/comun/js/qrcode.js'; s.onload = pintar; document.head.appendChild(s); }
+    qrEn(caja);
   }
 
   // ¿Cuántos acompañantes puede sumar?
@@ -264,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fd.set('labels', JSON.stringify(labels));
     btn.disabled = true; var original = btn.textContent; btn.textContent = t('textEnviando', 'Enviando…');
     var listo = function (prueba) {
-      if (invitado && invitado.codigo && !prueba) invitado.respuesta = Object.assign({ creado: new Date().toISOString() }, datos);
+      if (invitado && invitado.codigo && !prueba) { invitado.respuesta = Object.assign({ creado: new Date().toISOString() }, datos); tarjeta(); }
       form.replaceChildren(h('div', { class: 'rp-listo' }, [h('p', { class: 'rp-listo-icono', 'aria-hidden': 'true' }, r.asiste === 'Si' ? '🎉' : '💌'),
         h('p', {}, r.asiste === 'Si' ? t('msgOk') : t('msgNoAsiste')), prueba ? h('p', { class: 'rp-ayuda' }, t('msgPrueba', 'Vista previa: esta respuesta no se guarda.')) : null,
         r.asiste === 'Si' && invitado && invitado.pase && !prueba ? h('button', { type: 'button', class: 'rp-opcion', onclick: mostrarPase }, '🎟️ ' + t('textPase', 'Mi pase de entrada')) : null]));
@@ -287,6 +331,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // Cada vez que se abre, desde el principio (si todavía no envió)
   window.addEventListener('ai-modal-abierto', function (e) { if (e.detail && e.detail.id === '#confirmar-rsvp' && (!form.querySelector('.rp-listo') || (invitado && invitado.respuesta))) reiniciar(); });
   reiniciar();
+  // El botón lo pinta rsvp-fecha-fin-evento.js (abierto o cerrado): se repasa cuando terminó de cargar todo
+  window.addEventListener('load', tarjeta);
 });
 
 // ── Sugerir canciones (formulario de la sección Canciones) ──

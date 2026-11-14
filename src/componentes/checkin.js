@@ -77,7 +77,7 @@ export function checkinHTML({ id, t, nombres }) {
     var q = sinTildes($('#q').value.trim());
     var llegaron = gente.reduce(function (s, i) { return s + (i.llegaron || 0); }, 0);
     var esperan = gente.reduce(function (s, i) { return s + i.esperan; }, 0);
-    $('#c-llegaron').textContent = llegaron; $('#c-esperan').textContent = esperan; $('#c-faltan').textContent = Math.max(0, esperan - llegaron);
+    $('#c-llegaron').textContent = llegaron; $('#c-esperan').textContent = esperan; $('#c-faltan').textContent = Math.max(0, esperan - gente.reduce(function (t, i) { return t + (i.esperan ? Math.min(i.llegaron || 0, i.esperan) : 0); }, 0)); /* README (ronda 78): solo confirmados */
     var vis = gente.filter(function (i) {
       if (filtro === 'faltan' && (i.llegaron || !i.esperan)) return false;
       if (filtro === 'llegaron' && !i.llegaron) return false;
@@ -91,7 +91,7 @@ export function checkinHTML({ id, t, nombres }) {
     var d = document.createElement('div'); d.className = 'datos';
     var b = document.createElement('b'); b.textContent = i.nombre;
     var s = document.createElement('small');
-    s.textContent = [i.mesa ? 'Mesa ' + i.mesa : 'Sin mesa', i.respondio === 'No' ? 'Avisó que no va' : i.esperan + (i.esperan === 1 ? ' persona' : ' personas'), i.integrantes].filter(Boolean).join(' · ');
+    s.textContent = [i.mesa ? 'Mesa ' + i.mesa : 'Sin mesa', i.respondio === 'No' ? 'Avisó que no va' : !i.respondio ? 'Sin responder · ' + (i.posibles || 1) + ((i.posibles || 1) === 1 ? ' persona' : ' personas') : i.esperan + (i.esperan === 1 ? ' persona' : ' personas'), i.integrantes].filter(Boolean).join(' · ');
     if (i.respondio === 'No') s.className = 'no';
     d.append(b, s); li.append(d);
     if (i.llegaron) {
@@ -104,7 +104,7 @@ export function checkinHTML({ id, t, nombres }) {
       c.append(menos, n, mas); li.append(c);
     } else {
       var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn'; btn.textContent = 'Llegó';
-      btn.onclick = function () { marcar(i, Math.max(1, i.esperan)); };
+      btn.onclick = function () { marcar(i, Math.max(1, i.esperan || i.posibles || 1)); };
       li.append(btn);
     }
     return li;
@@ -113,10 +113,10 @@ export function checkinHTML({ id, t, nombres }) {
   function mostrarFicha(i) {
     var c = $('#ficha-cuerpo'); c.replaceChildren();
     var h = document.createElement('h2'); h.textContent = i.nombre; h.style.margin = '6px 0';
-    var p = document.createElement('p'); p.textContent = [i.mesa ? 'Mesa ' + i.mesa : 'Sin mesa', i.esperan + (i.esperan === 1 ? ' persona' : ' personas')].join(' · ');
+    var n = i.esperan || i.posibles || 1; var p = document.createElement('p'); p.textContent = [i.mesa ? 'Mesa ' + i.mesa : 'Sin mesa', (i.respondio ? '' : 'Sin responder · ') + n + (n === 1 ? ' persona' : ' personas')].join(' · ');
     var ya = document.createElement('p'); ya.textContent = i.llegaron ? '✓ Ya registrado (' + i.llegaron + ')' : (i.respondio === 'No' ? 'Había avisado que no iba' : ''); ya.style.color = '#4e9c87';
     var ok = document.createElement('button'); ok.className = 'btn'; ok.type = 'button'; ok.textContent = i.llegaron ? 'Listo' : 'Confirmar llegada';
-    ok.onclick = function () { if (!i.llegaron) marcar(i, Math.max(1, i.esperan)); $('#ficha').close(); abrirLector(); };
+    ok.onclick = function () { if (!i.llegaron) marcar(i, Math.max(1, i.esperan || i.posibles || 1)); $('#ficha').close(); abrirLector(); };
     var no = document.createElement('button'); no.className = 'btn sec'; no.type = 'button'; no.textContent = 'Cerrar'; no.style.marginLeft = '8px';
     no.onclick = function () { $('#ficha').close(); };
     c.append(h, p, ya, ok, no); $('#ficha').showModal();

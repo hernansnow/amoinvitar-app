@@ -1180,3 +1180,15 @@ body.ver-previa .btn-vista-flotante, body.modo-admin .btn-vista-flotante { displ
   .tabla-invitados tr > * { box-sizing: border-box; }
 }
 @supports (container-type: inline-size) { .envolver-tabla { overflow-x: clip; } }
+
+/* README (ronda 78): mesas: sin responder (posibles), vencidos en rojo y los que no van aparte */
+.ad-mesa li.ad-mesa-pend > span:nth-child(2) { color: var(--suave); }
+.ad-mesa li.ad-mesa-vencido > span:nth-child(2) { color: #b3261e; }
+.ad-mesa li.ad-mesa-vencido { background: #fdecea; border-radius: 6px; }
+.ad-mesa-etq { font-size: .75rem; } .ad-mesa-etq::before { content: ' · '; }
+.ad-no-van { margin-top: 14px; border: 1px dashed var(--borde); border-radius: 12px; padding: 10px 12px; }
+.ad-no-van summary { cursor: pointer; font-weight: 600; }
+.ad-no-van ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 2px; font-size: .9rem; color: var(--suave); }
+
+/* README (ronda 78): «Activar álbum QR gratis», llamativo (color de Albunear) */
+.btn-alb-activar { display: block; width: 100%; margin: 6px 0 4px; font-weight: 700; box-shadow: 0 4px 14px rgba(128, 118, 96, .35); }

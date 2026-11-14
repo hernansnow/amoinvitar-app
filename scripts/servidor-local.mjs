@@ -46,6 +46,8 @@ http.createServer(async (req, res) => {
   if (url.pathname === '/__tareas') { const esperar = []; await worker.scheduled({ cron: '0 4 * * *' }, env, { waitUntil: (p) => esperar.push(p) }); await Promise.all(esperar); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true, mails: env.ULTIMOS_MAILS.length })); }
   // README (ronda 52): probar la puerta interna para Albunear (Socios) sin el otro Worker: POST /__socios?m=<método> { … }
   if (url.pathname === '/__socios') { const { Socios } = await import('../src/socios.js'); let out; try { out = await new Socios({}, env)[url.searchParams.get('m')](JSON.parse(String(cuerpo || '{}'))); } catch (e) { out = { error: e.message }; } res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(out)); }
+  // README (ronda 78): solo en la compu, para probar: marca una invitación como publicada (y el plan) sin pasar por el pago
+  if (url.pathname === '/__publicar') { const id = url.searchParams.get('id'), slug = url.searchParams.get('slug') || id, paq = url.searchParams.get('paquete') || 'deluxe'; await env.DB.prepare("UPDATE eventos SET estado = 'publicado', slug = ?, paquete = ? WHERE id = ?").bind(slug, paq, id).run(); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true })); }
   if (url.pathname === '/__mails') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(env.ULTIMOS_MAILS)); }
   const request = new Request(url, { method: req.method, headers: req.headers, body: cuerpo, duplex: 'half' });
   // Como en Cloudflare (run_worker_first): todo pasa por el Worker, que sirve los archivos con ASSETS

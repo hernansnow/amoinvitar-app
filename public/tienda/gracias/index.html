@@ -27,9 +27,11 @@
       function poner(titulo, partes) {
         caja.replaceChildren();
         var h = document.createElement('h1'); h.textContent = titulo; caja.append(h);
-        partes.forEach(function (p) { caja.append(p); });
+        partes.forEach(function (p) { if (p) caja.append(p); });
       }
       function parrafo(t, clase) { var p = document.createElement('p'); p.textContent = t; if (clase) p.className = clase; return p; }
+      // README (ronda 78): Deluxe con la sección Álbum QR: botón llamativo (color de Albunear) a Administración → Álbum
+      function albumBoton(p) { if (!p.album) return null; var a = boton('📸 Activar álbum QR gratis', p.album); a.id = 'activar-album'; a.style.background = '#807660'; a.style.borderColor = '#807660'; a.style.color = '#fff'; a.style.fontWeight = '700'; a.style.boxShadow = '0 4px 14px rgba(128,118,96,.4)'; return a; }
       function boton(t, href) { var a = document.createElement('a'); a.className = 'btn btn-bloque'; a.style.marginTop = '10px'; a.textContent = t; a.href = href; a.id = 'abrir-panel'; return a; }
       var intentos = 0;
       function revisar() {
@@ -43,7 +45,7 @@
               return poner('¡Invitación publicada!', [
                 parrafo((p.numero && p.importe ? 'Pedido #' + p.numero + ' · ' : '') + p.producto, 'sub'),
                 parrafo('Ya está online en su link para compartir. Se puede seguir editando desde el panel. También llegó un mail a ' + p.email + ' con el acceso.'),
-                ver, p.panel ? boton('Volver al panel', p.panel) : boton('Entrar con el mail', '/entrar?siguiente=/mi-cuenta'),
+                ver, albumBoton(p), p.panel ? boton('Volver al panel', p.panel) : boton('Entrar con el mail', '/entrar?siguiente=/mi-cuenta'),
               ]);
             }
             if (p.estado === 'pagado') {

@@ -9,7 +9,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 // y el PIN con el botón contorneado.
 // README (ronda 73): misma tipografía (Abril Fatface y Jost) y color negro en todos los modelos; «estilos»
 // ya no se usa (en algunos modelos salía otra fuente).
-export function puertaHTML({ t, pantalla, nombres, accion, inv, error, lang = 'es', marca, estilos = [] }) {
+export function puertaHTML({ t, pantalla, nombres, evento = '', accion, inv, error, lang = 'es', marca, estilos = [] }) {
   const logo = pieChico(marca, '<img src="/comun/img/amoinvitar-line.svg" alt="Amo Invitar!" width="110" style="filter:invert(1);opacity:.45">');
   const cuerpo = pantalla === 'pin'
     ? `<form method="post" action="${esc(accion)}">
@@ -31,6 +31,8 @@ export function puertaHTML({ t, pantalla, nombres, accion, inv, error, lang = 'e
   main { max-width: 360px; width: 100%; }
   .icono { display: block; width: 200px; max-width: 70%; height: auto; margin: 0 auto 1rem; }
   .de { margin: 0 0 .5rem; }
+  /* README (ronda 78): «Acceso a la invitación», el tipo de evento («Boda de»…) más grande y en negrita, y los nombres */
+  .evento { margin: 0 0 .35rem; font-size: 1.2rem; font-weight: 700; color: #000; }
   h1 { font-family: 'Abril Fatface', Georgia, serif; font-weight: 400; font-size: 2.1rem; line-height: 1.2; color: #000; margin: 0 0 .8rem; overflow-wrap: anywhere; }
   hr { width: 66%; margin: 0 auto 1rem; border: 0; border-top: 1px solid #212529; }
   label { display: block; margin-bottom: .5rem; }
@@ -46,7 +48,8 @@ export function puertaHTML({ t, pantalla, nombres, accion, inv, error, lang = 'e
 </style></head>
 <body><main>
   <img class="icono" src="/comun/img/icon-login-pin.png" width="200" height="45" alt="">
-  <p class="de">${esc(t('acceso.de'))}</p>
+  ${evento ? `<p class="de">${esc(t('acceso.titulo'))}</p>
+  <p class="evento">${esc(evento)}</p>` : `<p class="de">${esc(t('acceso.de'))}</p>`}
   <h1 data-nombres>${esc(nombres)}</h1><script>(function(e){if(e&&/dantina/i.test(getComputedStyle(e).fontFamily))e.classList.add('alta')})(document.querySelector('[data-nombres]'))</script>
   <hr>
   ${cuerpo}

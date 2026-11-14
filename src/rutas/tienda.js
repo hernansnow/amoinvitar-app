@@ -418,6 +418,9 @@ export async function confirmar(request, env) {
     link: p.tipo === 'borrador' && ev?.estado === 'publicado' ? `/${ev.tipo}/${ev.slug}` : null,
     // README (ronda 73): «Ver la invitación» del comprador entra como dueño (con lista de invitados o PIN no lo bloquea)
     linkDueno: mismo && p.tipo === 'borrador' && ev?.estado === 'publicado' ? `/acceso/${ev.id}/dueno?k=${ev.clave}` : null,
+    // README (ronda 78): Deluxe con la sección «Álbum QR» (de Albunear) y el álbum sin crear: «Activar álbum QR gratis»
+    album: mismo && ev?.estado === 'publicado' && ev.paquete === 'deluxe' && ev.datos?.secciones?.album === true && ev.datos?.album?.origen !== 'propio' && !ev.datos?.album?.albunear
+      ? `/panel/${ev.id}?k=${ev.clave}#album` : null,
   });
 }
 

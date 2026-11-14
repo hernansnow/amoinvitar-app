@@ -36,6 +36,11 @@ const inicioEvento = () => {
 };
 const fechaTexto = (iso) => (iso ? iso.split('-').reverse().join('/') : '');
 const cierre = () => ctx.datos.rsvp?.cierre || '';
+// README (ronda 78): hasta cuándo se espera respuesta: la fecha límite si es antes del evento; si no hay (o es el mismo día), el día del evento
+const diaEvento = () => { const f = inicioEvento(); return f && !isNaN(f) ? `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}-${String(f.getDate()).padStart(2, '0')}` : ''; };
+const hoyISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const vencioPlazo = () => { const c = cierre(), e = diaEvento(); if (c && (!e || c < e)) return hoyISO() > c; return !!e && hoyISO() >= e; };
+const plazoTexto = () => { const c = cierre(), e = diaEvento(); return c && (!e || c < e) ? `la fecha límite (${fechaTexto(c)})` : 'el día del evento'; };
 const fechaHora = (iso) => new Date(iso).toLocaleString('es', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
 const admin = () => ctx.datos.admin || {};
 
@@ -535,16 +540,20 @@ function vistaMesas() {
   const st = estadisticas();
   if (!st.lista.length) return [tarjeta('Mesas', ctx.el('p', { class: 'ayuda' }, 'Con la lista de invitados (y la mesa de cada uno) aquí se arma la distribución de las mesas y un croquis para ver e imprimir.'))];
   const respuestaDe = new Map(st.filas.map((x) => [x.datos.inv, x.datos]));
+  // README (ronda 78): como en las apps de organización: los que no van salen de las mesas; los que no respondieron
+  // cuentan como posibles hasta la fecha límite (o el día del evento, si no hay o es ese día) y después quedan en rojo
+  const estadoDe = (i) => { const d = respuestaDe.get(i.codigo); return d?.asiste === 'Si' ? 'si' : d?.asiste === 'No' ? 'no' : vencioPlazo() ? 'vencido' : 'pend'; };
   const personasDe = (i) => {
-    const d = respuestaDe.get(i.codigo);
-    if (d?.asiste === 'No') return [];
-    if (d?.asiste === 'Si') return genteDe(d);
+    const d = respuestaDe.get(i.codigo), e = estadoDe(i);
+    if (e === 'no' || e === 'vencido') return [];
+    if (e === 'si') return genteDe(d);
     const base = separar(i.integrantes).length ? separar(i.integrantes) : [i.nombre];
-    return [...base, ...Array.from({ length: Number(i.pases) || 0 }, (_, k) => `${base[0]} +${k + 1}`)];
+    return [...base, ...Array.from({ length: Number(i.pases) || 0 }, (_, k) => `${base[0]} +${k + 1}`)].map((n) => `${n}\u200b`); // marca: posible
   };
+  const noVan = st.lista.filter((i) => estadoDe(i) === 'no');
   const asientos = Number(admin().asientos) || 10;
   const mesas = new Map();
-  for (const i of st.lista) { const k = String(i.mesa || '').trim() || 'Sin mesa'; if (!mesas.has(k)) mesas.set(k, []); mesas.get(k).push(i); }
+  for (const i of st.lista.filter((x) => estadoDe(x) !== 'no')) { const k = String(i.mesa || '').trim() || 'Sin mesa'; if (!mesas.has(k)) mesas.set(k, []); mesas.get(k).push(i); }
   const claves = [...mesas.keys()].sort((a, b) => (a === 'Sin mesa') - (b === 'Sin mesa') || a.localeCompare(b, 'es', { numeric: true }));
   const cambiarMesa = async (i, mesa) => {
     if (String(i.mesa || '') === String(mesa || '')) return;
@@ -559,8 +568,10 @@ function vistaMesas() {
       ctx.el('ul', {}, mesas.get(k).map((i) => {
         const sel = ctx.el('input', { type: 'text', value: i.mesa || '', class: 'ad-mesa-num', 'aria-label': `Mesa de ${i.nombre}`, placeholder: '—' });
         sel.addEventListener('change', () => cambiarMesa(i, sel.value.trim()));
-        const li = ctx.el('li', {}, ctx.el('span', { class: 'ad-arrastrar', title: 'Arrastrar a otra mesa', 'aria-hidden': 'true' }, '⠿'),
-          ctx.el('span', {}, i.nombre, personasDe(i).length > 1 ? ctx.el('small', {}, ` +${personasDe(i).length - 1}`) : null), sel);
+        const e = estadoDe(i);
+        const li = ctx.el('li', { class: e === 'si' ? '' : `ad-mesa-${e}` }, ctx.el('span', { class: 'ad-arrastrar', title: 'Arrastrar a otra mesa', 'aria-hidden': 'true' }, '⠿'),
+          ctx.el('span', {}, i.nombre, personasDe(i).length > 1 ? ctx.el('small', {}, ` +${personasDe(i).length - 1}`) : null,
+            e === 'pend' ? ctx.el('small', { class: 'ad-mesa-etq' }, 'sin responder') : e === 'vencido' ? ctx.el('small', { class: 'ad-mesa-etq' }, 'no respondió') : null), sel);
         arrastrable(li, li.firstChild, (mesa) => cambiarMesa(i, mesa === '+' ? siguienteMesa() : mesa));
         return li;
       })));
@@ -580,8 +591,8 @@ function vistaMesas() {
       for (let a = 0; a < lugares; a++) {
         const ang = (a / lugares) * Math.PI * 2 - Math.PI / 2, x = cx + Math.cos(ang) * (R + 16), y = cy + Math.sin(ang) * (R + 16);
         const tx = cx + Math.cos(ang) * (R + 34), ty = cy + Math.sin(ang) * (R + 34);
-        const g = String(gente[a] || ''), extra = / (\+\d+)$/.exec(g), nombre = g ? g.split(' ')[0] + (extra ? ` ${extra[1]}` : '') : '';
-        svg += `<circle cx="${x}" cy="${y}" r="9" fill="${gente[a] ? '#4e9c87' : '#fff'}" stroke="#4e9c87"/>`;
+        const g = String(gente[a] || ''), extra = / (\+\d+)\u200b?$/.exec(g), nombre = g ? g.split(' ')[0] + (extra ? ` ${extra[1]}` : '') : '';
+        svg += `<circle cx="${x}" cy="${y}" r="9" fill="${!gente[a] ? '#fff' : g.endsWith('\u200b') ? '#cfe3dc' : '#4e9c87'}" stroke="#4e9c87"/>`;
         if (nombre) svg += `<text x="${tx}" y="${ty + 4}" text-anchor="${Math.cos(ang) > 0.3 ? 'start' : Math.cos(ang) < -0.3 ? 'end' : 'middle'}" font-size="11" fill="#1f2421">${esc(nombre)}</text>`;
       }
     });
@@ -594,8 +605,14 @@ function vistaMesas() {
   const busca = ctx.el('input', { type: 'checkbox', checked: !!admin().buscaMesa });
   busca.addEventListener('change', async () => { await guardarAdmin({ buscaMesa: busca.checked }); ctx.redibujar(); });
   return [
-    tarjeta('Mesas', ctx.el('p', { class: 'ayuda' }, 'Para cambiar a alguien de mesa: arrastrarlo (⠿) a otra mesa, o escribir el número. Se guarda en la lista de invitados. Cuentan el invitado, sus acompañantes confirmados o sus pases.'),
-      ctx.el('div', { class: 'ad-botones' }, ctx.el('label', { class: 'ad-asientos' }, 'Asientos por mesa ', cant), boton('Editar lista de invitados', editarLista, 'btn btn-sec btn-chico')), listado),
+    tarjeta('Mesas', ctx.el('p', { class: 'ayuda' }, 'Para cambiar a alguien de mesa: arrastrarlo (⠿) a otra mesa, o escribir el número. Se guarda en la lista de invitados. Cuentan el invitado y sus acompañantes confirmados.'),
+      ctx.el('p', { class: 'ayuda' }, vencioPlazo()
+        ? 'Ya pasó la fecha límite para confirmar: los que no respondieron quedan en rojo y no cuentan. Conviene quitarlos o reorganizar esas mesas.'
+        : `Los que todavía no respondieron cuentan como posibles (con sus pases) hasta ${plazoTexto()}; después quedan en rojo y dejan de contar. Los que avisaron que no van salen de las mesas.`),
+      ctx.el('div', { class: 'ad-botones' }, ctx.el('label', { class: 'ad-asientos' }, 'Asientos por mesa ', cant), boton('Editar lista de invitados', editarLista, 'btn btn-sec btn-chico')), listado,
+      noVan.length ? ctx.el('details', { class: 'ad-no-van' }, ctx.el('summary', {}, `No asisten (${noVan.length})`),
+        ctx.el('p', { class: 'ayuda' }, 'Avisaron que no van: ya no ocupan lugar en las mesas.'),
+        ctx.el('ul', {}, noVan.map((i) => ctx.el('li', {}, i.nombre, i.mesa ? ctx.el('small', {}, ` · tenía mesa ${i.mesa}`) : null)))) : null),
     tarjeta('Buscá tu mesa (QR para la entrada)',
       ctx.el('p', { class: 'ayuda' }, 'Una página donde cada invitado escribe su nombre y ve su número de mesa. Se imprime el QR y se pone en la entrada del salón.'),
       ctx.el('label', { class: 'ad-check' }, busca, ' Activar la página "Buscá tu mesa"'),
@@ -679,14 +696,18 @@ function vistaLlegadas() {
   const acciones = ctx.el('div', { class: 'ad-botones' });
   const cargar = async () => {
     let d; try { d = await ctx.api('/puerta'); } catch (e) { lista.replaceChildren(ctx.el('p', { class: 'ayuda' }, e.message)); return; }
+    // README (ronda 78): se esperan solo los confirmados (con sus acompañantes); los que no respondieron, aparte
     const llegaron = d.invitados.reduce((s, i) => s + (i.llegaron || 0), 0), esperan = d.invitados.reduce((s, i) => s + i.esperan, 0);
-    cifras.replaceChildren(numero(llegaron, 'llegaron', 'si'), numero(esperan, 'se esperan'), numero(Math.max(0, esperan - llegaron), 'faltan', 'pend'));
+    const llegaronConf = d.invitados.reduce((s, i) => s + (i.esperan ? Math.min(i.llegaron || 0, i.esperan) : 0), 0);
+    const sinResp = d.invitados.filter((i) => !i.respondio);
+    cifras.replaceChildren(...[numero(llegaron, 'llegaron', 'si'), numero(esperan, 'se esperan (confirmados)'), numero(Math.max(0, esperan - llegaronConf), 'faltan', 'pend'),
+      sinResp.length ? numero(sinResp.length, `sin responder (${sinResp.reduce((s, i) => s + (i.posibles || 1), 0)} personas)`) : null].filter(Boolean));
     acciones.replaceChildren(enlace('Abrir la recepción', d.link, 'btn'), boton('Copiar link', () => copiar(d.link, 'Link copiado'), 'btn btn-sec'),
       enlace('Enviar por WhatsApp', wa(`Link para recibir a los invitados de ${nombres()} (lista y lector de QR):\n${d.link}`), 'btn btn-wa'),
       boton('QR del link', () => mostrarQR(d.link, 'Recepción de invitados'), 'btn btn-sec'));
     const orden = [...d.invitados].sort((a, b) => String(b.llego).localeCompare(String(a.llego)) || a.nombre.localeCompare(b.nombre, 'es'));
     lista.replaceChildren(ctx.el('table', { class: 'ad-tabla' }, ctx.el('tbody', {}, orden.map((i) => ctx.el('tr', { class: i.llegaron ? 'fila-si' : '' },
-      ctx.el('td', {}, ctx.el('strong', {}, i.nombre), ctx.el('small', {}, [i.mesa ? `Mesa ${i.mesa}` : 'Sin mesa', i.respondio === 'No' ? 'avisó que no va' : `${i.esperan} ${i.esperan === 1 ? 'persona' : 'personas'}`].join(' · '))),
+      ctx.el('td', {}, ctx.el('strong', {}, i.nombre), ctx.el('small', {}, [i.mesa ? `Mesa ${i.mesa}` : 'Sin mesa', i.respondio === 'No' ? 'avisó que no va' : !i.respondio ? `sin responder · ${i.posibles || 1} ${(i.posibles || 1) === 1 ? 'persona' : 'personas'}` : `${i.esperan} ${i.esperan === 1 ? 'persona' : 'personas'}`].join(' · '))),
       ctx.el('td', {}, i.llegaron ? ctx.el('span', { class: 'ad-estado si' }, `Llegó${i.llegaron > 1 ? ` (${i.llegaron})` : ''}`) : ctx.el('span', { class: 'ad-estado pend' }, 'Todavía no')),
       ctx.el('td', {}, i.llego ? fechaHora(i.llego) : ''))))));
   };

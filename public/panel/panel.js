@@ -1219,6 +1219,12 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
       if (c.estilo === 'linea') return el('hr', { class: 'separador' });
       if (c.estilo === 'etiqueta') return el('div', { class: 'etiqueta' }, c.texto);
       if (c.estilo === 'ayuda') return el('p', { class: 'ayuda' }, c.texto);
+      // README (ronda 78): «Activar álbum QR gratis» (Deluxe ya pagada, álbum de Albunear todavía sin crear) → Administración → Álbum
+      if (c.estilo === 'albunear') {
+        const pagada = S.evento.paquete === 'deluxe' && S.evento.estado === 'publicado';
+        if (!pagada || datos.album?.albunear || datos.secciones?.album === false) return el('span', {}, '');
+        return el('button', { type: 'button', class: 'btn btn-albunear btn-alb-activar', onclick: () => { window.__seccionAdmin = 'album'; ponerModo('admin'); } }, c.texto);
+      }
       if (c.estilo === 'boton') return el('div', { class: 'nota nota-boton' }, el('p', {}, c.texto), el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => irA(c.irA) }, c.boton));
       return el('p', { class: c.estilo === 'subtitulo' ? 'subtitulo-nota' : 'nota' }, c.texto);
     }
@@ -2149,7 +2155,8 @@ function recordarBorrador() {
   // Publicada: el panel abre en la administración (siempre se puede volver a editar)
   const hash = location.hash.slice(1);
   if (hash === 'recuerdo' && S.recuerdo) window.__seccionAdmin = 'recuerdo'; // desde el mail de aviso de vencimiento
-  if (hash === 'admin' || hash === 'recuerdo' || (!hash && S.evento.estado === 'publicado')) { irA(''); ponerModo('admin'); }
+  if (hash === 'album') window.__seccionAdmin = 'album'; // README (ronda 78): desde «Activar álbum QR gratis» de la página de gracias
+  if (hash === 'admin' || hash === 'recuerdo' || hash === 'album' || (!hash && S.evento.estado === 'publicado')) { irA(''); ponerModo('admin'); }
   else irA(hash);
   refrescarPrevia();
 })();

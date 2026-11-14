@@ -366,6 +366,8 @@ function pasosInvitacion({ tipo, modelo }) {
         { v: 'albunear', etiqueta: 'Usar álbum Classic de Albunear incluido en Deluxe', ayuda: 'En Basic y Premium se contrata en Albunear (hay planes gratis).' },
         { v: 'propio', etiqueta: 'Usar link de álbum propio' }] },
       { id: 'nota.albumAlbunear', tipo: 'nota', estilo: 'ayuda', texto: 'Luego podrás configurar el álbum en la pestaña Administración.', si: { campo: 'album.origen', no: 'propio' } },
+      // README (ronda 78): Deluxe pagada y sin álbum creado: botón llamativo que lleva a Administración → Álbum
+      { id: 'nota.albumActivar', tipo: 'nota', estilo: 'albunear', texto: 'Activar álbum QR gratis', si: { campo: 'album.origen', no: 'propio' } },
       { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', si: { campo: 'album.origen', es: 'propio' } },
       conFotos('album'),
       // La misma foto que Instagram Wall (van una u otra): si ya la cargó allá, aquí aparece cargada

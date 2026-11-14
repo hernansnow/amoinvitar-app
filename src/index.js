@@ -26,6 +26,7 @@ import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista, cookieAcceso, DUENO, tokenPuerta } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
 import { mesaHTML } from './componentes/mesa.js';
+import { eventoDe } from './textos/acceso-evento.js';
 import { checkinHTML } from './componentes/checkin.js';
 import { avisoRespuesta } from './avisos.js';
 import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA, FIJOS_VINCULO, aplicarTipoAcceso } from './panel/esquemas.js';
@@ -320,7 +321,7 @@ async function publicada(env, url, request, tipo, slug) {
   if (!acc.ok) {
     const v = variante(ev.datos.variante);
     const t = traductor(ev.tipo, v, ev.datos.textos);
-    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca, estilos: await estilosModelo(env, ev, url) }),
+    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca, estilos: await estilosModelo(env, ev, url) }),
       acc.pantalla === 'pin' ? 401 : 403, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
   }
   const evento = paraMotor(ev);
@@ -478,7 +479,7 @@ async function paginaMesa(env, url, id) {
   const v = variante(ev.datos.variante);
   const t = traductor(ev.tipo, v, ev.datos.textos);
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), estilos: await estilosModelo(env, ev, url), marca: await marcaEfectiva(env, empresa) }), 200,
+  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), estilos: await estilosModelo(env, ev, url), marca: await marcaEfectiva(env, empresa) }), 200,
     { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
 }
 async function buscarMesa(env, request, url) {
@@ -519,6 +520,10 @@ function personasEsperadas(i, d) {
     const acomp = d.acompanantes && !/^no$/i.test(d.acompanantes) ? String(d.acompanantes).split(',').filter((x) => x.trim()).length : 0;
     return 1 + acomp + sinNum(d.ninos);
   }
+  // README (ronda 78): sin responder no se espera a nadie (se cuentan aparte como posibles)
+  return 0;
+}
+function personasPosibles(i) {
   const familia = String(i.integrantes || '').split(',').filter((x) => x.trim()).length;
   return Math.max(1, familia) + (Number(i.pases) || 0);
 }
@@ -534,7 +539,7 @@ async function listaPuerta(env, ev) {
   return (await almacen.invitados(ev.id)).map((i) => {
     const d = ultima.get(i.codigo);
     return { codigo: i.codigo, nombre: i.nombre, mesa: i.mesa || '', integrantes: i.integrantes || '', respondio: d?.asiste || '',
-      esperan: personasEsperadas(i, d), llegaron: i.llegaron || 0, llego: i.llego || '' };
+      esperan: personasEsperadas(i, d), posibles: personasPosibles(i), llegaron: i.llegaron || 0, llego: i.llego || '' };
   });
 }
 async function paginaPuerta(env, url, id) {
