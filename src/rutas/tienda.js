@@ -467,7 +467,7 @@ async function validarMejora(env, request, m) {
   if (m.extra) {
     const x = EXTRAS[m.extra];
     if (!x) throw new HttpError(400, 'Adicional desconocido');
-    if (ev.paquete === 'gratis') throw new HttpError(400, 'Los adicionales no están disponibles en el plan gratis. Se puede pasar a Basic o superior.');
+    // README (ronda 85): en Gratis también se compran los adicionales (se cobran solos, sin el plan)
     if (m.extra !== 'idioma' && (ev.datos.extras || []).includes(m.extra)) throw new HttpError(400, 'Ese adicional ya está contratado');
     return { evento: ev, eur: x.precio, pedido: { producto: ev.producto, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete, extras: [m.extra],
       nombre: `${x.nombre}${mod0 ? ` · ${nombreModelo(mod0, ev.tipo)}` : ''}` } };

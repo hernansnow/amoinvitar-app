@@ -1065,8 +1065,11 @@ body.suelta .previa, body.suelta #btn-ojo, body.suelta .modo-vista, body.suelta 
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1h1Zm2 0h6V7a3 3 0 0 0-6 0v3Z'/%3E%3C/svg%3E") center / contain no-repeat; }
 .ad-bloqueo { display: grid; gap: 10px; color: var(--texto, #3a3f3c); }
 .ad-bloqueo p, .ad-bloqueo li { color: inherit; }
-.ad-bloqueo-cinta { margin: 0; padding: 10px 14px; border-radius: 10px; font-weight: 600; color: #fff; background: linear-gradient(90deg, #4e9c87, #7cb8a6); }
-.ad-bloqueo.nivel-deluxe .ad-bloqueo-cinta { background: linear-gradient(90deg, #8a6d3b, #c9a96a); }
+.ad-bloqueo-cinta { margin: 0; padding: 10px 14px; border-radius: 10px; font-weight: 600; border: 1.5px solid; }
+/* README (ronda 85): avisos para subir de plan con el color de cada plan: fondo claro, texto y borde fuerte */
+.ad-bloqueo.nivel-basic .ad-bloqueo-cinta, .aviso-nivel.nivel-basic { background: #e5f3f1; color: #0f6f69; border-color: #168A83; }
+.ad-bloqueo.nivel-premium .ad-bloqueo-cinta, .aviso-nivel.nivel-premium { background: #efeefd; color: #4b43c4; border-color: #635BDB; }
+.ad-bloqueo.nivel-deluxe .ad-bloqueo-cinta, .aviso-nivel.nivel-deluxe { background: #fbf2e2; color: #7a4d0e; border-color: #B77924; }
 .ad-bloqueo-texto { margin: 2px 0 0; font-size: 1.05rem; }
 .ad-bloqueo-lista { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 .subtitulo-campo { margin: -2px 0 8px; font-size: .88rem; color: var(--suave, #6b706c); line-height: 1.4; }
@@ -1200,7 +1203,7 @@ td .ad-ingresos { display: block; margin-top: 4px; }
 
 /* README (ronda 81): Spotify solo con Deluxe: botones apagados y aviso */
 .ad-bloq { opacity: .5; cursor: help; }
-.ad-aviso-plan { background: #fff7e0; border: 1px solid #f1d58a; color: #6b5310; border-radius: 12px; padding: 10px 14px; font-size: .9rem; margin: 0 0 12px; }
+.ad-aviso-plan { background: #fbf2e2; border: 1.5px solid #B77924; color: #7a4d0e; border-radius: 12px; padding: 10px 14px; font-size: .9rem; margin: 0 0 12px; } /* Deluxe */
 
 /* README (ronda 83): «Guardar mi invitación» con el mail y aviso de ayuda al volver */
 .guardar-cuenta .guardar-titulo { margin-bottom: 4px; font-size: 1rem; }
@@ -1212,3 +1215,25 @@ td .ad-ingresos { display: block; margin-top: 4px; }
 .aviso-volvio { background: #eef6f3; border: 1px solid #b9dccf; border-radius: 14px; padding: 12px 16px; margin: 0 0 14px; }
 .aviso-volvio p { margin: 0 0 8px; font-size: .92rem; }
 .aviso-volvio .botones { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* README (ronda 85): avisos de plan (Gratis → Basic…) y barra de pago en Administración */
+.aviso-nivel { border: 1.5px solid; border-radius: 12px; padding: 10px 14px; margin: 0 0 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-weight: 600; }
+.aviso-nivel p { margin: 0; flex: 1 1 260px; color: inherit; }
+.aviso-nivel .btn { background: currentColor; border-color: currentColor; padding: 6px 14px; font-size: .9rem; }
+.aviso-nivel .btn > span, .aviso-nivel .btn { color: #fff; }
+.aviso-nivel.nivel-basic .btn { background: #168A83; border-color: #168A83; }
+.aviso-nivel.nivel-premium .btn { background: #635BDB; border-color: #635BDB; }
+.aviso-nivel.nivel-deluxe .btn { background: #B77924; border-color: #B77924; }
+.barra-pago { display: none; }
+body.modo-admin .barra-pago:not([hidden]) { display: flex; align-items: center; gap: 12px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: #dfe7de; border-top: 1px solid var(--borde); }
+body.modo-admin.con-barra-pago #admin { padding-bottom: 90px; }
+.barra-pago .bp-txt { flex: 1; min-width: 0; display: grid; line-height: 1.25; }
+.barra-pago .bp-txt small { color: var(--suave); font-size: .78rem; }
+.barra-pago .bp-detalle { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.barra-pago .btn { flex: none; white-space: nowrap; }
+.ad-enviar-off { opacity: .45; pointer-events: none; }
+
+/* README (ronda 85): precio de los complementos junto al interruptor «Agregar» */
+.paso-titulo .precio-comp { margin-left: auto; color: #2f8a5a; font-weight: 700; font-size: 1.15rem; white-space: nowrap; display: inline-flex; align-items: baseline; gap: 4px; }
+.paso-titulo .precio-comp small { font-size: .78rem; font-weight: 600; }
+.paso-titulo .precio-comp + #btn-plegar { margin-left: 8px; }

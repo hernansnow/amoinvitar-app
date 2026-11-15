@@ -288,8 +288,23 @@ function editorTexto(clave, base, titulo, ayuda) {
     ctx.el('p', { class: 'ayuda' }, ayuda), area,
     ctx.el('button', { type: 'button', class: 'btn-link', onclick: () => { area.value = base(); guardarAdmin({ [clave]: '' }); } }, 'Volver al texto original'));
 }
+// README (ronda 85): sin activar (pagar) no se envía: botones apagados y el aviso con el botón para pagar
+function enviarSinPagar() {
+  const off = (t) => ctx.el('button', { type: 'button', class: 'btn btn-sec', disabled: true }, t);
+  return [tarjeta('Enviar la invitación',
+    ctx.el('div', { class: 'aviso-nivel nivel-basic' }, ctx.el('p', {}, 'Para enviar la invitación hay que activarla (pagar). Hasta entonces el link solo lo ves tú.'),
+      ctx.S.plan ? boton('Ir a pagar', () => ctx.pagar?.(), 'btn') : null),
+    ctx.el('div', { class: 'ad-enviar ad-enviar-off', 'aria-disabled': 'true' }, off('Enviar por WhatsApp'), off('Copiar link'), off('Código QR')))];
+}
+// README (ronda 85): en Gratis, el límite de confirmaciones y el paso a Basic
+const avisoGratis = () => (ctx.S.plan?.plan === 'gratis' && !ctx.S.plan?.producto ? ctx.el('div', { class: 'aviso-nivel nivel-basic' },
+  ctx.el('p', {}, 'El plan gratis solo permite recibir confirmaciones de hasta 35 invitados. Activa Basic para invitados ilimitados.'),
+  boton('Activar Basic', () => ctx.subirBasic?.(), 'btn')) : null);
 function vistaEnviar() {
-  if (!publicada()) return [tarjeta('Enviar la invitación', ctx.el('p', { class: 'ayuda' }, 'Cuando la invitación esté publicada, desde aquí se envía por WhatsApp, se copia el link o se descarga el código QR.'))];
+  if (!publicada()) return enviarSinPagar();
+  return [avisoGratis(), ...vistaEnviarPagada()].filter(Boolean);
+}
+function vistaEnviarPagada() {
   if (conLista()) return vistaEnviarLista();
   // Celular: un botón por línea, de ancho a ancho (Copiar link y QR, lado a lado)
   const texto = () => armarTexto(admin().textoWa || TEXTO_WA());
@@ -360,7 +375,8 @@ function vistaEnviarLista() {
     chips, buscar, ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla ad-links' }, cuerpo)))];
 }
 
-function vistaRespuestas() {
+function vistaRespuestas() { return [avisoGratis(), ...[].concat(vistaRespuestasBase())].filter(Boolean); }
+function vistaRespuestasBase() {
   const st = estadisticas();
   const preguntas = new Map();   // campo → etiqueta, según lo que respondieron
   for (const x of st.filas) {

@@ -29,7 +29,7 @@ import { mesaHTML } from './componentes/mesa.js';
 import { eventoDe } from './textos/acceso-evento.js';
 import { checkinHTML } from './componentes/checkin.js';
 import { avisoRespuesta } from './avisos.js';
-import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA, FIJOS_VINCULO, aplicarTipoAcceso } from './panel/esquemas.js';
+import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA, FIJOS_VINCULO, aplicarTipoAcceso, recortarSinPagar, NIVELES as NIVELES_PLAN } from './panel/esquemas.js';
 import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento, CON_TARJETA_STD } from './modelos.js';
 import { MODELOS_GRATIS, A_MEDIDA, PRODUCTOS, LIMITE_INVITADOS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
@@ -340,7 +340,11 @@ async function publicada(env, url, request, tipo, slug, ctx = null) {
     pl.leidoEn = Date.now(); // para no pedirlo dos veces mientras tanto
     ctx.waitUntil(refrescarPlaylist(env, ev.id).catch((e) => console.error('playlist', e)));
   }
-  const evento = paraMotor(ev);
+  // README (ronda 85): los invitados ven solo lo pagado (secciones de un plan más alto o complementos prendidos después
+  // de publicar quedan apagados); el dueño ve todo, con un aviso de lo que falta pagar para que lo vean los demás
+  const rec = recortarSinPagar(await esquemaDe(env, url, ev), ev.datos, { pagado: NIVELES_PLAN.includes(ev.paquete) ? ev.paquete : null, extras: ev.datos.extras || [] });
+  const pendiente = rec.recortado.length > 0;
+  const evento = paraMotor(acc.dueno || !pendiente ? ev : { ...ev, datos: rec.datos });
   if (await aforoLleno(almacen, ev)) evento.rsvp = { ...(evento.rsvp || {}), lleno: true };
   let invitado = acc.invitado;
   if (invitado) {
@@ -351,7 +355,8 @@ async function publicada(env, url, request, tipo, slug, ctx = null) {
     if (!delEquipo) await almacen.visita(ev.id, invitado.codigo).catch(() => {});
     invitado = { ...invitado, respuesta: await almacen.respuestaDe(ev.id, invitado.codigo).catch(() => null), pase: !!ev.datos.admin?.checkin };
   }
-  const r = await pagina(env, url, evento, { invitado, marca });
+  let r = await pagina(env, url, evento, { invitado, marca });
+  if (acc.dueno && pendiente) r = await conAvisoDueno(r, ev, 'pendiente', `/panel/${ev.id}?k=${ev.clave}`);
   if (acc.cookie) r.headers.append('set-cookie', acc.cookie);
   return r;
 }
@@ -976,7 +981,8 @@ async function apiPanel(env, request, url, partes) {
     if (gratis && !modelosPara(ev.tipo).find((m) => m.id === ev.modelo)?.gratis) return json({ error: 'Este diseño no tiene plan gratis' }, 400);
     ev.datos.planElegido = gratis ? 'gratis' : null;
     if (gratis) {
-      for (const p of esquema.pasos) if (p.seccion && (p.complemento || p.nivel !== 'basic')) (ev.datos.secciones ??= {})[p.seccion] = false;
+      // README (ronda 85): los complementos quedan (en Gratis se cobran solos); se apaga lo de Premium y Deluxe
+      for (const p of esquema.pasos) if (p.seccion && !p.complemento && p.nivel !== 'basic') (ev.datos.secciones ??= {})[p.seccion] = false;
       for (const p of esquema.pasos) if (p.interruptor && p.nivel !== 'basic') escribirRuta(ev.datos, p.interruptor, false);
       for (const p of esquema.pasos) for (const c of p.campos) if (c.paquete && c.paquete !== 'basic') escribirRuta(ev.datos, c.id, c.tipo === 'switch' ? false : undefined);
       if (Array.isArray(ev.datos.fotos?.portada)) ev.datos.fotos.portada = ev.datos.fotos.portada.slice(0, 1);
@@ -1269,7 +1275,28 @@ async function vistaPrevia(env, url, request, id) {
     const lista = await almacenDe(env).invitados(ev.id).catch(() => []);
     invitado = lista[0] || { codigo: 'ejemplo', nombre: 'Nombre del invitado', pases: 1, mesa: '1' };
   }
-  return pagina(env, url, evento, { marca: await marcaEfectiva(env, empresa), sinSobre: true, prueba: true, invitado, forzarPropio });
+  const r = await pagina(env, url, evento, { marca: await marcaEfectiva(env, empresa), sinSobre: true, prueba: true, invitado, forzarPropio });
+  // README (ronda 85): abierta fuera del panel y sin activar: un aviso de que solo la ve el cliente hasta pagar
+  return ev.estado === 'publicado' || ev.empresaId ? r : conAvisoDueno(r, ev, 'sinPagar', `/panel/${ev.id}?k=${ev.clave}`, true);
+}
+
+// README (ronda 85): aviso chico abajo de la invitación, solo para el dueño, en el idioma de la invitación
+const AVISO_DUENO = {
+  es: { sinPagar: 'Solo tú ves esta invitación. Para enviarla a tus invitados, hay que activarla (pagar).', pendiente: 'Lo agregado sin pagar solo lo ves tú. Para que lo vean tus invitados, hay que pagarlo.', boton: 'Ir a pagar' },
+  en: { sinPagar: 'Only you can see this invitation. To send it to your guests, you need to activate it (pay).', pendiente: 'What you added without paying is only visible to you. Pay for it so your guests can see it.', boton: 'Go to payment' },
+  pt: { sinPagar: 'Só você vê este convite. Para enviá-lo aos convidados, é preciso ativá-lo (pagar).', pendiente: 'O que você adicionou sem pagar só você vê. Para que os convidados vejam, é preciso pagar.', boton: 'Ir para o pagamento' },
+  fr: { sinPagar: 'Vous seul voyez cette invitation. Pour l’envoyer à vos invités, il faut l’activer (payer).', pendiente: 'Ce que vous avez ajouté sans payer n’est visible que par vous. Payez-le pour que vos invités le voient.', boton: 'Aller au paiement' },
+  it: { sinPagar: 'Solo tu vedi questo invito. Per inviarlo agli invitati devi attivarlo (pagare).', pendiente: 'Ciò che hai aggiunto senza pagare lo vedi solo tu. Pagalo perché lo vedano i tuoi invitati.', boton: 'Vai al pagamento' },
+  de: { sinPagar: 'Nur du siehst diese Einladung. Um sie an deine Gäste zu senden, musst du sie aktivieren (bezahlen).', pendiente: 'Was du ohne Bezahlung hinzugefügt hast, siehst nur du. Bezahle es, damit deine Gäste es sehen.', boton: 'Zur Zahlung' },
+  nl: { sinPagar: 'Alleen jij ziet deze uitnodiging. Om hem naar je gasten te sturen, moet je hem activeren (betalen).', pendiente: 'Wat je zonder betalen hebt toegevoegd, zie alleen jij. Betaal het zodat je gasten het zien.', boton: 'Naar betalen' },
+};
+async function conAvisoDueno(r, ev, cual, link, soloFuera = false) {
+  if (!(r.headers.get('content-type') || '').includes('text/html')) return r;
+  const L = AVISO_DUENO[String(ev.datos.variante || 'es').slice(0, 2)] || AVISO_DUENO.es;
+  const e = (x) => String(x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const aviso = `<div id="ai-aviso-dueno" style="position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:2147483000;width:calc(100% - 20px);max-width:520px;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:rgba(31,36,33,.92);color:#fff;font:500 13px/1.35 system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)"${soloFuera ? ' hidden' : ''}><span style="flex:1">🔒 ${e(L[cual])}</span><a href="${e(link)}" style="flex:none;background:#4e9c87;color:#fff;text-decoration:none;font-weight:700;padding:6px 10px;border-radius:999px;white-space:nowrap">${e(L.boton)}</a></div>${soloFuera ? '<script>if(window.top===window)document.getElementById("ai-aviso-dueno").hidden=false</script>' : ''}`;
+  const html = (await r.text()).replace(/<\/body>(?![\s\S]*<\/body>)/i, `${aviso}</body>`);
+  return new Response(html, { status: r.status, headers: r.headers });
 }
 
 // Vista previa del panel: donde el cliente todavía no subió fotos van las fotos de la demo

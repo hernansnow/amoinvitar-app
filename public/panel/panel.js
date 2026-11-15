@@ -1215,7 +1215,16 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     case 'ejemploAcceso': return ejemploAcceso();
     case 'nota': {
       // {precio:idioma}, {precio:diseno}: el precio en la moneda del cliente (S.plan.preciosExtras)
-      if (c.texto && c.texto.includes('{precio:')) c = { ...c, texto: c.texto.replace(/\{precio:([\w-]+)\}/g, (m, k) => String(S.plan?.preciosExtras?.[k] || '').replace(/^\+/, '')).replace(/\s*\(\s*\)|Costo:\s*\./g, '') };
+      // README (ronda 85): el precio va en su propio trozo, así el resto del texto se traduce por texto exacto
+      if (c.texto && c.texto.includes('{precio:') && (!c.estilo || c.estilo === 'ayuda')) {
+        const trozos = c.texto.split(/(\{precio:[\w-]+\})/).flatMap((x) => {
+          const k = /^\{precio:([\w-]+)\}$/.exec(x);
+          if (k) return [el('strong', {}, String(S.plan?.preciosExtras?.[k[1]] || '').replace(/^\+/, ''))];
+          const m = /^([.,;:]\s*)([\s\S]*)$/.exec(x);
+          return m ? [m[1], el('span', {}, m[2])] : [el('span', {}, x)];
+        });
+        return el('p', { class: c.estilo === 'ayuda' ? 'ayuda' : 'nota' }, ...trozos);
+      }
       if (c.estilo === 'linea') return el('hr', { class: 'separador' });
       if (c.estilo === 'etiqueta') return el('div', { class: 'etiqueta' }, c.texto);
       if (c.estilo === 'ayuda') return el('p', { class: 'ayuda' }, c.texto);
@@ -1637,6 +1646,20 @@ function pintarFaltan() {
   caja.replaceChildren(...(faltan.length ? [el('div', { class: 'tarjeta faltan' }, 'Faltan datos:', el('ul', {}, faltan.map((x) => el('li', {}, x.etiqueta))))] : []));
 }
 
+// README (ronda 85): el precio del complemento en el renglón del interruptor (verde, a la derecha). La Save The Date
+// tiene varios precios: «desde» y el más bajo de las opciones del paso
+function precioComplemento(p) {
+  if (!p.complemento || !S.plan?.preciosExtras || S.esquema?.sinNiveles) return null;
+  const pr = S.plan.preciosExtras;
+  const num = (x) => Number(String(x || '').replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}\b)/g, '').replace(',', '.')) || 0;
+  let claves = { idiomaAdicional: ['idioma'], agradecimiento: ['agradecimiento'], diseno: ['diseno'] }[p.id];
+  if (p.id === 'std') claves = [...new Set(p.campos.flatMap((c) => (c.valores || []).map((o) => o.extra)).filter((x) => x && pr[x] != null))];
+  if (!claves?.length) return null;
+  const orden = claves.map((k) => [k, num(pr[k])]).sort((a, b) => a[1] - b[1]);
+  const [k, n] = orden[0];
+  const txt = n ? String(pr[k]).replace(/^\+/, '') : 'Incluida';
+  return el('span', { class: 'precio-comp' }, claves.length > 1 && n ? el('small', {}, 'desde') : null, txt);
+}
 function dibujarPaso() {
   espejos = [];
   const p = pasoActual;
@@ -1648,7 +1671,7 @@ function dibujarPaso() {
   const plegar = el('button', { type: 'button', class: 'btn-redondo chico solo-escritorio', id: 'btn-plegar', 'aria-label': 'Achicar el panel', title: 'Achicar el panel (vista previa más grande)', onclick: () => plegarEditor(true) },
     el('span', { html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' }));
   const ayudaSeccion = p.ayudaSeccion ? el('p', { class: 'ayuda ayuda-seccion' }, p.ayudaSeccion) : null;
-  const apagada = !activo ? el('div', { class: 'tarjeta nota apagada-aviso' }, p.complemento ? `${p.titulo} es un complemento: al prenderlo se suma al total${esGratis() ? ' (en el plan gratis, pasa a Basic)' : ''}.` : 'Esta sección está apagada: no se ve en la invitación.', ' ',
+  const apagada = !activo ? el('div', { class: 'tarjeta nota apagada-aviso' }, p.complemento ? `${p.titulo} es un complemento: al prenderlo se suma al total.` : 'Esta sección está apagada: no se ve en la invitación.', ' ',
     el('button', { type: 'button', class: 'btn btn-chico', onclick: () => prenderPaso(p, true), html: `${icono('prender', 15)}<span>Prender</span>` })) : null;
   const motivo = p.fijoSi && cumple(p.fijoSi) ? el('p', { class: 'motivo' }, p.motivo) : null;
   // Campos "siempre": se editan aunque la sección esté apagada (p. ej. quién puede ver la invitación)
@@ -1658,7 +1681,7 @@ function dibujarPaso() {
   // Apagada: no se puede editar ni subir nada hasta prenderla
   if (!activo) { cuerpo.inert = true; cuerpo.setAttribute('aria-disabled', 'true'); }
   f.replaceChildren(...[
-    el('div', { class: 'paso-titulo' }, el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'mostrar' }, apagar, el('span', { class: 'lado' }, T('Mostrar en la invitación'))) : null, plegar),
+    el('div', { class: 'paso-titulo' }, el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'mostrar' }, apagar, el('span', { class: 'lado' }, p.complemento ? 'Agregar' : T('Mostrar en la invitación'))) : null, precioComplemento(p), plegar),
       el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, insigniasPaso(p))),
     ayudaSeccion, motivo, banderaGuardar(), arriba, apagada,
     el('div', { id: 'faltan-aca' }),
@@ -1736,6 +1759,7 @@ function pintarPlan() {
   $('#plan-mini').onclick = () => mostrarResumen(false);
   document.body.classList.toggle('suelta', !!S.esquema?.suelta);
   pintarMedida(); if (typeof pintarPublicar === "function" && S.evento) pintarPublicar();
+  pintarBarraPago();
 }
 // README (ronda 28): diseño a medida. Se completa, se envía al equipo, el equipo lo aprueba y recién ahí se paga
 function pintarMedida() {
@@ -1770,8 +1794,23 @@ function pintarMedida() {
           el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño')];
   caja.replaceChildren(el('p', {}, ...fila.filter(Boolean)));
 }
+// README (ronda 85): barra de pago en Administración (como la del editor en el celular): el plan y lo agregado que falta
+// pagar, con el botón para pagar. Si no se debe nada, no se ve.
+function pintarBarraPago() {
+  const b = $('#barra-pago'); if (!b) return;
+  const pl = S.plan;
+  const debe = !!pl && !pl.producto && !S.esquema?.suelta && !S.empresa && (pl.activar || (pl.aPagar?.eur || 0) > 0);
+  b.hidden = !debe;
+  document.body.classList.toggle('con-barra-pago', debe);
+  if (!debe) return;
+  const sinPagar = pl.complementos.filter((x) => !x.pagado);
+  const partes = [...(pl.activar || pl.aPagar?.eurPlan ? [el('span', {}, 'Plan ', el('strong', {}, pl.nombre))] : []), ...sinPagar.map((x) => el('span', {}, x.nombre))];
+  b.replaceChildren(
+    el('div', { class: 'bp-txt' }, el('small', {}, pl.activar ? 'Falta activar la invitación' : 'Falta pagar lo agregado'), el('span', { class: 'bp-detalle' }, ...partes.flatMap((x, i) => (i ? [' + ', x] : [x])))),
+    el('button', { type: 'button', class: 'btn', onclick: () => mostrarResumen(true) }, ...(pl.aPagar?.eur ? [el('span', {}, 'Pagar'), ` ${pl.aPagar.texto}`] : [el('span', {}, 'Activar')])));
+}
 async function pasarAGratis(gratis) {
-  if (gratis && !confirm('En el plan gratis se apagan la galería, la cuenta regresiva, las secciones Premium y Deluxe y los complementos. ¿Seguir?')) return;
+  if (gratis && !confirm('En el plan gratis se apagan la galería, la cuenta regresiva y las secciones Premium y Deluxe. ¿Seguir?')) return;
   clearTimeout(guardarTimer); await guardar();
   try { await api('/gratis', { method: 'POST', body: JSON.stringify({ gratis }) }); await recargar(); aviso(gratis ? 'Listo: plan gratis' : 'Listo: se pueden sumar secciones'); } catch (e) { aviso(e.message, true); }
 }
@@ -2220,6 +2259,8 @@ function ponerModo(m) {
       clave, editarLista: modalLista, cambiarAjuste: modalAjusteAcceso, redibujarAdmin: () => ponerModo('admin'),
       // README (ronda 29): desde una función con candado, se prende su sección (y el plan sube) o se ven las de Deluxe
       activarSeccion: (sec) => { const p = S.esquema.pasos.find((x) => x.seccion === sec); if (!p) return; prenderPaso(p, true); ponerModo('editar'); irA(p.id); aviso(`Listo: se sumó "${p.titulo}"`); },
+      // README (ronda 85): pagar lo que falte y pasar de Gratis a Basic desde Administración
+      pagar: () => mostrarResumen(true), subirBasic: () => pasarAGratis(false),
       verDeluxe: () => { ponerModo('editar'); const p = S.esquema.pasos.find((x) => x.nivel === 'deluxe' && x.seccion && !pasoActivo(x)); if (p) irA(p.id); aviso('Prende cualquier sección Deluxe y la invitación pasa a Deluxe'); },
       guardarInvitados: async () => { const r = await api('/invitados', { method: 'PUT', body: JSON.stringify({ invitados: S.invitados }) }); S.invitados = r.invitados; } });
   } else if (pasoActual) { history.replaceState(null, '', `#${pasoActual.id}`); requestAnimationFrame(escalarPrevia); }

@@ -422,7 +422,7 @@ const PALETA_DEFECTO = ['#a78977', '#86a388', '#9ab09c', '#ffffff'];
 const pasoDiseno = (modelo) => ({
   id: 'diseno', seccion: 'diseno', complemento: true, titulo: 'Cambios de diseño',
   campos: [
-    { id: 'nota.diseno', tipo: 'nota', texto: 'Costo: {precio:diseno} (colores y tipografía, uno o los dos). Los cambios los hace el equipo de diseño: el pedido se envía al publicar y desde ese momento ya no se puede modificar.' },
+    { id: 'nota.diseno', tipo: 'nota', texto: 'Los cambios los hace el equipo de diseño: el pedido se envía al publicar y desde ese momento ya no se puede modificar.' },
     { id: 'diseno.paleta.modo', tipo: 'opciones', etiqueta: 'Colores', defecto: 'original', valores: [
       { v: 'original', etiqueta: 'Los colores originales del diseño' }, { v: 'cambiar', etiqueta: 'Quiero otros colores' },
     ] },
@@ -546,7 +546,7 @@ function pasoIdiomaAdicional(base, datos) {
   return {
     id: 'idiomaAdicional', seccion: 'idiomas', complemento: true, titulo: 'Idioma adicional',
     campos: [
-      { id: 'nota.idiomas', tipo: 'nota', estilo: 'ayuda', texto: 'Cada idioma adicional: {precio:idioma}. Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' },
+      { id: 'nota.idiomas', tipo: 'nota', estilo: 'ayuda', texto: 'Cada idioma adicional: {precio:idioma}. Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar. El precio es por cada idioma adicional que se agregue.' },
       ...[2, 3, 4].flatMap((n) => {
         const l = datos.idiomas?.[`l${n}`];
         const ok = l && l !== principal;
@@ -726,10 +726,10 @@ export function planNecesario(esquema, datos, { gratisPosible = false } = {}) {
   }
   // El plan gratis no trae galería (README ronda 24): con la galería prendida, Basic
   const conGaleria = esquema.pasos.some((p) => p.seccion === 'galeria' && seccionActiva(p, datos));
-  // Tampoco la cuenta regresiva ni los complementos (con cualquiera de los dos, Basic)
+  // Tampoco la cuenta regresiva (con ella, Basic). README (ronda 85): los complementos ya no suben a Basic: en Gratis
+  // se cobran solos (idioma, tarjetas, cambios de diseño, video), sin el plan
   const conCuenta = esquema.pasos.some((p) => p.campos.some((c) => c.id === 'portada.cuenta')) && datos.portada?.cuenta === true;
-  const conComplementos = complementos(esquema, datos).length > 0;
-  return n === 1 && gratisPosible && datos.planElegido === 'gratis' && !conGaleria && !conCuenta && !conComplementos ? 'gratis' : NIVELES[n];
+  return n === 1 && gratisPosible && datos.planElegido === 'gratis' && !conGaleria && !conCuenta ? 'gratis' : NIVELES[n];
 }
 
 // Complementos elegidos: colores, tipografía y un idioma por cada adicional
@@ -755,6 +755,53 @@ export function complementos(esquema, datos) {
     ls.forEach(() => x.push('idioma'));
   }
   return x;
+}
+
+// README (ronda 85): lo que ven los invitados es solo lo pagado. Una invitación publicada puede tener cosas prendidas
+// después sin pagar (una sección de un plan más alto o un complemento): se apagan en la copia que se muestra, y el
+// panel le indica al cliente lo que falta pagar. El dueño, con «Ver la invitación», ve todo (con un aviso).
+export function recortarSinPagar(esquema, datos, { pagado, extras = [] }) {
+  const d = structuredClone(datos || {});
+  // Gratis permite lo de nivel Basic (confirmación, dress code…) menos la galería y la cuenta regresiva (abajo)
+  const tope = Math.max(1, NIVELES.indexOf(pagado));
+  const sobra = (nivel) => NIVELES.includes(nivel) && NIVELES.indexOf(nivel) > tope;
+  d.secciones = { ...(d.secciones || {}) };
+  const recortado = [];
+  for (const paso of esquema.pasos) {
+    if (!seccionActiva(paso, d)) continue;
+    if ((paso.seccion || paso.nivelPaso) && !paso.complemento && paso.seccion && sobra(paso.nivel)) { d.secciones[paso.seccion] = false; recortado.push(paso.seccion); continue; }
+    for (const c of paso.campos) {
+      const v = leer(d, c.id);
+      if (c.paquete && sobra(c.paquete) && usado(c, v)) { escribir(d, c.id, c.tipo === 'switch' ? false : Array.isArray(v) ? [] : undefined); recortado.push(c.id); }
+      if (c.nivelCantidad && Array.isArray(v) && v.length >= c.nivelCantidad[0] && sobra(c.nivelCantidad[1])) { escribir(d, c.id, v.slice(0, c.nivelCantidad[0] - 1)); recortado.push(c.id); }
+    }
+  }
+  if (pagado === 'gratis' || !pagado) {
+    if (d.secciones.galeria !== false && esquema.pasos.some((p) => p.seccion === 'galeria')) { d.secciones.galeria = false; recortado.push('galeria'); }
+    if (d.portada?.cuenta === true) { d.portada = { ...d.portada, cuenta: false }; recortado.push('portada.cuenta'); }
+  }
+  // Complementos: solo los pagados (los incluidos por el plan, como la Save The Date en Premium, cuentan como pagados)
+  const pagos = (extras || []).map((x) => (x === 'paleta' || x === 'tipografia' ? 'diseno' : x));
+  const tiene = (x) => { const i = pagos.indexOf(x); if (i >= 0) { pagos.splice(i, 1); return true; } return false; };
+  const incluida = (x) => x === 'std-tarjeta' && tope >= NIVELES.indexOf('premium');
+  for (const x of complementos(esquema, d)) {
+    if (incluida(x) || tiene(x)) continue;
+    recortado.push(x);
+    if (x === 'idioma') continue; // los idiomas se recortan abajo, según cuántos se pagaron
+    if (x === 'agradecimiento') d.secciones.agradecimiento = false;
+    else if (x === 'diseno') d.diseno = { ...(d.diseno || {}), paleta: { ...(d.diseno?.paleta || {}), modo: 'original' }, tipografia: { ...(d.diseno?.tipografia || {}), modo: 'original' } };
+    else if (x === 'video-portada') d.portada = { ...(d.portada || {}), tipo: 'fotos' };
+    else if (String(x).startsWith('std')) d.secciones.std = false;
+  }
+  const idiomasPagos = (extras || []).filter((x) => x === 'idioma').length;
+  const principal = String(d.variante || 'es').slice(0, 2);
+  const ls = [2, 3, 4].filter((n) => d.idiomas?.[`l${n}`] && d.idiomas[`l${n}`] !== principal);
+  if (ls.length > idiomasPagos) {
+    d.idiomas = { ...d.idiomas };
+    ls.slice(idiomasPagos).forEach((n) => delete d.idiomas[`l${n}`]);
+    if (!idiomasPagos) d.secciones.idiomas = false;
+  }
+  return { datos: d, recortado: [...new Set(recortado)] };
 }
 
 // Cada paso con su nivel (para los avisos Basic / Premium / Deluxe / Complemento del menú)
