@@ -1132,7 +1132,7 @@
  "1303": "Verplaats de scheiding tussen voorvertoning en paneel",
  "1304": "Paneel openen",
  "1305": "Voorvertoning van de uitnodiging",
- "1306": "QR-fotoalbum",
+ "1306": "QR-album",
  "1307": "Wat je invult, wordt alleen in deze browser opgeslagen. Wil je op een ander apparaat verder? Sla de uitnodiging op in een account:",
  "1308": "Opslaan met Google",
  "1309": "Hoe moeten de namen eruitzien? (namen, roepnamen, bijnamen…). Bijvoorbeeld: Lau en Pablo.",
@@ -1363,5 +1363,6 @@
  "1486": "De wijzigingen worden gedaan door het designteam: de aanvraag wordt verstuurd bij het publiceren en kan daarna niet meer worden aangepast.",
  "1487": "vanaf",
  "1488": "Elke extra taal:",
- "1489": "Elke gast ziet de uitnodiging in zijn taal en kan die wijzigen via de zwevende knop. De teksten worden vanzelf vertaald en kunnen worden aangepast. De prijs is per extra taal die je toevoegt."
+ "1489": "Elke gast ziet de uitnodiging in zijn taal en kan die wijzigen via de zwevende knop. De teksten worden vanzelf vertaald en kunnen worden aangepast. De prijs is per extra taal die je toevoegt.",
+ "1490": "Je hebt al een actieve gratis uitnodiging: er is er maar één toegestaan. Deze uitnodiging heeft een pakket nodig (Basic of hoger)."
 }

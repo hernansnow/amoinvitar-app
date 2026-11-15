@@ -1,6 +1,6 @@
 # Estado del sistema y novedades (para seguir trabajando)
 
-Resumen para quien siga con el proyecto (por ejemplo, cambios de diseño). Actualizado al 14/11/2026, ronda 84.
+Resumen para quien siga con el proyecto (por ejemplo, cambios de diseño). Actualizado al 15/11/2026, ronda 86.
 Ver también `CLAUDE.md` (reglas y mapa), `README.md` (carpetas y cómo probar) y el resto de `docs/`.
 
 ## 1. Qué está publicado
@@ -128,6 +128,36 @@ en el editor. Lleva a Administración → Álbum (`#album`).
 
 - La **política de privacidad** explica los recordatorios y la casilla de novedades. A pedido del dueño, **no dice que el
   segundo trae cupón**, para que nadie espere el descuento: no agregarlo.
+
+### Pagos, plan Gratis y lo que ven los invitados (rondas 85 y 86)
+- **Los invitados ven solo lo pagado** (`recortarSinPagar` en `src/panel/esquemas.js`, aplicado en `publicada()` de
+  `src/index.js`). En una invitación publicada, lo prendido después sin pagar se apaga en la copia que se muestra:
+  secciones de un plan más alto, galería y cuenta regresiva en Gratis, idiomas adicionales, tarjetas, cambios de
+  diseño y video. El dueño («Ver la invitación») ve todo, con el aviso «Lo agregado sin pagar solo lo ves tú» y un
+  botón para pagar (`conAvisoDueno`). Lo pagado sale de `ev.paquete` y `ev.datos.extras`.
+- **Gratis + complementos ya no pasa a Basic:** se cobra solo el complemento (`planNecesario`). Pasar a Gratis no
+  apaga los complementos; los adicionales sueltos también se compran en Gratis.
+- **Tope de Gratis: 35 personas confirmadas** (con acompañantes), con o sin lista de invitados (`topeConfirmaciones` y
+  `rsvp` en `src/index.js`). La respuesta que pasaría el tope se rechaza («lleno»); los «no voy» siguen entrando.
+  La lista de invitados de Gratis también tiene tope de 35 filas.
+- **Una sola invitación Gratis activa por cliente** (`otraGratisActiva` en `src/rutas/tienda.js`). Cuenta como el
+  mismo cliente:
+  - el mismo mail (cuenta o pedido);
+  - otra Gratis con los mismos nombres y la misma fecha (para que no alcance con usar otro mail).
+
+  «Activa» quiere decir ya activada (paquete `gratis`), publicada o no, y sin vencer. Si ya tiene una, el panel le
+  pide plan (`plan.otraGratis` + aviso) y la compra rechaza activarla gratis.
+- **Panel → Administración:**
+  - barra abajo con lo que falta pagar y el botón «Pagar» (`pintarBarraPago`);
+  - sin activar, Enviar con los botones apagados y el aviso;
+  - en Gratis, aviso de 35 confirmaciones en Enviar y Respuestas.
+- **Avisos para subir de plan** (`.aviso-nivel` / `.ad-bloqueo-cinta`), con el color de cada plan: Basic verde, Premium
+  violeta, Deluxe oro (fondo claro, texto y borde fuertes).
+- **Complementos en el editor:** el interruptor dice «Agregar» y el precio va en verde a la derecha
+  (`precioComplemento`); la Save The Date dice «desde» y el precio más bajo.
+- La pestaña «Álbum de fotos» de Administración se llama **«Álbum QR»**. En el celular, la flecha para pasar de
+  pestaña es negra con la flecha blanca.
+- En local, los pagos se simulan (`DEV_FAKE_PAYMENTS`): un pedido «pagado» en la compu no es un regalo.
 
 ## 5. Probar en la compu
 

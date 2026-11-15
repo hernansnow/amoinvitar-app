@@ -1363,5 +1363,6 @@
  "1486": "The changes are made by the design team: the request is sent when you publish and from then on it can no longer be modified.",
  "1487": "from",
  "1488": "Each additional language:",
- "1489": "Each guest sees the invitation in their language and can change it from the floating button. The texts are translated automatically and can be adjusted. The price is per additional language added."
+ "1489": "Each guest sees the invitation in their language and can change it from the floating button. The texts are translated automatically and can be adjusted. The price is per additional language added.",
+ "1490": "You already have an active free invitation: only one is allowed. This invitation needs a plan (Basic or higher)."
 }

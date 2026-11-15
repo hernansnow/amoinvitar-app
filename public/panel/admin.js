@@ -10,7 +10,7 @@ let reloj = null;
 
 const SECCIONES = [
   ['resumen', 'Resumen'], ['enviar', 'Enviar'], ['respuestas', 'Respuestas'], ['mensajes', 'Mensajes'],
-  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Llegadas'], ['album', 'Álbum de fotos'], ['accesos', 'Accesos'], ['recuerdo', 'Recuerdo'],
+  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Llegadas'], ['album', 'Álbum QR'], ['accesos', 'Accesos'], ['recuerdo', 'Recuerdo'],
 ];
 
 // ── Datos de la invitación ──

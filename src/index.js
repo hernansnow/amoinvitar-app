@@ -420,16 +420,22 @@ function personasConfirmadas(respuestas = []) {
   for (const { datos: d } of ultimas.values()) {
     if (d.asiste !== 'Si') continue;
     if (/^\d+$/.test(String(d.personas || ''))) { total += Number(d.personas) + (/^\d+$/.test(String(d.ninos || '').trim()) ? Number(d.ninos) : 0); continue; }
-    const acomp = d.acompanantes && d.acompanantes !== 'No' ? String(d.acompanantes).split(',').filter((n) => n.trim()).length : 0;
+    const acomp = d.acompanantes && !/^\s*no\s*$/i.test(d.acompanantes) ? String(d.acompanantes).split(',').filter((n) => n.trim()).length : 0; // «no» en cualquier forma: sin acompañantes
     const ninos = /^\d+$/.test(String(d.ninos || '').trim()) ? Number(d.ninos) : 0;
     total += 1 + acomp + ninos;
   }
   return total;
 }
-async function aforoLleno(almacen, ev) {
+// Tope de confirmaciones: el aforo que puso el cliente y, en el plan Gratis, 35 personas (README ronda 86)
+function topeConfirmaciones(ev) {
   const aforo = Number(ev.datos.rsvp?.aforo);
-  if (!(aforo > 0)) return false;
-  return personasConfirmadas(await almacen.respuestas(ev.id)) >= aforo;
+  const t = Math.min(aforo > 0 ? aforo : Infinity, ev.paquete === 'gratis' ? LIMITE_INVITADOS.gratis : Infinity);
+  return Number.isFinite(t) ? t : 0;
+}
+async function aforoLleno(almacen, ev) {
+  const tope = topeConfirmaciones(ev);
+  if (!tope) return false;
+  return personasConfirmadas(await almacen.respuestas(ev.id)) >= tope;
 }
 
 // ── Lo que usan las invitaciones: RSVP y lista ─────────────────────────
@@ -451,7 +457,11 @@ async function rsvp(env, request) {
   if (ver.codigo) datos.inv = ver.codigo; // con link personal, la respuesta queda atada a ese invitado
   if (ver.dueno) datos.prueba = '1'; // la mandó el dueño probando: el panel la marca y la deja borrar
   // Aforo completo: no entran más confirmaciones de asistencia (los "no voy" sí)
-  if (accion === 'rsvp' && datos.asiste === 'Si' && await aforoLleno(almacen, ev)) return json({ result: 'error', lleno: true }, 409);
+  // README (ronda 86): se cuenta con esta respuesta incluida (sus acompañantes también; si cambia la suya, reemplaza la anterior)
+  if (accion === 'rsvp' && datos.asiste === 'Si') {
+    const tope = topeConfirmaciones(ev);
+    if (tope && personasConfirmadas([{ tipo: 'rsvp', datos, creado: new Date().toISOString() }, ...await almacen.respuestas(ev.id)]) > tope) return json({ result: 'error', lleno: true }, 409);
+  }
   await almacen.guardarRespuesta(eventoId, accion, datos);
   if (accion === 'rsvp' && !datos.prueba && ev.datos.admin?.avisoRespuestas === 'cada') await avisoRespuesta(env, ev, datos).catch((e) => console.error('[aviso rsvp]', e));
   return json({ result: 'ok' });

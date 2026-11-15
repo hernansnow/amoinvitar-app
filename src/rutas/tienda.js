@@ -27,6 +27,7 @@ import { varianteDePais } from '../textos/index.js';
 import { varianteVisitante, bautizoVisitante, sweet16Visitante } from '../sitio/visitante.js';
 import { diceBautizo } from '../sitio/variantes.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
+import { venceEvento, fechaEvento } from '../vencimiento.js';
 import { ZONAS } from '../datos/zonas.js';
 
 const ORDEN = ['gratis', 'basic', 'premium', 'deluxe'];
@@ -190,6 +191,11 @@ export async function cotizar(request, env) {
   const b = await readJson(request);
   // Invitación armada en el panel: lo que falta pagar del plan y los complementos
   const borrador = b.borrador ? await validarBorrador(env, request, b.borrador, { esquemaDe: opcionesTienda.esquemaDe }) : null;
+  // README (ronda 86): activar Gratis solo si el cliente no tiene otra Gratis activa (control final, con el mail del pedido)
+  if (borrador && borrador.pedido.paquete === 'gratis' && borrador.evento.paquete === 'borrador' && !usuario?.esAdmin) {
+    const otra = await otraGratisActiva(env, borrador.evento, email);
+    if (otra) throw new HttpError(409, 'Ya hay una invitación gratis activa con este mail o con los mismos nombres y fecha. Se puede tener una sola: para esta, elige un plan (Basic o superior).');
+  }
   const rec = !borrador && b.recuerdo ? await validarRecuerdo(env, request, b.recuerdo) : null;
   const pedido = borrador ? borrador.pedido : rec ? rec.pedido : validarPedido(b.pedido);
   const eur = borrador ? borrador.eur : rec ? rec.eur : precioPedido(pedido);
@@ -215,6 +221,11 @@ export async function comprar(request, env) {
   const email = (usuario?.email || str(b.email, 200)).toLowerCase();
   if (!isEmail(email)) throw new HttpError(400, 'Falta un mail válido para mandar el acceso');
   const borrador = b.borrador ? await validarBorrador(env, request, b.borrador, { esquemaDe: opcionesTienda.esquemaDe }) : null;
+  // README (ronda 86): activar Gratis solo si el cliente no tiene otra Gratis activa (control final, con el mail del pedido)
+  if (borrador && borrador.pedido.paquete === 'gratis' && borrador.evento.paquete === 'borrador' && !usuario?.esAdmin) {
+    const otra = await otraGratisActiva(env, borrador.evento, email);
+    if (otra) throw new HttpError(409, 'Ya hay una invitación gratis activa con este mail o con los mismos nombres y fecha. Se puede tener una sola: para esta, elige un plan (Basic o superior).');
+  }
   const rec = !borrador && b.recuerdo ? await validarRecuerdo(env, request, b.recuerdo) : null;
   const mejora = borrador || rec || (b.mejora ? await validarMejora(env, request, b.mejora) : null);
   const pedido = mejora ? mejora.pedido : validarPedido(b.pedido);
@@ -544,10 +555,38 @@ function promoPanel(env, ev, { item, clave, eurLista, eurPagar, eurTotal, moneda
   return { nombre: promo.nombre, porcentaje: promo.porcentaje, antes: formatMoney(lista, moneda), texto: formatMoney(redondo(lista * (1 - promo.porcentaje / 100)), moneda),
     descuento: off ? `−${formatMoney(off, moneda)}` : null, total: off ? formatMoney(Math.max(0, total - off), moneda) : null };
 }
+// README (ronda 86): una sola invitación Gratis activa por cliente. Cuenta como el mismo cliente el mismo mail (cuenta o
+// pedido) o una Gratis activa con los mismos nombres y la misma fecha (para que no alcance con usar otro mail).
+const normaliza = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+export async function otraGratisActiva(env, ev, email) {
+  const ahora = new Date().toISOString();
+  // Activada = ya pasó por la «compra» gratis (paquete 'gratis'), publicada o no, y sin vencer
+  const activa = (e) => e.paquete === 'gratis' && e.id !== ev.id && (venceEvento(e) || '9999') > ahora;
+  if (email) {
+    const { results = [] } = await env.DB.prepare(`SELECT DISTINCT e.id FROM eventos e WHERE e.paquete = 'gratis' AND e.id != ?1 AND (
+      EXISTS (SELECT 1 FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = e.id AND lower(u.email) = ?2)
+      OR EXISTS (SELECT 1 FROM pedidos p WHERE p.evento_id = e.id AND lower(p.email) = ?2))`).bind(ev.id, String(email).toLowerCase()).all();
+    for (const r of results) { const e = await almacenD1(env).evento(r.id); if (e && activa(e)) return e; }
+  }
+  const firma = (d) => `${normaliza([d.nombres?.a, d.nombres?.b].filter(Boolean).sort().join('|'))}#${fechaEvento(d)}`;
+  const mia = firma(ev.datos || {});
+  if (mia.split('#')[0] && fechaEvento(ev.datos || {})) {
+    const { results = [] } = await env.DB.prepare("SELECT id FROM eventos WHERE paquete = 'gratis' AND tipo = ? AND id != ? ORDER BY actualizado DESC LIMIT 500").bind(ev.tipo, ev.id).all();
+    for (const r of results) { const e = await almacenD1(env).evento(r.id); if (e && activa(e) && firma(e.datos) === mia) return e; }
+  }
+  return null;
+}
 export async function estadoPlan(env, request, ev, esquema) {
   if (ev.producto !== 'invitacion') return estadoProducto(env, request, ev, esquema);
   const m = buscarModelo(ev.modelo);
-  const gratisPosible = !!(m && (m.gratis || MODELOS_GRATIS.includes(m.id)));
+  let gratisPosible = !!(m && (m.gratis || MODELOS_GRATIS.includes(m.id)));
+  // README (ronda 86): sin activar todavía y con otra Gratis activa del mismo cliente: esta va con plan
+  let otraGratis = null;
+  if (gratisPosible && ev.paquete === 'borrador' && ev.datos.planElegido === 'gratis') {
+    const u = await usuarioActual(request, env).catch(() => null);
+    if (!u?.esAdmin) otraGratis = await otraGratisActiva(env, ev, u?.email).catch(() => null);
+    if (otraGratis) gratisPosible = false;
+  }
   const necesario = planNecesario(esquema, ev.datos, { gratisPosible });
   const pagado = NIVELES.includes(ev.paquete) ? ev.paquete : null;
   // Lo pagado no se pierde: si apaga secciones, el plan queda en el que ya pagó
@@ -568,6 +607,7 @@ export async function estadoPlan(env, request, ev, esquema) {
   return {
     // README (ronda 52): Basic incluido con el álbum Platinum de Albunear: «Incluido» en lugar del precio
     plan, nombre: NOMBRES_PAQUETE[plan], precio: ev.datos.vinculo?.incluido === plan ? 'Incluido' : texto(plan, precioPaquete(plan)), pagado, gratisPosible,
+    ...(otraGratis ? { otraGratis: [otraGratis.datos.nombres?.a, otraGratis.datos.nombres?.b].filter(Boolean).join(' & ') || true } : {}),
     ...(ev.datos.vinculo?.albunear ? { incluidoCon: 'Albunear Platinum' } : {}),
     promo: ev.datos.vinculo?.incluido === plan ? null : promoPanel(env, ev, { item: PLANES_PROMO.includes(plan) ? plan : null, clave: plan, eurLista: precioPaquete(plan), eurPagar: eurPlan, eurTotal: eur, moneda, rates, pais }),
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: precioExtra(x) ? texto(x, precioExtra(x)) : `Incluida en ${NOMBRES_PAQUETE[plan]}`, pagado: !extrasAPagar.includes(x) })),

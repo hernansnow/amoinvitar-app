@@ -747,7 +747,8 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 /* Flecha ">" al borde derecho: avisa que el menú sigue (se esconde al llegar al final) */
 .ad-menu-mas { position: absolute; right: 0; top: 0; height: calc(100% - 8px); width: 44px; border: 0; padding: 0 0 0 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--acento);
   background: linear-gradient(90deg, rgba(255,255,255,0), var(--fondo, #f7f6f3) 45%); }
-.ad-menu-mas svg { background: #fff; border: 1px solid var(--borde); border-radius: 50%; width: 30px; height: 30px; padding: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+/* README (ronda 86): botón negro con flecha blanca, para que no se mezcle con los nombres de las pestañas */
+.ad-menu-mas svg { background: #111; color: #fff; border: 1px solid #111; border-radius: 50%; width: 30px; height: 30px; padding: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
 .ad-menu-mas[hidden] { display: none; }
 @media (min-width: 900px) { .ad-menu-mas { display: none; } }
 .ad-tab { border: 1px solid var(--borde); background: #fff; border-radius: 999px; padding: 8px 16px; font-weight: 600; white-space: nowrap; cursor: pointer; color: var(--texto); }

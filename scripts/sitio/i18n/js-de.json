@@ -1132,7 +1132,7 @@
  "1303": "Trennlinie zwischen Vorschau und Bereich verschieben",
  "1304": "Bereich öffnen",
  "1305": "Vorschau der Einladung",
- "1306": "QR-Fotoalbum",
+ "1306": "QR-Album",
  "1307": "Was du eingibst, wird nur in diesem Browser gespeichert. Um auf einem anderen Gerät weiterzumachen, speichere die Einladung in einem Konto:",
  "1308": "Mit Google speichern",
  "1309": "Wie sollen die Namen erscheinen? (Namen, Kurzformen, Spitznamen…). Zum Beispiel: Lau und Pablo.",
@@ -1363,5 +1363,6 @@
  "1486": "Die Änderungen macht das Design-Team: Der Auftrag wird beim Veröffentlichen gesendet und kann danach nicht mehr geändert werden.",
  "1487": "ab",
  "1488": "Jede zusätzliche Sprache:",
- "1489": "Jeder Gast sieht die Einladung in seiner Sprache und kann sie über den schwebenden Button ändern. Die Texte werden automatisch übersetzt und lassen sich anpassen. Der Preis gilt pro hinzugefügter Sprache."
+ "1489": "Jeder Gast sieht die Einladung in seiner Sprache und kann sie über den schwebenden Button ändern. Die Texte werden automatisch übersetzt und lassen sich anpassen. Der Preis gilt pro hinzugefügter Sprache.",
+ "1490": "Du hast bereits eine aktive kostenlose Einladung: Es ist nur eine erlaubt. Diese Einladung braucht einen Plan (Basic oder höher)."
 }

@@ -1760,6 +1760,8 @@ function pintarPlan() {
   document.body.classList.toggle('suelta', !!S.esquema?.suelta);
   pintarMedida(); if (typeof pintarPublicar === "function" && S.evento) pintarPublicar();
   pintarBarraPago();
+  // README (ronda 86): ya hay otra invitación gratis activa del mismo cliente: esta va con un plan (se avisa una vez)
+  if (pl.otraGratis && !pintarPlan.avisoGratis) { pintarPlan.avisoGratis = true; aviso('Ya tienes una invitación gratis activa: se puede tener una sola. Esta invitación va con un plan (Basic o superior).'); }
 }
 // README (ronda 28): diseño a medida. Se completa, se envía al equipo, el equipo lo aprueba y recién ahí se paga
 function pintarMedida() {
