@@ -309,9 +309,23 @@
         : 'Precios en ' + nombreMoneda(c.moneda) + '.' + (m.nombres.length ? ' Puedes pagar con ' + lista(m.nombres) + '.' : '') + ' No esperes más, diseña tu invitación hoy mismo sin pagar nada.' + (e.hasAttribute('data-sin-nota') ? '' : ' <br><small>(*) Solo disponible en algunos modelos.</small>');
     });
     $$('[data-pago-iconos]').forEach(function (e) { e.innerHTML = m.logos.map(logo).join('') + m.extra; });
+    // README (ronda 87): nota de la página de profesionales — moneda y medios del país; «Precios sin IVA» solo en España y la UE
+    var NP = { es: ['Precios en {m}.', 'Puedes pagar con {x}.'], ar: ['Precios en {m}.', 'Podés pagar con {x}.'], en: ['Prices in {m}.', 'You can pay with {x}.'], pt: ['Preços em {m}.', 'Você pode pagar com {x}.'], fr: ['Prix en {m}.', 'Vous pouvez payer par {x}.'], it: ['Prezzi in {m}.', 'Puoi pagare con {x}.'], de: ['Preise in {m}.', 'Du kannst bezahlen mit {x}.'], nl: ['Prijzen in {m}.', 'Je kunt betalen met {x}.'] };
+    var np = NP[IDI || (ar ? 'ar' : 'es')] || NP.es;
+    var monNP = ar && c.moneda === 'ARS' ? 'pesos' : nombreMoneda(c.moneda);
+    if (IDI) { monNP = c.moneda; try { monNP = new Intl.NumberFormat(IDI, { style: 'currency', currency: c.moneda, currencyDisplay: 'name' }).formatToParts(2).filter(function (x) { return x.type === 'currency'; })[0].value; } catch (x) { /* sin nombre */ } }
+    $$('[data-nota-pro-moneda]').forEach(function (e) { e.textContent = np[0].replace('{m}', monNP); });
+    $$('[data-nota-pro-medios]').forEach(function (e) {
+      var nn = m.nombres.map(function (t) { return window.AI_REGIONAL && IDI ? AI_REGIONAL.traduce(t) : t; });
+      var y = { en: ' and ', pt: ' e ', fr: ' et ', it: ' e ', de: ' und ', nl: ' en ' }[IDI] || ' y ';
+      e.textContent = nn.length ? np[1].replace('{x}', nn.length > 1 ? nn.slice(0, -1).join(', ') + y + nn[nn.length - 1] : nn[0]) : '';
+    });
     // README (ronda 44): «IVA incluido» solo si el precio lo lleva (lo dice la tienda según el país de quien mira)
     var conIva = c.iva === undefined ? c.moneda === 'EUR' : c.iva;
-    $$('[data-iva]').forEach(function (e) { e.hidden = !conIva; }); // el texto ya viene traducido en la página
+    $$('[data-iva]').forEach(function (e) { e.hidden = !conIva; });
+    var paisIva = String((CARPETA || '').split('/')[1] || c.pais || '').toUpperCase();
+    var enUE = paisIva ? 'AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE'.split(' ').indexOf(paisIva) >= 0 : c.moneda === 'EUR';
+    $$('[data-nota-pro-iva]').forEach(function (e) { e.hidden = !enUE; }); // «Precios sin IVA»: solo en España y la UE
     // Selector de país (la moneda y el idioma salen del país)
     if ($mon) {
       var actual = LISTA_PAISES.filter(function (y) { return y[3] === CARPETA; })[0];
