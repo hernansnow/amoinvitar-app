@@ -21,6 +21,7 @@ import { crearCompra, mediosPro, confirmarCompra } from '../pro/compras.js';
 import { dominioDe, pedirDominio, revisarDominio, quitarDominio, conCloudflare, cnameDe } from '../pro/dominios.js';
 import { transferInfo } from '../lib/pagos.js';
 import { getInvoice, invoiceUrl } from '../lib/facturas.js';
+import { extrasDe, COMPLEMENTOS_PRO } from '../pro/extras.js';
 
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
 const pais = (request) => request.cf?.country || request.headers.get('cf-ipcountry') || null;
@@ -34,7 +35,8 @@ async function contexto(request, env, url) {
   const empresas = await empresasDe(env, u.id);
   if (!empresas.length) throw new HttpError(403, 'Esta cuenta no tiene una empresa profesional');
   const e = empresas.find((x) => x.id === url.searchParams.get('e')) || empresas[0];
-  return { u, empresas, e, duenio: e.rol === 'duenio', puedeEditar: ['duenio', 'editor'].includes(e.rol), studio: paseVigente(e) };
+  const extras = await extrasDe(env, e.id); // README (ronda 87): DEMO y créditos de complementos
+  return { u, empresas, e, extras, duenio: e.rol === 'duenio', puedeEditar: ['duenio', 'editor'].includes(e.rol), studio: paseVigente(e) };
 }
 const exigir = (ok, msg = 'Sin permiso para esto') => { if (!ok) throw new HttpError(403, msg); };
 
@@ -53,6 +55,7 @@ export async function api(request, env, partes) {
   if (recurso === 'dominio') {
     exigir(c.duenio, 'Solo el dueño maneja el dominio');
     if (M === 'POST' && !id) {
+      if (c.extras.demo) throw new HttpError(409, 'Cuenta DEMO: el dominio propio no se conecta. Todo se ve desde amoinvitar.com.');
       if (!c.studio) throw new HttpError(409, 'El dominio propio es de Studio con el pase vigente');
       if (!c.e.dominio) throw new HttpError(409, 'Primero hay que contratar la configuración del dominio (49 €, o sin cargo con el pack de 100 créditos)');
       const b = await readJson(request);
@@ -110,11 +113,15 @@ async function resumen(request, env, c) {
     usuario: { id: u.id, email: u.email, nombre: u.nombre },
     empresas: c.empresas.map((x) => ({ id: x.id, nombre: x.nombre })),
     dominio: dom,
-    empresa: { id: e.id, nombre: e.nombre, rol: e.rol, nivel, studio: c.studio, paseVence: e.pase_vence, paseVencido: nivel === 'studio' && !c.studio, estado: e.estado, dominio: !!e.dominio },
+    empresa: { id: e.id, nombre: e.nombre, rol: e.rol, nivel, studio: c.studio, paseVence: e.pase_vence, paseVencido: nivel === 'studio' && !c.studio, estado: e.estado, dominio: !!e.dominio, demo: c.extras.demo },
+    // README (ronda 87): créditos de complementos (ocultos hasta que el admin los habilita; los regalados se ven siempre)
+    complementos: (c.extras.habilitado || Object.values(c.extras.saldo).some((n) => n > 0)) ? { habilitado: c.extras.habilitado, saldo: c.extras.saldo,
+      lista: Object.entries(COMPLEMENTOS_PRO).map(([k, v]) => ({ id: k, nombre: v.nombre, neto: v.neto, manual: !!v.manual, saldo: parseInt(c.extras.saldo[k], 10) || 0 })) } : null,
     limites: { usuarios: limiteUsuarios(nivel), usados: (miembros || []).length },
     creditos: cred,
-    marca: { nombre: e.marca.nombre || '', pie: e.marca.pie || '', logo: e.marca.logo || '', sinPie: !!e.marca.sinPie, blanca: !!e.marca.blanca },
-    eventos: dom.estado === 'activo' ? eventos.map((x) => (x.link ? { ...x, link: `https://${dom.host}${x.link}` } : x)) : eventos, equipo: miembros || [], compras: await Promise.all((compras || []).map(async (x) => {
+    marca: { nombre: e.marca.nombre || '', pie: e.marca.pie || '', logo: e.marca.logo || '', sinPie: !!e.marca.sinPie, blanca: !!e.marca.blanca, color: e.marca.color || '', paleta: e.marca.paleta || '' },
+    // README (ronda 87): con el dominio propio activo, la invitación y el panel del cliente salen desde ese dominio
+    eventos: dom.estado === 'activo' && !c.extras.demo ? eventos.map((x) => ({ ...x, link: x.link ? `https://${dom.host}${x.link}` : null, linkCliente: `https://${dom.host}${x.linkCliente}` })) : eventos, equipo: miembros || [], compras: await Promise.all((compras || []).map(async (x) => {
       const inv = x.factura ? await getInvoice(env, x.factura).catch(() => null) : null;
       return { ...x, nombre: cat[x.item]?.nombre || x.item, urlFactura: inv ? await invoiceUrl(env, base, inv) : null };
     })),
@@ -122,7 +129,7 @@ async function resumen(request, env, c) {
     modelos: MODELOS.filter((m) => !m.simple && !m.std).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
     tienda: {
       credito: PROFESIONALES.credito, pase: PROFESIONALES.studio.pase, config: PROFESIONALES.studio.configuracionDominio,
-      productos: Object.entries(cat).filter(([k, v]) => v.nivel === 'studio-dominio' ? (c.studio && !e.dominio) : (nivel === 'studio' ? (v.nivel === 'studio' && c.studio) || v.nivel === 'studio-pase' : v.nivel === 'pro' || v.nivel === 'studio-pase'))
+      productos: Object.entries(cat).filter(([k, v]) => v.nivel !== 'complemento').filter(([k, v]) => v.nivel === 'studio-dominio' ? (c.studio && !e.dominio) : (nivel === 'studio' ? (v.nivel === 'studio' && c.studio) || v.nivel === 'studio-pase' : v.nivel === 'pro' || v.nivel === 'studio-pase'))
         .map(([k, v]) => ({ id: k, nombre: v.nombre, creditos: v.creditos, neto: v.neto, nivel: v.nivel })),
       transferencia: transferInfo(env, 'EUR'),
       // Medios de pago online según el país de facturación (el de Argentina cobra en pesos con Mercado Pago)
@@ -142,8 +149,10 @@ async function crearEvento(request, env, c) {
   let tipoReal = tipo;
   if (m && !m.eventos.includes(tipoReal)) tipoReal = TIPOS_EVENTO.find((t) => t.grupo === tipo && m.eventos.includes(t.id))?.id || tipo;
   if (!m || !m.eventos.includes(tipoReal) || !TIPOS_EVENTO.some((t) => t.id === tipoReal)) throw new HttpError(400, 'Elige un diseño disponible para ese evento');
-  const a = str(b.nombres?.a, 20), bb = str(b.nombres?.b, 20);
+  // README (ronda 87): dos nombres solo en las bodas (como en el panel); en los demás eventos, uno
+  const a = str(b.nombres?.a, 20), bb = tipoReal === 'boda' ? str(b.nombres?.b, 20) : '';
   if (!a) throw new HttpError(400, 'Falta el nombre');
+  if (tipoReal === 'boda' && !bb) throw new HttpError(400, 'Faltan los dos nombres');
   const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';
   const ev = {
     id: `ev_${randomId(5)}`, producto: 'invitacion', tipo: tipoReal, modelo: m.id, paquete: 'borrador', aMedida: null, estado: 'borrador', clave: randomId(16), empresaId: c.e.id, slug: null,
@@ -191,6 +200,11 @@ async function guardarMarca(request, env, c) {
   const quiereBlanca = !!b.blanca, quiereSinPie = !!b.sinPie;
   if ((quiereBlanca || quiereSinPie) && !c.studio) throw new HttpError(409, 'La marca blanca es del nivel Studio con el pase anual vigente');
   marca.blanca = quiereBlanca; marca.sinPie = quiereBlanca && quiereSinPie;
+  // README (ronda 87): color del pie de las invitaciones y paleta del panel del cliente final
+  if ('color' in b) marca.color = /^#[0-9a-f]{6}$/i.test(String(b.color || '')) ? String(b.color).toLowerCase() : '';
+  if ('paleta' in b) marca.paleta = ['negro', 'azul', 'rojo', 'dorado'].includes(b.paleta) ? b.paleta : '';
+  // Con logo, el nombre no se usa en el pie (se mantiene el que estaba)
+  if (marca.logo) marca.nombre = c.e.marca.nombre || marca.nombre;
   await guardarMarcaEmpresa(env, c.e.id, marca);
   return json({ ok: true, marca });
 }
@@ -246,7 +260,7 @@ async function comprar(request, env, c) {
   const b = await readJson(request);
   const item = str(b.item, 20), cat = catalogoCompras()[item];
   if (!cat) throw new HttpError(400, 'Producto desconocido');
-  const permitido = (cat.nivel === 'studio-dominio' && c.studio && !c.e.dominio) || cat.nivel === 'studio-pase' || (cat.nivel === 'pro' && c.e.nivel === 'pro') || (cat.nivel === 'studio' && c.studio);
+  const permitido = (cat.nivel === 'complemento' && c.extras.habilitado) || (cat.nivel === 'studio-dominio' && c.studio && !c.e.dominio) || cat.nivel === 'studio-pase' || (cat.nivel === 'pro' && c.e.nivel === 'pro') || (cat.nivel === 'studio' && c.studio);
   if (!permitido) throw new HttpError(409, cat.nivel === 'studio' ? 'Los packs Studio necesitan el pase anual vigente' : 'Ese producto no está disponible para tu nivel');
   const pend = await env.DB.prepare("SELECT COUNT(*) AS n FROM compras_pro WHERE empresa_id = ? AND estado = 'pendiente'").bind(c.e.id).first();
   if (pend.n >= 5) throw new HttpError(409, 'Hay varios pedidos pendientes de pago. Se pueden cancelar los que no se vayan a abonar.');

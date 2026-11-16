@@ -11,6 +11,7 @@ import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { sendEmail, mailCompraPro, mailCompraProPagada, mailAvisoInterno } from '../lib/email.js';
 import { PROFESIONALES } from '../catalogo.js';
 import { catalogoCompras, siguienteNumeroCompra, nuevoLote, renovarPase } from './empresa.js';
+import { sumarSaldo } from './extras.js';
 
 const r2 = (n) => Math.round(n * 100) / 100;
 const eur = (n) => `${Number(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
@@ -63,6 +64,7 @@ export async function pagarCompra(env, id, { medio = 'transferencia', nota = nul
   const emp = await env.DB.prepare('SELECT nombre FROM empresas WHERE id = ?').bind(c.empresa_id).first();
   if (c.item === 'dominio' || c.item === `studio-${PROFESIONALES.dominioSinCargoDesdePack}`) await env.DB.prepare('UPDATE empresas_pro SET dominio = 1 WHERE empresa_id = ?').bind(c.empresa_id).run();
   if (c.item === 'pase') await renovarPase(env, c.empresa_id, 12);
+  else if (cat?.comp) await sumarSaldo(env, c.empresa_id, cat.comp, c.creditos, 'compra', `Pedido #${c.numero}`); // README (ronda 87)
   else await nuevoLote(env, c.empresa_id, c.creditos, c.item, `Pedido #${c.numero}`);
   let urlFactura = null;
   try {

@@ -155,7 +155,30 @@ Código: `src/rutas/superadmin.js`, `src/rutas/consola.js`, `src/rutas/admin.js`
 Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `consultas`, `admin_log`
 (`migrations/0005` y `0006`; también se crean solas al primer uso).
 
-## 11. Pendiente
+## 11. Ronda 87 (tablero, cliente final, DEMO, créditos de complementos)
+- **Datos extra por empresa**: `app_state` clave `pro-extra:<empresaId>` → `{ demo, habilitado, saldo: { diseno: n, … }, historial }`
+  (`src/pro/extras.js`). Sin migraciones.
+- **Créditos de complementos** (precios sin IVA en `COMPLEMENTOS_PRO`): cambio de diseño 17, idioma 6 (cada uno),
+  agradecimiento 13, STD tarjeta 5, STD foto 13, STD web 18, a medida invitación 120, a medida STD web 50, a medida STD
+  tarjeta 30. Ocultos en el tablero hasta que el admin toca «Habilitar la compra de complementos»; «Regalar créditos de
+  complementos» suma saldo sin cargo (negativo descuenta; así se descuenta a mano el diseño a medida). Se compran de a 1
+  o de a 5 (`comp-<id>` / `comp-<id>-5` en `catalogoCompras`; `pagarCompra` suma saldo). Se gastan solos al publicar
+  (`publicarConCredito` → `cubrirComplementos`, todo o nada) o al guardar una invitación ya publicada con un complemento
+  nuevo: el id queda en `datos.extras` (como pagado). El video de portada no se cobra en eventos de empresa (por eso
+  no tiene crédito, aunque el dueño lo listó a 5 €).
+- **DEMO**: /admin → «Modo DEMO» pone Studio (pase de 1 mes si no tiene) y 1 crédito si no tiene. No publica (403 con
+  mensaje), el panel ofrece «Ver vista previa (DEMO)», el dominio propio no se conecta y el tablero muestra la cinta DEMO.
+- **Studio** siempre es marca blanca (invitación y panel del cliente sin Amo Invitar). Sin Studio (Pro, o pase vencido),
+  el cliente final ve el logo de Amo Invitar (sin link).
+- **Marca**: `marca.color` (pie de las invitaciones, texto oscuro si es claro; `colorPie` en `bloques.js`) y
+  `marca.paleta` (`negro|azul|rojo|dorado`, cambia `--acento` del panel del cliente; el resto sale con `color-mix`).
+  Con logo, el nombre no se usa en el pie.
+- **Cliente final**: `conClaveCliente` en el GET del panel → `empresaContexto(…, null)`; `S.empresa.cliente`. El
+  esquema se filtra en el navegador (`paraCliente`). Publicar sin permiso responde 403 antes de revisar lo que falta.
+- **Dominio propio**: `dominioPropio` deja pasar `/panel/<ev>`, `/api/panel/<ev>/…`, `/vista/<ev>` (solo eventos de esa
+  empresa), los archivos de `/panel/` y las banderas. El «Link para el cliente» del tablero usa el dominio activo.
+
+## 12. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos
 (ver `docs/precios-y-recuerdo.md`).

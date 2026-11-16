@@ -358,7 +358,7 @@ function pasosInvitacion({ tipo, modelo }) {
     // Instagram Wall (hashtag) y álbum compartido: uno u otro
     { id: 'instagram', seccion: 'instagram', titulo: 'Instagram Wall', excluye: 'album', campos: [
       titulo('hashtag.titulo'),
-      { id: 'album.hashtag', tipo: 'texto', etiqueta: 'Hashtag de Instagram', max: 40, placeholder: 'SofiyAle2027',
+      { id: 'album.hashtag', tipo: 'texto', etiqueta: 'Hashtag de Instagram', max: 40, placeholder: plural ? 'LauyPablo2027' : 'Sofi2027', // README (ronda 87): un solo nombre si el evento es de una persona
         ayuda: 'Sin el #. Vacío: se arma solo con los nombres y el año. Los invitados etiquetan sus fotos y el botón "Ver fotos" las muestra.' },
       { id: 'textos.hashtag.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'hashtag.texto' },
       conFotos('instagram'),
@@ -935,7 +935,7 @@ function pasosStdWeb({ tipo, modelo, datos }) {
 
 // ── Entrada principal ─────────────────────────────────────────────────
 // producto: 'invitacion' | 'a-medida' | 'std-web' | 'std-tarjeta' | …
-export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false }) {
+export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false, empresa = false }) {
   // README (ronda 28): Save The Date (tarjeta o foto) y agradecimiento comprados sueltos: el mismo editor que en la
   // invitación, con el diseño elegido; se paga al generar la tarjeta
   if (['std-tarjeta', 'std-foto', 'agradecimiento'].includes(producto)) {
@@ -999,8 +999,18 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     const p = pasos.find((x) => x?.id === 'std');
     if (p) p.campos = p.campos.map((c) => (c.id.startsWith('std.medida.') || c.id === 'std.tipo' ? { ...c, cerrado: 'Ya enviaste la idea al equipo de diseño.' } : c));
   }
+  if (empresa) paraEmpresa(pasos);
   // README (ronda 29): el diseño a medida ya trae todo (Deluxe): sin insignias de plan
   return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}), pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
+}
+// README (ronda 87): eventos de empresas (Pro y Studio): el álbum QR solo con link propio (el de Albunear lo ofrece el
+// profesional por su cuenta) y los textos de los complementos sin precios
+function paraEmpresa(pasos) {
+  for (const p of pasos) {
+    if (!p) continue;
+    if (p.id === 'album') p.campos = p.campos.filter((c) => !['nota.albumAlbunear', 'nota.albumActivar'].includes(c.id)).map((c) => (c.id === 'album.origen' ? { ...c, defecto: 'propio', valores: c.valores.filter((o) => o.v === 'propio') } : c.id === 'album.url' ? { ...c, si: undefined } : c));
+    if (p.id === 'idiomaAdicional') p.campos = p.campos.map((c) => (c.id === 'nota.idiomas' ? { ...c, texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' } : c));
+  }
 }
 const MOTIVO_ENVIADA = 'Ya enviaste tu proyecto al equipo de diseño: no se puede modificar hasta que el diseño esté listo.';
 // Enviado al equipo y todavía sin el diseño listo

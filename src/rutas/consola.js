@@ -5,6 +5,9 @@
 //   POST /api/admin/pro/empresas/<id>/creditos     { cantidad, origen, nota }   (los créditos vencen a los 12 meses)
 //   POST /api/admin/pro/empresas/<id>/pase         { meses }   renovar el pase anual (Studio)
 //   POST /api/admin/pro/empresas/<id>/estado       { estado: 'activa' | 'suspendida', nivel? }
+//   POST /api/admin/pro/empresas/<id>/complementos { habilitado }   (README ronda 87) el profesional ve y compra créditos de complementos
+//   POST /api/admin/pro/empresas/<id>/regalar      { item, cantidad, nota }   créditos de complementos sin cargo (negativo = descontar)
+//   POST /api/admin/pro/empresas/<id>/demo         { demo }   cuenta DEMO de Studio (pase 30 días y 1 crédito si no tiene)
 //   POST /api/admin/medidas/<evento>/<aprobar|lista>  { parte: 'std' | 'medida' }
 // Quien entra: un administrador (ADMINS) con su sesión, o la clave ADMIN_CLAVE.
 import { json, readJson, str, randomId, HttpError } from '../lib/util.js';
@@ -16,6 +19,7 @@ import { sendEmail, mailMedidaAprobada, mailProAprobada, mailProRechazada } from
 import { PROFESIONALES } from '../catalogo.js';
 import { sumarMeses, nuevoLote, renovarPase as renovarPaseBase, catalogoCompras } from '../pro/empresa.js';
 import { pagarCompra } from '../pro/compras.js';
+import { extrasDe, cambiarExtras, sumarSaldo, COMPLEMENTOS_PRO } from '../pro/extras.js';
 import { dominiosParaAdmin, marcarDominio, quitarDominio, revisarDominio, conCloudflare, cnameDe } from '../pro/dominios.js';
 
 const ahora = () => new Date().toISOString();
@@ -50,7 +54,9 @@ export async function resumen(request, env) {
   const cat = catalogoCompras();
   const compras = (await q(`SELECT c.id, c.numero, c.item, c.neto, c.iva_tasa, c.iva, c.total, c.estado, c.creado, c.pagada, c.factura, e.nombre AS empresa FROM compras_pro c JOIN empresas e ON e.id = c.empresa_id ORDER BY (c.estado = 'pendiente') DESC, c.creado DESC LIMIT 100`)).map((x) => ({ ...x, nombre: cat[x.item]?.nombre || x.item }));
   const dominios = await dominiosParaAdmin(env);
-  return json({ solicitudes, empresas, dominios, dominiosInfo: { cname: cnameDe(env), automatico: conCloudflare(env) }, medidas, transferencias, compras, base: { pase: PROFESIONALES.studio.pase, credito: PROFESIONALES.credito } });
+  // README (ronda 87): DEMO y créditos de complementos de cada empresa
+  for (const e of empresas) { const x = await extrasDe(env, e.id); e.demo = x.demo; e.compHabilitado = x.habilitado; e.compSaldo = x.saldo; }
+  return json({ solicitudes, empresas, complementosPro: Object.entries(COMPLEMENTOS_PRO).map(([k, v]) => ({ id: k, nombre: v.nombre, neto: v.neto })), dominios, dominiosInfo: { cname: cnameDe(env), automatico: conCloudflare(env) }, medidas, transferencias, compras, base: { pase: PROFESIONALES.studio.pase, credito: PROFESIONALES.credito } });
 }
 
 // ── Cuentas profesionales ─────────────────────────────────────────────
@@ -80,6 +86,14 @@ export async function accionPro(request, env, partes) {
     if (accion === 'creditos') return darCreditos(env, id, b);
     if (accion === 'pase') return renovarPase(env, id, b);
     if (accion === 'estado') return cambiarEstado(env, id, b);
+    if (accion === 'complementos') { await empresaPro(env, id); return json({ ok: true, ...(await cambiarExtras(env, id, { habilitado: !!b.habilitado })) }); }
+    if (accion === 'regalar') {
+      await empresaPro(env, id);
+      const n = parseInt(b.cantidad, 10);
+      if (!COMPLEMENTOS_PRO[b.item] || !n || Math.abs(n) > 100) throw new HttpError(400, 'Elegir el complemento y una cantidad (1 a 100)');
+      return json({ ok: true, ...(await sumarSaldo(env, id, b.item, n, n > 0 ? 'regalo' : 'ajuste', str(b.nota, 120))) });
+    }
+    if (accion === 'demo') return modoDemo(env, id, b);
   }
   return json({ error: 'no encontrado' }, 404);
 }
@@ -137,6 +151,20 @@ async function renovarPase(env, id, b) {
   await empresaPro(env, id);
   const r = await renovarPaseBase(env, id, Math.max(1, Math.min(36, parseInt(b.meses, 10) || 12)));
   return json({ ok: true, paseVence: r.paseVence, lotesExtendidos: r.lotesExtendidos });
+}
+
+// README (ronda 87): cuenta DEMO de Studio: arma invitaciones con 1 crédito, pero no las publica (solo vista previa)
+async function modoDemo(env, id, b) {
+  const e = await empresaPro(env, id);
+  if (b.demo) {
+    if (!(e.nivel === 'studio' && e.pase_vence && e.pase_vence >= ahora())) {
+      await env.DB.prepare("UPDATE empresas_pro SET nivel = 'studio', pase_vence = ? WHERE empresa_id = ?").bind(sumarMeses(ahora(), 1), id).run();
+      await env.DB.prepare("UPDATE empresas SET plan = 'studio' WHERE id = ?").bind(id).run();
+    }
+    const c = await env.DB.prepare('SELECT COALESCE(SUM(cantidad - usados), 0) AS n FROM creditos_lotes WHERE empresa_id = ? AND vence >= ?').bind(id, ahora()).first();
+    if (!c?.n) await nuevoLote(env, id, 1, 'demo', 'Crédito de la cuenta DEMO');
+  }
+  return json({ ok: true, ...(await cambiarExtras(env, id, { demo: !!b.demo })) });
 }
 
 async function cambiarEstado(env, id, b) {

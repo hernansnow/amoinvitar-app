@@ -686,6 +686,13 @@ function vistaAlbum() {
     try { r = await ctx.api('/albunear'); } catch { /* sin conexión: quedan los links generales */ }
     const deluxe = r.incluido || ctx.S.plan?.plan === 'deluxe';
     const pie = ctx.el('p', { class: 'ad-alb-pie' }, 'No es obligatorio usar el álbum de Albunear: se puede sumar el link de otro proveedor en la sección "Álbum de fotos QR" de la invitación.');
+    // README (ronda 87): evento de un profesional: la propuesta de Albunear para sus clientes (sin el álbum incluido)
+    if (ctx.S.empresa) {
+      caja.replaceChildren(logo, ctx.el('h2', {}, 'Álbum de fotos compartido'),
+        ctx.el('p', { class: 'ad-alb-texto' }, 'Tus clientes pueden tener un álbum QR listo para usar de Albunear, para que los invitados suban sus fotos y videos del evento escaneando un QR, sin descargar nada, envíen mensajes y mucho más. Lo mejor es que tu cliente tiene todo en un solo lugar: puede descargar las imágenes, cambiar diseños, imprimir el QR, proyectar las fotos durante el evento y mucho más.'),
+        ctx.el('div', { class: 'ad-botones' }, enlace('Conoce Albunear', 'https://albunear.com', 'btn btn-albunear')), pie);
+      return;
+    }
     if (!albumActivo() && deluxe) {
       // Deluxe sin activar: se activa la sección con Albunear y se abre la creación del álbum (con el regalo)
       const activar = entrarAlbunear; // README (ronda 52): se crea ya armado (evento, nombres, fecha y estilo) y se entra a su panel
@@ -884,7 +891,8 @@ function dibujar(caja) {
   let menu = caja.querySelector('.ad-menu');
   if (!menu) {
     // Álbum: siempre, salvo que la sección use un link propio (ahí no hay nada que administrar)
-    const verAlbum = !(albumActivo() && albumPropio());
+    // README (ronda 87): en los eventos de empresa la ve solo el profesional (con la propuesta de Albunear para sus clientes)
+    const verAlbum = ctx.S.empresa ? !ctx.S.empresa.cliente : !(albumActivo() && albumPropio());
     if (!verAlbum && seccion === 'album') seccion = 'resumen';
     const tabs = SECCIONES.filter(([id]) => (id !== 'album' || verAlbum) && visible(id));
     if (!tabs.some(([id]) => id === seccion)) seccion = 'resumen';

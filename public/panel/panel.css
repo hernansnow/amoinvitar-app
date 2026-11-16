@@ -1238,3 +1238,10 @@ body.modo-admin.con-barra-pago #admin { padding-bottom: 90px; }
 .paso-titulo .precio-comp { margin-left: auto; color: #2f8a5a; font-weight: 700; font-size: 1.15rem; white-space: nowrap; display: inline-flex; align-items: baseline; gap: 4px; }
 .paso-titulo .precio-comp small { font-size: .78rem; font-weight: 600; }
 .paso-titulo .precio-comp + #btn-plegar { margin-left: 8px; }
+
+/* README (ronda 87): el logo de la barra espera a saber si el panel es de un profesional (evita el parpadeo del logo
+   de Amo Invitar antes del logo de la empresa) */
+.marca.esperando img { visibility: hidden; }
+/* README (ronda 87): complementos de eventos de empresa que se piden («Contactanos») */
+.btn-contacto { text-decoration: none; display: inline-flex; align-items: center; }
+.paso-acciones .btn-contacto { margin-right: 6px; }

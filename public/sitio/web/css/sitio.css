@@ -892,3 +892,6 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 .plan-card .precio .promo-precio, .plan-card .precio .tachado { white-space: nowrap; }
 /* README (ronda 54): el botón del país muestra solo la bandera (el símbolo de la moneda queda en la lista) */
 .moneda-boton > span { display: none; }
+
+/* README (ronda 87): insignia «Regalo» en las tarjetas de planes */
+.plan-card .regalo { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 99px; background: #c9a24a; color: #fff; font-size: 11.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; vertical-align: 2px; }

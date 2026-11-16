@@ -64,6 +64,30 @@
   dialog.ancho { max-width: 640px; }
   .chico { font-size: 13px; color: var(--suave); }
   .precios-base .fila { flex-wrap: nowrap; } .precios-base .fila > span:first-child { flex: 1; }
+  /* README (ronda 87): pestaña activa también con clase; celular ordenado, sin deslizar de costado */
+  .tabs button.on { background: var(--verde); border-color: var(--verde); color: #fff; }
+  .tabs button.on b { background: #fff; color: var(--verde-2); }
+  html, body { overflow-x: hidden; }
+  .tag.demo { background: #111; color: #c9a24a; }
+  @media (max-width: 700px) {
+    header { padding: 12px 14px; } header h1 { font-size: 17px; } header nav { gap: 10px; font-size: 14px; }
+    main { padding: 16px 12px 50px; }
+    .tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .tabs button { padding: 10px 8px; font-size: 14px; }
+    .tabs button:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .tarjeta { padding: 16px 14px; }
+    .cifras { grid-template-columns: repeat(2, 1fr); } .cifras b { font-size: 22px; }
+    .filtros label, .filtros .ancho { min-width: 0; flex: 1 1 100%; }
+    .filtros input, .filtros select { width: 100%; }
+    .envuelve { overflow: visible; }
+    .envuelve table, .envuelve tbody, .envuelve tr, .envuelve td { display: block; width: 100%; }
+    .envuelve thead { display: none; }
+    .envuelve tr { border-bottom: 1px solid var(--linea); padding: 8px 0; }
+    .envuelve td { border: 0; padding: 4px 12px; }
+    .envuelve td[data-l]:not(:empty)::before { content: attr(data-l); display: block; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); }
+    .barras { gap: 4px; } .precios-base { grid-template-columns: 1fr; } .precios-base .fila { flex-wrap: wrap; }
+    input, select, textarea { max-width: 100%; }
+  }
   .precios-base { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); column-gap: 24px; } /* README (ronda 47) */
 </style>
 </head>
@@ -92,7 +116,7 @@
   var $ = function (s) { return document.querySelector(s); };
   var D = null, TAB = 'resumen', ANIO = new Date().getFullYear();
   var clave = ''; try { clave = sessionStorage.getItem('ai_admin') || ''; } catch (e) { /* sin almacenamiento */ }
-  function el(t, a, h) { var e = document.createElement(t); Object.keys(a || {}).forEach(function (k) { if (k === 'class') e.className = a[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), a[k]); else if (a[k] != null && a[k] !== false) e.setAttribute(k, a[k] === true ? '' : a[k]); }); [].concat(h == null ? [] : h).forEach(function (x) { if (x != null) e.append(x); }); return e; }
+  function el(t, a, h) { var e = document.createElement(t); Object.keys(a || {}).forEach(function (k) { if (k === 'class') e.className = a[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), a[k]); else if (k.slice(0, 5) === 'aria-' && typeof a[k] === 'boolean') e.setAttribute(k, String(a[k])); else if (a[k] != null && a[k] !== false) e.setAttribute(k, a[k] === true ? '' : a[k]); }); [].concat(h == null ? [] : h).forEach(function (x) { if (x != null) e.append(x); }); return e; } // README (ronda 87): aria-selected="true" (antes quedaba vacío y la pestaña no se marcaba)
   function aviso(t, mal) { var a = $('#aviso'); a.textContent = t; a.className = mal ? 'error' : ''; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 4200); }
   function api(ruta, cuerpo) {
     var o = { headers: Object.assign({ 'content-type': 'application/json' }, clave ? { 'x-admin': clave } : {}) };
@@ -136,7 +160,7 @@
     return api(ruta, cuerpo || {}).then(function (r) { aviso(msg || 'Listo ✓'); return (despues ? despues(r) : refrescar()).then(function () { return r; }); }).catch(function (e) { aviso(e.message, true); }).then(function (r) { if (btn) btn.disabled = false; return r; });
   }
   function tabla(cab, filas) {
-    return el('div', { class: 'envuelve' }, el('table', {}, [el('thead', {}, el('tr', {}, cab.map(function (c) { return el('th', {}, c); }))), el('tbody', {}, filas.map(function (f) { return el('tr', {}, f.map(function (c) { return el('td', {}, c); })); }))]));
+    return el('div', { class: 'envuelve' }, el('table', {}, [el('thead', {}, el('tr', {}, cab.map(function (c) { return el('th', {}, c); }))), el('tbody', {}, filas.map(function (f) { return el('tr', {}, f.map(function (c, i) { return el('td', { 'data-l': cab[i] || null }, c); })); }))]));
   }
   function tag(t, clase) { return el('span', { class: 'tag' + (clase ? ' ' + clase : '') }, t); }
   var vacio = function (t) { return el('p', { class: 'vacio' }, t); };
@@ -363,6 +387,23 @@
     }).catch(function (e) { caja.append(el('p', { class: 'chico' }, e.message)); });
     return caja;
   }
+  // README (ronda 87): todas las invitaciones con cambios de diseño (colores o tipografía), en un clic
+  function vistaCambios() {
+    var v = el('div');
+    v.append(el('h2', {}, 'Invitaciones con cambios de diseño'));
+    v.append(el('p', { class: 'meta' }, 'Las que piden cambiar los colores o la tipografía (o ya mandaron el pedido al equipo). Primero las últimas modificadas.'));
+    var d = VISTAS.cambios;
+    if (!d) { cargaVista('cambios', '/api/admin/eventos?diseno=1&pagina=0'); return append(v, vacio('Cargando…')); }
+    if (!d.eventos.length) return append(v, vacio('No hay invitaciones con cambios de diseño.'));
+    v.append(tabla(['Invitación', 'Cambio', 'Estado', ''], d.eventos.map(function (e) {
+      var x = e.diseno || {};
+      return [el('div', {}, [el('strong', {}, e.nombres || '(sin nombre)'), el('div', { class: 'meta' }, e.tipo + ' · ' + (e.modelo || e.producto) + (e.empresa ? ' · ' + e.empresa : '')), el('div', { class: 'chico' }, e.id)]),
+        el('div', {}, [[x.paleta ? 'Colores' : '', x.tipografia ? 'Tipografía' : ''].filter(Boolean).join(' + ') || '—', el('div', { class: 'chico' }, (x.pagado ? 'Pagado' : 'Sin pagar') + (x.enviado ? ' · enviado ' + fecha(x.enviado) : ''))]),
+        tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'),
+        el('div', { class: 'acciones' }, [btn('Editar', '', function () { fichaEvento(e, d.extrasDisponibles); }), el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel'), e.link ? el('a', { class: 'b sec', href: e.link, target: '_blank', rel: 'noopener' }, 'Ver') : null])];
+    })));
+    return v;
+  }
   function vistaEventos() {
     var v = el('div'), f = FILTROS.eventos;
     v.append(el('h2', {}, 'Invitaciones'));
@@ -456,9 +497,20 @@
       });
       var bp = btn('Renovar pase', 'sec', function () { pedir('Renovar el pase de ' + e.nombre, [{ n: 'meses', l: 'Meses', tipo: 'number', v: 12 }]).then(function (r) { if (r) accion(bp, '/api/admin/pro/empresas/' + e.id + '/pase', r, 'Pase renovado: los créditos sin usar pasan al año siguiente', refrescarTodo); }); });
       var bd = btn(e.dominio ? 'Quitar dominio incluido' : 'Dar dominio incluido', 'sec', function () { accion(bd, '/api/admin/pro/empresas/' + e.id + '/dominio', { derecho: !e.dominio }, e.dominio ? 'Listo' : 'La empresa ya puede cargar su dominio', refrescarTodo); });
+      // README (ronda 87): créditos de complementos (ocultos para el profesional hasta habilitarlos) y cuenta DEMO
+      var hab = btn(e.compHabilitado ? 'Ocultar la compra de complementos' : 'Habilitar la compra de complementos (el profesional los ve y los compra)', e.compHabilitado ? 'mal' : 'sec', function () {
+        if (e.compHabilitado || confirm('¿Habilitar los créditos de complementos para ' + e.nombre + '? Los va a ver en su tablero y los podrá comprar.')) accion(hab, '/api/admin/pro/empresas/' + e.id + '/complementos', { habilitado: !e.compHabilitado }, e.compHabilitado ? 'Ya no los ve' : 'Habilitados: los ve en su tablero', refrescarTodo);
+      });
+      var reg = btn('🎁 Regalar créditos de complementos (sin cargo)', 'sec', function () {
+        pedir('Regalar créditos de complementos a ' + e.nombre, [{ n: 'item', l: 'Complemento', tipo: 'select', v: 'diseno', op: (D.complementosPro || []).map(function (c) { return [c.id, c.nombre + ' (' + eur(c.neto) + ' + IVA)']; }) }, { n: 'cantidad', l: 'Cantidad (negativo para descontar)', tipo: 'number', v: 1 }, { n: 'nota', l: 'Nota (opcional)' }]).then(function (r) { if (r) accion(reg, '/api/admin/pro/empresas/' + e.id + '/regalar', r, 'Créditos de complementos cargados', refrescarTodo); });
+      });
+      var dem = btn(e.demo ? 'Quitar modo DEMO' : 'Modo DEMO (prueba de Studio)', e.demo ? 'mal' : 'sec', function () {
+        if (e.demo || confirm('¿Pasar ' + e.nombre + ' a cuenta DEMO de Studio? Queda en Studio (pase de 1 mes si no tiene) con 1 crédito si no tiene ninguno. Puede armar invitaciones, pero no publicarlas.')) accion(dem, '/api/admin/pro/empresas/' + e.id + '/demo', { demo: !e.demo }, e.demo ? 'Ya no es DEMO' : 'Cuenta DEMO lista', refrescarTodo);
+      });
+      var saldo = Object.keys(e.compSaldo || {}).filter(function (k) { return e.compSaldo[k] > 0; }).map(function (k) { var c = (D.complementosPro || []).filter(function (x) { return x.id === k; })[0]; return (c ? c.nombre : k) + ': ' + e.compSaldo[k]; });
       var be = btn(e.estado === 'activa' ? 'Suspender' : 'Activar', e.estado === 'activa' ? 'mal' : 'sec', function () { accion(be, '/api/admin/pro/empresas/' + e.id + '/estado', { estado: e.estado === 'activa' ? 'suspendida' : 'activa' }, 'Estado actualizado', refrescarTodo); });
-      return [el('div', {}, [el('strong', {}, e.nombre), el('div', { class: 'meta' }, e.duenio || '')]), tag(e.nivel), e.nivel === 'studio' ? el('span', { class: vencido ? 'tag mal' : '' }, fecha(e.pase_vence)) : '—',
-        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'chico' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos), tag(e.estado, e.estado === 'activa' ? '' : 'mal'), el('div', { class: 'acciones' }, [bc, e.nivel === 'studio' ? bp : null, e.nivel === 'studio' ? bd : null, be])];
+      return [el('div', {}, [el('strong', {}, e.nombre), e.demo ? ' ' : null, e.demo ? tag('DEMO', 'demo') : null, el('div', { class: 'meta' }, e.duenio || ''), saldo.length ? el('div', { class: 'chico' }, 'Complementos: ' + saldo.join(' · ')) : null, e.compHabilitado ? el('div', { class: 'chico' }, 'Compra de complementos habilitada') : null]), tag(e.nivel), e.nivel === 'studio' ? el('span', { class: vencido ? 'tag mal' : '' }, fecha(e.pase_vence)) : '—',
+        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'chico' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos), tag(e.estado, e.estado === 'activa' ? '' : 'mal'), el('div', { class: 'acciones' }, [bc, e.nivel === 'studio' ? bp : null, e.nivel === 'studio' ? bd : null, be, hab, reg, dem])];
     })));
     // Dominios propios (Studio)
     var DO = D.dominios || [], info = D.dominiosInfo || {};
@@ -591,7 +643,7 @@
   }
 
   // ── Estructura ──
-  var PESTANAS = [['resumen', 'Resumen', vistaResumen], ['pedidos', 'Pedidos', vistaPedidos], ['facturas', 'Facturas', vistaFacturas], ['cupones', 'Cupones', vistaCupones], ['precios', 'Precios y promos', vistaPrecios], ['eventos', 'Invitaciones', vistaEventos], ['clientes', 'Clientes', vistaClientes], ['consultas', 'Consultas', vistaConsultas], ['pro', 'Profesionales', vistaPro], ['medidas', 'Diseños a medida', vistaMedidas], ['registro', 'Registro', vistaRegistro]];
+  var PESTANAS = [['resumen', 'Resumen', vistaResumen], ['pedidos', 'Pedidos', vistaPedidos], ['facturas', 'Facturas', vistaFacturas], ['cupones', 'Cupones', vistaCupones], ['precios', 'Precios y promos', vistaPrecios], ['eventos', 'Invitaciones', vistaEventos], ['cambios', 'Cambios de diseño', vistaCambios], ['clientes', 'Clientes', vistaClientes], ['consultas', 'Consultas', vistaConsultas], ['pro', 'Profesionales', vistaPro], ['medidas', 'Diseños a medida', vistaMedidas], ['registro', 'Registro', vistaRegistro]];
   var VISTA_DE = { clientes: 'usuarios' };
   function cargaVista(nombre, ruta) {
     var tab = TAB;
@@ -601,13 +653,13 @@
     var p = D.pendientes || {};
     var cuenta = { pedidos: p.transferencias, pro: (p.solicitudes || 0) + (p.compras || 0), medidas: p.medidas, consultas: p.consultas };
     var tabs = $('#tabs'); tabs.replaceChildren();
-    PESTANAS.forEach(function (t) { tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], onclick: function () { TAB = t[0]; pinta(); } }, [t[1], cuenta[t[0]] ? el('b', {}, String(cuenta[t[0]])) : null])); });
+    PESTANAS.forEach(function (t) { tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], class: TAB === t[0] ? 'on' : null, onclick: function () { TAB = t[0]; pinta(); } }, [t[1], cuenta[t[0]] ? el('b', {}, String(cuenta[t[0]])) : null])); });
     var f = PESTANAS.filter(function (t) { return t[0] === TAB; })[0][2];
     $('#vista').replaceChildren(f());
   }
   // Recarga lo pendiente (contadores y listas que dependen del resumen) y la pestaña abierta
   function refrescarTodo() { return api('/api/admin/resumen').then(function (d) { D = Object.assign(D, d); VISTAS.resumen = null; pinta(); }); }
-  function refrescar() { return refrescarTodo().then(function () { ['pedidos', 'facturas', 'cupones', 'eventos', 'usuarios', 'consultas', 'registro'].forEach(function (k) { VISTAS[k] = null; }); pinta(); }); }
+  function refrescar() { return refrescarTodo().then(function () { ['pedidos', 'facturas', 'cupones', 'eventos', 'cambios', 'usuarios', 'consultas', 'registro'].forEach(function (k) { VISTAS[k] = null; }); pinta(); }); }
   function cargar() {
     return api('/api/admin/resumen').then(function (d) {
       return api('/api/admin/estadisticas?year=' + ANIO).then(function (s) { D = d; D.pendientes = s.pendientes; VISTAS.resumen = s; $('#entrada').hidden = true; $('#consola').hidden = false; pinta(); });

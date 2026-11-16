@@ -54,6 +54,7 @@ import * as profesionales from './rutas/profesionales.js';
 import * as sa from './rutas/superadmin.js';
 import * as empresaApi from './rutas/empresa.js';
 import { marcaEfectiva, rolEnEmpresa, proDe, paseVigente, usarCredito, devolverCredito } from './pro/empresa.js';
+import { extrasDe, cubrirComplementos, COMPLEMENTO_DE_CREDITO } from './pro/extras.js';
 import { getCookie, hmacHex } from './lib/util.js';
 import { resolverMapa } from './lib/mapas.js';
 import { leerPlaylist } from './lib/spotify.js';
@@ -237,6 +238,11 @@ const noExiste = () => html('<!doctype html><meta charset="utf-8"><meta name="vi
 async function dominioPropio(env, request, url, emp) {
   const ruta = url.pathname;
   if (PERMITIDO_EN_DOMINIO.test(ruta) || API_EN_DOMINIO.test(ruta) || /^\/(favicon\.ico|robots\.txt)$/.test(ruta)) return null;
+  // README (ronda 87): el panel del cliente final también se abre desde el dominio propio (solo los eventos de esta
+  // empresa): la página del panel, su API, la vista previa y los archivos del panel
+  if (/^\/panel\/[\w.-]+\.(js|css|svg|png|webp|json)$/.test(ruta) || /^\/web\/img\/flags\/[\w-]+\.svg$/.test(ruta)) return null;
+  const pe = /^\/(?:api\/panel|panel|vista)\/(ev_[\w-]+)(?:\/|$)/.exec(ruta);
+  if (pe) { const evp = await almacenDe(env).evento(pe[1]); return evp && evp.empresaId === emp.id ? null : noExiste(); }
   const m = /^\/([a-z0-9-]+)\/([a-z0-9-]+)\/?$/.exec(ruta);
   if (!m) return ruta === '/' ? html(`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${escHtml(emp.nombre)}</title></head><body style="font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;color:#333;text-align:center"><div>${emp.marca?.logo ? `<img src="${escHtml(emp.marca.logo)}" alt="" style="max-height:90px;max-width:70vw">` : ''}<h1 style="font-weight:500">${escHtml(emp.nombre)}</h1></div></body></html>`, 200, { 'x-robots-tag': 'noindex' }) : noExiste();
   // Una invitación: tiene que ser de esta empresa
@@ -342,7 +348,7 @@ async function publicada(env, url, request, tipo, slug, ctx = null) {
   }
   // README (ronda 85): los invitados ven solo lo pagado (secciones de un plan más alto o complementos prendidos después
   // de publicar quedan apagados); el dueño ve todo, con un aviso de lo que falta pagar para que lo vean los demás
-  const rec = recortarSinPagar(await esquemaDe(env, url, ev), ev.datos, { pagado: NIVELES_PLAN.includes(ev.paquete) ? ev.paquete : null, extras: ev.datos.extras || [] });
+  const rec = recortarSinPagar(await esquemaDe(env, url, ev), ev.datos, { pagado: NIVELES_PLAN.includes(ev.paquete) ? ev.paquete : null, extras: [...(ev.datos.extras || []), ...(ev.empresaId ? ['video-portada'] : [])] }); // README (ronda 87): video sin costo en eventos de empresa
   const pendiente = rec.recortado.length > 0;
   const evento = paraMotor(acc.dueno || !pendiente ? ev : { ...ev, datos: rec.datos });
   if (await aforoLleno(almacen, ev)) evento.rsvp = { ...(evento.rsvp || {}), lleno: true };
@@ -631,7 +637,7 @@ async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {})
   const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web', 'std-tarjeta'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
     gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: !!datos.diseno?.enviado,
-    publicada: ev.estado === 'publicado', admin });
+    publicada: ev.estado === 'publicado', admin, empresa: !!ev.empresaId }); // README (ronda 87)
 }
 
 // Plan con el que se ve la invitación: el que ya pagó o, en el borrador, el que piden las secciones elegidas
@@ -675,15 +681,23 @@ async function empresaContexto(env, ev, usuario, admin) {
     marcaEfectiva: await marcaEfectiva(env, empresa),
     // Sin la marca de Amo Invitar: el cliente final del profesional y, con Studio, también su equipo
     limpio: !admin && (!rol || studio),
+    extras: await extrasDe(env, ev.empresaId), // README (ronda 87): DEMO y créditos de complementos
     puedePublicar: admin || (!!rol && rol !== 'lectura') || !!ev.datos.empresa?.clientePublica,
   };
 }
 // Publicar un evento de empresa: gasta un crédito (una sola vez por evento). Devuelve una respuesta de error o null.
 async function publicarConCredito(env, request, ev, esquema, emp) {
-  const aviso = (propio, ajeno) => (emp.limpio ? ajeno : propio);
+  const aviso = (propio, ajeno) => (emp.rol ? propio : ajeno); // README (ronda 87): el equipo (también con Studio) ve el mensaje para el profesional
   if (!emp.puedePublicar) return json({ error: 'Esta invitación la publica quien organiza el evento. Pídele que lo haga.' }, 403);
   if (emp.pro && emp.pro.estado !== 'activa') return json({ error: aviso('La cuenta de la empresa está suspendida. Escribir a Amo Invitar!.', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 403);
+  // README (ronda 87): cuenta DEMO de Studio: se arma todo, pero no se publica (el dueño la ve en la vista previa)
+  if (emp.extras?.demo) return json({ error: aviso('Cuenta DEMO: la invitación no se publica. Puedes verla completa con «Vista previa».', 'Esta invitación es una demostración: no se publica.') }, 403);
   const plan = await tienda.estadoPlan(env, request, ev, esquema);
+  // README (ronda 87): los complementos se cubren con los créditos de complementos del profesional (si alcanzan para todos)
+  if (plan.aPagar?.extras?.length) {
+    const r = await cubrirComplementos(env, ev, plan.aPagar.extras);
+    if (r.cubiertos.length) { ev.datos.extras = [...(ev.datos.extras || []), ...r.cubiertos]; plan.complementos = (plan.complementos || []).map((x) => ({ ...x, pagado: true })); }
+  }
   const sin = (plan.complementos || []).filter((x) => !x.pagado).map((x) => x.nombre);
   if (sin.length) return json({ error: aviso(`Esta invitación incluye complementos que el crédito no cubre (${sin.join(', ')}). Quitarlos de la invitación o contratarlos con Amo Invitar!.`, `Esta invitación incluye complementos que todavía no están incluidos (${sin.join(', ')}). Consúltalo con quien organiza tu evento.`) }, 402);
   const nivel = plan.plan === 'gratis' ? 'basic' : plan.plan;
@@ -812,7 +826,10 @@ async function apiPanel(env, request, url, partes) {
   const admin = !!usuario?.esAdmin;
   // README (ronda 35): eventos de una empresa profesional. El panel del cliente final (o del equipo Studio) va sin la marca
   // de Amo Invitar; publicar usa un crédito de la empresa.
-  const emp = ev.empresaId ? await empresaContexto(env, ev, usuario, admin) : null;
+  // README (ronda 87): con el link del cliente (?k=), el panel se ve como lo ve el cliente final aunque quien lo abra sea
+  // del equipo de la empresa (así el profesional prueba exactamente lo que ve su cliente)
+  const conClaveCliente = !!ev.empresaId && !admin && igual(request.headers.get('x-clave') || url.searchParams.get('k') || '', ev.clave);
+  const emp = ev.empresaId ? await empresaContexto(env, ev, conClaveCliente ? null : usuario, admin) : null;
   // README (ronda 29): una tarjeta Save The Date comprada sin modelo (desde la tienda) toma el tipo de evento y el
   // primer diseño con tarjeta; en el panel se cambia por otro
   if (ev.producto === 'std-tarjeta' && (!ev.modelo || !TIPOS_EVENTO.some((t) => t.id === ev.tipo))) {
@@ -865,7 +882,10 @@ async function apiPanel(env, request, url, partes) {
       marca: emp ? emp.marcaEfectiva : null,
       // README (ronda 36): pestaña «Recuerdo» (solo invitaciones publicadas que no son de una empresa)
       recuerdo: ev.estado === 'publicado' && !emp ? await recuerdo.infoRecuerdo(ev, (clave, eur) => tienda.precioATexto(env, request, clave, eur)) : null,
-      empresa: emp ? { limpio: emp.limpio, puedePublicar: emp.puedePublicar, nombre: emp.nombre, logo: emp.logo, pie: emp.pie, rol: emp.rol, credito: !!ev.datos.empresa?.credito, conCredito: true } : null,
+      // README (ronda 87): Studio (logo propio en el panel del cliente), paleta del panel, DEMO y créditos de complementos (para el equipo)
+      empresa: emp ? { limpio: emp.limpio, puedePublicar: emp.puedePublicar, nombre: emp.nombre, logo: emp.logo, pie: emp.pie, rol: emp.rol, credito: !!ev.datos.empresa?.credito, conCredito: true,
+        studio: !!emp.studio, paleta: emp.empresa.marca?.paleta || '', demo: !!emp.extras?.demo, cliente: !emp.rol && !admin,
+        saldo: emp.rol && emp.rol !== 'lectura' || admin ? emp.extras?.saldo || {} : null } : null,
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
   }
@@ -905,6 +925,12 @@ async function apiPanel(env, request, url, partes) {
     await almacen.guardarEvento(ev);
     // El esquema cambia con los idiomas elegidos (campos para traducir)
     const nuevo = await esquemaDe(env, url, ev, ev.datos, { admin });
+    // README (ronda 87): invitación de empresa ya publicada a la que se le prende un complemento: se cubre con los
+    // créditos de complementos del profesional (si alcanzan); si no, queda sin mostrarse a los invitados hasta cubrirlo
+    if (emp && ev.estado === 'publicado' && !emp.extras?.demo) {
+      const pl = await tienda.estadoPlan(env, request, ev, nuevo);
+      if (pl.aPagar?.extras?.length) { const r = await cubrirComplementos(env, ev, pl.aPagar.extras); if (r.cubiertos.length) { ev.datos.extras = [...(ev.datos.extras || []), ...r.cubiertos]; await almacen.guardarEvento(ev); } }
+    }
     return json({ ok: true, datos: limpio, faltan: faltantes(nuevo, limpio), esquema: nuevo,
       textosIdiomas: Object.fromEntries(idiomasDe(limpio).slice(1).map((l) => [l.slice(0, 2), diccionario(ev.tipo, l)])),
       formato: formatoPais(paisDeZona(limpio.zonaHoraria), idiomasDe(limpio)[0]),
@@ -1203,6 +1229,8 @@ async function apiPanel(env, request, url, partes) {
     return json({ ok: true });
   }
   if (accion === 'publicar' && request.method === 'POST') {
+    // README (ronda 87): el cliente final sin permiso (o la cuenta DEMO) no publica, antes de revisar lo que falta
+    if (emp && !admin && (!emp.puedePublicar || emp.extras?.demo) && ev.producto === 'invitacion') { const b0 = await publicarConCredito(env, request, ev, esquema, emp); if (b0) return b0; }
     const faltan = faltantes(esquema, ev.datos);
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
     if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);

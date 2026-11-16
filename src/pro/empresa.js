@@ -3,6 +3,7 @@
 import { randomId } from '../lib/util.js';
 import { PROFESIONALES } from '../catalogo.js';
 import { asegurarTablasPro } from './esquema.js';
+import { COMPLEMENTOS_PRO } from './extras.js';
 
 const iso = () => new Date().toISOString();
 export function sumarMeses(fecha, meses) { const d = new Date(fecha); d.setUTCMonth(d.getUTCMonth() + meses); return d.toISOString(); }
@@ -15,6 +16,11 @@ export function catalogoCompras() {
   for (const k of P.studio.packs) out[`studio-${k.creditos}`] = { nombre: `Pack Studio ${k.creditos} créditos`, creditos: k.creditos, neto: k.precio, nivel: 'studio' };
   out.dominio = { nombre: 'Configuración del dominio propio', creditos: 0, neto: P.studio.configuracionDominio, nivel: 'studio-dominio' };
   out.pase = { nombre: 'Pase anual Studio (12 meses)', creditos: 0, neto: P.studio.pase, nivel: 'studio-pase' };
+  // README (ronda 87): créditos de complementos (solo si el admin se los habilitó a la empresa): de a 1 o de a 5
+  for (const [k, v] of Object.entries(COMPLEMENTOS_PRO)) {
+    out[`comp-${k}`] = { nombre: `Crédito de complemento · ${v.nombre}`, creditos: 1, neto: v.neto, nivel: 'complemento', comp: k };
+    out[`comp-${k}-5`] = { nombre: `5 créditos de complemento · ${v.nombre}`, creditos: 5, neto: v.neto * 5, nivel: 'complemento', comp: k };
+  }
   return out;
 }
 export const limiteUsuarios = (nivel) => (nivel === 'studio' ? PROFESIONALES.studio.administradores : PROFESIONALES.pro.administradores);
@@ -89,7 +95,8 @@ export async function marcaEfectiva(env, empresa) {
   // Sin datos de nivel (cuentas anteriores a los niveles): se respeta lo que tenga cargado
   if (!pro) return m.blanca ? m : null;
   if (pro.estado !== 'activa') return null;
-  if (m.blanca && paseVigente(pro)) return { ...m, blanca: true };
+  // README (ronda 87): con Studio (pase vigente) siempre es marca blanca: ni la invitación ni el panel llevan el logo de Amo Invitar
+  if (paseVigente(pro)) return { ...m, blanca: true };
   if (m.logo || m.pie || m.nombre) return { ...m, blanca: false, sinPie: false, coBrand: true };
   return null;
 }

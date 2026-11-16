@@ -214,6 +214,8 @@ export async function eventos(request, env) {
   if (t) { donde.push("(e.id = ? OR e.slug LIKE ? ESCAPE '\\' OR e.datos LIKE ? ESCAPE '\\' OR EXISTS (SELECT 1 FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = e.id AND u.email LIKE ? ESCAPE '\\'))"); args.push(t, LIKE(t), LIKE(t), LIKE(t)); }
   if (estado) { donde.push('e.estado = ?'); args.push(estado); }
   if (paquete) { donde.push('e.paquete = ?'); args.push(paquete); }
+  // README (ronda 87): solo las que piden cambios de diseño (colores o tipografía) o ya los enviaron al equipo
+  if (url.searchParams.get('diseno') === '1') donde.push("(json_extract(e.datos, '$.diseno.paleta.modo') = 'cambiar' OR json_extract(e.datos, '$.diseno.tipografia.modo') = 'cambiar' OR json_extract(e.datos, '$.diseno.enviado') IS NOT NULL)");
   const rows = await q(`SELECT e.id, e.producto, e.tipo, e.modelo, e.paquete, e.estado, e.slug, e.vence, e.empresa_id, e.creado, e.actualizado, e.datos,
       (SELECT GROUP_CONCAT(u.email, ', ') FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = e.id AND a.rol = 'cliente') AS clientes,
       (SELECT em.nombre FROM empresas em WHERE em.id = e.empresa_id) AS empresa,
@@ -228,7 +230,8 @@ export async function eventos(request, env) {
       vence: venceEvento({ ...e, datos: d }), venceManual: e.vence || null, clientes: e.clientes || '', empresa: e.empresa || null, respuestas: e.respuestas, extras: d.extras || [],
       link: e.estado === 'publicado' && e.slug ? `/${e.tipo}/${e.slug}` : null, actualizado: e.actualizado, creado: e.creado,
       ingreso: e.ingreso || null, mails: (() => { try { return JSON.parse(e.mails || '[]'); } catch { return []; } })(),
-      contacto: (() => { try { const c = JSON.parse(e.contacto || 'null'); return c ? { email: c.email, promos: !!c.promos, idioma: c.idioma } : null; } catch { return null; } })() };
+      contacto: (() => { try { const c = JSON.parse(e.contacto || 'null'); return c ? { email: c.email, promos: !!c.promos, idioma: c.idioma } : null; } catch { return null; } })(),
+      diseno: d.diseno ? { paleta: d.diseno.paleta?.modo === 'cambiar', tipografia: d.diseno.tipografia?.modo === 'cambiar', enviado: d.diseno.enviado || null, pagado: (d.extras || []).some((x) => ['diseno', 'paleta', 'tipografia'].includes(x)) } : null };
   });
   return json({ eventos: out, pagina: pag, hayMas: rows.length > POR_PAGINA, extrasDisponibles: Object.entries(EXTRAS).map(([k, v]) => ({ id: k, nombre: v.nombre })) });
 }

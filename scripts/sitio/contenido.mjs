@@ -156,6 +156,7 @@ export const TABLA = [
   ['Pases adicionales y grupo familiar', F, F, T, T],
   ['Tarjeta Save The Date (*)', F, F, T, T],
   ['Soporte prioritario', F, F, T, T],
+  ['Álbum colaborativo QR', F, F, F, T], // README (ronda 87): después de «Soporte prioritario»
   ['Sugerencia de estilos de vestimenta', F, F, F, T],
   ['Itinerario del evento', F, F, F, T],
   ['Testigos / Padrinos', F, F, F, T],
@@ -165,7 +166,6 @@ export const TABLA = [
   ['Redes oficiales del evento', F, F, F, T],
   ['Organizador de mesas + página «Busca tu mesa»', F, F, F, T],
   ['Organizador de llegadas al evento con pase de entrada', F, F, F, T],
-  ['Álbum colaborativo QR', F, F, F, T],
   ['Cantidad de invitados', '35', 'Ilimitados', 'Ilimitados', 'Ilimitados'],
   ['Duración (desde la fecha del evento)', '15 días', '3 meses', '6 meses', '12 meses'],
 ];

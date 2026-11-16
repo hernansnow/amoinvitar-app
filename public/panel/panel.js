@@ -112,7 +112,7 @@ async function guardar() {
     if (r.formato) S.formato = r.formato; // README (ronda 40)
     // Si cambió el esquema (por ejemplo, un idioma adicional suma sus campos) se redibuja el paso
     const cambioEsquema = r.esquema && JSON.stringify(r.esquema.pasos.map((x) => [x.id, x.campos.length])) !== JSON.stringify(S.esquema.pasos.map((x) => [x.id, x.campos.length]));
-    if (r.esquema) S.esquema = r.esquema;
+    if (r.esquema) S.esquema = paraCliente(r.esquema);
     if (cambioEsquema) { pasoActual = S.esquema.pasos.find((x) => x.id === pasoActual?.id) || S.esquema.pasos[0]; if (!document.activeElement?.closest?.('#formulario input, #formulario textarea')) dibujarPaso(); }
     else pasoActual = S.esquema.pasos.find((x) => x.id === pasoActual?.id) || pasoActual;
     estado('Guardado ✓');
@@ -1587,7 +1587,26 @@ function prenderPaso(p, on) {
   }
   cambio(`secciones.${p.seccion}`, on, { rearmar: true });
 }
+// README (ronda 87): cliente final de un profesional: no ve lo que el profesional apagó (secciones, funciones,
+// complementos) ni puede prenderlo o apagarlo; si el profesional lo prende, vuelve a aparecer solo
+const esClienteEmp = () => !!S?.empresa?.cliente;
+function paraCliente(esq) {
+  if (!esClienteEmp() || !esq?.pasos) return esq;
+  return { ...esq, pasos: esq.pasos.filter((p) => p.obligatoria || p.sinInterruptor || (!p.seccion && !p.interruptor) || pasoActivo(p)).map((p, i, l) => (p.separado && !l.slice(i).some((x) => x.complemento) ? { ...p, separado: false } : p)) };
+}
+// README (ronda 87): complementos de un evento de empresa: sin crédito de complemento, en lugar de prenderlo se pide
+const CLAVES_COMP = { idiomaAdicional: ['idioma'], agradecimiento: ['agradecimiento'], diseno: ['diseno'], std: ['std-tarjeta', 'std-foto', 'std-web', 'std-tarjeta-medida', 'std-web-medida'] };
+const NOMBRE_COMP = { idiomaAdicional: 'Idioma adicional', agradecimiento: 'Tarjeta de agradecimiento', diseno: 'Cambios de diseño', std: 'Tarjeta Save The Date' };
+const saldoComp = (p) => (CLAVES_COMP[p.id] || []).reduce((t, k) => t + (Number(S.empresa?.saldo?.[k]) || 0), 0);
+const compBloqueado = (p) => !!S.empresa && !!p.complemento && !!CLAVES_COMP[p.id] && !pasoActivo(p) && !saldoComp(p);
+function linkContacto(p) {
+  const txt = `Hola! Quiero solicitar el complemento «${NOMBRE_COMP[p.id] || p.titulo}» para la invitación ${S.evento.id}.`;
+  const wa = S.ayuda?.whatsapp;
+  return el('a', { class: 'btn btn-chico btn-contacto', href: wa ? `https://wa.me/${wa}?text=${encodeURIComponent(txt)}` : `mailto:hola@amoinvitar.com?subject=${encodeURIComponent(txt)}`, target: '_blank', rel: 'noopener' }, 'Contactanos');
+}
 function interruptorPaso(p) {
+  if (esClienteEmp()) return el('span');
+  if (compBloqueado(p)) return el('span');
   // Las secciones obligatorias (y las que no se apagan) no llevan interruptor: siempre están
   if (p.sinInterruptor || p.obligatoria || (!p.seccion && !p.interruptor)) return el('span');
   const fijo = p.obligatoria || (p.fijoSi && cumple(p.fijoSi)) || !!S.esquema?.cerrada;
@@ -1649,7 +1668,7 @@ function pintarFaltan() {
 // README (ronda 85): el precio del complemento en el renglón del interruptor (verde, a la derecha). La Save The Date
 // tiene varios precios: «desde» y el más bajo de las opciones del paso
 function precioComplemento(p) {
-  if (!p.complemento || !S.plan?.preciosExtras || S.esquema?.sinNiveles) return null;
+  if (!p.complemento || !S.plan?.preciosExtras || S.esquema?.sinNiveles || S.empresa) return null; // README (ronda 87): sin precios en eventos de empresa
   const pr = S.plan.preciosExtras;
   const num = (x) => Number(String(x || '').replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}\b)/g, '').replace(',', '.')) || 0;
   let claves = { idiomaAdicional: ['idioma'], agradecimiento: ['agradecimiento'], diseno: ['diseno'] }[p.id];
@@ -1671,8 +1690,10 @@ function dibujarPaso() {
   const plegar = el('button', { type: 'button', class: 'btn-redondo chico solo-escritorio', id: 'btn-plegar', 'aria-label': 'Achicar el panel', title: 'Achicar el panel (vista previa más grande)', onclick: () => plegarEditor(true) },
     el('span', { html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' }));
   const ayudaSeccion = p.ayudaSeccion ? el('p', { class: 'ayuda ayuda-seccion' }, p.ayudaSeccion) : null;
-  const apagada = !activo ? el('div', { class: 'tarjeta nota apagada-aviso' }, p.complemento ? `${p.titulo} es un complemento: al prenderlo se suma al total.` : 'Esta sección está apagada: no se ve en la invitación.', ' ',
-    el('button', { type: 'button', class: 'btn btn-chico', onclick: () => prenderPaso(p, true), html: `${icono('prender', 15)}<span>Prender</span>` })) : null;
+  const bloq = compBloqueado(p);
+  const apagada = !activo ? (bloq ? el('div', { class: 'tarjeta nota apagada-aviso' }, `${NOMBRE_COMP[p.id]} es un complemento: Escríbenos para solicitarlo.`, ' ', linkContacto(p))
+    : el('div', { class: 'tarjeta nota apagada-aviso' }, S.empresa && p.complemento ? `${p.titulo} es un complemento: al prenderlo se usa 1 crédito de complemento al publicar (te quedan ${saldoComp(p)}).` : p.complemento ? `${p.titulo} es un complemento: al prenderlo se suma al total.` : 'Esta sección está apagada: no se ve en la invitación.', ' ',
+      el('button', { type: 'button', class: 'btn btn-chico', onclick: () => prenderPaso(p, true), html: `${icono('prender', 15)}<span>Prender</span>` }))) : null;
   const motivo = p.fijoSi && cumple(p.fijoSi) ? el('p', { class: 'motivo' }, p.motivo) : null;
   // Campos "siempre": se editan aunque la sección esté apagada (p. ej. quién puede ver la invitación)
   const siempre = p.campos.filter((c) => c.siempre);
@@ -1681,7 +1702,7 @@ function dibujarPaso() {
   // Apagada: no se puede editar ni subir nada hasta prenderla
   if (!activo) { cuerpo.inert = true; cuerpo.setAttribute('aria-disabled', 'true'); }
   f.replaceChildren(...[
-    el('div', { class: 'paso-titulo' }, el('div', { class: 'paso-acciones' }, apagar ? el('span', { class: 'mostrar' }, apagar, el('span', { class: 'lado' }, p.complemento ? 'Agregar' : T('Mostrar en la invitación'))) : null, precioComplemento(p), plegar),
+    el('div', { class: 'paso-titulo' }, el('div', { class: 'paso-acciones' }, bloq && !esClienteEmp() ? linkContacto(p) : apagar && !esClienteEmp() ? el('span', { class: 'mostrar' }, apagar, el('span', { class: 'lado' }, p.complemento ? 'Agregar' : T('Mostrar en la invitación'))) : null, precioComplemento(p), plegar),
       el('h1', {}, el('span', { class: 'ico-titulo', html: icono(p.id, 22) }), p.titulo, insigniasPaso(p))),
     ayudaSeccion, motivo, banderaGuardar(), arriba, apagada,
     el('div', { id: 'faltan-aca' }),
@@ -1833,7 +1854,8 @@ function pintarModelo() {
   // Escritorio: el modelo y, chico, el tipo de evento
   // README (ronda 47): ya publicada, el modelo queda fijo: solo se muestra su nombre (sin «cambiar»)
   // README (ronda 56): el administrador de Amo Invitar! sí puede cambiarlo (lo pide el cliente y corresponde)
-  if (S.evento.estado && S.evento.estado !== 'borrador' && !S.esquema?.admin) {
+  // README (ronda 87): el cliente final de un profesional no cambia el modelo (lo elige el profesional)
+  if ((S.evento.estado && S.evento.estado !== 'borrador' && !S.esquema?.admin) || esClienteEmp()) {
     caja.replaceChildren(el('div', { class: 'btn-modelo fijo', title: 'El modelo se elige antes de publicar' }, el('span', { class: 'btn-modelo-txt' }, el('strong', {}, actual.nombre), tipo ? el('small', { class: 'btn-modelo-tipo' }, tipo) : null)));
     movil.hidden = false;
     movil.replaceChildren(el('span', {}, actual.nombre), ' ', tipo ? el('span', {}, tipo) : '');
@@ -2040,6 +2062,8 @@ function textoPublicar() {
   const md = S.plan?.medida;
   if (md) return md.aprobado && !S.plan.pagado ? ['Completar el pago', 'Pagar'] : ['Enviar al equipo de diseño', 'Enviar'];
   if (!esInvitacionWeb()) return ['Enviar al diseño', 'Enviar'];
+  // README (ronda 87): el cliente final sin permiso para publicar solo guarda; la cuenta DEMO no publica (vista previa)
+  if (S.empresa && (!S.empresa.puedePublicar || (S.empresa.demo && S.evento.estado !== 'publicado'))) return S.empresa.demo && S.empresa.puedePublicar ? ['Ver vista previa (DEMO)', 'Vista previa'] : ['Guardar cambios', 'Guardar'];
   if (S.empresa) return S.evento.estado === 'publicado' ? ['Guardar cambios', 'Guardar'] : ['Publicar la invitación', 'Publicar'];
   return S.evento.estado === 'publicado' ? ['Guardar cambios', 'Guardar'] : ['Obtener mi link', 'Obtener link'];
 }
@@ -2052,6 +2076,8 @@ function pintarPublicar() {
 }
 async function publicar() {
   clearTimeout(guardarTimer); await guardar();
+  if (S.empresa && !S.empresa.puedePublicar) { aviso(S.evento.estado === 'publicado' ? '¡Cambios guardados en tu invitación!' : 'Cambios guardados. La invitación la publica quien organiza tu evento.'); return; }
+  if (S.empresa?.demo && S.evento.estado !== 'publicado') { verPrevia(true); aviso('Cuenta DEMO: la invitación no se publica. Así se vería.'); return; }
   // Diseño a medida: primero se envía al equipo; con el proyecto aprobado, se paga
   const md = S.plan?.medida;
   if (md) {
@@ -2156,14 +2182,23 @@ function aplicarMarca(m) {
 
 // README (ronda 35): panel de un evento de empresa. Para el cliente final (y el equipo Studio) va limpio: sin logo, links ni
 // contactos de Amo Invitar!; se ve el logo o el nombre de la empresa.
+// README (ronda 87): colores del panel del cliente final elegidos por el profesional (el resto sale de --acento)
+const PALETAS = { negro: '#1f1f1f', azul: '#2f5d9e', rojo: '#b0353f', dorado: '#a8823c' };
 function aplicarEmpresa(e) {
+  document.getElementById('marca')?.classList.remove('esperando');
   if (!e) return;
   document.body.classList.add('con-empresa');
+  if (PALETAS[e.paleta]) document.documentElement.style.setProperty('--acento', PALETAS[e.paleta]);
+  if (e.demo) document.body.classList.add('cuenta-demo');
+  // El cliente final no va a «Mis invitaciones» ni a otras invitaciones
+  if (e.cliente || e.limpio) document.querySelectorAll('.btn-mis-invitaciones').forEach((x) => x.remove());
+  if (e.cliente) { document.querySelectorAll('.link-cuenta').forEach((x) => x.remove()); const v = $('#btn-volver'); if (v) v.hidden = true; }
   if (!e.limpio) return;
   document.body.classList.add('panel-limpio');
   const a = $('#marca');
   a.removeAttribute('href'); a.classList.add('propia');
-  a.replaceChildren(e.logo ? el('img', { src: e.logo, alt: e.nombre || '' }) : el('strong', {}, e.nombre || ''));
+  // README (ronda 87): solo con Studio (pase pagado) va el logo del profesional; si no, el de Amo Invitar (sin link)
+  if (e.studio) a.replaceChildren(e.logo ? el('img', { src: e.logo, alt: e.nombre || '' }) : el('strong', {}, e.nombre || ''));
   document.title = `Panel · ${e.nombre || ''}`;
   document.querySelectorAll('.link-cuenta').forEach((x) => x.remove());
   if (!e.rol) { const v = $('#btn-volver'); if (v) v.hidden = true; }
@@ -2195,9 +2230,11 @@ function recordarBorrador() {
     if (e.status === 403 && !clave) { location.href = `/entrar?siguiente=${encodeURIComponent(location.pathname)}`; return; }
     $('#formulario').replaceChildren(el('div', { class: 'tarjeta mejorar' }, el('h2', {}, 'No se pudo abrir el panel'), el('p', {}, e.status === 403 ? 'El link no es válido o venció. Entrar con el mail de la compra en amoinvitar.com/entrar.' : 'Revisar la conexión y volver a intentar.')));
     $('#titulo-evento').textContent = '';
+    $('#marca')?.classList.remove('esperando');
     return;
   }
   datos = S.datos || {};
+  S.esquema = paraCliente(S.esquema);
   // Volvió de entrar con Google o con el mail: la invitación queda guardada en su cuenta
   if (params.has('vincular')) {
     history.replaceState(null, '', location.pathname + location.hash);

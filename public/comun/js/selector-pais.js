@@ -36,6 +36,7 @@
       location.reload();
     });
   }
+  window.AI_PAIS = montar; // README (ronda 87): para montarlo en barras que se arman después (tablero profesional)
   function auto() { [].forEach.call(d.querySelectorAll('[data-selector-pais]'), montar); }
   if (d.readyState !== 'loading') auto(); else d.addEventListener('DOMContentLoaded', auto);
 })();

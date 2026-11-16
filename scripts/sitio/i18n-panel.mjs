@@ -59,13 +59,16 @@ function cadenas(src) {
   return out;
 }
 const ARCHIVOS_JS = ['public/panel/panel.js', 'public/panel/admin.js', 'public/panel/tarjeta.js', 'public/panel/planilla.js', 'src/panel/esquemas.js'];
-for (const f of ARCHIVOS_JS) {
-  for (const { t, fijo } of cadenas(readFileSync(join(RAIZ, f), 'utf8'))) {
+// README (ronda 87): el código del tablero profesional (va dentro de su HTML) se lee igual que los .js
+const codigoDe = (f) => (f.endsWith('.html') ? [...readFileSync(join(RAIZ, f), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n') : readFileSync(join(RAIZ, f), 'utf8'));
+for (const f of [...ARCHIVOS_JS, 'public/empresa/index.html']) {
+  for (const { t, fijo } of cadenas(codigoDe(f))) {
     // Con HTML adentro («<span>Solicitar asistencia…</span>»): cada trozo de texto por separado
     for (const x of t.split(/<[^>]*>/)) if (fijo || /<[^>]*>/.test(t) ? /[a-záéíóúñ] [a-záéíóúñ]|[áéíóúñ]|^[A-ZÁÉÍÓÚ][a-záéíóúñ]+/.test(x) : /[a-záéíóúñ]{3,} [a-záéíóúñ]/.test(x)) agrega(x);
   }
 }
-for (const f of ['public/mi-cuenta/index.html', 'public/entrar/index.html', 'public/panel/index.html']) {
+for (const f of ['public/mi-cuenta/index.html', 'public/entrar/index.html', 'public/panel/index.html', 'public/empresa/index.html']) // README (ronda 87): también el tablero profesional
+  {
   const h = readFileSync(join(RAIZ, f), 'utf8');
   const sinJs = h.replace(/<style[\s\S]*?<\/style>/g, '');
   for (const m of sinJs.replace(/<script[\s\S]*?<\/script>/g, '').matchAll(/>([^<>]+)</g)) agrega(m[1]);

@@ -159,6 +159,26 @@ en el editor. Lleva a Administración → Álbum (`#album`).
   pestaña es negra con la flecha blanca.
 - En local, los pagos se simulan (`DEV_FAKE_PAYMENTS`): un pedido «pagado» en la compu no es un regalo.
 
+### Profesionales: tablero, panel de sus eventos, DEMO y créditos de complementos (ronda 87)
+Detalle completo en `docs/empresas.md` §11. Resumen:
+- **Tablero** (`public/empresa/index.html`): logo de Amo Invitar como en el panel, bandera de país/idioma antes de «Salir»
+  (`window.AI_PAIS` de `selector-pais.js`), pestañas activas (el `el()` ahora escribe `aria-selected="true"`), celular en
+  grilla sin desborde (tablas como tarjetas con `data-l`), «Nuevo evento» con dos nombres solo en bodas, Nombre de la
+  marca desactivado si hay logo, color del pie y paleta del panel del cliente. Studio en negro y oro. Se traduce con
+  `regional.js` (los textos del tablero entran en `npm run panel:i18n`).
+- **Panel de eventos de empresa** (todo con `ev.empresaId` / `S.empresa`; los clientes directos no cambian): sin precios
+  (`preciosExtras` vacío), video de portada sin costo, álbum QR solo con link propio, complementos con «Contactanos» si no
+  hay crédito de complemento, Administración → Álbum QR con la propuesta de Albunear para profesionales.
+- **Cliente final** (`S.empresa.cliente`): con el link `?k=` se ve como cliente aunque quien lo abra sea del equipo; no
+  ve cambiar modelo, «Mis invitaciones», la pestaña Álbum QR ni lo apagado (secciones y complementos; vuelven solos si
+  el profesional los prende); sin permiso, el botón solo guarda. Logo propio solo con Studio; el logo de la barra espera
+  a saber de quién es el panel (`.marca.esperando`). El panel también se abre desde el dominio propio.
+- **Studio** = marca blanca siempre (`marcaEfectiva`). **DEMO** y **créditos de complementos** en `app_state`
+  `pro-extra:<empresaId>` (`src/pro/extras.js`), manejados desde /admin → Profesionales.
+- Consola: pestaña «Cambios de diseño», pestañas activas, celular. Mail de aprobación Pro → «Ir a Mi panel» (/empresa/).
+- Web: insignia «Regalo» (Save The Date y Álbum colaborativo QR) y el álbum en «Compara» después de Soporte prioritario.
+- Hashtag de ejemplo con un nombre en eventos de una persona.
+
 ## 5. Probar en la compu
 
 - `npm run local` levanta http://localhost:8787 con base en memoria.

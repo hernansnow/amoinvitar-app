@@ -110,12 +110,22 @@ function flotante(v, t) {
 export function pieMarca({ v }) {
   const m = v.marca;
   if (!m || (!m.blanca && !m.coBrand) || m.sinPie) return '';
-  const texto = String(m.pie || m.nombre || '').trim();
+  // README (ronda 87): con logo, el nombre no se repite abajo (solo el texto del pie, si lo hay)
+  const texto = String(m.pie || (m.logo ? '' : m.nombre) || '').trim();
   if (!m.logo && !texto) return '';
   const logo = m.logo ? `<img class="img-fluid mb-1" style="max-height:40px" src="${esc(m.logo)}" alt="${esc(m.nombre || '')}">` : '';
   // README (ronda 35): sin marca blanca (nivel Pro) el logo o texto de la empresa va arriba del pie de Amo Invitar, que se mantiene
   const ajuste = m.coBrand ? ' style="padding-bottom:0!important"' : '';
-  return `<footer class="site-footer pt-4 pb-4"${ajuste}><div class="container text-center">${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}</div></footer>`;
+  return `${colorPie(m.color)}<footer class="site-footer pt-4 pb-4"${ajuste}><div class="container text-center">${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}</div></footer>`;
+}
+
+// README (ronda 87): color del pie elegido por el profesional (también el pie de Amo Invitar que va debajo, en Pro).
+// Con un color claro, los textos pasan a oscuro para que se lean.
+function colorPie(c) {
+  if (!/^#[0-9a-f]{6}$/i.test(String(c || ''))) return '';
+  const n = parseInt(c.slice(1), 16), luz = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+  const txt = luz > 0.6 ? '.site-footer,.site-footer p,.site-footer a,.site-footer .text-white-50{color:rgba(0,0,0,.62)!important}' : '';
+  return `<style>.site-footer{background:${c}!important}${txt}</style>`;
 }
 
 // Pie chico de las pantallas sueltas (acceso con PIN y «Busca tu mesa»): el logo de Amo Invitar, o con marca blanca el
@@ -123,7 +133,7 @@ export function pieMarca({ v }) {
 export function pieChico(marca, defecto) {
   if (!marca?.blanca) return defecto;
   if (marca.sinPie) return '';
-  const texto = String(marca.pie || marca.nombre || '').trim();
+  const texto = String(marca.pie || (marca.logo ? '' : marca.nombre) || '').trim();
   if (marca.logo) return `<img src="${esc(marca.logo)}" alt="${esc(marca.nombre || '')}" style="max-height:48px">`;
   return texto ? `<span style="opacity:.55;font-size:.85rem">${esc(texto)}</span>` : '';
 }

@@ -7,6 +7,12 @@
 <title>Tablero profesional</title>
 <link rel="icon" type="image/svg+xml" href="https://amoinvitar.com/favicon.svg">
 <link rel="stylesheet" href="/comun/fonts/google/jost.css">
+<!-- README (ronda 87): en el idioma elegido con la bandera (cookie idioma), como Mi cuenta y el panel -->
+<script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
+  if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
+<script src="/comun/js/regional.js?v=f51e5abc" defer></script>
+<script src="/comun/js/selector-pais.js?v=r87" defer></script>
 <style>
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
   * { box-sizing: border-box; }
@@ -14,13 +20,14 @@
   a { color: var(--verde-2); }
   header { background: #fff; border-bottom: 1px solid var(--linea); padding: 12px 20px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 5; }
   header .marca { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  header .marca img { height: 34px; width: auto; max-width: 180px; object-fit: contain; display: block; }
+  /* README (ronda 87): logo de Amo Invitar del tamaño del panel de clientes */
+  header .marca img { width: 104px; height: auto; max-height: 38px; object-fit: contain; display: block; }
   header .marca strong { font-weight: 500; font-size: 19px; }
   header .der { margin-left: auto; display: flex; gap: 12px; align-items: center; font-size: 14.5px; color: var(--suave); flex-wrap: wrap; }
   main { max-width: 1120px; margin: 0 auto; padding: 22px 16px 70px; }
   .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
   .tabs button { font: 500 15px/1 Jost, sans-serif; background: #fff; border: 1px solid var(--linea); border-radius: 999px; padding: 11px 18px; cursor: pointer; color: var(--tinta); }
-  .tabs button[aria-selected="true"] { background: var(--verde); border-color: var(--verde); color: #fff; }
+.tabs button[aria-selected="true"], .tabs button.on { background: var(--verde); border-color: var(--verde); color: #fff; }
   h2 { font-size: 22px; font-weight: 500; margin: 0 0 14px; }
   h3 { font-size: 18px; margin: 0 0 4px; font-weight: 600; }
   .tarjeta { background: #fff; border: 1px solid var(--linea); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; }
@@ -62,6 +69,61 @@
   dialog::backdrop { background: rgba(30, 42, 38, .5); }
   dialog h2 { margin: 0 0 12px; } dialog form { display: grid; gap: 12px; }
   #entrada { max-width: 460px; margin: 70px auto; text-align: center; }
+  /* README (ronda 87): selector de país e idioma (bandera redonda, como en el panel de clientes) */
+  .sel-pais { position: relative; display: inline-flex; }
+  .sel-pais-boton { display: inline-flex; width: 23px; height: 23px; border-radius: 50%; border: 1.5px solid var(--linea); background: transparent; cursor: pointer; padding: 0; overflow: hidden; }
+  .sel-pais-boton img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+  .sel-pais-lista { position: absolute; right: 0; top: calc(100% + 8px); width: 270px; max-height: 360px; overflow: auto; background: #fff; border: 1px solid #e3e6e4; border-radius: 14px; box-shadow: 0 12px 34px rgba(0,0,0,.16); padding: 6px; display: none; z-index: 60; }
+  .sel-pais.abierta .sel-pais-lista { display: block; }
+  .sel-pais-lista > button { display: flex; justify-content: space-between; align-items: center; width: 100%; text-align: left; font: 400 15px/1.2 Jost, system-ui, sans-serif; border: 0; background: none; padding: 9px 10px; border-radius: 8px; cursor: pointer; color: #1c1c1c; }
+  .sel-pais-lista > button:hover, .sel-pais-lista > button[aria-checked="true"] { background: var(--claro); }
+  .sel-pais-lista small { color: #6b7570; } .sel-pais-lista .pa { display: inline-flex; align-items: center; gap: 10px; }
+  .sel-pais-lista .pa img { width: 22px; height: 15px; object-fit: cover; border-radius: 2px; }
+  .sel-pais-idiomas { position: sticky; bottom: -6px; display: flex; gap: 6px; flex-wrap: wrap; margin: 6px -6px -6px; padding: 8px; background: #fff; border-top: 1px solid #e3e6e4; }
+  .sel-pais-idiomas .idi { flex: 1; font: 500 14px Jost, system-ui, sans-serif; padding: 8px 10px; border: 0; border-radius: 8px; background: #f3f3f1; color: #1c1c1c; cursor: pointer; }
+  .sel-pais-idiomas .idi.on { background: var(--verde); color: #fff; }
+  /* README (ronda 87): Studio en negro y oro */
+  :root { --oro: #c9a24a; --oro-2: #b38b33; }
+  .tag.studio { background: #111; color: var(--oro); border: 1px solid var(--oro); }
+  .aviso-caja.studio { background: #111; color: #fff; }
+  .aviso-caja.studio strong { color: var(--oro); }
+  .aviso-caja.studio .b { background: var(--oro); border-color: var(--oro); color: #111; }
+  .aviso-caja.studio .b.sec { background: #fff; border-color: #fff; color: #111; }
+  .producto.studio { background: #111; border-color: #111; color: #fff; }
+  .producto.studio .meta, .producto.studio small { color: rgba(255,255,255,.75); }
+  .producto.studio .b { background: var(--oro); border-color: var(--oro); color: #111; }
+  .demo-cinta { background: #111; color: #fff; border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .demo-cinta b { background: var(--oro); color: #111; border-radius: 6px; padding: 2px 8px; letter-spacing: .08em; }
+  .paletas { display: flex; gap: 10px; flex-wrap: wrap; }
+  .paletas label { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--linea); border-radius: 999px; padding: 6px 12px 6px 6px; cursor: pointer; color: var(--tinta); font-size: 14.5px; }
+  .paletas label:has(input:checked) { border-color: var(--tinta); box-shadow: 0 0 0 1px var(--tinta); }
+  .paletas input { display: none; } .paletas i { width: 22px; height: 22px; border-radius: 50%; display: inline-block; }
+  label.apagado { opacity: .5; }
+  /* README (ronda 87): celular ordenado y sin deslizar de costado */
+  html, body { overflow-x: hidden; }
+  @media (max-width: 640px) {
+    header { padding: 10px 14px; gap: 8px; }
+    header .marca strong { font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46vw; }
+    header .der { width: 100%; margin-left: 0; justify-content: space-between; gap: 8px; font-size: 13.5px; }
+    header .der .correo { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    main { padding: 16px 12px 60px; }
+    .tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .tabs button { padding: 11px 8px; font-size: 14px; }
+    .tabs button:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .tarjeta { padding: 16px 14px; }
+    .evento .fila .b { flex: 1 1 calc(50% - 10px); text-align: center; }
+    .cifras { grid-template-columns: repeat(2, 1fr); }
+    .cifras b { font-size: 26px; }
+    .aviso-caja .b { flex: 1 1 auto; text-align: center; }
+    .envuelve { overflow: visible; }
+    .envuelve table, .envuelve tbody, .envuelve tr, .envuelve td { display: block; width: 100%; }
+    .envuelve thead { display: none; }
+    .envuelve tr { border-bottom: 1px solid var(--linea); padding: 8px 0; }
+    .envuelve td { border: 0; padding: 4px 12px; }
+    .envuelve td[data-l]:not(:empty)::before { content: attr(data-l); display: block; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); }
+    .productos { grid-template-columns: 1fr 1fr; }
+    .producto b { font-size: 22px; }
+  }
   pre.datos { background: #f6f9f8; border-radius: 10px; padding: 12px; white-space: pre-wrap; font: 14px/1.5 Jost, sans-serif; margin: 8px 0; }
 </style>
 </head>
@@ -84,7 +146,7 @@
   'use strict';
   var $ = function (s) { return document.querySelector(s); };
   var D = null, TAB = 'eventos', EMP = new URLSearchParams(location.search).get('e') || '';
-  function el(t, a, h) { var e = document.createElement(t); Object.keys(a || {}).forEach(function (k) { if (k === 'class') e.className = a[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), a[k]); else if (a[k] != null && a[k] !== false) e.setAttribute(k, a[k] === true ? '' : a[k]); }); [].concat(h == null ? [] : h).forEach(function (x) { if (x != null) e.append(x); }); return e; }
+  function el(t, a, h) { var e = document.createElement(t); Object.keys(a || {}).forEach(function (k) { if (k === 'class') e.className = a[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), a[k]); else if (k.slice(0, 5) === 'aria-' && typeof a[k] === 'boolean') e.setAttribute(k, String(a[k])); else if (a[k] != null && a[k] !== false) e.setAttribute(k, a[k] === true ? '' : a[k]); }); [].concat(h == null ? [] : h).forEach(function (x) { if (x != null) e.append(x); }); return e; }
   function aviso(t, mal) { var a = $('#aviso'); a.textContent = t; a.className = mal ? 'error' : ''; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 4200); }
   function api(ruta, cuerpo, metodo, cruda) {
     var o = { headers: {} };
@@ -113,16 +175,22 @@
     if (btn) btn.disabled = true;
     return api(ruta, cuerpo, metodo).then(function (r) { aviso(msg || 'Listo ✓'); return cargar().then(function () { return r; }); }).catch(function (e) { aviso(e.message, true); }).then(function (r) { if (btn) btn.disabled = false; return r; });
   }
-  function tabla(cab, filas) { return el('div', { class: 'envuelve' }, el('table', {}, [el('thead', {}, el('tr', {}, cab.map(function (c) { return el('th', {}, c); }))), el('tbody', {}, filas.map(function (f) { return el('tr', {}, f.map(function (c) { return el('td', {}, c); })); }))])); }
+  function tabla(cab, filas) { return el('div', { class: 'envuelve' }, el('table', {}, [el('thead', {}, el('tr', {}, cab.map(function (c) { return el('th', {}, c); }))), el('tbody', {}, filas.map(function (f) { return el('tr', {}, f.map(function (c, i) { return el('td', { 'data-l': cab[i] || null }, c); })); }))])); }
+  var wa = function (t) { return D.contacto.whatsapp ? 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent(t + ' · ' + D.empresa.nombre) : 'mailto:' + D.contacto.email + '?subject=' + encodeURIComponent(t + ' · ' + D.empresa.nombre); };
+  // README (ronda 87): cuenta DEMO de Studio (se ve en todas las pestañas)
+  function cintaDemo() { return el('div', { class: 'demo-cinta' }, [el('b', {}, 'DEMO'), el('span', {}, 'Cuenta de prueba de Studio: puedes armar una invitación con tu crédito, pero no se publica (solo la ves tú en la vista previa).')]); }
 
   // ── Encabezado: con Studio, sin la marca de Amo Invitar ──
   function pintaCab() {
-    var e = D.empresa, m = D.marca, marca = $('#marca'); marca.replaceChildren();
-    if (e.studio) { if (m.logo) marca.append(el('img', { src: m.logo, alt: m.nombre || e.nombre })); marca.append(el('strong', {}, e.nombre)); document.title = 'Tablero · ' + e.nombre; }
-    else { marca.append(el('a', { href: 'https://amoinvitar.com/' }, el('img', { src: '/web/img/logo-linea-verde.svg', alt: 'Amo Invitar!' })), el('strong', {}, e.nombre)); document.title = 'Tablero profesional · ' + e.nombre; }
+    // README (ronda 87): el tablero del profesional (Pro o Studio) lleva el logo de Amo Invitar
+    var e = D.empresa, marca = $('#marca'); marca.replaceChildren();
+    marca.append(el('a', { href: 'https://amoinvitar.com/' }, el('img', { src: '/web/img/logo-linea-verde.svg', alt: 'Amo Invitar!' })), el('strong', {}, e.nombre)); document.title = 'Tablero profesional · ' + e.nombre;
     var der = $('#der'); der.replaceChildren();
     if (D.empresas.length > 1) { var s = el('select', { style: 'width:auto', onchange: function () { EMP = s.value; cargar(); } }, D.empresas.map(function (x) { return el('option', { value: x.id }, x.nombre); })); s.value = e.id; der.append(s); }
-    der.append(el('span', {}, D.usuario.email), el('span', { class: 'tag' }, e.nivel === 'studio' ? 'Studio' : 'Pro'),
+    // README (ronda 87): país e idioma, antes de «Salir» (se arma una sola vez y se reusa al repintar)
+    var pais = pintaCab.pais || (pintaCab.pais = el('div', { class: 'pais' }));
+    if (!pais.firstChild) { var monta = function () { if (window.AI_PAIS && !pais.firstChild) window.AI_PAIS(pais); }; monta(); if (!pais.firstChild) addEventListener('load', monta); }
+    der.append(el('span', { class: 'correo' }, D.usuario.email), el('span', { class: 'tag' + (e.nivel === 'studio' ? ' studio' : '') }, e.demo ? 'Studio DEMO' : e.nivel === 'studio' ? 'Studio' : 'Pro'), pais,
       el('form', { method: 'post', action: '/auth/salir', style: 'margin:0' }, el('button', { class: 'b sec', type: 'submit', style: 'padding:7px 14px' }, 'Salir')));
   }
 
@@ -130,14 +198,21 @@
   function nuevoEvento() {
     var porTipo = function (t) { return D.modelos.filter(function (m) { return m.eventos.indexOf(t) >= 0 || (t === 'cumple' && m.eventos.indexOf('infantil') >= 0); }); };
     var tipoInicial = D.tipos[0].id;
+    // README (ronda 87): como en el resto del sistema, dos nombres en las bodas y uno en los eventos de una persona
+    var nombres = function (tipo, ins) {
+      var a = ins.filter(function (x) { return x.name === 'a'; })[0], b = ins.filter(function (x) { return x.name === 'b'; })[0], dos = tipo === 'boda';
+      b.parentNode.hidden = !dos; b.required = dos; a.required = true;
+      a.parentNode.firstChild.textContent = dos ? 'Nombre 1' : 'Nombre'; a.placeholder = dos ? 'Ej.: Lau' : 'Ej.: Sofi';
+    };
     pedir('Nuevo evento', [
-      { n: 'tipo', l: 'Tipo de evento', tipo: 'select', v: tipoInicial, op: D.tipos.map(function (t) { return [t.id, t.nombre]; }), on: function (sel, ins) { var m = ins[1]; m.replaceChildren.apply(m, porTipo(sel.value).map(function (x) { return el('option', { value: x.id }, x.nombre); })); } },
+      { n: 'tipo', l: 'Tipo de evento', tipo: 'select', v: tipoInicial, op: D.tipos.map(function (t) { return [t.id, t.nombre]; }), on: function (sel, ins) { var m = ins[1]; m.replaceChildren.apply(m, porTipo(sel.value).map(function (x) { return el('option', { value: x.id }, x.nombre); })); nombres(sel.value, ins); } },
       { n: 'modelo', l: 'Diseño', tipo: 'select', op: porTipo(tipoInicial).map(function (m) { return [m.id, m.nombre]; }) },
-      { n: 'a', l: 'Nombre (o nombre 1)', ph: 'Ej.: Sofía' }, { n: 'b', l: 'Segundo nombre (bodas, opcional)' }, { n: 'fecha', l: 'Fecha del evento', tipo: 'date' },
+      { n: 'a', l: 'Nombre', ph: 'Ej.: Sofi' }, { n: 'b', l: 'Nombre 2', ph: 'Ej.: Pablo' }, { n: 'fecha', l: 'Fecha del evento', tipo: 'date' },
       { nota: 'Cada evento publicado usa 1 crédito. El diseño se puede cambiar después desde el panel del evento.' }], 'Crear y abrir el panel').then(function (r) {
       if (!r) return;
-      api(base('/eventos'), { tipo: r.tipo, modelo: r.modelo, nombres: { a: r.a, b: r.b }, fecha: r.fecha }).then(function (j) { location.href = j.panel; }).catch(function (e) { aviso(e.message, true); });
+      api(base('/eventos'), { tipo: r.tipo, modelo: r.modelo, nombres: { a: r.a, b: r.tipo === 'boda' ? r.b : '' }, fecha: r.fecha }).then(function (j) { location.href = j.panel; }).catch(function (e) { aviso(e.message, true); });
     });
+    nombres(tipoInicial, [].slice.call($('#dlg-c').querySelectorAll('input,select')));
   }
   var ESTADO = { borrador: ['Borrador', 'aviso'], publicado: ['Publicada', ''], 'en-diseno': ['En diseño', 'aviso'] };
   function vistaEventos() {
@@ -152,7 +227,7 @@
       if (e.link) botones.push(el('a', { class: 'b sec', href: e.link, target: '_blank', rel: 'noopener' }, 'Ver invitación'));
       if (puede) {
         var bc = el('button', { class: 'b sec', type: 'button' }, 'Link para el cliente');
-        bc.onclick = function () { var url = location.origin + e.linkCliente; (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { aviso('Link copiado: es el panel del evento para tu cliente'); }).catch(function () { prompt('Copia este link', url); }); };
+        bc.onclick = function () { var url = /^https?:/.test(e.linkCliente) ? e.linkCliente : location.origin + e.linkCliente; (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { aviso('Link copiado: es el panel del evento para tu cliente'); }).catch(function () { prompt('Copia este link', url); }); };
         botones.push(bc);
         if (e.estado !== 'publicado' && !e.creditoUsado) { var bd = el('button', { class: 'b mal', type: 'button' }, 'Borrar'); bd.onclick = function () { if (confirm('¿Borrar este borrador? No se puede deshacer.')) accion(bd, base('/eventos/' + e.id), undefined, 'Borrado', 'DELETE'); }; botones.push(bd); }
       }
@@ -196,9 +271,10 @@
     if (e.rol === 'duenio') {
       v.append(el('h2', {}, 'Comprar'), el('div', { class: 'productos' }, D.tienda.productos.map(function (p) {
         var b = el('button', { class: 'b', type: 'button' }, 'Comprar'); b.onclick = function () { comprar(p); };
-        return el('div', { class: 'producto' }, [el('span', { class: 'meta' }, p.nombre), el('b', {}, eur(p.neto)), el('small', {}, p.creditos > 1 ? eur(p.neto / p.creditos) + ' por crédito · + IVA' : '+ IVA'), el('div', { class: 'fila' }, b)]);
+        return el('div', { class: 'producto' + (p.id === 'pase' ? ' studio' : '') }, [el('span', { class: 'meta' }, p.nombre), el('b', {}, eur(p.neto)), el('small', {}, p.creditos > 1 ? eur(p.neto / p.creditos) + ' por crédito · + IVA' : '+ IVA'), el('div', { class: 'fila' }, b)]);
       })));
     }
+    if (D.complementos) v.append(vistaComplementos());
     v.append(el('h2', { style: 'margin-top:26px' }, 'Pedidos'));
     if (!D.compras.length) v.append(el('p', { class: 'vacio' }, 'Todavía no hiciste pedidos.'));
     else v.append(tabla(['Pedido', 'Producto', 'Total', 'Estado', ''], D.compras.map(function (x) {
@@ -209,6 +285,23 @@
     })));
     if (D.tienda.transferencia && D.compras.some(function (x) { return x.estado === 'pendiente'; })) v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Datos para la transferencia'), el('pre', { class: 'datos' }, D.tienda.transferencia), el('p', { class: 'meta', style: 'margin:0' }, 'Indicar la referencia PRO-número en el concepto.')]));
     if (D.creditos.lotes.length) { v.append(el('h2', { style: 'margin-top:26px' }, 'Lotes de créditos')); v.append(tabla(['Origen', 'Comprado', 'Vence', 'Usados'], D.creditos.lotes.map(function (l) { return [l.origen || '—', fecha(l.comprado), el('span', { class: l.vencido ? 'tag mal' : '' }, fecha(l.vence)), l.usados + ' de ' + l.cantidad]; }))); }
+    return v;
+  }
+
+  // README (ronda 87): créditos de complementos (los habilita Amo Invitar). Se usan solos al publicar una invitación con
+  // ese complemento prendido (o al guardarla, si ya estaba publicada).
+  function vistaComplementos() {
+    var c = D.complementos, v = el('div');
+    v.append(el('h2', { style: 'margin-top:26px' }, 'Créditos de complementos'));
+    v.append(el('p', { class: 'meta' }, 'Cada crédito cubre un complemento en una invitación (por ejemplo, un idioma adicional o una tarjeta de agradecimiento). Se descuenta solo al publicar con ese complemento prendido. El diseño a medida se coordina con nosotros.'));
+    v.append(el('div', { class: 'productos' }, c.lista.map(function (x) {
+      var hijos = [el('span', { class: 'meta' }, x.nombre), el('b', {}, String(x.saldo)), el('small', {}, x.saldo === 1 ? 'crédito disponible' : 'créditos disponibles')];
+      if (c.habilitado && D.empresa.rol === 'duenio') {
+        var p1 = { id: 'comp-' + x.id, nombre: 'Crédito de complemento · ' + x.nombre, neto: x.neto }, p5 = { id: 'comp-' + x.id + '-5', nombre: '5 créditos de complemento · ' + x.nombre, neto: x.neto * 5 };
+        hijos.push(el('small', {}, eur(x.neto) + ' + IVA cada uno'), el('div', { class: 'fila' }, [el('button', { class: 'b', type: 'button', onclick: function () { comprar(p1); } }, 'Comprar 1'), el('button', { class: 'b sec', type: 'button', onclick: function () { comprar(p5); } }, 'Comprar 5')]));
+      }
+      return el('div', { class: 'producto' }, hijos);
+    })));
     return v;
   }
 
@@ -235,34 +328,44 @@
   function vistaMarca() {
     var v = el('div'), m = D.marca, e = D.empresa, duenio = e.rol === 'duenio';
     v.append(el('h2', {}, 'Marca'));
-    v.append(el('p', { class: 'meta' }, e.studio ? 'Con Studio tus invitaciones salen sin la marca de Amo Invitar. Se aplica a todos tus eventos, los publicados y los nuevos.' : 'Tu logo o tu nombre aparece junto al pie de Amo Invitar en todas tus invitaciones. La marca blanca (sin el pie de Amo Invitar) es del nivel Studio.'));
+    v.append(el('p', { class: 'meta' }, e.studio ? 'Con Studio tus invitaciones y el panel de tus clientes salen sin la marca de Amo Invitar. Se aplica a todos tus eventos, los publicados y los nuevos.' : 'Tu logo o tu nombre aparece junto al pie de Amo Invitar en todas tus invitaciones. La marca blanca (sin el pie de Amo Invitar) es del nivel Studio.'));
     var f = el('form', { class: 'tarjeta' }), prev = el('div', { class: 'pie-previa' });
     var logo = el('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', disabled: !duenio });
-    var nombre = el('input', { name: 'nombre', value: m.nombre, maxlength: 80, disabled: !duenio, placeholder: 'Nombre de la empresa' });
+    // README (ronda 87): con logo cargado, el nombre no se usa (se desactiva); al quitar el logo vuelve
+    var nombre = el('input', { name: 'nombre', value: m.nombre, maxlength: 80, disabled: !duenio || !!m.logo, placeholder: 'Nombre de la empresa' });
+    var color = el('input', { type: 'color', value: m.color || '#333333', disabled: !duenio, style: 'width:56px;height:40px;padding:3px' });
+    var conColor = el('input', { type: 'checkbox', checked: !!m.color, disabled: !duenio });
+    var PALETAS = [['', 'Verde (Amo Invitar)', '#4e9c87', '#e5f3ec'], ['negro', 'Negro y gris', '#1f1f1f', '#e6e6e6'], ['azul', 'Azul y celeste', '#2f5d9e', '#e3edfa'], ['rojo', 'Rojo y rosa', '#b0353f', '#f8e3e6'], ['dorado', 'Dorado', '#a8823c', '#f5ecd9']];
+    var paletas = el('div', { class: 'paletas' }, PALETAS.map(function (p) { return el('label', {}, [el('input', { type: 'radio', name: 'paleta', value: p[0], checked: (m.paleta || '') === p[0], disabled: !duenio }), el('i', { style: 'background:linear-gradient(135deg,' + p[2] + ' 50%,' + p[3] + ' 50%)' }), p[1]]); }));
     var pie = el('input', { name: 'pie', value: m.pie, maxlength: 140, disabled: !duenio, placeholder: 'Ej.: Salón La Esperanza · Eventos desde 1998' });
-    var blanca = el('input', { type: 'checkbox', checked: m.blanca && e.studio, disabled: !duenio || !e.studio });
+    var blanca = el('input', { type: 'checkbox', checked: e.studio, disabled: true }); // README (ronda 87): con Studio siempre es marca blanca
     var sinPie = el('input', { type: 'checkbox', checked: m.sinPie && e.studio, disabled: !duenio || !e.studio });
     function previa() {
       prev.replaceChildren();
       if (blanca.checked && sinPie.checked) { prev.append(el('em', {}, 'La invitación no lleva pie.')); return; }
+      prev.style.background = conColor.checked ? color.value : '';
+      var claro = (function (h) { var n = parseInt(h.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255 > 0.6; })(color.value);
+      prev.style.color = conColor.checked && claro ? 'rgba(0,0,0,.62)' : '';
       if (m.logo) prev.append(el('img', { src: m.logo, alt: '' }));
-      var t = pie.value || nombre.value; if (t) prev.append(el('div', {}, t));
+      var t = pie.value || (m.logo ? '' : nombre.value); if (t) prev.append(el('div', {}, t));
       if (!m.logo && !t) prev.append(el('em', {}, 'Sin logo ni texto: ' + (blanca.checked ? 'sin pie.' : 'solo el pie de Amo Invitar!.')));
       if (!blanca.checked) prev.append(el('span', { class: 'amo' }, 'amoinvitar.com · pie de Amo Invitar!'));
     }
-    [nombre, pie, blanca, sinPie].forEach(function (i) { i.addEventListener('input', previa); i.addEventListener('change', previa); });
+    [nombre, pie, blanca, sinPie, color, conColor].forEach(function (i) { i.addEventListener('input', previa); i.addEventListener('change', previa); });
     logo.addEventListener('change', function () {
       var a = logo.files[0]; if (!a) return;
       api(base('/logo'), a, 'POST', a.type).then(function () { aviso('Logo guardado'); cargar(); }).catch(function (x) { aviso(x.message, true); });
     });
     f.append(el('div', { class: 'dos' }, [el('label', {}, ['Logo (PNG, JPG o WEBP; fondo transparente de preferencia, hasta 1,5 MB)', logo, m.logo ? el('span', { class: 'fila' }, [el('img', { src: m.logo, alt: '', style: 'max-height:40px;max-width:160px;background:#eee;padding:4px;border-radius:6px' }), duenio ? el('button', { class: 'b mal', type: 'button', onclick: function () { accion(null, base('/logo'), undefined, 'Logo quitado', 'DELETE'); } }, 'Quitar logo') : null]) : null]),
-      el('div', { style: 'display:grid;gap:12px' }, [el('label', {}, ['Nombre', nombre]), el('label', {}, ['Texto del pie (si no hay logo, o junto al logo)', pie])])]));
+      el('div', { style: 'display:grid;gap:12px' }, [el('label', { class: m.logo ? 'apagado' : null, title: m.logo ? 'Con logo cargado el nombre no se usa. Quita el logo para usar el nombre.' : null }, ['Nombre' + (m.logo ? ' (con logo no se usa)' : ''), nombre]), el('label', {}, ['Texto del pie (si no hay logo, o junto al logo)', pie])])]));
     f.append(el('div', { style: 'display:grid;gap:8px;margin-top:14px' }, [
-      el('label', { class: 'casilla' }, [blanca, el('span', {}, [el('strong', {}, 'Marca blanca: '), 'quitar el pie de Amo Invitar y usar el mío', e.studio ? '' : ' (solo Studio)'])]),
+      el('label', { class: 'casilla' }, [blanca, el('span', {}, [el('strong', {}, 'Marca blanca: '), 'sin el pie ni el logo de Amo Invitar', e.studio ? ' (incluida en Studio)' : ' (solo Studio)'])]),
       el('label', { class: 'casilla' }, [sinPie, el('span', {}, [el('strong', {}, 'No mostrar ningún pie '), '(con marca blanca; la invitación no lleva pie)'])])]));
+    f.append(el('div', { style: 'display:grid;gap:8px;margin-top:14px' }, [el('label', { class: 'casilla' }, [conColor, el('span', {}, [el('strong', {}, 'Color del pie: '), 'usar mi color en el pie de las invitaciones'])]), el('div', { class: 'fila', style: 'margin:0' }, [color, el('span', { class: 'meta' }, 'Elige el color (con un color claro, el texto pasa a oscuro).')])]));
     f.append(el('h3', { style: 'margin-top:16px' }, 'Así queda el pie de la invitación'), prev);
+    f.append(el('h3', { style: 'margin-top:18px' }, 'Colores del panel de tus clientes'), el('p', { class: 'meta', style: 'margin:0 0 8px' }, 'El panel donde tus clientes completan la invitación toma estos colores.'), paletas);
     if (duenio) f.append(el('div', { class: 'fila' }, el('button', { class: 'b', type: 'submit' }, 'Guardar marca')));
-    f.addEventListener('submit', function (ev) { ev.preventDefault(); accion(f.querySelector('[type=submit]'), base('/marca'), { nombre: nombre.value, pie: pie.value, blanca: blanca.checked, sinPie: sinPie.checked }, 'Marca guardada'); });
+    f.addEventListener('submit', function (ev) { ev.preventDefault(); var pal = f.querySelector('input[name=paleta]:checked'); accion(f.querySelector('[type=submit]'), base('/marca'), { nombre: nombre.value, pie: pie.value, blanca: blanca.checked, sinPie: sinPie.checked, color: conColor.checked ? color.value : '', paleta: pal ? pal.value : '' }, 'Marca guardada'); });
     previa(); v.append(f);
     if (!e.studio) v.append(promoStudio('Con Studio: marca blanca (sin el pie de Amo Invitar), panel sin la marca de Amo Invitar y dominio propio.'));
     return v;
@@ -270,7 +373,7 @@
 
   function promoStudio(texto) {
     var wa = D.contacto.whatsapp ? 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent('Hola! Quiero pasar a Studio. Empresa: ' + D.empresa.nombre) : null;
-    return el('div', { class: 'aviso-caja' }, [el('p', {}, [el('strong', {}, 'Pasa a Studio. '), texto + ' Pase anual ' + eur(D.tienda.pase) + ' + IVA, hasta 10 usuarios y packs de hasta ' + '56 % de descuento.']),
+    return el('div', { class: 'aviso-caja studio' }, [el('p', {}, [el('strong', {}, 'Pasa a Studio. '), texto + ' Pase anual ' + eur(D.tienda.pase) + ' + IVA, hasta 10 usuarios y packs de hasta ' + '56 % de descuento.']),
       el('button', { class: 'b', type: 'button', onclick: function () { TAB = 'creditos'; pinta(); window.scrollTo(0, 0); } }, 'Ver el pase'), wa ? el('a', { class: 'b sec', href: wa, target: '_blank', rel: 'noopener' }, 'Hablar con Amo Invitar!') : null]);
   }
 
@@ -279,10 +382,11 @@
   function tarjetaDominio() {
     var d = D.dominio, c = el('div', { class: 'tarjeta' }, [el('h3', {}, 'Dominio propio')]);
     var estados = { pendiente: ['Esperando el DNS', 'aviso'], verificando: ['Verificando', 'aviso'], activo: ['Activo', ''], error: ['Con un problema', 'mal'] };
+    if (D.empresa.demo) { c.append(el('p', { class: 'meta' }, 'Cuenta DEMO: el dominio propio no se conecta. Todo (las invitaciones y el panel de tus clientes) se ve desde amoinvitar.com. Con el pase Studio, todo sale desde tu dominio, por ejemplo invitaciones.tusalon.com.')); return c; }
     if (!d.studio) { c.append(el('p', { class: 'meta' }, 'El dominio propio es de Studio: renueva el pase para usarlo.')); return c; }
     if (!d.derecho) {
       var prod = D.tienda.productos.filter(function (p) { return p.id === 'dominio'; })[0];
-      c.append(el('p', { class: 'meta' }, 'Tus invitaciones pueden salir desde tu propio dominio o subdominio (por ejemplo invitaciones.tusalon.com), sin ninguna marca de Amo Invitar!. La configuración se incluye con el pack Studio de 100 créditos o se contrata una sola vez por ' + eur(D.tienda.config) + ' + IVA.'));
+      c.append(el('p', { class: 'meta' }, 'Tus invitaciones y el panel de tus clientes pueden salir desde tu propio dominio o subdominio (por ejemplo invitaciones.tusalon.com), sin ninguna marca de Amo Invitar!. La configuración se incluye con el pack Studio de 100 créditos o se contrata una sola vez por ' + eur(D.tienda.config) + ' + IVA.'));
       if (prod) { var bc = el('button', { class: 'b', type: 'button' }, 'Contratar la configuración'); bc.onclick = function () { comprar(prod); }; c.append(el('div', { class: 'fila' }, bc)); }
       return c;
     }
@@ -298,7 +402,7 @@
       c.append(el('p', { class: 'meta' }, 'En el panel de DNS de tu dominio crea este registro:'), el('pre', { class: 'datos' }, 'Tipo: CNAME\nNombre: ' + d.host.split('.')[0] + '\nDestino: ' + d.cname),
         el('p', { class: 'meta' }, 'Cuando el DNS se propague (de minutos a unas horas) se activa solo' + (d.automatico ? '' : ' o lo activa nuestro equipo en el día') + '. Si tu dominio está en Cloudflare, deja el registro «solo DNS» (nube gris).'));
       if (d.error) c.append(el('p', { class: 'meta', style: 'color:#b3392c' }, d.error));
-    } else c.append(el('p', { class: 'meta' }, 'Tus invitaciones publicadas ya se abren desde ' + d.host + '. Los links de «Ver invitación» del tablero usan tu dominio.'));
+    } else c.append(el('p', { class: 'meta' }, 'Tus invitaciones publicadas y el panel de tus clientes ya se abren desde ' + d.host + '. Los links del tablero («Ver invitación» y «Link para el cliente») usan tu dominio.'));
     var br = el('button', { class: 'b sec', type: 'button' }, 'Revisar ahora'), bq = el('button', { class: 'b mal', type: 'button' }, 'Quitar el dominio');
     br.onclick = function () { accion(br, base('/dominio/revisar'), {}, 'Revisado'); };
     bq.onclick = function () { if (confirm('¿Quitar ' + d.host + '? Las invitaciones vuelven a abrirse desde amoinvitar.com.')) accion(bq, base('/dominio'), undefined, 'Dominio quitado', 'DELETE'); };
@@ -310,7 +414,7 @@
     v.append(el('h2', {}, 'Cuenta'));
     v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, e.nombre), el('div', { class: 'meta' }, 'Nivel ' + (e.nivel === 'studio' ? 'Studio' : 'Pro') + (e.nivel === 'studio' ? ' · pase hasta ' + fecha(e.paseVence) + (e.paseVencido ? ' (vencido)' : '') : ' · sin pase anual') + ' · ' + D.limites.usados + ' de ' + D.limites.usuarios + ' usuarios' + (e.dominio ? ' · dominio propio activo' : ''))]));
     if (e.nivel !== 'studio') v.append(promoStudio('Marca blanca, 10 usuarios, dominio propio y los packs más baratos.'));
-    if (e.nivel === 'studio' && e.rol === 'duenio') v.append(tarjetaDominio());
+    if ((e.nivel === 'studio' || e.demo) && e.rol === 'duenio') v.append(tarjetaDominio());
     if (e.rol === 'duenio') {
       var msg = function (t) { return 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent(t + ' · Empresa: ' + D.empresa.nombre); };
       v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, 'Pedir algo más'), el('p', { class: 'meta' }, 'El diseño a medida, los cambios de diseño, los idiomas adicionales, los complementos y la configuración del dominio propio se contratan aparte. Escribe y lo coordinamos.'),
@@ -321,9 +425,10 @@
 
   function pinta() {
     var tabs = $('#tabs'); tabs.replaceChildren();
-    [['eventos', 'Eventos'], ['creditos', 'Créditos y pedidos'], ['equipo', 'Equipo'], ['marca', 'Marca'], ['cuenta', 'Cuenta']].forEach(function (t) { tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], onclick: function () { TAB = t[0]; pinta(); } }, t[1])); });
+    [['eventos', 'Eventos'], ['creditos', 'Créditos y pedidos'], ['equipo', 'Equipo'], ['marca', 'Marca'], ['cuenta', 'Cuenta']].forEach(function (t) { tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], class: TAB === t[0] ? 'on' : null, onclick: function () { TAB = t[0]; pinta(); } }, t[1])); });
     var cuerpo = el('div'), e = D.empresa;
-    if (e.nivel !== 'studio' && TAB === 'eventos') cuerpo.append(promoStudio('Sin costo fijo hoy; con Studio, marca blanca y más descuento.'));
+    if (e.demo) cuerpo.append(cintaDemo());
+    if (e.nivel !== 'studio' && !e.demo && TAB === 'eventos') cuerpo.append(promoStudio('Sin costo fijo hoy; con Studio, marca blanca y más descuento.'));
     cuerpo.append(TAB === 'eventos' ? vistaEventos() : TAB === 'creditos' ? vistaCreditos() : TAB === 'equipo' ? vistaEquipo() : TAB === 'marca' ? vistaMarca() : vistaCuenta());
     $('#vista').replaceChildren(cuerpo);
   }

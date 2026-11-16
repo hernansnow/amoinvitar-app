@@ -177,7 +177,8 @@ export const mailProAprobada = (env, { nombre, nivel, url }) => ({
   ...plantilla(env, {
     titulo: '¡Tu cuenta profesional fue aprobada!',
     lineas: [`${nombre ? `${b(nombre)}: ` : ''}la cuenta quedó aprobada en el nivel ${b(nivel)}.`, 'El equipo escribe en breve, por este mismo medio, con los pasos para empezar (créditos, equipo y marca). La cuenta se identifica con este mail, sin contraseñas.'],
-    boton: 'Ir a Amo Invitar!', url,
+    // README (ronda 87): el botón lleva directo al tablero profesional (entra con el mail y vuelve a /empresa/)
+    boton: 'Ir a Mi panel', url: `${String(url || '').replace(/\/$/, '')}/entrar?siguiente=/empresa/`,
   }),
 });
 
