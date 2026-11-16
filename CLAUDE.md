@@ -6,7 +6,9 @@ lo personaliza en el panel y paga al publicar. Ver `README.md` (carpetas y cómo
 ## Leer primero
 - **`docs/estado-y-novedades.md`**: qué está publicado, reglas del dueño, cómo están armados los modelos y los textos,
   todo lo nuevo de las rondas 64–87, cómo probar y qué queda pendiente.
-- Rama de trabajo: `claude/login-tienda` (publicada). Publicar con `npx wrangler deploy` y avisar al dueño que purgue
+- Rama de trabajo: `claude/login-tienda` (publicada). **Todas las sesiones trabajan y suben a esta misma rama.** Antes de
+  publicar, siempre `git fetch` + `git merge origin/claude/login-tienda`: `wrangler deploy` sube lo que hay en la compu y
+  pisa lo que otra sesión haya publicado sin estar en esta rama (pasó en la ronda 87 con la página de profesionales). Publicar con `npx wrangler deploy` y avisar al dueño que purgue
   la caché de Cloudflare.
 - Todo texto nuevo va en todos los idiomas (panel: `npm run panel:i18n` + `scripts/sitio/i18n/js-<idioma>.json` +
   `npm run sitio`; invitaciones: `src/textos`).
