@@ -39,6 +39,7 @@ import * as cuenta from './rutas/cuenta.js';
 import { servirLegado } from './sitio/legado.js';
 import { vencido, venceEvento } from './vencimiento.js';
 // La invitación ya cumplió su plazo
+const paginaNoDisponible = () => `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invitación no disponible</title><body style="margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;background:#f6f5f3;color:#333;text-align:center;padding:24px"><p>Esta invitación no está disponible por el momento.<br><span lang="en" style="opacity:.7">This invitation is not available at the moment.</span></p></body>`;
 const paginaVencida = (nombres) => `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invitación finalizada</title>
 <body style="margin:0;min-height:100vh;display:grid;place-content:center;text-align:center;font:17px/1.5 Jost,system-ui,sans-serif;background:#f6f5f1;color:#3a3f3c;padding:20px">
 <p style="font-size:2rem;margin:0">💌</p><h1 style="font-weight:500;margin:.3em 0">${String(nombres || '').replace(/[<>&"]/g, '')}</h1>
@@ -53,6 +54,7 @@ import * as consola from './rutas/consola.js';
 import * as profesionales from './rutas/profesionales.js';
 import * as sa from './rutas/superadmin.js';
 import * as empresaApi from './rutas/empresa.js';
+import { paginaMuestrario, apiMuestrario } from './pro/muestrario.js';
 import { marcaEfectiva, rolEnEmpresa, proDe, paseVigente, usarCredito, devolverCredito } from './pro/empresa.js';
 import { extrasDe, cubrirComplementos, COMPLEMENTO_DE_CREDITO } from './pro/extras.js';
 import { getCookie, hmacHex } from './lib/util.js';
@@ -241,6 +243,11 @@ async function dominioPropio(env, request, url, emp) {
   // README (ronda 87): el panel del cliente final también se abre desde el dominio propio (solo los eventos de esta
   // empresa): la página del panel, su API, la vista previa y los archivos del panel
   if (/^\/panel\/[\w.-]+\.(js|css|svg|png|webp|json)$/.test(ruta) || /^\/web\/img\/flags\/[\w-]+\.svg$/.test(ruta)) return null;
+  // README (ronda 88): el muestrario de la empresa, sus miniaturas y la vista previa limpia de cada modelo
+  const mu = /^\/(?:api\/)?muestrario\/(em_[\w-]+)\/?$/.exec(ruta);
+  if (mu) return mu[1] === emp.id ? null : noExiste();
+  if (/^\/muestrario\/?$/.test(ruta) || /^\/web\/img\/ci\/[\w.-]+\.(jpg|png|webp)$/.test(ruta)) return null;
+  if (/^\/demo\/[a-z0-9-]+$/.test(ruta) && url.searchParams.get('marca') === 'no') return null;
   const pe = /^\/(?:api\/panel|panel|vista)\/(ev_[\w-]+)(?:\/|$)/.exec(ruta);
   if (pe) { const evp = await almacenDe(env).evento(pe[1]); return evp && evp.empresaId === emp.id ? null : noExiste(); }
   const m = /^\/([a-z0-9-]+)\/([a-z0-9-]+)\/?$/.exec(ruta);
@@ -302,7 +309,9 @@ async function demo(env, url, request, idModelo) {
   // README (ronda 40): &invitado=familia muestra la confirmación con lista de invitados (como el link personal de un invitado), para el video de la portada
   const invitado = q.get('invitado') === 'familia' ? { codigo: 'demo', nombre: 'Familia Ríos', pases: 4, integrantes: 'Carla Ríos,Diego Ríos,Lucas Ríos,Sofía Ríos' } : null;
   if (invitado) ev.acceso = { ...(ev.acceso || {}), modo: 'codigo' };
-  const r = await pagina(env, url, ev, { demo: true, sinSobre: limpia, invitado });
+  // README (ronda 88): &marca=no (muestrario de los profesionales): sin pie ni marca de Amo Invitar
+  const sinMarca = q.get('marca') === 'no';
+  const r = await pagina(env, url, ev, { demo: true, sinSobre: limpia, invitado, ...(sinMarca ? { marca: { blanca: true, sinPie: true, sinPieAmo: true } } : {}) });
   if (!limpia || !r.ok) return r;
   const texto = (await r.text()).replace('</head>', '<style>footer,.site-footer,.ai-flotante,#ai-flotante{display:none!important}</style></head>');
   return new Response(texto, { status: r.status, headers: r.headers });
@@ -333,6 +342,8 @@ async function publicada(env, url, request, tipo, slug, ctx = null) {
   // README (ronda 31): pasado su plazo (según el plan, desde la fecha del evento) deja de verse
   if (vencido(ev)) return html(paginaVencida(nombresDe(ev.datos.nombres)), 410, { 'x-robots-tag': 'noindex' });
   const empresa = ev.empresaId ? await almacen.empresa(ev.empresaId) : null;
+  // README (ronda 88): invitación de una cuenta profesional suspendida: no se muestra
+  if (empresa) { const pro = await proDe(env, empresa.id); if (pro && pro.estado !== 'activa') return html(paginaNoDisponible(), 503, { 'cache-control': 'no-store', 'x-robots-tag': 'noindex' }); }
   const marca = await marcaEfectiva(env, empresa);
   const acc = await revisarAcceso({ ev, request, url, almacen, secreto: secretoDe(env) });
   if (!acc.ok) {
@@ -830,6 +841,8 @@ async function apiPanel(env, request, url, partes) {
   // del equipo de la empresa (así el profesional prueba exactamente lo que ve su cliente)
   const conClaveCliente = !!ev.empresaId && !admin && igual(request.headers.get('x-clave') || url.searchParams.get('k') || '', ev.clave);
   const emp = ev.empresaId ? await empresaContexto(env, ev, conClaveCliente ? null : usuario, admin) : null;
+  // README (ronda 88): cuenta profesional suspendida: los paneles de sus eventos no se abren (salvo el administrador)
+  if (emp?.pro && emp.pro.estado !== 'activa' && !admin) return json({ error: emp.rol ? 'La cuenta de la empresa está suspendida: los paneles y las invitaciones no están disponibles. Escribir a Amo Invitar!.' : 'Este panel no está disponible por el momento. Consúltalo con quien organiza tu evento.', suspendida: true }, 423);
   // README (ronda 29): una tarjeta Save The Date comprada sin modelo (desde la tienda) toma el tipo de evento y el
   // primer diseño con tarjeta; en el panel se cambia por otro
   if (ev.producto === 'std-tarjeta' && (!ev.modelo || !TIPOS_EVENTO.some((t) => t.id === ev.tipo))) {
@@ -1449,6 +1462,7 @@ export default {
         if (p1 === 'salir') return await cuenta.salir(request, env);
       }
       if (p0 === 'api') {
+        if (p1 === 'muestrario' && partes.length === 3 && M === 'GET') return await apiMuestrario(env, partes[2]); // README (ronda 88)
         if (p1 === 'cuenta' && partes[2] === 'eliminar' && M === 'POST') return await cuenta.eliminar(request, env);
         if (p1 === 'contacto' && M === 'POST') return await contacto(request, env);
         if (p1 === 'cuenta') return await cuenta.cuenta(request, env);
@@ -1502,6 +1516,8 @@ export default {
       if (p0 === 'factura' && p1) return await admin.facturaCliente(request, env, p1);
       if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);
+      // README (ronda 88): muestrario de modelos de un profesional (página y datos)
+      if (p0 === 'muestrario' && partes.length === 2) return await paginaMuestrario(env, request, url, p1, !!empHost);
       if (p0 === 'demo' && partes.length === 2) {
         // README (ronda 42): las demos de 15 del sitio viejo (/demo/disco15) son la misma demo con el evento de 15
         const m15 = /^([a-z]+)15$/.exec(p1);

@@ -1024,7 +1024,7 @@ ${fuente.replace(/^const ATRIB = .*\n(export )?function convertir\([\s\S]*?\n}\n
   const poner = (h) => h.replace(RE, (m, a, ruta) => { const v = version(ruta); return v ? `${a}${ruta}?v=${v}` : m; });
   const todos = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? todos(join(dir, e.name)) : e.name.endsWith('.html') ? [join(dir, e.name)] : []));
   // sitio.js primero: lleva la versión de crear-invitacion.js y su propia versión cambia con eso
-  for (const f of [join(RAIZ, 'web/js/sitio.js'), ...todos(join(RAIZ, 't')), join(pub, 'mi-cuenta/index.html'), join(pub, 'entrar/index.html'), join(pub, 'panel/index.html'), join(pub, 'empresa/index.html')]) {
+  for (const f of [join(RAIZ, 'web/js/sitio.js'), ...todos(join(RAIZ, 't')), join(pub, 'mi-cuenta/index.html'), join(pub, 'entrar/index.html'), join(pub, 'panel/index.html'), join(pub, 'empresa/index.html'), join(pub, 'muestrario/index.html')]) {
     if (!existsSync(f)) continue;
     const h = readFileSync(f, 'utf8'), n = poner(h);
     if (n !== h) writeFileSync(f, n);

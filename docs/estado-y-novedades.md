@@ -178,6 +178,9 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
 - Consola: pestaña «Cambios de diseño», pestañas activas, celular. Mail de aprobación Pro → «Ir a Mi panel» (/empresa/).
 - Web: insignia «Regalo» (Save The Date y Álbum colaborativo QR) y el álbum en «Compara» después de Soporte prioritario.
 - Hashtag de ejemplo con un nombre en eventos de una persona.
+- **Ronda 88** (ver `docs/empresas.md` §12): tablero en la moneda del país y sin IVA fuera de la UE, DEMO que vuelve al
+  nivel anterior, suspensión que bloquea paneles e invitaciones, cargador y «Powered by» en el panel del cliente,
+  pie Pro con «Powered by», subir/bajar Studio desde /admin y el muestrario `/muestrario/<empresa>`.
 
 ## 5. Probar en la compu
 

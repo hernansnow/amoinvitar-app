@@ -114,9 +114,9 @@ export function pieMarca({ v }) {
   const texto = String(m.pie || (m.logo ? '' : m.nombre) || '').trim();
   if (!m.logo && !texto) return '';
   const logo = m.logo ? `<img class="img-fluid mb-1" style="max-height:40px" src="${esc(m.logo)}" alt="${esc(m.nombre || '')}">` : '';
-  // README (ronda 35): sin marca blanca (nivel Pro) el logo o texto de la empresa va arriba del pie de Amo Invitar, que se mantiene
-  const ajuste = m.coBrand ? ' style="padding-bottom:0!important"' : '';
-  return `${colorPie(m.color)}<footer class="site-footer pt-4 pb-4"${ajuste}><div class="container text-center">${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}</div></footer>`;
+  // README (ronda 88): en Pro, debajo del logo del profesional y más chico: «Powered by (logo)» y «© año | amoinvitar.com»
+  const powered = m.coBrand ? `<div class="ai-powered" style="margin-top:14px;font-size:10px;line-height:1.5;opacity:.7;letter-spacing:.03em"><span style="display:inline-flex;align-items:center;gap:5px">Powered by <img src="/comun/img/amoinvitar-blanco.svg" alt="Amo Invitar!" style="height:11px;width:auto"></span><br><a href="https://amoinvitar.com/" style="color:inherit;text-decoration:none">© ${new Date().getFullYear()} | amoinvitar.com</a></div>` : '';
+  return `${colorPie(m.color)}<footer class="site-footer pt-4 pb-4"><div class="container text-center text-white-50">${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}${powered}</div></footer>`;
 }
 
 // README (ronda 87): color del pie elegido por el profesional (también el pie de Amo Invitar que va debajo, en Pro).
@@ -124,7 +124,7 @@ export function pieMarca({ v }) {
 function colorPie(c) {
   if (!/^#[0-9a-f]{6}$/i.test(String(c || ''))) return '';
   const n = parseInt(c.slice(1), 16), luz = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
-  const txt = luz > 0.6 ? '.site-footer,.site-footer p,.site-footer a,.site-footer .text-white-50{color:rgba(0,0,0,.62)!important}' : '';
+  const txt = luz > 0.6 ? '.site-footer,.site-footer p,.site-footer a,.site-footer .text-white-50{color:rgba(0,0,0,.62)!important}.ai-powered img{filter:brightness(0);opacity:.6}' : '';
   return `<style>.site-footer{background:${c}!important}${txt}</style>`;
 }
 

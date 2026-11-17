@@ -178,7 +178,27 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
 - **Dominio propio**: `dominioPropio` deja pasar `/panel/<ev>`, `/api/panel/<ev>/…`, `/vista/<ev>` (solo eventos de esa
   empresa), los archivos de `/panel/` y las banderas. El «Link para el cliente» del tablero usa el dominio activo.
 
-## 12. Pendiente
+## 12. Ronda 88
+- **Tablero en la moneda del país** (`monedaTablero` en `src/rutas/empresa.js`: cookies `pais_sel`/`cur` o la IP): los
+  precios netos se muestran convertidos (`D.moneda.precios[eur]`, función `pr()` del tablero) y «+ IVA» solo en España y la
+  UE. Lo que se cobra y se factura sigue en euros. Las frases del tablero van en partes (texto fijo / valor) para que
+  `regional.js` las traduzca.
+- **DEMO**: al prenderla se guarda `previo` (nivel y pase) en `pro-extra:<id>`; al quitarla vuelve a ese nivel.
+- **Suspendida**: el panel de sus eventos responde 423 (el panel muestra el motivo), sus invitaciones dan
+  «no disponible» (503) y el tablero muestra el aviso y oculta las acciones. El admin puede «Subir a Studio» / «Bajar a Pro».
+- **Panel del cliente final**: cargador gris (`#cargador`) hasta aplicar colores, logo y botones del profesional. Logo
+  del profesional también en Pro, con «Powered by Amo Invitar» chiquito abajo a la derecha de la barra (`.powered`);
+  en Studio nada de Amo Invitar.
+- **Pie de invitaciones Pro**: el pie de Amo Invitar del modelo se oculta (`data-no="marca.sinPieAmo"` en todos los
+  modelos; `marcaEfectiva` pone `sinPieAmo` en Pro y Studio) y `pieMarca` agrega debajo del logo del profesional
+  «Powered by (logo)» y «© año | amoinvitar.com», más chico.
+- **Muestrario** (`src/pro/muestrario.js`, `public/muestrario/index.html`): `/muestrario/<empresaId>` público para
+  compartir con el cliente; eventos con sus modelos armados desde `MODELOS` (un modelo nuevo aparece solo), miniaturas
+  de la web (`/web/img/ci/p_*.jpg`, con las de la app de respaldo) y vista previa `/demo/<modelo>?marca=no` (sin pie
+  ni marca de Amo Invitar). En Pro, «Powered by» chico al pie. Studio con dominio activo: solo desde su dominio (en
+  amoinvitar.com redirige). Botón «Catálogo» en la pestaña Eventos del tablero.
+
+## 13. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos
 (ver `docs/precios-y-recuerdo.md`).

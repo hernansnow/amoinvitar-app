@@ -93,11 +93,12 @@ export async function marcaEfectiva(env, empresa) {
   const m = empresa.marca || {};
   const pro = await proDe(env, empresa.id);
   // Sin datos de nivel (cuentas anteriores a los niveles): se respeta lo que tenga cargado
-  if (!pro) return m.blanca ? m : null;
+  if (!pro) return m.blanca ? { ...m, sinPieAmo: true } : null;
   if (pro.estado !== 'activa') return null;
   // README (ronda 87): con Studio (pase vigente) siempre es marca blanca: ni la invitación ni el panel llevan el logo de Amo Invitar
-  if (paseVigente(pro)) return { ...m, blanca: true };
-  if (m.logo || m.pie || m.nombre) return { ...m, blanca: false, sinPie: false, coBrand: true };
+  if (paseVigente(pro)) return { ...m, blanca: true, sinPieAmo: true };
+  // README (ronda 88): en Pro el pie de Amo Invitar del modelo se reemplaza por el del profesional con «Powered by» chico
+  if (m.logo || m.pie || m.nombre) return { ...m, blanca: false, sinPie: false, coBrand: true, sinPieAmo: true };
   return null;
 }
 

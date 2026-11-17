@@ -156,15 +156,24 @@ async function renovarPase(env, id, b) {
 // README (ronda 87): cuenta DEMO de Studio: arma invitaciones con 1 crédito, pero no las publica (solo vista previa)
 async function modoDemo(env, id, b) {
   const e = await empresaPro(env, id);
+  const x = await extrasDe(env, id);
   if (b.demo) {
+    // README (ronda 88): se guarda el nivel y el pase de antes, para volver a ellos al quitar la DEMO
+    const previo = x.demo && x.previo ? x.previo : { nivel: e.nivel, pase_vence: e.pase_vence || null };
     if (!(e.nivel === 'studio' && e.pase_vence && e.pase_vence >= ahora())) {
       await env.DB.prepare("UPDATE empresas_pro SET nivel = 'studio', pase_vence = ? WHERE empresa_id = ?").bind(sumarMeses(ahora(), 1), id).run();
       await env.DB.prepare("UPDATE empresas SET plan = 'studio' WHERE id = ?").bind(id).run();
     }
     const c = await env.DB.prepare('SELECT COALESCE(SUM(cantidad - usados), 0) AS n FROM creditos_lotes WHERE empresa_id = ? AND vence >= ?').bind(id, ahora()).first();
     if (!c?.n) await nuevoLote(env, id, 1, 'demo', 'Crédito de la cuenta DEMO');
+    return json({ ok: true, ...(await cambiarExtras(env, id, { demo: true, previo })) });
   }
-  return json({ ok: true, ...(await cambiarExtras(env, id, { demo: !!b.demo })) });
+  // Al quitarla: vuelve al nivel y al pase que tenía (una cuenta Pro vuelve a Pro)
+  if (x.demo && x.previo) {
+    await env.DB.prepare('UPDATE empresas_pro SET nivel = ?, pase_vence = ? WHERE empresa_id = ?').bind(x.previo.nivel || 'pro', x.previo.pase_vence || null, id).run();
+    await env.DB.prepare('UPDATE empresas SET plan = ? WHERE id = ?').bind(x.previo.nivel || 'pro', id).run();
+  }
+  return json({ ok: true, ...(await cambiarExtras(env, id, { demo: false, previo: null })) });
 }
 
 async function cambiarEstado(env, id, b) {

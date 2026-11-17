@@ -508,9 +508,13 @@
         if (e.demo || confirm('¿Pasar ' + e.nombre + ' a cuenta DEMO de Studio? Queda en Studio (pase de 1 mes si no tiene) con 1 crédito si no tiene ninguno. Puede armar invitaciones, pero no publicarlas.')) accion(dem, '/api/admin/pro/empresas/' + e.id + '/demo', { demo: !e.demo }, e.demo ? 'Ya no es DEMO' : 'Cuenta DEMO lista', refrescarTodo);
       });
       var saldo = Object.keys(e.compSaldo || {}).filter(function (k) { return e.compSaldo[k] > 0; }).map(function (k) { var c = (D.complementosPro || []).filter(function (x) { return x.id === k; })[0]; return (c ? c.nombre : k) + ': ' + e.compSaldo[k]; });
+      // README (ronda 88): subir a Studio o bajar a Pro (el pase y los créditos quedan como están)
+      var bn = btn(e.nivel === 'studio' ? 'Bajar a Pro' : 'Subir a Studio', 'sec', function () {
+        if (confirm(e.nivel === 'studio' ? '¿Bajar ' + e.nombre + ' a Pro? Pierde la marca blanca, el dominio propio y los packs Studio (los créditos que tiene se mantienen).' : '¿Subir ' + e.nombre + ' a Studio? Para la marca blanca necesita el pase vigente («Renovar pase»).')) accion(bn, '/api/admin/pro/empresas/' + e.id + '/estado', { estado: e.estado, nivel: e.nivel === 'studio' ? 'pro' : 'studio' }, 'Nivel cambiado', refrescarTodo);
+      });
       var be = btn(e.estado === 'activa' ? 'Suspender' : 'Activar', e.estado === 'activa' ? 'mal' : 'sec', function () { accion(be, '/api/admin/pro/empresas/' + e.id + '/estado', { estado: e.estado === 'activa' ? 'suspendida' : 'activa' }, 'Estado actualizado', refrescarTodo); });
       return [el('div', {}, [el('strong', {}, e.nombre), e.demo ? ' ' : null, e.demo ? tag('DEMO', 'demo') : null, el('div', { class: 'meta' }, e.duenio || ''), saldo.length ? el('div', { class: 'chico' }, 'Complementos: ' + saldo.join(' · ')) : null, e.compHabilitado ? el('div', { class: 'chico' }, 'Compra de complementos habilitada') : null]), tag(e.nivel), e.nivel === 'studio' ? el('span', { class: vencido ? 'tag mal' : '' }, fecha(e.pase_vence)) : '—',
-        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'chico' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos), tag(e.estado, e.estado === 'activa' ? '' : 'mal'), el('div', { class: 'acciones' }, [bc, e.nivel === 'studio' ? bp : null, e.nivel === 'studio' ? bd : null, be, hab, reg, dem])];
+        el('div', {}, [String(e.creditos), e.creditos_vencen ? el('div', { class: 'chico' }, 'vencen desde ' + fecha(e.creditos_vencen)) : '']), String(e.eventos), tag(e.estado, e.estado === 'activa' ? '' : 'mal'), el('div', { class: 'acciones' }, [bc, bp, e.nivel === 'studio' ? bd : null, bn, be, hab, reg, dem])];
     })));
     // Dominios propios (Studio)
     var DO = D.dominios || [], info = D.dominiosInfo || {};

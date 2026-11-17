@@ -1245,3 +1245,12 @@ body.modo-admin.con-barra-pago #admin { padding-bottom: 90px; }
 /* README (ronda 87): complementos de eventos de empresa que se piden («Contactanos») */
 .btn-contacto { text-decoration: none; display: inline-flex; align-items: center; }
 .paso-acciones .btn-contacto { margin-right: 6px; }
+
+/* README (ronda 88): cargador inicial (gris neutro, sin el verde de Amo Invitar) */
+.cargador { position: fixed; inset: 0; z-index: 9999; background: #f6f5f3; display: grid; place-items: center; transition: opacity .2s; }
+.cargador span { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #d9d6d0; border-top-color: #8a8780; animation: girar .8s linear infinite; }
+.cargador.fuera { opacity: 0; pointer-events: none; }
+@keyframes girar { to { transform: rotate(360deg); } }
+/* README (ronda 88): «Powered by Amo Invitar» chiquito en el panel del cliente de un profesional Pro (no mueve nada) */
+.powered { position: absolute; right: 14px; bottom: 1px; display: inline-flex; align-items: center; gap: 4px; font-size: 8.5px; line-height: 1; letter-spacing: .02em; color: var(--acento-texto); opacity: .75; text-decoration: none; pointer-events: auto; }
+.powered img { height: 8px; width: auto; display: block; }

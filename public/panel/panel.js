@@ -2183,6 +2183,7 @@ function aplicarMarca(m) {
 // README (ronda 35): panel de un evento de empresa. Para el cliente final (y el equipo Studio) va limpio: sin logo, links ni
 // contactos de Amo Invitar!; se ve el logo o el nombre de la empresa.
 // README (ronda 87): colores del panel del cliente final elegidos por el profesional (el resto sale de --acento)
+function quitarCargador() { const c = $('#cargador'); if (!c) return; c.classList.add('fuera'); setTimeout(() => c.remove(), 250); }
 const PALETAS = { negro: '#1f1f1f', azul: '#2f5d9e', rojo: '#b0353f', dorado: '#a8823c' };
 function aplicarEmpresa(e) {
   document.getElementById('marca')?.classList.remove('esperando');
@@ -2197,8 +2198,10 @@ function aplicarEmpresa(e) {
   document.body.classList.add('panel-limpio');
   const a = $('#marca');
   a.removeAttribute('href'); a.classList.add('propia');
-  // README (ronda 87): solo con Studio (pase pagado) va el logo del profesional; si no, el de Amo Invitar (sin link)
-  if (e.studio) a.replaceChildren(e.logo ? el('img', { src: e.logo, alt: e.nombre || '' }) : el('strong', {}, e.nombre || ''));
+  // README (ronda 88): el logo (o el nombre) del profesional, en Pro y en Studio. En Pro, abajo a la derecha de la barra,
+  // un «Powered by Amo Invitar» muy chico; en Studio, nada de Amo Invitar
+  a.replaceChildren(e.logo ? el('img', { src: e.logo, alt: e.nombre || '' }) : el('strong', {}, e.nombre || ''));
+  if (!e.studio && !document.querySelector('.barra .powered')) $('.barra').append(el('span', { class: 'powered' }, 'Powered by', el('img', { src: '/comun/img/amoinvitar-blanco.svg', alt: 'Amo Invitar!' })));
   document.title = `Panel · ${e.nombre || ''}`;
   document.querySelectorAll('.link-cuenta').forEach((x) => x.remove());
   if (!e.rol) { const v = $('#btn-volver'); if (v) v.hidden = true; }
@@ -2228,9 +2231,10 @@ function recordarBorrador() {
 (async () => {
   try { S = await api(); window.AI_REGIONAL?.activar(S.clave); } catch (e) {
     if (e.status === 403 && !clave) { location.href = `/entrar?siguiente=${encodeURIComponent(location.pathname)}`; return; }
-    $('#formulario').replaceChildren(el('div', { class: 'tarjeta mejorar' }, el('h2', {}, 'No se pudo abrir el panel'), el('p', {}, e.status === 403 ? 'El link no es válido o venció. Entrar con el mail de la compra en amoinvitar.com/entrar.' : 'Revisar la conexión y volver a intentar.')));
+    $('#formulario').replaceChildren(el('div', { class: 'tarjeta mejorar' }, el('h2', {}, 'No se pudo abrir el panel'), el('p', {}, e.status === 423 ? e.message : e.status === 403 ? 'El link no es válido o venció. Entrar con el mail de la compra en amoinvitar.com/entrar.' : 'Revisar la conexión y volver a intentar.')));
     $('#titulo-evento').textContent = '';
     $('#marca')?.classList.remove('esperando');
+    quitarCargador();
     return;
   }
   datos = S.datos || {};
@@ -2258,6 +2262,7 @@ function recordarBorrador() {
   pintarPublicar();
   estado(S.evento.estado === 'publicado' ? 'Publicada' : 'Guardado ✓');
   ayudaAlVolver();
+  quitarCargador();
   // README (ronda 58): miniatura para compartir desactualizada (otra fecha, otros nombres…) → se rearma y se guarda
   { const f = !S.esquema?.cerrada && firmaDeMiniatura(); if (f && f !== datos.miniatura?.firma && (datos.miniatura?.generada || datos.miniatura?.conTexto || !(datos.fotos?.portada || []).length)) { clearTimeout(guardarTimer); guardarTimer = setTimeout(guardar, 1500); } }
   // Publicada: el panel abre en la administración (siempre se puede volver a editar)

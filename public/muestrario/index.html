@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Modelos de invitaciones</title>
+<link rel="stylesheet" href="/comun/fonts/google/jost.css">
+<!-- README (ronda 88): muestrario de modelos para el profesional y su cliente final (sin marca de Amo Invitar en Studio) -->
+<script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
+  if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
+<script src="/comun/js/regional.js?v=7e0cc3fc" defer></script>
+<style>
+  :root { --acento: #4e9c87; --tinta: #1f2421; --suave: #6b706c; --linea: #e2e0dc; --fondo: #f6f5f3; }
+  * { box-sizing: border-box; }
+  html, body { overflow-x: hidden; }
+  body { margin: 0; font: 16px/1.5 Jost, system-ui, sans-serif; color: var(--tinta); background: var(--fondo); }
+  header { background: #fff; border-bottom: 1px solid var(--linea); padding: 14px 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .marca { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .marca img { max-height: 46px; max-width: 180px; object-fit: contain; display: block; }
+  .marca strong { font-weight: 500; font-size: 19px; }
+  .compartir { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .b { font: 600 14px/1 Jost, sans-serif; border-radius: 999px; padding: 10px 16px; border: 1px solid var(--acento); background: var(--acento); color: #fff; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .b.sec { background: #fff; color: var(--acento); }
+  main { max-width: 1180px; margin: 0 auto; padding: 22px 16px 60px; }
+  h1 { font-size: 26px; font-weight: 500; margin: 0 0 4px; }
+  .sub { color: var(--suave); margin: 0 0 18px; }
+  .eventos { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .eventos button { font: 500 15px/1 Jost, sans-serif; background: #fff; border: 1px solid var(--linea); border-radius: 999px; padding: 10px 16px; cursor: pointer; color: var(--tinta); }
+  .eventos button.on { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 18px; }
+  .ficha { background: #fff; border: 1px solid var(--linea); border-radius: 16px; padding: 12px; display: grid; gap: 10px; text-align: center; }
+  .ficha .foto { aspect-ratio: 9 / 16; border-radius: 10px; overflow: hidden; background: #eee; cursor: pointer; }
+  .ficha .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ficha strong { font-weight: 500; font-size: 17px; }
+  .ficha .b { justify-content: center; }
+  footer { text-align: center; color: var(--suave); font-size: 10px; padding: 0 0 22px; opacity: .8; }
+  footer img { height: 10px; vertical-align: -1px; margin-left: 4px; }
+  .previa { position: fixed; inset: 0; z-index: 50; background: rgba(20, 22, 21, .82); display: grid; place-items: center; padding: 14px; }
+  .previa[hidden] { display: none; }
+  .previa .caja { position: relative; width: min(430px, 100%); height: min(860px, calc(100vh - 28px)); background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+  .previa iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .previa .cerrar { position: absolute; top: 10px; right: 10px; z-index: 2; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font-size: 20px; cursor: pointer; }
+  #aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--tinta); color: #fff; padding: 12px 18px; border-radius: 12px; z-index: 60; }
+  @media (max-width: 640px) {
+    header { padding: 12px 14px; } .compartir { margin-left: 0; width: 100%; } .compartir .b { flex: 1; justify-content: center; }
+    .grilla { grid-template-columns: repeat(2, 1fr); gap: 10px; } .ficha { padding: 8px; } h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="marca" id="marca"></div>
+  <div class="compartir">
+    <button class="b sec" type="button" id="copiar">Copiar link</button>
+    <button class="b" type="button" id="compartir" hidden>Compartir</button>
+  </div>
+</header>
+<main>
+  <h1>Modelos de invitaciones</h1>
+  <p class="sub">Elige el tipo de evento y mira cada modelo en vista previa.</p>
+  <div class="eventos" id="eventos" role="tablist"></div>
+  <section class="grilla" id="grilla"></section>
+</main>
+<footer id="pie" hidden></footer>
+<div class="previa" id="previa" hidden><div class="caja"><button class="cerrar" type="button" id="cerrar" aria-label="Cerrar">✕</button><iframe id="marco" title="Vista previa" src="about:blank"></iframe></div></div>
+<div id="aviso" hidden></div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var id = location.pathname.split('/').filter(Boolean)[1] || '';
+  var IMG = '/web/img/ci/';
+  var PALETAS = { negro: '#1f1f1f', azul: '#2f5d9e', rojo: '#b0353f', dorado: '#a8823c' };
+  function el(t, a, h) { var e = document.createElement(t); Object.keys(a || {}).forEach(function (k) { if (k === 'class') e.className = a[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), a[k]); else if (a[k] != null) e.setAttribute(k, a[k]); }); [].concat(h == null ? [] : h).forEach(function (x) { if (x != null) e.append(x); }); return e; }
+  function aviso(t) { var a = $('#aviso'); a.textContent = t; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 3000); }
+  var clave = function (s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ''); };
+  // Las mismas miniaturas de las grillas de la web (sin logos), con las de la app de respaldo
+  function miniaturas(m, tipo) {
+    var ks = m.claves.map(clave).concat([m.id]).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+    var pref = { boda: [''], '15': [''], bautismo: ['bautismo-', 'bautizo-'], comunion: ['comunion-'], cumple: ['cumple-'], graduacion: ['egreso-', 'graduacion-'], babyshower: ['baby-shower-'], revelacion: ['baby-shower-'], infantil: ['infantil-'], navidad: [''] }[tipo] || [''];
+    var suf = tipo === '15' ? ['15', '15-1', '1'] : tipo === 'boda' ? ['', '1'] : [''];
+    var r = [];
+    ks.forEach(function (k) { pref.forEach(function (p) { suf.forEach(function (s) { r.push(IMG + 'p_' + p + k + s + '.jpg'); }); }); });
+    r.push(IMG + 'n_' + m.id + '-' + tipo + '.jpg', '/modelos/' + m.id + '/tienda-' + tipo + '.jpg', '/modelos/' + m.id + '/miniatura.jpg');
+    return r;
+  }
+  function imagen(lista, alt) { var i = 0, img = el('img', { src: lista[0], alt: alt, loading: 'lazy' }); img.addEventListener('error', function () { i++; if (i < lista.length) img.src = lista[i]; }); return img; }
+  var D = null, EV = new URLSearchParams(location.search).get('evento') || '';
+  function abrir(m) {
+    $('#marco').src = '/demo/' + m.id + '?evento=' + encodeURIComponent(m.evento) + '&paquete=deluxe&marca=no';
+    $('#previa').hidden = false; document.body.style.overflow = 'hidden';
+  }
+  function cerrar() { $('#previa').hidden = true; $('#marco').src = 'about:blank'; document.body.style.overflow = ''; }
+  $('#cerrar').onclick = cerrar; $('#previa').addEventListener('click', function (e) { if (e.target === $('#previa')) cerrar(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrar(); });
+  function pinta() {
+    var ev = D.eventos.filter(function (x) { return x.id === EV; })[0] || D.eventos[0]; EV = ev.id;
+    $('#eventos').replaceChildren.apply($('#eventos'), D.eventos.map(function (x) { return el('button', { type: 'button', role: 'tab', class: x.id === EV ? 'on' : null, 'aria-selected': String(x.id === EV), onclick: function () { EV = x.id; history.replaceState(null, '', location.pathname + '?evento=' + EV); pinta(); } }, x.nombre); }));
+    $('#grilla').replaceChildren.apply($('#grilla'), ev.modelos.map(function (m) {
+      return el('article', { class: 'ficha' }, [el('div', { class: 'foto', onclick: function () { abrir(m); } }, imagen(miniaturas(m, m.evento), m.nombre)), el('strong', {}, m.nombre), el('button', { class: 'b sec', type: 'button', onclick: function () { abrir(m); } }, 'Vista previa')]);
+    }));
+  }
+  // Copiar y compartir el link (con el evento elegido)
+  var link = function () { return location.origin + location.pathname + (EV ? '?evento=' + EV : ''); };
+  $('#copiar').onclick = function () { (navigator.clipboard ? navigator.clipboard.writeText(link()) : Promise.reject()).then(function () { aviso('Link copiado'); }).catch(function () { prompt('Copia este link', link()); }); };
+  if (navigator.share) { $('#compartir').hidden = false; $('#compartir').onclick = function () { navigator.share({ title: document.title, url: link() }).catch(function () {}); }; }
+  fetch('/api/muestrario/' + encodeURIComponent(id)).then(function (r) { if (!r.ok) throw new Error(); return r.json(); }).then(function (d) {
+    D = d; var e = d.empresa;
+    if (PALETAS[e.paleta]) document.documentElement.style.setProperty('--acento', PALETAS[e.paleta]);
+    $('#marca').replaceChildren(e.logo ? el('img', { src: e.logo, alt: e.nombre }) : el('strong', {}, e.nombre));
+    document.title = e.nombre + ' · ' + document.title;
+    // En Pro, un «Powered by Amo Invitar» chiquito al pie; en Studio, nada de Amo Invitar
+    if (!e.studio) { $('#pie').replaceChildren('Powered by', el('img', { src: '/comun/img/amoinvitar-verde.svg', alt: 'Amo Invitar!' })); $('#pie').hidden = false; }
+    pinta();
+  }).catch(function () { $('main').replaceChildren(el('p', { class: 'sub' }, 'Este muestrario no está disponible.')); });
+})();
+</script>
+</body>
+</html>

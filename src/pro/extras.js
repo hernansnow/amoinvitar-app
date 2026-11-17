@@ -26,7 +26,7 @@ export async function extrasDe(env, empresaId) {
   if (!empresaId) return { demo: false, habilitado: false, saldo: {} };
   let x = {};
   try { x = JSON.parse((await getState(env, clave(empresaId))) || '{}') || {}; } catch { x = {}; }
-  return { demo: !!x.demo, habilitado: !!x.habilitado, saldo: x.saldo && typeof x.saldo === 'object' ? x.saldo : {}, historial: Array.isArray(x.historial) ? x.historial : [] };
+  return { demo: !!x.demo, previo: x.previo || null, habilitado: !!x.habilitado, saldo: x.saldo && typeof x.saldo === 'object' ? x.saldo : {}, historial: Array.isArray(x.historial) ? x.historial : [] };
 }
 async function guardar(env, empresaId, x) {
   await setState(env, clave(empresaId), JSON.stringify({ ...x, historial: (x.historial || []).slice(-60) }));
@@ -34,6 +34,7 @@ async function guardar(env, empresaId, x) {
 export async function cambiarExtras(env, empresaId, cambios) {
   const x = await extrasDe(env, empresaId);
   for (const k of ['demo', 'habilitado']) if (k in cambios) x[k] = !!cambios[k];
+  if ('previo' in cambios) x.previo = cambios.previo || null; // README (ronda 88): nivel y pase de antes de la DEMO
   await guardar(env, empresaId, x);
   return x;
 }

@@ -11,7 +11,7 @@
 <script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
   if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
   document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
-<script src="/comun/js/regional.js?v=f51e5abc" defer></script>
+<script src="/comun/js/regional.js?v=7e0cc3fc" defer></script>
 <script src="/comun/js/selector-pais.js?v=r87" defer></script>
 <style>
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
@@ -155,12 +155,16 @@
   }
   var base = function (r) { return '/api/empresa' + (r || '') + (EMP ? '?e=' + encodeURIComponent(EMP) : ''); };
   var eur = function (n) { return Number(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; };
+  // README (ronda 88): precios en la moneda del país elegido con la bandera; «+ IVA» solo en España y la UE
+  var pr = function (n) { return (D && D.moneda && D.moneda.precios[String(n)]) || eur(n); };
+  var conIva = function () { return !D || !D.moneda || D.moneda.ue; };
+  var iva = function () { return conIva() ? ' + IVA' : ''; };
   var fecha = function (iso) { return iso ? String(iso).slice(0, 10).split('-').reverse().join('/') : '—'; };
   function pedir(titulo, campos, ok) {
     return new Promise(function (res) {
       var d = $('#dlg'), c = $('#dlg-c'); $('#dlg-t').textContent = titulo; $('#dlg-si').textContent = ok || 'Aceptar'; c.replaceChildren();
       var ins = campos.map(function (f) {
-        if (f.nota) { c.append(el('p', { class: 'meta', style: 'margin:0' }, f.nota)); return null; }
+        if (f.nota) { c.append(el('p', { class: 'meta', style: 'margin:0' }, f.nota)); return null; } // (texto o lista de partes)
         var i = f.tipo === 'select' ? el('select', { name: f.n }, f.op.map(function (o) { return el('option', { value: o[0] }, o[1]); })) : f.tipo === 'texto' ? el('textarea', { name: f.n, rows: 3 }) : el('input', { name: f.n, type: f.tipo || 'text', placeholder: f.ph || null });
         if (f.v != null) i.value = f.v; if (f.on) i.addEventListener('change', function () { f.on(i, ins); });
         c.append(el('label', {}, [f.l, i])); return i;
@@ -216,10 +220,12 @@
   }
   var ESTADO = { borrador: ['Borrador', 'aviso'], publicado: ['Publicada', ''], 'en-diseno': ['En diseño', 'aviso'] };
   function vistaEventos() {
-    var v = el('div'), puede = D.empresa.rol !== 'lectura';
+    var v = el('div'), puede = D.empresa.rol !== 'lectura' && D.empresa.estado === 'activa';
     var pub = D.eventos.filter(function (e) { return e.estado === 'publicado'; }).length, conf = D.eventos.reduce(function (t, e) { return t + e.respuestas; }, 0);
     v.append(el('div', { class: 'cifras' }, [['Eventos', D.eventos.length], ['Publicados', pub], ['Confirmaciones', conf], ['Créditos', D.creditos.disponibles]].map(function (x) { return el('div', {}, [el('b', {}, String(x[1])), el('span', {}, x[0])]); })));
-    v.append(el('div', { class: 'cabecera' }, [el('h2', { style: 'margin:0' }, 'Eventos'), puede ? el('button', { class: 'b', type: 'button', onclick: nuevoEvento }, '＋ Nuevo evento') : null]));
+    // README (ronda 88): «Catálogo»: el muestrario de modelos para compartir con el cliente (con el dominio propio, si está activo)
+    var catalogo = (D.dominio && D.dominio.estado === 'activo' && D.dominio.host && D.empresa.studio && !D.empresa.demo ? 'https://' + D.dominio.host : location.origin) + '/muestrario/' + D.empresa.id;
+    v.append(el('div', { class: 'cabecera' }, [el('h2', { style: 'margin:0' }, 'Eventos'), el('div', { class: 'fila', style: 'margin:0' }, [el('a', { class: 'b sec', href: catalogo, target: '_blank', rel: 'noopener' }, 'Catálogo'), puede ? el('button', { class: 'b', type: 'button', onclick: nuevoEvento }, '＋ Nuevo evento') : null])]));
     if (!D.eventos.length) v.append(el('p', { class: 'vacio' }, 'Todavía no hay eventos. Crea el primero con «Nuevo evento».'));
     D.eventos.forEach(function (e) {
       var est = ESTADO[e.estado] || [e.estado, ''];
@@ -234,8 +240,9 @@
       var cp = el('label', { class: 'casilla', style: 'margin-top:8px' }, [el('input', { type: 'checkbox', checked: e.clientePublica, disabled: !puede, onchange: function (ev) { accion(null, base('/eventos/' + e.id + '/ajustes'), { clientePublica: ev.target.checked }, ev.target.checked ? 'Tu cliente puede publicar' : 'Solo tu equipo publica'); } }), el('span', {}, 'Mi cliente puede publicar su invitación (con su link del panel)')]);
       v.append(el('div', { class: 'tarjeta' }, [el('div', { class: 'evento' }, [
         el('div', {}, [el('h3', {}, [e.nombres || 'Sin nombre', ' ', el('span', { class: 'tag ' + est[1] }, est[0])]),
-          el('div', { class: 'meta' }, e.tipoNombre + ' · ' + e.modelo + (e.paquete && e.paquete !== 'borrador' ? ' · ' + e.paquete : '') + (e.fecha ? ' · ' + fecha(e.fecha) : '')),
-          el('div', { class: 'meta' }, e.invitados + ' invitados cargados · ' + e.respuestas + ' confirmaciones' + (e.vence && e.estado === 'publicado' ? ' · online hasta ' + fecha(e.vence) : '') + (e.creditoUsado ? ' · crédito usado' : ''))]),
+          el('div', { class: 'meta' }, [el('span', {}, e.tipoNombre), ' · ', e.modelo, e.paquete && e.paquete !== 'borrador' ? ' · ' + e.paquete : '', e.fecha ? ' · ' + fecha(e.fecha) : '']),
+          // README (ronda 88): cada parte fija en su propio texto, así se traduce
+          el('div', { class: 'meta' }, [String(e.invitados), ' ', el('span', {}, 'invitados cargados'), ' · ', String(e.respuestas), ' ', el('span', {}, 'confirmaciones'), e.vence && e.estado === 'publicado' ? el('span', {}, [' · ', el('span', {}, 'online hasta'), ' ' + fecha(e.vence)]) : null, e.creditoUsado ? el('span', {}, [' · ', el('span', {}, 'crédito usado')]) : null])]),
         el('div', { class: 'fila', style: 'margin:0' }, botones)]), puede ? cp : null]));
     });
     return v;
@@ -246,18 +253,19 @@
   function mediosDe(pais) { var l = (D.tienda.medios || {})[pais === 'AR' ? 'AR' : 'general'] || ['transfer']; return l.map(function (m) { return [m, NOMBRE_MEDIO[m] || m]; }); }
   function rellenaMedios(sel, pais) { var v = sel.value; sel.replaceChildren.apply(sel, mediosDe(pais).map(function (o) { return el('option', { value: o[0] }, o[1]); })); sel.value = mediosDe(pais).some(function (o) { return o[0] === v; }) ? v : sel.options[0].value; }
   function comprar(p) {
-    var medios0 = mediosDe('ES');
+    var medios0 = mediosDe((D.moneda && D.moneda.pais) || 'ES');
     var paises = [['ES', 'España'], ['AR', 'Argentina'], ['MX', 'México'], ['CO', 'Colombia'], ['CL', 'Chile'], ['PE', 'Perú'], ['UY', 'Uruguay'], ['PY', 'Paraguay'], ['BO', 'Bolivia'], ['EC', 'Ecuador'], ['VE', 'Venezuela'], ['CR', 'Costa Rica'], ['PA', 'Panamá'], ['DO', 'República Dominicana'], ['GT', 'Guatemala'], ['HN', 'Honduras'], ['SV', 'El Salvador'], ['NI', 'Nicaragua'], ['US', 'Estados Unidos'], ['PT', 'Portugal'], ['FR', 'Francia'], ['DE', 'Alemania'], ['IT', 'Italia'], ['NL', 'Países Bajos'], ['BE', 'Bélgica'], ['IE', 'Irlanda'], ['AT', 'Austria'], ['GB', 'Reino Unido'], ['CH', 'Suiza'], ['XX', 'Otro país']];
     pedir('Comprar: ' + p.nombre, [
-      { nota: 'Precio sin IVA: ' + eur(p.neto) + '. En España y la Unión Europea se suma el IVA que corresponda (empresas de otro país de la UE con IVA válido, sin IVA). Elige cómo pagar: con tarjeta o PayPal se acreditan al instante; con transferencia se confirma a mano (te llega un mail con los datos). En Argentina, Mercado Pago cobra el equivalente en pesos.' },
-      { n: 'pais', l: 'País de facturación', tipo: 'select', v: 'ES', op: paises, on: function (i, ins) { var m = ins.filter(function (x) { return x.name === 'medio'; })[0]; if (m) rellenaMedios(m, i.value); } },
+      { nota: conIva() ? [el('span', {}, 'Precio sin IVA:'), ' ' + pr(p.neto) + '. ', el('span', {}, 'En España y la Unión Europea se suma el IVA que corresponda (empresas de otro país de la UE con IVA válido, sin IVA).'), ' ', el('span', {}, 'Elige cómo pagar: con tarjeta o PayPal se acreditan al instante; con transferencia se confirma a mano (te llega un mail con los datos).')]
+        : [el('span', {}, 'Precio:'), ' ' + pr(p.neto) + '. ', el('span', {}, 'Elige cómo pagar: con tarjeta o PayPal se acreditan al instante; con transferencia se confirma a mano (te llega un mail con los datos).'), D.moneda && D.moneda.codigo === 'ARS' ? el('span', {}, ' En Argentina, Mercado Pago cobra el equivalente en pesos.') : null] },
+      { n: 'pais', l: 'País de facturación', tipo: 'select', v: (D.moneda && D.moneda.pais) || 'ES', op: paises, on: function (i, ins) { var m = ins.filter(function (x) { return x.name === 'medio'; })[0]; if (m) rellenaMedios(m, i.value); } },
       { n: 'medio', l: 'Medio de pago', tipo: 'select', v: medios0[0][0], op: medios0 }, { n: 'nombre', l: 'Nombre o razón social para la factura', v: D.empresa.nombre },
       { n: 'nif', l: 'NIF / CIF / IVA intracomunitario / CUIT (opcional)' }, { n: 'direccion', l: 'Dirección fiscal (opcional)' }], 'Hacer el pedido').then(function (r) {
       if (!r) return;
       if (r.pais === 'XX') r.pais = 'ZZ';
       api(base('/compras'), Object.assign({ item: p.id }, r)).then(function (j) {
         if (j.url) { location.href = j.url; return; } // pago online: se sigue en la pasarela
-        pedir('Pedido #' + j.numero, [{ nota: j.nombre + ' · total a transferir: ' + eur(j.total) + (j.tasa ? ' (incluye IVA ' + j.tasa + ' %)' : ' (sin IVA)') + '. Referencia: PRO-' + j.numero + '. También te llegó por mail.' }], 'Entendido');
+        pedir('Pedido #' + j.numero, [{ nota: [j.nombre, ' · ', el('span', {}, 'total a transferir:'), ' ' + eur(j.total) + (j.tasa ? ' (IVA ' + j.tasa + ' %)' : '') + '. ', el('span', {}, 'Referencia:'), ' PRO-' + j.numero + '. ', el('span', {}, 'También te llegó por mail.')] }], 'Entendido');
         if (j.datos) { var c = $('#dlg-c'); c.append(el('pre', { class: 'datos' }, j.datos)); }
         $('#dlg-no').hidden = true; cargar(); setTimeout(function () { $('#dlg-no').hidden = false; }, 500);
       }).catch(function (e) { aviso(e.message, true); });
@@ -267,11 +275,11 @@
     var v = el('div'), c = D.creditos, e = D.empresa;
     v.append(el('div', { class: 'cifras' }, [[c.disponibles, 'Créditos disponibles'], [c.proximoVence ? fecha(c.proximoVence) : '—', 'Primer vencimiento'], [e.nivel === 'studio' ? fecha(e.paseVence) : '—', e.nivel === 'studio' ? 'Pase Studio hasta' : 'Pase']].map(function (x) { return el('div', {}, [el('b', {}, String(x[0])), el('span', {}, x[1])]); })));
     if (e.paseVencido) v.append(el('div', { class: 'aviso-caja mal' }, [el('p', {}, 'El pase Studio venció: la marca blanca y los packs Studio están pausados. Al renovarlo, los créditos que no venzan antes pasan al año siguiente.')]));
-    v.append(el('p', { class: 'meta' }, 'Cada crédito publica una invitación de cualquier paquete (hasta Deluxe) y modelo. Los créditos vencen a los 12 meses de la compra' + (e.nivel === 'studio' ? '; si renuevas el pase antes de que venzan, los que sobran pasan al año siguiente.' : '.') + ' No incluyen diseño a medida, cambio de diseño, idiomas adicionales ni complementos.'));
+    v.append(el('p', { class: 'meta' }, [el('span', {}, 'Cada crédito publica una invitación de cualquier paquete (hasta Deluxe) y modelo.'), ' ', el('span', {}, e.nivel === 'studio' ? 'Los créditos vencen a los 12 meses de la compra; si renuevas el pase antes de que venzan, los que sobran pasan al año siguiente.' : 'Los créditos vencen a los 12 meses de la compra.'), ' ', el('span', {}, 'No incluyen diseño a medida, cambio de diseño, idiomas adicionales ni complementos.')]));
     if (e.rol === 'duenio') {
       v.append(el('h2', {}, 'Comprar'), el('div', { class: 'productos' }, D.tienda.productos.map(function (p) {
         var b = el('button', { class: 'b', type: 'button' }, 'Comprar'); b.onclick = function () { comprar(p); };
-        return el('div', { class: 'producto' + (p.id === 'pase' ? ' studio' : '') }, [el('span', { class: 'meta' }, p.nombre), el('b', {}, eur(p.neto)), el('small', {}, p.creditos > 1 ? eur(p.neto / p.creditos) + ' por crédito · + IVA' : '+ IVA'), el('div', { class: 'fila' }, b)]);
+        return el('div', { class: 'producto' + (p.id === 'pase' ? ' studio' : '') }, [el('span', { class: 'meta' }, p.nombre), el('b', {}, pr(p.neto)), el('small', {}, p.creditos > 1 ? [pr(p.neto / p.creditos) + ' ', el('span', {}, 'por crédito'), iva()] : iva().trim() || '\u00a0'), el('div', { class: 'fila' }, b)]);
       })));
     }
     if (D.complementos) v.append(vistaComplementos());
@@ -298,7 +306,7 @@
       var hijos = [el('span', { class: 'meta' }, x.nombre), el('b', {}, String(x.saldo)), el('small', {}, x.saldo === 1 ? 'crédito disponible' : 'créditos disponibles')];
       if (c.habilitado && D.empresa.rol === 'duenio') {
         var p1 = { id: 'comp-' + x.id, nombre: 'Crédito de complemento · ' + x.nombre, neto: x.neto }, p5 = { id: 'comp-' + x.id + '-5', nombre: '5 créditos de complemento · ' + x.nombre, neto: x.neto * 5 };
-        hijos.push(el('small', {}, eur(x.neto) + ' + IVA cada uno'), el('div', { class: 'fila' }, [el('button', { class: 'b', type: 'button', onclick: function () { comprar(p1); } }, 'Comprar 1'), el('button', { class: 'b sec', type: 'button', onclick: function () { comprar(p5); } }, 'Comprar 5')]));
+        hijos.push(el('small', {}, [pr(x.neto) + iva() + ' ', el('span', {}, 'cada uno')]), el('div', { class: 'fila' }, [el('button', { class: 'b', type: 'button', onclick: function () { comprar(p1); } }, 'Comprar 1'), el('button', { class: 'b sec', type: 'button', onclick: function () { comprar(p5); } }, 'Comprar 5')]));
       }
       return el('div', { class: 'producto' }, hijos);
     })));
@@ -308,7 +316,7 @@
   // ── Equipo ──
   function vistaEquipo() {
     var v = el('div'), duenio = D.empresa.rol === 'duenio';
-    v.append(el('div', { class: 'cabecera' }, [el('h2', { style: 'margin:0' }, 'Equipo'), el('span', { class: 'meta' }, D.limites.usados + ' de ' + D.limites.usuarios + ' usuarios')]));
+    v.append(el('div', { class: 'cabecera' }, [el('h2', { style: 'margin:0' }, 'Equipo'), el('span', { class: 'meta' }, [D.limites.usados + ' / ' + D.limites.usuarios + ' ', el('span', {}, 'usuarios')])]));
     v.append(el('p', { class: 'meta' }, 'Quienes sumes entran con su mail (sin contraseñas) y ven todos los eventos de la empresa. Editor: crea y edita eventos y publica. Solo lectura: mira.'));
     v.append(tabla(['Usuario', 'Rol', ''], D.equipo.map(function (m) {
       var b = m.rol !== 'duenio' && duenio ? el('button', { class: 'b mal', type: 'button' }, 'Quitar') : null; if (b) b.onclick = function () { if (confirm('¿Quitar a ' + m.email + ' del equipo?')) accion(b, base('/equipo/' + m.usuarioId), undefined, 'Quitado del equipo', 'DELETE'); };
@@ -335,7 +343,7 @@
     var nombre = el('input', { name: 'nombre', value: m.nombre, maxlength: 80, disabled: !duenio || !!m.logo, placeholder: 'Nombre de la empresa' });
     var color = el('input', { type: 'color', value: m.color || '#333333', disabled: !duenio, style: 'width:56px;height:40px;padding:3px' });
     var conColor = el('input', { type: 'checkbox', checked: !!m.color, disabled: !duenio });
-    var PALETAS = [['', 'Verde (Amo Invitar)', '#4e9c87', '#e5f3ec'], ['negro', 'Negro y gris', '#1f1f1f', '#e6e6e6'], ['azul', 'Azul y celeste', '#2f5d9e', '#e3edfa'], ['rojo', 'Rojo y rosa', '#b0353f', '#f8e3e6'], ['dorado', 'Dorado', '#a8823c', '#f5ecd9']];
+    var PALETAS = [['', 'Verde', '#4e9c87', '#e5f3ec'], ['negro', 'Negro', '#1f1f1f', '#e6e6e6'], ['azul', 'Azul', '#2f5d9e', '#e3edfa'], ['rojo', 'Rojo', '#b0353f', '#f8e3e6'], ['dorado', 'Dorado', '#a8823c', '#f5ecd9']]; // README (ronda 88): un solo nombre por color
     var paletas = el('div', { class: 'paletas' }, PALETAS.map(function (p) { return el('label', {}, [el('input', { type: 'radio', name: 'paleta', value: p[0], checked: (m.paleta || '') === p[0], disabled: !duenio }), el('i', { style: 'background:linear-gradient(135deg,' + p[2] + ' 50%,' + p[3] + ' 50%)' }), p[1]]); }));
     var pie = el('input', { name: 'pie', value: m.pie, maxlength: 140, disabled: !duenio, placeholder: 'Ej.: Salón La Esperanza · Eventos desde 1998' });
     var blanca = el('input', { type: 'checkbox', checked: e.studio, disabled: true }); // README (ronda 87): con Studio siempre es marca blanca
@@ -348,7 +356,7 @@
       prev.style.color = conColor.checked && claro ? 'rgba(0,0,0,.62)' : '';
       if (m.logo) prev.append(el('img', { src: m.logo, alt: '' }));
       var t = pie.value || (m.logo ? '' : nombre.value); if (t) prev.append(el('div', {}, t));
-      if (!m.logo && !t) prev.append(el('em', {}, 'Sin logo ni texto: ' + (blanca.checked ? 'sin pie.' : 'solo el pie de Amo Invitar!.')));
+      if (!m.logo && !t) prev.append(el('em', {}, [el('span', {}, 'Sin logo ni texto:'), ' ', el('span', {}, blanca.checked ? 'sin pie.' : 'solo el pie de Amo Invitar!.')]));
       if (!blanca.checked) prev.append(el('span', { class: 'amo' }, 'amoinvitar.com · pie de Amo Invitar!'));
     }
     [nombre, pie, blanca, sinPie, color, conColor].forEach(function (i) { i.addEventListener('input', previa); i.addEventListener('change', previa); });
@@ -357,7 +365,7 @@
       api(base('/logo'), a, 'POST', a.type).then(function () { aviso('Logo guardado'); cargar(); }).catch(function (x) { aviso(x.message, true); });
     });
     f.append(el('div', { class: 'dos' }, [el('label', {}, ['Logo (PNG, JPG o WEBP; fondo transparente de preferencia, hasta 1,5 MB)', logo, m.logo ? el('span', { class: 'fila' }, [el('img', { src: m.logo, alt: '', style: 'max-height:40px;max-width:160px;background:#eee;padding:4px;border-radius:6px' }), duenio ? el('button', { class: 'b mal', type: 'button', onclick: function () { accion(null, base('/logo'), undefined, 'Logo quitado', 'DELETE'); } }, 'Quitar logo') : null]) : null]),
-      el('div', { style: 'display:grid;gap:12px' }, [el('label', { class: m.logo ? 'apagado' : null, title: m.logo ? 'Con logo cargado el nombre no se usa. Quita el logo para usar el nombre.' : null }, ['Nombre' + (m.logo ? ' (con logo no se usa)' : ''), nombre]), el('label', {}, ['Texto del pie (si no hay logo, o junto al logo)', pie])])]));
+      el('div', { style: 'display:grid;gap:12px' }, [el('label', { class: m.logo ? 'apagado' : null, title: m.logo ? 'Con logo cargado el nombre no se usa. Quita el logo para usar el nombre.' : null }, [el('span', {}, 'Nombre'), m.logo ? el('span', {}, ' (con logo no se usa)') : null, nombre]), el('label', {}, ['Texto del pie (si no hay logo, o junto al logo)', pie])])]));
     f.append(el('div', { style: 'display:grid;gap:8px;margin-top:14px' }, [
       el('label', { class: 'casilla' }, [blanca, el('span', {}, [el('strong', {}, 'Marca blanca: '), 'sin el pie ni el logo de Amo Invitar', e.studio ? ' (incluida en Studio)' : ' (solo Studio)'])]),
       el('label', { class: 'casilla' }, [sinPie, el('span', {}, [el('strong', {}, 'No mostrar ningún pie '), '(con marca blanca; la invitación no lleva pie)'])])]));
@@ -373,7 +381,7 @@
 
   function promoStudio(texto) {
     var wa = D.contacto.whatsapp ? 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent('Hola! Quiero pasar a Studio. Empresa: ' + D.empresa.nombre) : null;
-    return el('div', { class: 'aviso-caja studio' }, [el('p', {}, [el('strong', {}, 'Pasa a Studio. '), texto + ' Pase anual ' + eur(D.tienda.pase) + ' + IVA, hasta 10 usuarios y packs de hasta ' + '56 % de descuento.']),
+    return el('div', { class: 'aviso-caja studio' }, [el('p', {}, [el('strong', {}, 'Pasa a Studio.'), ' ', el('span', {}, texto), ' ', el('span', {}, 'Pase anual:'), ' ', el('b', {}, pr(D.tienda.pase) + iva()), '. ', el('span', {}, 'Hasta 10 usuarios y packs de hasta 56 % de descuento.')]),
       el('button', { class: 'b', type: 'button', onclick: function () { TAB = 'creditos'; pinta(); window.scrollTo(0, 0); } }, 'Ver el pase'), wa ? el('a', { class: 'b sec', href: wa, target: '_blank', rel: 'noopener' }, 'Hablar con Amo Invitar!') : null]);
   }
 
@@ -386,7 +394,7 @@
     if (!d.studio) { c.append(el('p', { class: 'meta' }, 'El dominio propio es de Studio: renueva el pase para usarlo.')); return c; }
     if (!d.derecho) {
       var prod = D.tienda.productos.filter(function (p) { return p.id === 'dominio'; })[0];
-      c.append(el('p', { class: 'meta' }, 'Tus invitaciones y el panel de tus clientes pueden salir desde tu propio dominio o subdominio (por ejemplo invitaciones.tusalon.com), sin ninguna marca de Amo Invitar!. La configuración se incluye con el pack Studio de 100 créditos o se contrata una sola vez por ' + eur(D.tienda.config) + ' + IVA.'));
+      c.append(el('p', { class: 'meta' }, [el('span', {}, 'Tus invitaciones y el panel de tus clientes pueden salir desde tu propio dominio o subdominio (por ejemplo invitaciones.tusalon.com), sin ninguna marca de Amo Invitar!.'), ' ', el('span', {}, 'La configuración se incluye con el pack Studio de 100 créditos o se contrata una sola vez por'), ' ' + pr(D.tienda.config) + iva() + '.']));
       if (prod) { var bc = el('button', { class: 'b', type: 'button' }, 'Contratar la configuración'); bc.onclick = function () { comprar(prod); }; c.append(el('div', { class: 'fila' }, bc)); }
       return c;
     }
@@ -400,9 +408,9 @@
     c.append(el('div', { class: 'fila', style: 'align-items:center' }, [el('strong', {}, d.host), el('span', { class: 'tag ' + st[1] }, st[0])]));
     if (d.estado !== 'activo') {
       c.append(el('p', { class: 'meta' }, 'En el panel de DNS de tu dominio crea este registro:'), el('pre', { class: 'datos' }, 'Tipo: CNAME\nNombre: ' + d.host.split('.')[0] + '\nDestino: ' + d.cname),
-        el('p', { class: 'meta' }, 'Cuando el DNS se propague (de minutos a unas horas) se activa solo' + (d.automatico ? '' : ' o lo activa nuestro equipo en el día') + '. Si tu dominio está en Cloudflare, deja el registro «solo DNS» (nube gris).'));
+        el('p', { class: 'meta' }, [el('span', {}, d.automatico ? 'Cuando el DNS se propague (de minutos a unas horas) se activa solo.' : 'Cuando el DNS se propague (de minutos a unas horas) se activa solo o lo activa nuestro equipo en el día.'), ' ', el('span', {}, 'Si tu dominio está en Cloudflare, deja el registro «solo DNS» (nube gris).')]));
       if (d.error) c.append(el('p', { class: 'meta', style: 'color:#b3392c' }, d.error));
-    } else c.append(el('p', { class: 'meta' }, 'Tus invitaciones publicadas y el panel de tus clientes ya se abren desde ' + d.host + '. Los links del tablero («Ver invitación» y «Link para el cliente») usan tu dominio.'));
+    } else c.append(el('p', { class: 'meta' }, [el('span', {}, 'Tus invitaciones publicadas y el panel de tus clientes ya se abren desde'), ' ' + d.host + '. ', el('span', {}, 'Los links del tablero («Ver invitación» y «Link para el cliente») usan tu dominio.')]));
     var br = el('button', { class: 'b sec', type: 'button' }, 'Revisar ahora'), bq = el('button', { class: 'b mal', type: 'button' }, 'Quitar el dominio');
     br.onclick = function () { accion(br, base('/dominio/revisar'), {}, 'Revisado'); };
     bq.onclick = function () { if (confirm('¿Quitar ' + d.host + '? Las invitaciones vuelven a abrirse desde amoinvitar.com.')) accion(bq, base('/dominio'), undefined, 'Dominio quitado', 'DELETE'); };
@@ -412,7 +420,7 @@
   function vistaCuenta() {
     var e = D.empresa, v = el('div');
     v.append(el('h2', {}, 'Cuenta'));
-    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, e.nombre), el('div', { class: 'meta' }, 'Nivel ' + (e.nivel === 'studio' ? 'Studio' : 'Pro') + (e.nivel === 'studio' ? ' · pase hasta ' + fecha(e.paseVence) + (e.paseVencido ? ' (vencido)' : '') : ' · sin pase anual') + ' · ' + D.limites.usados + ' de ' + D.limites.usuarios + ' usuarios' + (e.dominio ? ' · dominio propio activo' : ''))]));
+    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, e.nombre), el('div', { class: 'meta' }, [el('span', {}, 'Nivel'), ' ' + (e.nivel === 'studio' ? 'Studio' : 'Pro') + ' · ', e.nivel === 'studio' ? el('span', {}, [el('span', {}, 'Pase Studio hasta'), ' ' + fecha(e.paseVence)]) : el('span', {}, 'sin pase anual'), ' · ' + D.limites.usados + ' / ' + D.limites.usuarios + ' ', el('span', {}, 'usuarios')])]));
     if (e.nivel !== 'studio') v.append(promoStudio('Marca blanca, 10 usuarios, dominio propio y los packs más baratos.'));
     if ((e.nivel === 'studio' || e.demo) && e.rol === 'duenio') v.append(tarjetaDominio());
     if (e.rol === 'duenio') {
@@ -428,6 +436,8 @@
     [['eventos', 'Eventos'], ['creditos', 'Créditos y pedidos'], ['equipo', 'Equipo'], ['marca', 'Marca'], ['cuenta', 'Cuenta']].forEach(function (t) { tabs.append(el('button', { type: 'button', role: 'tab', 'aria-selected': TAB === t[0], class: TAB === t[0] ? 'on' : null, onclick: function () { TAB = t[0]; pinta(); } }, t[1])); });
     var cuerpo = el('div'), e = D.empresa;
     if (e.demo) cuerpo.append(cintaDemo());
+    // README (ronda 88): cuenta suspendida: aviso arriba en todas las pestañas (los paneles y las invitaciones no se abren)
+    if (e.estado !== 'activa') cuerpo.append(el('div', { class: 'aviso-caja mal' }, [el('p', {}, [el('strong', {}, 'Cuenta suspendida.'), ' ', el('span', {}, 'Los paneles de tus eventos y tus invitaciones no están disponibles. Escríbenos para reactivarla.')]), el('a', { class: 'b', href: wa('Mi cuenta profesional está suspendida'), target: '_blank', rel: 'noopener' }, 'Contactanos')]));
     if (e.nivel !== 'studio' && !e.demo && TAB === 'eventos') cuerpo.append(promoStudio('Sin costo fijo hoy; con Studio, marca blanca y más descuento.'));
     cuerpo.append(TAB === 'eventos' ? vistaEventos() : TAB === 'creditos' ? vistaCreditos() : TAB === 'equipo' ? vistaEquipo() : TAB === 'marca' ? vistaMarca() : vistaCuenta());
     $('#vista').replaceChildren(cuerpo);

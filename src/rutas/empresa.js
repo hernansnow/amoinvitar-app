@@ -8,7 +8,9 @@
 //   POST   /api/empresa/equipo                   { email, rol: 'editor' | 'lectura' }   ·   DELETE /api/empresa/equipo/<usuarioId>
 //   POST   /api/empresa/compras                  { item, pais, nombre, nif, direccion }   ·   POST /api/empresa/compras/<id>/cancelar
 // Roles (tabla miembros): duenio (todo) · editor (crea y edita eventos) · lectura (solo mira).
-import { json, readJson, isEmail, str, randomId, HttpError } from '../lib/util.js';
+import { json, readJson, isEmail, str, randomId, HttpError, getCookie } from '../lib/util.js';
+import { CURRENCIES, currencyForCountry, getRates, convertirSimple, isEU } from '../lib/fx.js';
+import { formatMoney } from '../lib/dinero.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
 import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo } from '../modelos.js';
@@ -86,6 +88,18 @@ async function infoDominio(env, c) {
   return { derecho: !!c.e.dominio, studio: c.studio, host: d?.host || null, estado: d?.estado || null, error: d?.error || null, cname: cnameDe(env), automatico: conCloudflare(env) };
 }
 
+// README (ronda 88): moneda del tablero según la bandera elegida (cookies pais_sel y cur, si no, la IP). Los precios
+// netos en euros se muestran convertidos; «+ IVA» solo en España y la UE. Lo que se cobra y se factura sigue en euros.
+async function monedaTablero(env, request, montos) {
+  const pais = String(getCookie(request, 'pais_sel') || pais0(request) || 'ES').toUpperCase();
+  const c = String(getCookie(request, 'cur') || '').toUpperCase();
+  const codigo = CURRENCIES.includes(c) ? c : currencyForCountry(pais);
+  const rates = await getRates(env);
+  const precios = Object.fromEntries([...new Set(montos.filter((v) => v > 0))].map((v) => [String(v), formatMoney(convertirSimple(v, codigo, rates), codigo)]));
+  return { pais, codigo, ue: isEU(pais), precios };
+}
+const pais0 = (request) => request.cf?.country || request.headers.get('cf-ipcountry') || null;
+
 // ── Resumen ───────────────────────────────────────────────────────────
 async function resumen(request, env, c) {
   const { e, u } = c;
@@ -137,6 +151,8 @@ async function resumen(request, env, c) {
     },
     contacto: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, ''), email: env.SUPPORT_EMAIL || 'hola@amoinvitar.com' },
     base,
+    moneda: await monedaTablero(env, request, [PROFESIONALES.studio.pase, PROFESIONALES.studio.configuracionDominio,
+      ...Object.values(cat).flatMap((v) => [v.neto, v.creditos > 1 ? v.neto / v.creditos : 0])]),
   };
 }
 
