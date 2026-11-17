@@ -14,7 +14,7 @@ const SECCIONES = [
 ];
 
 // ── Datos de la invitación ──
-const link = () => `${location.origin}/${ctx.S.evento.tipo}/${ctx.datos.slug || ctx.S.evento.slug || ''}`;
+const link = () => `${ctx.S.empresa?.host ? `https://${ctx.S.empresa.host}` : location.origin}/${ctx.S.evento.tipo}/${ctx.datos.slug || ctx.S.evento.slug || ''}`; // README (ronda 89): con el dominio propio (Studio)
 const linkDe = (i) => `${link()}?inv=${encodeURIComponent(i.codigo)}`;
 const publicada = () => ctx.S.evento.estado === 'publicado';
 // "Ver la invitación" del dueño: entra aunque sea de lista cerrada o con PIN

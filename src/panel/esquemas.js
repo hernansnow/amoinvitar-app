@@ -1008,7 +1008,8 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
 function paraEmpresa(pasos) {
   for (const p of pasos) {
     if (!p) continue;
-    if (p.id === 'album') p.campos = p.campos.filter((c) => !['nota.albumAlbunear', 'nota.albumActivar'].includes(c.id)).map((c) => (c.id === 'album.origen' ? { ...c, defecto: 'propio', valores: c.valores.filter((o) => o.v === 'propio') } : c.id === 'album.url' ? { ...c, si: undefined } : c));
+    // README (ronda 89): sin el selector (con una sola opción no hay nada que elegir): solo el link del álbum
+    if (p.id === 'album') p.campos = p.campos.filter((c) => !['nota.albumAlbunear', 'nota.albumActivar', 'album.origen'].includes(c.id)).map((c) => (c.id === 'album.url' ? { ...c, si: undefined } : c));
     if (p.id === 'idiomaAdicional') p.campos = p.campos.map((c) => (c.id === 'nota.idiomas' ? { ...c, texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' } : c));
   }
 }

@@ -77,13 +77,16 @@ function cabecera(P) {
   const orden = ['boda', '15', 'cumple', 'bautismo', 'comunion', 'babyshower', 'graduacion', 'empresarial', 'otros'];
   const lista = orden.map((id) => evs.find((e) => e.id === id));
   const items = lista.map((e) => `<a href="${e.href}"${actual(e.pagina)}>${esc(e.id === 'boda' ? 'Bodas' : e.menu)}</a>`).join('');
-  const enEvento = lista.some((e) => e.pagina === P.slug);
+  const enEvento = lista.some((e) => e.pagina === P.slug) || ['diseno-a-medida', 'profesionales', 'ideas'].includes(P.slug);
+  // README (ronda 89): «Diseño a medida» con los eventos y, después de una línea, profesionales e ideas
+  const itemsMas = `<a href="/diseno-a-medida"${actual('diseno-a-medida')}>Diseño a medida</a>`;
+  const itemsExtra = `<hr class="menu-sep"><a class="menu-extra" href="/profesionales"${actual('profesionales')}>Para profesionales</a><a class="menu-extra" href="/ideas"${actual('ideas')}>Ideas y frases</a>`;
   return `<a class="skip" href="#principal">Saltar al contenido</a>
 <header class="cab">
   <div class="caja cab-fila">
     <a class="logo" href="/" aria-label="Amo Invitar! · Inicio"><img class="l-b" src="/web/img/logo-linea-blanco.svg" alt="Amo Invitar!" width="174" height="37"><img class="l-v" src="/web/img/logo-linea-verde.svg" alt="" width="174" height="37"></a>
     <nav class="nav-principal" aria-label="Principal">
-      <div class="menu-ev${enEvento ? ' en' : ''}"><button type="button" aria-expanded="false" aria-haspopup="true">Invitaciones ${ic('chevron')}</button><div class="menu-ev-lista">${items}</div></div>
+      <div class="menu-ev${enEvento ? ' en' : ''}"><button type="button" aria-expanded="false" aria-haspopup="true">Invitaciones ${ic('chevron')}</button><div class="menu-ev-lista">${items}${itemsMas}${itemsExtra}</div></div>
       <a href="/album"${actual('album')}>Álbum QR</a>
       <a href="/#como-funciona">Cómo funciona</a>
       <a href="/precios"${actual('precios')}>Precios</a>
@@ -101,7 +104,7 @@ function cabecera(P) {
 <div class="cajon" id="cajon" role="dialog" aria-label="Menú">
   <div class="cajon-cuerpo">
     <button type="button" class="cajon-titulo" data-plegar aria-expanded="true" aria-controls="cajon-ev">Invitaciones ${ic('chevron')}</button>
-    <div class="cajon-eventos" id="cajon-ev">${items}</div>
+    <div class="cajon-eventos" id="cajon-ev">${items}${itemsMas}<div class="cajon-extra">${itemsExtra}</div></div>
     <nav class="cajon-lista" aria-label="Secciones"><a href="/album">Álbum QR</a><a href="/#como-funciona" data-cerrar-menu>Cómo funciona</a><a href="/precios">Precios</a><a href="/#faq" data-cerrar-menu>FAQ</a><a href="/contacto">Contacto</a></nav>
     <div class="cajon-botones">
       <a class="btn btn-panel" href="/mi-cuenta">${ic('user-check')} Mi panel</a>
@@ -178,6 +181,19 @@ function pasos(E) {
       `<div class="plan-l"><span>Diseño corporativo</span><span data-precio="medida">140 €</span></div><div class="pill">${ic('check')} Diseño aprobado</div>`,
       uis[4]);
   }
+  // README (ronda 89): diseño a medida para cualquier evento (como el corporativo, con los datos de un evento personal)
+  if (E.medida) {
+    textos.splice(0, 5,
+      ['Completa tus datos', 'Ingresa el tipo de evento, los nombres y la fecha para comenzar.'],
+      ['Personaliza', 'Activa las secciones que quieras, completa los textos y cuéntanos tu idea: estilo, colores, tipografías e imágenes.'],
+      ['Nos envías tu idea', 'Revisamos todo lo que enviaste y te contactamos con la aprobación de tu diseño.'],
+      ['Realizas el pago', 'Comenzamos a diseñar tu invitación y, una vez lista, la revisas y apruebas o nos pides los cambios que quieras.'],
+      ['Gestiona todo', 'Desde tu panel privado administras confirmaciones, editas tu invitación, organizas mesas y pases, y descargas la lista final.']);
+    uis.splice(1, 3,
+      uis[2].replace('Dress code', 'Ideas para el diseño'),
+      `<div class="interr"><span>Paleta y tipografías</span><i class="sw on"></i></div><div class="interr"><span>Fotos e inspiración</span><i class="sw on"></i></div><div class="pill">${ic('send')} Enviar al equipo de diseño</div>`,
+      `<div class="plan-l"><span>Diseño a medida</span><span data-precio="medida">140 €</span></div><div class="pill">${ic('check')} Diseño aprobado</div>`);
+  }
   return `<ol class="pasos">${textos.map(([h, p], i) => `<li class="paso rev"><span class="paso-num">${i + 1}</span><h3>${h}</h3><p>${p}</p><div class="paso-ui" aria-hidden="true">${uis[i]}</div></li>`).join('')}</ol>`;
 }
 
@@ -193,16 +209,16 @@ function comoFunciona(E, esIndex) {
       <div class="rev">
         <p>No es solo una invitación digital: es <strong>un sitio web de ${esIndex ? 'tu boda o evento' : t}</strong>, personalizado ${E.corp ? 'con la identidad de tu marca y ' : ''}con un atractivo diseño, que envías por WhatsApp${E.corp ? ' o email' : ''} fácilmente. Los invitados hacen clic y tienen toda la información del evento, confirman asistencia y participan activamente.</p>
         <p>Y lo más importante: desde el <strong>panel privado</strong> vas a administrar las respuestas, exportarlas, organizar las mesas, la llegada de los invitados el día del evento y mucho más.</p>
-        ${E.corp ? checks(['Diseño 100% a medida con tu identidad.', '3 cambios de diseño hasta que lo apruebes.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.']) : checks(['Diseño de catálogo o estilo 100% a medida.', 'Puedes hacer cambios siempre, incluso publicada.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.'])}
+        ${E.medida ? checks(['Diseño 100% a medida, creado desde cero para tu evento.', '3 cambios de diseño hasta que lo apruebes.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.']) : E.corp ? checks(['Diseño 100% a medida con tu identidad.', '3 cambios de diseño hasta que lo apruebes.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.']) : checks(['Diseño de catálogo o estilo 100% a medida.', 'Puedes hacer cambios siempre, incluso publicada.', 'Un link para todos o uno por invitado, con su nombre y pases.', 'Las confirmaciones te llegan al panel privado y al email.'])}
         <div class="fila-btn"><a class="btn btn-verde btn-grande" href="/crear-invitacion">Crear invitación ${ic('flecha')}</a><a class="enlace-video" href="${C.VIDEO}" data-video="${C.VIDEO}" target="_blank" rel="noopener">${ic('play')} Ver video</a></div>
-        ${E.corp ? '' : `<p class="nota-pago">${ic('shield')}<span><strong>Solo pagas al publicar.</strong> Si el modelo es gratis, tienes tu link y no pagas nada.</span></p>`}
+        ${E.corp || E.medida ? '' : `<p class="nota-pago">${ic('shield')}<span><strong>Solo pagas al publicar.</strong> Si el modelo es gratis, tienes tu link y no pagas nada.</span></p>`}
       </div>
       <a class="video-mini rev" href="${C.VIDEO}" data-video="${C.VIDEO}" target="_blank" rel="noopener" aria-label="Ver el video de Amo Invitar"><picture><source media="(max-width: 899px)" srcset="/web/img/video-ancho.webp" width="1300" height="721"><img src="/web/img/video-cuadrado.webp" alt="" loading="lazy" width="900" height="900"></picture><span><i>${ic('play')}</i></span></a>
     </div>`;
-  const tPasos = titulo('', E.corp ? 'Tu <em>invitación</em> en 5 simples pasos' : 'Tu <em>invitación</em> hoy, en 5 simples pasos', '');
+  const tPasos = titulo('', E.corp || E.medida ? 'Tu <em>invitación</em> en 5 simples pasos' : 'Tu <em>invitación</em> hoy, en 5 simples pasos', '');
   return `<section class="seccion" id="como-funciona">
   <div class="caja">
-    ${E.corp ? `${tPasos}${pasos(E)}<div style="margin-top:clamp(40px,6vw,64px)">${texto}</div>` : esIndex ? `${titulo('¿Cómo funciona?', '<em>Invitar</em> nunca fue tan fácil', '')}${texto}<div style="margin-top:clamp(44px,6vw,72px)">${tPasos}${pasos(E)}</div>`
+    ${E.corp || E.medida ? `${tPasos}${pasos(E)}<div style="margin-top:clamp(40px,6vw,64px)">${texto}</div>` : esIndex ? `${titulo('¿Cómo funciona?', '<em>Invitar</em> nunca fue tan fácil', '')}${texto}<div style="margin-top:clamp(44px,6vw,72px)">${tPasos}${pasos(E)}</div>`
       : `${tPasos}${pasos(E)}<div style="margin-top:clamp(40px,6vw,64px)">${texto}</div>`}
   </div>
 </section>`;
@@ -393,7 +409,7 @@ const SLUG_CREAR = { boda: 'boda', 15: '15-anos', bautismo: 'bautismo', comunion
 const CABECERA_SIMPLE = new Set(['crear-invitacion', 'precios', 'contacto', 'ejemplos-a-medida']);
 // README (ronda 42): links internos de la web con la carpeta del país ({{R}} → '' en la raíz, '/ar', '/us/en'…). Las páginas
 // legales (/info/…), el panel, la cuenta y las demos son las mismas para todos y no llevan carpeta.
-const SLUGS_WEB = ['disenos', 'invitacion', 'ideas', 'bodas', 'mis15', 'bautismo', 'comunion', 'cumple', 'baby-shower', 'graduacion', 'empresarial', 'eventos', 'album', 'precios', 'contacto', 'crear-invitacion', 'ejemplos-a-medida', 'profesionales'];
+const SLUGS_WEB = ['disenos', 'invitacion', 'ideas', 'bodas', 'mis15', 'bautismo', 'comunion', 'cumple', 'baby-shower', 'graduacion', 'empresarial', 'eventos', 'album', 'precios', 'contacto', 'crear-invitacion', 'ejemplos-a-medida', 'diseno-a-medida', 'profesionales'];
 const RE_LINK = new RegExp(`href="/(?=(?:${SLUGS_WEB.join('|')})(?:[-?#"/]|$)|#|")`, 'g');
 const prefijar = (h) => h.replace(RE_LINK, 'href="{{R}}/');
 // FAQ de los datos estructurados con las preguntas ya traducidas (se leen de la página)
@@ -424,7 +440,8 @@ const escribe = (slug, P, cuerpo) => {
   // README (ronda 44): las fichas de modelo (/invitacion-*) llevan la misma cabecera que /precios (sin foto detrás, se lee el menú)
   if (CABECERA_SIMPLE.has(slug) || slug.startsWith('info/') || slug.startsWith('invitacion-')) P.cabFija = true;
   let h = pagina(P, cuerpo);
-  if (P.evento === 'empresarial') h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, 'href="#crear" data-medida="empresarial" data-titulo="Diseño corporativo a medida"');
+  if (P.evento === 'medida') h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, 'href="#crear" data-medida="" data-titulo="Diseño a medida"'); // README (ronda 89)
+  else if (P.evento === 'empresarial') h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, 'href="#crear" data-medida="empresarial" data-titulo="Diseño corporativo a medida"');
   else if (P.evento && SLUG_CREAR[P.evento]) h = h.replace(/href="\/crear-invitacion(\?[^"]*)?"/g, (m, q) => `href="/crear-invitacion-para-${SLUG_CREAR[P.evento]}${q || ''}"`);
   h = h.replace(/(?<![\p{L}])([Dd])e el (?=[a-záéíóúñ])/gu, '$1el '); // «de el bautismo» → «del bautismo»
   h = prefijar(h);
@@ -624,6 +641,53 @@ const cabeceraSimple = (etiqueta, h1, lead) => `<section class="cabecera-simple"
     portada({ etiqueta: pt.etiqueta, h1: pt.h1, lead: pt.lead, evento: true, fondo: HEROES.empresarial, panelImg: '/web/img/hero-panel-captura.webp', demo: urlDemo('aquasalud') + '.html', sinGratis: true, ticks: ['100% a medida', 'Con la identidad de tu marca'], demoVer: urlDemo('aquasalud') }),
     confianza(), identidad, comoFunciona(E, false), muestras, funciones(E), precio, faq(E, P, preg), testimonios(), llamada(E), contacto(E),
   ].join('\n'));
+}
+
+// ── Diseño a medida para cualquier evento (README ronda 89): como el corporativo, para bodas, 15, bautismos, cumpleaños… ──
+{
+  const E = { ...GENERICO, contactoEvento: 'Otro evento', medida: true, tuEvento: 'tu evento' };
+  const P = { titulo: 'Invitaciones digitales con diseño a medida', descripcion: 'Invitación web única, creada desde cero para tu boda, 15 años, bautismo, cumpleaños o cualquier evento: con todas las funciones Deluxe y tu estilo.', widget: false, evento: 'medida' };
+  const hero = `<section class="portada portada-medida" id="inicio" style="${fondoDe('url(/comun/img/modelo-a-medida.webp)', G3('20,24,22,.55', '20,24,22,.62', '12,16,14,.86'))}"><div class="caja portada-centro"><span class="etiqueta">Diseño a medida</span><h1>Una invitación única, creada desde cero</h1><p class="lead" style="margin-inline:auto">Para bodas, 15 años, bautismos, comuniones, cumpleaños, baby showers, graduaciones y cualquier celebración: un diseño exclusivo con tu estilo, tus colores y tus ideas, con todas las funciones de nuestras invitaciones.</p><div class="fila-btn" style="justify-content:center"><a class="btn btn-claro" href="/crear-invitacion">Comenzar mi diseño</a><a class="btn btn-borde-claro" href="#precio">Ver precio</a></div></div></section>`;
+  const identidad = `<section class="seccion" id="identidad"><div class="caja">${titulo('Para tu evento', '<em>Invitar</em> con un diseño único', '')}
+  <div class="medida identidad rev"><div class="med-slider"><img src="/comun/img/modelo-a-medida.webp" alt="Invitación web con diseño a medida" width="1000" height="667"></div>
+  <div><p>Una invitación web interactiva hecha especialmente para tu celebración: tu boda, tus 15, el bautismo, la comunión, tu cumpleaños o el evento que imagines. Con un diseño que nadie más tiene, que compartes por WhatsApp; tus invitados confirman con un clic y tú sabes exactamente quién viene.</p>
+  <p>Cada invitación se crea desde cero con tu estilo: paleta de colores, tipografías, ilustraciones, fotos, secciones y funciones que mejor se adapten a tu evento. Incluye todo lo del plan Deluxe: ubicación, agenda, dress code, menú, organizador de mesas, entradas, álbum QR y mucho más.</p>
+  <div class="fila-btn"><a class="btn btn-claro" href="#precio">Ver precio</a><a class="btn btn-borde-claro" href="#funciones">Funciones</a><a class="btn btn-borde-claro" href="#catalogo-o-medida">A medida o de catálogo</a></div></div></div></div></section>`;
+  // Modelos a medida y de catálogo (en lugar de los modelos de muestra, por ahora)
+  const comparacion = `<section class="seccion verde verde-liso catalogo-pro" id="catalogo-o-medida"><div class="caja">
+  <div class="titulo rev"><span class="sobre">A medida o de catálogo</span><h2><em>Modelos</em> a medida y de catálogo</h2></div>
+  <div class="catalogo-texto rev"><p>Los <strong>modelos de catálogo</strong> están listos para usar: los eliges, cargas tus datos y en minutos tienes tu invitación. No son plantillas genéricas: cada uno fue creado por nuestro equipo de diseño, y además se les puede <strong>cambiar la paleta de colores y la tipografía</strong> para ajustarlos a tu estilo.</p>
+  <p>El <strong>diseño a medida</strong> es para cuando quieres algo totalmente tuyo: un concepto nuevo, creado desde cero con tus ideas, tus colores y tu impronta. Lo diseña una persona del equipo, te acompaña en cada detalle y lo ajustas hasta que te encante.</p>
+  <ul class="ck-blanco"><li>Catálogo: listo en minutos, con cambios de color y tipografía.</li><li>A medida: diseño exclusivo, creado desde cero.</li><li>En los dos: todas las funciones y el mismo panel privado.</li></ul>
+  <p class="centro"><a class="btn btn-claro" href="/disenos">Ver modelos de catálogo</a></p></div></div>
+  <img class="catalogo-celulares" src="/web/img/profesionales-celulares.png" alt="Invitaciones de distintos estilos vistas en el celular" width="1302" height="543" loading="lazy"></section>`;
+  const gal = (lista) => esc(JSON.stringify(lista));
+  const GAL_WEB = [{ img: '/web/img/ejemplos/stdw-point-marco.webp', t: 'Point', marco: 1 }, { img: '/web/img/ejemplos/stdw-rama-marco.webp', t: 'Rama', marco: 1 }];
+  const GAL_TAR = [{ img: '/web/img/ejemplos/stdt-rama.webp', t: 'Rama' }, { img: '/web/img/ejemplos/stdt-natalia-daniel.webp', t: 'Natalia y Daniel' }];
+  const tarjetaPlan = (nombre, precio, items, botones, destacado) => `<article class="plan-card${destacado ? ' destacado' : ''} rev"><h3>${nombre}</h3><p class="precio" ${precio}></p><p class="precio-s">Pago único<span data-iva> · IVA incluido</span></p><ul>${items.map((t) => `<li>${ic('check')}<span>${t}</span></li>`).join('')}</ul><div class="plan-botones">${botones}</div></article>`;
+  const precio = `<section class="seccion" id="precio"><span id="precios"></span><div class="caja">${titulo('Planes y precios', 'Un pago, <em>cero</em> complicaciones', 'Sin suscripciones ni sorpresas: pagas recién cuando tu proyecto está aprobado.')}
+  <div class="planes tres">
+  ${tarjetaPlan('Invitación Web Deluxe · Diseño a medida', 'data-precio="medida">140 €', ['Diseño 100% a medida, creado desde cero', 'Acceso VIP restringido', 'Todas las secciones y funciones', 'Lista de invitados con nombre y link personalizado', 'Confirmación de asistencia (RSVP)', 'Panel privado con organizador'],
+    `<a class="btn btn-verde" href="/crear-invitacion">Crear invitación</a><a class="btn btn-borde" href="/ejemplos-a-medida">Ver ejemplos</a>`, true)}
+  ${tarjetaPlan('Save The Date Web · Diseño a medida', 'data-prod="std-web-medida">70 €', ['Diseño 100% a medida', 'Agenda multiplataforma', 'Ubicación con mapa'],
+    `<a class="btn btn-verde" href="#crear" data-medida="" data-producto="std-web-medida" data-titulo="Save The Date web a medida">Crear Save The Date</a><button type="button" class="btn btn-borde" data-galeria="${gal(GAL_WEB)}" data-titulo="Save The Date web a medida">Ver ejemplos</button>`)}
+  ${tarjetaPlan('Save The Date Tarjeta · Diseño a medida', 'data-prod="std-tarjeta-medida">50 €', ['Diseño 100% a medida', 'Para compartir por WhatsApp o redes'],
+    `<a class="btn btn-verde" href="#crear" data-medida="" data-producto="std-tarjeta-medida" data-titulo="Save The Date tarjeta a medida">Crear Save The Date</a><button type="button" class="btn btn-borde" data-galeria="${gal(GAL_TAR)}" data-titulo="Save The Date tarjeta a medida">Ver ejemplos</button>`)}
+  </div>
+  <p class="planes-nota" data-nota-precios data-sin-nota>Precios en euros.</p><div class="pago-seguro"><span>${ic('lock')} Pago seguro</span><span class="pago-iconos" data-pago-iconos></span></div></div></section>`;
+  const preg = [
+    ['¿Qué es una invitación con diseño a medida?', '<p>Es una invitación web (para verla desde el celular o la computadora) creada desde cero para tu evento: tu boda, tus 15, un bautismo, una comunión, un cumpleaños o cualquier celebración. Tus invitados la abren con un link, confirman asistencia con un clic y tú gestionas todo desde un panel privado.</p>'],
+    ['¿En qué se diferencia de un modelo de catálogo?', '<p>Los modelos de catálogo ya están diseñados: los eliges y cargas tus datos, y se les puede cambiar la paleta de colores y la tipografía. El diseño a medida se crea desde cero con tus ideas: es exclusivo, nadie más lo tiene.</p>'],
+    ['¿Cuánto cuesta y cuándo pago?', '<p>El diseño a medida tiene un <strong>pago único</strong> (el precio figura en esta página). Primero cuentas tu idea desde el panel, la revisamos y te contactamos con la aprobación. <strong>Pagas recién cuando el proyecto está aprobado</strong>.</p>'],
+    ['¿Cuánto tarda en estar lista?', '<p>Una vez que enviaste todo, el diseño fue aprobado y realizaste el pago, el diseño toma de <strong>5 a 10 días hábiles</strong>. Después la revisas y nos pides los cambios que quieras antes de publicarla.</p>'],
+    ['¿Qué puedo personalizar?', '<p>Todo: paleta de colores, tipografías, ilustraciones, fotos, textos, secciones y funciones. Puedes enviarnos inspiración (imágenes, ideas, el estilo de tu evento) y lo diseñamos para ti.</p>'],
+    ['¿Qué funciones incluye?', '<p>Incluye todo lo del plan Deluxe: confirmación de asistencia, ubicación y mapa, agenda, itinerario, dress code, menú, regalos, organizador de mesas y «Busca tu mesa», entradas con control de llegada, álbum QR, lista descargable y mucho más. Mira la sección <a href="#funciones">Funciones</a>.</p>'],
+    ['¿Cuánto tiempo queda online?', '<p>12 meses desde la fecha del evento. Antes de que termine te avisamos y puedes conservarla: descargarla para siempre o dejarla online sin vencimiento.</p>'],
+    ['¿Mis invitados tienen que instalar algo?', '<p>No. Abren el link desde cualquier celular o computadora, sin apps ni registros.</p>'],
+    ['¿Puedo hacer cambios después de publicarla?', '<p>Sí. Desde el panel puedes corregir datos y textos las veces que necesites, incluso ya publicada. Los cambios de diseño se cotizan aparte.</p>'],
+    ['¿Y si es un evento de empresa?', '<p>Para lanzamientos, congresos y eventos corporativos tenemos una página con ejemplos para marcas: mira <a href="/empresarial">invitaciones corporativas</a>.</p>'],
+  ];
+  escribe('diseno-a-medida', P, [hero, confianza(), identidad, comoFunciona(E, false), comparacion, funciones(E), precio, faq(E, P, preg), testimonios(), llamada(E), contacto(E)].join('\n'));
 }
 
 // ── Ejemplos de diseños a medida (README ronda 39): la lista de ejemplos está en scripts/sitio/ejemplos-a-medida.json ──

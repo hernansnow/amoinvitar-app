@@ -181,6 +181,10 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
 - **Ronda 88** (ver `docs/empresas.md` §12): tablero en la moneda del país y sin IVA fuera de la UE, DEMO que vuelve al
   nivel anterior, suspensión que bloquea paneles e invitaciones, cargador y «Powered by» en el panel del cliente,
   pie Pro con «Powered by», subir/bajar Studio desde /admin y el muestrario `/muestrario/<empresa>`.
+- **Ronda 89** (ver `docs/empresas.md` §13): el link del cliente muestra la vista del cliente aunque entre el profesional
+  o el admin, dominio Studio en links y miniatura, país por IP en paneles, cambiador de modelos Pro con «Solicitar» a
+  medida, volver de a medida a catálogo, paleta violeta, barra verde fija en tablero y /admin, pase Studio de 12 meses,
+  página `/diseno-a-medida`, menú Invitaciones nuevo y selector de país más fino.
 
 ## 5. Probar en la compu
 

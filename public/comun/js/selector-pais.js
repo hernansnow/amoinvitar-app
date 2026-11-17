@@ -7,7 +7,7 @@
   function cookie(n) { var m = d.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : ''; }
   function montar(caja) {
     var sede = cookie('ai_sede'); if (sede === 'raiz') sede = '';
-    var pais = cookie('pais_sel');
+    var pais = cookie('pais_sel') || d.documentElement.getAttribute('data-pais') || ''; // README (ronda 89): el de la IP (lo pone el Worker)
     var actual = LISTA.filter(function (y) { return y[3] === sede; })[0] || LISTA.filter(function (y) { return y[0] && y[0] === pais && y[6]; })[0] || LISTA.filter(function (y) { return !y[0] && y[6]; })[0];
     var grupo = function (y) { return y[0] || 'INT'; }, g = actual ? grupo(actual) : 'INT';
     var flag = function (y) { return '/web/img/flags/' + (y && y[0] ? y[0].toLowerCase() : 'globo') + '.svg'; };

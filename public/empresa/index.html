@@ -11,8 +11,8 @@
 <script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
   if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
   document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
-<script src="/comun/js/regional.js?v=fab3139a" defer></script>
-<script src="/comun/js/selector-pais.js?v=r87" defer></script>
+<script src="/comun/js/regional.js?v=dffa16b4" defer></script>
+<script src="/comun/js/selector-pais.js?v=r89" defer></script>
 <style>
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
   * { box-sizing: border-box; }
@@ -100,12 +100,13 @@
   .paletas input { display: none; } .paletas i { width: 22px; height: 22px; border-radius: 50%; display: inline-block; }
   label.apagado { opacity: .5; }
   /* README (ronda 87): celular ordenado y sin deslizar de costado */
-  html, body { overflow-x: hidden; }
+  html, body { overflow-x: clip; } /* README (ronda 89): clip (no hidden) para que la barra quede fija arriba */
   @media (max-width: 640px) {
     header { padding: 10px 14px; gap: 8px; }
     header .marca strong { font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46vw; }
-    header .der { width: 100%; margin-left: 0; justify-content: space-between; gap: 8px; font-size: 13.5px; }
-    header .der .correo { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    header .der { width: 100%; margin-left: 0; justify-content: space-between; gap: 8px; font-size: 13.5px; flex-wrap: nowrap; }
+    header .der .correo { flex: 1 1 0; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+    header .der > * { flex: none; } header .der > .correo { flex: 1 1 0; }
     main { padding: 16px 12px 60px; }
     .tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
     .tabs button { padding: 11px 8px; font-size: 14px; }
@@ -124,6 +125,16 @@
     .productos { grid-template-columns: 1fr 1fr; }
     .producto b { font-size: 22px; }
   }
+  /* README (ronda 89): barra verde fija, con el logo en blanco */
+  [hidden] { display: none !important; }
+  header { background: var(--verde); border-bottom: 0; color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+  header .marca strong { color: #fff; }
+  header .der { color: rgba(255,255,255,.88); }
+  header .tag:not(.studio) { background: rgba(255,255,255,.2); color: #fff; }
+  header .b.sec { background: transparent; border-color: rgba(255,255,255,.85); color: #fff; }
+  header .b.sec:hover { background: rgba(255,255,255,.14); }
+  header select { background: rgba(255,255,255,.95); }
+  header .sel-pais-boton { border-color: rgba(255,255,255,.85); }
   pre.datos { background: #f6f9f8; border-radius: 10px; padding: 12px; white-space: pre-wrap; font: 14px/1.5 Jost, sans-serif; margin: 8px 0; }
 </style>
 </head>
@@ -188,7 +199,7 @@
   function pintaCab() {
     // README (ronda 87): el tablero del profesional (Pro o Studio) lleva el logo de Amo Invitar
     var e = D.empresa, marca = $('#marca'); marca.replaceChildren();
-    marca.append(el('a', { href: 'https://amoinvitar.com/' }, el('img', { src: '/web/img/logo-linea-verde.svg', alt: 'Amo Invitar!' })), el('strong', {}, e.nombre)); document.title = 'Tablero profesional · ' + e.nombre;
+    marca.append(el('a', { href: 'https://amoinvitar.com/' }, el('img', { src: '/comun/img/amoinvitar-blanco.svg', alt: 'Amo Invitar!' })), el('strong', {}, e.nombre)); document.title = 'Tablero profesional · ' + e.nombre;
     var der = $('#der'); der.replaceChildren();
     if (D.empresas.length > 1) { var s = el('select', { style: 'width:auto', onchange: function () { EMP = s.value; cargar(); } }, D.empresas.map(function (x) { return el('option', { value: x.id }, x.nombre); })); s.value = e.id; der.append(s); }
     // README (ronda 87): país e idioma, antes de «Salir» (se arma una sola vez y se reusa al repintar)
@@ -343,7 +354,7 @@
     var nombre = el('input', { name: 'nombre', value: m.nombre, maxlength: 80, disabled: !duenio || !!m.logo, placeholder: 'Nombre de la empresa' });
     var color = el('input', { type: 'color', value: m.color || '#333333', disabled: !duenio, style: 'width:56px;height:40px;padding:3px' });
     var conColor = el('input', { type: 'checkbox', checked: !!m.color, disabled: !duenio });
-    var PALETAS = [['', 'Verde', '#4e9c87', '#e5f3ec'], ['negro', 'Negro', '#1f1f1f', '#e6e6e6'], ['azul', 'Azul', '#2f5d9e', '#e3edfa'], ['rojo', 'Rojo', '#b0353f', '#f8e3e6'], ['dorado', 'Dorado', '#a8823c', '#f5ecd9']]; // README (ronda 88): un solo nombre por color
+    var PALETAS = [['', 'Verde', '#4e9c87', '#e5f3ec'], ['negro', 'Negro', '#1f1f1f', '#e6e6e6'], ['azul', 'Azul', '#2f5d9e', '#e3edfa'], ['rojo', 'Rojo', '#b0353f', '#f8e3e6'], ['dorado', 'Dorado', '#a8823c', '#f5ecd9'], ['violeta', 'Violeta', '#6b4c9a', '#eee6f7']]; // README (ronda 88): un solo nombre por color
     var paletas = el('div', { class: 'paletas' }, PALETAS.map(function (p) { return el('label', {}, [el('input', { type: 'radio', name: 'paleta', value: p[0], checked: (m.paleta || '') === p[0], disabled: !duenio }), el('i', { style: 'background:linear-gradient(135deg,' + p[2] + ' 50%,' + p[3] + ' 50%)' }), p[1]]); }));
     var pie = el('input', { name: 'pie', value: m.pie, maxlength: 140, disabled: !duenio, placeholder: 'Ej.: Salón La Esperanza · Eventos desde 1998' });
     var blanca = el('input', { type: 'checkbox', checked: e.studio, disabled: true }); // README (ronda 87): con Studio siempre es marca blanca

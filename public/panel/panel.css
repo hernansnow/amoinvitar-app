@@ -1251,6 +1251,17 @@ body.modo-admin.con-barra-pago #admin { padding-bottom: 90px; }
 .cargador span { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #d9d6d0; border-top-color: #8a8780; animation: girar .8s linear infinite; }
 .cargador.fuera { opacity: 0; pointer-events: none; }
 @keyframes girar { to { transform: rotate(360deg); } }
-/* README (ronda 88): «Powered by Amo Invitar» chiquito en el panel del cliente de un profesional Pro (no mueve nada) */
-.powered { position: absolute; right: 14px; bottom: 1px; display: inline-flex; align-items: center; gap: 4px; font-size: 8.5px; line-height: 1; letter-spacing: .02em; color: var(--acento-texto); opacity: .75; text-decoration: none; pointer-events: auto; }
-.powered img { height: 8px; width: auto; display: block; }
+/* README (ronda 88/89): «Powered by Amo Invitar» en el panel del cliente de un profesional Pro (no mueve nada).
+   Compu: al lado del idioma, centrado. Celular/tablet: chiquito abajo de los botones. El logo alineado con el texto. */
+.powered { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; line-height: 1; letter-spacing: .02em; color: var(--acento-texto); opacity: .55; white-space: nowrap; }
+.powered img { height: 11px; width: auto; display: block; margin-top: -1px; }
+@media (max-width: 1023px) {
+  .powered { position: absolute; right: 14px; bottom: 3px; font-size: 8.5px; opacity: .6; }
+  .powered img { height: 9px; }
+}
+
+/* README (ronda 89): sin precio que mostrar, la cajita del plan no deja su fondo vacío */
+.caja-plan[hidden], .caja-plan.solo-escritorio[hidden], #plan-mini[hidden] { display: none !important; }
+/* README (ronda 89): el logo del profesional, sin el botón de volver, con margen (no pegado al borde) */
+.barra .marca.propia { margin-left: 8px; }
+.barra .marca.propia img { max-width: 150px; }

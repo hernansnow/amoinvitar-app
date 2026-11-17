@@ -39,6 +39,16 @@ import * as cuenta from './rutas/cuenta.js';
 import { servirLegado } from './sitio/legado.js';
 import { vencido, venceEvento } from './vencimiento.js';
 // La invitación ya cumplió su plazo
+// README (ronda 89): las páginas fuera de la web (panel, tablero, muestrario) llevan el país del visitante en <html data-pais>,
+// así la bandera del selector muestra su país aunque nunca haya elegido uno en la web
+async function conPais(r, request) {
+  if (!r.ok || !(r.headers.get('content-type') || '').includes('text/html')) return r;
+  const pais = String(paisVisitante(request) || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
+  if (!pais) return r;
+  const t = (await r.text()).replace(/<html([^>]*)>/i, `<html$1 data-pais="${pais}">`);
+  const h = new Headers(r.headers); h.delete('content-length');
+  return new Response(t, { status: r.status, headers: h });
+}
 const paginaNoDisponible = () => `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invitación no disponible</title><body style="margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;background:#f6f5f3;color:#333;text-align:center;padding:24px"><p>Esta invitación no está disponible por el momento.<br><span lang="en" style="opacity:.7">This invitation is not available at the moment.</span></p></body>`;
 const paginaVencida = (nombres) => `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invitación finalizada</title>
 <body style="margin:0;min-height:100vh;display:grid;place-content:center;text-align:center;font:17px/1.5 Jost,system-ui,sans-serif;background:#f6f5f1;color:#3a3f3c;padding:20px">
@@ -48,7 +58,7 @@ import { sitioNuevo } from './sitio/nuevo.js';
 import { contacto } from './rutas/contacto.js';
 import * as tienda from './rutas/tienda.js';
 import * as recuerdo from './recuerdo.js';
-import { empresaDeHost } from './pro/dominios.js';
+import { empresaDeHost, dominioDe } from './pro/dominios.js';
 import * as admin from './rutas/admin.js';
 import * as consola from './rutas/consola.js';
 import * as profesionales from './rutas/profesionales.js';
@@ -693,6 +703,8 @@ async function empresaContexto(env, ev, usuario, admin) {
     // Sin la marca de Amo Invitar: el cliente final del profesional y, con Studio, también su equipo
     limpio: !admin && (!rol || studio),
     extras: await extrasDe(env, ev.empresaId), // README (ronda 87): DEMO y créditos de complementos
+    // README (ronda 89): Studio con el dominio propio activo: los links y la miniatura muestran ese dominio
+    host: await (async () => { if (!studio) return null; const x = await extrasDe(env, ev.empresaId); if (x.demo) return null; const d = await dominioDe(env, ev.empresaId).catch(() => null); return d?.estado === 'activo' ? d.host : null; })(),
     puedePublicar: admin || (!!rol && rol !== 'lectura') || !!ev.datos.empresa?.clientePublica,
   };
 }
@@ -839,8 +851,9 @@ async function apiPanel(env, request, url, partes) {
   // de Amo Invitar; publicar usa un crédito de la empresa.
   // README (ronda 87): con el link del cliente (?k=), el panel se ve como lo ve el cliente final aunque quien lo abra sea
   // del equipo de la empresa (así el profesional prueba exactamente lo que ve su cliente)
-  const conClaveCliente = !!ev.empresaId && !admin && igual(request.headers.get('x-clave') || url.searchParams.get('k') || '', ev.clave);
-  const emp = ev.empresaId ? await empresaContexto(env, ev, conClaveCliente ? null : usuario, admin) : null;
+  // README (ronda 89): también con la sesión de administrador (el dueño probando el link del cliente)
+  const conClaveCliente = !!ev.empresaId && igual(request.headers.get('x-clave') || url.searchParams.get('k') || '', ev.clave);
+  const emp = ev.empresaId ? await empresaContexto(env, ev, conClaveCliente ? null : usuario, conClaveCliente ? false : admin) : null;
   // README (ronda 88): cuenta profesional suspendida: los paneles de sus eventos no se abren (salvo el administrador)
   if (emp?.pro && emp.pro.estado !== 'activa' && !admin) return json({ error: emp.rol ? 'La cuenta de la empresa está suspendida: los paneles y las invitaciones no están disponibles. Escribir a Amo Invitar!.' : 'Este panel no está disponible por el momento. Consúltalo con quien organiza tu evento.', suspendida: true }, 423);
   // README (ronda 29): una tarjeta Save The Date comprada sin modelo (desde la tienda) toma el tipo de evento y el
@@ -884,7 +897,7 @@ async function apiPanel(env, request, url, partes) {
       // Variante del español para los textos del panel: la elegida en el selector de la web o la del país de la visita
       clave: claveVisitante(request),
       plan: await tienda.estadoPlan(env, request, ev, esquema),
-      modelos: modelosCambio(ev.tipo, ev.producto, ev.modelo),
+      modelos: modelosCambio(ev.tipo, ev.producto === 'a-medida' && !ev.datos.medida?.enviado ? 'invitacion' : ev.producto, ev.modelo), // README (ronda 89): desde a medida, los de catálogo
       // README (ronda 28): en el cambio de modelo también está el diseño a medida, con su precio
       aMedida: ev.producto === 'invitacion' ? { precio: await tienda.precioATexto(env, request, 'personalizado', A_MEDIDA.personalizado.deluxe), empresarial: ev.tipo === 'empresarial' }
         : ['std-tarjeta', 'std-foto'].includes(ev.producto) ? { precio: await tienda.precioATexto(env, request, 'std-tarjeta-medida', PRODUCTOS['std-tarjeta-medida'].precio), std: true }
@@ -896,8 +909,8 @@ async function apiPanel(env, request, url, partes) {
       // README (ronda 36): pestaña «Recuerdo» (solo invitaciones publicadas que no son de una empresa)
       recuerdo: ev.estado === 'publicado' && !emp ? await recuerdo.infoRecuerdo(ev, (clave, eur) => tienda.precioATexto(env, request, clave, eur)) : null,
       // README (ronda 87): Studio (logo propio en el panel del cliente), paleta del panel, DEMO y créditos de complementos (para el equipo)
-      empresa: emp ? { limpio: emp.limpio, puedePublicar: emp.puedePublicar, nombre: emp.nombre, logo: emp.logo, pie: emp.pie, rol: emp.rol, credito: !!ev.datos.empresa?.credito, conCredito: true,
-        studio: !!emp.studio, paleta: emp.empresa.marca?.paleta || '', demo: !!emp.extras?.demo, cliente: !emp.rol && !admin,
+      empresa: emp ? { id: ev.empresaId, limpio: emp.limpio, puedePublicar: emp.puedePublicar, nombre: emp.nombre, logo: emp.logo, pie: emp.pie, rol: emp.rol, credito: !!ev.datos.empresa?.credito, conCredito: true,
+        studio: !!emp.studio, host: emp.host || null, paleta: emp.empresa.marca?.paleta || '', demo: !!emp.extras?.demo, cliente: !emp.rol && (!admin || conClaveCliente),
         saldo: emp.rol && emp.rol !== 'lectura' || admin ? emp.extras?.saldo || {} : null } : null,
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
@@ -960,6 +973,14 @@ async function apiPanel(env, request, url, partes) {
       ev.producto = ev.producto === 'std-web' ? 'std-web-medida' : 'std-tarjeta-medida'; ev.datos.modeloAnterior = ev.modelo; ev.modelo = null;
       await almacen.guardarEvento(ev);
       return json({ ok: true });
+    }
+    // README (ronda 89): en eventos de profesionales el diseño a medida lo habilita Amo Invitar (se pide por WhatsApp)
+    if (modelo === 'a-medida' && ev.empresaId && !admin) return json({ error: 'El diseño a medida se solicita a Amo Invitar.' }, 403);
+    // README (ronda 89): de diseño a medida se puede volver a un modelo de catálogo (mientras no se haya enviado al equipo)
+    if (modelo !== 'a-medida' && ev.producto === 'a-medida') {
+      if (ev.datos.medida?.enviado && !admin) return json({ error: 'Ya enviaste tu proyecto al equipo de diseño: no se puede cambiar el modelo. Escríbenos por WhatsApp.' }, 400);
+      if (!modelosCambio(ev.tipo, 'invitacion').some((m) => m.id === modelo)) return json({ error: 'Ese diseño no está disponible para este evento' }, 400);
+      ev.producto = 'invitacion'; ev.aMedida = null;
     }
     // Pasar a diseño a medida: el equipo diseña con lo que el cliente cuente en "Ideas para el diseño"
     if (modelo === 'a-medida' && ev.producto === 'invitacion') {
@@ -1253,6 +1274,7 @@ async function apiPanel(env, request, url, partes) {
       const bloqueo = await publicarConCredito(env, request, ev, esquema, emp);
       if (bloqueo) return bloqueo;
       const r2 = await publicarEvento(env, request, ev);
+      if (r2.ok && emp.host && r2.link) r2.link = r2.link.replace(/^https?:\/\/[^/]+/, `https://${emp.host}`); // README (ronda 89)
       return r2.ok ? json(r2) : json({ error: r2.error || 'faltan', faltan: r2.faltan }, 422);
     }
     // README (ronda 28): nada se publica sin pagar. Los productos sueltos (Save The Date web, invitación simple)
@@ -1517,7 +1539,7 @@ export default {
       if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);
       // README (ronda 88): muestrario de modelos de un profesional (página y datos)
-      if (p0 === 'muestrario' && partes.length === 2) return await paginaMuestrario(env, request, url, p1, !!empHost);
+      if (p0 === 'muestrario' && partes.length === 2) return await conPais(await paginaMuestrario(env, request, url, p1, !!empHost), request);
       if (p0 === 'demo' && partes.length === 2) {
         // README (ronda 42): las demos de 15 del sitio viejo (/demo/disco15) son la misma demo con el evento de 15
         const m15 = /^([a-z]+)15$/.exec(p1);
@@ -1528,7 +1550,9 @@ export default {
         return r;
       }
       if (p0 === 'std' && partes.length === 2 && p1.startsWith('ev_')) return await saveTheDate(env, url, request, p1);
-      if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return env.ASSETS.fetch(new URL('/panel/', url.origin));
+      if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return await conPais(await env.ASSETS.fetch(new URL('/panel/', url.origin)), request);
+      // README (ronda 89): el tablero profesional con el país del visitante (para la bandera, sin pasar por la web)
+      if (p0 === 'empresa' && partes.length === 1 && M === 'GET') return await conPais(await env.ASSETS.fetch(new URL('/empresa/', url.origin)), request);
       if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, url, p1);
       if (p0 === 'puerta' && partes.length === 2) return await paginaPuerta(env, url, p1);
       if (p0 === 'vista' && partes.length === 2) return await vistaPrevia(env, url, request, p1);

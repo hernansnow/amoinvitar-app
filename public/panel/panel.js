@@ -811,7 +811,7 @@ function vistaCompartir() {
       el('button', { type: 'button', class: 'quitar', 'aria-label': 'Quitar foto', onclick: () => { escribir(datos, 'miniatura.fotoPos', undefined); cambio('miniatura.foto', '', { rearmar: true }); } }, '✕'))
     : el('img', { id: 'miniatura-previa', alt: '', src: fuenteMiniatura() });
   return el('div', { class: 'tarjeta-compartir' }, imagen,
-    el('div', { class: 'cuerpo' }, el('small', {}, 'AMOINVITAR.COM'), el('strong', { id: 'compartir-titulo' }, tituloLink), el('span', { id: 'compartir-desc' }, desc)));
+    el('div', { class: 'cuerpo' }, el('small', {}, dominioInv().toUpperCase()), el('strong', { id: 'compartir-titulo' }, tituloLink), el('span', { id: 'compartir-desc' }, desc)));
 }
 
 function campoSlug(c, valor, alCambiar) {
@@ -837,14 +837,16 @@ function campoSlug(c, valor, alCambiar) {
     const base = [n.a, n.b].filter(Boolean).join(' y ');
     if (base) { input.value = base; setTimeout(revisar, 0); }
   }
-  return el('div', {}, el('div', { class: 'slug' }, el('span', {}, c.prefijo), input), info, chips);
+  return el('div', {}, el('div', { class: 'slug' }, el('span', {}, String(c.prefijo || '').replace('amoinvitar.com', dominioInv())), input), info, chips);
 }
 let mostrarSlugOcupado = () => {};
+// README (ronda 89): el dominio de las invitaciones (el propio del profesional Studio, si está activo)
+const dominioInv = () => S?.empresa?.host || 'amoinvitar.com';
 
 // Lo que recibe un invitado según la opción elegida (con el primero de la lista, o un ejemplo)
 function ejemploAcceso() {
   const t = datos.acceso?.tipo || 'abierta';
-  const base = `amoinvitar.com/${S.evento.tipo}/${datos.slug || S.evento.slug || 'tu-link'}`;
+  const base = `${dominioInv()}/${S.evento.tipo}/${datos.slug || S.evento.slug || 'tu-link'}`;
   const i = (S.invitados || [])[0] || { nombre: 'Juan', codigo: 'juan-xk2p', pin: '4821' };
   const quien = String(i.nombre || 'Juan').split(' ')[0];
   const txt = {
@@ -1848,6 +1850,13 @@ function pintarModelo() {
   const actual = (S.modelos || []).find((m) => m.id === S.evento.modelo);
   const caja = $('#selector-modelo');
   const movil = $('#modelo-movil');
+  // README (ronda 89): con diseño a medida (todavía sin enviar al equipo) se puede volver a un modelo de catálogo
+  if (!actual && S.evento.producto === 'a-medida' && (S.modelos || []).length && !S.plan?.medida?.enviado && !esClienteEmp()) {
+    caja.hidden = false; movil.hidden = false;
+    caja.replaceChildren(el('button', { type: 'button', class: 'btn-modelo', onclick: elegirModelo }, el('span', { class: 'btn-modelo-txt' }, el('strong', {}, 'Diseño a medida'), el('small', { class: 'btn-modelo-tipo' }, S.evento.tipoNombre || '')), el('small', {}, 'cambiar ▾')));
+    movil.replaceChildren(el('span', {}, 'Diseño a medida'), ' - ', el('button', { type: 'button', class: 'btn-link', onclick: elegirModelo }, 'Cambiar'));
+    return;
+  }
   // README (ronda 30): la tarjeta Save The Date suelta elige su diseño en la grilla del paso, no arriba
   if (!actual || S.evento.producto === 'std-tarjeta') { caja.hidden = true; movil.hidden = true; return; }
   const tipo = S.evento.tipoNombre || '';
@@ -1880,17 +1889,26 @@ function elegirModelo() {
   abrirModal('Cambiar de modelo', el('div', { class: 'modelos-grilla' }, (S.modelos || []).map((m) => el('div', { class: `modelo-opcion${m.id === S.evento.modelo ? ' actual' : ''}`, role: 'button', tabindex: '0',
       onclick: () => usar(m), onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); usar(m); } } },
     el('img', { src: `/modelos/${m.id}/tienda-${m.tipo || S.evento.tipo}.jpg`, alt: '', loading: 'lazy', onerror: (e) => { if (e.target.dataset.f) return; e.target.dataset.f = 1; e.target.src = `/modelos/${m.id}/miniatura.jpg`; } }), el('strong', {}, m.nombre),
-    m.tipo && m.tipo !== S.evento.tipo ? el('small', {}, m.tipoNombre) : null, m.gratis ? el('small', {}, 'También en plan gratis') : null,
+    m.tipo && m.tipo !== S.evento.tipo ? el('small', {}, m.tipoNombre) : null, m.gratis && !S.empresa ? el('small', {}, 'También en plan gratis') : null,
     m.id === S.evento.modelo ? el('span', { class: 'chip' }, 'En uso') : el('span', { class: 'btn btn-chico' }, 'Usar este'))),
     // README (ronda 28): el diseño a medida, con su precio
-    S.aMedida ? el('div', { class: 'modelo-opcion a-medida', role: 'button', tabindex: '0', onclick: () => usar({ id: 'a-medida', nombre: 'Diseño a medida' }),
-      onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); usar({ id: 'a-medida', nombre: 'Diseño a medida' }); } } },
+    // README (ronda 89): en eventos de profesionales el diseño a medida se pide (WhatsApp), sin precio: lo autoriza Amo Invitar
+    S.aMedida ? el('div', { class: 'modelo-opcion a-medida', role: 'button', tabindex: '0', onclick: () => (S.empresa ? solicitarMedida() : usar({ id: 'a-medida', nombre: 'Diseño a medida' })),
+      onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (S.empresa) solicitarMedida(); else usar({ id: 'a-medida', nombre: 'Diseño a medida' }); } } },
     // README (ronda 29): con la imagen del diseño a medida (la de la Save The Date en las tarjetas y la web)
     el('img', { class: 'a-medida-img', alt: '', loading: 'lazy', src: !S.aMedida.std ? '/comun/img/modelo-a-medida.webp' : S.evento.producto === 'std-web' ? '/comun/img/std-medida-web.webp' : '/comun/img/std-medida-tarjeta.jpg' }), el('strong', {}, S.aMedida.empresarial ? 'Diseño para empresas' : 'Diseño a medida'),
-    el('small', {}, `Creado para ti · ${S.aMedida.precio}`), el('span', { class: 'btn btn-chico' }, 'Elegir')) : null),
-  el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/crear-invitacion', target: '_blank' }, 'la web'), '.'));
+    S.empresa ? null : el('small', {}, `Creado para ti · ${S.aMedida.precio}`), el('span', { class: 'btn btn-chico' }, S.empresa ? 'Solicitar' : 'Elegir')) : null),
+  // README (ronda 89): para los profesionales, «aquí» lleva a su muestrario de modelos
+  S.empresa?.id ? el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos ', el('a', { href: `/muestrario/${S.empresa.id}`, target: '_blank' }, 'aquí'), '.')
+    : el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/crear-invitacion', target: '_blank' }, 'la web'), '.'));
   // El foco en el modelo que está en uso, no al principio de la lista
   requestAnimationFrame(() => document.querySelector('.modelo-opcion.actual')?.scrollIntoView({ block: 'center' }));
+}
+
+// README (ronda 89): el profesional pide el diseño a medida a Amo Invitar (no lo activa solo)
+function solicitarMedida() {
+  const wa = S.ayuda?.whatsapp, txt = `Quiero contratar un extra · Empresa: ${S.empresa?.nombre || ''} · Diseño a medida para la invitación ${S.evento.id}`;
+  window.open(wa ? `https://wa.me/${wa}?text=${encodeURIComponent(txt)}` : `mailto:hola@amoinvitar.com?subject=${encodeURIComponent(txt)}`, '_blank', 'noopener');
 }
 
 // ── Ventanas (manual, resumen y pago, modelos) ────────────────────────
@@ -2184,7 +2202,7 @@ function aplicarMarca(m) {
 // contactos de Amo Invitar!; se ve el logo o el nombre de la empresa.
 // README (ronda 87): colores del panel del cliente final elegidos por el profesional (el resto sale de --acento)
 function quitarCargador() { const c = $('#cargador'); if (!c) return; c.classList.add('fuera'); setTimeout(() => c.remove(), 250); }
-const PALETAS = { negro: '#1f1f1f', azul: '#2f5d9e', rojo: '#b0353f', dorado: '#a8823c' };
+const PALETAS = { negro: '#1f1f1f', azul: '#2f5d9e', rojo: '#b0353f', dorado: '#a8823c', violeta: '#6b4c9a' };
 function aplicarEmpresa(e) {
   document.getElementById('marca')?.classList.remove('esperando');
   if (!e) return;
@@ -2201,7 +2219,7 @@ function aplicarEmpresa(e) {
   // README (ronda 88): el logo (o el nombre) del profesional, en Pro y en Studio. En Pro, abajo a la derecha de la barra,
   // un «Powered by Amo Invitar» muy chico; en Studio, nada de Amo Invitar
   a.replaceChildren(e.logo ? el('img', { src: e.logo, alt: e.nombre || '' }) : el('strong', {}, e.nombre || ''));
-  if (!e.studio && !document.querySelector('.barra .powered')) $('.barra').append(el('span', { class: 'powered' }, 'Powered by', el('img', { src: '/comun/img/amoinvitar-blanco.svg', alt: 'Amo Invitar!' })));
+  if (!e.studio && !document.querySelector('.barra .powered')) { const ac = $('.barra .acciones'); (ac || $('.barra')).prepend(el('span', { class: 'powered' }, 'Powered by', el('img', { src: '/comun/img/amoinvitar-blanco.svg', alt: 'Amo Invitar!' }))); }
   document.title = `Panel · ${e.nombre || ''}`;
   document.querySelectorAll('.link-cuenta').forEach((x) => x.remove());
   if (!e.rol) { const v = $('#btn-volver'); if (v) v.hidden = true; }

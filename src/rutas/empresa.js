@@ -218,7 +218,7 @@ async function guardarMarca(request, env, c) {
   marca.blanca = quiereBlanca; marca.sinPie = quiereBlanca && quiereSinPie;
   // README (ronda 87): color del pie de las invitaciones y paleta del panel del cliente final
   if ('color' in b) marca.color = /^#[0-9a-f]{6}$/i.test(String(b.color || '')) ? String(b.color).toLowerCase() : '';
-  if ('paleta' in b) marca.paleta = ['negro', 'azul', 'rojo', 'dorado'].includes(b.paleta) ? b.paleta : '';
+  if ('paleta' in b) marca.paleta = ['negro', 'azul', 'rojo', 'dorado', 'violeta'].includes(b.paleta) ? b.paleta : '';
   // Con logo, el nombre no se usa en el pie (se mantiene el que estaba)
   if (marca.logo) marca.nombre = c.e.marca.nombre || marca.nombre;
   await guardarMarcaEmpresa(env, c.e.id, marca);

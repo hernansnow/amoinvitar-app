@@ -905,3 +905,31 @@ html[data-cab-fija] .cab .nav-principal > a, html[data-cab-fija] .cab .nav-princ
 
 /* README (ronda 87): insignia «Regalo» en las tarjetas de planes */
 .plan-card .regalo { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 99px; background: #c9a24a; color: #fff; font-size: 11.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; vertical-align: 2px; }
+
+/* README (ronda 89): menú «Invitaciones» con mayúscula inicial (más corto), más junto, con «Diseño a medida» y, después
+   de una línea sutil, «Para profesionales» e «Ideas y frases». En el celular, los eventos en dos columnas. */
+.menu-ev-lista { min-width: 230px; padding: 8px 0 10px; }
+.menu-ev-lista a { font: 400 15px/1.15 var(--sans); letter-spacing: .01em; text-transform: none; padding: 7px 22px; }
+.menu-ev-lista .menu-sep { border: 0; border-top: 1px solid var(--linea, #e6e6e6); margin: 8px 18px; }
+.menu-ev-lista a.menu-extra { color: #3a3a3a; }
+.cajon .cajon-titulo { padding: 10px 0; }
+.cajon-eventos { grid-template-columns: 1fr 1fr; column-gap: 14px; margin: 0 0 4px 22px; }
+.cajon-eventos a { font: 400 15px/1.15 var(--sans); letter-spacing: .01em; text-transform: none; padding: 8px 0; }
+.cajon-eventos .cajon-extra { grid-column: 1 / -1; display: grid; }
+.cajon-eventos .menu-sep { border: 0; border-top: 1px solid var(--linea, #e6e6e6); margin: 6px 0 4px; width: 100%; }
+.cajon-lista a { padding: 11px 0; }
+.cajon-botones { gap: 10px; margin-top: 18px; }
+.cajon-botones .btn { padding-block: 12px; }
+.cajon-cuerpo { padding: 16px 22px 28px; }
+@media (max-width: 360px) { .cajon-eventos a { font-size: 14px; } .cajon-eventos { column-gap: 10px; margin-left: 14px; } }
+
+/* README (ronda 89): selector de país más delicado. Barra transparente: fondo negro translúcido y flecha blanca;
+   barra blanca: verde claro y flecha negra (como antes). El desplegable no cambia. */
+.moneda-boton { gap: 4px; padding: 5px 6px 5px 6px; border-radius: 6px; }
+.moneda-boton img { width: 21px; height: 14px; }
+.moneda-boton .icono { width: 12px; height: 12px; margin-right: 0; }
+.cab:not(.solida) .moneda-boton { background: rgba(0, 0, 0, .32); color: #fff; }
+.cab:not(.solida) .moneda-boton .icono { color: #fff; }
+html.sin-js .cab .moneda-boton, .cab.solida .moneda-boton, html[data-cab-fija] .cab .moneda-boton { background: #e5f3ec; color: #1c1c1c; }
+.moneda-idiomas { gap: 8px; padding: 10px; }
+.moneda-lista .moneda-idiomas button.idi { flex: 1 1 auto; padding: 9px 14px; white-space: nowrap; }

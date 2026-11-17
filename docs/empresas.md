@@ -198,7 +198,33 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
   ni marca de Amo Invitar). En Pro, «Powered by» chico al pie. Studio con dominio activo: solo desde su dominio (en
   amoinvitar.com redirige). Botón «Catálogo» en la pestaña Eventos del tablero.
 
-## 13. Pendiente
+## 13. Ronda 89
+- **Vista del cliente con el link del cliente**: si la URL trae `?k=` (o la cabecera `x-clave`) válida, el panel se arma
+  como cliente aunque haya sesión del profesional o del admin (`conClaveCliente` en `src/index.js`). Sin clave, el
+  profesional ve su vista. La respuesta del panel trae `empresa.id` y `empresa.host` (dominio Studio activo o `null`).
+- **Dominio propio en el panel** (Studio, sin DEMO): `dominioInv()` en `panel.js` usa `S.empresa.host` en el ejemplo de
+  link, el prefijo del slug y la miniatura de WhatsApp; `admin.js` arma los links con ese dominio y al publicar el link
+  devuelto se reescribe al dominio. No se pudo probar con un dominio real en la compu.
+- **País por IP**: `conPais()` agrega `<html data-pais="XX">` (cabecera `cf-ipcountry`) en `/panel/`, `/empresa` y el
+  muestrario; `selector-pais.js` lo usa si no hay cookie `pais_sel`.
+- **Cambiador de modelos en eventos de empresa**: sin «También en plan gratis», la tarjeta «Diseño a medida» sin precio y
+  con «Solicitar» (abre WhatsApp «Quiero contratar un extra · Empresa: …»). El servidor rechaza `a-medida` del
+  profesional o su cliente (403); solo el admin lo activa. Texto al pie con «aquí» → `/muestrario/<empresaId>`.
+- **Volver de a medida a catálogo** (todos los clientes): mientras no se haya enviado el proyecto, la acción `modelo`
+  pasa `producto` a `invitacion` y el GET devuelve los modelos de catálogo; el panel muestra «Diseño a medida · cambiar».
+- Paleta **violeta** (`#6b4c9a`) en tablero, panel y muestrario. Sin selector «Usar link de álbum propio» en Pro
+  (queda solo el campo del link). «Powered by» en línea a la izquierda del globo (escritorio) y chiquito abajo a la
+  derecha (celular). Margen del logo propio sin botón de volver. Fondo vacío del precio oculto (`[hidden]`).
+- **Tablero y /admin**: barra superior fija verde con logo blanco (`overflow-x: clip` para que `sticky` funcione);
+  correo largo con «…» en celular. Segundo nombre de «Crear evento» oculto si no es boda (`[hidden]{display:none!important}`).
+- **Pase Studio**: «Subir a Studio» sin pase vigente da 12 meses; la aprobación propone 12 meses. DEMO sigue dando 1 mes
+  (por eso aparecía «Pase hasta 16/12/2026» en una cuenta de prueba).
+- **Web**: página nueva `/diseno-a-medida` (bloque `escribe('diseno-a-medida', …)` en `scripts/sitio/construir.mjs`, con
+  `E.medida` en `pasos()`/`comoFunciona()`; sus botones abren el modal con `data-medida`). Menú Invitaciones en
+  minúsculas con «Diseño a medida», divisor, «Para profesionales» e «Ideas y frases» (celular: dos columnas). Selector
+  de país más fino: negro translúcido sobre la cabecera transparente y verde claro sobre la blanca.
+
+## 14. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos
 (ver `docs/precios-y-recuerdo.md`).

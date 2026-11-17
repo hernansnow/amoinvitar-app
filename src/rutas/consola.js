@@ -182,6 +182,10 @@ async function cambiarEstado(env, id, b) {
   const nivel = b.nivel === 'studio' ? 'studio' : b.nivel === 'pro' ? 'pro' : null;
   await env.DB.prepare('UPDATE empresas_pro SET estado = ?, nivel = COALESCE(?, nivel) WHERE empresa_id = ?').bind(estado, nivel, id).run();
   if (nivel) await env.DB.prepare('UPDATE empresas SET plan = ? WHERE id = ?').bind(nivel, id).run();
+  // README (ronda 89): al subir a Studio sin un pase vigente, el pase anual arranca hoy y dura 12 meses
+  // (la DEMO, en cambio, da un pase de prueba de 1 mes)
+  const e = await empresaPro(env, id);
+  if (nivel === 'studio' && !(e.pase_vence && e.pase_vence >= ahora())) await env.DB.prepare('UPDATE empresas_pro SET pase_vence = ? WHERE empresa_id = ?').bind(sumarMeses(ahora(), 12), id).run();
   return json({ ok: true });
 }
 
