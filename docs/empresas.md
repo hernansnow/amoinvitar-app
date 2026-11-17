@@ -251,6 +251,28 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
   accesos de Administración con textos de empresa. A medida para boda pide dos nombres al empezar.
 - Galería del panel: el cuadro «Agregar» ya no se sale de su columna con fotos 3:2 / 2:3.
 
+## 14b. Ronda 92 · Save The Date a medida (entrega) y ajustes del corporativo
+- **STD a medida en todos los paneles** (catálogo, a medida y corporativo): el paso «Save The Date a medida» trae siempre el
+  aviso con «Enviar al equipo de diseño» (`pasoTarjetaMedida` sin `conAviso`). Flujo: el cliente envía → la consola aprueba
+  («Diseños a medida» o el botón del panel) → se entrega → «Lista».
+- **Tarjeta a medida** (complemento `std.tipo = tarjeta-medida` o producto suelto `std-tarjeta-medida`): el admin abre el panel
+  del cliente (paso Save The Date) y usa «Subir la tarjeta terminada (administración)». Acción `POST /api/panel/<id>/entregaMedida`
+  `{ parte: 'std'|'medida', entrega: [urls] }` (solo admin, solo archivos de `/media/eventos/<id>/`): guarda `medida.entrega` y marca
+  `listo`. El cliente ve las imágenes con Descargar y Compartir.
+- **Web a medida** (complemento `web-medida`): «Diseño propio» con el id virtual `<evento>std` (`/admin/diseno.html?id=ev_xxxstd`):
+  carpeta R2 `propio/<evento>std/`, datos en `ev.datos.std.propio`, bases = modelos de Save The Date (Classic/Soft). Se ve en
+  `/std/<evento>` cuando está activo, «Lista» y pagado (`extras` con `std-web-medida`). La web a medida suelta (`std-web-medida`)
+  usa el diseño propio normal del evento.
+- **«Lista»** (`prepararLista` en `src/propio.js`, usado por el panel y la consola): invitación/STD web = diseño propio activo;
+  tarjeta = con entrega. Si falta, 409 con el motivo.
+- Consola «Diseños a medida»: dice qué se entrega y cómo (tarjeta → panel; web/invitación → Diseño propio).
+- **Corporativo/a medida**: portada con foto o video (`MODELO_A_MEDIDA.videoPortada`); la foto no se veía porque el color de la
+  sección tapaba las capas `z-index:-1` → `isolation: isolate` en `.corp-portada` (corporativo y provisorios). Título del relato
+  igual a los demás (800, 2rem) y se puede dejar vacío (`historia.sinTitulo` → `historia.conTitulo` en la vista; en otros diseños
+  base el título queda en blanco). Con el relato apagado, la bienvenida es un área de hasta 1500 caracteres (solo a medida).
+  Foto de la sección en Instagram Wall y Álbum QR (`fotos.instagram`/`fotos.album`). Cierre: con logo, «Título del cierre» queda
+  desactivado (`desactivarSi`, campo nuevo de los esquemas, también en el panel).
+
 ## 15. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos

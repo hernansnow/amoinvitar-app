@@ -7,7 +7,8 @@ body { background: var(--verde-1); color: #fff; }
 .corp-linea { border: 0; border-top: 2px solid var(--acento); opacity: .9; }
 .corp-vertical { display: inline-block; height: 50px; width: 2px; background: var(--acento); border: 0; }
 .corp-etiqueta { background: rgba(255,255,255,.14); color: #fff !important; }
-.corp-portada { background: var(--verde-1); }
+/* README (ronda 92): contexto propio, así las fotos (z-index -1) quedan sobre el color y no detrás */
+.corp-portada { background: var(--verde-1); isolation: isolate; }
 .corp-logo { max-width: min(78%, 340px); max-height: 180px; object-fit: contain; display: block; margin: 0 auto 18px; }
 .corp-titulo { color: #fff; font-family: 'Jost', sans-serif; font-weight: 600; font-size: clamp(30px, 8vw, 54px); line-height: 1.1; margin-bottom: 12px; }
 .corp-subtitulo { letter-spacing: .12em; text-transform: uppercase; }
@@ -22,3 +23,7 @@ body { background: var(--verde-1); color: #fff; }
 .ai-video-portada { opacity: .55; }
 .ai-slide { opacity: .5; }
 .animated-modal p, .animated-modal li, .animated-modal span { color: #222 !important; }
+/* README (ronda 92): el título del relato y el del cierre, iguales a los demás títulos */
+h3.corp-titulo-seccion.text-uppercase { font-weight: 800; font-size: 2rem; }
+@media screen and (max-width: 768px) { h3.corp-titulo-seccion.text-uppercase { font-size: 1.625rem; } }
+.corp-foto-seccion { max-height: 380px; width: auto; max-width: 100%; object-fit: cover; } /* README (ronda 92) */

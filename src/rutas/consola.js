@@ -15,6 +15,7 @@ import { requiereAdmin } from './admin.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
+import { prepararLista } from '../propio.js'; // README (ronda 92)
 import { sendEmail, mailMedidaAprobada, mailProAprobada, mailProRechazada } from '../lib/email.js';
 import { PROFESIONALES } from '../catalogo.js';
 import { sumarMeses, nuevoLote, renovarPase as renovarPaseBase, catalogoCompras } from '../pro/empresa.js';
@@ -46,7 +47,11 @@ export async function resumen(request, env) {
     const d = JSON.parse(f.datos || '{}');
     for (const [parte, m] of [['medida', d.medida], ['std', d.std?.medida]]) {
       if (!m?.enviado) continue;
-      medidas.push({ id: f.id, parte, producto: f.producto, tipo: f.tipo, nombres: [d.nombres?.a, d.nombres?.b].filter(Boolean).join(' & '), enviado: m.enviado, aprobado: m.aprobado || null, listo: m.listo || null });
+      // README (ronda 92): qué se entrega: la invitación o la STD web (con «Diseño propio») o la tarjeta STD (imágenes en el panel)
+      const t = parte === 'std' ? d.std?.tipo : f.producto;
+      const entrega = t === 'tarjeta-medida' || t === 'std-tarjeta-medida' ? 'tarjeta' : t === 'web-medida' || t === 'std-web-medida' ? 'web' : 'invitacion';
+      medidas.push({ id: f.id, parte, producto: f.producto, tipo: f.tipo, nombres: [d.nombres?.a, d.nombres?.b].filter(Boolean).join(' & '), enviado: m.enviado, aprobado: m.aprobado || null, listo: m.listo || null,
+        entrega, entregadas: (m.entrega || []).length, disenoId: parte === 'std' ? `${f.id}std` : f.id });
     }
   }
   const transferencias = (await q("SELECT id, numero, email, importe, moneda, detalle, creado FROM pedidos WHERE estado = 'pendiente' AND medio = 'transferencia' ORDER BY creado DESC LIMIT 100"))
@@ -203,11 +208,8 @@ export async function medida(request, env, eventoId, accion) {
   if (!actual?.enviado) throw new HttpError(409, 'Ese diseño todavía no se envió al equipo');
   const marca = accion === 'lista' ? { listo: ahora() } : accion === 'aprobar' ? { aprobado: ahora() } : null;
   if (!marca) throw new HttpError(404, 'no encontrado');
-  // README (ronda 91): una invitación a medida está «Lista» con su diseño propio activo (si no, se veía «Diseño en preparación»)
-  if (accion === 'lista' && clave === 'medida' && ev.producto === 'a-medida') {
-    if (!ev.datos.propio?.base) throw new HttpError(409, 'Falta el diseño: en «Diseño propio» elegí el modelo base, subí el diseño y después marcá «Lista».');
-    ev.datos.propio = { ...ev.datos.propio, activo: true };
-  }
+  // README (ronda 91/92): «Lista» con el diseño propio activo (invitación y STD web) o con la tarjeta STD entregada
+  if (accion === 'lista') { const error = prepararLista(ev, parte === 'std' ? 'std' : 'medida'); if (error) throw new HttpError(409, error); }
   if (clave === 'std') ev.datos.std = { ...(ev.datos.std || {}), medida: { ...actual, ...marca } };
   else ev.datos.medida = { ...actual, ...marca };
   await alm.guardarEvento(ev);

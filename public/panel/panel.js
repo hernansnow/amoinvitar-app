@@ -75,6 +75,8 @@ const estado = (t) => { $('#estado-guardado').textContent = t; };
 let espejos = [];
 function cambio(ruta, valor, { rearmar = false } = {}) {
   const antes = leer(datos, ruta) ?? '';
+  // README (ronda 92): un campo del paso depende de este (desactivarSi): se vuelve a dibujar el paso
+  if (pasoActual?.campos?.some((x) => x.desactivarSi?.campo === ruta) && !!valor !== !!antes) setTimeout(() => dibujarPaso(), 0);
   for (const e of espejos.filter((x) => x.de === ruta)) {
     const actual = leer(datos, e.id) ?? '';
     if (actual === '' || actual === antes) { escribir(datos, e.id, valor); e.input.value = valor; }
@@ -1023,6 +1025,13 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
       const phTitulo = c.titulo ? `Cambiar título${textoBase(c) ? ` · ${textoBase(c).replace(/\n/g, ' ')}` : ''}` : '';
       const i = el('input', { id: idHtml, type: c.tipo === 'url' ? 'url' : 'text', value: valor ?? '', maxlength: c.max, placeholder: phTitulo || placeholder(c) || (c.tipo === 'url' ? 'https://' : ''), disabled: dis, inputmode: c.patron ? 'numeric' : null,
         'aria-label': c.titulo ? 'Título de la sección' : null });
+      // README (ronda 92): título que se puede dejar vacío (no se muestra): el texto sugerido ya escrito; vacío = sin título
+      if (c.vacioOculta) {
+        i.placeholder = 'Vacío: sin título';
+        if (!valor) i.value = leer(datos, c.vacioOculta) ? '' : textoBase(c);
+        i.addEventListener('input', () => { alCambiar(i.value.trim() === textoBase(c).trim() ? '' : i.value); cambio(c.vacioOculta, !i.value.trim()); });
+        return [conContador(i, c.max > 20 ? c.max : 0)];
+      }
       if (c.titulo) {
         i.addEventListener('input', () => alCambiar(i.value.trim() === textoBase(c).trim() ? '' : i.value));
         return [conContador(i, c.max > 20 ? c.max : 0)];
@@ -1395,21 +1404,69 @@ function opcionMedida(c, idHtml, dis, celular = false) {
 }
 function avisoMedidaStd() {
   const md = datos.std?.medida || {};
+  const web = datos.std?.tipo === 'web-medida';
   const volver = () => { cambio('std.tipo', datos.std?.tipoAntes || (S.modelo?.tarjetas?.std ? 'tarjeta' : 'foto'), { rearmar: true }); };
   const enviar = async (b) => {
     b.disabled = true; clearTimeout(guardarTimer); await guardar();
     try { await api('/enviarMedida', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('¡Enviado al equipo de diseño!'); }
     catch (e) { b.disabled = false; aviso(e.datos?.faltan?.length ? `Antes de enviarlo, completa: ${e.datos.faltan.map((x) => x.etiqueta).join(', ')}` : e.message, true); }
   };
-  const aprobar = async (b) => { b.disabled = true; try { await api('/aprobarMedida', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('Aprobado: se suma al pago de la invitación'); } catch (e) { b.disabled = false; aviso(e.message, true); } };
-  const precio = S.plan?.preciosExtras?.[datos.std?.tipo === 'web-medida' ? 'std-web-medida' : 'std-tarjeta-medida'];
-  const fila = md.aprobado ? [el('strong', {}, 'Tu proyecto fue aprobado por el equipo de diseño.'), ' Se suma al pago de tu invitación para que comencemos a crearlo.']
-    : md.enviado ? [el('strong', {}, 'Recibimos tu idea.'), ' Vamos a evaluarla y, si todo está bien, recibirás la confirmación pronto.',
-      S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
-      : [`Completa tu idea y envíala al equipo de diseño${precio ? ` (${precio.replace(/^\+/, '')})` : ''}. Pagas solo cuando el proyecto esté aprobado. `,
-        el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño'),
-        el('button', { type: 'button', class: 'btn-link', onclick: volver }, '← Volver a los diseños')];
-  return el('div', { class: 'aviso-medida en-paso' }, el('p', {}, ...fila.filter(Boolean)));
+  const aprobar = async (b) => { b.disabled = true; try { await api('/aprobarMedida', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('Proyecto aprobado: se avisó al cliente'); } catch (e) { b.disabled = false; aviso(e.message, true); } };
+  const listo = async (b) => { b.disabled = true; try { await api('/medidaLista', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('Lista: el cliente ya la puede ver'); } catch (e) { b.disabled = false; aviso(e.message, true); } };
+  const precio = S.plan?.preciosExtras?.[web ? 'std-web-medida' : 'std-tarjeta-medida'];
+  // README (ronda 92): el diseño terminado. La tarjeta: las imágenes que sube el equipo (descargar y compartir).
+  // La web: su link (/std/<evento>), que el equipo arma en «Diseño propio» de la consola
+  const linkWeb = `${location.origin}/std/${S.evento.id}`;
+  const fila = md.listo && web ? [el('strong', {}, '¡Tu Save The Date web está lista!'), ' Este es su link para compartir: ', el('a', { href: linkWeb, target: '_blank', rel: 'noopener' }, linkWeb)]
+    : md.listo ? [el('strong', {}, '¡Tu tarjeta Save The Date está lista!'), ' Descárgala o compártela todas las veces que quieras.']
+      : md.aprobado ? [el('strong', {}, 'Tu proyecto fue aprobado por el equipo de diseño.'), ' Ya estamos creando tu Save The Date: te avisaremos cuando esté lista.',
+        S.usuario?.admin && web ? el('a', { class: 'btn btn-chico', href: `/admin/diseno.html?id=${S.evento.id}std`, target: '_blank', rel: 'noopener' }, 'Diseño propio de la web (administración)') : null,
+        S.usuario?.admin && web ? el('button', { type: 'button', class: 'btn btn-chico btn-sec', onclick: (e) => listo(e.currentTarget) }, 'Marcar lista (administración)') : null]
+        : md.enviado ? [el('strong', {}, 'Recibimos tu idea.'), ' Vamos a evaluarla y, si todo está bien, recibirás la confirmación pronto.',
+          S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
+          : [`Completa tu idea (lo obligatorio, con *) y envíala al equipo de diseño${precio && !/Gratis/i.test(precio) && !(datos.extras || []).includes(web ? 'std-web-medida' : 'std-tarjeta-medida') ? ` (${precio.replace(/^\+/, '')})` : ''}. Pagas solo cuando el proyecto esté aprobado. `,
+            el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño'),
+            S.esquema?.producto === 'a-medida' ? null : el('button', { type: 'button', class: 'btn-link', onclick: volver }, '← Volver a los diseños')];
+  return el('div', { class: 'aviso-medida en-paso' }, el('p', {}, ...fila.filter(Boolean)),
+    !web && (md.aprobado || md.listo) ? entregaTarjetaMedida(md, 'std') : null);
+}
+// README (ronda 92): la tarjeta Save The Date a medida terminada. El equipo sube las imágenes (JPG/PNG, la versión con
+// y sin foto, etc.) y queda lista; el cliente las ve con «Descargar» y «Compartir»
+function entregaTarjetaMedida(md, parte) {
+  const urls = md.entrega || [];
+  const guardarEntrega = async (lista, b) => {
+    if (b) b.disabled = true;
+    try { await api('/entregaMedida', { method: 'POST', body: JSON.stringify({ parte, entrega: lista }) }); await recargar(); aviso(lista.length ? 'Tarjeta entregada: el cliente ya la puede descargar' : 'Entrega quitada'); }
+    catch (e) { aviso(e.message, true); } finally { if (b) b.disabled = false; }
+  };
+  const compartir = async (u, i) => {
+    try {
+      const blob = await (await fetch(u)).blob();
+      const archivo = new File([blob], `save-the-date-${i + 1}.${(blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg')}`, { type: blob.type });
+      if (navigator.canShare?.({ files: [archivo] })) { await navigator.share({ files: [archivo] }); return; }
+    } catch (e) { if (e.name === 'AbortError') return; }
+    window.open(`https://wa.me/?text=${encodeURIComponent(location.origin + u)}`, '_blank', 'noopener');
+  };
+  const tarjetas = urls.map((u, i) => el('div', { class: 'tj-lista' },
+    el('img', { src: u, alt: 'Tarjeta Save The Date' }),
+    el('div', { class: 'tj-acciones' },
+      el('a', { class: 'btn', href: u, download: `save-the-date-${i + 1}`, html: `${icono('descargar', 16) || ''}<span>Descargar</span>` }),
+      el('button', { type: 'button', class: 'btn btn-wa', onclick: () => compartir(u, i), html: `${ICONO_WA}<span>Compartir por WhatsApp</span>` }),
+      S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: (e) => { if (confirm('¿Quitar esta imagen de la entrega?')) guardarEntrega(urls.filter((x) => x !== u), e.currentTarget); } }, 'Quitar (administración)') : null)));
+  let admin = null;
+  if (S.usuario?.admin) {
+    const input = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', multiple: true, hidden: true, onchange: async () => {
+      const archivos = [...input.files]; input.value = '';
+      if (!archivos.length) return;
+      boton.disabled = true; boton.textContent = 'Subiendo…';
+      try { const nuevas = []; for (const f of archivos) nuevas.push(await subirArchivo(f)); await guardarEntrega([...urls, ...nuevas]); }
+      catch (e) { aviso(e.message, true); } finally { boton.disabled = false; boton.textContent = 'Subir la tarjeta terminada (administración)'; }
+    } });
+    const boton = el('button', { type: 'button', class: 'btn btn-chico', onclick: () => input.click() }, 'Subir la tarjeta terminada (administración)');
+    admin = el('div', { class: 'tj-admin' }, input, boton, el('p', { class: 'ayuda' }, 'JPG, PNG o WEBP (hasta 4 MB cada una; se pueden subir varias). Al subirla queda «Lista» y el cliente la descarga desde aquí.'));
+  }
+  if (!tarjetas.length && !admin) return null;
+  return el('div', { class: 'entrega-medida' }, ...tarjetas, admin);
 }
 function campoTarjeta(c, valor, alCambiar) {
   const caja = el('div', { class: 'tj-campo' }, el('p', { class: 'ayuda' }, 'Cargando la tarjeta…'));
@@ -1477,7 +1534,8 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   // Funciones de un plan más alto: se pueden usar y suben el plan (el aviso lo indica)
   const insignia = S.esquema?.sinNiveles ? null : c.insigniaGratis ? insigniaNivel(c.insigniaGratis) : c.paquete && c.paquete !== 'basic' && pasoActual?.nivel !== c.paquete ? insigniaNivel(c.paquete) : null;
   // Necesita algo de otra sección, o queda fijo por lo que se eligió en otra
-  const desactivado = c.requiere && !cumple(c.requiere) && !leer(datos, c.id);
+  // README (ronda 92): desactivarSi = se desactiva aunque tenga algo escrito (ej.: el título del cierre cuando hay logo)
+  const desactivado = (c.requiere && !cumple(c.requiere) && !leer(datos, c.id)) || !!(c.desactivarSi && cumple(c.desactivarSi));
   const fijo = c.fijoSi && cumple(c.fijoSi);
   const motivo = desactivado || fijo ? el('p', { class: 'motivo' }, c.motivo, ' ',
     desactivado && c.irA ? el('button', { type: 'button', class: 'btn-link', onclick: () => irA(c.irA) }, 'Ir →') : null) : null;
@@ -1810,7 +1868,11 @@ function pintarMedida() {
     if (!confirm('¿Aprobar el proyecto? Al cliente le llega un mail para que complete el pago.')) return;
     b.disabled = true; try { await api('/aprobarMedida', { method: 'POST', body: '{}' }); await recargar(); aviso('Proyecto aprobado: se avisó al cliente'); } catch (e) { b.disabled = false; aviso(e.message, true); }
   };
-  const fila = pagado && md.listo ? [el('strong', {}, '¡Tu diseño está listo!'), ' Ya puedes revisar y completar el contenido.']
+  // README (ronda 92): la tarjeta Save The Date a medida suelta se entrega aquí (imágenes); la web a medida suelta, con su link
+  const tarjetaSuelta = S.esquema?.producto === 'std-tarjeta-medida', webSuelta = S.esquema?.producto === 'std-web-medida';
+  const fila = pagado && md.listo && tarjetaSuelta ? [el('strong', {}, '¡Tu tarjeta Save The Date está lista!'), ' Descárgala o compártela todas las veces que quieras.']
+    : pagado && md.listo && webSuelta ? [el('strong', {}, '¡Tu Save The Date web está lista!'), ' Su link: ', el('a', { href: `${location.origin}/std/${S.evento.id}`, target: '_blank', rel: 'noopener' }, `${location.origin}/std/${S.evento.id}`)]
+    : pagado && md.listo ? [el('strong', {}, '¡Tu diseño está listo!'), ' Ya puedes revisar y completar el contenido.']
     : pagado ? [el('strong', {}, '¡Pago recibido!'), ' El equipo de diseño ya está trabajando en tu diseño. Mientras tanto, el contenido queda como lo enviaste.',
       S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => listo(e.currentTarget) }, 'Diseño listo (administración)') : null]
     : md.aprobado ? [el('strong', {}, 'Tu proyecto fue aprobado por el equipo de diseño.'), ' Completa el pago para que comencemos a crear tu invitación. ',
@@ -1819,7 +1881,8 @@ function pintarMedida() {
         S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
         : ['Cuando completes lo obligatorio (*) de "Ideas para el diseño", envíalo al equipo de diseño. ',
           el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño')];
-  caja.replaceChildren(el('p', {}, ...fila.filter(Boolean)));
+  caja.replaceChildren(...[el('p', {}, ...fila.filter(Boolean)), tarjetaSuelta && pagado ? entregaTarjetaMedida(datos.medida || {}, 'medida') : null].filter(Boolean));
+  if (webSuelta && pagado && !md.listo && S.usuario?.admin) caja.append(el('p', {}, el('a', { class: 'btn btn-chico', href: `/admin/diseno.html?id=${S.evento.id}`, target: '_blank', rel: 'noopener' }, 'Diseño propio de la web (administración)')));
 }
 // README (ronda 85): barra de pago en Administración (como la del editor en el celular): el plan y lo agregado que falta
 // pagar, con el botón para pagar. Si no se debe nada, no se ve.

@@ -204,7 +204,7 @@
   ].join('\r\n');
 
   async function descargarKit(b) {
-    var p = D.propio, base = $('#base').value || (p && p.base) || D.evento.modelo;
+    var p = D.propio, base = $('#base').value || (p && p.base) || D.evento.modelo || D.evento.base;
     if (!base) return toast('Elegí primero el modelo base', true);
     b.disabled = true; var txt = b.textContent;
     try {
@@ -247,14 +247,14 @@
     } catch (e) { toast(e.message, true); return false; }
   }
   async function moverTodos() {
-    var base = (D.propio && D.propio.base) || D.evento.modelo, n = 0;
+    var base = (D.propio && D.propio.base) || D.evento.modelo || D.evento.base, n = 0;
     for (var i = 0; i < (D.archivos || []).length; i++) { var a = D.archivos[i], dest = rutaDelModelo(a.ruta, base); if (dest && await moverA(a.ruta, dest)) n++; }
     toast(n + ' archivos movidos a su carpeta'); await cargar(true);
   }
   async function subir(lista, soloCambios) {
     var reg = $('#registro'); reg.hidden = false; reg.textContent = '';
     var log = function (t) { reg.textContent += t + '\n'; reg.scrollTop = reg.scrollHeight; };
-    var base = (D.propio && D.propio.base) || $('#base').value || D.evento.modelo;
+    var base = (D.propio && D.propio.base) || $("#base").value || D.evento.modelo || D.evento.base;
     if (!base) return toast('Elegí primero el modelo base y guardá', true);
     if (!D.propio) await api(API, { method: 'POST', json: { base: base } });
     var raiz = D.ruta || ('/propio/' + id + '~0~' + base);
@@ -313,12 +313,13 @@
   }
 
   function pintar() {
-    var e = D.evento, p = D.propio || {}, medida = e.producto === 'a-medida';
-    $('#titulo').textContent = 'Diseño propio · ' + (e.nombres || e.id);
+    var e = D.evento, p = D.propio || {}, medida = e.producto === 'a-medida', std = !!e.std;
+    $('#titulo').textContent = 'Diseño propio · ' + (std ? 'Save The Date web · ' : '') + (e.nombres || e.id);
     $('#sub').textContent = e.tipo + ' · ' + (e.modelo || (medida ? (e.aMedida === 'empresarial' ? 'corporativo a medida' : 'a medida') : '—')) + ' · plan ' + e.paquete + ' · ' + e.estado;
     var main = $('#main'); main.replaceChildren();
-    var vista = '/vista/' + e.id + '?k=' + encodeURIComponent(e.clave) + '&propio=1';
-    var publica = e.slug ? '/' + e.tipo + '/' + e.slug : null;
+    // README (ronda 92): la Save The Date web a medida se ve en /std/<evento>
+    var vista = D.vista || '/vista/' + e.id + '?k=' + encodeURIComponent(e.clave) + '&propio=1';
+    var publica = D.publica !== undefined ? D.publica : e.slug ? '/' + e.tipo + '/' + e.slug : null;
 
     // Estado
     main.append(el('section', { class: 'tarjeta' }, [
@@ -330,13 +331,14 @@
       el('div', { class: 'fila' }, [
         el('a', { class: 'b', href: vista, target: '_blank', rel: 'noopener' }, 'Vista previa con el diseño propio'),
         el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel del cliente'),
-        publica ? el('a', { class: 'b sec', href: publica, target: '_blank', rel: 'noopener' }, 'Invitación publicada') : null,
+        publica ? el('a', { class: 'b sec', href: publica, target: '_blank', rel: 'noopener' }, std ? 'Save The Date (link del cliente)' : 'Invitación publicada') : null,
       ]),
       el('div', { class: 'fila' }, [
-        p.base && !p.activo ? el('button', { class: 'b', onclick: function (ev) { activar(ev.target, true); } }, medida ? 'Activar, marcar «Lista» y publicar' : 'Activar en la invitación') : null,
+        p.base && !p.activo ? el('button', { class: 'b', onclick: function (ev) { activar(ev.target, true); } }, std ? 'Activar y marcar «Lista»' : medida ? 'Activar, marcar «Lista» y publicar' : 'Activar en la invitación') : null,
         p.activo ? el('button', { class: 'b sec', onclick: function (ev) { activar(ev.target, false); } }, 'Desactivar (vuelve el diseño del modelo)') : null,
         p.base ? el('button', { class: 'b mal', onclick: borrarTodo }, 'Borrar todo el diseño propio') : null,
       ]),
+      std ? el('p', { class: 'meta', text: 'Save The Date web a medida: elegí el modelo de Save The Date más parecido (Classic o Soft), descargá el kit, transformalo y subilo. Al activarlo se marca «Lista» y el cliente ve su link en el panel.' }) : null,
       medida ? el('p', { class: 'meta', text: 'Diseño a medida / corporativo: elegí el modelo base más parecido, descargá el kit, transformalo y subilo. Al activarlo se marca «Lista» y, si tiene link, se publica.' }) : null,
     ]));
 
@@ -387,7 +389,7 @@
     var base = el('select', { id: 'base' }, [el('option', { value: '', text: '— Elegí el modelo base —' })].concat(D.modelos.map(function (m) {
       return el('option', { value: m.id, text: m.nombre + (m.eventos.indexOf(e.tipo) >= 0 ? '' : '  (no es de ' + e.tipo + ')') });
     })));
-    base.value = p.base || e.modelo || '';
+    base.value = p.base || e.modelo || e.base || "";
     var plantillas = (ARCH && ARCH[base.value] ? ARCH[base.value].map(function (x) { return x[0]; }) : []).concat((D.archivos || []).map(function (a) { return a.ruta; })).filter(function (r, i, a) { return /\.html$/.test(r) && a.indexOf(r) === i; });
     var plantilla = el('select', { id: 'plantilla' }, [el('option', { value: '', text: 'La que corresponde al evento y al plan (recomendado)' })].concat(plantillas.map(function (r) { return el('option', { value: r, text: r }); })));
     plantilla.value = p.plantilla || '';
@@ -418,7 +420,7 @@
     zona.addEventListener('dragover', function (ev) { ev.preventDefault(); zona.classList.add('encima'); });
     zona.addEventListener('dragleave', function () { zona.classList.remove('encima'); });
     zona.addEventListener('drop', function (ev) { ev.preventDefault(); zona.classList.remove('encima'); recibir(ev.dataTransfer.files, $('#carpeta').value); });
-    var bModelo = p.base || e.modelo, delModelo = rutasModelo(bModelo), malUbicados = 0;
+    var bModelo = p.base || e.modelo || e.base, delModelo = rutasModelo(bModelo), malUbicados = 0;
     var filas = (D.archivos || []).map(function (a) {
       var ver = D.ruta ? D.ruta + '/' + a.ruta.split('/').map(encodeURIComponent).join('/') : null;
       var dest = rutaDelModelo(a.ruta, bModelo); if (dest) malUbicados++;
@@ -478,7 +480,7 @@
     });
   }
   async function detectar() {
-    var base = $('#base') && $('#base').value || (D.propio && D.propio.base) || D.evento.modelo, est = $('#det-estado');
+    var base = $('#base') && $('#base').value || (D.propio && D.propio.base) || D.evento.modelo || D.evento.base, est = $('#det-estado');
     if (!base) { est.textContent = 'Elegí el modelo base para ver sus colores.'; return; }
     try {
       if (!CATALOGO) CATALOGO = await fetch('/comun/fonts/catalogo/catalogo.css').then(function (r) { return r.text(); }).then(function (t) {
@@ -623,7 +625,9 @@
     try {
       await api(API, { method: 'POST', json: { activo: si, base: $('#base').value || undefined } });
       var e = D.evento;
-      if (si && e.producto === 'a-medida') {
+      if (si && e.std) {
+        try { await api('/api/admin/medidas/' + e.id + '/lista', { method: 'POST', json: { parte: e.parte } }); } catch (x) { toast('Activado, pero no se pudo marcar «Lista»: ' + x.message, true); }
+      } else if (si && e.producto === 'a-medida') {
         try { await api('/api/admin/medidas/' + e.id + '/lista', { method: 'POST', json: { parte: 'medida' } }); } catch (x) { /* ya estaba lista o no se envió */ }
         if (e.estado !== 'publicado') {
           if (e.slug) await api('/api/admin/eventos/' + e.id + '/estado', { method: 'POST', json: { estado: 'publicado' } });

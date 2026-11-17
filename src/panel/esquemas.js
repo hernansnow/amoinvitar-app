@@ -476,13 +476,14 @@ const CAMPOS_STD_MEDIDA = [
 // En el diseño a medida, la Save The Date solo a medida
 // README (ronda 30): la web a medida no va como complemento en cumpleaños, bautismo, comunión y baby shower
 const SIN_WEB_MEDIDA = new Set(['cumple', 'infantil', 'bautismo', 'comunion', 'babyshower', 'revelacion']);
-const pasoTarjetaMedida = (tipo, { conAviso = false } = {}) => ({
+// README (ronda 92): con el aviso (enviar al equipo, aprobar, entregar) también en el diseño a medida y el corporativo
+const pasoTarjetaMedida = (tipo) => ({
   id: 'std', seccion: 'std', complemento: true, titulo: 'Save The Date a medida',
   campos: [
     { id: 'nota.std', tipo: 'nota', estilo: 'ayuda', texto: 'Una Save The Date con el mismo estilo que tu invitación, diseñada por el equipo.' },
     { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de Save The Date', defecto: 'tarjeta-medida', rearmar: true,
       valores: OPCIONES_STD_MEDIDA.filter((o) => o.v !== 'web-medida' || !SIN_WEB_MEDIDA.has(tipo)) },
-    ...CAMPOS_STD_MEDIDA.filter((c) => conAviso || c.tipo !== 'medidaStd'),
+    ...CAMPOS_STD_MEDIDA,
   ],
 });
 const pasoTarjeta = (clase, modelo, tipo) => (clase === 'std' ? {
@@ -694,6 +695,7 @@ export const MODELO_A_MEDIDA = {
     deluxe: { secciones: ['historia', 'galeria', 'rsvp', 'dresscode', 'hospedaje', 'bus', 'itinerario', 'testigos', 'album', 'canciones', 'regalos', 'redes'], incluye: { sobre: true, musica: true, cuenta: true, fotosPortada: 4, fotosGaleria: 12, sugerenciasDress: true } },
   },
   iconosItinerario: [],
+  videoPortada: true, // README (ronda 92): en la portada, fotos o video
 };
 // README (ronda 91): el corporativo con las secciones de su plantilla (public/modelos/corporativo): sin regalos, redes ni
 // anfitriones; con Instagram Wall y playlist. Siempre Deluxe y sin sobre
@@ -824,7 +826,7 @@ function anotar(pasos, { vinculo = false, modelo, gratis = false, disenoEnviado 
       if (c.planGratis && gratis) return { ...c, defecto: false, insigniaGratis: 'basic' };
       if (admin) return c;
       if (paso.id === 'diseno' && disenoEnviado && c.tipo !== 'nota') return { ...c, cerrado: 'El pedido de diseño ya se envió al equipo.' };
-      if (cerrada && !['nota', 'linkStd'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
+      if (cerrada && !['nota', 'linkStd', 'medidaStd'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
       if (vinculo && !publicada && FIJOS_VINCULO.includes(c.id)) return { ...c, cerrado: MOTIVO_VINCULO, pedirCambio: true };
       if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'La invitación ya está publicada: los nombres y la fecha se cambian pidiéndolo por WhatsApp.', pedirCambio: true };
       return c;
@@ -995,7 +997,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     // Complementos: aparte, después de una línea y el título "Complementos" en el menú
     // Save The Date en todos los modelos (la del diseño, si el modelo la tiene; si no, las con foto)
     // README (ronda 30): sin tarjeta Save The Date del evento (egreso, Navidad…), solo las a medida como complemento
-    ...(producto === 'invitacion' ? [tarjetasDe('std', m, tipo) ? { ...pasoTarjeta('std', m, tipo), separado: true } : { ...pasoTarjetaMedida(tipo, { conAviso: true }), separado: true }] : []),
+    ...(producto === 'invitacion' ? [tarjetasDe('std', m, tipo) ? { ...pasoTarjeta('std', m, tipo), separado: true } : { ...pasoTarjetaMedida(tipo), separado: true }] : []),
     // Diseño a medida o empresas: sin cambio de diseño ni agradecimiento; la Save The Date solo a medida
     ...(producto === 'a-medida' ? [{ ...pasoTarjetaMedida(tipo), separado: true }] : [pasoDiseno(m)]),
     pasoIdiomaAdicional(base, datos),
@@ -1012,7 +1014,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   if (empresa) paraEmpresa(pasos);
   // README (ronda 91): corporativo con sus campos y sin lo de bodas; a medida (y corporativo) siempre es Deluxe: sin planes
   if (tipo === 'empresarial') paraCorporativo(pasos);
-  if (producto === 'a-medida') sinPlanes(pasos);
+  if (producto === 'a-medida') { sinPlanes(pasos); paraMedida(pasos); }
   // README (ronda 29): el diseño a medida ya trae todo (Deluxe): sin insignias de plan
   return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}), pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
 }
@@ -1050,7 +1052,8 @@ function paraCorporativo(pasos) {
     if (p.id === 'historia') p.titulo = 'Relato inicial o historia';
     if (p.id === 'pie') p.campos = [
       { id: 'fotos.logoPie', tipo: 'foto', etiqueta: 'Logo del cierre (opcional)', sinRecorte: true, ayuda: 'Con logo, el cierre muestra el logo en lugar del título.' },
-      { id: 'textos.pie.titulo', tipo: 'texto', etiqueta: 'Título del cierre', max: 40, base: 'pie.titulo', ayuda: 'Se ve cuando no hay logo.' },
+      { id: 'textos.pie.titulo', tipo: 'texto', etiqueta: 'Título del cierre', max: 40, base: 'pie.titulo', ayuda: 'Se ve cuando no hay logo.',
+        desactivarSi: { campo: 'fotos.logoPie' }, motivo: 'Con logo en el cierre, el título no se muestra. Para usar el título, quita el logo.' }, // README (ronda 92)
       ...p.campos];
   }
 }
@@ -1059,6 +1062,17 @@ function sinPlanes(pasos) {
   for (const p of pasos) {
     if (!p?.campos) continue;
     p.campos = p.campos.map((c) => (c.id === 'portada.cuenta' ? { ...c, ayuda: undefined, planGratis: undefined } : /\bplan(es)?\b/i.test(c.ayuda || '') ? { ...c, ayuda: undefined } : c));
+  }
+}
+// README (ronda 92): a medida y corporativo. El título del relato se puede dejar vacío (no se muestra) y, con el relato
+// apagado, el mensaje de bienvenida no tiene el límite de una frase corta
+function paraMedida(pasos) {
+  for (const p of pasos) {
+    if (!p?.campos) continue;
+    if (p.id === 'historia') p.campos = p.campos.flatMap((c) => (c.id === 'textos.historia.titulo'
+      ? [{ ...c, titulo: false, vacioOculta: 'historia.sinTitulo', max: 60, ayuda: 'Si lo dejas vacío, el relato va sin título.' }, { id: 'historia.sinTitulo', tipo: 'switch', oculto: true, etiqueta: 'Sin título' }] : [c]));
+    p.campos = p.campos.map((c) => (c.id === 'textos.bienvenida.texto'
+      ? { ...c, tipo: 'area', max: 1500, ayuda: 'El texto que va en lugar del relato (sin título). Con el relato prendido, va el relato.' } : c));
   }
 }
 const MOTIVO_ENVIADA = 'Ya enviaste tu proyecto al equipo de diseño: no se puede modificar hasta que el diseño esté listo.';

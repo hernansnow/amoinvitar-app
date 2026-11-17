@@ -379,7 +379,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       inicio: e.musica?.inicio ?? '',
     },
 
-    historia: { activa: historiaActiva, bienvenida: !historiaActiva, texto: esc(propio(e.historia?.texto, 'historia.texto')).replace(/\n/g, '<br>') },
+    // README (ronda 92): conTitulo = el título del relato, salvo que lo hayan dejado vacío (corporativo y a medida)
+    historia: { activa: historiaActiva, conTitulo: historiaActiva && !e.historia?.sinTitulo, bienvenida: !historiaActiva, texto: esc(propio(e.historia?.texto, 'historia.texto')).replace(/\n/g, '<br>') },
     ceremonia, celebracion, calendarios,
     fotos: {
       portada, galeria,

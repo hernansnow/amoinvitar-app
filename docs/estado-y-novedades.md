@@ -189,6 +189,7 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   centrado en el celular, los 5 corporativos viejos (Snow, AI Travel, Aquasalud, Liseth, Prave) como modelos de kit
   para «Diseño propio» y eventos empresariales sin sobre de apertura.
 - **Ronda 91** (ver `docs/empresas.md` §14): modelo Corporativo general (reemplaza los 5 viejos), vista previa provisoria
+- **Ronda 92** (ver `docs/empresas.md` §14b): entrega de la Save The Date a medida (tarjeta: imágenes que sube el admin en el panel; web: Diseño propio `<evento>std` en `/std/<evento>`), botón de envío en los paneles a medida, portada con foto/video en corporativo, título del relato opcional, bienvenida larga, foto en Instagram Wall/Álbum QR, título del cierre desactivado con logo.
   verde para a medida y corporativo, «Lista» activa el diseño propio, textos corporativos en todos los idiomas, panel
   corporativo con logo/texto en portada y cierre, consola con la idea completa del cliente, cuadro de galería arreglado.
 

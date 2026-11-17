@@ -73,8 +73,8 @@
         <div class="col-md-6 ml-auto mr-auto text-center" data-aos="fade-up">
           <div class="col-4 ml-auto mr-auto p-0"><hr class="corp-vertical mb-3 mt-2"></div>
           <h3 data-t="bienvenida.texto" data-si="historia.bienvenida" class="mb-2 text-center elegance corp-titulo-seccion"><span>¡Queremos invitarte a nuestro evento!</span></h3>
-          <h3 data-si="historia.activa" class="mb-2 text-center elegance text-uppercase corp-titulo-seccion"><span data-t="historia.titulo">Historia</span></h3>
-          <div data-si="historia.activa" class="col-6 ml-auto mr-auto p-0"><hr class="corp-linea mb-3 mt-2"></div>
+          <h3 data-si="historia.conTitulo" class="mb-2 text-center elegance text-uppercase corp-titulo-seccion"><span data-t="historia.titulo">Historia</span></h3>
+          <div data-si="historia.conTitulo" class="col-6 ml-auto mr-auto p-0"><hr class="corp-linea mb-3 mt-2"></div>
           <p data-si="historia.activa" class="mb-0 elegance pb-4"><span data-campo-html="historia.texto">Detrás de cada logro hay personas que lo hicieron posible.</span></p>
         </div>
       </div>
@@ -229,6 +229,8 @@
         <img loading="lazy" class="img-fluid mb-0" src="img/icon-ig-w.png" width="90" alt="">
         <h3 class="mb-2 text-center text-white elegance text-uppercase"><span data-t="hashtag.titulo">Etiqueta tus fotos</span></h3>
         <div class="col-6 ml-auto mr-auto p-0"><hr class="corp-linea mb-3 mt-2"></div>
+        <!-- README (ronda 92): la foto de la sección (panel: «Incluir foto en esta sección») -->
+        <div data-si="fotos.instagram" class="text-center mb-3"><img data-attr="src:c:fotos.instagram;style:c:fotos.instagramEstilo" src="" loading="lazy" alt="foto" class="img-fluid rounded corp-foto-seccion"></div>
         <p data-t-html="hashtag.texto" class="text-center text-white mb-3">Compartamos las fotos y videos del evento.<br>Etiquétanos en Instagram con nuestro hashtag.</p>
         <p data-si="hashtag.texto" class="mb-4"><span data-campo="hashtag.texto" class="text-white p-1 elegance corp-etiqueta">#EventoAcme2027</span></p>
         <a data-si="hashtag.link" data-t="hashtag.boton" data-attr="href:c:hashtag.link" href="#" target="_blank" rel="noopener" class="btn button-blanco mb-2 text-uppercase btn-small">VER FOTOS</a>
@@ -241,6 +243,8 @@
         <img loading="lazy" class="img-fluid mb-0" src="img/icon-ig-w.png" width="90" alt="">
         <h3 class="mb-2 text-center text-white elegance text-uppercase"><span data-t="album.titulo">Comparte tus fotos</span></h3>
         <div class="col-6 ml-auto mr-auto p-0"><hr class="corp-linea mb-3 mt-2"></div>
+        <!-- README (ronda 92): la foto de la sección (panel: «Incluir foto en esta sección») -->
+        <div data-si="fotos.album" class="text-center mb-3"><img data-attr="src:c:fotos.album;style:c:fotos.albumEstilo" src="" loading="lazy" alt="foto" class="img-fluid rounded corp-foto-seccion"></div>
         <p data-t-html="album.texto" class="text-center text-white mb-4">¡Prepárate para el evento!<br>Haz clic en el botón y sube todas las fotos y videos que tomes durante el evento al álbum colaborativo, al instante, sin descargar ninguna app.</p>
         <button data-t="album.boton" type="button" data-toggle="modal" data-target="#qr" class="btn button-blanco mb-2 text-uppercase btn-small">SUBE TUS IMÁGENES</button>
         <div data-componente="album-qr"></div>

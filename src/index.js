@@ -19,7 +19,7 @@ import { formatoPais, paisDeZona } from './textos/regional.js';
 import { paisVisitante, claveVisitante, varianteVisitante, bautizoVisitante, sweet16Visitante } from './sitio/visitante.js';
 import { traducirEstaticos, traducePrefijo } from './textos/estaticos.js';
 import { armarVista, ALBUNEAR_TEMA } from './motor/datos.js';
-import { propioDe, rutaPropia, leerPropio, servirPropio, conExtrasPropios, adminPropio } from './propio.js'; // README (ronda 57)
+import { propioDe, rutaPropia, leerPropio, servirPropio, conExtrasPropios, adminPropio, idStd, prepararLista } from './propio.js'; // README (ronda 57)
 import { renderizar } from './motor/render.js';
 import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
@@ -174,21 +174,22 @@ function idiomaPedido(url, datos) {
   return todos.find((x) => x.slice(0, 2) === q.slice(0, 2)) || todos[0];
 }
 
-async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false, prueba = false, forzarPropio = false } = {}) {
+async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false, prueba = false, forzarPropio = false, idPropio = null } = {}) {
   // README (ronda 57): diseño propio (carpeta de la invitación sobre la del modelo base). En a medida/corporativo,
   // el modelo base es el punto de partida del diseño.
   const propio = demo ? null : propioDe(evento, forzarPropio);
+  const idP = idPropio || evento.id; // README (ronda 92): la Save The Date web a medida usa la carpeta «<evento>std»
   if (propio) evento = { ...evento, modelo: propio.base };
   // README (ronda 91): a medida o corporativo todavía sin diseño: la plantilla provisoria (verde, con lo que completó)
   else if (!evento.modelo && evento.producto === 'a-medida') evento = { ...evento, modelo: evento.tipo === 'empresarial' ? 'provisorio-corp' : 'provisorio' };
-  const propioMj = propio ? await leerPropio(env, evento.id, 'modelo.json', 'json') : null;
+  const propioMj = propio ? await leerPropio(env, idP, 'modelo.json', 'json') : null;
   const modelo = propioMj ? conEvento(propioMj, evento.tipo) : await modeloJSON(env, evento.modelo, url.origin, evento.tipo);
   // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html.
   // Los otros eventos: index-15.html, index-15-premium.html… (ver plantillaDe)
   // README (ronda 28): Basic trae cuenta regresiva (Gratis no): con la cuenta, la portada es la del diseño con su cuenta
   if (evento.paquete === 'gratis') evento = { ...evento, paquete: 'basic', gratis: true };
   const conCuenta = evento.paquete === 'basic' && !evento.gratis && evento.portada?.cuenta !== false;
-  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, conCuenta ? 'premium' : evento.paquete, url.origin, propio ? { ev: evento.id, plantilla: propio.plantilla } : null);
+  const plantilla = modelo && await plantillaDe(env, evento.modelo, evento.tipo, conCuenta ? 'premium' : evento.paquete, url.origin, propio ? { ev: idP, plantilla: propio.plantilla } : null);
   if (!plantilla) return html('<p>Diseño en preparación.</p>', 404);
   const idiomas = demo ? [variante(evento.variante)] : idiomasDe(evento);
   const v = demo ? variante(evento.variante) : idiomaPedido(url, evento);
@@ -197,8 +198,10 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     evento = structuredClone(evento);
     for (const [ruta, val] of Object.entries(aplanar(evento.traducciones?.[v.slice(0, 2)] || {}))) if (typeof val === 'string' && val.trim()) escribirRuta(evento, ruta, val);
   }
-  const t = traductor(evento.tipo, v, textosPropios(evento.textos), nombresDe(evento.nombres), modelo, { bautizo: evento.bautizo, sweet16: evento.sweet16 });
-  const rutas = { comun: '/comun', modelo: propio ? rutaPropia(evento.id, propio) : `/modelos/${evento.modelo}`, api: '/api' };
+  const propios = textosPropios(evento.textos);
+  if (evento.historia?.sinTitulo) propios['historia.titulo'] = ' '; // README (ronda 92): relato sin título (en cualquier diseño base)
+  const t = traductor(evento.tipo, v, propios, nombresDe(evento.nombres), modelo, { bautizo: evento.bautizo, sweet16: evento.sweet16 });
+  const rutas = { comun: '/comun', modelo: propio ? rutaPropia(idP, propio) : `/modelos/${evento.modelo}`, api: '/api' };
   const vista = armarVista({ evento, modelo, t, variante: v, rutas, demo, invitado, marca });
   vista.idiomas = { lista: idiomas, actual: v, banderas: Object.fromEntries(idiomas.map((x) => [x.slice(0, 2), banderaDe(x.slice(0, 2), evento)])) };
   vista.prueba = prueba;
@@ -337,13 +340,20 @@ async function saveTheDate(env, url, request, id) {
   if (!ev) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Save The Date no encontrada.</p>', 404);
   const dueno = !!(await eventoConClave(env, request, url, id));
   const suelta = MODELOS.find((m) => m.id === ev.modelo)?.std;
-  const modelo = suelta ? ev.modelo : (ev.datos.std?.web || 'std-classic');
+  // README (ronda 92): web a medida, suelta (diseño propio de la invitación) o complemento (diseño propio «<evento>std»)
+  const medidaSuelta = ev.producto === 'std-web-medida';
+  const medidaComp = !medidaSuelta && ev.datos.std?.tipo === 'web-medida';
+  const forzar = (medidaSuelta || medidaComp) && url.searchParams.get('propio') === '1' && !!(await usuarioActual(request, env).catch(() => null))?.esAdmin;
+  const pp = medidaSuelta ? propioDe(ev.datos, forzar) : medidaComp ? propioDe(ev.datos.std, forzar) : null;
+  const modelo = pp ? pp.base : suelta ? ev.modelo : (ev.datos.std?.web || 'std-classic');
   const m = MODELOS.find((x) => x.id === modelo);
-  const lista = suelta ? ev.estado === 'publicado' : ev.datos.std?.tipo === 'web' && (ev.datos.extras || []).includes('std-web');
-  if (!m?.std || !m.eventos.includes(ev.tipo) || (!lista && !dueno)) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Esta Save The Date todavía no está disponible.</p>', 404);
+  const lista = medidaSuelta ? !!ev.datos.propio?.activo && ev.paquete !== 'borrador'
+    : medidaComp ? !!ev.datos.std?.propio?.activo && (ev.datos.extras || []).includes('std-web-medida')
+      : suelta ? ev.estado === 'publicado' : ev.datos.std?.tipo === 'web' && (ev.datos.extras || []).includes('std-web');
+  if (!m?.std || (!pp && !m.eventos.includes(ev.tipo)) || (!lista && !dueno && !forzar)) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Esta Save The Date todavía no está disponible.</p>', 404);
   if (!dueno && vencido(ev)) return html(paginaVencida(nombresDe(ev.datos.nombres)), 410, { 'x-robots-tag': 'noindex' });
-  const evento = { ...paraMotor(ev), modelo, paquete: 'basic' };
-  return pagina(env, url, evento, { sinSobre: true, prueba: dueno && !lista });
+  const evento = { ...paraMotor(ev), modelo, paquete: 'basic', propio: pp };
+  return pagina(env, url, evento, { sinSobre: true, prueba: (dueno || forzar) && !lista, forzarPropio: !!pp, idPropio: medidaComp ? idStd(ev.id) : null });
 }
 
 // ── Invitación publicada (con su seguridad) ───────────────────────────
@@ -1043,14 +1053,27 @@ async function apiPanel(env, request, url, partes) {
   // README (ronda 29): el equipo marca el diseño a medida como listo: el cliente vuelve a poder editar el contenido
   if (accion === 'medidaLista' && request.method === 'POST') {
     if (!admin) return json({ error: 'Solo el equipo de diseño' }, 403);
-    // README (ronda 91): «Lista» = con el diseño propio activo
-    if (ev.producto === 'a-medida') {
-      if (!ev.datos.propio?.base) return json({ error: 'Falta el diseño: en «Diseño propio» elegí el modelo base, subí el diseño y después marcá «Lista».' }, 409);
-      ev.datos.propio = { ...ev.datos.propio, activo: true };
-    }
-    ev.datos.medida = { ...(ev.datos.medida || {}), listo: new Date().toISOString() };
+    // README (ronda 91/92): «Lista» = con el diseño propio activo (invitación y STD web) o la tarjeta entregada
+    const { parte } = await request.json().catch(() => ({}));
+    const error = prepararLista(ev, parte);
+    if (error) return json({ error }, 409);
+    if (parte === 'std') ev.datos.std = { ...ev.datos.std, medida: { ...(ev.datos.std?.medida || {}), listo: new Date().toISOString() } };
+    else ev.datos.medida = { ...(ev.datos.medida || {}), listo: new Date().toISOString() };
     await almacen.guardarEvento(ev);
     return json({ ok: true });
+  }
+  // README (ronda 92): el equipo entrega la tarjeta Save The Date a medida (las imágenes terminadas, subidas desde el
+  // panel): queda «Lista» y el cliente la descarga y la comparte
+  if (accion === 'entregaMedida' && request.method === 'POST') {
+    if (!admin) return json({ error: 'Solo el equipo de diseño' }, 403);
+    const { parte, entrega } = await request.json().catch(() => ({}));
+    const urls = (Array.isArray(entrega) ? entrega : []).map(String).filter((u) => u.startsWith(`/media/eventos/${ev.id}/`) && u.length < 300).slice(0, 8);
+    const ahora = new Date().toISOString();
+    const md = { ...((parte === 'std' ? ev.datos.std?.medida : ev.datos.medida) || {}), entrega: urls };
+    if (urls.length) md.listo = md.listo || ahora; else delete md.listo;
+    if (parte === 'std') ev.datos.std = { ...(ev.datos.std || {}), medida: md }; else ev.datos.medida = md;
+    await almacen.guardarEvento(ev);
+    return json({ ok: true, entrega: urls });
   }
   // Pasar al plan gratis (modelos que lo tienen): se apaga lo que no es de Basic
   if (accion === 'gratis' && request.method === 'POST') {

@@ -24,7 +24,7 @@
 .corp-etiqueta { background-color: var(--acento); }
 
 /* Portada: sin fotos ni video queda el color */
-.corp-portada { background-color: var(--fondo-portada); }
+.corp-portada { background-color: var(--fondo-portada); isolation: isolate; } /* README (ronda 92): las fotos y el video (z-index -1) sobre el color */
 .corp-logo { max-width: min(78%, 360px); max-height: 190px; object-fit: contain; display: block; margin: 0 auto 18px; }
 .corp-titulo { color: #fff; font-family: 'Montserrat', 'Jost', sans-serif; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; font-size: clamp(30px, 8vw, 58px); line-height: 1.1; margin-bottom: 12px; }
 .corp-subtitulo { letter-spacing: .12em; text-transform: uppercase; }
@@ -48,3 +48,7 @@
 .corp-acceso { background-color: var(--fondo-acceso); background-image: linear-gradient(var(--oscurecer), var(--oscurecer)), var(--img-acceso); }
 /* Mientras carga (bg-diferido) va solo el color */
 .bg-diferido.corp-fondo { background-image: none; }
+/* README (ronda 92): el título del relato y el del cierre, iguales a los demás títulos */
+h3.corp-titulo-seccion.text-uppercase { font-weight: 800; font-size: 2rem; }
+@media screen and (max-width: 768px) { h3.corp-titulo-seccion.text-uppercase { font-size: 1.625rem; } }
+.corp-foto-seccion { max-height: 380px; width: auto; max-width: 100%; object-fit: cover; } /* README (ronda 92) */

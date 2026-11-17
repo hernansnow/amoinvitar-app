@@ -54,6 +54,13 @@ function desdeBrief(b) {
   if (!colores.length && !fuente) return null;
   return { paleta: colores.length ? { modo: 'cambiar', colores } : null, tipografia: fuente ? { modo: 'cambiar', nombre: b.tipografia || '', otra: b.tipografiaOtra || '' } : null };
 }
+// README (ronda 92): la Save The Date web a medida (complemento) tiene su propio diseño, con id «<evento>std»
+// (carpeta propio/<evento>std/ y ev.datos.std.propio). Los id de evento son hexadecimales: «std» no se confunde.
+export const idStd = (id) => `${id}std`;
+const desdeIdStd = (id) => (/std$/.test(id) ? { real: id.slice(0, -3), std: true } : { real: id, std: false });
+const propioGuardado = (ev, std) => (std ? ev.datos.std?.propio : ev.datos.propio) || null;
+// Save The Date web a medida suelta: su diseño parte de los modelos de Save The Date
+const esStdWeb = (ev, std) => std || ev.producto === 'std-web-medida';
 export const rutaPropia = (id, p) => `/propio/${id}~${p.ver || '0'}~${p.base}`;
 
 export async function leerPropio(env, id, ruta, tipo = 'text') {
@@ -78,8 +85,9 @@ export async function servirPropio(env, url) {
   const tipo = o ? o.httpMetadata?.contentType || mimeDe(ruta) : r.headers.get('content-type') || mimeDe(ruta);
   // README (ronda 59): CSS y SVG con los colores y fuentes cambiados (la versión de la ruta cambia con cada ajuste)
   if (RECOLOREABLE.test(ruta)) {
-    const ev = await almacenD1(env).evento(id).catch(() => null);
-    const p = ev?.datos?.propio;
+    const { real, std } = desdeIdStd(id);
+    const ev = await almacenD1(env).evento(real).catch(() => null);
+    const p = ev ? propioGuardado(ev, std) : null;
     if (hayCambios(p)) {
       const texto = await new Response(o ? o.body : r.body).text();
       return new Response(recolorear(texto, p, ruta), { headers: { 'content-type': tipo, ...cab } });
@@ -230,14 +238,19 @@ export async function adminPropio(request, env, id, sub) {
   await requiereAdmin(request, env);
   if (!ID_OK.test(id)) throw new HttpError(400, 'Invitación inválida');
   const alm = almacenD1(env);
-  const ev = await alm.evento(id);
+  const { real, std } = desdeIdStd(id);
+  const ev = await alm.evento(real);
   if (!ev) throw new HttpError(404, 'Invitación no encontrada');
+  if (std && ev.datos.std?.tipo !== 'web-medida') throw new HttpError(404, 'Esta invitación no tiene Save The Date web a medida');
   const url = new URL(request.url);
-  const p = ev.datos.propio || null;
+  const p = propioGuardado(ev, std);
+  const stdWeb = esStdWeb(ev, std);
+  const baseDefecto = stdWeb ? (ev.datos.std?.web || 'std-classic') : ev.modelo || '';
   const guardar = async (cambios) => {
-    ev.datos.propio = { ...(ev.datos.propio || { base: ev.modelo || '', activo: false, css: '', head: '', plantilla: '' }), ...cambios, ver: version(), actualizado: new Date().toISOString() };
+    const nuevo = { ...(propioGuardado(ev, std) || { base: baseDefecto, activo: false, css: '', head: '', plantilla: '' }), ...cambios, ver: version(), actualizado: new Date().toISOString() };
+    if (std) ev.datos.std = { ...(ev.datos.std || {}), propio: nuevo }; else ev.datos.propio = nuevo;
     await alm.guardarEvento(ev);
-    return ev.datos.propio;
+    return nuevo;
   };
 
   if (sub === 'archivo') {
@@ -261,16 +274,21 @@ export async function adminPropio(request, env, id, sub) {
 
   if (request.method === 'GET') {
     const archivos = await listar(env, id);
-    const disponibles = MODELOS.filter((m) => !m.std).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos }));
+    const disponibles = MODELOS.filter((m) => (stdWeb ? m.std : !m.std)).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos }));
     return json({
-      evento: { id: ev.id, tipo: ev.tipo, modelo: ev.modelo, producto: ev.producto, aMedida: ev.aMedida, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, clave: ev.clave,
-        nombres: [ev.datos.nombres?.a, ev.datos.nombres?.b].filter(Boolean).join(' & '), medida: ev.datos.medida || null },
+      evento: { id: ev.id, tipo: ev.tipo, modelo: stdWeb ? baseDefecto : ev.modelo, producto: ev.producto, aMedida: ev.aMedida, paquete: ev.paquete, estado: ev.estado, slug: ev.slug, clave: ev.clave,
+        nombres: [ev.datos.nombres?.a, ev.datos.nombres?.b].filter(Boolean).join(' & '), medida: (std ? ev.datos.std?.medida : ev.datos.medida) || null,
+        // README (ronda 92): Save The Date web a medida (complemento «std» o suelta): se ve en /std/<evento>
+        std: stdWeb, parte: std ? 'std' : 'medida', base: baseDefecto },
+      vista: stdWeb ? `/std/${ev.id}?k=${encodeURIComponent(ev.clave)}&propio=1` : `/vista/${ev.id}?k=${encodeURIComponent(ev.clave)}&propio=1`,
+      publica: stdWeb ? `/std/${ev.id}` : ev.slug ? `/${ev.tipo}/${ev.slug}` : null,
       propio: p, archivos, modelos: disponibles,
       // Lo que pidió el cliente (complemento «Cambios de diseño») y su idea para el diseño a medida
       // README (ronda 91): en a medida y corporativo, la idea del cliente está en «brief» (colores, tipografía, imágenes…):
       // va completa y, si no pidió «Cambios de diseño», sus colores y su fuente cuentan como el pedido de colores/tipografía
-      pedido: { diseno: ev.datos.diseno || desdeBrief(ev.datos.brief), medida: ev.datos.medida || null, brief: ev.datos.brief || null },
-      ruta: p?.base ? rutaPropia(ev.id, p) : null,
+      pedido: std ? { diseno: desdeBrief(ev.datos.std?.medida), medida: ev.datos.std?.medida || null, brief: ev.datos.std?.medida || null }
+        : { diseno: ev.datos.diseno || desdeBrief(ev.datos.brief), medida: ev.datos.medida || null, brief: ev.datos.brief || null },
+      ruta: p?.base ? rutaPropia(id, p) : null,
     });
   }
   if (request.method === 'POST') {
@@ -294,17 +312,33 @@ export async function adminPropio(request, env, id, sub) {
       const limpia = (x) => String(x || '').replace(/["';{}<>]/g, '').trim().slice(0, 60);
       c.fuentes = (Array.isArray(b.fuentes) ? b.fuentes : []).slice(0, 20).map((v) => (Array.isArray(v) ? [limpia(v[0]), limpia(v[1]) || limpia(v[0]), escalaDe(v[2])] : null))
         .filter((v) => v && v[0] && (v[0] !== v[1] || v[2] !== 100));
-      const r = await carasEscaladas(env, url.origin, c.base || p?.base || ev.modelo, c.fuentes);
+      const r = await carasEscaladas(env, url.origin, c.base || p?.base || baseDefecto, c.fuentes);
       c.carasFuentes = r.css; sinCara = r.sinCara;
     }
-    if (c.activo && !(c.base || p?.base || ev.modelo)) throw new HttpError(400, 'Falta elegir el modelo base');
+    if (c.activo && !(c.base || p?.base || baseDefecto)) throw new HttpError(400, 'Falta elegir el modelo base');
     return json({ ok: true, propio: await guardar(c), ...(sinCara.length ? { aviso: `No encontré el archivo de ${sinCara.join(', ')} para cambiarle el tamaño: usá una fuente del catálogo o ajustalo en el CSS extra.` } : {}) });
   }
   if (request.method === 'DELETE') {
     for (const a of await listar(env, id)) await env.MEDIA.delete(PREFIJO(id) + a.ruta);
-    delete ev.datos.propio;
+    if (std) { if (ev.datos.std) delete ev.datos.std.propio; } else delete ev.datos.propio;
     await alm.guardarEvento(ev);
     return json({ ok: true });
   }
   throw new HttpError(405, 'Método no permitido');
+}
+
+// README (ronda 91/92): marcar un diseño a medida como «Lista». La invitación y la Save The Date web, con su diseño propio
+// (queda activo); la tarjeta Save The Date, con las imágenes entregadas. Devuelve el error o null (y deja ev listo para guardar).
+export function prepararLista(ev, parte) {
+  const std = parte === 'std';
+  const tipo = std ? ev.datos.std?.tipo : ev.producto;
+  const md = (std ? ev.datos.std?.medida : ev.datos.medida) || {};
+  if (tipo === 'a-medida' || tipo === 'std-web-medida' || tipo === 'web-medida') {
+    const p = std ? ev.datos.std?.propio : ev.datos.propio;
+    if (!p?.base) return 'Falta el diseño: en «Diseño propio» elegí el modelo base, subí el diseño y después marcá «Lista».';
+    if (std) ev.datos.std = { ...ev.datos.std, propio: { ...p, activo: true } }; else ev.datos.propio = { ...p, activo: true };
+  } else if ((tipo === 'tarjeta-medida' || tipo === 'std-tarjeta-medida') && !(md.entrega || []).length) {
+    return 'Falta la tarjeta: subí el diseño terminado desde el panel del cliente («Entregar la tarjeta») y después marcá «Lista».';
+  }
+  return null;
 }

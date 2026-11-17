@@ -1268,3 +1268,6 @@ body.modo-admin.con-barra-pago #admin { padding-bottom: 90px; }
 /* README (ronda 89): el logo del profesional, sin el botón de volver, con margen (no pegado al borde) */
 .barra .marca.propia { margin-left: 8px; }
 .barra .marca.propia img { max-width: 150px; }
+/* README (ronda 92): entrega de la tarjeta Save The Date a medida */
+.entrega-medida { display: grid; gap: 18px; margin-top: 14px; }
+.entrega-medida .tj-admin { display: grid; gap: 6px; justify-items: start; }
