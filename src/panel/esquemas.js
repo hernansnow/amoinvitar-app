@@ -821,12 +821,13 @@ function anotar(pasos, { vinculo = false, modelo, gratis = false, disenoEnviado 
   return pasos.map((paso) => ({
     ...paso,
     nivel: paso.complemento ? 'complemento' : paso.nivelPaso || (paso.seccion ? paqueteMinimo(modelo, paso.seccion) : 'basic'),
-    campos: paso.campos.map((c) => {
+    // README (ronda 93): el pedido de cambios de diseño ya enviado: el paso muestra solo el aviso (con WhatsApp)
+    ...(paso.id === 'diseno' && disenoEnviado && !admin ? { bloqueado: true } : {}),
+    campos: paso.id === 'diseno' && disenoEnviado && !admin ? [AVISO_DISENO] : paso.campos.map((c) => {
       // README (ronda 28): los complementos se pueden sumar siempre (en el plan gratis, pasa a Basic)
       if (c.planGratis && gratis) return { ...c, defecto: false, insigniaGratis: 'basic' };
       if (admin) return c;
-      if (paso.id === 'diseno' && disenoEnviado && c.tipo !== 'nota') return { ...c, cerrado: 'El pedido de diseño ya se envió al equipo.' };
-      if (cerrada && !['nota', 'linkStd', 'medidaStd'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
+      if (cerrada && !['nota', 'linkStd', 'medidaStd', 'avisoDiseno'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
       if (vinculo && !publicada && FIJOS_VINCULO.includes(c.id)) return { ...c, cerrado: MOTIVO_VINCULO, pedirCambio: true };
       if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'La invitación ya está publicada: los nombres y la fecha se cambian pidiéndolo por WhatsApp.', pedirCambio: true };
       return c;
@@ -974,7 +975,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   }
   if (PRODUCTOS_STD[producto] && !(modelo?.simple || modelo?.std)) {
     const bloqueada = medidaBloqueada(datos) && !admin;
-    return { producto, sinAdmin: true, sinNiveles: true, cerrada: bloqueada, pasos: anotar(PRODUCTOS_STD[producto](), { modelo, cerrada: bloqueada, admin, motivoCerrada: MOTIVO_ENVIADA }) };
+    return { producto, sinAdmin: true, sinNiveles: true, cerrada: bloqueada, edicionOculta: bloqueada ? estadoMedida(datos.medida) : null, pasos: anotar(PRODUCTOS_STD[producto](), { modelo, cerrada: bloqueada, admin, motivoCerrada: MOTIVO_ENVIADA }) };
   }
   const m = producto === 'a-medida' ? (tipo === 'empresarial' ? MODELO_A_MEDIDA_CORP : MODELO_A_MEDIDA) : modelo;
   // Modelos simples y Save The Date web: su panel reducido; al publicarse ya no se editan
@@ -1006,17 +1007,19 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   // README (ronda 29): el diseño a medida, una vez enviado al equipo, no se modifica hasta que el diseño esté listo
   const bloqueada = producto === 'a-medida' && medidaBloqueada(datos);
   const cerrada = (publicada && edicionCerrada(datos)) || bloqueada;
-  // La Save The Date a medida (complemento) ya enviada: su brief queda fijo
-  if (datos.std?.medida?.enviado && !admin) {
+  // README (ronda 93): la Save The Date a medida (complemento) ya enviada: el paso muestra solo el aviso (espera, aprobada,
+  // lista con la entrega y WhatsApp) hasta que la administración lo vuelva a abrir (std.medida.abierta)
+  if (datos.std?.medida?.enviado && !datos.std?.medida?.abierta && !admin) {
     const p = pasos.find((x) => x?.id === 'std');
-    if (p) p.campos = p.campos.map((c) => (c.id.startsWith('std.medida.') || c.id === 'std.tipo' ? { ...c, cerrado: 'Ya enviaste la idea al equipo de diseño.' } : c));
+    if (p) { p.bloqueado = true; p.campos = p.campos.filter((c) => c.tipo === 'medidaStd').map((c) => ({ ...c, si: undefined })); }
   }
   if (empresa) paraEmpresa(pasos);
   // README (ronda 91): corporativo con sus campos y sin lo de bodas; a medida (y corporativo) siempre es Deluxe: sin planes
   if (tipo === 'empresarial') paraCorporativo(pasos);
   if (producto === 'a-medida') { sinPlanes(pasos); paraMedida(pasos); }
   // README (ronda 29): el diseño a medida ya trae todo (Deluxe): sin insignias de plan
-  return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}), pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
+  return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}),
+    edicionOculta: bloqueada && !admin ? estadoMedida(datos.medida) : null, /* README (ronda 93): solo el mensaje, sin los campos */ pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
 }
 // README (ronda 87): eventos de empresas (Pro y Studio): el álbum QR solo con link propio (el de Albunear lo ofrece el
 // profesional por su cuenta) y los textos de los complementos sin precios
@@ -1075,9 +1078,15 @@ function paraMedida(pasos) {
       ? { ...c, tipo: 'area', max: 1500, ayuda: 'El texto que va en lugar del relato (sin título). Con el relato prendido, va el relato.' } : c));
   }
 }
-const MOTIVO_ENVIADA = 'Ya enviaste tu proyecto al equipo de diseño: no se puede modificar hasta que el diseño esté listo.';
+const MOTIVO_ENVIADA = 'Ya enviaste tu proyecto al equipo de diseño: no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.';
 // Enviado al equipo y todavía sin el diseño listo
-export const medidaBloqueada = (datos) => !!datos.medida?.enviado && !datos.medida?.listo;
+// README (ronda 93): desde que se envía queda cerrado (también aprobado y terminado) hasta que la administración
+// lo vuelva a abrir desde la consola (medida.abierta)
+export const medidaBloqueada = (datos) => !!datos.medida?.enviado && !datos.medida?.abierta;
+export const estadoMedida = (m = {}) => (m.listo ? 'listo' : m.aprobado ? 'aprobado' : 'enviado');
+// El pedido de «Cambios de diseño» ya enviado (al publicar) y no reabierto
+export const disenoBloqueado = (datos) => !!datos.diseno?.enviado && !datos.diseno?.abierta;
+const AVISO_DISENO = { id: 'diseno.aviso', tipo: 'avisoDiseno', etiqueta: 'Cambios de diseño', sinEtiqueta: true };
 
 // Condición "si" de un campo: { campo, es | no } · [todas] · { o: [alguna] }
 export function cumple(s, datos) {

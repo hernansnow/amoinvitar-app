@@ -29,7 +29,7 @@ import { mesaHTML } from './componentes/mesa.js';
 import { eventoDe } from './textos/acceso-evento.js';
 import { checkinHTML } from './componentes/checkin.js';
 import { avisoRespuesta } from './avisos.js';
-import { esquemaPanel, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA, FIJOS_VINCULO, aplicarTipoAcceso, recortarSinPagar, NIVELES as NIVELES_PLAN } from './panel/esquemas.js';
+import { esquemaPanel, disenoBloqueado, limpiarDatos, faltantes, planNecesario, banderaDe, FIJOS_PUBLICADA, FIJOS_VINCULO, aplicarTipoAcceso, recortarSinPagar, NIVELES as NIVELES_PLAN } from './panel/esquemas.js';
 import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento, CON_TARJETA_STD } from './modelos.js';
 import { MODELOS_GRATIS, A_MEDIDA, PRODUCTOS, LIMITE_INVITADOS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
@@ -669,7 +669,7 @@ async function eventoConClave(env, request, url, id) {
 async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {}) {
   const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web', 'std-tarjeta'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
-    gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: !!datos.diseno?.enviado,
+    gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: disenoBloqueado(datos), // README (ronda 93): reabierto desde la consola = se puede volver a editar
     publicada: ev.estado === 'publicado', admin, empresa: !!ev.empresaId }); // README (ronda 87)
 }
 
@@ -937,7 +937,7 @@ async function apiPanel(env, request, url, partes) {
     // Los campos de cada idioma (bandera, traducciones) dependen de los idiomas que llegan ahora
     const conIdiomas = datos?.idiomas ? await esquemaDe(env, url, ev, { ...ev.datos, idiomas: datos.idiomas, variante: datos.variante ?? ev.datos.variante }, { admin }) : esquema;
     const limpio = limpiarDatos(conIdiomas, datos || {}, ev.datos);
-    if (ev.datos.diseno?.enviado) limpio.diseno = ev.datos.diseno;
+    if (disenoBloqueado(ev.datos) && !admin) limpio.diseno = ev.datos.diseno;
     // Tarjetas ya generadas: quedan fijas
     if (ev.datos.admin) limpio.admin = ev.datos.admin; // lo de la administración se guarda aparte
     if (ev.datos.empresa) limpio.empresa = ev.datos.empresa; // crédito usado y permisos del cliente (empresas)
@@ -1327,7 +1327,8 @@ async function apiPanel(env, request, url, partes) {
 // una sola vez y desde ahí queda cerrado en el panel.
 async function avisarDiseno(env, url, ev) {
   const d = ev.datos.diseno || {};
-  if (d.enviado || (d.paleta?.modo !== 'cambiar' && d.tipografia?.modo !== 'cambiar')) return;
+  // README (ronda 93): reabierto desde la consola, al volver a publicar se manda de nuevo y se vuelve a cerrar
+  if ((d.enviado && !d.abierta) || (d.paleta?.modo !== 'cambiar' && d.tipografia?.modo !== 'cambiar')) return;
   const lineas = [
     `Evento: ${nombresDe(ev.datos.nombres)} · ${ev.tipo} · ${ev.modelo} ${ev.paquete}`,
     `Link: ${url.origin}/${ev.tipo}/${ev.slug}`,
@@ -1338,7 +1339,7 @@ async function avisarDiseno(env, url, ev) {
   const para = String(env.ADMINS || '').split(/[,\s]+/).filter(Boolean)[0] || env.SUPPORT_EMAIL;
   try {
     if (para) await sendEmail(env, { to: para, subject: `Cambio de diseño pedido · ${nombresDe(ev.datos.nombres)}`, text: lineas.join('\n'), html: lineas.map((l) => `<p>${escHtml(l)}</p>`).join('') });
-    ev.datos.diseno = { ...d, enviado: new Date().toISOString() };
+    ev.datos.diseno = { ...d, enviado: new Date().toISOString(), abierta: false };
   } catch (e) { console.error('[diseño]', e); }
 }
 function escribirRuta(o, ruta, v) {

@@ -273,6 +273,19 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
   Foto de la sección en Instagram Wall y Álbum QR (`fotos.instagram`/`fotos.album`). Cierre: con logo, «Título del cierre» queda
   desactivado (`desactivarSi`, campo nuevo de los esquemas, también en el panel).
 
+## 14c. Ronda 93 · Panel cerrado desde que se envía (a medida, STD a medida y Cambios de diseño)
+- **Invitación a medida / corporativo y STD sueltas a medida** (`std-tarjeta-medida`, `std-web-medida`): desde «Enviar al equipo»
+  el esquema trae `edicionOculta: 'enviado'|'aprobado'|'listo'` y el panel (clase `body.edicion-oculta`) oculta los pasos y los
+  campos: solo queda el mensaje (espera de aprobación → aprobado → listo con «Si quieres modificar algo, contáctanos» y botón de
+  WhatsApp). `medidaBloqueada` = `medida.enviado && !medida.abierta` (antes se abría sola al marcar «Lista»).
+- **STD a medida como complemento**: enviada, el paso `std` muestra solo el aviso (`p.bloqueado`, sin el interruptor); el resto
+  de la invitación sigue editable.
+- **Cambios de diseño (catálogo)**: enviado al publicar, el paso `diseno` muestra solo `avisoDiseno` (mensaje + WhatsApp).
+  `disenoBloqueado` = `diseno.enviado && !diseno.abierta`. Reabierto, al volver a publicar se envía de nuevo y se cierra solo.
+- **Reabrir / volver a bloquear**: `POST /api/admin/medidas/<id>/<abrir|cerrar>` `{ parte: 'medida'|'std'|'diseno' }` (pone
+  `abierta`). Botones en la consola («Diseños a medida» y «Cambios de diseño») y, para el admin, también en el panel del cliente.
+- El servidor no guarda cambios del cliente en lo cerrado (campos `cerrado`, `limpiarDatos` parte de lo guardado).
+
 ## 15. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos

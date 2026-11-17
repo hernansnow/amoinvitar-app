@@ -8,7 +8,7 @@
 //   POST /api/admin/pro/empresas/<id>/complementos { habilitado }   (README ronda 87) el profesional ve y compra créditos de complementos
 //   POST /api/admin/pro/empresas/<id>/regalar      { item, cantidad, nota }   créditos de complementos sin cargo (negativo = descontar)
 //   POST /api/admin/pro/empresas/<id>/demo         { demo }   cuenta DEMO de Studio (pase 30 días y 1 crédito si no tiene)
-//   POST /api/admin/medidas/<evento>/<aprobar|lista>  { parte: 'std' | 'medida' }
+//   POST /api/admin/medidas/<evento>/<aprobar|lista|abrir|cerrar>  { parte: 'std' | 'medida' | 'diseno' }
 // Quien entra: un administrador (ADMINS) con su sesión, o la clave ADMIN_CLAVE.
 import { json, readJson, str, randomId, HttpError } from '../lib/util.js';
 import { requiereAdmin } from './admin.js';
@@ -51,7 +51,7 @@ export async function resumen(request, env) {
       const t = parte === 'std' ? d.std?.tipo : f.producto;
       const entrega = t === 'tarjeta-medida' || t === 'std-tarjeta-medida' ? 'tarjeta' : t === 'web-medida' || t === 'std-web-medida' ? 'web' : 'invitacion';
       medidas.push({ id: f.id, parte, producto: f.producto, tipo: f.tipo, nombres: [d.nombres?.a, d.nombres?.b].filter(Boolean).join(' & '), enviado: m.enviado, aprobado: m.aprobado || null, listo: m.listo || null,
-        entrega, entregadas: (m.entrega || []).length, disenoId: parte === 'std' ? `${f.id}std` : f.id });
+        entrega, entregadas: (m.entrega || []).length, abierta: !!m.abierta, disenoId: parte === 'std' ? `${f.id}std` : f.id });
     }
   }
   const transferencias = (await q("SELECT id, numero, email, importe, moneda, detalle, creado FROM pedidos WHERE estado = 'pendiente' AND medio = 'transferencia' ORDER BY creado DESC LIMIT 100"))
@@ -203,6 +203,15 @@ export async function medida(request, env, eventoId, accion) {
   const ev = await alm.evento(str(eventoId, 40));
   if (!ev) throw new HttpError(404, 'No existe ese evento');
   const { parte } = await readJson(request);
+  // README (ronda 93): volver a abrir (o cerrar) la edición del cliente: invitación a medida / STD suelta («medida»),
+  // Save The Date a medida complemento («std») o el pedido de «Cambios de diseño» («diseno»)
+  if (accion === 'abrir' || accion === 'cerrar') {
+    const obj = parte === 'diseno' ? ev.datos.diseno : parte === 'std' ? ev.datos.std?.medida : ev.datos.medida;
+    if (!obj?.enviado) throw new HttpError(409, 'Todavía no se envió: el cliente ya puede editarlo');
+    obj.abierta = accion === 'abrir';
+    await alm.guardarEvento(ev);
+    return json({ ok: true, abierta: obj.abierta });
+  }
   const clave = parte === 'std' ? 'std' : 'medida';
   const actual = clave === 'std' ? ev.datos.std?.medida : ev.datos.medida;
   if (!actual?.enviado) throw new HttpError(409, 'Ese diseño todavía no se envió al equipo');

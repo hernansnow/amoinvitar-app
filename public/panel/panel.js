@@ -1184,6 +1184,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
         precio ? el('span', { class: 'precio-opcion' }, precio) : null));
     }
     case 'medidaStd': return avisoMedidaStd();
+    case 'avisoDiseno': return avisoDisenoEnviado();
     // El link de la Save The Date web: copiar, mandar por WhatsApp y verla
     case 'linkStd': {
       const link = `${location.origin}/std/${S.evento.id}`;
@@ -1402,6 +1403,33 @@ function opcionMedida(c, idHtml, dis, celular = false) {
   return el('label', { class: `diseno-foto a-medida${celular ? ' celular' : ''}` }, i, precio ? el('span', { class: 'cinta-precio' }, precio.replace(/^\+/, '')) : null,
     el('img', { src: c.medida.img, alt: '', loading: 'lazy' }), el('span', {}, 'Diseño a medida'));
 }
+// README (ronda 93): «Si quieres modificar algo, contáctanos» con el botón de WhatsApp
+function contactoCambios(que) {
+  const base = whatsapp();
+  if (!base) return null;
+  const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' y ');
+  const numero = base.match(/wa\.me\/(\d+)/)?.[1];
+  const texto = `Hola! Quiero modificar algo de ${que}${nombres ? ` (${nombres})` : ''}. Código: ${id}`;
+  return el('a', { class: 'btn btn-wa btn-chico', target: '_blank', rel: 'noopener', href: `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, html: `${ICONO_WA}<span>${T('Escríbenos por WhatsApp')}</span>` });
+}
+// README (ronda 93): administración: volver a abrir (o cerrar) la edición del cliente
+function botonEdicionAdmin(parte, abierta) {
+  if (!S.usuario?.admin) return null;
+  return el('button', { type: 'button', class: 'btn btn-chico btn-sec', onclick: async (e) => {
+    const b = e.currentTarget; b.disabled = true;
+    try {
+      const r = await fetch(`/api/admin/medidas/${S.evento.id}/${abierta ? 'cerrar' : 'abrir'}`, { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ parte }) });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'No se pudo');
+      await recargar(); aviso(abierta ? 'Edición bloqueada' : 'Edición habilitada al cliente');
+    } catch (x) { b.disabled = false; aviso(x.message, true); }
+  } }, abierta ? 'Volver a bloquear la edición (administración)' : 'Habilitar edición al cliente (administración)');
+}
+// README (ronda 93): «Cambios de diseño» ya enviado: solo este mensaje (la administración lo reabre desde la consola)
+function avisoDisenoEnviado() {
+  return el('div', { class: 'aviso-medida en-paso' },
+    el('p', {}, el('strong', {}, 'Tu pedido de cambios de diseño ya está con el equipo.'), ' Ya no se puede modificar desde aquí. Si quieres cambiar algo, contáctanos.'),
+    el('p', {}, contactoCambios('los cambios de diseño de mi invitación')));
+}
 function avisoMedidaStd() {
   const md = datos.std?.medida || {};
   const web = datos.std?.tipo === 'web-medida';
@@ -1417,18 +1445,21 @@ function avisoMedidaStd() {
   // README (ronda 92): el diseño terminado. La tarjeta: las imágenes que sube el equipo (descargar y compartir).
   // La web: su link (/std/<evento>), que el equipo arma en «Diseño propio» de la consola
   const linkWeb = `${location.origin}/std/${S.evento.id}`;
+  const cerrada = md.enviado && !md.abierta;
   const fila = md.listo && web ? [el('strong', {}, '¡Tu Save The Date web está lista!'), ' Este es su link para compartir: ', el('a', { href: linkWeb, target: '_blank', rel: 'noopener' }, linkWeb)]
     : md.listo ? [el('strong', {}, '¡Tu tarjeta Save The Date está lista!'), ' Descárgala o compártela todas las veces que quieras.']
-      : md.aprobado ? [el('strong', {}, 'Tu proyecto fue aprobado por el equipo de diseño.'), ' Ya estamos creando tu Save The Date: te avisaremos cuando esté lista.',
+      : md.aprobado ? [el('strong', {}, '✓ Proyecto aprobado.'), ' Ya estamos creando tu Save The Date: te avisaremos cuando esté lista.',
         S.usuario?.admin && web ? el('a', { class: 'btn btn-chico', href: `/admin/diseno.html?id=${S.evento.id}std`, target: '_blank', rel: 'noopener' }, 'Diseño propio de la web (administración)') : null,
         S.usuario?.admin && web ? el('button', { type: 'button', class: 'btn btn-chico btn-sec', onclick: (e) => listo(e.currentTarget) }, 'Marcar lista (administración)') : null]
-        : md.enviado ? [el('strong', {}, 'Recibimos tu idea.'), ' Vamos a evaluarla y, si todo está bien, recibirás la confirmación pronto.',
+        : md.enviado ? [el('strong', {}, 'Recibimos tu idea: está esperando la aprobación del equipo de diseño.'), ' Te avisaremos por email. Mientras tanto, ya no se puede modificar.',
           S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
           : [`Completa tu idea (lo obligatorio, con *) y envíala al equipo de diseño${precio && !/Gratis/i.test(precio) && !(datos.extras || []).includes(web ? 'std-web-medida' : 'std-tarjeta-medida') ? ` (${precio.replace(/^\+/, '')})` : ''}. Pagas solo cuando el proyecto esté aprobado. `,
             el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño'),
             S.esquema?.producto === 'a-medida' ? null : el('button', { type: 'button', class: 'btn-link', onclick: volver }, '← Volver a los diseños')];
   return el('div', { class: 'aviso-medida en-paso' }, el('p', {}, ...fila.filter(Boolean)),
-    !web && (md.aprobado || md.listo) ? entregaTarjetaMedida(md, 'std') : null);
+    !web && (md.aprobado || md.listo) ? entregaTarjetaMedida(md, 'std') : null,
+    md.listo && cerrada ? el('p', {}, 'Si quieres modificar algo, contáctanos. ', contactoCambios('mi Save The Date a medida')) : null,
+    md.enviado ? el('p', {}, botonEdicionAdmin('std', !!md.abierta)) : null);
 }
 // README (ronda 92): la tarjeta Save The Date a medida terminada. El equipo sube las imágenes (JPG/PNG, la versión con
 // y sin foto, etc.) y queda lista; el cliente las ve con «Descargar» y «Compartir»
@@ -1671,7 +1702,7 @@ function interruptorPaso(p) {
   if (compBloqueado(p)) return el('span');
   // Las secciones obligatorias (y las que no se apagan) no llevan interruptor: siempre están
   if (p.sinInterruptor || p.obligatoria || (!p.seccion && !p.interruptor)) return el('span');
-  const fijo = p.obligatoria || (p.fijoSi && cumple(p.fijoSi)) || !!S.esquema?.cerrada;
+  const fijo = p.obligatoria || (p.fijoSi && cumple(p.fijoSi)) || !!S.esquema?.cerrada || !!p.bloqueado; // README (ronda 93): bloqueado = ya enviado
   const sinComplementos = false; // README (ronda 28): los complementos se suman siempre (en gratis, pasa a Basic)
   const chk = el('input', { type: 'checkbox', role: 'switch', 'aria-label': `${pasoActivo(p) ? 'Apagar' : 'Prender'} ${p.titulo}`, disabled: fijo || sinComplementos,
     title: p.obligatoria ? 'Sección obligatoria' : sinComplementos ? 'No disponible en el plan gratis' : '' });
@@ -1850,7 +1881,7 @@ function pintarPlan() {
 function pintarMedida() {
   const md = S.plan?.medida;
   let caja = $('#aviso-medida');
-  if (!md) { caja?.remove(); return; }
+  if (!md) { caja?.remove(); document.body.classList.remove('edicion-oculta'); return; }
   if (!caja) { caja = el('div', { id: 'aviso-medida', class: 'aviso-medida' }); $('#formulario').before(caja); }
   const pagado = !!S.plan.pagado;
   const enviar = async (b) => {
@@ -1870,18 +1901,25 @@ function pintarMedida() {
   };
   // README (ronda 92): la tarjeta Save The Date a medida suelta se entrega aquí (imágenes); la web a medida suelta, con su link
   const tarjetaSuelta = S.esquema?.producto === 'std-tarjeta-medida', webSuelta = S.esquema?.producto === 'std-web-medida';
+  // README (ronda 93): enviado → solo este mensaje (sin los pasos ni los campos) hasta que la administración lo reabra
+  const oculta = !!S.esquema?.edicionOculta && !S.usuario?.admin;
+  document.body.classList.toggle('edicion-oculta', oculta);
+  const abierta = !!datos.medida?.abierta;
+  const contacto = md.listo && !abierta ? el('p', {}, 'Si quieres modificar algo, contáctanos. ', contactoCambios('mi diseño a medida')) : null;
   const fila = pagado && md.listo && tarjetaSuelta ? [el('strong', {}, '¡Tu tarjeta Save The Date está lista!'), ' Descárgala o compártela todas las veces que quieras.']
     : pagado && md.listo && webSuelta ? [el('strong', {}, '¡Tu Save The Date web está lista!'), ' Su link: ', el('a', { href: `${location.origin}/std/${S.evento.id}`, target: '_blank', rel: 'noopener' }, `${location.origin}/std/${S.evento.id}`)]
-    : pagado && md.listo ? [el('strong', {}, '¡Tu diseño está listo!'), ' Ya puedes revisar y completar el contenido.']
-    : pagado ? [el('strong', {}, '¡Pago recibido!'), ' El equipo de diseño ya está trabajando en tu diseño. Mientras tanto, el contenido queda como lo enviaste.',
+    : md.listo && abierta ? [el('strong', {}, '¡Tu diseño está listo!'), ' Ya puedes revisar y completar el contenido.']
+    : md.listo ? [el('strong', {}, '¡Tu diseño está listo!')]
+    : pagado && md.aprobado ? [el('strong', {}, '✓ Proyecto aprobado y pago recibido.'), ' El equipo de diseño ya está trabajando en tu diseño: te avisaremos cuando esté listo.',
       S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => listo(e.currentTarget) }, 'Diseño listo (administración)') : null]
-    : md.aprobado ? [el('strong', {}, 'Tu proyecto fue aprobado por el equipo de diseño.'), ' Completa el pago para que comencemos a crear tu invitación. ',
+    : md.aprobado ? [el('strong', {}, '✓ Tu proyecto fue aprobado por el equipo de diseño.'), ' Completa el pago para que comencemos a crear tu diseño. ',
       el('button', { type: 'button', class: 'btn btn-chico', onclick: () => mostrarResumen(true) }, 'Completar el pago')]
-      : md.enviado ? [el('strong', {}, 'Recibimos tu idea.'), ' Vamos a evaluarla y, si todo está bien, recibirás la confirmación pronto. Hasta que el diseño esté listo, el panel no se puede modificar.',
+      : md.enviado ? [el('strong', {}, 'Recibimos tu idea: está esperando la aprobación del equipo de diseño.'), ' Te avisaremos por email. Mientras tanto, la personalización queda en pausa y no se puede modificar.',
         S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
         : ['Cuando completes lo obligatorio (*) de "Ideas para el diseño", envíalo al equipo de diseño. ',
           el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño')];
-  caja.replaceChildren(...[el('p', {}, ...fila.filter(Boolean)), tarjetaSuelta && pagado ? entregaTarjetaMedida(datos.medida || {}, 'medida') : null].filter(Boolean));
+  caja.replaceChildren(...[el('p', {}, ...fila.filter(Boolean)), tarjetaSuelta && pagado ? entregaTarjetaMedida(datos.medida || {}, 'medida') : null, contacto,
+    md.enviado && S.usuario?.admin ? el('p', {}, botonEdicionAdmin('medida', abierta)) : null].filter(Boolean));
   if (webSuelta && pagado && !md.listo && S.usuario?.admin) caja.append(el('p', {}, el('a', { class: 'btn btn-chico', href: `/admin/diseno.html?id=${S.evento.id}`, target: '_blank', rel: 'noopener' }, 'Diseño propio de la web (administración)')));
 }
 // README (ronda 85): barra de pago en Administración (como la del editor en el celular): el plan y lo agregado que falta

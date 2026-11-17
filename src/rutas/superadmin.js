@@ -231,7 +231,7 @@ export async function eventos(request, env) {
       link: e.estado === 'publicado' && e.slug ? `/${e.tipo}/${e.slug}` : null, actualizado: e.actualizado, creado: e.creado,
       ingreso: e.ingreso || null, mails: (() => { try { return JSON.parse(e.mails || '[]'); } catch { return []; } })(),
       contacto: (() => { try { const c = JSON.parse(e.contacto || 'null'); return c ? { email: c.email, promos: !!c.promos, idioma: c.idioma } : null; } catch { return null; } })(),
-      diseno: d.diseno ? { paleta: d.diseno.paleta?.modo === 'cambiar', tipografia: d.diseno.tipografia?.modo === 'cambiar', enviado: d.diseno.enviado || null, pagado: (d.extras || []).some((x) => ['diseno', 'paleta', 'tipografia'].includes(x)) } : null };
+      diseno: d.diseno ? { paleta: d.diseno.paleta?.modo === 'cambiar', tipografia: d.diseno.tipografia?.modo === 'cambiar', enviado: d.diseno.enviado || null, abierta: !!d.diseno.abierta, pagado: (d.extras || []).some((x) => ['diseno', 'paleta', 'tipografia'].includes(x)) } : null };
   });
   return json({ eventos: out, pagina: pag, hayMas: rows.length > POR_PAGINA, extrasDisponibles: Object.entries(EXTRAS).map(([k, v]) => ({ id: k, nombre: v.nombre })) });
 }

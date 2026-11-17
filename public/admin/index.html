@@ -406,7 +406,8 @@
       return [el('div', {}, [el('strong', {}, e.nombres || '(sin nombre)'), el('div', { class: 'meta' }, e.tipo + ' · ' + (e.modelo || e.producto) + (e.empresa ? ' · ' + e.empresa : '')), el('div', { class: 'chico' }, e.id)]),
         el('div', {}, [[x.paleta ? 'Colores' : '', x.tipografia ? 'Tipografía' : ''].filter(Boolean).join(' + ') || '—', el('div', { class: 'chico' }, (x.pagado ? 'Pagado' : 'Sin pagar') + (x.enviado ? ' · enviado ' + fecha(x.enviado) : ''))]),
         tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'),
-        el('div', { class: 'acciones' }, [btn('Editar', '', function () { fichaEvento(e, d.extrasDisponibles); }), el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel'), e.link ? el('a', { class: 'b sec', href: e.link, target: '_blank', rel: 'noopener' }, 'Ver') : null])];
+        el('div', { class: 'acciones' }, [btn('Editar', '', function () { fichaEvento(e, d.extrasDisponibles); }), el('a', { class: 'b sec', href: '/panel/' + e.id, target: '_blank', rel: 'noopener' }, 'Panel'), e.link ? el('a', { class: 'b sec', href: e.link, target: '_blank', rel: 'noopener' }, 'Ver') : null,
+          x.enviado ? botonEdicion(e.id, 'diseno', x.abierta) : null])];
     })));
     return v;
   }
@@ -538,6 +539,14 @@
   }
 
   // ══ Diseños a medida ══
+  // README (ronda 93): desde que el cliente envía, su panel queda cerrado (solo ve el mensaje). Aquí se vuelve a abrir la
+  // edición (cambiar textos, fotos, fuentes, la idea…) o se cierra otra vez
+  function botonEdicion(id, parte, abierta) {
+    var refrescarTodo = function () { VISTAS.cambios = null; return refrescarTodoBase(); };
+    return abierta
+      ? btn('Volver a bloquear la edición', 'sec', function (b) { accion(b, '/api/admin/medidas/' + id + '/cerrar', { parte: parte }, 'Edición bloqueada', refrescarTodo); })
+      : btn('Habilitar edición al cliente', 'sec', function (b) { if (confirm('¿Habilitar que el cliente vuelva a modificar los campos, las fotos y el diseño?')) accion(b, '/api/admin/medidas/' + id + '/abrir', { parte: parte }, 'Edición habilitada', refrescarTodo); });
+  }
   function vistaMedidas() {
     var v = el('div', {}, [el('h2', {}, 'Diseños a medida')]);
     if (!D.medidas.length) return append(v, vacio('No hay proyectos enviados.'));
@@ -551,7 +560,7 @@
         : m.entrega === 'web' ? 'Entrega: «Diseño propio» (base Save The Date), activar y marcar listo. Se ve en /std/' + m.id : 'Entrega: «Diseño propio», activar y marcar listo.';
       return [el('div', {}, [el('strong', {}, m.nombres || m.id), el('div', { class: 'meta' }, que + ' · ' + m.producto + ' · ' + m.tipo), el('div', { class: 'meta' }, como)]), fecha(m.enviado), tag(m.listo ? 'Listo' : m.aprobado ? 'Aprobado · en diseño' : 'Por aprobar', m.listo || m.aprobado ? '' : 'aviso'),
         el('div', { class: 'acciones' }, [el('a', { class: 'b sec', href: '/panel/' + m.id + (m.parte === 'std' ? '#std' : ''), target: '_blank', rel: 'noopener' }, m.entrega === 'tarjeta' ? 'Abrir panel (entregar tarjeta)' : 'Abrir panel'),
-          m.entrega !== 'tarjeta' ? el('a', { class: 'b', href: '/admin/diseno.html?id=' + (m.disenoId || m.id), target: '_blank', rel: 'noopener' }, 'Diseño propio') : null, !m.aprobado ? ba : null, m.aprobado && !m.listo ? bl : null])];
+          m.entrega !== 'tarjeta' ? el('a', { class: 'b', href: '/admin/diseno.html?id=' + (m.disenoId || m.id), target: '_blank', rel: 'noopener' }, 'Diseño propio') : null, !m.aprobado ? ba : null, m.aprobado && !m.listo ? bl : null, botonEdicion(m.id, m.parte, m.abierta)])];
     })));
     return v;
   }
@@ -673,6 +682,7 @@
     $('#vista').replaceChildren(f());
   }
   // Recarga lo pendiente (contadores y listas que dependen del resumen) y la pestaña abierta
+  function refrescarTodoBase() { return refrescarTodo(); }
   function refrescarTodo() { return api('/api/admin/resumen').then(function (d) { D = Object.assign(D, d); VISTAS.resumen = null; pinta(); }); }
   function refrescar() { return refrescarTodo().then(function () { ['pedidos', 'facturas', 'cupones', 'eventos', 'cambios', 'usuarios', 'consultas', 'registro'].forEach(function (k) { VISTAS[k] = null; }); pinta(); }); }
   function cargar() {

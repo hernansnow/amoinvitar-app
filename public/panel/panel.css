@@ -1271,3 +1271,10 @@ body.modo-admin.con-barra-pago #admin { padding-bottom: 90px; }
 /* README (ronda 92): entrega de la tarjeta Save The Date a medida */
 .entrega-medida { display: grid; gap: 18px; margin-top: 14px; }
 .entrega-medida .tj-admin { display: grid; gap: 6px; justify-items: start; }
+/* README (ronda 93): proyecto a medida enviado al equipo: solo el mensaje (sin pasos ni campos) */
+body.edicion-oculta #formulario, body.edicion-oculta #btn-ver-pasos, body.edicion-oculta #progreso-movil { display: none !important; }
+body.edicion-oculta #pasos { visibility: hidden; overflow: hidden; }
+@media (min-width: 1024px) { body.edicion-oculta .layout { grid-template-columns: 0 minmax(380px, 560px) 1fr; } }
+@media (max-width: 1023px) { body.edicion-oculta #pasos { display: none !important; } }
+body.edicion-oculta #aviso-medida { margin: 24px; }
+body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
