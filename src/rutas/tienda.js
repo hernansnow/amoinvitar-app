@@ -153,7 +153,7 @@ export async function catalogo(request, env) {
     // Los tipos con grupo (revelación de género) se eligen dentro de su grupo (Baby Shower)
     tipos: TIPOS_EVENTO.filter((t) => !t.grupo),
     // Los modelos simples y las Save The Date web se compran como producto (Invitación web simple, Save The Date web)
-    modelos: MODELOS.filter((m) => !m.simple && !m.std).map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {},
+    modelos: MODELOS.filter((m) => !m.simple && !m.std && !m.kit).map((m) => ({ id: m.id, nombre: m.nombre, nombres: m.nombres || {},
       eventos: [...new Set([...m.eventos, ...TIPOS_EVENTO.filter((t) => t.grupo && m.eventos.includes(t.id)).map((t) => t.grupo)])],
       gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), dosNombres: m.eventos.includes('revelacion'), propios: m.eventos })),
     // README (ronda 41): precios de profesionales en la moneda del visitante (sin IVA ni descuento por país). Clave: el importe en euros

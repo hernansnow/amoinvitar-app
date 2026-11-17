@@ -736,7 +736,7 @@ async function publicarConCredito(env, request, ev, esquema, emp) {
 }
 
 // Modelos a los que se puede cambiar (los del mismo tipo de evento)
-const modelosPara = (tipo) => MODELOS.filter((m) => m.eventos.includes(tipo) && !m.std).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), simple: !!m.simple }));
+const modelosPara = (tipo) => MODELOS.filter((m) => m.eventos.includes(tipo) && !m.std && !m.kit).map((m) => ({ id: m.id, nombre: nombreModelo(m, tipo), gratis: !!(m.gratis || MODELOS_GRATIS.includes(m.id)), simple: !!m.simple }));
 const nombreTipo = (tipo) => TIPOS_EVENTO.find((t) => t.id === tipo)?.nombre || tipo;
 // Para cambiar de modelo en el panel: los del mismo tipo y los de su grupo (Cumpleaños con los infantiles,
 // Baby Shower con Revelación). Cada uno con el tipo de evento con el que queda.

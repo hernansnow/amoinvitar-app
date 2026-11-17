@@ -33,7 +33,7 @@ async function escribir(env, k, v) {
 
 // Primer modelo pago del tipo (el cliente lo cambia en el panel: es solo para arrancar)
 function modeloInicial(tipo) {
-  const m = MODELOS.filter((x) => x.eventos.includes(tipo) && !x.simple && !x.std);
+  const m = MODELOS.filter((x) => x.eventos.includes(tipo) && !x.simple && !x.std && !x.kit);
   return m.find((x) => !x.gratis && !MODELOS_GRATIS.includes(x.id)) || m[0] || null;
 }
 

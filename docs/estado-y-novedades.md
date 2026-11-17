@@ -185,6 +185,9 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   o el admin, dominio Studio en links y miniatura, país por IP en paneles, cambiador de modelos Pro con «Solicitar» a
   medida, volver de a medida a catálogo, paleta violeta, barra verde fija en tablero y /admin, pase Studio de 12 meses,
   página `/diseno-a-medida`, menú Invitaciones nuevo y selector de país más fino.
+- **Ronda 90** (ver `docs/empresas.md` §14): «Pagas al enviar a producción» y slideshow en Diseño a medida, Powered by
+  centrado en el celular, los 5 corporativos viejos (Snow, AI Travel, Aquasalud, Liseth, Prave) como modelos de kit
+  para «Diseño propio» y eventos empresariales sin sobre de apertura.
 
 ## 5. Probar en la compu
 

@@ -332,9 +332,10 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     paquete: { id: e.paquete, incluye },
     modelo: { id: modelo.id, sobre: modelo.sobre },
     // Sobre de apertura (Premium y Deluxe, se puede apagar en Portada). Apagado: la ventana de bienvenida del diseño
-    sobre: { activo: !!incluye.sobre && e.portada?.sobre !== false },
+    // README (ronda 90): los eventos empresariales nunca llevan sobre: la ventana de bienvenida (con música) en su lugar
+    sobre: { activo: !!incluye.sobre && e.portada?.sobre !== false && e.tipo !== 'empresarial' },
     // Sobre apagado: la ventana de bienvenida del diseño, solo si hay música de fondo (es para elegir con o sin música)
-    bienvenidaModal: { activa: !!incluye.sobre && e.portada?.sobre === false && !!(e.musica?.archivo && secciones.musica !== false) },
+    bienvenidaModal: { activa: !!incluye.sobre && (e.portada?.sobre === false || e.tipo === 'empresarial') && !!(e.musica?.archivo && secciones.musica !== false) },
     secciones,
     plural,
 

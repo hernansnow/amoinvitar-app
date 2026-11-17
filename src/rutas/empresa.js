@@ -140,7 +140,7 @@ async function resumen(request, env, c) {
       return { ...x, nombre: cat[x.item]?.nombre || x.item, urlFactura: inv ? await invoiceUrl(env, base, inv) : null };
     })),
     tipos: TIPOS_EVENTO.filter((t) => !t.grupo).map((t) => ({ id: t.id, nombre: t.nombre })),
-    modelos: MODELOS.filter((m) => !m.simple && !m.std).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
+    modelos: MODELOS.filter((m) => !m.simple && !m.std && !m.kit).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
     tienda: {
       credito: PROFESIONALES.credito, pase: PROFESIONALES.studio.pase, config: PROFESIONALES.studio.configuracionDominio,
       productos: Object.entries(cat).filter(([k, v]) => v.nivel !== 'complemento').filter(([k, v]) => v.nivel === 'studio-dominio' ? (c.studio && !e.dominio) : (nivel === 'studio' ? (v.nivel === 'studio' && c.studio) || v.nivel === 'studio-pase' : v.nivel === 'pro' || v.nivel === 'studio-pase'))

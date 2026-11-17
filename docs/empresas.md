@@ -224,7 +224,19 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
   minúsculas con «Diseño a medida», divisor, «Para profesionales» e «Ideas y frases» (celular: dos columnas). Selector
   de país más fino: negro translúcido sobre la cabecera transparente y verde claro sobre la blanca.
 
-## 14. Pendiente
+## 14. Ronda 90 · Modelos corporativos de base (kit)
+- Los 5 diseños corporativos del sistema viejo (`demo/empresarial/{snow,aitravel,aquasalud,liseth,prave}.html`) son
+  modelos del sistema nuevo con `eventos: ['empresarial']` y `kit: true` en `src/modelos.js`: **no aparecen** en el
+  catálogo, la tienda, el muestrario, el tablero ni «Cambiar modelo»; sí en la consola → «Diseño propio» como modelo
+  base, para descargar su kit, transformarlo y subirlo.
+- Se arman con `REPO_VIEJO=../amoinvitar-v2.0 node scripts/conversion/corporativos.mjs [id…]` (convierte, arma
+  `modelo.json`/`tema.css`, deja todos los fondos e imágenes fijas en `img/` —`img/fondo-1.jpg`, `fondo-2.jpg`…— para
+  reemplazarlos subiendo un archivo con el mismo nombre, pone fotos de muestra y limpia `demo/`). La portada de los que
+  tenían video de Vimeo (Snow, AI Travel, Aquasalud) usa las fotos de portada del panel o el video propio.
+- **Sin sobre de apertura en eventos empresariales** (`src/motor/datos.js`): en su lugar, la ventana de bienvenida si
+  hay música.
+
+## 15. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos
 (ver `docs/precios-y-recuerdo.md`).

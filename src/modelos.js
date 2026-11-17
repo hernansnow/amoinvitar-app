@@ -54,6 +54,13 @@ export const MODELOS = [
   { id: 'monster', nombre: 'Monster', eventos: ['infantil'], gratis: false },
   { id: 'peppa', nombre: 'Peppa', eventos: ['infantil'], gratis: false },
   { id: 'navidad', nombre: 'Navidad', eventos: ['navidad'], gratis: false },
+  // README (ronda 90): diseños corporativos del sistema viejo (demo/empresarial/*). No están en el catálogo:
+  // son modelos base para «Diseño propio» (la consola descarga su kit para armar una invitación a medida)
+  { id: 'snow', nombre: 'Snow (corporativo)', eventos: ['empresarial'], gratis: false, kit: true },
+  { id: 'aitravel', nombre: 'AI Travel (corporativo)', eventos: ['empresarial'], gratis: false, kit: true },
+  { id: 'aquasalud', nombre: 'Aquasalud (corporativo)', eventos: ['empresarial'], gratis: false, kit: true },
+  { id: 'liseth', nombre: 'Liseth (corporativo)', eventos: ['empresarial'], gratis: false, kit: true },
+  { id: 'prave', nombre: 'Prave (corporativo)', eventos: ['empresarial'], gratis: false, kit: true },
 ];
 
 // Modelos con su tarjeta Save The Date propia (scripts/conversion/tarjetas y Garden)

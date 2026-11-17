@@ -30,7 +30,7 @@ function catalogoModelos() {
     const vistos = new Set();
     const modelos = [];
     for (const real of reales) for (const m of MODELOS) {
-      if (m.simple || m.std || !m.eventos.includes(real) || vistos.has(m.id)) continue;
+      if (m.simple || m.std || m.kit || !m.eventos.includes(real) || vistos.has(m.id)) continue; // README (ronda 90): sin los corporativos de kit
       vistos.add(m.id);
       modelos.push({ id: m.id, evento: real, nombre: m.nombres?.[real] || m.nombres?.[t.id] || m.nombre, claves: [m.nombres?.[real], m.nombre].filter(Boolean), propios: m.eventos });
     }

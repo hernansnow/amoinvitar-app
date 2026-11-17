@@ -1,0 +1,41 @@
+{
+  "empresarial": {
+    "carpeta": "empresarial",
+    "archivo": "aitravel.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-empresarial.html",
+        "secciones": [
+          "rsvp",
+          "dresscode",
+          "instagram",
+          "canciones",
+          "playlist"
+        ],
+        "avisos": [
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "historia: no se encontró el texto ni el saludo",
+          "galería: no se encontró",
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "itinerario: sin #timeline",
+          "cierre: sin sección de cierre",
+          "perdiste: sin lugar",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "nombresPortada": "AI TRAVEL",
+          "videoPortada": true,
+          "portadaFotos": 4,
+          "rsvpConFoto": false,
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css",
+            "../../comun/fonts/google/josefin-sans+montserrat.css"
+          ]
+        }
+      }
+    }
+  }
+}

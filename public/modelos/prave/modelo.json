@@ -1,0 +1,99 @@
+{
+  "id": "prave",
+  "nombre": "Prave",
+  "eventos": [
+    "empresarial"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#a78977",
+    "#a78180",
+    "#8f8f8f",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": true,
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": false,
+        "cuenta": false,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "rsvp",
+        "dresscode"
+      ],
+      "incluye": {
+        "sobre": true,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 1,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "sinFotoRsvp": true,
+  "proporciones": {},
+  "nombresHTML": {
+    "portada": "{a}",
+    "cierre": "{a}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": null,
+    "colorFondo": "#a78180",
+    "colorTitulos": "#a78977",
+    "fuenteTitulos": "Great Vibes",
+    "fuenteTexto": "Jost"
+  },
+  "sobre": {
+    "colores": {
+      "lacre": "#a78977"
+    }
+  },
+  "demo": {
+    "empresarial": {
+      "portadas": [
+        {
+          "f": "prave-hero-banner.jpg",
+          "pos": "40% 50%"
+        }
+      ]
+    }
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/jost.css",
+      "/modelos/prave/tema.css"
+    ]
+  }
+}

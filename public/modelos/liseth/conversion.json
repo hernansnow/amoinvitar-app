@@ -1,0 +1,43 @@
+{
+  "empresarial": {
+    "carpeta": "empresarial",
+    "archivo": "liseth.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-empresarial.html",
+        "secciones": [
+          "rsvp"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "historia: no se encontró el texto ni el saludo",
+          "galería: no se encontró",
+          "dress code: no se encontró",
+          "itinerario: sin #timeline",
+          "perdiste: se agregó (no había)"
+        ],
+        "info": {
+          "portadas": [
+            {
+              "f": "l-portada.jpg",
+              "pos": "50% 70%"
+            }
+          ],
+          "fondoCompleto": true,
+          "portadaFotos": 1,
+          "idAgenda": "inicio",
+          "rsvpConFoto": false,
+          "textoPie": "La escritura es una forma de autoexpresión, una valiosa ofrenda para la humanidad, compartir nuestro conocimiento y experiencias con el mundo.",
+          "nombresCierre": "<span class=\"texto-especial\" data-aos=\"fade-in\" data-aos-delay=\"200\">Liseth </span>",
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost.css"
+          ]
+        }
+      }
+    }
+  }
+}
