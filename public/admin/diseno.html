@@ -265,6 +265,8 @@
       if (/(^|\/)(LEEME\.txt|archivos\.json)$/i.test(a.ruta)) continue;
       var dest = rutaDelModelo(a.ruta, base);
       if (dest) { log('↪ ' + a.ruta + ' → ' + dest + ' (donde está el del modelo)'); a.ruta = dest; }
+      // README (ronda 94): una imagen nueva suelta (sin carpeta y que no es del kit) va a img/: se usa como img/<nombre> en el HTML o url(img/<nombre>) en el CSS
+      else if (a.ruta.indexOf('/') < 0 && /\.(png|jpe?g|webp|gif|svg|avif)$/i.test(a.ruta) && rutasModelo(base).indexOf(a.ruta) < 0) { log('↪ ' + a.ruta + ' → img/' + a.ruta + ' (imagen nueva)'); a.ruta = 'img/' + a.ruta; }
       try {
         if (soloCambios) {
           var r = await fetch(raiz + '/' + a.ruta.split('/').map(encodeURIComponent).join('/'));

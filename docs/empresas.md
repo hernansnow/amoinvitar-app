@@ -286,6 +286,14 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
   `abierta`). Botones en la consola («Diseños a medida» y «Cambios de diseño») y, para el admin, también en el panel del cliente.
 - El servidor no guarda cambios del cliente en lo cerrado (campos `cerrado`, `limpiarDatos` parte de lo guardado).
 
+## 14d. Ronda 94 · Bienvenida del corporativo e imágenes nuevas del diseño propio
+- La ventana de bienvenida (con o sin música) no salía en los corporativos: `bienvenidaModal` pedía `incluye.sobre` y el
+  modelo corporativo trae `sobre: false`. Ahora los empresariales la llevan siempre que haya música (`src/motor/datos.js`).
+  Si un HTML propio no tiene `data-componente="sobre"`, el servidor inserta la ventana genérica antes de `</body>`
+  (se estiliza con `.ai-bv-generica` en el CSS extra).
+- «Diseño propio»: una imagen suelta (sin carpeta) cuyo nombre no es del kit se guarda en `img/` (se usa como
+  `img/<nombre>` en el HTML o `url(img/<nombre>)` en el CSS).
+
 ## 15. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos

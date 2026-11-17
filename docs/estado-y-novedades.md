@@ -191,6 +191,7 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
 - **Ronda 91** (ver `docs/empresas.md` §14): modelo Corporativo general (reemplaza los 5 viejos), vista previa provisoria
 - **Ronda 92** (ver `docs/empresas.md` §14b): entrega de la Save The Date a medida (tarjeta: imágenes que sube el admin en el panel; web: Diseño propio `<evento>std` en `/std/<evento>`), botón de envío en los paneles a medida, portada con foto/video en corporativo, título del relato opcional, bienvenida larga, foto en Instagram Wall/Álbum QR, título del cierre desactivado con logo.
 - **Ronda 93** (ver `docs/empresas.md` §14c): enviado al equipo (a medida, corporativo, STD a medida, Cambios de diseño) el panel oculta los campos y muestra solo el estado (espera, aprobado, listo + WhatsApp); la consola puede volver a habilitar la edición.
+- **Ronda 94** (ver `docs/empresas.md` §14d): ventana de bienvenida con música en los corporativos; imágenes nuevas del diseño propio a `img/`.
   verde para a medida y corporativo, «Lista» activa el diseño propio, textos corporativos en todos los idiomas, panel
   corporativo con logo/texto en portada y cierre, consola con la idea completa del cliente, cuadro de galería arreglado.
 

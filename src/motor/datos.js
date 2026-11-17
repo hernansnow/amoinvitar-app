@@ -337,7 +337,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
     // README (ronda 90): los eventos empresariales nunca llevan sobre: la ventana de bienvenida (con música) en su lugar
     sobre: { activo: !!incluye.sobre && e.portada?.sobre !== false && e.tipo !== 'empresarial' },
     // Sobre apagado: la ventana de bienvenida del diseño, solo si hay música de fondo (es para elegir con o sin música)
-    bienvenidaModal: { activa: !!incluye.sobre && (e.portada?.sobre === false || e.tipo === 'empresarial') && !!(e.musica?.archivo && secciones.musica !== false) },
+    // README (ronda 94): en los empresariales va siempre (con música), aunque el modelo no incluya sobre (corporativo: sobre false)
+    bienvenidaModal: { activa: ((!!incluye.sobre && e.portada?.sobre === false) || e.tipo === 'empresarial') && !!(e.musica?.archivo && secciones.musica !== false) },
     secciones,
     plural,
 

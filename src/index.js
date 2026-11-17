@@ -25,6 +25,7 @@ import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista, cookieAcceso, DUENO, tokenPuerta } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
+import { bienvenida as bienvenidaGenerica } from './componentes/bloques.js'; // README (ronda 94)
 import { mesaHTML } from './componentes/mesa.js';
 import { eventoDe } from './textos/acceso-evento.js';
 import { checkinHTML } from './componentes/checkin.js';
@@ -210,7 +211,10 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
     vista.sobre = { activo: false }; vista.bienvenidaModal = { activa: false };
   }
   // README (ronda 44): los textos fijos en español de algunos modelos, en el idioma de la invitación
-  return html(conExtrasPropios(traducirEstaticos(await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]), v), propio), 200, {
+  let armada = await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]);
+  // README (ronda 94): un diseño propio sin el lugar de la ventana de bienvenida (data-componente="sobre"): va igual, antes de </body>
+  if (vista.bienvenidaModal?.activa && !/id="ai-bienvenida"/.test(armada)) armada = armada.replace(/<\/body>/i, `${bienvenidaGenerica({ t, v: vista })}\n</body>`);
+  return html(conExtrasPropios(traducirEstaticos(armada, v), propio), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
     'x-robots-tag': 'noindex',
     ...(demo ? { vary: 'cf-ipcountry, Cookie' } : {}),
