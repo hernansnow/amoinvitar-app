@@ -47,6 +47,13 @@ export function propioDe(evento, forzar = false) {
   const p = evento?.propio;
   return p && p.base && MODELO_OK.test(p.base) && (p.activo || forzar) ? p : null;
 }
+// README (ronda 91): la idea del diseño a medida (brief) con la forma de «Cambios de diseño» (paleta y tipografía)
+function desdeBrief(b) {
+  if (!b) return null;
+  const colores = (b.colores || []).filter(Boolean), fuente = b.tipografiaOtra || b.tipografia || '';
+  if (!colores.length && !fuente) return null;
+  return { paleta: colores.length ? { modo: 'cambiar', colores } : null, tipografia: fuente ? { modo: 'cambiar', nombre: b.tipografia || '', otra: b.tipografiaOtra || '' } : null };
+}
 export const rutaPropia = (id, p) => `/propio/${id}~${p.ver || '0'}~${p.base}`;
 
 export async function leerPropio(env, id, ruta, tipo = 'text') {
@@ -260,7 +267,9 @@ export async function adminPropio(request, env, id, sub) {
         nombres: [ev.datos.nombres?.a, ev.datos.nombres?.b].filter(Boolean).join(' & '), medida: ev.datos.medida || null },
       propio: p, archivos, modelos: disponibles,
       // Lo que pidió el cliente (complemento «Cambios de diseño») y su idea para el diseño a medida
-      pedido: { diseno: ev.datos.diseno || null, medida: ev.datos.medida || null },
+      // README (ronda 91): en a medida y corporativo, la idea del cliente está en «brief» (colores, tipografía, imágenes…):
+      // va completa y, si no pidió «Cambios de diseño», sus colores y su fuente cuentan como el pedido de colores/tipografía
+      pedido: { diseno: ev.datos.diseno || desdeBrief(ev.datos.brief), medida: ev.datos.medida || null, brief: ev.datos.brief || null },
       ruta: p?.base ? rutaPropia(ev.id, p) : null,
     });
   }

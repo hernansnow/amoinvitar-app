@@ -129,6 +129,8 @@ async function guardar() {
   }
 }
 
+// README (ronda 91): a medida y corporativo también tienen vista previa (sin diseño todavía, la plantilla provisoria)
+const hayVista = () => !!(S.evento.modelo || S.evento.producto === 'a-medida');
 // Vista previa con dos iframes: la nueva versión carga atrás y recién cuando terminó se
 // muestra (así no se ve la página a medio armar ni los nombres encimados al recargar)
 const marcos = () => [...document.querySelectorAll('#escala iframe')];
@@ -162,7 +164,7 @@ function cargarPrevia() {
 }
 function refrescarPrevia() {
   clearTimeout(previaTimer);
-  previaTimer = setTimeout(() => { if (S.evento.modelo && $('#previa')) cargarPrevia(); }, 300);
+  previaTimer = setTimeout(() => { if (hayVista() && $('#previa')) cargarPrevia(); }, 300);
 }
 
 // La invitación se arma siempre al tamaño de un dispositivo real y se achica entera para
@@ -2015,10 +2017,11 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
   const partes = [
     plan.producto ? null : el('p', { class: 'ayuda' }, 'Secciones elegidas (además de portada, lugar y fecha, confirmación y cierre):'), plan.producto ? null : secciones,
     el('ul', { class: 'lista-precios' }, lineas),
-    plan.pagado ? el('p', { class: 'ayuda' }, `Ya pagado: plan ${NOMBRE_NIVEL[plan.pagado]}. Se paga solo la diferencia.`) : null,
-    el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? (plan.promo?.total || plan.aPagar.texto) : 'Gratis')),
+    // README (ronda 91): a medida y corporativo: sin planes ni «diferencia»; pagada, se dice así
+    plan.pagado ? el('p', { class: 'ayuda' }, plan.medida ? 'Tu diseño a medida ya está pagado.' : `Ya pagado: plan ${NOMBRE_NIVEL[plan.pagado]}. Se paga solo la diferencia.`) : null,
+    el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? (plan.promo?.total || plan.aPagar.texto) : plan.medida && plan.pagado ? 'Pagado' : 'Gratis')),
   ];
-  if (!paraPagar) { abrirModal(plan.producto ? plan.nombre : 'Tu invitación', ...partes.filter(Boolean), el('p', { class: 'ayuda' }, 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
+  if (!paraPagar) { abrirModal(plan.producto ? plan.nombre : 'Tu invitación', ...partes.filter(Boolean), el('p', { class: 'ayuda' }, plan.medida ? 'Incluye todas las secciones. Se paga una sola vez, al enviar tu proyecto a producción (cuando el equipo de diseño lo aprueba).' : 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
   // Pago: mail (si no entró con su cuenta), cupón y medio de pago
   const mail = S.usuario ? null : el('input', { type: 'email', required: true, placeholder: 'tu@mail.com', autocomplete: 'email' });
   const cupon = el('input', { type: 'text', placeholder: 'Cupón (opcional)', maxlength: 30 });
@@ -2276,7 +2279,7 @@ function recordarBorrador() {
   medirBarra(); addEventListener('resize', medirBarra);
   const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ');
   $('#titulo-evento').textContent = nombres || 'Mi invitación';
-  if (!S.evento.modelo) { $('#btn-ojo').hidden = true; $('#previa').remove(); document.body.classList.add('sin-previa'); }
+  if (!hayVista()) { $('#btn-ojo').hidden = true; $('#previa').remove(); document.body.classList.add('sin-previa'); }
   pintarPublicar();
   estado(S.evento.estado === 'publicado' ? 'Publicada' : 'Guardado ✓');
   ayudaAlVolver();

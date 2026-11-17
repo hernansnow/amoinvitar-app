@@ -45,10 +45,14 @@ const fechaHora = (iso) => new Date(iso).toLocaleString('es', { day: '2-digit', 
 const admin = () => ctx.datos.admin || {};
 
 // Textos base de WhatsApp (se pueden cambiar y quedan guardados)
-const TEXTO_WA = () => (plural()
+// README (ronda 91): eventos de empresa: invitación formal, sin «¡Quiero celebrar contigo!»
+const corp = () => ctx.S.evento.tipo === 'empresarial';
+const TEXTO_WA = () => (corp()
+  ? `¡Te invitamos a nuestro evento! ✨\nIngresa a la invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te esperamos!\n{nombres}`
+  : plural()
   ? `¡Nos casamos y queremos celebrar contigo! 💍\nTe invitamos a nuestra boda. Ingresa a nuestra invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te esperamos!\n{nombres}`
   : `¡Quiero celebrar contigo! 🎉\nIngresa a mi invitación digital para ver todos los detalles y confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Te espero!\n{nombres}`);
-const TEXTO_WA_LISTA = () => `¡Hola {invitado}! ${plural() ? '¡Nos casamos y queremos celebrar contigo! 💍\nTe invitamos cordialmente a nuestra boda.' : '¡Quiero celebrar contigo! 🎉'}\nEn tu invitación personal están todos los detalles y puedes confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Saludos!\n{nombres}`;
+const TEXTO_WA_LISTA = () => `¡Hola {invitado}! ${corp() ? '¡Te invitamos a nuestro evento! ✨' : plural() ? '¡Nos casamos y queremos celebrar contigo! 💍\nTe invitamos cordialmente a nuestra boda.' : '¡Quiero celebrar contigo! 🎉'}\nEn tu invitación personal están todos los detalles y puedes confirmar tu asistencia:\n{link}{pin}${cierre() ? '\n(Fecha límite para confirmar: {cierre})' : ''}\n¡Saludos!\n{nombres}`;
 const TEXTO_RECORDATORIO = () => `¡Hola {invitado}! 😊 Te recordamos que todavía no confirmaste tu asistencia${cierre() ? ' (la fecha límite es el {cierre})' : ''}. Puedes hacerlo aquí:\n{link}{pin}\n¡Gracias!\n{nombres}`;
 // Si hay PIN y el texto (cambiado a mano) no tiene {pin}, el PIN va igual, después del link
 const armarTexto = (plantilla, i = null) => (/\{pin\}/.test(plantilla) ? plantilla : plantilla.replace('{link}', '{link}{pin}'))
@@ -780,7 +784,7 @@ function vistaAccesos() {
         if (!confirm(`¿Quitarle el acceso a ${a.email}?`)) return;
         try { await ctx.api(`/accesos?u=${encodeURIComponent(a.id)}`, { method: 'DELETE' }); ctx.aviso('Acceso quitado'); cargar(); } catch (e) { ctx.aviso(e.message, true); }
       }, 'btn btn-chico btn-sec') : null)));
-    const opciones = [['pareja', 'Pareja'], ['admin', 'Administrador/a (wedding planner, organizador…)']].filter(([r]) => cuantos(r) < (d.limite[r] || 0));
+    const opciones = [['pareja', 'Pareja'], ['admin', corp() ? 'Administrador/a (organizador, agencia, alguien del equipo…)' : 'Administrador/a (wedding planner, organizador…)']].filter(([r]) => cuantos(r) < (d.limite[r] || 0));
     const email = ctx.el('input', { type: 'email', placeholder: 'mail@ejemplo.com', autocomplete: 'off', class: 'ad-buscar' });
     const rol = ctx.el('select', { class: 'ad-orden', 'aria-label': 'Rol' }, opciones.map(([v, t]) => ctx.el('option', { value: v }, t)));
     const sumar = async () => {
@@ -800,7 +804,7 @@ function vistaAccesos() {
   cargar();
   return [tarjeta('Accesos',
     ctx.el('p', { class: 'ayuda' }, 'Quiénes pueden editar y administrar la invitación, cada uno con su mail (entran con un link por correo o con Google, sin contraseña).', ' ', // README (ronda 46): frases completas para poder traducirlas
-       ctx.S.evento.tipo === 'boda' ? 'Se puede sumar a la pareja y hasta 3 administradores: wedding planner, organizador, un familiar…' : 'Se pueden sumar hasta 3 administradores: wedding planner, organizador, un familiar…'),
+       ctx.S.evento.tipo === 'boda' ? 'Se puede sumar a la pareja y hasta 3 administradores: wedding planner, organizador, un familiar…' : corp() ? 'Se pueden sumar hasta 3 administradores: organizador, agencia, alguien del equipo…' : 'Se pueden sumar hasta 3 administradores: wedding planner, organizador, un familiar…'),
     caja)];
 }
 

@@ -1,0 +1,52 @@
+{
+  "empresarial": {
+    "carpeta": "empresarial",
+    "archivo": "corporativo.html",
+    "hojas": [],
+    "faltan": [],
+    "paquetes": {
+      "deluxe": {
+        "archivo": "index-empresarial.html",
+        "secciones": [
+          "galeria",
+          "rsvp",
+          "hospedaje",
+          "bus",
+          "dresscode",
+          "estilos",
+          "itinerario",
+          "album",
+          "instagram",
+          "canciones",
+          "playlist"
+        ],
+        "avisos": [
+          "portada: sin título de nombres",
+          "portada: sin frase (NOS CASAMOS / MIS 15…)",
+          "historia: no se encontró el texto ni el saludo",
+          "agenda: no se encontró la celebración (#fiesta-button)",
+          "cierre: sin sección de cierre",
+          "bienvenida: sin modal original (queda la genérica)"
+        ],
+        "info": {
+          "videoPortada": true,
+          "portadaFotos": 4,
+          "galeria": 6,
+          "rsvpConFoto": false,
+          "iconosItinerario": [
+            "tragos",
+            "mic",
+            "cena",
+            "disco",
+            "camara",
+            "last-call2"
+          ],
+          "claseTitulos": "",
+          "fuentes": [
+            "../../comun/fonts/google/jost+montserrat.css"
+          ]
+        }
+      }
+    }
+  }
+}

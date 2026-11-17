@@ -159,7 +159,7 @@ function aplanar(o, pre = '', salida = {}) {
 }
 
 // El evento guardado → lo que espera el motor
-const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, gratis: ev.paquete === 'gratis', variante: ev.datos.variante });
+const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, producto: ev.producto, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, gratis: ev.paquete === 'gratis', variante: ev.datos.variante });
 
 // Idiomas de la invitación: el principal y los adicionales contratados (el visitante
 // la ve en el suyo si está, y puede cambiarlo con ?lang=)
@@ -179,6 +179,8 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   // el modelo base es el punto de partida del diseño.
   const propio = demo ? null : propioDe(evento, forzarPropio);
   if (propio) evento = { ...evento, modelo: propio.base };
+  // README (ronda 91): a medida o corporativo todavía sin diseño: la plantilla provisoria (verde, con lo que completó)
+  else if (!evento.modelo && evento.producto === 'a-medida') evento = { ...evento, modelo: evento.tipo === 'empresarial' ? 'provisorio-corp' : 'provisorio' };
   const propioMj = propio ? await leerPropio(env, evento.id, 'modelo.json', 'json') : null;
   const modelo = propioMj ? conEvento(propioMj, evento.tipo) : await modeloJSON(env, evento.modelo, url.origin, evento.tipo);
   // Cada paquete tiene su propio diseño (index-basic.html, index-premium.html); Deluxe es index.html.
@@ -1041,6 +1043,11 @@ async function apiPanel(env, request, url, partes) {
   // README (ronda 29): el equipo marca el diseño a medida como listo: el cliente vuelve a poder editar el contenido
   if (accion === 'medidaLista' && request.method === 'POST') {
     if (!admin) return json({ error: 'Solo el equipo de diseño' }, 403);
+    // README (ronda 91): «Lista» = con el diseño propio activo
+    if (ev.producto === 'a-medida') {
+      if (!ev.datos.propio?.base) return json({ error: 'Falta el diseño: en «Diseño propio» elegí el modelo base, subí el diseño y después marcá «Lista».' }, 409);
+      ev.datos.propio = { ...ev.datos.propio, activo: true };
+    }
     ev.datos.medida = { ...(ev.datos.medida || {}), listo: new Date().toISOString() };
     await almacen.guardarEvento(ev);
     return json({ ok: true });
@@ -1265,6 +1272,8 @@ async function apiPanel(env, request, url, partes) {
   if (accion === 'publicar' && request.method === 'POST') {
     // README (ronda 87): el cliente final sin permiso (o la cuenta DEMO) no publica, antes de revisar lo que falta
     if (emp && !admin && (!emp.puedePublicar || emp.extras?.demo) && ev.producto === 'invitacion') { const b0 = await publicarConCredito(env, request, ev, esquema, emp); if (b0) return b0; }
+    // README (ronda 91): una invitación a medida o corporativa se publica con su diseño terminado (activo)
+    if (ev.producto === 'a-medida' && !ev.datos.propio?.activo) return json({ error: admin ? 'Falta activar el diseño propio (consola → Diseño propio).' : 'Tu invitación se puede publicar cuando el diseño esté listo. Te avisamos por email.' }, 409);
     const faltan = faltantes(esquema, ev.datos);
     if (faltan.length || !ev.slug) return json({ error: 'faltan', faltan }, 422);
     if (modoAcceso(ev) === 'pin' && !ev.datos.acceso?.pinPorInvitado && !/^\d{4}$/.test(ev.datos.acceso?.pin || '')) return json({ error: 'Falta el PIN' }, 422);
@@ -1338,10 +1347,12 @@ async function vistaPrevia(env, url, request, id) {
   // README (ronda 57): ?propio=1 → el administrador ve el diseño propio aunque todavía no esté activo
   const forzarPropio = url.searchParams.get('propio') === '1' && !!(await usuarioActual(request, env).catch(() => null))?.esAdmin;
   const pp = propioDe(ev.datos, forzarPropio);
-  if (!ev.modelo && !pp) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
+  // README (ronda 91): a medida o corporativo sin diseño todavía: la plantilla provisoria (antes, solo un aviso)
+  const base = pp?.base || ev.modelo || (ev.producto === 'a-medida' ? (ev.tipo === 'empresarial' ? 'provisorio-corp' : 'provisorio') : null);
+  if (!base) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">La vista previa aparece cuando el diseño está listo.</p>');
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  const mj = await modeloJSON(env, pp?.base || ev.modelo, url.origin, ev.tipo);
-  const evento = conFotosDeMuestra({ ...paraMotor(ev), modelo: pp?.base || ev.modelo, paquete: await planVista(env, url, ev) }, mj);
+  const mj = await modeloJSON(env, base, url.origin, ev.tipo);
+  const evento = conFotosDeMuestra({ ...paraMotor(ev), modelo: base, paquete: await planVista(env, url, ev) }, mj);
   // Con lista de invitados se ve como la ve el primero de la lista (o un ejemplo)
   let invitado = null;
   if (usaLista(ev.datos)) {

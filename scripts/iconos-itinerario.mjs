@@ -82,8 +82,15 @@ export const I = {
   corazones: `${corazon(135, 140, 4)}${corazon(240, 200, 2.8)}`,
   mesa: `<path d="M40 130h270v35c0 15-12 25-25 25h-15v130h-28V190H108v130H80V190H65c-13 0-25-10-25-25Z"/>${Hs("M60 165c25 18 45 18 70 0s45 18 70 0 45 18 70 0", 10)}<path d="M175 40c14 16 16 30 0 46-16-16-14-30 0-46Z"/><rect x="167" y="86" width="16" height="40"/>`,
   baile2: `<circle cx="120" cy="60" r="30"/><circle cx="235" cy="70" r="28"/><path d="M95 100h50l20 80-20 10 10 140h-28l-12-110-10 110H80l12-140-25-10Z"/><path d="M215 105h40l15 55-20 6 45 100h-60l-8 64h-22l-2-64h-28l30-100-18-8Z"/><path d="M160 135l50-10" stroke="#fff" stroke-width="14" stroke-linecap="round"/>`,
+  // ── Corporativos (ronda 91) ──
+  presentacion: `<rect x="35" y="40" width="280" height="22" rx="8"/><rect x="55" y="62" width="240" height="160" rx="6"/>${H('<rect x="75" y="80" width="200" height="124" rx="4"/>')}<path d="M105 180l45-50 35 30 55-60" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M175 222v40M175 262l-55 60M175 262l55 60" stroke="#fff" stroke-width="12" stroke-linecap="round"/>`,
+  networking: `<path d="M20 150l70-50 50 22 35-10 35 10 50-22 70 50-40 30-35-15-80 70c-12 12-28 10-36-2-8 10-26 12-36 0-12 6-28 2-32-12-14 0-26-12-22-28l-14-8Z"/>${Hs("M140 122l-55 55M175 130l-58 58M205 150l-58 58", 9)}<path d="M20 150v-20l70-50M330 150v-20l-70-50" stroke="#fff" stroke-width="12" fill="none" stroke-linecap="round"/>`,
+  laptop: `<rect x="70" y="70" width="210" height="140" rx="12"/>${H('<rect x="88" y="88" width="174" height="104" rx="4"/>')}<path d="M30 230h290l-22 40H52Z"/>${H('<rect x="150" y="238" width="50" height="10" rx="5"/>')}`,
+  edificio: `<rect x="95" y="40" width="160" height="285" rx="6"/>${[0, 1, 2, 3, 4].map((f) => [0, 1, 2].map((c) => H(`<rect x="${120 + c * 42}" y="${68 + f * 44}" width="26" height="26" rx="3"/>`)).join('')).join('')}${H('<rect x="155" y="280" width="40" height="45"/>')}<rect x="40" y="325" width="270" height="12" rx="6"/>`,
+  grafico: `<rect x="50" y="210" width="50" height="100" rx="6"/><rect x="125" y="160" width="50" height="150" rx="6"/><rect x="200" y="110" width="50" height="200" rx="6"/><path d="M40 160L130 85l50 35 110-90" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M250 30h45v45Z"/><rect x="30" y="310" width="290" height="14" rx="7"/>`,
 };
 export const GRUPOS = {
+  corporativo: ['presentacion', 'networking', 'laptop', 'edificio', 'grafico'],
   graduacion: ['birrete', 'diploma', 'medalla', 'trofeo', 'libros', 'birretes', 'atril', 'egresado', 'grupo', 'avion'],
   infantil: ['gorrito', 'chupetin', 'helado', 'pochoclo', 'pelota', 'magia', 'castillo', 'osito', 'cohete', 'auto', 'pizza', 'pinata', 'paleta', 'rompecabezas', 'calesita', 'burbujas', 'tren'],
   navidad: ['arbol', 'campanas', 'baston', 'muneco', 'gorro', 'copo', 'bota', 'esfera', 'guirnalda', 'belen', 'reloj', 'champagne'],

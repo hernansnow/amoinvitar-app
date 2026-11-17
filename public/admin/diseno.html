@@ -342,6 +342,8 @@
 
     // Pedido del cliente
     var d = (D.pedido && D.pedido.diseno) || null, cajaPedido = el('section', { class: 'tarjeta' }, [el('h2', { text: 'Lo que pidió el cliente' })]);
+    // README (ronda 91): sin los «null» de lo que no se cargó
+    var appendOrig = cajaPedido.append.bind(cajaPedido); cajaPedido.append = function () { appendOrig.apply(null, Array.prototype.filter.call(arguments, Boolean)); };
     if (d && ((d.paleta && d.paleta.modo === 'cambiar') || (d.tipografia && d.tipografia.modo === 'cambiar'))) {
       var cols = ((d.paleta && d.paleta.colores) || []).map(function (c) { return typeof c === 'string' ? c : c && c.color; });
       if (d.paleta && d.paleta.modo === 'cambiar') cajaPedido.append(el('p', { class: 'meta', text: 'Colores (tocá uno para copiarlo):' }), el('div', { class: 'muestras', style: 'margin-bottom:22px' }, cols.map(function (c, i) {
@@ -349,9 +351,24 @@
       })), d.paleta.notas ? el('p', { text: 'Notas: ' + d.paleta.notas }) : null);
       if (d.tipografia && d.tipografia.modo === 'cambiar') cajaPedido.append(el('p', { text: 'Tipografía: ' + [d.tipografia.nombre, d.tipografia.otra && ('otra: ' + d.tipografia.otra)].filter(Boolean).join(' · ') }));
       cajaPedido.append(el('div', { class: 'fila' }, el('button', { class: 'b sec', onclick: function () { cargarPedido(); } }, 'Usar estos colores y tipografía (en «Colores y tipografías»)')));
-    } else if (D.pedido && D.pedido.medida) {
-      cajaPedido.append(el('details', {}, [el('summary', { text: 'Ver la idea que mandó para el diseño a medida' }), el('pre', { class: 'registro', text: JSON.stringify(D.pedido.medida, null, 2) })]));
-    } else cajaPedido.append(el('p', { class: 'vacio', text: 'No pidió cambios de diseño desde el panel.' }));
+    } else if (!(D.pedido && D.pedido.brief)) cajaPedido.append(el('p', { class: 'vacio', text: 'No pidió cambios de diseño desde el panel.' }));
+    // README (ronda 91): la idea completa del diseño a medida / corporativo (antes salía solo el estado, en JSON)
+    var br = D.pedido && D.pedido.brief;
+    if (br) {
+      var DOM = { claro: 'Claro / Luminoso', oscuro: 'Oscuro / Elegante', combinado: 'Combinado' };
+      var fila = function (et, v) { return v ? el('p', { style: 'margin:0 0 8px' }, [el('b', { text: et + ': ' }), document.createTextNode(v)]) : null; };
+      var refs = (br.referencias || []).map(function (f) { return f && (f.url || f); }).filter(Boolean);
+      cajaPedido.append(el('h3', { text: 'Idea para el diseño a medida', style: 'margin:18px 0 10px;font-size:16px' }),
+        fila('Temática', br.tematica || br.personaje), fila('Estilo, sensaciones, ideas', br.estilo), fila('Modelo o diseño de referencia', br.referencia),
+        fila('Dominancia de color', DOM[br.dominancia] || br.dominancia), fila('Tipografía', [br.tipografia, br.tipografiaOtra].filter(Boolean).join(' · ')),
+        fila('Uso de elementos propios', br.propios),
+        (br.links || []).length ? el('p', { style: 'margin:0 0 8px' }, [el('b', { text: 'Links: ' })].concat((br.links || []).map(function (l) { var u = l && (l.url || l); return u ? el('a', { href: u, target: '_blank', rel: 'noopener', text: u, style: 'display:block' }) : null; }))) : null,
+        refs.length ? el('p', { class: 'meta', text: 'Imágenes de referencia (tocá una para abrirla en grande):' }) : null,
+        refs.length ? el('div', { style: 'display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:12px' }, refs.map(function (u) {
+          return el('a', { href: u, target: '_blank', rel: 'noopener' }, el('img', { src: u, alt: 'referencia', loading: 'lazy', style: 'width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;display:block;border:1px solid var(--linea)' }));
+        })) : null);
+      if (D.pedido.medida) cajaPedido.append(el('p', { class: 'meta', text: 'Estado: ' + ['enviado', 'aprobado', 'listo'].filter(function (k) { return D.pedido.medida[k]; }).map(function (k) { return k + ' el ' + new Date(D.pedido.medida[k]).toLocaleString('es'); }).join(' · ') }));
+    }
     main.append(cajaPedido);
     main.append(el('section', { class: 'tarjeta', id: 'sec-colores' }, [
       el('h2', { text: 'Colores y tipografías' }),

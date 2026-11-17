@@ -203,6 +203,11 @@ export async function medida(request, env, eventoId, accion) {
   if (!actual?.enviado) throw new HttpError(409, 'Ese diseño todavía no se envió al equipo');
   const marca = accion === 'lista' ? { listo: ahora() } : accion === 'aprobar' ? { aprobado: ahora() } : null;
   if (!marca) throw new HttpError(404, 'no encontrado');
+  // README (ronda 91): una invitación a medida está «Lista» con su diseño propio activo (si no, se veía «Diseño en preparación»)
+  if (accion === 'lista' && clave === 'medida' && ev.producto === 'a-medida') {
+    if (!ev.datos.propio?.base) throw new HttpError(409, 'Falta el diseño: en «Diseño propio» elegí el modelo base, subí el diseño y después marcá «Lista».');
+    ev.datos.propio = { ...ev.datos.propio, activo: true };
+  }
   if (clave === 'std') ev.datos.std = { ...(ev.datos.std || {}), medida: { ...actual, ...marca } };
   else ev.datos.medida = { ...actual, ...marca };
   await alm.guardarEvento(ev);

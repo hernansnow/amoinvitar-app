@@ -1,3 +1,4 @@
+import { textosCorporativos, CLAVES_NUEVAS } from './corporativo.js';
 // ════════════════════════════════════════════════════════════════════
 // TEXTOS DE LAS INVITACIONES
 //
@@ -567,6 +568,9 @@ export function diccionario(tipo, variante) {
   const d = Object.assign({}, ...capas.filter(Boolean));
   // README (ronda 58): corporativo en los demás idiomas: título y nombre del evento neutros (no los de boda)
   if (tipo === 'empresarial' && otro) Object.assign(d, CORPORATIVO[v.slice(0, 2)] || {});
+  // README (ronda 91): corporativo con todos sus textos propios (antes se mezclaban los de boda y 15)
+  if (tipo === 'empresarial') Object.assign(d, textosCorporativos(v));
+  else { const n = CLAVES_NUEVAS[v] || CLAVES_NUEVAS[v.slice(0, 2)] || CLAVES_NUEVAS.en; for (const [k, x] of Object.entries({ ...CLAVES_NUEVAS.es, ...n })) if (!(k in d)) d[k] = x; }
   return d;
 }
 const CORPORATIVO = {

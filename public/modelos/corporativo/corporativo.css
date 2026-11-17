@@ -1,0 +1,50 @@
+/* ════════════════════════════════════════════════════════════════
+   CORPORATIVO · fondos y detalles de la plantilla (README ronda 91)
+   Cada sección: un color (--fondo-*) y, las que llevan imagen, su archivo (--img-*).
+   Para dejar solo el color: --img-<sección>: none;
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --acento: #f88a69;
+  --fondo-portada: #1b1b1b;
+  --fondo-relato: #ffffff;   --texto-relato: #1f1f1f;
+  --fondo-galeria: #ffffff;
+  --fondo-ubicacion: #000000;
+  --fondo-confirmacion: #606060; --img-confirmacion: url(img/fondo-confirmacion.jpg);
+  --fondo-info: #3a3a3a;
+  --fondo-itinerario: #2b2140;  --img-itinerario: url(img/fondo-itinerario.jpg);
+  --fondo-fotos: #606060;       --img-fotos: url(img/fondo-fotos.jpg);
+  --fondo-musica: #3a3a3a;
+  --fondo-cierre: #f2f2f2;      --texto-cierre: #1f1f1f;
+  --fondo-acceso: #333333;      --img-acceso: url(img/fondo-acceso.jpg);
+  --oscurecer: rgba(0, 0, 0, 0.45);
+}
+.corp-acento { color: var(--acento); }
+.corp-linea { border: 0; border-top: 3px solid var(--acento); opacity: 1; }
+.corp-vertical { display: inline-block; vertical-align: middle; height: 60px; width: 3px; background-color: var(--acento); border: 0; }
+.corp-etiqueta { background-color: var(--acento); }
+
+/* Portada: sin fotos ni video queda el color */
+.corp-portada { background-color: var(--fondo-portada); }
+.corp-logo { max-width: min(78%, 360px); max-height: 190px; object-fit: contain; display: block; margin: 0 auto 18px; }
+.corp-titulo { color: #fff; font-family: 'Montserrat', 'Jost', sans-serif; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; font-size: clamp(30px, 8vw, 58px); line-height: 1.1; margin-bottom: 12px; }
+.corp-subtitulo { letter-spacing: .12em; text-transform: uppercase; }
+
+.corp-relato { background-color: var(--fondo-relato); color: var(--texto-relato); }
+.corp-relato .corp-titulo-seccion, .corp-relato p { color: var(--texto-relato); }
+.corp-galeria { background-color: var(--fondo-galeria); }
+.corp-ubicacion { background-color: var(--fondo-ubicacion); }
+.corp-ubicacion img.rounded { max-height: 320px; width: 100%; object-fit: cover; }
+.corp-info { background-color: var(--fondo-info); }
+.corp-musica { background-color: var(--fondo-musica); }
+.corp-cierre { background-color: var(--fondo-cierre); color: var(--texto-cierre); }
+.corp-cierre p, .corp-cierre .corp-titulo-seccion { color: var(--texto-cierre); }
+.corp-logo-pie { max-width: min(70%, 280px); max-height: 140px; object-fit: contain; display: block; margin: 0 auto; }
+
+/* Secciones con imagen de fondo: la imagen (si hay) oscurecida, sobre el color */
+.corp-fondo { position: relative; background-repeat: no-repeat; background-size: cover; background-position: 50% 50%; }
+.corp-confirmacion { background-color: var(--fondo-confirmacion); background-image: linear-gradient(var(--oscurecer), var(--oscurecer)), var(--img-confirmacion); }
+.corp-itinerario { background-color: var(--fondo-itinerario); background-image: linear-gradient(var(--oscurecer), var(--oscurecer)), var(--img-itinerario); }
+.corp-fotos { background-color: var(--fondo-fotos); background-image: linear-gradient(var(--oscurecer), var(--oscurecer)), var(--img-fotos); }
+.corp-acceso { background-color: var(--fondo-acceso); background-image: linear-gradient(var(--oscurecer), var(--oscurecer)), var(--img-acceso); }
+/* Mientras carga (bg-diferido) va solo el color */
+.bg-diferido.corp-fondo { background-image: none; }

@@ -257,7 +257,8 @@
   function personalizar(it, ev, op) {
     op = op || {};
     ventanas();
-    var dos = !!it.dos, largo = it.link.producto === 'invitacion' ? 15 : 20;
+    // README (ronda 91): a medida para una boda también pide los dos nombres
+    var dos = !!(it.dos || (it.medida && ev.tipo === 'boda')), largo = it.link.producto === 'invitacion' ? 15 : 20;
     var campo = function (id, etiqueta, ph) {
       return el('label', { class: 'ci-campo' }, el('span', { text: etiqueta }), el('input', { type: 'text', name: id, maxlength: largo, required: true, placeholder: ph, autocomplete: 'off' }));
     };
@@ -266,7 +267,7 @@
       : ev.tipo === 'babyshower' && it.link.evento === 'revelacion' ? [campo('a', 'Nombres', 'Dani & Marce')]
       : [campo('a', 'Nombre', 'Sofi')];
     var nota = it.medida
-      ? 'Completa tu idea en el panel y envíala al equipo de diseño. Pagas solo cuando el proyecto esté aprobado' + (it.precio ? ' (desde ' + it.precio + ').' : '.')
+      ? 'Completa tu idea en el panel y envíala al equipo de diseño. Pagas al enviar tu proyecto a producción' + (it.precio ? ' (desde ' + it.precio + ').' : '.')
       : it.gratis ? 'Después puedes cambiar todo en el panel. Este modelo es gratis: tienes tu link sin pagar nada.'
       : 'Después puedes cambiar todo en el panel. No pagas nada hasta publicar.';
     // README (ronda 39): el diseño a medida elige el tipo de evento acá mismo (salvo que se entre desde la página de un evento)

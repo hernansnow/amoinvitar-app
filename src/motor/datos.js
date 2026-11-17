@@ -202,6 +202,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
   // La historia apagada no desaparece: queda el saludo de bienvenida de los modelos Basic
   // Testigos o padrinos solo en boda, 15, bautismo y comunión
   if (!CON_PADRINOS.has(e.tipo) && 'testigos' in secciones) secciones.testigos = false;
+  // README (ronda 91): los eventos de empresa no llevan regalos ni redes
+  if (e.tipo === 'empresarial') for (const s of ['regalos', 'redes']) if (s in secciones) secciones[s] = false;
   // Dress code apagado: tampoco van las sugerencias de estilos (son parte del dress code)
   if (secciones.dresscode === false && 'estilos' in secciones) secciones.estilos = false;
   const historiaActiva = !!secciones.historia;
@@ -391,6 +393,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       // Instagram Wall (en Premium antes usaba la foto del álbum)
       instagram: fotosOn('instagram') ? fotos.instagram || fotos.album || '' : '', instagramEstilo: '',
       cantidadGaleria: galeria.length,
+      // README (ronda 91): corporativo: logo de la portada y del cierre (con logo, va en lugar del nombre / del título)
+      logo: fotos.logo || '', logoPie: fotos.logoPie || '',
     },
 
     galeria: { tipo: tipoGaleria, carrusel: tipoGaleria === 'carrusel', proporcion: propGaleria, color: !!e.galeria?.color },

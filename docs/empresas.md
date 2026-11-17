@@ -224,17 +224,32 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
   minúsculas con «Diseño a medida», divisor, «Para profesionales» e «Ideas y frases» (celular: dos columnas). Selector
   de país más fino: negro translúcido sobre la cabecera transparente y verde claro sobre la blanca.
 
-## 14. Ronda 90 · Modelos corporativos de base (kit)
-- Los 5 diseños corporativos del sistema viejo (`demo/empresarial/{snow,aitravel,aquasalud,liseth,prave}.html`) son
-  modelos del sistema nuevo con `eventos: ['empresarial']` y `kit: true` en `src/modelos.js`: **no aparecen** en el
-  catálogo, la tienda, el muestrario, el tablero ni «Cambiar modelo»; sí en la consola → «Diseño propio» como modelo
-  base, para descargar su kit, transformarlo y subirlo.
-- Se arman con `REPO_VIEJO=../amoinvitar-v2.0 node scripts/conversion/corporativos.mjs [id…]` (convierte, arma
-  `modelo.json`/`tema.css`, deja todos los fondos e imágenes fijas en `img/` —`img/fondo-1.jpg`, `fondo-2.jpg`…— para
-  reemplazarlos subiendo un archivo con el mismo nombre, pone fotos de muestra y limpia `demo/`). La portada de los que
-  tenían video de Vimeo (Snow, AI Travel, Aquasalud) usa las fotos de portada del panel o el video propio.
-- **Sin sobre de apertura en eventos empresariales** (`src/motor/datos.js`): en su lugar, la ventana de bienvenida si
-  hay música.
+## 14. Ronda 90–91 · Corporativo, a medida y vista previa provisoria
+- **Modelo Corporativo** (`public/modelos/corporativo/`, `kit: true` en `src/modelos.js`): la plantilla general de los
+  eventos de empresa (de la plantilla del dueño). Reemplaza a Snow, AI Travel, Aquasalud, Liseth y Prave (quitados).
+  Es la base de «Diseño propio» de toda invitación corporativa. No aparece en catálogo, tienda, muestrario ni «Cambiar
+  modelo». Fondos: variables `--fondo-*` / `--img-*` en `corporativo.css` (sin imagen: `--img-x: none`) y archivos
+  `img/fondo-confirmacion.jpg`, `fondo-itinerario.jpg`, `fondo-fotos.jpg`, `fondo-acceso.jpg`.
+- Logo o texto en **portada** (`fotos.logo`) y **cierre** (`fotos.logoPie` + `textos.pie.titulo`): campos del panel
+  corporativo (`paraCorporativo` en `src/panel/esquemas.js`); el motor los expone en `fotos.logo`/`fotos.logoPie`.
+- Panel corporativo: un solo nombre («Nombre del evento o de la empresa»), «Relato inicial o historia», solo las secciones
+  de la plantilla (`SECCIONES_CORP` / `MODELO_A_MEDIDA_CORP`: sin regalos, redes ni anfitriones). A medida y corporativo:
+  sin hablar de planes (`sinPlanes`). Íconos de itinerario corporativos nuevos (presentación, networking, laptop, empresa,
+  resultados: `scripts/iconos-itinerario.mjs`, grupo `corporativo`).
+- **Textos corporativos** en todos los idiomas: `src/textos/corporativo.js` (última capa de `diccionario('empresarial')`;
+  también `perdiste.ubicacion/galeria/historia`, `cuenta.comienza` y `provisorio.aviso` para todos).
+- **Vista previa provisoria**: a medida y corporativo sin diseño activo se ven con `public/modelos/provisorio/` (o
+  `provisorio-corp/`, copia de corporativo): verde oscuro, letras blancas, aviso arriba, con lo que el cliente completa.
+  Si se cambia `corporativo`, rearmar `provisorio-corp` (mismo HTML con `provisorio.css` y el aviso).
+- **«Lista» = diseño propio activo**: consola (`/api/admin/medidas/<id>/lista`) y panel (`medidaLista`) activan el diseño
+  propio; sin modelo base, 409. Una invitación a medida no se publica sin el diseño activo (409).
+- Consola → Diseño propio: «Lo que pidió el cliente» muestra la idea completa (brief: temática, estilo, colores,
+  tipografía, imágenes, links) y sus colores/fuente se pueden cargar en «Colores y tipografías».
+- Consola → plan de una invitación a medida: solo «Pagada (Deluxe)» o «Sin pagar». Resumen del panel: «ya está pagado»,
+  «se paga al enviar a producción».
+- Eventos empresariales: sin sobre de apertura (ventana de bienvenida si hay música), sin regalos ni redes; WhatsApp y
+  accesos de Administración con textos de empresa. A medida para boda pide dos nombres al empezar.
+- Galería del panel: el cuadro «Agregar» ya no se sale de su columna con fotos 3:2 / 2:3.
 
 ## 15. Pendiente
 

@@ -188,6 +188,9 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
 - **Ronda 90** (ver `docs/empresas.md` §14): «Pagas al enviar a producción» y slideshow en Diseño a medida, Powered by
   centrado en el celular, los 5 corporativos viejos (Snow, AI Travel, Aquasalud, Liseth, Prave) como modelos de kit
   para «Diseño propio» y eventos empresariales sin sobre de apertura.
+- **Ronda 91** (ver `docs/empresas.md` §14): modelo Corporativo general (reemplaza los 5 viejos), vista previa provisoria
+  verde para a medida y corporativo, «Lista» activa el diseño propio, textos corporativos en todos los idiomas, panel
+  corporativo con logo/texto en portada y cierre, consola con la idea completa del cliente, cuadro de galería arreglado.
 
 ## 5. Probar en la compu
 

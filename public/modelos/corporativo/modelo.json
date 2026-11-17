@@ -1,0 +1,120 @@
+{
+  "id": "corporativo",
+  "nombre": "Corporativo",
+  "eventos": [
+    "empresarial"
+  ],
+  "gratis": false,
+  "paleta": [
+    "#f88a69",
+    "#1b1b1b",
+    "#3a3a3a",
+    "#ffffff"
+  ],
+  "galeria": {
+    "byn": false,
+    "enRsvp": false
+  },
+  "videoPortada": true,
+  "paquetes": {
+    "basic": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "hospedaje",
+        "bus",
+        "itinerario",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 4,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    },
+    "premium": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "hospedaje",
+        "bus",
+        "itinerario",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 4,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    },
+    "deluxe": {
+      "secciones": [
+        "musica",
+        "historia",
+        "galeria",
+        "rsvp",
+        "dresscode",
+        "estilos",
+        "hospedaje",
+        "bus",
+        "itinerario",
+        "instagram",
+        "album",
+        "canciones",
+        "playlist"
+      ],
+      "incluye": {
+        "sobre": false,
+        "musica": true,
+        "cuenta": true,
+        "fotosPortada": 4,
+        "fotosGaleria": 20,
+        "sugerenciasDress": true
+      }
+    }
+  },
+  "sinFotoRsvp": true,
+  "proporciones": {},
+  "nombresHTML": {
+    "portada": "{a}",
+    "cierre": "{a}",
+    "solo": "{a}"
+  },
+  "miniatura": {
+    "fondo": null,
+    "colorFondo": "#1b1b1b",
+    "colorTitulos": "#f88a69",
+    "fuenteTitulos": "Montserrat",
+    "fuenteTexto": "Jost"
+  },
+  "demo": {
+    "empresarial": {}
+  },
+  "porEvento": {},
+  "acceso": {
+    "css": [
+      "/comun/fonts/google/jost+montserrat.css",
+      "/modelos/corporativo/tema.css"
+    ]
+  }
+}

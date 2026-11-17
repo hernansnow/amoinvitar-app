@@ -335,6 +335,9 @@ details.pegar textarea { margin-top: 8px; }
 .fotos-grilla[data-forma="alta"] { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
 .fotos-grilla[data-forma="ancha"], .fotos-grilla.portada { grid-template-columns: 1fr; }
 .fotos-grilla .agregar { aspect-ratio: auto; min-height: 120px; }
+/* README (ronda 91): con la proporción de la foto (3:2, 2:3) y la altura mínima, el cuadro «Agregar» se salía de su columna: ocupa el ancho de la columna y la altura sale de la proporción */
+.fotos-grilla > * { min-width: 0; }
+.fotos-grilla .agregar[style*="aspect-ratio"] { width: 100%; min-height: 0; align-self: start; }
 .con-quitar { position: relative; }
 .con-quitar.chica, .foto-una.chica { max-width: 150px; }
 .con-quitar .quitar, .con-quitar .mover { position: absolute; top: 6px; z-index: 2; border: 0; border-radius: 50%; width: 30px; height: 30px; background: rgba(0,0,0,.65); color: #fff; cursor: pointer; font-size: .85rem; }

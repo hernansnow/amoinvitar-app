@@ -1,0 +1,24 @@
+/* PROVISORIO · README (ronda 91) · vista previa de un diseño a medida o corporativo mientras se diseña:
+   verde oscuro con letras blancas, una franja por sección y el aviso arriba */
+:root { --acento: #9fd6c3; --verde-1: #173a30; --verde-2: #1d463a; }
+body { background: var(--verde-1); color: #fff; }
+.prov-aviso { position: sticky; top: 0; z-index: 900; background: #0e2a22; color: #e6f4ee; font: 600 12.5px/1.35 'Jost', sans-serif; text-align: center; padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,.15); }
+.corp-acento { color: var(--acento); }
+.corp-linea { border: 0; border-top: 2px solid var(--acento); opacity: .9; }
+.corp-vertical { display: inline-block; height: 50px; width: 2px; background: var(--acento); border: 0; }
+.corp-etiqueta { background: rgba(255,255,255,.14); color: #fff !important; }
+.corp-portada { background: var(--verde-1); }
+.corp-logo { max-width: min(78%, 340px); max-height: 180px; object-fit: contain; display: block; margin: 0 auto 18px; }
+.corp-titulo { color: #fff; font-family: 'Jost', sans-serif; font-weight: 600; font-size: clamp(30px, 8vw, 54px); line-height: 1.1; margin-bottom: 12px; }
+.corp-subtitulo { letter-spacing: .12em; text-transform: uppercase; }
+.corp-logo-pie { max-width: min(70%, 260px); max-height: 130px; object-fit: contain; display: block; margin: 0 auto; }
+/* Todas las secciones alternan dos verdes, sin imágenes de fondo, con texto blanco */
+.site-section, .corp-galeria { background-color: var(--verde-2) !important; background-image: none !important; color: #fff; }
+.site-section:nth-of-type(odd) { background-color: var(--verde-1) !important; }
+.site-section p, .site-section h1, .site-section h2, .site-section h3, .site-section h6, .site-section small, .site-section .text-black-50,
+.corp-titulo-seccion, .corp-relato p, .corp-cierre p, .text-byn { color: #fff !important; }
+.site-section a:not(.btn) { color: #fff; }
+.button-blanco, .btn.button-blanco { background: transparent !important; color: #fff !important; border: 1px solid rgba(255,255,255,.7) !important; }
+.ai-video-portada { opacity: .55; }
+.ai-slide { opacity: .5; }
+.animated-modal p, .animated-modal li, .animated-modal span { color: #222 !important; }

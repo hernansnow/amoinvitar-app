@@ -80,6 +80,8 @@ const ICONOS = {
   cubiertos: 'Cubiertos', copas: 'Copas', torta4: 'Torta', auriculares: 'DJ', vinilo: 'Vinilo', polaroid: 'Fotos instantáneas', cafe: 'Café',
   hamburguesa: 'Trasnoche', sol: 'Día / brunch', ubicacion: 'Llegada', trago: 'Barra de tragos', botella: 'Vino', bengalas: 'Bengalas', confeti: 'Confeti',
   anillos: 'Anillos', corazones: 'Corazones', mesa: 'Banquete', baile2: 'Baile',
+  // README (ronda 91): corporativos
+  presentacion: 'Presentación', networking: 'Networking', laptop: 'Laptop / demo', edificio: 'Empresa', grafico: 'Resultados',
 };
 // Íconos del itinerario que van en todas las invitaciones (además de los del modelo), en public/comun/img/itinerario.
 // Los de siempre van en todos los eventos; los grupos, según el tipo de evento (así la lista no se hace eterna).
@@ -93,11 +95,12 @@ const GRUPOS_ICONOS = {
   infantil: ['gorrito', 'chupetin', 'helado', 'pochoclo', 'pelota', 'magia', 'castillo', 'osito', 'cohete', 'auto', 'pizza', 'pinata', 'paleta', 'rompecabezas', 'calesita', 'burbujas', 'tren'],
   navidad: ['arbol', 'campanas', 'baston', 'muneco', 'gorro', 'copo', 'bota', 'esfera', 'guirnalda', 'belen', 'reloj', 'champagne'],
   religioso: ['paloma', 'cruz', 'biblia', 'rosario', 'concha', 'gota', 'angel', 'uvas', 'espiga'],
+  corporativo: ['presentacion', 'networking', 'laptop', 'edificio', 'grafico', 'atril', 'trofeo', 'medalla', 'grupo', 'avion', 'reloj', 'champagne'],
 };
 const GRUPOS_POR_TIPO = {
   boda: ['general', 'religioso', 'navidad'], 15: ['general', 'religioso', 'graduacion'], bautismo: ['religioso', 'infantil', 'general'], comunion: ['religioso', 'infantil', 'general'],
   cumple: ['general', 'infantil', 'graduacion'], graduacion: ['graduacion', 'general'], infantil: ['infantil', 'general'], navidad: ['navidad', 'general'],
-  babyshower: ['infantil', 'general'], revelacion: ['infantil', 'general'], empresarial: ['general', 'navidad', 'graduacion'],
+  babyshower: ['infantil', 'general'], revelacion: ['infantil', 'general'], empresarial: ['corporativo', 'general', 'navidad'],
 };
 export const ICONOS_COMUNES = [...ICONOS_SIEMPRE, ...Object.values(GRUPOS_ICONOS).flat()];
 export const iconosComunesDe = (tipo) => [...ICONOS_SIEMPRE, ...(GRUPOS_POR_TIPO[tipo] || ['general']).flatMap((g) => GRUPOS_ICONOS[g])];
@@ -692,6 +695,13 @@ export const MODELO_A_MEDIDA = {
   },
   iconosItinerario: [],
 };
+// README (ronda 91): el corporativo con las secciones de su plantilla (public/modelos/corporativo): sin regalos, redes ni
+// anfitriones; con Instagram Wall y playlist. Siempre Deluxe y sin sobre
+const SECCIONES_CORP = ['historia', 'galeria', 'rsvp', 'dresscode', 'estilos', 'hospedaje', 'bus', 'itinerario', 'album', 'instagram', 'canciones', 'playlist'];
+export const MODELO_A_MEDIDA_CORP = {
+  ...MODELO_A_MEDIDA,
+  paquetes: Object.fromEntries(['premium', 'deluxe'].map((p) => [p, { secciones: SECCIONES_CORP, incluye: { ...MODELO_A_MEDIDA.paquetes.deluxe.incluye, sobre: false } }])),
+};
 
 // ── El plan sale de lo que elige el cliente ───────────────────────────
 // Cada sección es de un paquete (la más baja que la trae en modelo.json) y algunas
@@ -964,7 +974,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     const bloqueada = medidaBloqueada(datos) && !admin;
     return { producto, sinAdmin: true, sinNiveles: true, cerrada: bloqueada, pasos: anotar(PRODUCTOS_STD[producto](), { modelo, cerrada: bloqueada, admin, motivoCerrada: MOTIVO_ENVIADA }) };
   }
-  const m = producto === 'a-medida' ? MODELO_A_MEDIDA : modelo;
+  const m = producto === 'a-medida' ? (tipo === 'empresarial' ? MODELO_A_MEDIDA_CORP : MODELO_A_MEDIDA) : modelo;
   // Modelos simples y Save The Date web: su panel reducido; al publicarse ya no se editan
   if (m?.simple || m?.std) {
     const pasos = m.std ? pasosStdWeb({ tipo, modelo: m, datos }) : pasosSimple({ tipo, modelo: m, datos });
@@ -1000,6 +1010,9 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     if (p) p.campos = p.campos.map((c) => (c.id.startsWith('std.medida.') || c.id === 'std.tipo' ? { ...c, cerrado: 'Ya enviaste la idea al equipo de diseño.' } : c));
   }
   if (empresa) paraEmpresa(pasos);
+  // README (ronda 91): corporativo con sus campos y sin lo de bodas; a medida (y corporativo) siempre es Deluxe: sin planes
+  if (tipo === 'empresarial') paraCorporativo(pasos);
+  if (producto === 'a-medida') sinPlanes(pasos);
   // README (ronda 29): el diseño a medida ya trae todo (Deluxe): sin insignias de plan
   return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}), pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
 }
@@ -1011,6 +1024,41 @@ function paraEmpresa(pasos) {
     // README (ronda 89): sin el selector (con una sola opción no hay nada que elegir): solo el link del álbum
     if (p.id === 'album') p.campos = p.campos.filter((c) => !['nota.albumAlbunear', 'nota.albumActivar', 'album.origen'].includes(c.id)).map((c) => (c.id === 'album.url' ? { ...c, si: undefined } : c));
     if (p.id === 'idiomaAdicional') p.campos = p.campos.map((c) => (c.id === 'nota.idiomas' ? { ...c, texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' } : c));
+  }
+}
+// README (ronda 91): eventos corporativos. Nombre del evento o la empresa (uno solo), logo en portada y cierre (si hay
+// logo va en lugar del texto), «Relato inicial o historia», sin regalos ni redes (no van en un evento de empresa)
+function paraCorporativo(pasos) {
+  // Solo las secciones que tiene la plantilla corporativa (sin regalos, redes ni anfitriones)
+  for (let i = pasos.length - 1; i >= 0; i--) {
+    const p = pasos[i];
+    if (p && (['regalos', 'redes', 'testigos'].includes(p.id) || (p.seccion && !p.complemento && !['musica', ...SECCIONES_CORP].includes(p.seccion)))) pasos.splice(i, 1);
+  }
+  for (const p of pasos) {
+    if (!p) continue;
+    if (p.id === 'portada') {
+      p.campos = p.campos.flatMap((c) => {
+        if (c.id === 'nombres.a') return [{ ...c, etiqueta: 'Nombre del evento o de la empresa', max: 40, ancho: null, placeholder: 'Acme · Fiesta de fin de año' },
+          { id: 'fotos.logo', tipo: 'foto', etiqueta: 'Logo (opcional)', sinRecorte: true, ayuda: 'Mejor en PNG con fondo transparente. Con logo, la portada muestra el logo en lugar del nombre.' }];
+        if (c.id === 'nombres.b') return [];
+        if (c.id === 'nota.nombres') return [{ ...c, texto: 'Sin logo, en la portada se ve este nombre. Con logo, el nombre se usa en el título del link y al compartir.' }];
+        if (c.id === 'textos.portada.subtitulo') return [{ ...c, ayuda: 'Por ejemplo "Te invitamos", "Fiesta de fin de año", "Lanzamiento"…' }];
+        if (c.id === 'nota.portadaSinFoto') return [{ ...c, texto: 'Sin fotos ni video, la portada va con el color de fondo del diseño.' }];
+        return [c];
+      });
+    }
+    if (p.id === 'historia') p.titulo = 'Relato inicial o historia';
+    if (p.id === 'pie') p.campos = [
+      { id: 'fotos.logoPie', tipo: 'foto', etiqueta: 'Logo del cierre (opcional)', sinRecorte: true, ayuda: 'Con logo, el cierre muestra el logo en lugar del título.' },
+      { id: 'textos.pie.titulo', tipo: 'texto', etiqueta: 'Título del cierre', max: 40, base: 'pie.titulo', ayuda: 'Se ve cuando no hay logo.' },
+      ...p.campos];
+  }
+}
+// README (ronda 91): el diseño a medida y el corporativo traen todo (Deluxe): las ayudas no hablan de planes
+function sinPlanes(pasos) {
+  for (const p of pasos) {
+    if (!p?.campos) continue;
+    p.campos = p.campos.map((c) => (c.id === 'portada.cuenta' ? { ...c, ayuda: undefined, planGratis: undefined } : /\bplan(es)?\b/i.test(c.ayuda || '') ? { ...c, ayuda: undefined } : c));
   }
 }
 const MOTIVO_ENVIADA = 'Ya enviaste tu proyecto al equipo de diseño: no se puede modificar hasta que el diseño esté listo.';
