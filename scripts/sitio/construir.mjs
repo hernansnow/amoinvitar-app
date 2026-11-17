@@ -200,7 +200,7 @@ function pasos(E) {
 // README (ronda 37): franja de confianza justo debajo de la portada (respuestas a las 4 dudas de quien llega)
 function confianza(medida) {
   // README (ronda 90): en diseño a medida se paga al enviar el proyecto a producción
-  const it = [medida ? ['shield', 'Pagas al enviar a producción', 'Cuéntanos tu idea y prepara todo sin pagar.'] : ['shield', 'Pagas solo al publicar', 'Diséñala y mírala terminada sin pagar.'], ['phone', 'Sin apps ni registros', 'Tus invitados abren el link y listo.'], ['wa', 'Soporte humano', 'Te ayudamos por WhatsApp, en el día.'], ['award', 'Acompañándote desde 2005', 'en bodas y eventos.']];
+  const it = [medida ? ['shield', 'Pagas al enviar a producción', 'Cuéntanos tu idea y prepara todo sin pagar.'] : ['shield', 'Pagas solo al publicar', 'Diséñala y mírala terminada sin pagar.'], ['phone', 'Sin apps ni registros', 'Tus invitados abren el link y listo.'], medida ? ['edit', 'Tu diseñador personal', 'Convierte tu idea en una invitación única.'] : ['wa', 'Soporte humano', 'Te ayudamos por WhatsApp, en el día.'], ['award', 'Acompañándote desde 2005', 'en bodas y eventos.']];
   return `<section class="confianza" id="ventajas"><div class="caja"><ul>${it.map(([i, t, p]) => `<li class="rev">${ic(i)}<div><b>${t}</b><span>${p}</span></div></li>`).join('')}</ul></div></section>`;
 }
 
