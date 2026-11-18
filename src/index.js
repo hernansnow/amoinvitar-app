@@ -26,6 +26,8 @@ import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista, cookieAcceso, DUENO, tokenPuerta } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
 import { bienvenida as bienvenidaGenerica } from './componentes/bloques.js'; // README (ronda 94)
+import { pagarHTML } from './componentes/pagar.js'; // README (ronda 95)
+import { estiloNombres, esMedida } from './lib/estilo-nombres.js'; // README (ronda 95)
 import { mesaHTML } from './componentes/mesa.js';
 import { eventoDe } from './textos/acceso-evento.js';
 import { checkinHTML } from './componentes/checkin.js';
@@ -375,7 +377,7 @@ async function publicada(env, url, request, tipo, slug, ctx = null) {
   if (!acc.ok) {
     const v = variante(ev.datos.variante);
     const t = traductor(ev.tipo, v, ev.datos.textos);
-    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca, estilos: await estilosModelo(env, ev, url) }),
+    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca, nombresEstilo: await nombresEstiloDe(env, ev, url) }),
       acc.pantalla === 'pin' ? 401 : 403, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
   }
   const pl = ev.datos.playlist;
@@ -542,6 +544,15 @@ async function estilosModelo(env, ev, url) {
   return [...[].concat(m.tarjetas?.fuentes?.css || []), `/modelos/${mid}/tema.css`].map(propia); // README (ronda 51): la lista de hojas, no un arreglo adentro
 }
 
+// README (ronda 95): letra y color de los nombres en acceso/PIN y Buscá tu mesa (catálogo: la del modelo; a medida y
+// corporativo: Kaushan Script en negro). Ver src/lib/estilo-nombres.js
+async function nombresEstiloDe(env, ev, url) {
+  if (esMedida(ev)) return estiloNombres(null, { medida: true });
+  const mid = propioDe(ev.datos)?.base || ev.modelo;
+  let m = null; try { m = mid && await modeloJSON(env, mid, url.origin, ev.tipo); } catch { /* sin modelo */ }
+  return estiloNombres(m ? { ...m, id: mid } : null, { medida: !m });
+}
+
 // ── Buscá tu mesa (QR de la entrada) ──────────────────────────────────
 // Solo si el dueño la activó en Administración → Mesas. Se busca por nombre (3 letras
 // como mínimo, hasta 6 resultados): nunca se manda la lista entera.
@@ -556,7 +567,7 @@ async function paginaMesa(env, url, id) {
   const v = variante(ev.datos.variante);
   const t = traductor(ev.tipo, v, ev.datos.textos);
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), estilos: await estilosModelo(env, ev, url), marca: await marcaEfectiva(env, empresa) }), 200,
+  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), nombresEstilo: await nombresEstiloDe(env, ev, url), marca: await marcaEfectiva(env, empresa) }), 200,
     { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
 }
 async function buscarMesa(env, request, url) {
@@ -622,7 +633,8 @@ async function listaPuerta(env, ev) {
 async function paginaPuerta(env, url, id) {
   const ev = await eventoPuerta(env, id, url.searchParams.get('t'));
   if (!ev) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Link no válido. Pedir uno nuevo a los anfitriones.</p>', 403);
-  return html(checkinHTML({ id: ev.id, t: url.searchParams.get('t'), nombres: nombresDe(ev.datos.nombres) }), 200, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
+  const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
+  return html(checkinHTML({ id: ev.id, t: url.searchParams.get('t'), nombres: nombresDe(ev.datos.nombres), marca: await marcaEfectiva(env, empresa) }), 200, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
 }
 async function apiPuerta(env, request, url) {
   if (request.method === 'POST') {
@@ -862,7 +874,9 @@ async function apiPanel(env, request, url, partes) {
   const almacen = almacenDe(env);
   // Superusuario (administrador de Amo Invitar): edita todo, sin las restricciones de publicada
   const usuario = await usuarioActual(request, env);
-  const admin = !!usuario?.esAdmin;
+  // README (ronda 95): «Ver como cliente»: el administrador pide el panel sin sus permisos (x-como-cliente: 1)
+  const comoCliente = !!usuario?.esAdmin && request.headers.get('x-como-cliente') === '1';
+  const admin = !!usuario?.esAdmin && !comoCliente;
   // README (ronda 35): eventos de una empresa profesional. El panel del cliente final (o del equipo Studio) va sin la marca
   // de Amo Invitar; publicar usa un crédito de la empresa.
   // README (ronda 87): con el link del cliente (?k=), el panel se ve como lo ve el cliente final aunque quien lo abra sea
@@ -890,7 +904,7 @@ async function apiPanel(env, request, url, partes) {
     if (previo?.value) ausente = Math.floor((Date.now() - Date.parse(previo.value)) / 86400000) || 0;
     contacto = await contactoDe(env, ev.id);
   }
-  if (!accion && request.method === 'GET' && !admin) {
+  if (!accion && request.method === 'GET' && !usuario?.esAdmin) {
     await env.DB?.prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = ?3")
       .bind(`ingreso:${ev.id}`, new Date().toISOString(), Date.now()).run().catch(() => {});
   }
@@ -918,10 +932,11 @@ async function apiPanel(env, request, url, partes) {
       aMedida: ev.producto === 'invitacion' ? { precio: await tienda.precioATexto(env, request, 'personalizado', A_MEDIDA.personalizado.deluxe), empresarial: ev.tipo === 'empresarial' }
         : ['std-tarjeta', 'std-foto'].includes(ev.producto) ? { precio: await tienda.precioATexto(env, request, 'std-tarjeta-medida', PRODUCTOS['std-tarjeta-medida'].precio), std: true }
           : ev.producto === 'std-web' ? { precio: await tienda.precioATexto(env, request, 'std-web-medida', PRODUCTOS['std-web-medida'].precio), std: true } : null,
-      usuario: usuario ? { email: usuario.email, admin } : null,
+      usuario: usuario ? { email: usuario.email, admin, superusuario: !!usuario.esAdmin, comoCliente } : null,
       invitados: await almacen.invitados(ev.id),
       modelo: ev.modelo ? await (async () => { const mj = await modeloJSON(env, ev.modelo, url.origin, ev.tipo); return { id: ev.modelo, miniatura: mj?.miniatura || null, tarjetas: mj?.tarjetas || null, proporciones: mj?.proporciones || {} }; })() : null,
       marca: emp ? emp.marcaEfectiva : null,
+      nombresEstilo: await nombresEstiloDe(env, ev, url), // README (ronda 95): letra y color de los nombres (PDF de mensajes)
       // README (ronda 36): pestaña «Recuerdo» (solo invitaciones publicadas que no son de una empresa)
       recuerdo: ev.estado === 'publicado' && !emp ? await recuerdo.infoRecuerdo(ev, (clave, eur) => tienda.precioATexto(env, request, clave, eur)) : null,
       // README (ronda 87): Studio (logo propio en el panel del cliente), paleta del panel, DEMO y créditos de complementos (para el equipo)
@@ -1182,12 +1197,15 @@ async function apiPanel(env, request, url, partes) {
     const mio = usuario && lista.find((a) => a.id === usuario.id);
     const gestiona = igual(clave, ev.clave) || admin || ['cliente', 'pareja'].includes(mio?.rol);
     const LIMITE = { pareja: ev.tipo === 'boda' ? 1 : 0, admin: 3 };
-    if (request.method === 'GET') return json({ accesos: lista.map(({ id: uid, email, nombre, rol }) => ({ id: uid, email, nombre, rol })), gestiona, limite: LIMITE, yo: usuario?.id || null });
+    // README (ronda 95): nombre y cargo de cada acceso (wedding planner, organizador…), guardados en el evento
+    const info = ev.datos.accesosInfo || {};
+    if (request.method === 'GET') return json({ accesos: lista.map(({ id: uid, email, nombre, rol }) => ({ id: uid, email, nombre: info[uid]?.nombre || nombre, cargo: info[uid]?.cargo || '', rol })), gestiona, limite: LIMITE, yo: usuario?.id || null });
     if (!gestiona) return json({ error: 'Solo el titular o la pareja pueden cambiar los accesos.' }, 403);
     if (request.method === 'DELETE') {
       const uid = url.searchParams.get('u') || '';
       if (lista.find((a) => a.id === uid)?.rol === 'cliente') return json({ error: 'El titular no se puede quitar.' }, 400);
       await almacen.quitarAcceso(ev.id, uid);
+      if (ev.datos.accesosInfo?.[uid]) { delete ev.datos.accesosInfo[uid]; await almacen.guardarEvento(ev); }
       return json({ ok: true });
     }
     if (request.method === 'POST') {
@@ -1199,6 +1217,8 @@ async function apiPanel(env, request, url, partes) {
       if (lista.filter((a) => a.rol === rol).length >= LIMITE[rol]) return json({ error: rol === 'pareja' ? 'Ya hay una pareja con acceso.' : 'Ya hay 3 administradores. Quitar uno para sumar otro.' }, 400);
       const u = await crearUsuario(env, email);
       await almacen.darAcceso(ev.id, u.id, rol);
+      const nombreAcc = String(b.nombre || '').trim().slice(0, 80), cargo = String(b.cargo || '').trim().slice(0, 60);
+      if (nombreAcc || cargo) { ev.datos.accesosInfo = { ...(ev.datos.accesosInfo || {}), [u.id]: { nombre: nombreAcc, cargo } }; await almacen.guardarEvento(ev); }
       const base = String(env.SITE_URL || url.origin).replace(/\/$/, '');
       await sendEmail(env, { to: email, ...mailNuevoAcceso(env, { nombres: nombresDe(ev.datos.nombres) || 'la invitación', rol, quien: mio?.nombre || mio?.email || '',
         url: `${base}/entrar?siguiente=${encodeURIComponent(`/panel/${ev.id}`)}` }) }).catch((e) => console.error('[acceso]', e));
@@ -1539,6 +1559,7 @@ export default {
         if (p1 === 'stripe' && partes[2] === 'webhook' && M === 'POST') return await tienda.webhookStripe(request, env);
         if (p1 === 'mp' && partes[2] === 'webhook') return await tienda.webhookMp(request, env);
         if (p1 === 'admin' && partes[2] === 'pedidos' && partes[4] === 'cobrado' && M === 'POST') return await tienda.marcarCobrado(request, env, partes[3]);
+        if (p1 === 'admin' && partes[2] === 'adicionales') return await consola.adicionales(request, env, partes[3], partes[4]); // README (ronda 95)
         if (p1 === 'empresa') return await empresaApi.api(request, env, partes);
         if (p1 === 'profesionales' && partes[2] === 'solicitud' && M === 'POST') return await profesionales.solicitud(request, env);
         if (p1 === 'admin' && partes[2] === 'estadisticas') return await sa.estadisticas(request, env);
@@ -1574,6 +1595,7 @@ export default {
       if (p0 === 'baja' && partes.length === 1) return await bajaMails(env, url);
       if (p0 === 'media') return await media(env, partes);
       if (p0 === 'recuerdo' && partes.length === 3 && ['pdf', 'web'].includes(partes[2])) return await descargaRecuerdo(env, request, url, partes[1], partes[2]);
+      if (p0 === 'pagar' && partes.length === 2 && /^[a-z0-9]{6,20}$/i.test(p1)) return html(pagarHTML({ id: p1 }), 200, { 'cache-control': 'no-store', 'x-robots-tag': 'noindex' }); // README (ronda 95): cobro adicional
       if (p0 === 'factura' && p1) return await admin.facturaCliente(request, env, p1);
       if (p0 === 'admin' && p1 === 'facturas') return await admin.facturasImprimir(request, env);
       if (p0 === 'admin' && p1 === 'facturas.csv') return await admin.facturasCsv(request, env);

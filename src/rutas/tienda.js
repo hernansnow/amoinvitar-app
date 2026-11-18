@@ -197,6 +197,11 @@ export async function cotizar(request, env) {
     if (otra) throw new HttpError(409, 'Ya hay una invitación gratis activa con este mail o con los mismos nombres y fecha. Se puede tener una sola: para esta, elige un plan (Basic o superior).');
   }
   const rec = !borrador && b.recuerdo ? await validarRecuerdo(env, request, b.recuerdo) : null;
+  // README (ronda 95): cobro adicional (sin cupones: el monto lo fija la administración)
+  if (!borrador && !rec && b.adicional) {
+    const ad = await validarAdicional(env, b.adicional);
+    return json({ pais: ad.pais, pedido: ad.pedido, eur: ad.eur, medios: await cotizacionAdicional(env, request, ad.adicional), titulo: ad.adicional.titulo, email: ad.adicional.email || '' });
+  }
   const pedido = borrador ? borrador.pedido : rec ? rec.pedido : validarPedido(b.pedido);
   const eur = borrador ? borrador.eur : rec ? rec.eur : precioPedido(pedido);
   let cupon = null, errorCupon = null;
@@ -207,6 +212,31 @@ export async function cotizar(request, env) {
   const o = await opciones(env, request, { eur, clave: clavePrecio(pedido), moneda: monedaPedida(request, b.moneda), cupon, promo, eurPromo: borrador?.eurPromo ?? (b.mejora && !borrador && !rec ? eur : eurConPromo(pedido)), sinIva: !!rc, pais });
   return json({ pais, paisIp: paisIp(request), pedido, eur, gratis: eur === 0, medios: o.medios, lista: o.lista, cupon: cupon ? { codigo: cupon.codigo } : null, promo: promo ? { nombre: promo.nombre, porcentaje: promo.porcentaje, descuento: o.medios[0]?.descuentoPromo || null } : null, errorCupon,
     empresa: rc ? { valida: true, nombre: rc.name || '', direccion: rc.address || '' } : null });
+}
+
+// ── README (ronda 95): cobro adicional con monto libre (lo crea la consola: título, monto, moneda, país y mail) ──
+// Se guarda en app_state «adicional:<id>». El monto se pasa a euros (precio de lista) y en el país elegido valen las reglas de
+// siempre: medios de pago del país, conversión, descuento por país e IVA. Al pagarse queda como pedido «adicional» con factura.
+export async function leerAdicional(env, id) {
+  if (!/^[a-z0-9]{6,20}$/i.test(String(id || ''))) return null;
+  const r = await env.DB.prepare('SELECT value FROM app_state WHERE key = ?').bind(`adicional:${id}`).first().catch(() => null);
+  try { return r ? { id, ...JSON.parse(r.value) } : null; } catch { return null; }
+}
+export async function guardarAdicional(env, a) {
+  const { id, ...resto } = a;
+  await env.DB.prepare('INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = ?3')
+    .bind(`adicional:${id}`, JSON.stringify(resto), Date.now()).run();
+}
+async function validarAdicional(env, id) {
+  const a = await leerAdicional(env, id);
+  if (!a || a.cancelado) throw new HttpError(404, 'Este link de pago no existe o fue cancelado');
+  if (a.pagado) throw new HttpError(409, 'Este pago ya se realizó. ¡Gracias!');
+  return { adicional: a, eur: a.eur, pais: a.pais, moneda: a.moneda, pedido: { producto: 'adicional', tipo: 'adicional', paquete: 'adicional', extras: [], nombre: a.titulo } };
+}
+// Lo que pagaría el cliente en cada medio (para la consola y la página de pago)
+export async function cotizacionAdicional(env, request, a) {
+  const o = await opciones(env, request, { eur: a.eur, clave: 'adicional', moneda: a.moneda, cupon: null, pais: a.pais });
+  return o.medios;
 }
 
 // ── Comprar ──────────────────────────────────────────────────────────
@@ -227,15 +257,16 @@ export async function comprar(request, env) {
     if (otra) throw new HttpError(409, 'Ya hay una invitación gratis activa con este mail o con los mismos nombres y fecha. Se puede tener una sola: para esta, elige un plan (Basic o superior).');
   }
   const rec = !borrador && b.recuerdo ? await validarRecuerdo(env, request, b.recuerdo) : null;
-  const mejora = borrador || rec || (b.mejora ? await validarMejora(env, request, b.mejora) : null);
+  const adic = !borrador && !rec && b.adicional ? await validarAdicional(env, b.adicional) : null; // README (ronda 95)
+  const mejora = borrador || rec || adic || (b.mejora ? await validarMejora(env, request, b.mejora) : null);
   const pedido = mejora ? mejora.pedido : validarPedido(b.pedido);
   const eur = mejora ? mejora.eur : precioPedido(pedido);
-  const cupon = await buscarCupon(env, b.cupon, pedido.paquete);
-  const moneda = monedaPedida(request, b.moneda);
+  const cupon = adic ? null : await buscarCupon(env, b.cupon, pedido.paquete);
+  const moneda = adic ? adic.moneda : monedaPedida(request, b.moneda);
   const rc = await inversion(env, request, b.factura);
-  const pais = paisDe(request, b);
-  const promo = await promoDe(env, request, pedido, pais);
-  const o = await opciones(env, request, { eur, clave: clavePrecio(pedido), moneda, cupon, promo, eurPromo: borrador?.eurPromo ?? (b.mejora && !borrador && !rec ? eur : eurConPromo(pedido)), sinIva: !!rc, pais });
+  const pais = adic ? adic.pais : paisDe(request, b);
+  const promo = adic ? null : await promoDe(env, request, pedido, pais);
+  const o = await opciones(env, request, { eur, clave: adic ? 'adicional' : clavePrecio(pedido), moneda, cupon, promo, eurPromo: borrador?.eurPromo ?? (b.mejora && !borrador && !rec ? eur : eurConPromo(pedido)), sinIva: !!rc, pais });
   // Administradores: pueden crear cualquier invitación sin pagar, para probar (no genera factura)
   const sinPagar = !!(b.sinPagar && usuario?.esAdmin);
   const elegido = sinPagar ? null : o.medios.find((m) => m.id === b.medio) || o.medios[0];
@@ -252,7 +283,7 @@ export async function comprar(request, env) {
   } : null;
   await env.DB.prepare(`INSERT INTO pedidos (id, numero, usuario_id, email, tipo, detalle, evento_id, medio, moneda, importe, iva, iva_tasa, eur, cupon, descuento, pais, factura, inversion, vies, creado)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .bind(id, numero, usuario?.id || null, email, borrador ? 'borrador' : rec ? 'recuerdo' : mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null }), mejora?.evento.id || null, medio,
+    .bind(id, numero, usuario?.id || null, email, borrador ? 'borrador' : rec ? 'recuerdo' : adic ? 'adicional' : mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null, ...(adic ? { adicional: adic.adicional.id } : {}) }), adic ? (adic.adicional.evento || null) : mejora?.evento.id || null, medio,
       elegido?.moneda || moneda, total, elegido?.iva || 0, elegido?.ivaTasa || 0, eur, cupon?.codigo || null, 0, pais, factura ? JSON.stringify(factura) : null,
       rc ? 1 : 0, rc ? (rc.consultation || 'VIES ' + new Date().toISOString().slice(0, 10)) : null, now()).run();
 
@@ -297,6 +328,13 @@ export async function comprar(request, env) {
   }
   // Transferencia: el evento se crea ya (se puede ir cargando) y se publica cuando llega el pago
   const datos = transferInfo(env, elegido.moneda) || 'Escribirnos para recibir los datos de la cuenta.';
+  if (adic) { // README (ronda 95): el cobro adicional no crea ninguna invitación
+    try {
+      await sendEmail(env, { to: email, ...mailTransferencia(env, { url: `${base}/pagar/${adic.adicional.id}`, producto: pedido.nombre, numero, importe: elegido.texto, datos }) });
+      if (env.SUPPORT_EMAIL) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Transferencia pendiente #${numero} · ${elegido.texto}`, lineas: [`${email} eligió transferencia para ${pedido.nombre}.`, `Cuando llegue, marcar como cobrado: POST /api/admin/pedidos/${id}/cobrado`] }) });
+    } catch (e) { console.error('[mail]', e); }
+    return responder({ url: gracias });
+  }
   const ev = mejora ? mejora.evento : await crearEventoDePedido(env, { ...(await leerPedido(env, id)) });
   const panel = `${base}/panel/${ev.id}?k=${ev.clave}`;
   try {
@@ -353,6 +391,11 @@ export async function cumplirPedido(env, request, id) {
     ev.datos.recuerdo = { ...(ev.datos.recuerdo || {}), [op]: new Date().toISOString() };
     if (op === 'online') ev.vence = '2099-12-31T23:59:59.000Z';
     await almacen.guardarEvento(ev);
+  } else if (p.tipo === 'adicional') {
+    // README (ronda 95): cobro adicional: se marca pagado (no crea ni cambia invitaciones)
+    const a = await leerAdicional(env, p.detalle.adicional);
+    if (a) await guardarAdicional(env, { ...a, pagado: now(), pedido: p.id, numero: p.numero });
+    ev = p.evento_id ? await almacen.evento(p.evento_id) : null;
   } else if (p.tipo === 'mejora') {
     ev = await almacen.evento(p.evento_id);
     ev.paquete = p.detalle.paquete;
@@ -371,7 +414,8 @@ export async function cumplirPedido(env, request, id) {
     if (verifactuMode(env)) await sendPending(env);
   } catch (e) { console.error('[factura]', e); }
   try {
-    if (p.tipo === 'recuerdo') await sendEmail(env, { to: p.email, ...mailRecuerdoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}#recuerdo`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null }) });
+    if (p.tipo === 'adicional') await sendEmail(env, { to: p.email, ...mailAvisoInterno(env, { asunto: `Pago recibido · ${p.detalle.nombre}`, lineas: ['¡Gracias! Recibimos tu pago.', `${p.detalle.nombre} · Pedido #${p.numero} · ${formatMoney(p.importe, p.moneda)}`, 'La factura te llega en un mail aparte.'] }) });
+    else if (p.tipo === 'recuerdo') await sendEmail(env, { to: p.email, ...mailRecuerdoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}#recuerdo`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null }) });
     else await sendEmail(env, { to: p.email, ...mailPedidoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, gratis: ['gratis', 'admin'].includes(p.medio) }) });
     if (env.SUPPORT_EMAIL && p.importe) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Venta #${p.numero} · ${formatMoney(p.importe, p.moneda)}`, lineas: [`${p.email} · ${p.detalle.nombre} · ${p.medio}`] }) });
   } catch (e) { console.error('[mail]', e); }
@@ -387,7 +431,7 @@ export function ordenParaFactura(p) {
     method: p.medio === 'transferencia' ? 'transfer' : p.medio, country: p.pais,
     bill_type: f.tipo === 'empresa' ? 'company' : 'person', bill_name: f.nombre || null, bill_tax_id: f.id || null, bill_address: f.direccion || null,
     reverse_charge: p.inversion, vies_ref: p.vies,
-    concept: `Invitaciones digitales Amo Invitar · ${p.detalle.nombre} · Pedido #${p.numero}`,
+    concept: p.detalle.producto === 'adicional' ? `${p.detalle.nombre} · Pedido #${p.numero}` : `Invitaciones digitales Amo Invitar · ${p.detalle.nombre} · Pedido #${p.numero}`, // README (ronda 95): adicional con su descripción
   };
 }
 

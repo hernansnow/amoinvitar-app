@@ -1278,3 +1278,14 @@ body.edicion-oculta #pasos { visibility: hidden; overflow: hidden; }
 @media (max-width: 1023px) { body.edicion-oculta #pasos { display: none !important; } }
 body.edicion-oculta #aviso-medida { margin: 24px; }
 body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
+/* README (ronda 95): Administración con íconos en las pestañas y en el título de cada una */
+.ad-tab { display: inline-flex; align-items: center; gap: 6px; }
+.ad-tab-ico { display: inline-flex; flex: none; opacity: .85; }
+.ad-titulo-sec { display: flex; align-items: center; font-size: 1.35rem; margin: 4px 0 14px; }
+.ad-titulo-sec .ico-titulo { flex: none; }
+.ad-barra-acceso { flex-wrap: wrap; } .ad-barra-acceso > * { flex: 1 1 180px; } .ad-barra-acceso .btn { flex: 0 0 auto; } /* README (ronda 95) */
+/* README (ronda 95): «Ver como el cliente» (solo el administrador) */
+.como-cliente { position: fixed; left: 12px; bottom: 12px; z-index: 9000; border: 0; border-radius: 999px; padding: 8px 14px; font: 600 12px/1.2 Jost, system-ui, sans-serif; background: #1f2421; color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.25); cursor: pointer; opacity: .85; }
+.como-cliente:hover { opacity: 1; }
+.como-cliente.activo { background: #e0a100; color: #1f2421; }
+@media (max-width: 1023px) { .como-cliente { bottom: calc(76px + env(safe-area-inset-bottom)); } }

@@ -227,7 +227,8 @@ export async function eventos(request, env) {
   const out = rows.slice(0, POR_PAGINA).map((e) => {
     const d = JSON.parse(e.datos || '{}');
     return { id: e.id, producto: e.producto, tipo: e.tipo, modelo: e.modelo, paquete: e.paquete, estado: e.estado, slug: e.slug, nombres: nombresDe(d), fecha: fechaEvento(d) || null,
-      vence: venceEvento({ ...e, datos: d }), venceManual: e.vence || null, clientes: e.clientes || '', empresa: e.empresa || null, respuestas: e.respuestas, extras: d.extras || [],
+      vence: venceEvento({ ...e, datos: d }), venceManual: e.vence || null, clientes: e.clientes || '', empresa: e.empresa || null, respuestas: e.respuestas, extras: d.extras || [], recuerdo: Object.keys(d.recuerdo || {}).filter((k) => ['pdf', 'web', 'online'].includes(k)), // README (ronda 95)
+     
       link: e.estado === 'publicado' && e.slug ? `/${e.tipo}/${e.slug}` : null, actualizado: e.actualizado, creado: e.creado,
       ingreso: e.ingreso || null, mails: (() => { try { return JSON.parse(e.mails || '[]'); } catch { return []; } })(),
       contacto: (() => { try { const c = JSON.parse(e.contacto || 'null'); return c ? { email: c.email, promos: !!c.promos, idioma: c.idioma } : null; } catch { return null; } })(),
@@ -301,6 +302,19 @@ export async function accionEvento(request, env, id, accion) {
     await alm.guardarEvento(ev);
     await registrar(env, u, 'evento.estado', objeto, { estado: nuevo });
     return json({ ok: true });
+  }
+  // README (ronda 95): regalar (o quitar) las opciones de «Recuerdo»: PDF, página para descargar y permanencia online ilimitada
+  if (accion === 'recuerdo') {
+    const quiero = new Set([].concat(b.opciones || []).filter((x) => ['pdf', 'web', 'online'].includes(x)));
+    const antes = ev.datos.recuerdo || {}, ahora = new Date().toISOString();
+    const r = { ...antes };
+    for (const op of ['pdf', 'web', 'online']) { if (quiero.has(op)) r[op] = antes[op] || ahora; else delete r[op]; }
+    ev.datos.recuerdo = r;
+    if (quiero.has('online')) ev.vence = '2099-12-31T23:59:59.000Z';
+    else if (String(ev.vence || '') >= '2090') ev.vence = null; // vuelve al vencimiento del plan
+    await alm.guardarEvento(ev);
+    await registrar(env, u, 'evento.recuerdo', objeto, { opciones: [...quiero] });
+    return json({ ok: true, vence: venceEvento(ev) });
   }
   if (accion === 'extras') {
     const lista = [].concat(b.extras || []).filter((x) => EXTRAS[x]);

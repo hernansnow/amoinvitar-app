@@ -59,8 +59,10 @@ let datos = {};
 let pasoActual = null;
 let guardarTimer = null, previaTimer = null, guardando = false, pendiente = false;
 
+// README (ronda 95): «Ver como cliente» (solo el administrador): el servidor responde sin los permisos de superusuario
+const comoCliente = (() => { try { return sessionStorage.getItem('ai-como-cliente') === '1'; } catch { return false; } })();
 const api = (ruta = '', opciones = {}) => fetch(`/api/panel/${id}${ruta}`, {
-  ...opciones, headers: { 'x-clave': clave || '', ...(opciones.body && !(opciones.body instanceof FormData) ? { 'content-type': 'application/json' } : {}), ...(opciones.headers || {}) },
+  ...opciones, headers: { 'x-clave': clave || '', ...(comoCliente ? { 'x-como-cliente': '1' } : {}), ...(opciones.body && !(opciones.body instanceof FormData) ? { 'content-type': 'application/json' } : {}), ...(opciones.headers || {}) },
 }).then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(j.error || 'Error'), { status: r.status, datos: j }); return j; });
 
 function aviso(texto, error = false) {
@@ -314,6 +316,14 @@ const TRAZOS = {
   quitar: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
   prender: '<path d="M12 3v9"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/>',
   enviar: '<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>',
+  // README (ronda 95): pestañas de Administración
+  resumen: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  respuestas: '<path d="M9 11l2.5 2.5L16 9"/><rect x="3" y="4" width="18" height="16" rx="2"/>',
+  mensajes: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M9 11h6M9 14h4"/>',
+  mesas: '<circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="3.5" r="1.5"/><circle cx="12" cy="20.5" r="1.5"/><circle cx="3.5" cy="12" r="1.5"/><circle cx="20.5" cy="12" r="1.5"/>',
+  llegadas: '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M3 12h11M10 8l4 4-4 4"/>',
+  accesos: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/>',
+  recuerdo: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
 };
 const icono = (n, tam = 18) => (TRAZOS[n] ? `<svg class="ico" viewBox="0 0 24 24" width="${tam}" height="${tam}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TRAZOS[n]}</svg>` : '');
 
@@ -2307,6 +2317,14 @@ function aplicarMarca(m) {
 // README (ronda 87): colores del panel del cliente final elegidos por el profesional (el resto sale de --acento)
 function quitarCargador() { const c = $('#cargador'); if (!c) return; c.classList.add('fuera'); setTimeout(() => c.remove(), 250); }
 const PALETAS = { negro: '#1f1f1f', azul: '#2f5d9e', rojo: '#b0353f', dorado: '#a8823c', violeta: '#6b4c9a' };
+// README (ronda 95): botón flotante del administrador para alternar entre su vista (superusuario) y la del cliente
+function botonComoCliente() {
+  if (!S.usuario?.superusuario || $('#como-cliente')) return;
+  const b = el('button', { type: 'button', id: 'como-cliente', class: `como-cliente${comoCliente ? ' activo' : ''}`, title: 'Solo lo ves vos (administración)',
+    onclick: () => { try { if (comoCliente) sessionStorage.removeItem('ai-como-cliente'); else sessionStorage.setItem('ai-como-cliente', '1'); } catch { /* sin almacenamiento */ } location.reload(); } },
+  comoCliente ? '👁 Viendo como el cliente · Volver a administración' : '👁 Ver como el cliente');
+  document.body.append(b);
+}
 function aplicarEmpresa(e) {
   document.getElementById('marca')?.classList.remove('esperando');
   if (!e) return;
@@ -2371,7 +2389,7 @@ function recordarBorrador() {
   document.body.classList.toggle('sin-admin', !!S.esquema?.sinAdmin);
   if (S.modelo?.miniatura?.colorTitulos) document.documentElement.style.setProperty('--icono-fondo', S.modelo.miniatura.colorTitulos);
   aplicarMarca(S.empresa?.limpio ? null : S.marca);
-  aplicarEmpresa(S.empresa);
+  aplicarEmpresa(S.empresa); botonComoCliente();
   botonAyuda();
   pintarPlan();
   pintarModelo();
@@ -2421,7 +2439,7 @@ function ponerModo(m) {
   document.querySelectorAll('#modos > button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === m)));
   if (admin) {
     history.replaceState(null, '', '#admin');
-    montarAdmin($('#admin'), { S, datos, api, el, aviso, abrirModal,
+    montarAdmin($('#admin'), { S, datos, api, el, aviso, abrirModal, icono,
       clave, editarLista: modalLista, cambiarAjuste: modalAjusteAcceso, redibujarAdmin: () => ponerModo('admin'),
       // README (ronda 29): desde una función con candado, se prende su sección (y el plan sube) o se ven las de Deluxe
       activarSeccion: (sec) => { const p = S.esquema.pasos.find((x) => x.seccion === sec); if (!p) return; prenderPaso(p, true); ponerModo('editar'); irA(p.id); aviso(`Listo: se sumó "${p.titulo}"`); },

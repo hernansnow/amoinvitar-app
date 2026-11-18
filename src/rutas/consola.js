@@ -231,3 +231,42 @@ export async function medida(request, env, eventoId, accion) {
   }
   return json({ ok: true, avisados });
 }
+
+// ── README (ronda 95): cobros adicionales con monto libre ──────────────
+//   GET  /api/admin/adicionales            la lista (más nuevos primero)
+//   POST /api/admin/adicionales            { titulo, monto, moneda, pais, email?, evento? } → link de pago y lo que pagaría
+//   POST /api/admin/adicionales/<id>/cancelar
+// El monto se toma como precio de lista en esa moneda: se pasa a euros con la cotización del día y, en el país elegido,
+// valen las reglas de siempre (medios de pago del país, conversión, descuento por país e IVA).
+export async function adicionales(request, env, id, accion) {
+  await requiereAdmin(request, env);
+  const { leerAdicional, guardarAdicional, cotizacionAdicional } = await import('./tienda.js');
+  const { getRates, CURRENCIES } = await import('../lib/fx.js');
+  const base = sitio(env, request);
+  if (request.method === 'GET') {
+    const { results } = await env.DB.prepare("SELECT key, value FROM app_state WHERE key LIKE 'adicional:%' ORDER BY updated_at DESC LIMIT 100").all();
+    return json({ adicionales: (results || []).map((r) => { try { return { id: r.key.slice(10), ...JSON.parse(r.value), link: `${base}/pagar/${r.key.slice(10)}` }; } catch { return null; } }).filter(Boolean) });
+  }
+  if (request.method !== 'POST') throw new HttpError(405, 'Método no permitido');
+  if (id && accion === 'cancelar') {
+    const a = await leerAdicional(env, id);
+    if (!a) throw new HttpError(404, 'No existe');
+    if (a.pagado) throw new HttpError(409, 'Ya está pagado');
+    await guardarAdicional(env, { ...a, cancelado: new Date().toISOString() });
+    return json({ ok: true });
+  }
+  const b = await readJson(request);
+  const titulo = str(b.titulo, 120), monto = Number(b.monto), moneda = String(b.moneda || 'EUR').toUpperCase(), pais = String(b.pais || '').toUpperCase().slice(0, 2);
+  if (!titulo) throw new HttpError(400, 'Falta el título (lo que se cobra)');
+  if (!(monto > 0)) throw new HttpError(400, 'El monto tiene que ser mayor que 0');
+  if (!CURRENCIES.includes(moneda)) throw new HttpError(400, 'Moneda no admitida');
+  if (!/^[A-Z]{2}$/.test(pais)) throw new HttpError(400, 'Falta el país (código de 2 letras)');
+  const email = str(b.email, 200).toLowerCase();
+  const rates = await getRates(env);
+  const r = (c) => Number(rates[c]) || 0;
+  const eur = moneda === 'EUR' ? monto : Math.round(((monto / r(moneda)) * r('EUR')) * 100) / 100;
+  if (!(eur > 0)) throw new HttpError(503, 'No hay cotización para esa moneda en este momento');
+  const a = { id: randomId(10), titulo, monto, moneda, pais, eur, email: email || '', evento: str(b.evento, 40) || '', creado: new Date().toISOString() };
+  await guardarAdicional(env, a);
+  return json({ ok: true, ...a, link: `${base}/pagar/${a.id}`, medios: await cotizacionAdicional(env, request, a) });
+}

@@ -116,7 +116,10 @@ async function resumen(request, env, c) {
       respuestas: f.respuestas, invitados: f.invitados, creditoUsado: !!d.empresa?.credito, clientePublica: !!d.empresa?.clientePublica,
       linkCliente: `/panel/${f.id}?k=${f.clave_panel}`, actualizado: f.actualizado };
   });
-  const { results: miembros } = await env.DB.prepare('SELECT u.id AS usuarioId, u.email, u.nombre, m.rol FROM miembros m JOIN usuarios u ON u.id = m.usuario_id WHERE m.empresa_id = ? ORDER BY (m.rol = \'duenio\') DESC, u.email').bind(e.id).all();
+  const { results: miembros0 } = await env.DB.prepare('SELECT u.id AS usuarioId, u.email, u.nombre, m.rol FROM miembros m JOIN usuarios u ON u.id = m.usuario_id WHERE m.empresa_id = ? ORDER BY (m.rol = \'duenio\') DESC, u.email').bind(e.id).all();
+  // README (ronda 95): nombre y cargo de cada persona del equipo (app_state «equipo-info:<empresa>»)
+  const infoEq = await leerInfoEquipo(env, e.id);
+  const miembros = (miembros0 || []).map((m) => ({ ...m, nombre: infoEq[m.usuarioId]?.nombre || m.nombre, cargo: infoEq[m.usuarioId]?.cargo || '' }));
   const { results: compras } = await env.DB.prepare('SELECT id, numero, item, creditos, neto, iva_tasa, iva, total, estado, creado, pagada, factura FROM compras_pro WHERE empresa_id = ? ORDER BY creado DESC LIMIT 100').bind(e.id).all();
   const cat = catalogoCompras();
   const nivel = e.nivel;
@@ -246,6 +249,14 @@ async function quitarLogo(env, c) {
 }
 
 // ── Equipo ────────────────────────────────────────────────────────────
+async function leerInfoEquipo(env, empresaId) {
+  const r = await env.DB.prepare('SELECT value FROM app_state WHERE key = ?').bind(`equipo-info:${empresaId}`).first().catch(() => null);
+  try { return JSON.parse(r?.value || '{}') || {}; } catch { return {}; }
+}
+async function guardarInfoEquipo(env, empresaId, info) {
+  await env.DB.prepare('INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = ?3')
+    .bind(`equipo-info:${empresaId}`, JSON.stringify(info), Date.now()).run();
+}
 async function sumarMiembro(request, env, c) {
   exigir(c.duenio, 'Solo el dueño maneja el equipo');
   const b = await readJson(request);
@@ -258,6 +269,8 @@ async function sumarMiembro(request, env, c) {
   const ya = await env.DB.prepare('SELECT 1 FROM miembros WHERE empresa_id = ? AND usuario_id = ?').bind(c.e.id, u.id).first();
   if (!ya && n >= limite) throw new HttpError(409, `El nivel ${c.e.nivel === 'studio' ? 'Studio' : 'Pro'} admite hasta ${limite} usuarios (contando al dueño).${c.e.nivel === 'studio' ? '' : ' Con Studio son 10.'}`);
   await env.DB.prepare('INSERT INTO miembros (empresa_id, usuario_id, rol) VALUES (?, ?, ?) ON CONFLICT(empresa_id, usuario_id) DO UPDATE SET rol = CASE WHEN miembros.rol = \'duenio\' THEN \'duenio\' ELSE excluded.rol END').bind(c.e.id, u.id, rol).run();
+  const nombre = str(b.nombre, 80), cargo = str(b.cargo, 60);
+  if (nombre || cargo) { const info = await leerInfoEquipo(env, c.e.id); info[u.id] = { nombre, cargo }; await guardarInfoEquipo(env, c.e.id, info); }
   try { await sendEmail(env, { to: email, ...mailEquipoPro(env, { empresa: c.e.nombre, quien: c.u.nombre || c.u.email, url: `${sitio(env, request)}/entrar?siguiente=/empresa/` }) }); } catch (e) { console.error('[equipo]', e); }
   return json({ ok: true });
 }

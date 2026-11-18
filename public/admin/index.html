@@ -242,9 +242,47 @@
     });
     return caja;
   }
+  // README (ronda 95): cobro adicional con monto libre. Título, monto, moneda y país del cliente → link de pago con los
+  // medios de su país (conversión, descuento por país e IVA como el resto). Al pagarse queda como pedido con factura.
+  var MONEDAS_AD = ['EUR', 'USD', 'ARS', 'MXN', 'COP', 'CLP', 'UYU', 'PEN', 'BRL', 'GBP', 'CAD', 'AUD', 'CHF', 'PYG', 'BOB', 'CRC', 'DOP', 'GTQ', 'HNL'];
+  function tarjetaAdicional() {
+    var caja = el('div', { class: 'tarjeta' }), lista = el('div');
+    var titulo = el('input', { placeholder: 'Ej.: Cambios extra de diseño', maxlength: 120, style: 'flex:2 1 220px' });
+    var monto = el('input', { type: 'number', min: '0', step: '0.01', placeholder: 'Monto', style: 'width:120px' });
+    var moneda = el('select', {}, MONEDAS_AD.map(function (m) { return el('option', { value: m }, m); }));
+    var pais = el('input', { maxlength: 2, placeholder: 'País (ES, AR…)', style: 'width:120px;text-transform:uppercase' });
+    var email = el('input', { type: 'email', placeholder: 'Mail del cliente (opcional)', style: 'flex:1 1 200px' });
+    var evento = el('input', { placeholder: 'Invitación ev_… (opcional)', style: 'flex:1 1 160px' });
+    var res = el('div', { class: 'meta' });
+    var cargar = function () {
+      api('/api/admin/adicionales').then(function (d) {
+        lista.replaceChildren(d.adicionales.length ? tabla(['Concepto', 'Monto', 'Estado', ''], d.adicionales.map(function (a) {
+          var est = a.pagado ? tag('Pagado #' + (a.numero || ''), '') : a.cancelado ? tag('Cancelado', 'mal') : tag('Esperando pago', 'aviso');
+          return [el('div', {}, [el('strong', {}, a.titulo), el('div', { class: 'chico' }, (a.email || 'sin mail') + ' · ' + a.pais + ' · ' + fecha(a.creado))]), a.monto + ' ' + a.moneda + (a.moneda !== 'EUR' ? ' (≈ ' + a.eur + ' €)' : ''), est,
+            el('div', { class: 'acciones' }, [!a.pagado && !a.cancelado ? btn('Copiar link', 'sec', function () { navigator.clipboard.writeText(a.link).then(function () { aviso('Link copiado'); }); }) : null,
+              !a.pagado && !a.cancelado ? el('a', { class: 'b sec', href: a.link, target: '_blank', rel: 'noopener' }, 'Abrir') : null,
+              !a.pagado && !a.cancelado ? btn('Cancelar', 'mal', function (b) { if (confirm('¿Cancelar este cobro? El link deja de funcionar.')) accion(b, '/api/admin/adicionales/' + a.id + '/cancelar', {}, 'Cancelado', function () { cargar(); return Promise.resolve(); }); }) : null])];
+        })) : vacio('Todavía no hay cobros adicionales.'));
+      }).catch(function (e) { lista.replaceChildren(vacio(e.message)); });
+    };
+    var crear = btn('Crear link de pago', '', function (b) {
+      accion(b, '/api/admin/adicionales', { titulo: titulo.value, monto: monto.value, moneda: moneda.value, pais: pais.value, email: email.value, evento: evento.value }, 'Link de pago creado', function (r) {
+        res.replaceChildren(el('p', {}, ['Link: ', el('a', { href: r.link, target: '_blank', rel: 'noopener' }, r.link)]),
+          el('p', {}, 'El cliente paga: ' + (r.medios.length ? r.medios.map(function (m) { return ({ stripe: 'Tarjeta', paypal: 'PayPal', mercadopago: 'Mercado Pago', transfer: 'Transferencia' })[m.id] + ' ' + m.texto; }).join(' · ') : 'sin medios de pago para ese país')));
+        navigator.clipboard && navigator.clipboard.writeText(r.link).catch(function () {});
+        titulo.value = ''; monto.value = ''; cargar(); return Promise.resolve();
+      });
+    });
+    caja.append(el('h3', {}, 'Cobro adicional (monto libre)'),
+      el('p', { class: 'meta' }, 'Para cobrar cualquier cosa extra: el monto es el precio de lista (con IVA, como los precios base) en la moneda elegida. Para el país del cliente se aplican las mismas reglas que al resto: sus medios de pago, la conversión, el descuento por país y el IVA. Al pagarse se emite la factura con este concepto y queda en Pedidos.'),
+      el('div', { class: 'fila', style: 'gap:8px;flex-wrap:wrap' }, [titulo, monto, moneda, pais, email, evento, crear]), res, el('h4', {}, 'Cobros creados'), lista);
+    cargar();
+    return caja;
+  }
   function vistaPedidos() {
     var v = el('div'), f = FILTROS.pedidos;
     v.append(el('h2', {}, 'Pedidos'));
+    v.append(tarjetaAdicional());
     v.append(tarjetaLimpieza());
     v.append(buscador(f, [{ n: 'q', l: 'Buscar', ph: 'mail, n.º de pedido, cupón o evento', ancho: true }, { n: 'estado', l: 'Estado', op: [['', 'Todos'], ['pendiente', 'Pendientes'], ['pagado', 'Pagados'], ['cancelado', 'Cancelados'], ['reembolsado', 'Reembolsados']] },
       { n: 'medio', l: 'Medio', op: [['', 'Todos'], ['stripe', 'Tarjeta'], ['paypal', 'PayPal'], ['mercadopago', 'Mercado Pago'], ['transferencia', 'Transferencia'], ['gratis', 'Gratis'], ['cupon', 'Cupón'], ['admin', 'Administración']] }],
@@ -346,6 +384,10 @@
     c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Vencimiento'), el('div', { class: 'meta', style: 'margin:0' }, 'Hoy vence: ' + fecha(e.vence) + (e.venceManual ? ' (extensión manual hasta ' + fecha(e.venceManual) + ')' : '')), el('div', { class: 'fila', style: 'margin:0' }, [venc, btn('Extender hasta…', '', function (b) { if (!venc.value) { aviso('Elige una fecha', true); return; } accion(b, '/api/admin/eventos/' + e.id + '/vence', { fecha: venc.value }, 'Vencimiento extendido', rec); }), e.venceManual ? btn('Quitar extensión', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/vence', { fecha: '' }, 'Extensión quitada', rec); }) : null])]));
     c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Estado'), el('div', { class: 'fila', style: 'margin:0' }, [tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'), e.estado === 'publicado' ? btn('Pasar a borrador (despublicar)', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/estado', { estado: 'borrador' }, 'Despublicada', rec); }) : btn('Publicar', '', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/estado', { estado: 'publicado' }, 'Publicada', rec); })])]));
     var marcas = extrasDisp.map(function (x) { return el('label', {}, [el('input', { type: 'checkbox', value: x.id, checked: e.extras.indexOf(x.id) >= 0 }), x.nombre]); });
+    // README (ronda 95): regalar las opciones de «Recuerdo»
+    var REC = [['pdf', 'Recuerdo en PDF'], ['web', 'Página web para descargar (ZIP)'], ['online', 'Permanencia online ilimitada']];
+    var marcasRec = REC.map(function (x) { return el('label', {}, [el('input', { type: 'checkbox', value: x[0], checked: (e.recuerdo || []).indexOf(x[0]) >= 0 }), x[1]]); });
+    c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Recuerdo (regalar sin cobrar)'), el('div', { class: 'marcas' }, marcasRec), el('div', { class: 'fila', style: 'margin:0' }, btn('Guardar recuerdo', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/recuerdo', { opciones: marcasRec.map(function (l) { return l.firstChild; }).filter(function (i) { return i.checked; }).map(function (i) { return i.value; }) }, 'Recuerdo guardado', rec); }))]));
     c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Complementos incluidos (sin cobrar)'), el('div', { class: 'marcas' }, marcas), el('div', { class: 'fila', style: 'margin:0' }, btn('Guardar complementos', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/extras', { extras: marcas.map(function (l) { return l.firstChild; }).filter(function (i) { return i.checked; }).map(function (i) { return i.value; }) }, 'Complementos guardados', rec); }))]));
     var slug = el('input', { value: e.slug || '', placeholder: 'link-de-la-invitacion' });
     c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Link de la invitación'), el('div', { class: 'fila', style: 'margin:0' }, [slug, btn('Cambiar link', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/slug', { slug: slug.value }, 'Link cambiado', rec); })])]));

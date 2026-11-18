@@ -6,7 +6,15 @@
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 
-export function checkinHTML({ id, t, nombres }) {
+// README (ronda 95): arriba, el logo de Amo Invitar (verde); en Pro, el del profesional y un «Powered by» chico;
+// en Studio, solo el del profesional (nada de Amo Invitar)
+function logoCabecera(marca) {
+  const amo = '<img class="logo" src="/comun/img/amoinvitar-verde.svg" alt="Amo Invitar!">';
+  if (!marca || (!marca.logo && !marca.nombre)) return marca?.blanca ? '' : amo;
+  const propio = marca.logo ? `<img class="logo logo-pro" src="${esc(marca.logo)}" alt="${esc(marca.nombre || '')}">` : `<strong class="logo-nombre">${esc(marca.nombre)}</strong>`;
+  return marca.blanca ? propio : `${propio}<span class="powered">Powered by <img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!"></span>`;
+}
+export function checkinHTML({ id, t, nombres, marca = null }) {
   return `<!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>Recepción · ${esc(nombres)}</title>
@@ -16,7 +24,12 @@ export function checkinHTML({ id, t, nombres }) {
   * { box-sizing: border-box; }
   body { margin: 0; font-family: Jost, system-ui, sans-serif; background: #f6f5f3; color: #1f2421; }
   header { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 1px solid var(--borde); padding: 12px 16px; }
-  h1 { margin: 0; font-size: 1.1rem; } h1 small { display: block; color: var(--suave); font-weight: 400; font-size: .85rem; }
+  h1 { margin: 0; font-size: 1.1rem; text-align: center; } h1 small { display: block; color: var(--suave); font-weight: 400; font-size: .9rem; }
+  .marca { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 6px; }
+  .marca .logo { height: 34px; width: auto; max-width: 70%; object-fit: contain; } .marca .logo-pro { height: 40px; }
+  .marca .logo-nombre { font-size: 1.05rem; }
+  .marca .powered { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; color: var(--suave); opacity: .7; letter-spacing: .03em; }
+  .marca .powered img { height: 10px; width: auto; }
   .cifras { display: flex; gap: 8px; margin: 10px 0; }
   .cifras div { flex: 1; background: #f6f5f3; border-radius: 12px; padding: 8px; text-align: center; }
   .cifras strong { display: block; font-size: 1.4rem; } .cifras span { font-size: .75rem; color: var(--suave); }
@@ -49,6 +62,7 @@ export function checkinHTML({ id, t, nombres }) {
 </style></head>
 <body>
 <header>
+  <div class="marca">${logoCabecera(marca)}</div>
   <h1>Recepción de invitados<small>${esc(nombres)}</small></h1>
   <div class="cifras"><div><strong id="c-llegaron">0</strong><span>llegaron</span></div><div><strong id="c-esperan">0</strong><span>se esperan</span></div><div><strong id="c-faltan">0</strong><span>faltan</span></div></div>
   <div class="barra"><input id="q" type="search" placeholder="Buscar por nombre o mesa…" autocomplete="off"><button class="btn" id="escanear" type="button">Escanear QR</button></div>

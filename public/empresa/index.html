@@ -11,7 +11,7 @@
 <script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
   if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
   document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
-<script src="/comun/js/regional.js?v=fdf50c98" defer></script>
+<script src="/comun/js/regional.js?v=3f3ba818" defer></script>
 <script src="/comun/js/selector-pais.js?v=r89" defer></script>
 <style>
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
@@ -331,11 +331,17 @@
     v.append(el('p', { class: 'meta' }, 'Quienes sumes entran con su mail (sin contraseñas) y ven todos los eventos de la empresa. Editor: crea y edita eventos y publica. Solo lectura: mira.'));
     v.append(tabla(['Usuario', 'Rol', ''], D.equipo.map(function (m) {
       var b = m.rol !== 'duenio' && duenio ? el('button', { class: 'b mal', type: 'button' }, 'Quitar') : null; if (b) b.onclick = function () { if (confirm('¿Quitar a ' + m.email + ' del equipo?')) accion(b, base('/equipo/' + m.usuarioId), undefined, 'Quitado del equipo', 'DELETE'); };
-      return [el('div', {}, [el('strong', {}, m.nombre || m.email), m.nombre ? el('div', { class: 'meta' }, m.email) : null]), el('span', { class: 'tag' }, m.rol === 'duenio' ? 'Dueño' : m.rol === 'editor' ? 'Editor' : 'Solo lectura'), b || ''];
+      return [el('div', {}, [el('strong', {}, m.nombre || m.email), m.cargo ? el('div', { class: 'meta' }, m.cargo) : null, m.nombre ? el('div', { class: 'meta' }, m.email) : null]), el('span', { class: 'tag' }, m.rol === 'duenio' ? 'Dueño' : m.rol === 'editor' ? 'Editor' : 'Solo lectura'), b || ''];
     })));
     if (duenio) {
-      var f = el('form', { class: 'tarjeta', onsubmit: function (ev) { ev.preventDefault(); accion(f.querySelector('button'), base('/equipo'), { email: f.email.value, rol: f.rol.value }, 'Invitación enviada').then(function () { f.reset(); }); } }, [
-        el('h3', {}, 'Sumar a alguien'), el('div', { class: 'dos' }, [el('label', {}, ['Email', el('input', { name: 'email', type: 'email', required: true })]), el('label', {}, ['Rol', el('select', { name: 'rol' }, [el('option', { value: 'editor' }, 'Editor'), el('option', { value: 'lectura' }, 'Solo lectura')])])]),
+      // README (ronda 95): nombre y cargo (con «Otro» para escribirlo), además del permiso
+      var CARGOS = ['Socio/a', 'Organizador/a', 'Coordinador/a', 'Diseñador/a', 'Asistente', 'Recepción'];
+      var otro = el('input', { name: 'otro', type: 'text', maxlength: 60, placeholder: 'Escribir el cargo', hidden: true });
+      var selCargo = el('select', { name: 'cargo', required: true, onchange: function () { otro.hidden = selCargo.value !== 'otro'; otro.required = !otro.hidden; } },
+        [el('option', { value: '' }, 'Elegir…')].concat(CARGOS.map(function (x) { return el('option', { value: x }, x); }), [el('option', { value: 'otro' }, 'Otro (escribirlo)')]));
+      var f = el('form', { class: 'tarjeta', onsubmit: function (ev) { ev.preventDefault(); accion(f.querySelector('button'), base('/equipo'), { nombre: f.nombre.value, email: f.email.value, cargo: selCargo.value === 'otro' ? otro.value : selCargo.value, rol: f.rol.value }, 'Invitación enviada').then(function () { f.reset(); otro.hidden = true; }); } }, [
+        el('h3', {}, 'Sumar a alguien'), el('div', { class: 'dos' }, [el('label', {}, ['Nombre', el('input', { name: 'nombre', type: 'text', maxlength: 80, required: true })]), el('label', {}, ['Email', el('input', { name: 'email', type: 'email', required: true })])]),
+        el('div', { class: 'dos' }, [el('label', {}, ['Cargo', selCargo, otro]), el('label', {}, ['Permiso', el('select', { name: 'rol' }, [el('option', { value: 'editor' }, 'Editor'), el('option', { value: 'lectura' }, 'Solo lectura')])])]),
         el('div', { class: 'fila' }, el('button', { class: 'b', type: 'submit' }, 'Enviar invitación'))]);
       v.append(f);
       if (D.empresa.nivel !== 'studio') v.append(promoStudio('Con Studio el equipo llega a 10 usuarios.'));

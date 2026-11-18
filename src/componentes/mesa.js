@@ -22,6 +22,7 @@ export function mesaHTML({ t, id, nombres, evento = '', lang = 'es', activa = tr
 <html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>${esc(t('mesa.titulo'))} · ${esc(nombres)}</title>
 <link rel="stylesheet" href="/comun/fonts/google/abril-fatface+great-vibes+jost.css">
+${nombresEstilo ? `<link rel="stylesheet" href="${esc(nombresEstilo.css)}">` : ''}
 <link rel="stylesheet" href="/comun/fonts/icomoon/style.css">
 <style>
   * { box-sizing: border-box; }
@@ -31,6 +32,7 @@ export function mesaHTML({ t, id, nombres, evento = '', lang = 'es', activa = tr
   .de { margin: 0 0 .25rem; font-family: 'Abril Fatface', Georgia, serif; font-size: 2.1rem; line-height: 1.2; color: #000; overflow-wrap: anywhere; }
   .evento { margin: 0 0 .2rem; font-size: 1.2rem; font-weight: 700; color: #000; } /* README (ronda 78): tipo de evento arriba de los nombres */
   .de.alta { font-size: 2.3rem; line-height: 1.9; margin: .9rem 0 1.3rem; } /* README (ronda 51): Dantina */
+  ${nombresEstilo ? `.de { font-family: '${String(nombresEstilo.fuente).replace(/[^\w ]/g, '')}', 'Abril Fatface', Georgia, serif; color: ${/^#[0-9a-f]{6}$/i.test(nombresEstilo.color) ? nombresEstilo.color : '#000'}; }` : ''} /* README (ronda 95) */
   h1 { font-size: 1.1rem; text-transform: uppercase; font-weight: 800; letter-spacing: .08em; margin: 0 0 1rem; }
   hr { width: 66%; margin: 0 auto 1.2rem; border: 0; border-top: 1px solid #212529; }
   input { display: block; width: 100%; font: inherit; font-size: 1.05rem; text-align: center; padding: .6rem .8rem; border: 1px solid #212529; border-radius: 999px; }

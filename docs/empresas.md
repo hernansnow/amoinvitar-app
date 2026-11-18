@@ -294,6 +294,29 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
 - «Diseño propio»: una imagen suelta (sin carpeta) cuyo nombre no es del kit se guarda en `img/` (se usa como
   `img/<nombre>` en el HTML o `url(img/<nombre>)` en el CSS).
 
+## 14e. Ronda 95 · Nombres por modelo, Recepción, Administración con íconos, accesos, regalos y cobros adicionales
+- **Letra y color de los nombres** (`src/lib/estilo-nombres.js`): acceso/bloqueo, PIN, Buscá tu mesa y el PDF de mensajes.
+  Catálogo: la letra de los nombres del modelo (`tarjetas.fuentes.titulos`, o `FUENTE_DE`/`FUENTE_PORTADA` medidas en la
+  demo) y el color principal de la paleta oscurecido hasta leerse sobre blanco (contraste ≥ 3.2; si no, negro). A medida y
+  corporativo: Kaushan Script en negro. Todas desde `/comun/fonts/catalogo/catalogo.css`. El panel recibe `nombresEstilo`.
+- **PDF de mensajes**: nombres con esa letra y color; firmas de los invitados en Kaushan Script; al pie, el logo de Amo
+  Invitar chico (Pro: logo del profesional + «Powered by»; Studio: solo el del profesional).
+- **Recepción** (ex Llegadas; `src/componentes/checkin.js`): cabecera con el logo verde, «Recepción de invitados» y los
+  nombres; Pro: logo del profesional + «Powered by» chico; Studio: sin nada de Amo Invitar (igual que bloqueo y mesas, vía `pieChico`).
+- **Administración**: cada pestaña con su ícono (`TRAZOS` en panel.js, pasado como `ctx.icono`) y el título de la pestaña
+  con el ícono grande.
+- **Accesos**: nombre + cargo (opciones por tipo de evento y «Otro»); se guarda en `ev.datos.accesosInfo[uid]`. Tablero Pro:
+  nombre + cargo + permiso (app_state `equipo-info:<empresa>`).
+- **Recuerdo regalado**: `POST /api/admin/eventos/<id>/recuerdo { opciones: ['pdf','web','online'] }` (ficha de la invitación).
+- **Cobro adicional**: consola → Pedidos → «Cobro adicional»: título, monto (precio de lista en esa moneda), moneda, país,
+  mail. `POST /api/admin/adicionales` (app_state `adicional:<id>`) → link `/pagar/<id>` (src/componentes/pagar.js) con los
+  medios del país y las reglas de siempre (conversión, descuento por país, IVA). Pagado: pedido tipo `adicional`, factura con
+  el título como concepto. Cancelar: `POST /api/admin/adicionales/<id>/cancelar`.
+- **Ver como el cliente**: botón flotante (solo administradores) en el panel; manda `x-como-cliente: 1` y el servidor responde
+  sin permisos de superusuario (`usuario.superusuario` sigue en true para mostrar el botón). Se guarda en sessionStorage.
+- Sitio viejo (bucket `amoinvitar-legado`): `panel/co/15/cinema/renata.html` actualizado, `15/renata/` nuevo y
+  `boda/luana-y-jorge/` actualizado (con `wrangler r2 object put … --remote`).
+
 ## 15. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos

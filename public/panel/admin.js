@@ -10,7 +10,7 @@ let reloj = null;
 
 const SECCIONES = [
   ['resumen', 'Resumen'], ['enviar', 'Enviar'], ['respuestas', 'Respuestas'], ['mensajes', 'Mensajes'],
-  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Llegadas'], ['album', 'Álbum QR'], ['accesos', 'Accesos'], ['recuerdo', 'Recuerdo'],
+  ['canciones', 'Canciones'], ['mesas', 'Mesas'], ['llegadas', 'Recepción'], ['album', 'Álbum QR'], ['accesos', 'Accesos'], ['recuerdo', 'Recuerdo'],
 ];
 
 // ── Datos de la invitación ──
@@ -163,21 +163,32 @@ function libroMensajes(msgs) {
   const o = location.origin;
   const f = inicioEvento();
   const fecha = f ? f.toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  // README (ronda 95): los nombres con la letra y el color de la invitación (a medida y corporativo: Kaushan Script en negro);
+  // las firmas de los invitados en Kaushan Script; al pie, el logo como una firma (Studio: el del profesional, nunca Amo Invitar)
+  const ne = ctx.S.nombresEstilo || { fuente: 'Kaushan Script', color: '#000000' };
+  const fuente = String(ne.fuente || 'Kaushan Script').replace(/[^\w ]/g, ''), color = /^#[0-9a-f]{6}$/i.test(ne.color || '') ? ne.color : '#000000';
+  const emp = ctx.S.empresa;
+  const firma = emp?.limpio
+    ? `${emp.logo ? `<img class="logo-pro" src="${esc(emp.logo)}" alt="${esc(emp.nombre || '')}">` : emp.nombre ? `<span>${esc(emp.nombre)}</span>` : ''}${emp.studio ? '' : `<span class="powered">Powered by <img src="${o}/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!"></span>`}`
+    : `<img src="${o}/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!">`;
   const tarjetas = msgs.map((m) => `<article><p class="txt">${esc(m.texto)}</p><p class="de">${esc(m.nombre)}</p>${m.canciones.length ? `<p class="can">♫ ${esc(m.canciones.join(' · '))}</p>` : ''}</article>`).join('');
   w.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Libro de mensajes · ${esc(nombres())}</title>
-    <link rel="stylesheet" href="${o}/comun/fonts/google/great-vibes+jost.css"><style>
+    <link rel="stylesheet" href="${o}/comun/fonts/google/great-vibes+jost.css"><link rel="stylesheet" href="${o}/comun/fonts/catalogo/catalogo.css"><style>
     @page { size: A4; margin: 14mm; }
     * { box-sizing: border-box; } body { margin: 0; font: 15px/1.55 Jost, system-ui, sans-serif; color: #3a3f3c; background: #fbf9f5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .portada { min-height: 92vh; display: grid; place-content: center; text-align: center; gap: 10px; page-break-after: always; break-after: page; }
     .portada small { letter-spacing: .35em; text-transform: uppercase; color: #8a8f8b; font-size: 12px; }
-    .portada h1 { font: 400 76px/1.1 'Great Vibes', cursive; color: #4e9c87; margin: 0; }
+    .portada h1 { font: 400 76px/1.15 '${fuente}', 'Great Vibes', cursive; color: ${color}; margin: 0; overflow-wrap: anywhere; }
     .portada p { margin: 0; color: #6b706c; } .portada .linea { width: 120px; height: 1px; background: #c9b98f; margin: 14px auto; }
     .grilla { columns: 2; column-gap: 18px; padding: 10px 6px; }
     article { break-inside: avoid; background: #fff; border-radius: 14px; padding: 22px 22px 18px; margin: 0 0 18px; box-shadow: 0 2px 10px rgba(0,0,0,.06); border-top: 3px solid #c9b98f; position: relative; }
     article::before { content: '“'; position: absolute; top: -6px; left: 14px; font: 64px/1 Georgia, serif; color: #e3d9bf; }
-    .txt { font-style: italic; margin: 8px 0 12px; font-size: 16px; } .de { font: 400 28px/1 'Great Vibes', cursive; color: #4e9c87; margin: 0; text-align: right; }
+    .txt { font-style: italic; margin: 8px 0 12px; font-size: 16px; } .de { font: 400 24px/1.1 'Kaushan Script', cursive; color: ${color}; margin: 0; text-align: right; }
     .can { margin: 8px 0 0; font-size: 12px; color: #8a8f8b; text-align: right; }
     .pie { text-align: center; color: #9aa09c; font-size: 11px; margin: 10px 0 0; }
+    .firma { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 24px 0 4px; opacity: .55; font-size: 10px; color: #8a8f8b; }
+    .firma img { height: 18px; width: auto; } .firma .logo-pro { height: 26px; } .firma .powered { display: inline-flex; align-items: center; gap: 4px; } .firma .powered img { height: 11px; }
+    @media print { .firma { position: fixed; bottom: 0; left: 0; right: 0; margin: 0; } }
     @media screen { body { padding: 20px; } .aviso { position: sticky; top: 0; background: #4e9c87; color: #fff; padding: 10px 14px; border-radius: 10px; text-align: center; margin-bottom: 14px; } }
     @media print { .aviso { display: none; } }
     @media (max-width: 640px) { .grilla { columns: 1; } .portada h1 { font-size: 54px; } }
@@ -185,6 +196,7 @@ function libroMensajes(msgs) {
     <div class="aviso">Para guardarlo: Imprimir → "Guardar como PDF"</div>
     <section class="portada"><small>Libro de mensajes</small><h1>${esc(nombres())}</h1><div class="linea"></div><p>${esc(fecha)}</p><p>${msgs.length} ${msgs.length === 1 ? 'mensaje' : 'mensajes'} con cariño</p></section>
     <section class="grilla">${tarjetas}</section>
+    ${firma ? `<footer class="firma">${firma}</footer>` : ''}
     <script>document.fonts.ready.then(() => setTimeout(() => print(), 400))<\/script></body></html>`);
   w.document.close();
 }
@@ -733,7 +745,7 @@ function vistaAlbum() {
 // La persona que recibe usa el link de la puerta (sin acceso al panel); aquí se ve en vivo.
 let relojLlegadas = null;
 function vistaLlegadas() {
-  if (!conLista()) return [tarjeta('Llegadas', ctx.el('p', { class: 'ayuda' }, 'Con la lista de invitados, el día del evento se registra quién llega: escaneando el QR de cada invitado o buscándolo por nombre.'),
+  if (!conLista()) return [tarjeta('Recepción', ctx.el('p', { class: 'ayuda' }, 'Con la lista de invitados, el día del evento se registra quién llega: escaneando el QR de cada invitado o buscándolo por nombre.'),
     ctx.el('div', { class: 'ad-botones' }, boton('Editar lista de invitados', editarLista, 'btn btn-sec btn-chico')))];
   const activo = ctx.el('input', { type: 'checkbox', checked: !!admin().checkin });
   activo.addEventListener('change', async () => { await guardarAdmin({ checkin: activo.checked }); ctx.redibujar(); });
@@ -779,17 +791,27 @@ function vistaAccesos() {
     const cuantos = (r) => d.accesos.filter((a) => a.rol === r).length;
     const filas = d.accesos.map((a) => ctx.el('tr', {},
       ctx.el('td', { class: 'ad-acceso' }, ctx.el('strong', {}, a.nombre || a.email), a.nombre ? ctx.el('small', {}, a.email) : null,
-        ctx.el('span', { class: `ad-estado ${a.rol === 'cliente' ? 'si' : 'abrio'}` }, ROLES[a.rol] || a.rol), a.id === d.yo ? ctx.el('small', {}, 'Tu cuenta') : null),
+        ctx.el('span', { class: `ad-estado ${a.rol === 'cliente' ? 'si' : 'abrio'}` }, a.cargo || ROLES[a.rol] || a.rol), a.id === d.yo ? ctx.el('small', {}, 'Tu cuenta') : null),
       ctx.el('td', {}, d.gestiona && a.rol !== 'cliente' ? boton('Quitar', async () => {
         if (!confirm(`¿Quitarle el acceso a ${a.email}?`)) return;
         try { await ctx.api(`/accesos?u=${encodeURIComponent(a.id)}`, { method: 'DELETE' }); ctx.aviso('Acceso quitado'); cargar(); } catch (e) { ctx.aviso(e.message, true); }
       }, 'btn btn-chico btn-sec') : null)));
-    const opciones = [['pareja', 'Pareja'], ['admin', corp() ? 'Administrador/a (organizador, agencia, alguien del equipo…)' : 'Administrador/a (wedding planner, organizador…)']].filter(([r]) => cuantos(r) < (d.limite[r] || 0));
+    // README (ronda 95): nombre, mail y cargo (opciones según el evento y «Otro» para escribirlo); la pareja va con su rol
+    const hayPareja = cuantos('pareja') < (d.limite.pareja || 0), hayAdmin = cuantos('admin') < (d.limite.admin || 0);
+    const CARGOS = corp() ? ['Organizador/a', 'Agencia', 'Equipo de la empresa', 'Recepción', 'Asistente']
+      : ctx.S.evento.tipo === 'boda' ? ['Wedding planner', 'Organizador/a', 'Familiar', 'Amigo/a', 'Recepción'] : ['Organizador/a', 'Familiar', 'Amigo/a', 'Recepción'];
+    const opciones = [...(hayPareja ? [['pareja', 'Pareja']] : []), ...(hayAdmin ? [...CARGOS.map((c) => [c, c]), ['otro', 'Otro (escribirlo)']] : [])];
+    const nombreAcc = ctx.el('input', { type: 'text', placeholder: 'Nombre', maxlength: 80, autocomplete: 'off', class: 'ad-buscar' });
     const email = ctx.el('input', { type: 'email', placeholder: 'mail@ejemplo.com', autocomplete: 'off', class: 'ad-buscar' });
-    const rol = ctx.el('select', { class: 'ad-orden', 'aria-label': 'Rol' }, opciones.map(([v, t]) => ctx.el('option', { value: v }, t)));
+    const rol = ctx.el('select', { class: 'ad-orden', 'aria-label': 'Cargo' }, ctx.el('option', { value: '' }, 'Cargo…'), opciones.map(([v, t]) => ctx.el('option', { value: v }, t)));
+    const otro = ctx.el('input', { type: 'text', placeholder: 'Escribir el cargo', maxlength: 60, class: 'ad-buscar', hidden: true });
+    rol.addEventListener('change', () => { otro.hidden = rol.value !== 'otro'; if (!otro.hidden) otro.focus(); });
     const sumar = async () => {
+      if (!rol.value) { ctx.aviso('Elegir el cargo', true); return; }
+      const cargo = rol.value === 'otro' ? otro.value.trim() : rol.value === 'pareja' ? 'Pareja' : rol.value;
+      if (!cargo) { ctx.aviso('Escribir el cargo', true); return; }
       try {
-        await ctx.api('/accesos', { method: 'POST', body: JSON.stringify({ email: email.value, rol: rol.value }) });
+        await ctx.api('/accesos', { method: 'POST', body: JSON.stringify({ email: email.value, nombre: nombreAcc.value, cargo, rol: rol.value === 'pareja' ? 'pareja' : 'admin' }) });
         ctx.aviso(`Listo: le llegó un mail a ${email.value} para entrar`); cargar();
       } catch (e) { ctx.aviso(e.message, true); }
     };
@@ -797,7 +819,7 @@ function vistaAccesos() {
       ctx.el('div', { class: 'envolver-tabla' }, ctx.el('table', { class: 'ad-tabla' }, ctx.el('tbody', {}, filas))),
       !d.accesos.length ? ctx.el('p', { class: 'ayuda' }, 'Por ahora se entra solo con el link del panel.') : null,
       d.gestiona && opciones.length ? ctx.el('div', { class: 'ad-acceso-nuevo' }, ctx.el('h3', { class: 'ad-subtitulo' }, 'Dar acceso'),
-        ctx.el('div', { class: 'ad-barra' }, email, rol, boton('Dar acceso', sumar, 'btn'))) : null,
+        ctx.el('div', { class: 'ad-barra ad-barra-acceso' }, nombreAcc, email, rol, otro, boton('Dar acceso', sumar, 'btn'))) : null,
       d.gestiona && !opciones.length ? ctx.el('p', { class: 'ayuda' }, 'Ya están todos los lugares ocupados (pareja y 3 administradores). Para sumar a alguien, quitar a otro.') : null,
       !d.gestiona ? ctx.el('p', { class: 'ayuda' }, 'Los accesos los cambian el titular o la pareja.') : null].filter(Boolean));
   };
@@ -901,7 +923,7 @@ function dibujar(caja) {
     const tabs = SECCIONES.filter(([id]) => (id !== 'album' || verAlbum) && visible(id));
     if (!tabs.some(([id]) => id === seccion)) seccion = 'resumen';
     menu = ctx.el('nav', { class: 'ad-menu', 'aria-label': 'Administración' }, tabs.map(([id, t]) => ctx.el('button', { type: 'button', class: `ad-tab${bloqueo(id) ? ' bloqueada' : ''}`, 'data-id': id,
-      title: bloqueo(id) ? `Incluido en ${NOMBRE_NIVEL[bloqueo(id).nivel]}` : null, onclick: () => { seccion = id; dibujar(caja); } }, t)));
+      title: bloqueo(id) ? `Incluido en ${NOMBRE_NIVEL[bloqueo(id).nivel]}` : null, onclick: () => { seccion = id; dibujar(caja); } }, ctx.el('span', { class: 'ad-tab-ico', html: ctx.icono?.(id, 16) || '' }), t)));
     const mas = ctx.el('button', { type: 'button', class: 'ad-menu-mas', 'aria-label': 'Ver más opciones', html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
       onclick: () => menu.scrollBy({ left: menu.clientWidth * 0.6, behavior: 'smooth' }) });
     const flecha = () => mas.hidden = menu.scrollLeft + menu.clientWidth >= menu.scrollWidth - 4;
@@ -915,7 +937,10 @@ function dibujar(caja) {
     b.classList.toggle('activo', activo);
     if (activo) { b.setAttribute('aria-current', 'page'); b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); } else b.removeAttribute('aria-current');
   });
-  caja.querySelector('.ad-contenido').replaceChildren(...((bloqueo(seccion) ? vistaBloqueada(seccion) : VISTAS[seccion]()) || []).filter(Boolean));
+  // README (ronda 95): el título de la pestaña con su ícono grande (como las secciones de «Editar invitación»)
+  const nombreSec = (SECCIONES.find(([x]) => x === seccion) || [])[1] || '';
+  const tituloSec = ctx.el('h2', { class: 'ad-titulo-sec' }, ctx.el('span', { class: 'ico-titulo', html: ctx.icono?.(seccion, 22) || '' }), nombreSec);
+  caja.querySelector('.ad-contenido').replaceChildren(tituloSec, ...((bloqueo(seccion) ? vistaBloqueada(seccion) : VISTAS[seccion]()) || []).filter(Boolean));
 }
 // ── README (ronda 29): lo que incluye cada plan ──
 // Las funciones de un plan superior se ven con candado y una explicación (como la pestaña del álbum), con un botón
