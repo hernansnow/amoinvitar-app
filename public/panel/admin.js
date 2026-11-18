@@ -261,31 +261,27 @@ function vistaResumen() {
   const st = estadisticas();
   const inicio = inicioEvento();
   const cuenta = ctx.el('div', { class: 'ad-cuenta' });
-  // README (ronda 97): la cuenta del cierre de la lista va solo acá (en la invitación, la cuenta es hasta el evento)
-  const fin = finCierre(), cuentaCierre = fin && (!inicio || fin <= inicio) ? ctx.el('div', { class: 'ad-cuenta' }) : null;
-  const digitos = (caja, hasta) => {
-    let s = Math.max(0, Math.floor((hasta - Date.now()) / 1000));
-    const d = Math.floor(s / 86400); s -= d * 86400; const h = Math.floor(s / 3600); s -= h * 3600; const m = Math.floor(s / 60); s -= m * 60;
-    caja.replaceChildren(...[[d, 'días'], [h, 'horas'], [m, 'min'], [s, 'seg']].map(([n, t]) => ctx.el('div', {}, ctx.el('strong', {}, String(n).padStart(2, '0')), ctx.el('span', {}, t))));
-  };
+  const fin = finCierre();
   const pintar = () => {
-    if (!inicio) cuenta.replaceChildren(ctx.el('p', { class: 'ayuda' }, 'Falta la fecha del evento.')); else digitos(cuenta, inicio);
-    if (cuentaCierre && fin > Date.now()) digitos(cuentaCierre, fin);
+    if (!inicio) { cuenta.replaceChildren(ctx.el('p', { class: 'ayuda' }, 'Falta la fecha del evento.')); return; }
+    let s = Math.max(0, Math.floor((inicio - Date.now()) / 1000));
+    const d = Math.floor(s / 86400); s -= d * 86400; const h = Math.floor(s / 3600); s -= h * 3600; const m = Math.floor(s / 60); s -= m * 60;
+    cuenta.replaceChildren(...[[d, 'días'], [h, 'horas'], [m, 'min'], [s, 'seg']].map(([n, t]) => ctx.el('div', {}, ctx.el('strong', {}, String(n).padStart(2, '0')), ctx.el('span', {}, t))));
   };
   pintar(); clearInterval(reloj); reloj = setInterval(() => { if (!document.body.contains(cuenta)) { clearInterval(reloj); return; } pintar(); }, 1000);
   const avisos = [];
+  // README (ronda 98): el cierre de la lista va como aviso (sin segunda cuenta), contado en la zona del evento
   if (cierre()) {
+    const dias = Math.ceil((fin - 1000 - Date.now()) / 86400000);
     const faltan = st.sinResponder.length;
     avisos.push(fin > Date.now()
-      ? `${cuentaCierre ? '' : `La lista cierra el ${fechaTexto(cierre())}. `}${conLista() ? (faltan ? `Aún ${faltan === 1 ? 'queda 1 invitado' : `quedan ${faltan} invitados`} sin confirmar.` : 'Ya respondieron todos.') : ''}`.trim()
+      ? `Quedan ${dias} ${dias === 1 ? 'día' : 'días'} para el cierre de la lista.${conLista() ? ` ${faltan ? `Aún ${faltan === 1 ? 'queda 1 invitado' : `quedan ${faltan} invitados`} sin confirmar.` : 'Ya respondieron todos.'}` : ''}`
       : 'La confirmación ya cerró.');
   }
   const aforo = Number(ctx.datos.rsvp?.aforo);
   if (aforo > 0) { const libres = Math.max(0, aforo - st.personas); avisos.push(libres === 1 ? 'Queda 1 lugar.' : `Quedan ${libres} lugares (aforo de ${aforo}).`); }
   return [
-    tarjeta(inicio ? `Faltan para ${plural() ? 'la boda' : 'el evento'}` : 'Cuenta regresiva', cuenta,
-      ...(cuentaCierre && fin > Date.now() ? [ctx.el('p', { class: 'ad-sub' }, 'Faltan para el cierre de la lista', ` (${fechaTexto(cierre())})`), cuentaCierre] : []),
-      ...avisos.filter(Boolean).map((a) => ctx.el('p', { class: 'ad-aviso' }, a))),
+    tarjeta(inicio ? `Faltan para ${plural() ? 'la boda' : 'el evento'}` : 'Cuenta regresiva', cuenta, ...avisos.map((a) => ctx.el('p', { class: 'ad-aviso' }, a))),
     numerosConteo(st),
     // README (ronda 29): el resumen muestra solo lo que incluye el plan (sin canciones en Basic, etc.)
     disponible('canciones') || disponible('mensajes') ? ctx.el('div', { class: 'ad-numeros ad-extras' },
