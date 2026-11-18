@@ -766,6 +766,7 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .ad-cuenta div { background: color-mix(in srgb, var(--acento) 10%, #fff); border-radius: 14px; padding: 12px 6px; text-align: center; display: grid; }
 .ad-cuenta strong { font-size: clamp(1.6rem, 6vw, 2.4rem); color: var(--acento); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .ad-cuenta span { font-size: .8rem; color: var(--suave); text-transform: uppercase; letter-spacing: .06em; }
+.ad-sub { margin: 16px 0 8px; font-size: .9rem; color: var(--suave); } /* README (ronda 97): título de la cuenta del cierre de la lista */
 .ad-aviso { margin: 0; padding: 10px 14px; border-radius: 10px; background: #fff7e6; color: #7a5a12; }
 .ad-numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
 .ad-numero { background: #fff; border: 1px solid var(--borde); border-radius: 14px; padding: 14px; display: grid; gap: 2px; }

@@ -29,16 +29,32 @@ const pinTodos = () => (ctx.datos.acceso?.modo === 'pin' && !ctx.datos.acceso?.p
 const pinDe = (i) => (ctx.datos.acceso?.modo === 'pin' ? (ctx.datos.acceso?.pinPorInvitado ? i.pin : ctx.datos.acceso?.pin) : '');
 const nombres = () => [ctx.datos.nombres?.a, ctx.datos.nombres?.b].filter(Boolean).join(' & ');
 const plural = () => !!ctx.datos.nombres?.b;
-const inicioEvento = () => {
-  const l = ctx.datos.celebracion || {};
-  const f = l.fecha || String(l.inicio || '').slice(0, 10) || ctx.datos.ceremonia?.fecha;
-  return f ? new Date(`${f}T${l.hora || '00:00'}:00`) : null;
+// README (ronda 97): fecha y hora en la zona horaria que eligió el cliente → instante exacto (el mismo para todos)
+const zona = () => ctx.datos.zonaHoraria || 'Europe/Madrid';
+const enZona = (fecha, hora = '00:00') => {
+  const [a, m, d] = fecha.split('-').map(Number), [hh, mm] = hora.split(':').map(Number);
+  const local = Date.UTC(a, m - 1, d, hh || 0, mm || 0);
+  const pared = (ms) => { try { const f = new Intl.DateTimeFormat('en-US', { timeZone: zona(), hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).formatToParts(new Date(ms)).reduce((o, x) => ((o[x.type] = x.value), o), {}); return Date.UTC(+f.year, +f.month - 1, +f.day, +f.hour, +f.minute); } catch { return ms; } };
+  let t = local - (pared(local) - local); t = local - (pared(t) - t);
+  return new Date(t);
 };
+// README (ronda 97): con ceremonia aparte, la cuenta va hasta la ceremonia (como en la invitación); si no, hasta la fiesta
+const lugarEvento = () => {
+  const cer = ctx.datos.ceremonia || {}, cel = ctx.datos.celebracion || {};
+  const sep = (cer.modo || 'mismo-lugar') === 'separada' && (cer.fecha || cer.inicio);
+  const l = sep ? cer : cel;
+  const f = l.fecha || String(l.inicio || '').slice(0, 10) || (sep ? '' : cer.fecha) || ctx.datos.fecha || '';
+  return f ? { fecha: f, hora: l.hora || String(l.inicio || '').slice(11, 16) || '00:00' } : null;
+};
+const inicioEvento = () => { const l = lugarEvento(); return l ? enZona(l.fecha, l.hora) : null; };
 const fechaTexto = (iso) => (iso ? iso.split('-').reverse().join('/') : '');
 const cierre = () => ctx.datos.rsvp?.cierre || '';
 // README (ronda 78): hasta cuándo se espera respuesta: la fecha límite si es antes del evento; si no hay (o es el mismo día), el día del evento
-const diaEvento = () => { const f = inicioEvento(); return f && !isNaN(f) ? `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}-${String(f.getDate()).padStart(2, '0')}` : ''; };
-const hoyISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const diaEvento = () => lugarEvento()?.fecha || '';
+// Hoy en la zona del evento (no en la de la compu de quien mira)
+const hoyISO = () => { try { return new Intl.DateTimeFormat('en-CA', { timeZone: zona(), year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); } catch { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; } };
+// Fin del día límite (las confirmaciones se reciben hasta las 23:59 de ese día, en la zona del evento)
+const finCierre = () => { const c = cierre(); if (!c) return null; const d = new Date(`${c}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + 1); return enZona(d.toISOString().slice(0, 10)); };
 const vencioPlazo = () => { const c = cierre(), e = diaEvento(); if (c && (!e || c < e)) return hoyISO() > c; return !!e && hoyISO() >= e; };
 const plazoTexto = () => { const c = cierre(), e = diaEvento(); return c && (!e || c < e) ? `la fecha límite (${fechaTexto(c)})` : 'el día del evento'; };
 const fechaHora = (iso) => new Date(iso).toLocaleString('es', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
@@ -245,25 +261,31 @@ function vistaResumen() {
   const st = estadisticas();
   const inicio = inicioEvento();
   const cuenta = ctx.el('div', { class: 'ad-cuenta' });
-  const pintar = () => {
-    if (!inicio) { cuenta.replaceChildren(ctx.el('p', { class: 'ayuda' }, 'Falta la fecha del evento.')); return; }
-    let s = Math.max(0, Math.floor((inicio - Date.now()) / 1000));
+  // README (ronda 97): la cuenta del cierre de la lista va solo acá (en la invitación, la cuenta es hasta el evento)
+  const fin = finCierre(), cuentaCierre = fin && (!inicio || fin <= inicio) ? ctx.el('div', { class: 'ad-cuenta' }) : null;
+  const digitos = (caja, hasta) => {
+    let s = Math.max(0, Math.floor((hasta - Date.now()) / 1000));
     const d = Math.floor(s / 86400); s -= d * 86400; const h = Math.floor(s / 3600); s -= h * 3600; const m = Math.floor(s / 60); s -= m * 60;
-    cuenta.replaceChildren(...[[d, 'días'], [h, 'horas'], [m, 'min'], [s, 'seg']].map(([n, t]) => ctx.el('div', {}, ctx.el('strong', {}, String(n).padStart(2, '0')), ctx.el('span', {}, t))));
+    caja.replaceChildren(...[[d, 'días'], [h, 'horas'], [m, 'min'], [s, 'seg']].map(([n, t]) => ctx.el('div', {}, ctx.el('strong', {}, String(n).padStart(2, '0')), ctx.el('span', {}, t))));
+  };
+  const pintar = () => {
+    if (!inicio) cuenta.replaceChildren(ctx.el('p', { class: 'ayuda' }, 'Falta la fecha del evento.')); else digitos(cuenta, inicio);
+    if (cuentaCierre && fin > Date.now()) digitos(cuentaCierre, fin);
   };
   pintar(); clearInterval(reloj); reloj = setInterval(() => { if (!document.body.contains(cuenta)) { clearInterval(reloj); return; } pintar(); }, 1000);
   const avisos = [];
   if (cierre()) {
-    const dias = Math.ceil((new Date(`${cierre()}T23:59:59`) - Date.now()) / 86400000);
     const faltan = st.sinResponder.length;
-    avisos.push(dias >= 0
-      ? `Quedan ${dias} ${dias === 1 ? 'día' : 'días'} para el cierre de la lista.${conLista() ? ` ${faltan ? `Aún ${faltan === 1 ? 'queda 1 invitado' : `quedan ${faltan} invitados`} sin confirmar.` : 'Ya respondieron todos.'}` : ''}`
+    avisos.push(fin > Date.now()
+      ? `${cuentaCierre ? '' : `La lista cierra el ${fechaTexto(cierre())}. `}${conLista() ? (faltan ? `Aún ${faltan === 1 ? 'queda 1 invitado' : `quedan ${faltan} invitados`} sin confirmar.` : 'Ya respondieron todos.') : ''}`.trim()
       : 'La confirmación ya cerró.');
   }
   const aforo = Number(ctx.datos.rsvp?.aforo);
   if (aforo > 0) { const libres = Math.max(0, aforo - st.personas); avisos.push(libres === 1 ? 'Queda 1 lugar.' : `Quedan ${libres} lugares (aforo de ${aforo}).`); }
   return [
-    tarjeta(inicio ? `Faltan para ${plural() ? 'la boda' : 'el evento'}` : 'Cuenta regresiva', cuenta, ...avisos.map((a) => ctx.el('p', { class: 'ad-aviso' }, a))),
+    tarjeta(inicio ? `Faltan para ${plural() ? 'la boda' : 'el evento'}` : 'Cuenta regresiva', cuenta,
+      ...(cuentaCierre && fin > Date.now() ? [ctx.el('p', { class: 'ad-sub' }, 'Faltan para el cierre de la lista', ` (${fechaTexto(cierre())})`), cuentaCierre] : []),
+      ...avisos.filter(Boolean).map((a) => ctx.el('p', { class: 'ad-aviso' }, a))),
     numerosConteo(st),
     // README (ronda 29): el resumen muestra solo lo que incluye el plan (sin canciones en Basic, etc.)
     disponible('canciones') || disponible('mensajes') ? ctx.el('div', { class: 'ad-numeros ad-extras' },

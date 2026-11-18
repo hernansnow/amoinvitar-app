@@ -99,7 +99,14 @@ const lugarTexto = (l) => l.nombre || l.direccionTexto || l.direccion || '';
 function aUTC(fh, zona) {
   const p = partes(fh);
   if (!p || p.hh == null) return null;
-  const local = Date.UTC(+p.a, +p.m - 1, +p.d, +p.hh, +p.mm);
+  return new Date(msUTC(fh, zona)).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+
+// README (ronda 97): el instante (milisegundos UTC) de una fecha y hora «de pared» en la zona del cliente (sin hora: 00:00)
+function msUTC(fh, zona) {
+  const p = partes(fh);
+  if (!p) return null;
+  const local = Date.UTC(+p.a, +p.m - 1, +p.d, +(p.hh ?? 0), +(p.mm ?? 0));
   // diferencia entre la hora "de pared" en la zona y UTC para ese momento
   const enZona = (ms) => {
     const f = new Intl.DateTimeFormat('en-US', { timeZone: zona, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
@@ -108,7 +115,7 @@ function aUTC(fh, zona) {
   };
   let t = local - (enZona(local) - local);
   t = local - (enZona(t) - t); // segunda pasada por si cae en un cambio de horario
-  return new Date(t).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  return t;
 }
 
 function calendario({ nombre, descripcion, inicio, fin, lugar, zona }) {
@@ -361,6 +368,8 @@ export function armarVista({ evento: e, modelo, t, variante, rutas, demo = false
       // Apagada: Premium y Deluxe usan la portada de Basic (sin cuenta regresiva)
       portada: !!incluye.cuenta && e.portada?.cuenta !== false,
       fecha: principal ? `${principal.a}/${principal.m}/${principal.d} ${principal.hh ?? '00'}:${principal.mm ?? '00'}:00` : '',
+      // README (ronda 97): el instante exacto en la zona horaria que eligió el cliente (ceremonia si hay; si no, la fiesta)
+      fin: principal ? msUTC(`${principal.a}-${principal.m}-${principal.d}T${principal.hh ?? '00'}:${principal.mm ?? '00'}`, zona) : null,
     },
     // La sección "Música de fondo" se puede apagar (sin la marca, prendida como antes)
     // Save The Date web: "Próximamente la invitación formal" (se prende y apaga)

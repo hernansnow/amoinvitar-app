@@ -248,7 +248,11 @@ function cabecera(doc, v, origen) {
       google: v.t('agendar.google'), apple: v.t('agendar.apple'), outlook: v.t('agendar.outlook'), otro: v.t('agendar.otro'), cerrar: v.t('boton.cerrar'),
     },
   };
-  doc.head.insertAdjacentHTML('beforeend', `<script>window.INV = ${JSON.stringify(inv).replace(/</g, '\\u003c')};</script>`);
+  // README (ronda 97): la cuenta regresiva usa la zona horaria del cliente: el instante exacto (cuentaFin) se pasa a la hora
+  // del celular de quien mira, así todos los diseños (que leen INV.cuenta como hora local) cuentan hasta el mismo momento
+  if (inv.cuenta && v.cuenta.fin) inv.cuentaFin = v.cuenta.fin;
+  const local = 'if(INV.cuentaFin){var d=new Date(INV.cuentaFin),z=function(n){return(n<10?"0":"")+n};INV.cuenta=d.getFullYear()+"/"+z(d.getMonth()+1)+"/"+z(d.getDate())+" "+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds())}';
+  doc.head.insertAdjacentHTML('beforeend', `<script>window.INV = ${JSON.stringify(inv).replace(/</g, '\\u003c')};${local}</script>`);
   if (inv.videoPortada) doc.body.insertAdjacentHTML('beforeend', `<script src="${v.rutas.comun}/js/video-portada.js" defer></script>`);
   // Byn / Romantic: "mostrar en color" vale para todas las fotos de la invitación
   if (v.galeria?.color) doc.body.classList.add('ai-fotos-color');
