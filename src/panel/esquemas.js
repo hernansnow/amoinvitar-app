@@ -827,7 +827,7 @@ function anotar(pasos, { vinculo = false, modelo, gratis = false, disenoEnviado 
       // README (ronda 28): los complementos se pueden sumar siempre (en el plan gratis, pasa a Basic)
       if (c.planGratis && gratis) return { ...c, defecto: false, insigniaGratis: 'basic' };
       if (admin) return c;
-      if (cerrada && !['nota', 'linkStd', 'medidaStd', 'avisoDiseno'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
+      if (cerrada && !['nota', 'linkStd', 'medidaStd', 'avisoDiseno', 'avisoPersonalizacion'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
       if (vinculo && !publicada && FIJOS_VINCULO.includes(c.id)) return { ...c, cerrado: MOTIVO_VINCULO, pedirCambio: true };
       if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'La invitación ya está publicada: los nombres y la fecha se cambian pidiéndolo por WhatsApp.', pedirCambio: true };
       return c;
@@ -975,7 +975,9 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   }
   if (PRODUCTOS_STD[producto] && !(modelo?.simple || modelo?.std)) {
     const bloqueada = medidaBloqueada(datos) && !admin;
-    return { producto, sinAdmin: true, sinNiveles: true, cerrada: bloqueada, edicionOculta: bloqueada ? estadoMedida(datos.medida) : null, pasos: anotar(PRODUCTOS_STD[producto](), { modelo, cerrada: bloqueada, admin, motivoCerrada: MOTIVO_ENVIADA }) };
+    const pasosStd = PRODUCTOS_STD[producto]();
+    if (!bloqueada && !admin && personalizacionBloqueada(datos)) cerrarPersonalizacion(pasosStd); // README (ronda 96)
+    return { producto, sinAdmin: true, sinNiveles: true, cerrada: bloqueada, edicionOculta: bloqueada ? estadoMedida(datos.medida) : null, pasos: anotar(pasosStd, { modelo, cerrada: bloqueada, admin, motivoCerrada: MOTIVO_ENVIADA }) };
   }
   const m = producto === 'a-medida' ? (tipo === 'empresarial' ? MODELO_A_MEDIDA_CORP : MODELO_A_MEDIDA) : modelo;
   // Modelos simples y Save The Date web: su panel reducido; al publicarse ya no se editan
@@ -1016,7 +1018,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   if (empresa) paraEmpresa(pasos);
   // README (ronda 91): corporativo con sus campos y sin lo de bodas; a medida (y corporativo) siempre es Deluxe: sin planes
   if (tipo === 'empresarial') paraCorporativo(pasos);
-  if (producto === 'a-medida') { sinPlanes(pasos); paraMedida(pasos); }
+  if (producto === 'a-medida') { sinPlanes(pasos); paraMedida(pasos); if (!bloqueada && !admin && personalizacionBloqueada(datos)) cerrarPersonalizacion(pasos); }
   // README (ronda 29): el diseño a medida ya trae todo (Deluxe): sin insignias de plan
   return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}),
     edicionOculta: bloqueada && !admin ? estadoMedida(datos.medida) : null, /* README (ronda 93): solo el mensaje, sin los campos */ pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
@@ -1082,7 +1084,16 @@ const MOTIVO_ENVIADA = 'Ya enviaste tu proyecto al equipo de diseño: no se pued
 // Enviado al equipo y todavía sin el diseño listo
 // README (ronda 93): desde que se envía queda cerrado (también aprobado y terminado) hasta que la administración
 // lo vuelva a abrir desde la consola (medida.abierta)
-export const medidaBloqueada = (datos) => !!datos.medida?.enviado && !datos.medida?.abierta;
+// README (ronda 96): todo cerrado solo mientras se espera, se aprueba o se produce; con el diseño listo (y activo) se abre el
+// panel menos la «personalización» (la idea del diseño), que abre la administración (medida.abierta)
+export const medidaBloqueada = (datos) => !!datos.medida?.enviado && !datos.medida?.listo && !datos.medida?.abierta;
+export const personalizacionBloqueada = (datos) => !!datos.medida?.enviado && !datos.medida?.abierta;
+const AVISO_PERSONALIZACION = { id: 'medida.avisoPersonalizacion', tipo: 'avisoPersonalizacion', etiqueta: 'Personalización', sinEtiqueta: true };
+// El paso «Ideas para el diseño» (brief) con solo el aviso para pedir cambios
+function cerrarPersonalizacion(pasos) {
+  const p = pasos.find((x) => x?.id === 'brief');
+  if (p) { p.bloqueado = true; p.obligatoria = false; p.campos = [AVISO_PERSONALIZACION]; }
+}
 export const estadoMedida = (m = {}) => (m.listo ? 'listo' : m.aprobado ? 'aprobado' : 'enviado');
 // El pedido de «Cambios de diseño» ya enviado (al publicar) y no reabierto
 export const disenoBloqueado = (datos) => !!datos.diseno?.enviado && !datos.diseno?.abierta;

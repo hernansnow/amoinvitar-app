@@ -1,0 +1,17 @@
+# README (ronda 96): caché del navegador para los archivos estáticos (antes iban con max-age=0 y cada recarga de la vista
+# previa del panel volvía a preguntar por ~60 archivos). 10 minutos sin preguntar y, después, se usa lo guardado mientras se
+# actualiza en segundo plano. Las fuentes no cambian nunca: 30 días. Las rutas no se pisan entre sí (una sola regla por archivo).
+/comun/fonts/*
+  Cache-Control: public, max-age=2592000
+
+/comun/js/*
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400
+
+/comun/css/*
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400
+
+/comun/img/*
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400
+
+/modelos/*
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400

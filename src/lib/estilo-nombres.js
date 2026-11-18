@@ -31,10 +31,31 @@ export function colorLegible(paleta = []) {
   return '#000000';
 }
 
+// README (ronda 96): letras con trazos muy altos y grandes (Dantina, Amsterdam Four…): más chicas y con aire arriba y abajo.
+// tam = factor sobre el tamaño de cada página; linea = interlineado; aire = margen arriba/abajo (en em)
+const AJUSTE = {
+  Dantina: { tam: 0.58, linea: 1.8, aire: 0.7 },
+  'Amsterdam Four': { tam: 0.68, linea: 1.9, aire: 0.55 },
+  'Passions Conflict': { tam: 1.4, linea: 1.25, aire: 0.1 },
+  'Fleur De Leah': { tam: 1.3, linea: 1.35, aire: 0.15 },
+  Ruthie: { tam: 1.2, linea: 1.25, aire: 0.05 },
+  'Square Peg': { tam: 1.2, linea: 1.25, aire: 0.05 },
+  Monoton: { tam: 0.8, linea: 1.25, aire: 0.1 },
+  'Sedgwick Ave Display': { tam: 0.95, linea: 1.2, aire: 0 },
+};
+export const ajusteDe = (fuente) => AJUSTE[fuente] || { tam: 1, linea: 1.2, aire: 0 };
+
 export function estiloNombres(modelo, { medida = false } = {}) {
-  if (medida || !modelo) return { fuente: FUENTE_MEDIDA, color: '#000000', css: CSS_FUENTES };
+  if (medida || !modelo) return { fuente: FUENTE_MEDIDA, color: '#000000', css: CSS_FUENTES, ...ajusteDe(FUENTE_MEDIDA) };
   const fuente = FUENTE_PORTADA[modelo.id] || modelo.tarjetas?.fuentes?.titulos || FUENTE_DE[modelo.id] || 'Great Vibes';
-  return { fuente, color: colorLegible(modelo.paleta), css: CSS_FUENTES };
+  return { fuente, color: colorLegible(modelo.paleta), css: CSS_FUENTES, ...ajusteDe(fuente) };
+}
+// CSS de los nombres para una página: base = tamaño normal en rem
+export function cssNombres(sel, ne, base) {
+  if (!ne) return '';
+  const f = String(ne.fuente).replace(/[^\w ]/g, ''), color = /^#[0-9a-f]{6}$/i.test(ne.color) ? ne.color : '#000';
+  const tam = Number(ne.tam) || 1, linea = Number(ne.linea) || 1.2, aire = Number(ne.aire) || 0;
+  return `${sel} { font-family: '${f}', 'Abril Fatface', Georgia, serif; color: ${color}; font-size: ${(base * tam).toFixed(2)}rem; line-height: ${linea}; margin-top: ${aire}em; margin-bottom: ${(aire + 0.25).toFixed(2)}em; overflow-wrap: normal; word-break: normal; text-wrap: balance; }`;
 }
 // A medida (diseño a medida y corporativo): Kaushan Script en negro
 export const esMedida = (ev) => ev?.producto === 'a-medida' || ev?.tipo === 'empresarial';

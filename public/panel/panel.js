@@ -1195,6 +1195,9 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     }
     case 'medidaStd': return avisoMedidaStd();
     case 'avisoDiseno': return avisoDisenoEnviado();
+    case 'avisoPersonalizacion': return el('div', { class: 'aviso-medida en-paso' }, // README (ronda 96)
+      el('p', {}, el('strong', {}, 'Tu diseño se hizo con estas ideas.'), ' Para cambiar algo del diseño (colores, estilo, imágenes…), contáctanos y lo habilitamos.'),
+      el('p', {}, contactoCambios('el diseño de mi invitación')));
     // El link de la Save The Date web: copiar, mandar por WhatsApp y verla
     case 'linkStd': {
       const link = `${location.origin}/std/${S.evento.id}`;
@@ -1915,11 +1918,11 @@ function pintarMedida() {
   const oculta = !!S.esquema?.edicionOculta && !S.usuario?.admin;
   document.body.classList.toggle('edicion-oculta', oculta);
   const abierta = !!datos.medida?.abierta;
-  const contacto = md.listo && !abierta ? el('p', {}, 'Si quieres modificar algo, contáctanos. ', contactoCambios('mi diseño a medida')) : null;
+  const contacto = md.listo && !abierta ? el('p', {}, contactoCambios('mi diseño a medida')) : null;
   const fila = pagado && md.listo && tarjetaSuelta ? [el('strong', {}, '¡Tu tarjeta Save The Date está lista!'), ' Descárgala o compártela todas las veces que quieras.']
     : pagado && md.listo && webSuelta ? [el('strong', {}, '¡Tu Save The Date web está lista!'), ' Su link: ', el('a', { href: `${location.origin}/std/${S.evento.id}`, target: '_blank', rel: 'noopener' }, `${location.origin}/std/${S.evento.id}`)]
     : md.listo && abierta ? [el('strong', {}, '¡Tu diseño está listo!'), ' Ya puedes revisar y completar el contenido.']
-    : md.listo ? [el('strong', {}, '¡Tu diseño está listo!')]
+    : md.listo ? [el('strong', {}, '¡Tu diseño está listo!'), ' Ya puedes revisar y completar el contenido. Las ideas del diseño quedan fijas: para cambiar algo del diseño, contáctanos.']
     : pagado && md.aprobado ? [el('strong', {}, '✓ Proyecto aprobado y pago recibido.'), ' El equipo de diseño ya está trabajando en tu diseño: te avisaremos cuando esté listo.',
       S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => listo(e.currentTarget) }, 'Diseño listo (administración)') : null]
     : md.aprobado ? [el('strong', {}, '✓ Tu proyecto fue aprobado por el equipo de diseño.'), ' Completa el pago para que comencemos a crear tu diseño. ',

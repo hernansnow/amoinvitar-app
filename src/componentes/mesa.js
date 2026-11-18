@@ -3,6 +3,7 @@
 // buscan en el servidor (GET /api/mesa) y nunca se manda la lista entera.
 
 import { pieChico } from './bloques.js';
+import { cssNombres } from '../lib/estilo-nombres.js';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 
@@ -16,7 +17,7 @@ const ICONO_MESA = `<svg class="icono" viewBox="0 0 200 120" width="200" height=
   ${SILLAS}<circle cx="100" cy="60" r="30" fill="#fff"/><circle cx="100" cy="60" r="24" stroke-width="1.2"/>
   <path d="M100 68c-7-5-11-8-11-12a5 5 0 0 1 11-1 5 5 0 0 1 11 1c0 4-4 7-11 12z" fill="#2b2b2b" stroke="none"/></svg>`;
 
-export function mesaHTML({ t, id, nombres, evento = '', lang = 'es', activa = true, estilos = [], marca = null }) {
+export function mesaHTML({ t, id, nombres, evento = '', lang = 'es', activa = true, estilos = [], marca = null, nombresEstilo = null }) {
   const tx = { mesa: t('mesa.mesa'), ninguno: t('mesa.ninguno'), sinMesa: t('mesa.sinMesa'), ayuda: t('mesa.ayuda') };
   return `<!DOCTYPE html>
 <html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,7 +33,7 @@ ${nombresEstilo ? `<link rel="stylesheet" href="${esc(nombresEstilo.css)}">` : '
   .de { margin: 0 0 .25rem; font-family: 'Abril Fatface', Georgia, serif; font-size: 2.1rem; line-height: 1.2; color: #000; overflow-wrap: anywhere; }
   .evento { margin: 0 0 .2rem; font-size: 1.2rem; font-weight: 700; color: #000; } /* README (ronda 78): tipo de evento arriba de los nombres */
   .de.alta { font-size: 2.3rem; line-height: 1.9; margin: .9rem 0 1.3rem; } /* README (ronda 51): Dantina */
-  ${nombresEstilo ? `.de { font-family: '${String(nombresEstilo.fuente).replace(/[^\w ]/g, '')}', 'Abril Fatface', Georgia, serif; color: ${/^#[0-9a-f]{6}$/i.test(nombresEstilo.color) ? nombresEstilo.color : '#000'}; }` : ''} /* README (ronda 95) */
+  ${cssNombres('.de, .de.alta', nombresEstilo, 2.1)} /* README (ronda 95/96): letra, color y tamaño del modelo */
   h1 { font-size: 1.1rem; text-transform: uppercase; font-weight: 800; letter-spacing: .08em; margin: 0 0 1rem; }
   hr { width: 66%; margin: 0 auto 1.2rem; border: 0; border-top: 1px solid #212529; }
   input { display: block; width: 100%; font: inherit; font-size: 1.05rem; text-align: center; padding: .6rem .8rem; border: 1px solid #212529; border-radius: 999px; }

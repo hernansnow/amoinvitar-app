@@ -303,6 +303,18 @@ export async function accionEvento(request, env, id, accion) {
     await registrar(env, u, 'evento.estado', objeto, { estado: nuevo });
     return json({ ok: true });
   }
+  // README (ronda 96): accesos de la invitación desde la consola: ver y quitar (también a un titular, si queda otro)
+  if (accion === 'accesos') {
+    const lista = await alm.accesos(ev.id);
+    if (b.quitar) {
+      const q = lista.find((x) => x.id === b.quitar);
+      if (!q) throw new HttpError(404, 'Esa persona no tiene acceso');
+      if (q.rol === 'cliente' && lista.filter((x) => x.rol === 'cliente').length < 2) throw new HttpError(409, 'Es el único titular: primero hay que sumar otro titular');
+      await env.DB.prepare('DELETE FROM accesos_evento WHERE evento_id = ? AND usuario_id = ?').bind(ev.id, q.id).run();
+      await registrar(env, u, 'evento.acceso.quitar', objeto, { email: q.email, rol: q.rol });
+    }
+    return json({ ok: true, accesos: (await alm.accesos(ev.id)).map((x) => ({ id: x.id, email: x.email, rol: x.rol })) });
+  }
   // README (ronda 95): regalar (o quitar) las opciones de «Recuerdo»: PDF, página para descargar y permanencia online ilimitada
   if (accion === 'recuerdo') {
     const quiero = new Set([].concat(b.opciones || []).filter((x) => ['pdf', 'web', 'online'].includes(x)));

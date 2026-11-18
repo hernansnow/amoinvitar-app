@@ -178,7 +178,7 @@ function libroMensajes(msgs) {
     * { box-sizing: border-box; } body { margin: 0; font: 15px/1.55 Jost, system-ui, sans-serif; color: #3a3f3c; background: #fbf9f5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .portada { min-height: 92vh; display: grid; place-content: center; text-align: center; gap: 10px; page-break-after: always; break-after: page; }
     .portada small { letter-spacing: .35em; text-transform: uppercase; color: #8a8f8b; font-size: 12px; }
-    .portada h1 { font: 400 76px/1.15 '${fuente}', 'Great Vibes', cursive; color: ${color}; margin: 0; overflow-wrap: anywhere; }
+    .portada h1 { font: 400 ${Math.round(76 * (Number(ne.tam) || 1))}px/${Number(ne.linea) || 1.15} '${fuente}', 'Great Vibes', cursive; color: ${color}; margin: ${Number(ne.aire) || 0}em 0; text-wrap: balance; }
     .portada p { margin: 0; color: #6b706c; } .portada .linea { width: 120px; height: 1px; background: #c9b98f; margin: 14px auto; }
     .grilla { columns: 2; column-gap: 18px; padding: 10px 6px; }
     article { break-inside: avoid; background: #fff; border-radius: 14px; padding: 22px 22px 18px; margin: 0 0 18px; box-shadow: 0 2px 10px rgba(0,0,0,.06); border-top: 3px solid #c9b98f; position: relative; }
@@ -186,12 +186,12 @@ function libroMensajes(msgs) {
     .txt { font-style: italic; margin: 8px 0 12px; font-size: 16px; } .de { font: 400 24px/1.1 'Kaushan Script', cursive; color: ${color}; margin: 0; text-align: right; }
     .can { margin: 8px 0 0; font-size: 12px; color: #8a8f8b; text-align: right; }
     .pie { text-align: center; color: #9aa09c; font-size: 11px; margin: 10px 0 0; }
-    .firma { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 24px 0 4px; opacity: .55; font-size: 10px; color: #8a8f8b; }
-    .firma img { height: 18px; width: auto; } .firma .logo-pro { height: 26px; } .firma .powered { display: inline-flex; align-items: center; gap: 4px; } .firma .powered img { height: 11px; }
+    .firma { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 24px 0 4px; font-size: 10px; color: rgba(0,0,0,.4); }
+    .firma img { height: 18px; width: auto; filter: brightness(0); opacity: .4; } .firma .logo-pro { filter: none; opacity: .7; } /* README (ronda 96): logo negro al 40 % */ .firma .logo-pro { height: 26px; } .firma .powered { display: inline-flex; align-items: center; gap: 4px; } .firma .powered img { height: 11px; }
     @media print { .firma { position: fixed; bottom: 0; left: 0; right: 0; margin: 0; } }
     @media screen { body { padding: 20px; } .aviso { position: sticky; top: 0; background: #4e9c87; color: #fff; padding: 10px 14px; border-radius: 10px; text-align: center; margin-bottom: 14px; } }
     @media print { .aviso { display: none; } }
-    @media (max-width: 640px) { .grilla { columns: 1; } .portada h1 { font-size: 54px; } }
+    @media (max-width: 640px) { .grilla { columns: 1; } .portada h1 { font-size: ${Math.round(54 * (Number(ne.tam) || 1))}px; } }
     </style></head><body>
     <div class="aviso">Para guardarlo: Imprimir → "Guardar como PDF"</div>
     <section class="portada"><small>Libro de mensajes</small><h1>${esc(nombres())}</h1><div class="linea"></div><p>${esc(fecha)}</p><p>${msgs.length} ${msgs.length === 1 ? 'mensaje' : 'mensajes'} con cariño</p></section>
@@ -928,11 +928,22 @@ function dibujar(caja) {
       onclick: () => menu.scrollBy({ left: menu.clientWidth * 0.6, behavior: 'smooth' }) });
     const flecha = () => mas.hidden = menu.scrollLeft + menu.clientWidth >= menu.scrollWidth - 4;
     menu.addEventListener('scroll', flecha, { passive: true }); addEventListener('resize', flecha);
+    // README (ronda 96): en escritorio, dos filas: Resumen, Enviar y Respuestas anchos arriba; el resto abajo (con la flecha)
+    const fila1 = ctx.el('nav', { class: 'ad-menu-1', 'aria-label': 'Administración' });
+    const PRINCIPALES = ['resumen', 'enviar', 'respuestas'];
+    const acomodar = () => {
+      const escritorio = matchMedia('(min-width: 900px)').matches;
+      const tabsTodas = [...caja.querySelectorAll('.ad-tab')].sort((a, b) => SECCIONES.findIndex(([x]) => x === a.dataset.id) - SECCIONES.findIndex(([x]) => x === b.dataset.id));
+      if (escritorio) { tabsTodas.filter((t) => PRINCIPALES.includes(t.dataset.id)).forEach((t) => fila1.append(t)); tabsTodas.filter((t) => !PRINCIPALES.includes(t.dataset.id)).forEach((t) => menu.append(t)); }
+      else tabsTodas.forEach((t) => menu.append(t));
+      fila1.hidden = !escritorio || !fila1.children.length; flecha();
+    };
     caja.replaceChildren(ctx.el('div', { class: 'ad-cabeza' }, ctx.el('h1', {}, 'Administración'), publicada() ? enlace('Ver la invitación', linkDueno(), 'btn btn-sec btn-chico') : ctx.el('span', { class: 'chip' }, 'Sin publicar')),
-      ctx.el('div', { class: 'ad-menu-caja' }, menu, mas), ctx.el('div', { class: 'ad-contenido' }));
+      fila1, ctx.el('div', { class: 'ad-menu-caja' }, menu, mas), ctx.el('div', { class: 'ad-contenido' }));
+    acomodar(); matchMedia('(min-width: 900px)').addEventListener('change', acomodar);
     requestAnimationFrame(flecha);
   }
-  menu.querySelectorAll('.ad-tab').forEach((b) => {
+  caja.querySelectorAll('.ad-tab').forEach((b) => {
     const activo = b.dataset.id === seccion;
     b.classList.toggle('activo', activo);
     if (activo) { b.setAttribute('aria-current', 'page'); b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); } else b.removeAttribute('aria-current');

@@ -2,6 +2,7 @@
 // No lleva nada del evento salvo los nombres (para saber que es el link correcto).
 
 import { pieChico } from './bloques.js';
+import { cssNombres } from '../lib/estilo-nombres.js';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Diseño de la pantalla de acceso de Amo Invitar (el de las invitaciones con lista):
@@ -46,7 +47,7 @@ ${nombresEstilo ? `<link rel="stylesheet" href="${esc(nombresEstilo.css)}">` : '
   footer { margin-top: 40px; }
   /* README (ronda 51): Dantina (trazos muy altos): más aire arriba y abajo de los nombres */
   h1.alta { font-size: 2.3rem; line-height: 1.9; margin: .9rem 0 1.3rem; }
-  ${nombresEstilo ? `h1 { font-family: '${String(nombresEstilo.fuente).replace(/[^\w ]/g, '')}', 'Abril Fatface', Georgia, serif; color: ${/^#[0-9a-f]{6}$/i.test(nombresEstilo.color) ? nombresEstilo.color : '#000'}; }` : ''}
+  ${cssNombres('h1, h1.alta', nombresEstilo, 2.1)} /* README (ronda 95/96): letra, color y tamaño del modelo */
 </style></head>
 <body><main>
   <img class="icono" src="/comun/img/icon-login-pin.png" width="200" height="45" alt="">

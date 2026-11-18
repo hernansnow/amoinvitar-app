@@ -753,7 +753,10 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 /* README (ronda 86): botón negro con flecha blanca, para que no se mezcle con los nombres de las pestañas */
 .ad-menu-mas svg { background: #111; color: #fff; border: 1px solid #111; border-radius: 50%; width: 30px; height: 30px; padding: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
 .ad-menu-mas[hidden] { display: none; }
-@media (min-width: 900px) { .ad-menu-mas { display: none; } }
+/* README (ronda 96): en escritorio la flecha también (la segunda fila puede no entrar) */
+.ad-menu-1 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+.ad-menu-1[hidden] { display: none; }
+.ad-menu-1 .ad-tab { justify-content: center; padding: 11px 16px; font-size: 1.02rem; }
 .ad-tab { border: 1px solid var(--borde); background: #fff; border-radius: 999px; padding: 8px 16px; font-weight: 600; white-space: nowrap; cursor: pointer; color: var(--texto); }
 .ad-tab.activo { background: var(--acento); border-color: var(--acento); color: #fff; }
 .ad-contenido { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }

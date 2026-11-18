@@ -317,6 +317,19 @@ Tablas: `solicitudes_pro`, `empresas_pro`, `creditos_lotes`, `compras_pro`, `con
 - Sitio viejo (bucket `amoinvitar-legado`): `panel/co/15/cinema/renata.html` actualizado, `15/renata/` nuevo y
   `boda/luana-y-jorge/` actualizado (con `wrangler r2 object put … --remote`).
 
+## 14f. Ronda 96
+- **Buscá tu mesa** daba «Error al armar la página» (faltaba `nombresEstilo` en `mesaHTML`): arreglado.
+- **Letras grandes** (Dantina, Amsterdam Four…) en PIN/bloqueo, mesas y PDF: `AJUSTE` en `src/lib/estilo-nombres.js`
+  (tamaño, interlineado y aire por letra) aplicado con `cssNombres()`; revisadas las 46 letras de los modelos.
+- **PDF de mensajes**: logo negro al 40 %.
+- **Administración en escritorio**: dos filas (Resumen, Enviar, Respuestas anchos arriba; el resto abajo con la flecha).
+- **A medida**: todo cerrado mientras espera, se aprueba o se produce; con «Lista» se abre el panel menos la personalización
+  (el paso «Ideas para el diseño», con el aviso + WhatsApp). «Habilitar edición al cliente» de la consola abre la personalización
+  (`medidaBloqueada` = enviado && !listo && !abierta; `personalizacionBloqueada` = enviado && !abierta).
+- **Consola → ficha de la invitación → Accesos**: ver y quitar accesos (también un titular si queda otro).
+- **Velocidad**: `public/_headers` con caché de navegador para /comun y /modelos (10 min + stale-while-revalidate; fuentes 30
+  días). Antes iban con max-age=0 y cada recarga de la vista previa revalidaba ~60 archivos.
+
 ## 15. Pendiente
 
 Dominio propio por empresa (Studio). Ya están el cobro online (tarjeta, PayPal, Mercado Pago) y el aviso de vencimiento de créditos

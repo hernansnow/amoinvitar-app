@@ -384,6 +384,16 @@
     c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Vencimiento'), el('div', { class: 'meta', style: 'margin:0' }, 'Hoy vence: ' + fecha(e.vence) + (e.venceManual ? ' (extensión manual hasta ' + fecha(e.venceManual) + ')' : '')), el('div', { class: 'fila', style: 'margin:0' }, [venc, btn('Extender hasta…', '', function (b) { if (!venc.value) { aviso('Elige una fecha', true); return; } accion(b, '/api/admin/eventos/' + e.id + '/vence', { fecha: venc.value }, 'Vencimiento extendido', rec); }), e.venceManual ? btn('Quitar extensión', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/vence', { fecha: '' }, 'Extensión quitada', rec); }) : null])]));
     c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Estado'), el('div', { class: 'fila', style: 'margin:0' }, [tag(e.estado, e.estado === 'publicado' ? '' : 'aviso'), e.estado === 'publicado' ? btn('Pasar a borrador (despublicar)', 'sec', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/estado', { estado: 'borrador' }, 'Despublicada', rec); }) : btn('Publicar', '', function (b) { accion(b, '/api/admin/eventos/' + e.id + '/estado', { estado: 'publicado' }, 'Publicada', rec); })])]));
     var marcas = extrasDisp.map(function (x) { return el('label', {}, [el('input', { type: 'checkbox', value: x.id, checked: e.extras.indexOf(x.id) >= 0 }), x.nombre]); });
+    // README (ronda 96): accesos (titular, pareja, administradores) con «Quitar»
+    var cajaAcc = el('div', { class: 'meta' }, 'Cargando…');
+    var pintarAcc = function (lista) {
+      cajaAcc.replaceChildren(lista.length ? tabla(['Persona', 'Rol', ''], lista.map(function (x) {
+        return [x.email, ({ cliente: 'Titular', pareja: 'Pareja', admin: 'Administrador/a' })[x.rol] || x.rol,
+          btn('Quitar', 'mal', function (b) { if (confirm('¿Quitarle el acceso a ' + x.email + '?')) { b.disabled = true; api('/api/admin/eventos/' + e.id + '/accesos', { quitar: x.id }).then(function (r) { aviso('Acceso quitado'); pintarAcc(r.accesos); }).catch(function (er) { aviso(er.message, true); b.disabled = false; }); } })];
+      })) : vacio('Nadie tiene acceso con mail (solo el link del panel).'));
+    };
+    api('/api/admin/eventos/' + e.id + '/accesos', {}).then(function (r) { pintarAcc(r.accesos); }).catch(function (er) { cajaAcc.textContent = er.message; });
+    c.append(el('div', { class: 'grupo' }, [el('h3', {}, 'Accesos'), cajaAcc]));
     // README (ronda 95): regalar las opciones de «Recuerdo»
     var REC = [['pdf', 'Recuerdo en PDF'], ['web', 'Página web para descargar (ZIP)'], ['online', 'Permanencia online ilimitada']];
     var marcasRec = REC.map(function (x) { return el('label', {}, [el('input', { type: 'checkbox', value: x[0], checked: (e.recuerdo || []).indexOf(x[0]) >= 0 }), x[1]]); });

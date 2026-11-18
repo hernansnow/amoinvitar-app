@@ -193,6 +193,7 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
 - **Ronda 93** (ver `docs/empresas.md` §14c): enviado al equipo (a medida, corporativo, STD a medida, Cambios de diseño) el panel oculta los campos y muestra solo el estado (espera, aprobado, listo + WhatsApp); la consola puede volver a habilitar la edición.
 - **Ronda 94** (ver `docs/empresas.md` §14d): ventana de bienvenida con música en los corporativos; imágenes nuevas del diseño propio a `img/`.
 - **Ronda 95** (ver `docs/empresas.md` §14e): letra/color de los nombres por modelo en bloqueo, PIN, mesas y PDF; Recepción con logo; Administración con íconos; accesos con nombre y cargo; regalar Recuerdo; cobros adicionales con link de pago; «Ver como el cliente».
+- **Ronda 96** (ver `docs/empresas.md` §14f): Buscá tu mesa arreglado, letras grandes ajustadas, Administración en dos filas, a medida abre todo menos la personalización, accesos desde la consola, caché de estáticos.
   verde para a medida y corporativo, «Lista» activa el diseño propio, textos corporativos en todos los idiomas, panel
   corporativo con logo/texto en portada y cierre, consola con la idea completa del cliente, cuadro de galería arreglado.
 
