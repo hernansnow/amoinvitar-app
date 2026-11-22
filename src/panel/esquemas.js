@@ -829,7 +829,7 @@ function anotar(pasos, { vinculo = false, modelo, gratis = false, disenoEnviado 
       if (admin) return c;
       if (cerrada && !['nota', 'linkStd', 'medidaStd', 'avisoDiseno', 'avisoPersonalizacion'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
       if (vinculo && !publicada && FIJOS_VINCULO.includes(c.id)) return { ...c, cerrado: MOTIVO_VINCULO, pedirCambio: true };
-      if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'La invitación ya está publicada: los nombres y la fecha se cambian pidiéndolo por WhatsApp.', pedirCambio: true };
+      if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'Invitación publicada: solicitar cambio', pedirCambio: true /* README (ronda 104): texto corto + botón de WhatsApp */ };
       return c;
     }),
   }));
@@ -983,12 +983,11 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   // Modelos simples y Save The Date web: su panel reducido; al publicarse ya no se editan
   if (m?.simple || m?.std) {
     const pasos = m.std ? pasosStdWeb({ tipo, modelo: m, datos }) : pasosSimple({ tipo, modelo: m, datos });
-    // README (ronda 101): los simples (Civil, Party, Compromiso, Pedida) se editan como las demás: al publicar solo quedan
-    // fijos los nombres y la fecha, y se cierran unos días después del evento. La Save The Date web sigue cerrada al publicar.
-    const cerrada = !admin && (m.std ? publicada : publicada && edicionCerrada(datos));
+    // README (ronda 101/104): los simples (Civil, Party, Compromiso, Pedida) y la Save The Date web se editan como las demás:
+    // al publicar solo quedan fijos los nombres y la fecha, y se cierran unos días después del evento.
+    const cerrada = !admin && publicada && edicionCerrada(datos);
     return { producto, tipo, paquete, publicada, simple: !!m.simple, std: !!m.std, sinAdmin: !!m.std, sinNiveles: true, cerrada,
-      pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin,
-        motivoCerrada: m.std ? 'Ya está publicada: no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.' : undefined }) };
+      pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin }) };
   }
   const base = pasosInvitacion({ tipo, modelo: m });
   // Sin lista de invitados en el modelo (a medida, etc.), la seguridad va sola antes del idioma

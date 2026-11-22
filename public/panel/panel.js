@@ -1611,8 +1611,9 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   const fijo = c.fijoSi && cumple(c.fijoSi);
   const motivo = desactivado || fijo ? el('p', { class: 'motivo' }, c.motivo, ' ',
     desactivado && c.irA ? el('button', { type: 'button', class: 'btn-link', onclick: () => irA(c.irA) }, 'Ir →') : null) : null;
-  const aviso = c.cerrado ? el('p', { class: 'motivo' }, c.cerrado, ' ',
-    c.pedirCambio && whatsapp() ? el('a', { class: 'btn-link', target: '_blank', rel: 'noopener', href: `${whatsapp()}${encodeURIComponent(` ${tr('Quiero pedir un cambio en: {campo}.', { campo: c.etiqueta ? tr(c.etiqueta) : c.id })}`)}` }, 'Pedir el cambio por WhatsApp') : null) : null;
+  // README (ronda 104): «Invitación publicada: solicitar cambio» y después el botón de WhatsApp
+  const aviso = c.cerrado ? el('p', { class: `motivo${c.pedirCambio ? ' motivo-cambio' : ''}` }, tr(c.cerrado), ' ',
+    c.pedirCambio && whatsapp() ? el('a', { class: 'btn btn-wa btn-chico', target: '_blank', rel: 'noopener', href: `${whatsapp()}${encodeURIComponent(` ${tr('Quiero pedir un cambio en: {campo}.', { campo: c.etiqueta ? tr(c.etiqueta) : c.id })}`)}`, html: `${ICONO_WA}<span>WhatsApp</span>` }) : null) : null;
   const extra = { ...posicion, desactivado, fijo };
   if (!posicion.pos && (c.tipo === 'foto' && c.encuadre)) { extra.pos = () => leer(datos, `${c.id}Pos`); extra.alPos = (p) => cambio(`${c.id}Pos`, p); }
   // README (ronda 66): zoom en las fotos con encuadre (lugares, historia)
