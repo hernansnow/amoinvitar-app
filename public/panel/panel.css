@@ -1299,6 +1299,3 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
 .como-cliente:hover { opacity: 1; }
 .como-cliente.activo { background: #e0a100; color: #1f2421; }
 @media (max-width: 1023px) { .como-cliente { bottom: calc(76px + env(safe-area-inset-bottom)); } }
-/* README (ronda 104): «Invitación publicada: solicitar cambio» con el botón de WhatsApp al lado */
-.motivo.motivo-cambio { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
-.motivo.motivo-cambio .btn-wa { display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .75rem; font-size: .8rem; }
