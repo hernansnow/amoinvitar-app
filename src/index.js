@@ -988,7 +988,7 @@ async function apiPanel(env, request, url, partes) {
   }
   if (!accion && request.method === 'PUT') {
     const { datos } = await request.json();
-    if (esquema.cerrada) return json({ error: esquema.simple || esquema.std ? 'Ya está publicada: no se puede modificar. Para un cambio, escríbenos por WhatsApp.' : 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escríbenos por WhatsApp.' }, 403);
+    if (esquema.cerrada) return json({ error: esquema.std ? 'Ya está publicada: no se puede modificar. Para un cambio, escríbenos por WhatsApp.' : 'El evento ya pasó: la invitación no se puede modificar. Para un cambio, escríbenos por WhatsApp.' }, 403);
     // Publicada: los nombres y la fecha quedan como estaban (evita reciclar la invitación para otro evento)
     // README (ronda 52): invitación incluida con un álbum de Albunear: los nombres y la fecha del álbum no cambian
     if (ev.datos.vinculo?.albunear && !admin && datos) for (const ruta of FIJOS_VINCULO) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));

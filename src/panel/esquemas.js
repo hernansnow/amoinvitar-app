@@ -983,9 +983,12 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   // Modelos simples y Save The Date web: su panel reducido; al publicarse ya no se editan
   if (m?.simple || m?.std) {
     const pasos = m.std ? pasosStdWeb({ tipo, modelo: m, datos }) : pasosSimple({ tipo, modelo: m, datos });
-    const cerrada = publicada && !admin;
+    // README (ronda 101): los simples (Civil, Party, Compromiso, Pedida) se editan como las demás: al publicar solo quedan
+    // fijos los nombres y la fecha, y se cierran unos días después del evento. La Save The Date web sigue cerrada al publicar.
+    const cerrada = !admin && (m.std ? publicada : publicada && edicionCerrada(datos));
     return { producto, tipo, paquete, publicada, simple: !!m.simple, std: !!m.std, sinAdmin: !!m.std, sinNiveles: true, cerrada,
-      pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, motivoCerrada: 'Ya está publicada: no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.' }) };
+      pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin,
+        motivoCerrada: m.std ? 'Ya está publicada: no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.' : undefined }) };
   }
   const base = pasosInvitacion({ tipo, modelo: m });
   // Sin lista de invitados en el modelo (a medida, etc.), la seguridad va sola antes del idioma
