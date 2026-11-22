@@ -17,7 +17,7 @@ const ICONO_MESA = `<svg class="icono" viewBox="0 0 200 120" width="200" height=
   ${SILLAS}<circle cx="100" cy="60" r="30" fill="#fff"/><circle cx="100" cy="60" r="24" stroke-width="1.2"/>
   <path d="M100 68c-7-5-11-8-11-12a5 5 0 0 1 11-1 5 5 0 0 1 11 1c0 4-4 7-11 12z" fill="#2b2b2b" stroke="none"/></svg>`;
 
-export function mesaHTML({ t, id, nombres, evento = '', lang = 'es', activa = true, estilos = [], marca = null, nombresEstilo = null }) {
+export function mesaHTML({ t, id, nombres, evento = '', lang = 'es', activa = true, estilos = [], marca = null, nombresEstilo = null, selector = '' }) {
   const tx = { mesa: t('mesa.mesa'), ninguno: t('mesa.ninguno'), sinMesa: t('mesa.sinMesa'), ayuda: t('mesa.ayuda') };
   return `<!DOCTYPE html>
 <html lang="${esc(lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -46,7 +46,7 @@ ${nombresEstilo ? `<link rel="stylesheet" href="${esc(nombresEstilo.css)}">` : '
   li small { display: block; opacity: .65; }
   footer { margin-top: 40px; }
 </style></head>
-<body><main>
+<body>${selector /* README (ronda 98): selector de idioma */}<main>
   ${ICONO_MESA}
   ${evento ? `<p class="evento">${esc(evento)}</p>` : ''}
   <p class="de" data-nombres>${esc(nombres)}</p><script>(function(e){if(e&&/dantina/i.test(getComputedStyle(e).fontFamily))e.classList.add('alta')})(document.querySelector('[data-nombres]'))</script>

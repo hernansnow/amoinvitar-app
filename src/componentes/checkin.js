@@ -2,6 +2,7 @@
 // Buscador + lector de QR (el QR es el link personal del invitado: su "pase de entrada").
 // Lector: BarcodeDetector donde existe (Android) y jsQR en el resto (iPhone).
 // Se actualiza sola cada 10 segundos, así varias personas pueden recibir a la vez.
+import { selectorIdioma } from '../lib/idioma-pagina.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
@@ -14,9 +15,11 @@ function logoCabecera(marca) {
   const propio = marca.logo ? `<img class="logo logo-pro" src="${esc(marca.logo)}" alt="${esc(marca.nombre || '')}">` : `<strong class="logo-nombre">${esc(marca.nombre)}</strong>`;
   return marca.blanca ? propio : `${propio}<span class="powered">Powered by <img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!"></span>`;
 }
-export function checkinHTML({ id, t, nombres, marca = null }) {
+// README (ronda 98): en el idioma elegido con el selector, el del panel o el de la invitación (idioma: idiomaPagina()):
+// los textos fijos los traduce /comun/js/regional.js (el mismo diccionario del panel) y las frases con datos, tr()
+export function checkinHTML({ id, t, nombres, marca = null, idioma = { corto: 'es', regional: 'es' } }) {
   return `<!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="${esc(idioma.corto)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>Recepción · ${esc(nombres)}</title>
 <link rel="stylesheet" href="/comun/fonts/google/great-vibes+jost.css">
 <style>
@@ -61,6 +64,7 @@ export function checkinHTML({ id, t, nombres, marca = null }) {
   .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: #1f2421; color: #fff; padding: 10px 18px; border-radius: 999px; z-index: 50; max-width: 90vw; text-align: center; }
 </style></head>
 <body>
+${selectorIdioma(idioma.corto)}
 <header>
   <div class="marca">${logoCabecera(marca)}</div>
   <h1>Recepción de invitados<small>${esc(nombres)}</small></h1>
@@ -72,9 +76,13 @@ export function checkinHTML({ id, t, nombres, marca = null }) {
 <dialog id="lector"><div class="camara"><video id="video" playsinline muted></video></div>
   <div class="pie"><p id="lector-txt">Apuntar al QR del invitado (su pase de entrada o el link de su invitación).</p><button class="btn sec" type="button" id="cerrar-lector">Cerrar</button></div></dialog>
 <dialog id="ficha"><div class="pie" id="ficha-cuerpo"></div></dialog>
+${idioma.corto !== 'es' ? '<script src="/comun/js/regional.js"></script>' : ''}
 <script>
 (function () {
   var E = ${json(id)}, T = ${json(t)}, gente = [], filtro = 'todos';
+  if (window.AI_REGIONAL) AI_REGIONAL.activar(${json(idioma.regional)});
+  var tr = function (x, v) { var s = window.AI_REGIONAL ? AI_REGIONAL.traduce(x) : x; return s.replace(/\\{(\\w+)\\}/g, function (m, k) { return v && k in v ? String(v[k]) : m; }); };
+  var personasTxt = function (n) { return n === 1 ? tr('1 persona') : tr('{n} personas', { n: n }); };
   var $ = function (s) { return document.querySelector(s); };
   function aviso(m) { var a = document.createElement('div'); a.className = 'aviso'; a.textContent = m; document.body.append(a); setTimeout(function () { a.remove(); }, 2200); }
   function cargar() {
@@ -84,7 +92,7 @@ export function checkinHTML({ id, t, nombres, marca = null }) {
   function marcar(i, personas) {
     i.llegaron = personas; i.llego = personas > 0 ? new Date().toISOString() : ''; pintar();
     return fetch('/api/puerta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ e: E, t: T, codigo: i.codigo, personas: personas }) })
-      .then(function (r) { if (!r.ok) throw 0; }).catch(function () { aviso('No se pudo guardar. Revisar la conexión.'); cargar(); });
+      .then(function (r) { if (!r.ok) throw 0; }).catch(function () { aviso(tr('No se pudo guardar. Revisar la conexión.')); cargar(); });
   }
   var sinTildes = function (x) { return String(x || '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, ''); };
   function pintar() {
@@ -105,19 +113,19 @@ export function checkinHTML({ id, t, nombres, marca = null }) {
     var d = document.createElement('div'); d.className = 'datos';
     var b = document.createElement('b'); b.textContent = i.nombre;
     var s = document.createElement('small');
-    s.textContent = [i.mesa ? 'Mesa ' + i.mesa : 'Sin mesa', i.respondio === 'No' ? 'Avisó que no va' : !i.respondio ? 'Sin responder · ' + (i.posibles || 1) + ((i.posibles || 1) === 1 ? ' persona' : ' personas') : i.esperan + (i.esperan === 1 ? ' persona' : ' personas'), i.integrantes].filter(Boolean).join(' · ');
+    s.textContent = [i.mesa ? tr('Mesa {n}', { n: i.mesa }) : tr('Sin mesa'), i.respondio === 'No' ? tr('Avisó que no va') : !i.respondio ? tr('Sin responder') + ' · ' + personasTxt(i.posibles || 1) : personasTxt(i.esperan), i.integrantes].filter(Boolean).join(' · ');
     if (i.respondio === 'No') s.className = 'no';
     d.append(b, s); li.append(d);
     if (i.llegaron) {
       var c = document.createElement('div'); c.className = 'contador';
-      var menos = document.createElement('button'); menos.type = 'button'; menos.textContent = '−'; menos.setAttribute('aria-label', 'Una persona menos');
+      var menos = document.createElement('button'); menos.type = 'button'; menos.textContent = '−'; menos.setAttribute('aria-label', tr('Una persona menos'));
       menos.onclick = function () { marcar(i, i.llegaron - 1); };
       var n = document.createElement('span'); n.textContent = i.llegaron;
-      var mas = document.createElement('button'); mas.type = 'button'; mas.textContent = '+'; mas.setAttribute('aria-label', 'Una persona más');
+      var mas = document.createElement('button'); mas.type = 'button'; mas.textContent = '+'; mas.setAttribute('aria-label', tr('Una persona más'));
       mas.onclick = function () { marcar(i, i.llegaron + 1); };
       c.append(menos, n, mas); li.append(c);
     } else {
-      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn'; btn.textContent = 'Llegó';
+      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn'; btn.textContent = tr('Llegó');
       btn.onclick = function () { marcar(i, Math.max(1, i.esperan || i.posibles || 1)); };
       li.append(btn);
     }
@@ -127,11 +135,11 @@ export function checkinHTML({ id, t, nombres, marca = null }) {
   function mostrarFicha(i) {
     var c = $('#ficha-cuerpo'); c.replaceChildren();
     var h = document.createElement('h2'); h.textContent = i.nombre; h.style.margin = '6px 0';
-    var n = i.esperan || i.posibles || 1; var p = document.createElement('p'); p.textContent = [i.mesa ? 'Mesa ' + i.mesa : 'Sin mesa', (i.respondio ? '' : 'Sin responder · ') + n + (n === 1 ? ' persona' : ' personas')].join(' · ');
-    var ya = document.createElement('p'); ya.textContent = i.llegaron ? '✓ Ya registrado (' + i.llegaron + ')' : (i.respondio === 'No' ? 'Había avisado que no iba' : ''); ya.style.color = '#4e9c87';
-    var ok = document.createElement('button'); ok.className = 'btn'; ok.type = 'button'; ok.textContent = i.llegaron ? 'Listo' : 'Confirmar llegada';
+    var n = i.esperan || i.posibles || 1; var p = document.createElement('p'); p.textContent = [i.mesa ? tr('Mesa {n}', { n: i.mesa }) : tr('Sin mesa'), (i.respondio ? '' : tr('Sin responder') + ' · ') + personasTxt(n)].join(' · ');
+    var ya = document.createElement('p'); ya.textContent = i.llegaron ? '✓ ' + tr('Ya registrado ({n})', { n: i.llegaron }) : (i.respondio === 'No' ? tr('Había avisado que no iba') : ''); ya.style.color = '#4e9c87';
+    var ok = document.createElement('button'); ok.className = 'btn'; ok.type = 'button'; ok.textContent = i.llegaron ? tr('Listo') : tr('Confirmar llegada');
     ok.onclick = function () { if (!i.llegaron) marcar(i, Math.max(1, i.esperan || i.posibles || 1)); $('#ficha').close(); abrirLector(); };
-    var no = document.createElement('button'); no.className = 'btn sec'; no.type = 'button'; no.textContent = 'Cerrar'; no.style.marginLeft = '8px';
+    var no = document.createElement('button'); no.className = 'btn sec'; no.type = 'button'; no.textContent = tr('Cerrar'); no.style.marginLeft = '8px';
     no.onclick = function () { $('#ficha').close(); };
     c.append(h, p, ya, ok, no); $('#ficha').showModal();
   }
@@ -142,7 +150,7 @@ export function checkinHTML({ id, t, nombres, marca = null }) {
   }
   function leido(texto) {
     var cod = codigoDe(texto), i = gente.find(function (x) { return x.codigo === cod; });
-    if (!i) { $('#lector-txt').textContent = 'Ese QR no es de un invitado de la lista.'; return false; }
+    if (!i) { $('#lector-txt').textContent = tr('Ese QR no es de un invitado de la lista.'); return false; }
     cerrarLector(); mostrarFicha(i); return true;
   }
   function cuadro() {
@@ -163,13 +171,13 @@ export function checkinHTML({ id, t, nombres, marca = null }) {
     setTimeout(function () { requestAnimationFrame(cuadro); }, 120);
   }
   function abrirLector() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { aviso('Este navegador no permite usar la cámara. Usar el buscador.'); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { aviso(tr('Este navegador no permite usar la cámara. Usar el buscador.')); return; }
     var listo = ('BarcodeDetector' in window) ? Promise.resolve(detector = new window.BarcodeDetector({ formats: ['qr_code'] })) : cargarJsQR();
     listo.then(function () { return navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }); }).then(function (s) {
       flujo = s; var v = $('#video'); v.srcObject = s; v.play(); corriendo = true;
-      $('#lector-txt').textContent = 'Apuntar al QR del invitado (su pase de entrada o el link de su invitación).';
+      $('#lector-txt').textContent = tr('Apuntar al QR del invitado (su pase de entrada o el link de su invitación).');
       $('#lector').showModal(); cuadro();
-    }).catch(function () { aviso('No se pudo abrir la cámara. Revisar el permiso del navegador.'); });
+    }).catch(function () { aviso(tr('No se pudo abrir la cámara. Revisar el permiso del navegador.')); });
   }
   function cargarJsQR() {
     if (window.jsQR) return Promise.resolve();

@@ -10,11 +10,11 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 // y el PIN con el botón contorneado.
 // README (ronda 95): los nombres con la letra y el color del modelo (nombresEstilo, de src/lib/estilo-nombres.js);
 // a medida y corporativo, Kaushan Script en negro. Sin datos, Abril Fatface en negro (ronda 73).
-export function puertaHTML({ t, pantalla, nombres, evento = '', accion, inv, error, lang = 'es', marca, estilos = [], nombresEstilo = null }) {
+export function puertaHTML({ t, pantalla, nombres, evento = '', accion, inv, error, lang = 'es', marca, estilos = [], nombresEstilo = null, selector = '', langPedido = '' }) {
   const logo = pieChico(marca, '<img src="/comun/img/amoinvitar-line.svg" alt="Amo Invitar!" width="110" style="filter:invert(1);opacity:.45">');
   const cuerpo = pantalla === 'pin'
     ? `<form method="post" action="${esc(accion)}">
-        <input type="hidden" name="inv" value="${esc(inv)}">
+        <input type="hidden" name="inv" value="${esc(inv)}">${langPedido ? `<input type="hidden" name="lang" value="${esc(langPedido)}">` : ''}
         <label for="pin">${esc(t('acceso.pin'))}</label>
         <input id="pin" name="pin" type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="one-time-code" required autofocus placeholder="PIN">
         <button type="submit"><i class="icon-send-o" aria-hidden="true"></i> ${esc(t('acceso.confirmar'))}</button>
@@ -49,7 +49,7 @@ ${nombresEstilo ? `<link rel="stylesheet" href="${esc(nombresEstilo.css)}">` : '
   h1.alta { font-size: 2.3rem; line-height: 1.9; margin: .9rem 0 1.3rem; }
   ${cssNombres('h1, h1.alta', nombresEstilo, 2.1)} /* README (ronda 95/96): letra, color y tamaño del modelo */
 </style></head>
-<body><main>
+<body>${selector /* README (ronda 98): selector de idioma */}<main>
   <img class="icono" src="/comun/img/icon-login-pin.png" width="200" height="45" alt="">
   ${evento ? `<p class="de">${esc(t('acceso.titulo'))}</p>
   <p class="evento">${esc(evento)}</p>` : `<p class="de">${esc(t('acceso.de'))}</p>`}

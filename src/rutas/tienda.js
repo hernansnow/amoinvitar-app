@@ -402,6 +402,8 @@ export async function cumplirPedido(env, request, id) {
     const previos = ev.datos.extras || [];
     ev.datos.extras = [...previos, ...(p.detalle.extras || []).filter((x) => x === 'idioma' || !previos.includes(x))];
     await almacen.guardarEvento(ev);
+    // README (ronda 98): mejora a Deluxe de una invitación ya publicada: el álbum de Albunear se crea y se vincula solo
+    if (ev.estado === 'publicado' && opcionesTienda.album) await opcionesTienda.album(ev);
   } else {
     ev = await crearEventoDePedido(env, p);
   }

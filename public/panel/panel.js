@@ -7,6 +7,9 @@ import { editorTarjeta, dibujarTarjeta } from './tarjeta.js';
 import { montarAdmin } from './admin.js';
 
 const $ = (s, r = document) => r.querySelector(s);
+// README (ronda 98): frases con datos («{nombre} recibe: …»): se traduce la plantilla al idioma del panel y después se ponen
+// los datos (el traductor del panel solo reconoce textos fijos). Los {x} que no estén en v quedan tal cual.
+const tr = (t, v = {}) => String(window.AI_REGIONAL?.traduce ? window.AI_REGIONAL.traduce(t) : t).replace(/\{(\w+)\}/g, (m, k) => (k in v ? String(v[k]) : m));
 
 // ── Textos del panel ──────────────────────────────────────────────────
 // El panel está escrito en español neutro (tú). Para las otras variantes
@@ -498,8 +501,8 @@ function encuadrePortada({ url, pos, posPc, zoom, zoomPc, alCambiar }) {
       nivel.textContent = `${Math.round(zm[ks[0]] * 100)}%`; pintar(); emitir();
     };
     return el('div', { class: 'zoom' }, rotulo ? el('span', { class: 'zoom-rotulo' }, rotulo) : null,
-      el('button', { type: 'button', class: 'btn-zoom', 'aria-label': `Alejar${rotulo ? ` (${rotulo})` : ''}`, onclick: () => cambiar(-0.25) }, '−'), nivel,
-      el('button', { type: 'button', class: 'btn-zoom', 'aria-label': `Acercar${rotulo ? ` (${rotulo})` : ''}`, onclick: () => cambiar(0.25) }, '+'));
+      el('button', { type: 'button', class: 'btn-zoom', 'aria-label': rotulo ? `${tr('Alejar')} (${tr(rotulo)})` : 'Alejar', onclick: () => cambiar(-0.25) }, '−'), nivel,
+      el('button', { type: 'button', class: 'btn-zoom', 'aria-label': rotulo ? `${tr('Acercar')} (${tr(rotulo)})` : 'Acercar', onclick: () => cambiar(0.25) }, '+'));
   };
   if (soloUno) zm.pc = zm.cel;
   const zooms = el('div', { class: 'zoom-portada' }, soloUno ? controlZoom(['cel', 'pc'], '') : [controlZoom(['cel'], 'Celular'), controlZoom(['pc'], 'Computadora')]);
@@ -655,7 +658,7 @@ function campoMp3(c, valor, alCambiar) {
         const a = input.files[0]; if (!a) return;
         if (!/mpeg|mp3/.test(a.type) && !/\.mp3$/i.test(a.name)) { aviso('Solo archivos MP3', true); return; }
         if (a.size > (c.maxMB || 12) * 1048576) { aviso(`El MP3 supera ${c.maxMB || 12} MB`, true); return; }
-        estadoArchivo.textContent = `Subiendo ${a.name}…`;
+        estadoArchivo.textContent = tr('Subiendo {archivo}…', { archivo: a.name });
         try { const url = await subirArchivo(new File([a], a.name, { type: 'audio/mpeg' })); alCambiar(url); dibujar(url); } catch (e) { aviso(e.message, true); estadoArchivo.textContent = 'No se pudo subir'; }
       });
       caja.append(el('label', { class: `btn btn-cargar${c.bloqueado ? ' deshabilitado' : ''}` }, input, `♫ ${c.boton || 'Cargar música'}`), estadoArchivo);
@@ -686,7 +689,7 @@ function campoVideo(c, valor, alCambiar) {
       if (a.size > (c.maxMB || 40) * 1048576) { aviso(`El video supera ${c.maxMB || 40} MB`, true); return; }
       const seg = await new Promise((ok) => { const v = document.createElement('video'); v.preload = 'metadata'; v.onloadedmetadata = () => ok(v.duration); v.onerror = () => ok(NaN); v.src = URL.createObjectURL(a); });
       if (!(seg <= (c.maxSeg || 30) + 0.5)) { aviso(`El video tiene que durar hasta ${c.maxSeg || 30} segundos`, true); return; }
-      estadoArchivo.textContent = `Subiendo ${a.name}…`;
+      estadoArchivo.textContent = tr('Subiendo {archivo}…', { archivo: a.name });
       try { const url = await subirArchivo(new File([a], a.name, { type: 'video/mp4' })); alCambiar(url); dibujar(url); } catch (e) { aviso(e.message, true); estadoArchivo.textContent = 'No se pudo subir'; }
     });
     caja.append(el('label', { class: 'btn btn-cargar' }, input, '▶ Cargar video'), estadoArchivo);
@@ -769,7 +772,7 @@ function campoFuente(c, valor, alCambiar, dis) {
     const grilla = el('div', { class: 'grilla-fuentes', role: 'radiogroup' }, visibles.map((f) => el('button', {
       type: 'button', role: 'radio', 'aria-checked': String(f === elegida), class: 'fuente', disabled: dis,
       onclick: () => { elegida = f; alCambiar(f); dibujar(); } }, el('span', { class: 'abc', style: `font-family:'${f}';font-size:${Math.round(28 * (ESCALA_FUENTE[f] || 1))}px` }, 'Abc'), el('span', { class: 'nombre' }, f))));
-    const mas = c.valores.length > 20 ? el('button', { type: 'button', class: 'btn-link', onclick: () => { todas = !todas; dibujar(); } }, todas ? 'Ver menos fuentes' : `Ver todas (${c.valores.length})`) : null;
+    const mas = c.valores.length > 20 ? el('button', { type: 'button', class: 'btn-link', onclick: () => { todas = !todas; dibujar(); } }, todas ? 'Ver menos fuentes' : `${tr('Ver todas')} (${c.valores.length})`) : null;
     prueba.style.fontFamily = elegida ? `'${elegida}'` : '';
     const k = () => ESCALA_FUENTE[elegida] || 1;
     prueba.style.fontSize = `${tam * k()}px`;
@@ -866,8 +869,8 @@ function ejemploAcceso() {
   const txt = {
     abierta: `Todos reciben: ${base}`,
     pin: `Todos reciben: ${base} · PIN ${datos.acceso?.pin || '1234'}`,
-    lista: `${quien} recibe: ${base}?inv=${i.codigo || 'juan-xk2p'}`,
-    listaPin: `${quien} recibe: ${base}?inv=${i.codigo || 'juan-xk2p'} · PIN ${i.pin || '4821'}`,
+    lista: `${tr('{nombre} recibe:', { nombre: quien })} ${base}?inv=${i.codigo || 'juan-xk2p'}`,
+    listaPin: `${tr('{nombre} recibe:', { nombre: quien })} ${base}?inv=${i.codigo || 'juan-xk2p'} · PIN ${i.pin || '4821'}`,
   }[t];
   return el('p', { class: 'ejemplo-acceso' }, el('span', { 'aria-hidden': 'true' }, '💬 '), txt);
 }
@@ -922,7 +925,7 @@ function campoInvitados() {
     if (TOPE && lista.length + nuevas.length > TOPE) { nuevas = nuevas.slice(0, Math.max(0, TOPE - lista.length)); cortado = true; }
     lista.push(...nuevas);
     dibujar(); guardarLista();
-    aviso(cortado ? `El plan Gratis admite hasta ${TOPE} invitados: se sumaron ${nuevas.length}. Mejora tu plan para sumar más.` : nuevas.length ? `${nuevas.length} invitados sumados` : 'No se encontraron nombres en el archivo', cortado || !nuevas.length);
+    aviso(cortado ? tr('El plan Gratis admite hasta {tope} invitados: se sumaron {n}. Mejora tu plan para sumar más.', { tope: TOPE, n: nuevas.length }) : nuevas.length ? tr('{n} invitados sumados', { n: nuevas.length }) : 'No se encontraron nombres en el archivo', cortado || !nuevas.length);
   };
   const archivo = el('input', { type: 'file', accept: '.xlsx,.csv,.txt,.vcf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/vcard,text/x-vcard' });
   // Contactos del celular: en Android (Chrome) se eligen directo de la agenda; en el iPhone, con el archivo .vcf
@@ -946,22 +949,22 @@ function campoInvitados() {
     const pinVisible = datos.acceso?.modo === 'pin' && datos.acceso?.pinPorInvitado;
     const filas = lista.map((i, n) => el('tr', {},
       // README (ronda 71): en el celular, cada invitado en dos líneas (el título de cada dato va arriba del campo)
-      el('td', { class: 'inv-nombre', 'data-et': 'Nombre' }, el('input', { type: 'text', value: i.nombre, 'aria-label': 'Nombre', oninput: (e) => { i.nombre = e.target.value; guardarLista(); } })),
-      el('td', { class: 'inv-pases', 'data-et': 'Pases' }, el('input', { type: 'number', class: 'num', min: 0, max: 50, value: i.pases ?? 0, 'aria-label': 'Pases extra', oninput: (e) => { i.pases = e.target.value; guardarLista(); } })),
-      el('td', { class: 'inv-mesa', 'data-et': 'Mesa' }, el('input', { type: 'text', class: 'num', value: i.mesa ?? '', 'aria-label': 'Mesa', oninput: (e) => { i.mesa = e.target.value; guardarLista(); } })),
-      verFamilias ? el('td', { class: 'inv-familia', 'data-et': 'Integrantes (familia)' }, el('input', { type: 'text', class: 'ancho', value: i.integrantes ?? '', placeholder: 'Solo si es familia: Juan, Ana…', 'aria-label': 'Integrantes', oninput: (e) => { i.integrantes = e.target.value; guardarLista(); } })) : null,
+      el('td', { class: 'inv-nombre', 'data-et': tr('Nombre') }, el('input', { type: 'text', value: i.nombre, 'aria-label': 'Nombre', oninput: (e) => { i.nombre = e.target.value; guardarLista(); } })),
+      el('td', { class: 'inv-pases', 'data-et': tr('Pases') }, el('input', { type: 'number', class: 'num', min: 0, max: 50, value: i.pases ?? 0, 'aria-label': 'Pases extra', oninput: (e) => { i.pases = e.target.value; guardarLista(); } })),
+      el('td', { class: 'inv-mesa', 'data-et': tr('Mesa') }, el('input', { type: 'text', class: 'num', value: i.mesa ?? '', 'aria-label': 'Mesa', oninput: (e) => { i.mesa = e.target.value; guardarLista(); } })),
+      verFamilias ? el('td', { class: 'inv-familia', 'data-et': tr('Integrantes (familia)') }, el('input', { type: 'text', class: 'ancho', value: i.integrantes ?? '', placeholder: 'Solo si es familia: Juan, Ana…', 'aria-label': 'Integrantes', oninput: (e) => { i.integrantes = e.target.value; guardarLista(); } })) : null,
       // README (ronda 71): ejemplo que no parece un número real: el código del país y unos
-      verTel ? el('td', { class: 'inv-tel', 'data-et': 'WhatsApp' }, el('input', { type: 'tel', class: 'tel', value: i.telefono ?? '', placeholder: `${prefijoEvento()?.cod || '+1'} 111 111 111`, 'aria-label': 'Teléfono', inputmode: 'tel',
+      verTel ? el('td', { class: 'inv-tel', 'data-et': tr('WhatsApp') }, el('input', { type: 'tel', class: 'tel', value: i.telefono ?? '', placeholder: `${prefijoEvento()?.cod || '+1'} 111 111 111`, 'aria-label': 'Teléfono', inputmode: 'tel',
         oninput: (e) => { i.telefono = e.target.value; guardarLista(); },
         onblur: (e) => { const v = telInternacional(e.target.value); if (v !== e.target.value) { e.target.value = v; i.telefono = v; guardarLista(); } } })) : null,
-      pinVisible ? el('td', { class: 'pin', 'data-n': n, 'data-et': 'PIN' }, i.pin || '…') : null,
+      pinVisible ? el('td', { class: 'pin', 'data-n': n, 'data-et': tr('PIN') }, i.pin || '…') : null,
       el('td', { class: 'acciones-fila' },
         el('button', { type: 'button', class: 'btn-icono', title: 'Quitar', onclick: () => { lista.splice(n, 1); dibujar(); guardarLista(); } }, '✕'))));
     caja.replaceChildren(
       el('div', { class: 'envolver-tabla' }, el('table', { class: 'tabla-invitados' },
         el('thead', {}, el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Pases extra'), el('th', {}, 'Mesa'), verFamilias ? el('th', {}, 'Integrantes (familia)') : null, verTel ? el('th', {}, 'WhatsApp') : null, pinVisible ? el('th', {}, 'PIN') : null, el('th', {}, ''))),
         el('tbody', {}, filas))),
-      el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { if (TOPE && lista.length >= TOPE) { aviso(`El plan Gratis admite hasta ${TOPE} invitados. Mejora tu plan para sumar más.`, true); return; } lista.push({ nombre: '', pases: 0 }); dibujar(); caja.querySelector('tbody tr:last-child input')?.focus(); } }, '＋ Agregar invitado')),
+      el('p', {}, el('button', { type: 'button', class: 'btn btn-sec btn-chico', onclick: () => { if (TOPE && lista.length >= TOPE) { aviso(tr('El plan Gratis admite hasta {tope} invitados. Mejora tu plan para sumar más.', { tope: TOPE }), true); return; } lista.push({ nombre: '', pases: 0 }); dibujar(); caja.querySelector('tbody tr:last-child input')?.focus(); } }, '＋ Agregar invitado')),
       el('div', { class: 'casillas-lista' },
         el('label', { class: 'casilla' }, el('input', { type: 'checkbox', checked: verFamilias, onchange: (e) => { verFamilias = e.target.checked; dibujar(); } }),
           el('span', {}, 'Familias', el('small', {}, ' · un link para toda la familia; cada integrante confirma por separado'))),
@@ -973,7 +976,8 @@ function campoInvitados() {
         el('a', { class: 'btn btn-sec btn-chico', href: '/panel/plantilla-invitados.xlsx', download: 'invitados.xlsx' }, 'Descargar planilla modelo')),
       el('p', { class: 'ayuda' }, 'Columnas: nombre, pases extra y mesa (y, si se quiere, integrantes y teléfono). Si la planilla tiene títulos ("Nombre", "Pases", "Mesa", "Integrantes", "Teléfono"…) se reconocen solos, en cualquier orden.'),
       el('p', { class: 'ayuda' }, hayAgenda ? 'Con "Elegir de mis contactos" se suman nombre y teléfono desde la agenda del celular.' : 'Contactos del iPhone: en la app Contactos, mantener apretada una lista (o un contacto) → Exportar → guardar el archivo .vcf y subirlo aquí.'),
-      verTel ? el('p', { class: 'ayuda' }, `Teléfono con código de país${prefijoEvento() ? ` (${prefijoEvento().cod} es el de ${ZONA_NOMBRE()})` : ''}. Si se escribe sin código, se completa solo con el del país del evento.`) : null,
+      verTel ? el('p', { class: 'ayuda' }, prefijoEvento() ? tr('Teléfono con código de país ({cod} es el de {pais}). Si se escribe sin código, se completa solo con el del país del evento.', { cod: prefijoEvento().cod, pais: tr(ZONA_NOMBRE()) })
+        : 'Teléfono con código de país. Si se escribe sin código, se completa solo con el del país del evento.') : null,
       el('p', { class: 'ayuda total-lista' }, resumenLista()));
   };
   const resumenLista = () => `${lista.length}${TOPE ? ` de ${TOPE}` : ''} invitados · ${lista.reduce((s, i) => s + Math.max(1, String(i.integrantes || '').split(',').filter((x) => x.trim()).length) + (parseInt(i.pases, 10) || 0), 0)} personas`;
@@ -1190,7 +1194,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     case 'activarMedida': {
       const precio = c.convertir ? S.aMedida?.precio : S.plan?.preciosExtras?.[c.extra];
       return el('div', { class: 'activar-medida' }, el('p', {}, c.texto), el('div', { class: 'activar-medida-fila' },
-        el('button', { type: 'button', class: 'btn', disabled: dis, onclick: () => pasarAMedida(c) }, c.boton.toUpperCase()),
+        el('button', { type: 'button', class: 'btn', disabled: dis, onclick: () => pasarAMedida(c) }, tr(c.boton).toUpperCase() /* README (ronda 98): traducido antes de pasarlo a mayúsculas */),
         precio ? el('span', { class: 'precio-opcion' }, precio) : null));
     }
     case 'medidaStd': return avisoMedidaStd();
@@ -1450,7 +1454,7 @@ function avisoMedidaStd() {
   const enviar = async (b) => {
     b.disabled = true; clearTimeout(guardarTimer); await guardar();
     try { await api('/enviarMedida', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('¡Enviado al equipo de diseño!'); }
-    catch (e) { b.disabled = false; aviso(e.datos?.faltan?.length ? `Antes de enviarlo, completa: ${e.datos.faltan.map((x) => x.etiqueta).join(', ')}` : e.message, true); }
+    catch (e) { b.disabled = false; aviso(e.datos?.faltan?.length ? `${tr('Antes de enviarlo, completa:')} ${e.datos.faltan.map((x) => tr(x.etiqueta)).join(', ')}` : e.message, true); }
   };
   const aprobar = async (b) => { b.disabled = true; try { await api('/aprobarMedida', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('Proyecto aprobado: se avisó al cliente'); } catch (e) { b.disabled = false; aviso(e.message, true); } };
   const listo = async (b) => { b.disabled = true; try { await api('/medidaLista', { method: 'POST', body: JSON.stringify({ parte: 'std' }) }); await recargar(); aviso('Lista: el cliente ya la puede ver'); } catch (e) { b.disabled = false; aviso(e.message, true); } };
@@ -1466,7 +1470,7 @@ function avisoMedidaStd() {
         S.usuario?.admin && web ? el('button', { type: 'button', class: 'btn btn-chico btn-sec', onclick: (e) => listo(e.currentTarget) }, 'Marcar lista (administración)') : null]
         : md.enviado ? [el('strong', {}, 'Recibimos tu idea: está esperando la aprobación del equipo de diseño.'), ' Te avisaremos por email. Mientras tanto, ya no se puede modificar.',
           S.usuario?.admin ? el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => aprobar(e.currentTarget) }, 'Aprobar proyecto (administración)') : null]
-          : [`Completa tu idea (lo obligatorio, con *) y envíala al equipo de diseño${precio && !/Gratis/i.test(precio) && !(datos.extras || []).includes(web ? 'std-web-medida' : 'std-tarjeta-medida') ? ` (${precio.replace(/^\+/, '')})` : ''}. Pagas solo cuando el proyecto esté aprobado. `,
+          : [`${precio && !/Gratis/i.test(precio) && !(datos.extras || []).includes(web ? 'std-web-medida' : 'std-tarjeta-medida') ? tr('Completa tu idea (lo obligatorio, con *) y envíala al equipo de diseño ({precio}).', { precio: precio.replace(/^\+/, '') }) : tr('Completa tu idea (lo obligatorio, con *) y envíala al equipo de diseño.')} ${tr('Pagas solo cuando el proyecto esté aprobado.')} `,
             el('button', { type: 'button', class: 'btn btn-chico', onclick: (e) => enviar(e.currentTarget) }, 'Enviar al equipo de diseño'),
             S.esquema?.producto === 'a-medida' ? null : el('button', { type: 'button', class: 'btn-link', onclick: volver }, '← Volver a los diseños')];
   return el('div', { class: 'aviso-medida en-paso' }, el('p', {}, ...fila.filter(Boolean)),
@@ -1626,9 +1630,9 @@ function panelRespuestas() {
     const columnas = Object.keys(titulos).filter((k) => !['nombre', 'asiste'].includes(k));
     const fecha = (iso) => new Date(iso).toLocaleString('es', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     const csv = () => {
-      const cab = ['Nombre', 'Asiste', 'Personas', ...columnas.map((k) => titulos[k]), 'Fecha'];
+      const cab = [tr('Nombre'), tr('Asiste'), tr('Personas'), ...columnas.map((k) => titulos[k]), tr('Fecha')]; // README (ronda 98): en el idioma del panel
       const celda = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-      const cuerpo = filas.map((x) => [x.datos.nombre, x.datos.asiste === 'Si' ? 'Sí' : 'No', personas(x), ...columnas.map((k) => x.datos[k]), fecha(x.creado)].map(celda).join(';'));
+      const cuerpo = filas.map((x) => [x.datos.nombre, x.datos.asiste === 'Si' ? tr('Sí') : tr('No'), personas(x), ...columnas.map((k) => x.datos[k]), fecha(x.creado)].map(celda).join(';'));
       const blob = new Blob([`\uFEFF${[cab.map(celda).join(';'), ...cuerpo].join('\n')}`], { type: 'text/csv;charset=utf-8' });
       const a = el('a', { href: URL.createObjectURL(blob), download: 'confirmaciones.csv' }); document.body.append(a); a.click(); a.remove();
     };
@@ -1680,7 +1684,7 @@ function prenderPaso(p, on) {
   // Instagram Wall y álbum compartido: uno u otro
   if (on && p.excluye) {
     const otro = S.esquema.pasos.find((x) => x.id === p.excluye);
-    if (otro?.seccion && pasoActivo(otro)) { escribir(datos, `secciones.${otro.seccion}`, false); aviso(`Se apagó "${otro.titulo}": va uno u otro.`); }
+    if (otro?.seccion && pasoActivo(otro)) { escribir(datos, `secciones.${otro.seccion}`, false); aviso(tr('Se apagó "{seccion}": va uno u otro.', { seccion: tr(otro.titulo) })); }
   }
   // Sin dress code no van las sugerencias de estilos
   if (!on && p.seccion === 'dresscode') escribir(datos, 'secciones.estilos', false);
@@ -1903,7 +1907,7 @@ function pintarMedida() {
     catch (e) {
       b.disabled = false;
       const f = e.datos?.faltan || [];
-      aviso(f.length ? `Antes de enviarlo, completa: ${f.map((x) => x.etiqueta).join(', ')}` : e.message, true);
+      aviso(f.length ? `${tr('Antes de enviarlo, completa:')} ${f.map((x) => tr(x.etiqueta)).join(', ')}` : e.message, true);
       if (f[0]?.paso) irA(f[0].paso);
     }
   };
@@ -2013,7 +2017,7 @@ function elegirModelo() {
       onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (S.empresa) solicitarMedida(); else usar({ id: 'a-medida', nombre: 'Diseño a medida' }); } } },
     // README (ronda 29): con la imagen del diseño a medida (la de la Save The Date en las tarjetas y la web)
     el('img', { class: 'a-medida-img', alt: '', loading: 'lazy', src: !S.aMedida.std ? '/comun/img/modelo-a-medida.webp' : S.evento.producto === 'std-web' ? '/comun/img/std-medida-web.webp' : '/comun/img/std-medida-tarjeta.jpg' }), el('strong', {}, S.aMedida.empresarial ? 'Diseño para empresas' : 'Diseño a medida'),
-    S.empresa ? null : el('small', {}, `Creado para ti · ${S.aMedida.precio}`), el('span', { class: 'btn btn-chico' }, S.empresa ? 'Solicitar' : 'Elegir')) : null),
+    S.empresa ? null : el('small', {}, `${tr('Creado para ti')} · ${S.aMedida.precio}`), el('span', { class: 'btn btn-chico' }, S.empresa ? 'Solicitar' : 'Elegir')) : null),
   // README (ronda 89): para los profesionales, «aquí» lleva a su muestrario de modelos
   S.empresa?.id ? el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos ', el('a', { href: `/muestrario/${S.empresa.id}`, target: '_blank' }, 'aquí'), '.')
     : el('p', { class: 'ayuda' }, 'Lo cargado se mantiene: cambia solo el diseño. Más modelos en ', el('a', { href: '/crear-invitacion', target: '_blank' }, 'la web'), '.'));
@@ -2057,8 +2061,8 @@ const MANUAL = [
   ['Invitados y acceso', 'Una sola pregunta: ¿quién puede entrar? Abierta (cualquiera con el link), Con PIN (uno para todos), Lista de invitados (cada uno con su link personal; solo entran los de la lista) o Lista + PIN (además, cada uno con su PIN). Los dueños la ven siempre con "Ver la invitación" desde Administración; lo que confirmen ahí queda como prueba y se puede borrar.'],
   ['Obtener mi link', 'Al tocar "Obtener mi link" se ve el resumen con lo elegido y el total. Después del pago, la invitación queda online en su link (no se envía nada a los invitados: el link se comparte cuando se quiera) y se puede seguir editando. Después, el botón dice "Guardar cambios".'],
   ['Lista de invitados', 'En "Invitados y acceso" se elige quién puede entrar: Abierta, Con PIN, Lista de invitados o Lista + PIN. Con lista, cada invitado recibe su link personal. Para familias: un solo link y cada integrante confirma por separado. Con el teléfono, el WhatsApp sale directo a su número; los contactos se suman desde la agenda (Android) o con el archivo .vcf (iPhone). Si el invitado vuelve a abrir su link, ve lo que respondió y puede cambiarlo. "Enviar a todos" (en Enviar) y "Recordar a todos" (en Respuestas) abren WhatsApp con el mensaje de cada uno, uno tras otro.'],
-  ['Llegadas', 'El día del evento: cada invitado muestra su pase de entrada (QR) y quien recibe lo escanea con el link de la recepción, o lo busca por nombre. En Administración → Llegadas se ve en vivo quién llegó.'],
-  ['Administración', 'Resumen con la cuenta regresiva; Enviar (WhatsApp, link, QR o los links personales); Respuestas con filtros, recordatorios y descarga en Excel o PDF (casilla "Solo confirmados"); Mensajes; Canciones (pasarlas a una playlist de Spotify); Mesas (arrastrar invitados entre mesas, croquis y el QR "Buscá tu mesa" para la entrada); Llegadas; Álbum de fotos; Accesos (la pareja y hasta 3 administradores, cada uno con su mail). En Enviar se ve quién abrió su link y quién no.'],
+  ['Recepción', 'El día del evento: cada invitado muestra su pase de entrada (QR) y quien recibe lo escanea con el link de la recepción, o lo busca por nombre. En Administración → Recepción se ve en vivo quién llegó.'], // README (ronda 98): ex Llegadas
+  ['Administración', 'Resumen con la cuenta regresiva; Enviar (WhatsApp, link, QR o los links personales); Respuestas con filtros, recordatorios y descarga en Excel o PDF (casilla "Solo confirmados"); Mensajes; Canciones (pasarlas a una playlist de Spotify); Mesas (arrastrar invitados entre mesas, croquis y el QR "Buscá tu mesa" para la entrada); Recepción; Álbum de fotos; Accesos (la pareja y hasta 3 administradores, cada uno con su mail). En Enviar se ve quién abrió su link y quién no.'],
 ];
 function mostrarManual() {
   const wa = whatsapp();
@@ -2125,7 +2129,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
     ...plan.complementos.map((x) => el('li', {}, el('span', {}, x.nombre, x.pagado ? ' (ya pagado)' : ''), el('span', {}, x.precio))),
   ];
   // Descuento de la promo (solo sobre el plan o el producto; los complementos van a precio de lista)
-  const lineaPromo = plan.promo?.descuento ? el('li', { class: 'linea-promo' }, el('span', {}, plan.promo.nombre ? `Descuento · ${plan.promo.nombre} (−${plan.promo.porcentaje} %)` : `Descuento (−${plan.promo.porcentaje} %)`), el('span', {}, plan.promo.descuento)) : null;
+  const lineaPromo = plan.promo?.descuento ? el('li', { class: 'linea-promo' }, el('span', {}, plan.promo.nombre ? `${tr('Descuento')} · ${plan.promo.nombre} (−${plan.promo.porcentaje} %)` : `${tr('Descuento')} (−${plan.promo.porcentaje} %)`), el('span', {}, plan.promo.descuento)) : null;
   if (lineaPromo) lineas.push(lineaPromo);
   const secciones = el('ul', { class: 'lista-secciones' }, plan.secciones.map((x) => el('li', {}, x.titulo, insigniaNivel(x.nivel))));
   const partes = [
@@ -2445,7 +2449,7 @@ function ponerModo(m) {
     montarAdmin($('#admin'), { S, datos, api, el, aviso, abrirModal, icono,
       clave, editarLista: modalLista, cambiarAjuste: modalAjusteAcceso, redibujarAdmin: () => ponerModo('admin'),
       // README (ronda 29): desde una función con candado, se prende su sección (y el plan sube) o se ven las de Deluxe
-      activarSeccion: (sec) => { const p = S.esquema.pasos.find((x) => x.seccion === sec); if (!p) return; prenderPaso(p, true); ponerModo('editar'); irA(p.id); aviso(`Listo: se sumó "${p.titulo}"`); },
+      activarSeccion: (sec) => { const p = S.esquema.pasos.find((x) => x.seccion === sec); if (!p) return; prenderPaso(p, true); ponerModo('editar'); irA(p.id); aviso(tr('Listo: se sumó "{seccion}"', { seccion: tr(p.titulo) })); },
       // README (ronda 85): pagar lo que falte y pasar de Gratis a Basic desde Administración
       pagar: () => mostrarResumen(true), subirBasic: () => pasarAGratis(false),
       verDeluxe: () => { ponerModo('editar'); const p = S.esquema.pasos.find((x) => x.nivel === 'deluxe' && x.seccion && !pasoActivo(x)); if (p) irA(p.id); aviso('Prende cualquier sección Deluxe y la invitación pasa a Deluxe'); },

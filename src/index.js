@@ -25,6 +25,7 @@ import { eventoDemo } from './datos/demos.js';
 import { almacenD1 } from './almacen.js';
 import { revisarAcceso, validarPin, puedeVer, modoAcceso, nuevoCodigo, nuevoPin, usaLista, cookieAcceso, DUENO, tokenPuerta } from './acceso.js';
 import { puertaHTML } from './componentes/puerta.js';
+import { idiomaPagina, selectorIdioma } from './lib/idioma-pagina.js';
 import { bienvenida as bienvenidaGenerica } from './componentes/bloques.js'; // README (ronda 94)
 import { pagarHTML } from './componentes/pagar.js'; // README (ronda 95)
 import { estiloNombres, esMedida } from './lib/estilo-nombres.js'; // README (ronda 95)
@@ -375,9 +376,11 @@ async function publicada(env, url, request, tipo, slug, ctx = null) {
   const marca = await marcaEfectiva(env, empresa);
   const acc = await revisarAcceso({ ev, request, url, almacen, secreto: secretoDe(env) });
   if (!acc.ok) {
-    const v = variante(ev.datos.variante);
-    const t = traductor(ev.tipo, v, ev.datos.textos);
-    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: v.slice(0, 2), marca, nombresEstilo: await nombresEstiloDe(env, ev, url) }),
+    // README (ronda 98): en el idioma elegido con el selector, el del panel o el de la invitación
+    const vi = variante(ev.datos.variante), { variante: v, corto } = idiomaPagina(request, url, vi);
+    const t = traductor(ev.tipo, v, v === vi ? ev.datos.textos : {});
+    return html(puertaHTML({ t, pantalla: acc.pantalla, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), accion: `/acceso/${ev.id}`, inv: url.searchParams.get('inv') || '', error: url.searchParams.has('error'), lang: corto, marca, nombresEstilo: await nombresEstiloDe(env, ev, url),
+      selector: selectorIdioma(corto), langPedido: url.searchParams.get('lang') || '' }),
       acc.pantalla === 'pin' ? 401 : 403, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
   }
   const pl = ev.datos.playlist;
@@ -448,8 +451,11 @@ async function entrarConPin(env, request, id) {
   const f = await request.formData();
   const inv = String(f.get('inv') || '');
   const cookie = await validarPin({ ev, pin: String(f.get('pin') || ''), inv, almacen, secreto: secretoDe(env) });
-  const destino = `/${ev.tipo}/${ev.slug}${inv ? `?inv=${encodeURIComponent(inv)}` : ''}`;
-  if (!cookie) return new Response(null, { status: 303, headers: { location: `${destino}${inv ? '&' : '?'}error=1` } });
+  // README (ronda 98): el idioma elegido en la pantalla del PIN sigue (también en la invitación, si lo tiene)
+  const lang = String(f.get('lang') || '').replace(/[^a-z-]/gi, '').slice(0, 5);
+  const q = [inv ? `inv=${encodeURIComponent(inv)}` : '', lang ? `lang=${lang}` : ''].filter(Boolean).join('&');
+  const destino = `/${ev.tipo}/${ev.slug}${q ? `?${q}` : ''}`;
+  if (!cookie) return new Response(null, { status: 303, headers: { location: `${destino}${q ? '&' : '?'}error=1` } });
   return new Response(null, { status: 303, headers: { location: destino, 'set-cookie': cookie } });
 }
 
@@ -561,13 +567,14 @@ async function eventoConMesas(env, id) {
   const ev = id && await almacenDe(env).evento(id);
   return ev && ev.estado === 'publicado' && ev.datos.admin?.buscaMesa ? ev : null;
 }
-async function paginaMesa(env, url, id) {
+async function paginaMesa(env, url, id, request) {
   const ev = await almacenDe(env).evento(id);
   if (!ev) return html('No encontrado', 404);
-  const v = variante(ev.datos.variante);
-  const t = traductor(ev.tipo, v, ev.datos.textos);
+  // README (ronda 98): en el idioma elegido con el selector, el del panel o el de la invitación
+  const vi = variante(ev.datos.variante), { variante: v, corto } = idiomaPagina(request, url, vi);
+  const t = traductor(ev.tipo, v, v === vi ? ev.datos.textos : {});
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), lang: v.slice(0, 2), activa: !!(await eventoConMesas(env, id)), nombresEstilo: await nombresEstiloDe(env, ev, url), marca: await marcaEfectiva(env, empresa) }), 200,
+  return html(mesaHTML({ t, id: ev.id, nombres: nombresDe(ev.datos.nombres), evento: eventoDe(ev.tipo, v), lang: corto, activa: !!(await eventoConMesas(env, id)), nombresEstilo: await nombresEstiloDe(env, ev, url), marca: await marcaEfectiva(env, empresa), selector: selectorIdioma(corto) }), 200,
     { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
 }
 async function buscarMesa(env, request, url) {
@@ -630,11 +637,12 @@ async function listaPuerta(env, ev) {
       esperan: personasEsperadas(i, d), posibles: personasPosibles(i), llegaron: i.llegaron || 0, llego: i.llego || '' };
   });
 }
-async function paginaPuerta(env, url, id) {
+async function paginaPuerta(env, url, id, request) {
   const ev = await eventoPuerta(env, id, url.searchParams.get('t'));
   if (!ev) return html('<p style="font-family:sans-serif;text-align:center;padding:40px">Link no válido. Pedir uno nuevo a los anfitriones.</p>', 403);
   const empresa = ev.empresaId ? await almacenDe(env).empresa(ev.empresaId) : null;
-  return html(checkinHTML({ id: ev.id, t: url.searchParams.get('t'), nombres: nombresDe(ev.datos.nombres), marca: await marcaEfectiva(env, empresa) }), 200, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
+  // README (ronda 98): en el idioma elegido con el selector, el del panel o el de la invitación
+  return html(checkinHTML({ id: ev.id, t: url.searchParams.get('t'), nombres: nombresDe(ev.datos.nombres), marca: await marcaEfectiva(env, empresa), idioma: idiomaPagina(request, url, variante(ev.datos.variante)) }), 200, { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
 }
 async function apiPuerta(env, request, url) {
   if (request.method === 'POST') {
@@ -713,7 +721,39 @@ async function publicarEvento(env, request, ev) {
   ev.estado = ['invitacion', 'std-web', 'compromiso-web'].includes(ev.producto) ? 'publicado' : 'en-diseno';
   await avisarDiseno(env, url, ev);
   await almacenDe(env).guardarEvento(ev);
+  if (ev.estado === 'publicado') await albumAutomatico(env, ev, paisVisitante(request) || null); // README (ronda 98)
   return { ok: true, estado: ev.estado, link: ev.estado === 'publicado' ? `${url.origin}/${ev.tipo}/${ev.slug}` : null };
+}
+
+// README (ronda 98): álbum Classic de Albunear incluido en Deluxe. Solo con el plan Deluxe ya pagado (paquete 'deluxe':
+// lo pone el pago o la consola; un borrador que solo «pide» Deluxe por sus secciones sigue en 'borrador'). Los eventos
+// de profesionales no lo traen (ven la propuesta de Albunear para sus clientes).
+const deluxePagada = (ev) => ev.producto === 'invitacion' && ev.paquete === 'deluxe' && !ev.empresaId;
+const fechaAlbum = (ev) => ev.datos.celebracion?.fecha || ev.datos.ceremonia?.fecha || '';
+const TIPO_ALB = { boda: 'boda', 15: 'quince', bautismo: 'bautizo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', empresarial: 'corporativo' };
+async function crearAlbumIncluido(env, ev, { email, pais }) {
+  const d = ev.datos;
+  const r = await env.ALBUNEAR.crearAlbum({ evento: ev.id, email, tipo: TIPO_ALB[ev.tipo] || 'otro', nombre1: d.nombres?.a || '', nombre2: d.nombres?.b || '',
+    fecha: fechaAlbum(ev).slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais, lang: String(d.variante || 'es').slice(0, 2) });
+  // El álbum pasa a la invitación (sección «Álbum de fotos QR» con Albunear, en lugar de Instagram Wall)
+  if (r?.album?.link) {
+    ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
+    ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, instagram: false };
+    await almacenDe(env).guardarEvento(ev);
+  }
+  return r;
+}
+// Publicada y pagada: el álbum se crea a nombre del dueño y queda vinculado, sin que el cliente tenga que entrar a
+// Albunear. No se crea si eligió un álbum propio o apagó la sección. Si algo falla, queda el botón del panel.
+async function albumAutomatico(env, ev, pais) {
+  try {
+    const d = ev.datos;
+    if (!deluxePagada(ev) || d.album?.albunear || d.album?.origen === 'propio' || d.secciones?.album === false) return;
+    if (!env.ALBUNEAR?.crearAlbum || !/^\d{4}-\d{2}-\d{2}/.test(fechaAlbum(ev))) return;
+    const email = (await almacenDe(env).accesos(ev.id)).find((a) => a.rol === 'cliente')?.email;
+    if (!email) return;
+    await crearAlbumIncluido(env, ev, { email, pais });
+  } catch (e) { console.error('albunear automático', e); }
 }
 
 // ── Empresas profesionales: contexto, panel limpio y créditos ─────────────────
@@ -1253,7 +1293,9 @@ async function apiPanel(env, request, url, partes) {
   // Álbum de fotos: con Deluxe viene el Classic de Albunear sin cargo (un código de regalo por invitación,
   // pedido al Worker de Albunear por el enlace interno). Cuando el álbum ya está creado, su link pasa a la invitación.
   if (accion === 'albunear' && request.method === 'GET') {
-    const incluido = ev.paquete === 'deluxe';
+    const incluido = deluxePagada(ev);
+    // README (ronda 98): publicada y pagada sin álbum todavía (por ejemplo, de antes de este cambio): se crea y se vincula solo
+    if (incluido && ev.estado === 'publicado') await albumAutomatico(env, ev, paisVisitante(request) || null);
     let r = null;
     if (incluido && env.ALBUNEAR?.albumDeluxe) { try { r = await env.ALBUNEAR.albumDeluxe(ev.id); } catch (e) { console.error('albunear', e); } }
     if (r?.album?.link && ev.datos.album?.albunear !== r.album.link) {
@@ -1266,32 +1308,23 @@ async function apiPanel(env, request, url, partes) {
   // evento, los nombres, la fecha y el estilo de la invitación, y devuelve un link de un solo uso que entra al panel del
   // álbum con la cuenta del dueño. Solo con la cuenta del dueño iniciada (el link del panel solo no alcanza).
   if (accion === 'albunear' && request.method === 'POST') {
-    if (ev.paquete !== 'deluxe' && !admin) return json({ error: 'El álbum Classic va incluido con la invitación Deluxe.' }, 402);
+    // README (ronda 98): solo con Deluxe pagado (tampoco un administrador puede crearlo antes: el código de regalo es del pago)
+    if (!deluxePagada(ev)) return json({ error: 'El álbum Classic de Albunear se activa al publicar y pagar la invitación Deluxe.' }, 402);
     const usuario = await usuarioActual(request, env);
     const conAcceso = usuario && (usuario.esAdmin || await almacen.tieneAcceso(ev.id, usuario.id));
     if (!conAcceso) return json({ error: 'Para abrir el álbum, entra con tu cuenta (la del mail con el que compraste la invitación).', entrar: `/entrar?siguiente=${encodeURIComponent(`/panel/${ev.id}?k=${ev.clave}`)}` }, 401);
     if (!env.ALBUNEAR?.crearAlbum) return json({ error: 'Albunear no responde en este momento. Prueba en un rato.' }, 503);
-    const d = ev.datos;
-    const fecha = d.celebracion?.fecha || d.ceremonia?.fecha || '';
-    if (!/^\d{4}-\d{2}-\d{2}/.test(fecha)) return json({ error: 'Primero carga la fecha del evento.' }, 400);
+    if (!/^\d{4}-\d{2}-\d{2}/.test(fechaAlbum(ev))) return json({ error: 'Primero carga la fecha del evento.' }, 400);
     // El dueño (si entra un administrador de Amo Invitar!, el álbum igual queda a nombre del cliente)
     const email = usuario.esAdmin ? ((await almacen.accesos(ev.id)).find((a) => a.rol === 'cliente')?.email || usuario.email) : usuario.email;
-    const TIPO_ALB = { boda: 'boda', 15: 'quince', bautismo: 'bautizo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', empresarial: 'corporativo' };
     let r;
     try {
-      r = await env.ALBUNEAR.crearAlbum({ evento: ev.id, email, tipo: TIPO_ALB[ev.tipo] || 'otro', nombre1: d.nombres?.a || '', nombre2: d.nombres?.b || '',
-        fecha: fecha.slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais: paisVisitante(request) || null, lang: String(d.variante || 'es').slice(0, 2) });
+      r = await crearAlbumIncluido(env, ev, { email, pais: paisVisitante(request) || null });
     } catch (e) {
       // Si Albunear todavía no tiene la puerta nueva (o falla), el camino de siempre: crear el álbum con el código de regalo
       console.error('albunear', e);
       try { const g = await env.ALBUNEAR.albumDeluxe(ev.id); if (g?.album?.panel || g?.crear) return json({ entrar: g.album?.panel || g.crear, album: g.album || null }); } catch (e2) { console.error('albunear', e2); }
       return json({ error: 'No se pudo crear el álbum en Albunear. Prueba en un rato.' }, 502);
-    }
-    // El álbum pasa a la invitación (sección «Álbum de fotos QR» con Albunear, en lugar de Instagram Wall)
-    if (r?.album?.link) {
-      ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
-      ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, instagram: false };
-      await almacen.guardarEvento(ev);
     }
     return json({ entrar: r?.entrar, album: r?.album || null });
   }
@@ -1516,6 +1549,7 @@ export default {
     const [p0, p1] = partes;
     tienda.opcionesTienda.esquemaDe = (ev) => esquemaDe(env, url, ev);
     tienda.opcionesTienda.publicar = publicarEvento;
+    tienda.opcionesTienda.album = (ev) => albumAutomatico(env, ev, null); // README (ronda 98)
     // README (ronda 47): precios base y precios fijos por país editados en /admin (caché corta), antes de calcular cualquier precio
     if (p0 === 'api' || p0 === 'panel' || p0 === 'tienda') await cargarConfig(env);
     // README (ronda 38): dominio propio de una empresa Studio (invitaciones.tusalon.com). Ahí solo se sirven las invitaciones
@@ -1614,8 +1648,8 @@ export default {
       if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return await conPais(await env.ASSETS.fetch(new URL('/panel/', url.origin)), request);
       // README (ronda 89): el tablero profesional con el país del visitante (para la bandera, sin pasar por la web)
       if (p0 === 'empresa' && partes.length === 1 && M === 'GET') return await conPais(await env.ASSETS.fetch(new URL('/empresa/', url.origin)), request);
-      if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, url, p1);
-      if (p0 === 'puerta' && partes.length === 2) return await paginaPuerta(env, url, p1);
+      if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, url, p1, request);
+      if (p0 === 'puerta' && partes.length === 2) return await paginaPuerta(env, url, p1, request);
       if (p0 === 'vista' && partes.length === 2) return await vistaPrevia(env, url, request, p1);
       if (p0 === 'acceso' && partes.length === 2 && request.method === 'POST') return await entrarConPin(env, request, p1);
       if (p0 === 'acceso' && partes.length === 3 && partes[2] === 'dueno') return await entrarDueno(env, request, url, p1);

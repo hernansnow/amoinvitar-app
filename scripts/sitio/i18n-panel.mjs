@@ -15,8 +15,12 @@ const nuevos = [];
 const ES = /[áéíóúñ¿¡]|\b(de|la|el|los|las|tu|tus|con|para|por|una?|que|del|en|y|o|se|sin|al|lo|es|más|ya|no)\b/i;
 const agrega = (t) => {
   t = t.replace(/\s+/g, ' ').trim();
-  if (t.length < 2 || t.length > 400 || !/[A-Za-zÁÉÍÓÚáéíóúñ]/.test(t) || /^[a-z0-9_.-]+$/.test(t) || /[<>{}=]|^[^\wÁÉÍÓÚáéíóúñ¿¡"«(☰←→＋+✓]|https?:|\/\w+\/|;\s*$|^[a-z-]+:/.test(t)) return;
-  if (!/^[A-ZÁÉÍÓÚÑ¿¡0-9"«(☰←→＋+✓]/.test(t) && !ES.test(t)) return;
+  // README (ronda 98): frases con huecos {nombre}, {n}… (las arma tr() en el panel): se traducen enteras, con los huecos
+  const sinHuecos = t.replace(/\{\w+\}/g, 'X');
+  if (t.length < 2 || t.length > 1500 || /* README (ronda 98): antes 400 (quedaban afuera las ayudas largas) */ !/[A-Za-zÁÉÍÓÚáéíóúñ]/.test(t) || /^[a-z0-9_.-]+$/.test(t) || /[<>{}=]|https?:|\/\w+\/|;\s*$|^[a-z-]+:/.test(sinHuecos) || /^[^\wÁÉÍÓÚáéíóúñ¿¡"«(☰←→＋+✓{]/.test(t)) return;
+  if (/^\{\w+\}$/.test(t)) return;
+  if (/\.replace\(|=>|JSON\.|\?\?/.test(t)) return; // código, no texto
+  if (!/^[A-ZÁÉÍÓÚÑ¿¡0-9"«(☰←→＋+✓]/.test(t) && !ES.test(t) && !/^\{\w+\} [a-záéíóúñ]{3}/.test(t)) return;
   if (/^[A-Z][a-zA-Z]+$/.test(t) && !/[áéíóúñ]/.test(t) && t.length < 4) return;
   if (!hay.has(t)) { hay.add(t); nuevos.push(t); }
 };
@@ -41,6 +45,7 @@ function cadenas(src) {
         if (src[j] === '$' && src[j + 1] === '{') { // salta la expresión ${…} (con llaves anidadas)
           let k = j + 2, nivel = 1;
           while (k < n && nivel) { if (src[k] === '{') nivel++; else if (src[k] === '}') nivel--; else if (src[k] === '`') { k = src.indexOf('`', k + 1); } k++; } // (solo llaves: las comillas dentro de ${…} pueden ser de una expresión regular)
+          out.push(...cadenas(src.slice(j + 2, k - 1))); // README (ronda 98): también las cadenas de adentro (tr('…') en ${…})
           t += '\u0000'; j = k; continue;
         }
         t += src[j++];
@@ -64,16 +69,23 @@ const codigoDe = (f) => (f.endsWith('.html') ? [...readFileSync(join(RAIZ, f), '
 for (const f of [...ARCHIVOS_JS, 'public/empresa/index.html', 'public/muestrario/index.html']) {
   for (const { t, fijo } of cadenas(codigoDe(f))) {
     // Con HTML adentro («<span>Solicitar asistencia…</span>»): cada trozo de texto por separado
-    for (const x of t.split(/<[^>]*>/)) if (fijo || /<[^>]*>/.test(t) ? /[a-záéíóúñ] [a-záéíóúñ]|[áéíóúñ]|^[A-ZÁÉÍÓÚ][a-záéíóúñ]+/.test(x) : /[a-záéíóúñ]{3,} [a-záéíóúñ]/.test(x)) agrega(x);
+    for (const x of t.split(/<[^>]*>/)) if (fijo || /<[^>]*>/.test(t) ? /[a-záéíóúñ] [a-záéíóúñ]|[áéíóúñ]|^[A-ZÁÉÍÓÚ][a-záéíóúñ]+|^¡[A-Za-z]|\{\w+\} ?[a-z]{3}|[a-z]{2} \{\w+\}|^\+1? ?\{?\w*\}? [a-z]+$|^1 [a-z]{4,}$/.test(x) : /[a-záéíóúñ]{3,} [a-záéíóúñ]/.test(x)) agrega(x);
   }
 }
-for (const f of ['public/mi-cuenta/index.html', 'public/entrar/index.html', 'public/panel/index.html', 'public/empresa/index.html', 'public/muestrario/index.html']) // README (ronda 87/88): también el tablero profesional
+for (const f of ['public/mi-cuenta/index.html', 'public/entrar/index.html', 'public/panel/index.html', 'public/empresa/index.html', 'public/muestrario/index.html', 'src/componentes/checkin.js']) // README (ronda 98): también la Recepción // README (ronda 87/88): también el tablero profesional
   {
   const h = readFileSync(join(RAIZ, f), 'utf8');
   const sinJs = h.replace(/<style[\s\S]*?<\/style>/g, '');
   for (const m of sinJs.replace(/<script[\s\S]*?<\/script>/g, '').matchAll(/>([^<>]+)</g)) agrega(m[1]);
   for (const m of sinJs.matchAll(/\b(?:alt|title|placeholder|aria-label)="([^"]*)"/g)) agrega(m[1]);
   for (const sc of h.matchAll(/<script>([\s\S]*?)<\/script>/g)) for (const m of sc[1].matchAll(/'((?:[^'\\\n]|\\.){2,})'/g)) if (/[a-záéíóúñ] [a-záéíóúñ]|[áéíóúñ]/.test(m[1])) agrega(m[1]);
+}
+// README (ronda 98): palabras sueltas en minúscula que el filtro de arriba no reconoce como español
+for (const x of ['llegaron', 'faltan', 'Una persona menos', 'Una persona más', 'Ya registrado ({n})', 'Había avisado que no iba']) if (!hay.has(x)) { hay.add(x); nuevos.push(x); }
+// README (ronda 98): textos que manda el servidor y se ven en el panel (opciones de Recuerdo)
+{
+  const { RECUERDO } = await import(join(RAIZ, 'src/catalogo.js'));
+  for (const o of Object.values(RECUERDO)) for (const x of [o.nombre, o.corto, o.texto]) if (x) agrega(x);
 }
 let n = Math.max(...Object.keys(fuente).map(Number)) + 1;
 for (const t of nuevos) fuente[n++] = t;
