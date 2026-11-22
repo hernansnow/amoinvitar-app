@@ -103,8 +103,8 @@ function enPais(sede) {
 const PIE_ZONA = { es: 'Invitaciones digitales', en: 'Digital invitations', pt: 'Convites digitais', fr: 'Invitations numériques', it: 'Inviti digitali', de: 'Digitale Einladungen', nl: 'Digitale uitnodigingen' };
 
 // Completa la página guardada para la carpeta de un país
-// README (ronda 43): los artículos de /ideas/ están solo en español (sus hreflang, solo entre las carpetas en español)
-const soloEspanol = (pagina) => /^ideas(\/|$)/.test(pagina);
+// README (ronda 100): los artículos de /ideas/ ya están en todos los idiomas (antes, ronda 43, solo en español)
+const soloEspanol = () => false;
 // README (ronda 44): Sweet 16 solo en inglés (Estados Unidos, Canadá e internacional)
 const soloIngles = (pagina) => pagina === 'sweet16';
 function componer(html, sede, pagina, { legal = false, monedaRaiz = '' } = {}) {

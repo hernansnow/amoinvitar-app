@@ -80,7 +80,7 @@ function cabecera(P) {
   const enEvento = lista.some((e) => e.pagina === P.slug) || ['diseno-a-medida', 'profesionales', 'ideas'].includes(P.slug);
   // README (ronda 89): «Diseño a medida» con los eventos y, después de una línea, profesionales e ideas
   const itemsMas = `<a href="/diseno-a-medida"${actual('diseno-a-medida')}>Diseño a medida</a>`;
-  const itemsExtra = `<hr class="menu-sep"><a class="menu-extra" href="/profesionales"${actual('profesionales')}>Para profesionales</a><a class="menu-extra" href="/ideas"${actual('ideas')} data-solo-es>Ideas y frases</a>`; // README (ronda 99): las ideas existen solo en español: fuera del menú en los otros idiomas
+  const itemsExtra = `<hr class="menu-sep"><a class="menu-extra" href="/profesionales"${actual('profesionales')}>Para profesionales</a><a class="menu-extra" href="/ideas"${actual('ideas')}>Ideas y frases</a>`; // README (ronda 100): las ideas ya están en todos los idiomas
   return `<a class="skip" href="#principal">Saltar al contenido</a>
 <header class="cab">
   <div class="caja cab-fila">
@@ -367,7 +367,7 @@ function pie() {
   <div class="pie-grid">
     <div class="pie-marca"><a class="logo" href="/" aria-label="Amo Invitar!"><img src="/web/img/logo-pie.svg" alt="Amo Invitar!" width="170" height="37" loading="lazy"></a><p>Invitaciones digitales interactivas y originales para bodas y eventos.</p>${redes}</div>
     <div class="pie-links">
-      <div class="pie-bloque">${lista('Invitaciones', [...ev.map((e) => [`/${e.pagina}`, esc(e.id === 'boda' ? 'Bodas' : e.nombre)]), ['/diseno-a-medida', 'Diseño a medida']] /* README (ronda 99): acceso a Diseño a medida también en el pie */)}${lista('Recursos', [['/crear-invitacion', 'Crear invitación'], ['/#como-funciona', 'Cómo funciona'], ['/#funciones', 'Funciones'], ['/disenos', 'Modelos'], ['/precios', 'Planes y precios'], ['/album', 'Álbum QR'], ['/ideas', 'Ideas y frases', 0, 1], ['/profesionales', 'Para profesionales'], ['/#faq', 'Preguntas frecuentes'], ['/#nosotros', 'Nosotros'], ['/contacto', 'Contacto']])}</div>
+      <div class="pie-bloque">${lista('Invitaciones', [...ev.map((e) => [`/${e.pagina}`, esc(e.id === 'boda' ? 'Bodas' : e.nombre)]), ['/diseno-a-medida', 'Diseño a medida']] /* README (ronda 99): acceso a Diseño a medida también en el pie */)}${lista('Recursos', [['/crear-invitacion', 'Crear invitación'], ['/#como-funciona', 'Cómo funciona'], ['/#funciones', 'Funciones'], ['/disenos', 'Modelos'], ['/precios', 'Planes y precios'], ['/album', 'Álbum QR'], ['/ideas', 'Ideas y frases'], ['/profesionales', 'Para profesionales'], ['/#faq', 'Preguntas frecuentes'], ['/#nosotros', 'Nosotros'], ['/contacto', 'Contacto']])}</div>
       <div class="pie-bloque">${lista('Tu cuenta', [['/mi-cuenta', 'Mi panel'], ['/entrar', 'Entrar']])}${lista('Productos', [['https://amofotear.com', 'Amo Fotear', 1], ['https://albunear.com', 'Albunear', 1], ['https://snowproducciones.com.ar', 'Snow Producciones', 1]])}</div>
     </div>
   </div>
@@ -859,7 +859,7 @@ paginaProfesionales();
   const GEN = { ...GENERICO, id: 'otros' };
   const SLUG_EV = { boda: 'bodas', 15: 'mis15', bautismo: 'bautismo' };
   for (const a of IDEAS) {
-    const P = { titulo: a.titulo, descripcion: a.descripcion, cabFija: true, soloEspanol: true };
+    const P = { titulo: a.titulo, descripcion: a.descripcion, cabFija: true }; // README (ronda 100): ya en todos los idiomas
     const otras = IDEAS.filter((x) => x !== a).map((x) => `<li><a href="/ideas/${x.slug}">${esc(x.h1)}</a></li>`).join('');
     escribe(`ideas/${a.slug}`, P, [
       cabeceraSimple('Ideas', esc(a.h1), esc(a.lead)),
@@ -869,7 +869,7 @@ paginaProfesionales();
       llamada(GEN),
     ].join('\n'));
   }
-  const P = { titulo: 'Ideas y frases para invitaciones', descripcion: 'Frases para invitaciones de boda, 15 años y bautismo, qué poner en una invitación y cuándo enviar el Save The Date.', cabFija: true, soloEspanol: true };
+  const P = { titulo: 'Ideas y frases para invitaciones', descripcion: 'Frases para invitaciones de boda, 15 años y bautismo, qué poner en una invitación y cuándo enviar el Save The Date.', cabFija: true };
   escribe('ideas', P, [
     cabeceraSimple('Ideas', 'Ideas y frases para tu <em>invitación</em>', 'Textos, consejos y tiempos para armar una invitación que todos quieran abrir.'),
     `<section class="seccion"><div class="caja"><div class="ideas-lista">${IDEAS.map((a) => `<a class="ideas-item rev" href="/ideas/${a.slug}"><h2>${esc(a.h1)}</h2><p>${esc(a.lead)}</p><span>Leer ${ic('flecha')}</span></a>`).join('')}</div></div></section>`,

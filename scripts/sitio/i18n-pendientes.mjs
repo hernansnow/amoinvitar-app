@@ -13,7 +13,8 @@ const des = (t) => t.replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 const hay = new Set(Object.values(fuente));
 const nuevos = [];
 const agrega = (t) => { t = norm(t); if (t.length > 1 && /[A-Za-zÁÉÍÓÚáéíóúñ]/.test(t) && !/^\{\{/.test(t) && !hay.has(t)) { hay.add(t); nuevos.push(t); } };
-for (const f of readdirSync(RAIZ).filter((x) => x.endsWith('.html'))) {
+// README (ronda 100): también las notas de /ideas/ (subcarpeta)
+for (const f of [...readdirSync(RAIZ).filter((x) => x.endsWith('.html')), ...readdirSync(join(RAIZ, 'ideas')).filter((x) => x.endsWith('.html')).map((x) => `ideas/${x}`)]) {
   const h = readFileSync(join(RAIZ, f), 'utf8');
   const limpio = h.replace(/<(script|style)[\s\S]*?<\/\1>/g, '').replace(/<figure class="opinion">[\s\S]*?<\/figure>/g, '');
   for (const m of limpio.matchAll(/>([^<>]+)</g)) agrega(m[1]);
