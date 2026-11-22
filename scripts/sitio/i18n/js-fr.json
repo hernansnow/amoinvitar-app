@@ -1256,8 +1256,8 @@
  "1184": "Andorre",
  "1325": "portable",
  "129": "Baby shower",
- "220": "Plan: ",
- "281": "Plan ",
+ "220": "Formule : ",
+ "281": "Formule ",
  "487": "Costa Rica",
  "488": "El Salvador",
  "490": "Puerto Rico",
@@ -1914,5 +1914,8 @@
  "1914": "Une personne de moins",
  "1915": "Une personne de plus",
  "1916": "Déjà enregistré ({n})",
- "1917": "Avait prévenu qu’il ne viendrait pas"
+ "1917": "Avait prévenu qu’il ne viendrait pas",
+ "1918": "Mariage civil",
+ "1919": "Fiançailles",
+ "1920": "Demande en mariage"
 }

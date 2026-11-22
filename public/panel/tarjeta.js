@@ -38,7 +38,8 @@ const el = (tag, attrs = {}, ...hijos) => {
 const ALTO_LINEA = 1.18;
 const GENERICA = { titulos: 'cursive', brush: 'cursive', serif: 'serif', rouge: 'cursive', juliette: 'cursive', parisienne: 'cursive', satisfy: 'cursive', pristina: 'cursive', dantina: 'cursive', abril: 'serif', triforce: 'serif' };
 const familia = (def, t, fuente = t.fuente) => `"${def.fuentes?.[fuente] || 'Jost'}", ${GENERICA[fuente] || 'sans-serif'}`;
-const rellenar = (s, vars) => String(s || '').replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+// README (ronda 99): con vars.__tr, el texto fijo del diseño pasa antes al idioma de la invitación
+const rellenar = (s, vars) => String((vars?.__tr ? vars.__tr(s || '') : s) || '').replace(/\{(\w+)\}/g, (_, k) => (k === '__tr' ? '' : vars[k] ?? ''));
 const leerPos = (p) => String(p || '50% 50%').split(' ').map((x) => parseFloat(x) / 100);
 const visible = (t, valor) => (t.mayus ? String(valor).toLocaleUpperCase('es') : String(valor));
 // Posición horizontal según la alineación: centro (x es el medio), izquierda o derecha (x es el borde)

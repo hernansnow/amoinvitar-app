@@ -5,6 +5,7 @@ import { armarMiniatura, achicarFoto } from './miniatura.js';
 import { leerPlanilla } from './planilla.js';
 import { editorTarjeta, dibujarTarjeta } from './tarjeta.js';
 import { montarAdmin } from './admin.js';
+import { TARJETA_I18N, traducirFijo } from './tarjeta-i18n.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 // README (ronda 98): frases con datos («{nombre} recibe: …»): se traduce la plantilla al idioma del panel y después se ponen
@@ -1330,7 +1331,7 @@ function horaPais(hora, corta = false) {
   if (f.h === 12) return `${h % 12 || 12}${corta && m[2] === '00' ? '' : ':' + m[2]} ${h < 12 ? 'am' : 'pm'}`;
   return `${corta ? m[1] + (m[2] === '00' ? '' : ':' + m[2]) : m[1].padStart(2, '0') + ':' + m[2]}${f.suf}`;
 }
-function varsTarjeta(o = {}) {
+function varsTarjetaEs(o = {}) {
   // o: lo que el cliente cambió en los campos de la tarjeta (nombres, fecha, hora); si no, lo de la invitación
   const nA = o.a ?? datos.nombres?.a ?? '', nB = o.b ?? datos.nombres?.b ?? '';
   const lugar = datos.celebracion?.nombre || datos.ceremonia?.nombre || '';
@@ -1371,6 +1372,29 @@ function varsTarjeta(o = {}) {
     graciasAcomp: plural ? '¡Gracias por acompañarnos y haber hecho que sea inolvidable para nosotros!' : '¡Gracias por acompañarme y haber hecho que sea inolvidable!',
     teQueremos: plural ? '¡Te queremos!' : '¡Te quiero!', quince: S.evento.tipo === '15' ? '15' : '',
   };
+}
+// README (ronda 99): la tarjeta en el idioma de la invitación (en castellano, como siempre). Las frases y los nombres de
+// meses y días se cambian acá; los textos fijos de cada diseño, al rellenarlos (vars.__tr, ver tarjeta.js)
+function varsTarjeta(o = {}) {
+  const v = varsTarjetaEs(o);
+  const base = String(datos.variante || 'es').slice(0, 2), I = TARJETA_I18N[base];
+  if (!I) return v;
+  const plural = !!v.b, k = plural ? 1 : 0;
+  const f = I.frases[S.evento.tipo] || I.frases[plural ? 'boda' : 'cumple'];
+  const fecha = v.iso ? new Date(`${v.iso}T12:00:00`) : null;
+  const fmt = (op) => { try { return new Intl.DateTimeFormat(base, op).format(fecha); } catch { return ''; } };
+  const may = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  const mes = fecha ? fmt({ month: 'long' }) : '', dia = fecha ? fmt({ weekday: 'long' }) : '';
+  const [a, m, d] = v.iso ? v.iso.split('-') : [];
+  const cierre = datos.rsvp?.cierre ? (([ca, cm, cd]) => (S.formato?.fecha === 'MDY' ? `${cm}/${cd}/${ca}` : `${cd}/${cm}/${ca}`))(datos.rsvp.cierre.split('-')) : '';
+  return { ...v, __tr: (x) => traducirFijo(x, base),
+    evento: f.evento, eventoExclama: f.exclama, invitamos: f.invitamos[k], invitamosLinea: f.invitamos[k].replace(/\s*\n\s*/g, ' '),
+    teEsperamos: I.teEsperamos[k], acompanar: I.acompanar[k], mensaje: I.mensaje, citaMomentos: I.citaMomentos, citaFelices: I.citaFelices,
+    graciasAcomp: I.graciasAcomp[k], teQueremos: I.teQueremos[k], rsvpAntes: cierre ? I.rsvpAntes.replace('{fecha}', cierre) : '',
+    exclamaCorta: S.evento.tipo === 'boda' || (plural && !I.frases[S.evento.tipo]) ? I.exclamaBoda.replace(/[!¡]/g, '').trim() + '!' : S.evento.tipo === '15' ? I.exclama15 : f.exclama,
+    ...(fecha ? { mes: may(mes), mesCorto: may(mes.slice(0, 3)), diaSemana: may(dia), diaSemanaCorto: may(dia).slice(0, 3),
+      fechaCorta: `${d} ${mes.slice(0, 3).toUpperCase()} ${a}`, fechaLarga: fmt({ day: 'numeric', month: 'long', year: 'numeric' }),
+      fechaPuntos: `${Number(d)}·${may(mes)}·${a}`, fechaGuion: fmt({ day: 'numeric', month: 'long', year: 'numeric' }), fechaBullets: `${Number(d)} • ${may(mes)} • ${a}` } : {}) };
 }
 // Catálogo de tarjetas con foto (se carga una vez)
 const catalogos = {};

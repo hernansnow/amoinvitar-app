@@ -1256,8 +1256,8 @@
  "1184": "Andorra",
  "1325": "Handy",
  "129": "Baby shower",
- "220": "Plan: ",
- "281": "Plan ",
+ "220": "Tarif: ",
+ "281": "Tarif ",
  "487": "Costa Rica",
  "488": "El Salvador",
  "490": "Puerto Rico",
@@ -1914,5 +1914,8 @@
  "1914": "Eine Person weniger",
  "1915": "Eine Person mehr",
  "1916": "Bereits erfasst ({n})",
- "1917": "Hatte abgesagt"
+ "1917": "Hatte abgesagt",
+ "1918": "Standesamt",
+ "1919": "Verlobung",
+ "1920": "Heiratsantrag"
 }

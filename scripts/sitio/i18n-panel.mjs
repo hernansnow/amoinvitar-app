@@ -81,7 +81,7 @@ for (const f of ['public/mi-cuenta/index.html', 'public/entrar/index.html', 'pub
   for (const sc of h.matchAll(/<script>([\s\S]*?)<\/script>/g)) for (const m of sc[1].matchAll(/'((?:[^'\\\n]|\\.){2,})'/g)) if (/[a-záéíóúñ] [a-záéíóúñ]|[áéíóúñ]/.test(m[1])) agrega(m[1]);
 }
 // README (ronda 98): palabras sueltas en minúscula que el filtro de arriba no reconoce como español
-for (const x of ['llegaron', 'faltan', 'Una persona menos', 'Una persona más', 'Ya registrado ({n})', 'Había avisado que no iba']) if (!hay.has(x)) { hay.add(x); nuevos.push(x); }
+for (const x of ['Civil', 'Compromiso', 'Pedida de mano', 'llegaron', 'faltan', 'Una persona menos', 'Una persona más', 'Ya registrado ({n})', 'Había avisado que no iba']) if (!hay.has(x)) { hay.add(x); nuevos.push(x); }
 // README (ronda 98): textos que manda el servidor y se ven en el panel (opciones de Recuerdo)
 {
   const { RECUERDO } = await import(join(RAIZ, 'src/catalogo.js'));

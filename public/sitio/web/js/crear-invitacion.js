@@ -257,8 +257,9 @@
   function personalizar(it, ev, op) {
     op = op || {};
     ventanas();
-    // README (ronda 91): a medida para una boda también pide los dos nombres
-    var dos = !!(it.dos || (it.medida && ev.tipo === 'boda')), largo = it.link.producto === 'invitacion' ? 15 : 20;
+    // README (ronda 91): a medida para una boda también pide los dos nombres. README (ronda 99): y la STD web, la tarjeta
+    // y cualquier otro producto de boda (siempre son dos)
+    var dos = !!(it.dos || ev.tipo === 'boda'), largo = it.link.producto === 'invitacion' ? 15 : 20;
     var campo = function (id, etiqueta, ph) {
       return el('label', { class: 'ci-campo' }, el('span', { text: etiqueta }), el('input', { type: 'text', name: id, maxlength: largo, required: true, placeholder: ph, autocomplete: 'off' }));
     };

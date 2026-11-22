@@ -1256,8 +1256,8 @@
  "1184": "Andorra",
  "1325": "mobiel",
  "129": "Baby shower",
- "220": "Plan: ",
- "281": "Plan ",
+ "220": "Pakket: ",
+ "281": "Pakket ",
  "487": "Costa Rica",
  "488": "El Salvador",
  "490": "Puerto Rico",
@@ -1914,5 +1914,8 @@
  "1914": "Eén persoon minder",
  "1915": "Eén persoon meer",
  "1916": "Al geregistreerd ({n})",
- "1917": "Had laten weten niet te komen"
+ "1917": "Had laten weten niet te komen",
+ "1918": "Burgerlijk huwelijk",
+ "1919": "Verloving",
+ "1920": "Huwelijksaanzoek"
 }
