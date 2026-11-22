@@ -1202,7 +1202,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
     case 'avisoDiseno': return avisoDisenoEnviado();
     case 'avisoPersonalizacion': return el('div', { class: 'aviso-medida en-paso' }, // README (ronda 96)
       el('p', {}, el('strong', {}, 'Tu diseño se hizo con estas ideas.'), ' Para cambiar algo del diseño (colores, estilo, imágenes…), contáctanos y lo habilitamos.'),
-      el('p', {}, contactoCambios('el diseño de mi invitación')));
+      el('p', {}, contactoCambios(tr('el diseño de mi invitación'))));
     // El link de la Save The Date web: copiar, mandar por WhatsApp y verla
     case 'linkStd': {
       const link = `${location.origin}/std/${S.evento.id}`;
@@ -1211,7 +1211,7 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
         el('input', { type: 'text', readonly: true, value: link, onclick: (e) => e.target.select(), 'aria-label': c.etiqueta }),
         el('div', { class: 'link-std-botones' },
           el('button', { type: 'button', class: 'btn btn-chico', onclick: async () => { try { await navigator.clipboard.writeText(link); aviso('Link copiado'); } catch { aviso('No se pudo copiar: seleccionarlo y copiarlo a mano', true); } } }, 'Copiar link'),
-          el('a', { class: 'btn btn-sec btn-chico', target: '_blank', rel: 'noopener', href: `https://wa.me/?text=${encodeURIComponent(`¡Reservá la fecha! ${link}`)}` }, 'Mandar por WhatsApp'),
+          el('a', { class: 'btn btn-sec btn-chico', target: '_blank', rel: 'noopener', href: `https://wa.me/?text=${encodeURIComponent(`${tr('¡Reserva la fecha!')} ${link}`)}` }, 'Mandar por WhatsApp'),
           el('a', { class: 'btn btn-sec btn-chico', target: '_blank', rel: 'noopener', href: ver }, 'Ver')));
       return caja;
     }
@@ -1448,9 +1448,9 @@ function opcionMedida(c, idHtml, dis, celular = false) {
 function contactoCambios(que) {
   const base = whatsapp();
   if (!base) return null;
-  const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' y ');
   const numero = base.match(/wa\.me\/(\d+)/)?.[1];
-  const texto = `Hola! Quiero modificar algo de ${que}${nombres ? ` (${nombres})` : ''}. Código: ${id}`;
+  // README (ronda 102): el mensaje va en el idioma del panel (así se sabe en qué idioma contestar)
+  const texto = `${tr('¡Hola! Quiero modificar algo de {que}', { que })}${nombresWa()}. ${tr('Código: {id}', { id })}`;
   return el('a', { class: 'btn btn-wa btn-chico', target: '_blank', rel: 'noopener', href: `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, html: `${ICONO_WA}<span>${T('Escríbenos por WhatsApp')}</span>` });
 }
 // README (ronda 93): administración: volver a abrir (o cerrar) la edición del cliente
@@ -1469,7 +1469,7 @@ function botonEdicionAdmin(parte, abierta) {
 function avisoDisenoEnviado() {
   return el('div', { class: 'aviso-medida en-paso' },
     el('p', {}, el('strong', {}, 'Tu pedido de cambios de diseño ya está con el equipo.'), ' Ya no se puede modificar desde aquí. Si quieres cambiar algo, contáctanos.'),
-    el('p', {}, contactoCambios('los cambios de diseño de mi invitación')));
+    el('p', {}, contactoCambios(tr('los cambios de diseño de mi invitación'))));
 }
 function avisoMedidaStd() {
   const md = datos.std?.medida || {};
@@ -1499,7 +1499,7 @@ function avisoMedidaStd() {
             S.esquema?.producto === 'a-medida' ? null : el('button', { type: 'button', class: 'btn-link', onclick: volver }, '← Volver a los diseños')];
   return el('div', { class: 'aviso-medida en-paso' }, el('p', {}, ...fila.filter(Boolean)),
     !web && (md.aprobado || md.listo) ? entregaTarjetaMedida(md, 'std') : null,
-    md.listo && cerrada ? el('p', {}, 'Si quieres modificar algo, contáctanos. ', contactoCambios('mi Save The Date a medida')) : null,
+    md.listo && cerrada ? el('p', {}, 'Si quieres modificar algo, contáctanos. ', contactoCambios(tr('mi Save The Date a medida'))) : null,
     md.enviado ? el('p', {}, botonEdicionAdmin('std', !!md.abierta)) : null);
 }
 // README (ronda 92): la tarjeta Save The Date a medida terminada. El equipo sube las imágenes (JPG/PNG, la versión con
@@ -1612,7 +1612,7 @@ function campo(c, valor, alCambiar, prefijo = '', posicion = {}) {
   const motivo = desactivado || fijo ? el('p', { class: 'motivo' }, c.motivo, ' ',
     desactivado && c.irA ? el('button', { type: 'button', class: 'btn-link', onclick: () => irA(c.irA) }, 'Ir →') : null) : null;
   const aviso = c.cerrado ? el('p', { class: 'motivo' }, c.cerrado, ' ',
-    c.pedirCambio && whatsapp() ? el('a', { class: 'btn-link', target: '_blank', rel: 'noopener', href: `${whatsapp()}${encodeURIComponent(` Quiero pedir un cambio en: ${c.etiqueta || c.id}.`)}` }, 'Pedir el cambio por WhatsApp') : null) : null;
+    c.pedirCambio && whatsapp() ? el('a', { class: 'btn-link', target: '_blank', rel: 'noopener', href: `${whatsapp()}${encodeURIComponent(` ${tr('Quiero pedir un cambio en: {campo}.', { campo: c.etiqueta ? tr(c.etiqueta) : c.id })}`)}` }, 'Pedir el cambio por WhatsApp') : null) : null;
   const extra = { ...posicion, desactivado, fijo };
   if (!posicion.pos && (c.tipo === 'foto' && c.encuadre)) { extra.pos = () => leer(datos, `${c.id}Pos`); extra.alPos = (p) => cambio(`${c.id}Pos`, p); }
   // README (ronda 66): zoom en las fotos con encuadre (lugares, historia)
@@ -1734,7 +1734,7 @@ const NOMBRE_COMP = { idiomaAdicional: 'Idioma adicional', agradecimiento: 'Tarj
 const saldoComp = (p) => (CLAVES_COMP[p.id] || []).reduce((t, k) => t + (Number(S.empresa?.saldo?.[k]) || 0), 0);
 const compBloqueado = (p) => !!S.empresa && !!p.complemento && !!CLAVES_COMP[p.id] && !pasoActivo(p) && !saldoComp(p);
 function linkContacto(p) {
-  const txt = `Hola! Quiero solicitar el complemento «${NOMBRE_COMP[p.id] || p.titulo}» para la invitación ${S.evento.id}.`;
+  const txt = tr('¡Hola! Quiero solicitar el complemento «{nombre}» para la invitación {id}.', { nombre: tr(NOMBRE_COMP[p.id] || p.titulo), id: S.evento.id }); // README (ronda 102): en el idioma del panel
   const wa = S.ayuda?.whatsapp;
   return el('a', { class: 'btn btn-chico btn-contacto', href: wa ? `https://wa.me/${wa}?text=${encodeURIComponent(txt)}` : `mailto:hola@amoinvitar.com?subject=${encodeURIComponent(txt)}`, target: '_blank', rel: 'noopener' }, 'Contactanos');
 }
@@ -1946,7 +1946,7 @@ function pintarMedida() {
   const oculta = !!S.esquema?.edicionOculta && !S.usuario?.admin;
   document.body.classList.toggle('edicion-oculta', oculta);
   const abierta = !!datos.medida?.abierta;
-  const contacto = md.listo && !abierta ? el('p', {}, contactoCambios('mi diseño a medida')) : null;
+  const contacto = md.listo && !abierta ? el('p', {}, contactoCambios(tr('mi diseño a medida'))) : null;
   const fila = pagado && md.listo && tarjetaSuelta ? [el('strong', {}, '¡Tu tarjeta Save The Date está lista!'), ' Descárgala o compártela todas las veces que quieras.']
     : pagado && md.listo && webSuelta ? [el('strong', {}, '¡Tu Save The Date web está lista!'), ' Su link: ', el('a', { href: `${location.origin}/std/${S.evento.id}`, target: '_blank', rel: 'noopener' }, `${location.origin}/std/${S.evento.id}`)]
     : md.listo && abierta ? [el('strong', {}, '¡Tu diseño está listo!'), ' Ya puedes revisar y completar el contenido.']
@@ -2051,7 +2051,7 @@ function elegirModelo() {
 
 // README (ronda 89): el profesional pide el diseño a medida a Amo Invitar (no lo activa solo)
 function solicitarMedida() {
-  const wa = S.ayuda?.whatsapp, txt = `Quiero contratar un extra · Empresa: ${S.empresa?.nombre || ''} · Diseño a medida para la invitación ${S.evento.id}`;
+  const wa = S.ayuda?.whatsapp, txt = tr('Quiero contratar un extra · Empresa: {empresa} · Diseño a medida para la invitación {id}', { empresa: S.empresa?.nombre || '', id: S.evento.id });
   window.open(wa ? `https://wa.me/${wa}?text=${encodeURIComponent(txt)}` : `mailto:hola@amoinvitar.com?subject=${encodeURIComponent(txt)}`, '_blank', 'noopener');
 }
 
@@ -2068,9 +2068,10 @@ const whatsapp = () => {
   if (S.empresa?.limpio) return null; // el cliente de una empresa no ve contactos de Amo Invitar!
   const numero = S.marca?.blanca ? String(S.marca.whatsapp || '').replace(/\D/g, '') : S.ayuda?.whatsapp;
   if (!numero) return null;
-  const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' y ');
-  return `https://wa.me/${numero}?text=${encodeURIComponent(`Hola! Necesito ayuda con mi invitación${nombres ? ` (${nombres})` : ''}. Código: ${id}`)}`;
+  // README (ronda 102): en el idioma del panel
+  return `https://wa.me/${numero}?text=${encodeURIComponent(`${tr('¡Hola! Necesito ayuda con mi invitación')}${nombresWa()}. ${tr('Código: {id}', { id })}`)}`;
 };
+const nombresWa = () => { const n = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & '); return n ? ` (${n})` : ''; };
 const ICONO_WA = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3 1 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2 .7 2.8.6.4-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.3-.2Z"/></svg>';
 
 // Manual de uso corto (el completo está en /ayuda/panel/)
