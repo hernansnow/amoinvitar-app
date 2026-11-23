@@ -558,12 +558,21 @@ export function varianteDePais(pais) { return PAISES[(pais || '').toUpperCase()]
 export function esPlural(tipo) { return !!EVENTOS[tipo]?.plural; }
 
 // Devuelve el diccionario completo para un tipo de evento y una variante.
+// README (ronda 106): textos de la Save The Date web en los demás idiomas (antes caían en inglés)
+const STD_OTROS = {
+  pt: { base: { 'std.proximamente': 'Em breve, o convite oficial' }, boda: { 'std.mensaje': 'Esperamos você para celebrar o nosso casamento.' }, 15: { 'std.mensaje': 'Espero que você me acompanhe na minha grande noite.' } },
+  fr: { base: { 'std.proximamente': 'Invitation officielle à suivre' }, boda: { 'std.mensaje': 'Nous avons hâte de célébrer notre mariage avec vous.' }, 15: { 'std.mensaje': 'J’espère que vous serez là pour ma grande soirée.' } },
+  it: { base: { 'std.proximamente': 'Invito ufficiale a breve' }, boda: { 'std.mensaje': 'Ti aspettiamo per festeggiare il nostro matrimonio.' }, 15: { 'std.mensaje': 'Spero che tu possa accompagnarmi nella mia grande notte.' } },
+  de: { base: { 'std.proximamente': 'Offizielle Einladung folgt' }, boda: { 'std.mensaje': 'Wir freuen uns, unsere Hochzeit mit dir zu feiern.' }, 15: { 'std.mensaje': 'Ich hoffe, du feierst mit mir meinen großen Abend.' } },
+  nl: { base: { 'std.proximamente': 'Officiële uitnodiging volgt' }, boda: { 'std.mensaje': 'We kijken ernaar uit om onze bruiloft met je te vieren.' }, 15: { 'std.mensaje': 'Ik hoop dat je erbij bent op mijn grote avond.' } },
+  ca: { base: { 'std.proximamente': 'Properament, la invitació formal' }, boda: { 'std.mensaje': 'T’esperem per celebrar el nostre casament.' }, 15: { 'std.mensaje': 'Espero que m’acompanyis en la meva gran nit.' } },
+};
 export function diccionario(tipo, variante) {
   const ev = EVENTOS[tipo] || EVENTOS.boda;
   const v = VARIANTES.includes(variante) ? variante : 'es';
   const otro = OTROS[v];
   const capas = v === 'en' || otro
-    ? [BASE.es, BASE.en, ev.es, ev.en, otro?.base, ...(ev.de ? [otro?.eventos?.[EVENTOS[ev.de].de || ev.de], otro?.eventos?.[ev.de]] : []), otro?.eventos?.[tipo in EVENTOS ? tipo : 'boda'], NUEVOS[v]?.[tipo]]
+    ? [BASE.es, BASE.en, ev.es, ev.en, otro?.base, STD_OTROS[v]?.base, STD_OTROS[v]?.[tipo], ...(ev.de ? [otro?.eventos?.[EVENTOS[ev.de].de || ev.de], otro?.eventos?.[ev.de]] : []), otro?.eventos?.[tipo in EVENTOS ? tipo : 'boda'], NUEVOS[v]?.[tipo]]
     : [BASE.es, v === 'es-cr' ? BASE['es-ar'] : null, BASE[v], ev.es, v === 'es-cr' ? ev['es-ar'] : null, ev[v]];
   const d = Object.assign({}, ...capas.filter(Boolean));
   // README (ronda 58): corporativo en los demás idiomas: título y nombre del evento neutros (no los de boda)

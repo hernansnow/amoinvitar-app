@@ -927,7 +927,9 @@ function pasosSimple({ tipo, modelo, datos }) {
   const soloFiesta = modelo?.id !== 'civil';
   const lug = lugares && { ...lugares, obligatoria: true, campos: lugares.campos.filter((c) => !/^(separador\.fotosLugar|fotosOn\.lugares|ceremonia\.foto|celebracion\.foto)$/.test(c.id)
     && (!soloFiesta || !/^(ceremonia\.|separador\.ceremonia|separador\.fiesta|celebracion\.tituloUnico|celebracion\.titulo$)/.test(c.id))) };
-  const rsvp = de('rsvp') && { ...de('rsvp'), obligatoria: true, campos: de('rsvp').campos.filter((c) => !/^(rsvp\.aforo|rsvp\.extras|rsvp\.preguntas\.traslado|rsvp\.preguntas\.mensaje)$/.test(c.id)) };
+  // README (ronda 106): sin «Título» (estos modelos no lo tienen) y «Texto» en lugar de «Texto de la sección»
+  const rsvp = de('rsvp') && { ...de('rsvp'), obligatoria: true, campos: de('rsvp').campos.filter((c) => !/^(rsvp\.aforo|rsvp\.extras|rsvp\.preguntas\.traslado|rsvp\.preguntas\.mensaje|textos\.rsvp\.titulo)$/.test(c.id))
+    .map((c) => (c.id === 'rsvp.texto' ? { ...c, etiqueta: 'Texto' } : c)) };
   const acceso = { id: 'seguridad', titulo: 'Acceso', obligatoria: true,
     campos: CAMPOS_ACCESO.map((c) => (c.id === 'acceso.tipo' ? { ...c, valores: c.valores.filter((o) => !o.v.startsWith('lista')) } : c)) };
   const pasos = [portadaSimple(base, modelo), pasoIdioma, lug, rsvp, acceso, pasoPublicar(tipo), { ...pasoDiseno(modelo), separado: true }].filter(Boolean);

@@ -679,7 +679,8 @@ async function estadoProducto(env, request, ev, esquema) {
   const clave = medida ? 'a-medida' : ev.producto; // README (ronda 48): clave de precio (precios fijos por país)
   const base = medida ? (A_MEDIDA[ev.aMedida || 'personalizado']?.deluxe || 0) : (PRODUCTOS[ev.producto]?.precio || 0);
   const pagado = ev.paquete !== 'borrador';
-  const elegidos = medida ? complementos(esquema, ev.datos).filter((x) => EXTRAS[x]) : [];
+  // README (ronda 106): también los modelos simples y la STD web cobran sus complementos (cambio de diseño, idioma adicional)
+  const elegidos = complementos(esquema, ev.datos).filter((x) => EXTRAS[x]);
   const ya = ev.datos.extras || [];
   const extrasAPagar = elegidos.filter((x) => !ya.includes(x));
   const eur = (pagado ? 0 : base) + extrasAPagar.reduce((t, x) => t + (EXTRAS[x]?.precio || 0), 0);
@@ -692,7 +693,7 @@ async function estadoProducto(env, request, ev, esquema) {
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: texto(x, EXTRAS[x]?.precio || 0), pagado: !extrasAPagar.includes(x) })),
     aPagar: { eur, eurBase: pagado ? 0 : base, texto: texto(clave, eur), plan: pagado ? null : texto(clave, base), extras: extrasAPagar },
     secciones: [],
-    preciosExtras: Object.fromEntries(['std-tarjeta-medida', 'std-web-medida', 'idioma'].map((x) => [x, `+${texto(x, EXTRAS[x]?.precio || 0)}`])),
+    preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'agradecimiento', 'video-portada', 'idioma', 'diseno'].map((x) => [x, `+${texto(x, EXTRAS[x]?.precio || 0)}`])),
     activar: !pagado,
     // Diseño a medida: primero lo aprueba el equipo; recién ahí se paga
     ...(enviable ? { medida: { enviado: !!ev.datos.medida?.enviado, aprobado: !!ev.datos.medida?.aprobado, listo: !!ev.datos.medida?.listo } } : {}),

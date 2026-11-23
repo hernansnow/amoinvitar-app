@@ -1803,7 +1803,7 @@ function pintarFaltan() {
 // README (ronda 85): el precio del complemento en el renglón del interruptor (verde, a la derecha). La Save The Date
 // tiene varios precios: «desde» y el más bajo de las opciones del paso
 function precioComplemento(p) {
-  if (!p.complemento || !S.plan?.preciosExtras || S.esquema?.sinNiveles || S.empresa) return null; // README (ronda 87): sin precios en eventos de empresa
+  if (!p.complemento || !S.plan?.preciosExtras || S.empresa) return null; // README (ronda 87): sin precios en eventos de empresa · (ronda 106): también en simples, STD web y a medida
   const pr = S.plan.preciosExtras;
   const num = (x) => Number(String(x || '').replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}\b)/g, '').replace(',', '.')) || 0;
   let claves = { idiomaAdicional: ['idioma'], agradecimiento: ['agradecimiento'], diseno: ['diseno'] }[p.id];
