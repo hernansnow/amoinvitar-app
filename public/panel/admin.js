@@ -713,17 +713,18 @@ function vistaMesas() {
 // servidor a Albunear); pasar a Platinum cuesta solo la diferencia. Con un link propio, la pestaña no aparece.
 const albumActivo = () => ctx.datos.secciones?.album === true;
 const albumPropio = () => ctx.datos.album?.origen === 'propio';
-// README (ronda 52): crear el álbum Classic (si falta) ya armado con el evento y entrar directo a su panel de Albunear
-async function entrarAlbunear() {
-  const w = window.open('', '_blank');
+// README (ronda 108): activar el álbum Classic incluido en Deluxe: se crea ya armado (tipo de evento, nombres, fecha, el
+// estilo de la invitación y la foto de la sección) y queda vinculado. Se administra desde esta misma pestaña.
+async function activarAlbum(b) {
+  if (b) b.disabled = true;
   try {
     const x = await ctx.api('/albunear', { method: 'POST', body: '{}' });
     ctx.datos.secciones = { ...(ctx.datos.secciones || {}), album: true, instagram: false };
     ctx.datos.album = { ...(ctx.datos.album || {}), origen: 'albunear', ...(x.album?.link ? { albunear: x.album.link } : {}) };
-    if (w) w.location = x.entrar; else location.href = x.entrar;
-    ctx.redibujar();
+    ctx.aviso(tr('¡Listo! El álbum QR ya está activo en tu invitación.'));
+    ctx.redibujarAdmin?.();
   } catch (e) {
-    w?.close();
+    if (b) b.disabled = false;
     if (e.datos?.entrar) { ctx.aviso(e.message, true); setTimeout(() => { location.href = e.datos.entrar; }, 1800); return; }
     ctx.aviso(e.message, true);
   }
@@ -731,53 +732,51 @@ async function entrarAlbunear() {
 function vistaAlbum() {
   const caja = ctx.el('section', { class: 'ad-tarjeta ad-albunear' }, ctx.el('p', { class: 'ayuda' }, 'Cargando…'));
   const logo = ctx.el('img', { src: '/comun/img/albunear.svg', alt: 'Albunear', class: 'ad-alb-logo', width: 160, height: 50 });
+  const boda = ctx.S.evento.tipo === 'boda';
+  // En bodas, en plural (ustedes); en los demás eventos, en singular (tú)
+  const descripcion = () => ctx.el('p', { class: 'ad-alb-texto' }, boda
+    ? 'Los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y ustedes las tienen todas en un solo lugar.'
+    : 'Los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y tú las tienes todas en un solo lugar.');
   (async () => {
     let r = { incluido: false, crear: 'https://albunear.com/empezar', album: null };
     try { r = await ctx.api('/albunear'); } catch { /* sin conexión: quedan los links generales */ }
-    // README (ronda 98): el álbum incluido es solo con Deluxe pagado (el borrador que pide Deluxe todavía no lo trae)
     const deluxe = !!r.incluido, deluxeSinPagar = !deluxe && ctx.S.plan?.plan === 'deluxe';
-    const pie = ctx.el('p', { class: 'ad-alb-pie' }, 'No es obligatorio usar el álbum de Albunear: se puede sumar el link de otro proveedor en la sección "Álbum de fotos QR" de la invitación.');
-    // README (ronda 87): evento de un profesional: la propuesta de Albunear para sus clientes (sin el álbum incluido)
+    // README (ronda 87): evento de un profesional: la propuesta de Albunear para sus clientes (sin el álbum incluido). Igual que antes
     if (ctx.S.empresa) {
+      const pie = ctx.el('p', { class: 'ad-alb-pie' }, 'No es obligatorio usar el álbum de Albunear: se puede sumar el link de otro proveedor en la sección "Álbum de fotos QR" de la invitación.');
       caja.replaceChildren(logo, ctx.el('h2', {}, 'Álbum de fotos compartido'),
         ctx.el('p', { class: 'ad-alb-texto' }, 'Tus clientes pueden tener un álbum QR listo para usar de Albunear, para que los invitados suban sus fotos y videos del evento escaneando un QR, sin descargar nada, envíen mensajes y mucho más. Lo mejor es que tu cliente tiene todo en un solo lugar: puede descargar las imágenes, cambiar diseños, imprimir el QR, proyectar las fotos durante el evento y mucho más.'),
         ctx.el('div', { class: 'ad-botones' }, enlace('Conoce Albunear', 'https://albunear.com', 'btn btn-albunear')), pie);
       return;
     }
-    if (!albumActivo() && deluxe) {
-      // Deluxe sin activar: se activa la sección con Albunear y se abre la creación del álbum (con el regalo)
-      const activar = entrarAlbunear; // README (ronda 52): se crea ya armado (evento, nombres, fecha y estilo) y se entra a su panel
-      caja.replaceChildren(logo, ctx.el('h2', {}, 'Álbum de fotos compartido'),
+    // Deluxe pagada, con la sección prendida y el álbum creado: se administra todo desde acá
+    const link = r.album?.link || ctx.datos.album?.albunear;
+    if (deluxe && albumActivo() && link) {
+      const { vistaAlbumQr } = await import('/panel/album-qr.js');
+      caja.replaceWith(vistaAlbumQr(ctx, { tr, album: { ...(r.album || {}), link } }));
+      return;
+    }
+    // Deluxe sin activar (o pedida y todavía sin pagar)
+    if (deluxe || deluxeSinPagar) {
+      caja.classList.add('ad-alb-oferta');
+      caja.replaceChildren(ctx.el('h2', {}, 'Álbum de fotos compartido'),
+        ctx.el('div', { class: 'ad-alb-banner deluxe' }, 'Activa la sección "Álbum QR" para usar esta función'),
+        descripcion(),
         ctx.el('p', { class: 'ad-alb-texto' }, 'Tu invitación Deluxe incluye el álbum QR Classic, totalmente gratis. ¡Activarlo para comenzar!'),
-        ctx.el('p', { class: 'ad-alb-nota' }, 'Con Albunear los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y ustedes las tienen todas en un solo lugar.'),
-        ctx.el('div', { class: 'ad-botones' }, boton('Activar y crear el álbum Classic', activar, 'btn btn-albunear')), pie);
+        ctx.el('p', { class: 'ad-alb-pie' }, 'Activo reemplaza Instagram Wall.'),
+        deluxe ? ctx.el('div', { class: 'ad-botones' }, boton('Activar y crear el Álbum', (e) => activarAlbum(e.currentTarget), 'btn btn-albunear'))
+          : ctx.el('p', { class: 'ad-alb-nota' }, 'El álbum se crea y se vincula solo a la invitación al publicarla y pagar el plan Deluxe.'),
+        enlace('Conocer Albunear', 'https://albunear.com', 'btn-link ad-alb-conocer'));
       return;
     }
-    if (deluxeSinPagar) {
-      caja.replaceChildren(logo, ctx.el('h2', {}, 'Álbum de fotos compartido'),
-        ctx.el('p', { class: 'ad-alb-texto' }, 'Tu invitación Deluxe incluye el álbum QR Classic, totalmente gratis.'),
-        ctx.el('p', { class: 'ad-alb-nota' }, 'El álbum se crea y se vincula solo a la invitación al publicarla y pagar el plan Deluxe. No hace falta hacer nada más.'), pie);
-      return;
-    }
-    if (!albumActivo()) {
-      caja.replaceChildren(logo, ctx.el('h2', {}, 'Álbum de fotos compartido'),
-        ctx.el('p', { class: 'ad-alb-texto' }, 'Con Albunear los invitados suben sus fotos y videos del evento escaneando un QR, sin descargar nada, y ustedes las tienen todas en un solo lugar.'),
-        ctx.el('p', { class: 'ad-alb-nota' }, ctx.el('span', { class: 'ad-alb-verde' }, 'Si la invitación es Deluxe, está incluido el paquete Classic de Albunear sin cargo.'), ctx.el('br'),
-          'También se puede agregar a invitaciones Basic y Premium contratándolo en Albunear.', ctx.el('br'), ctx.el('strong', {}, '¡Hay planes gratis!')),
-        ctx.el('div', { class: 'ad-botones' }, enlace('Conocer Albunear', 'https://albunear.com', 'btn btn-albunear')), pie);
-      return;
-    }
-    const creado = r.album;
-    caja.replaceChildren(...[logo, ctx.el('h2', {}, 'Álbum de fotos (Albunear)'),
-      ctx.el('p', { class: 'ayuda' }, creado ? 'Las fotos y videos que suben los invitados se ven y se descargan desde el panel de Albunear.'
-        : deluxe ? 'La invitación Deluxe incluye el álbum Classic de Albunear sin cargo. Con este botón se crea ya armado (tipo de evento, nombres, fecha y el estilo que combina con tu invitación) y entras directo a su panel. Para pasar después a Platinum se paga solo la diferencia.'
-          : 'Crear el álbum en Albunear (hay planes gratis) y después pegar su link en la sección "Álbum de fotos QR" de la invitación.'),
-      ctx.el('div', { class: 'ad-botones' },
-        creado || deluxe ? boton(creado ? 'Abrir el panel de Albunear' : 'Crear el álbum Classic', entrarAlbunear, 'btn btn-albunear') : enlace('Abrir Albunear', r.crear, 'btn btn-albunear'),
-        creado ? enlace('Ver el álbum', creado.link, 'btn btn-sec') : null),
-      deluxe && !r.conectado ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para activar el Classic incluido, escribir a hola@amoinvitar.com con el código de esta invitación.') : null,
-      creado && creado.plan !== 'platinum' && deluxe ? ctx.el('p', { class: 'ad-alb-nota' }, 'Para pasar a Platinum (fotos originales, 2 años, diseños exclusivos), desde el panel de Albunear se paga solo la diferencia.') : null,
-      ctx.el('p', { class: 'ad-alb-pie' }, 'Activo reemplaza Instagram Wall.')].filter(Boolean));
+    // Gratis, Basic o Premium
+    caja.classList.add('ad-alb-oferta');
+    caja.replaceChildren(ctx.el('h2', {}, 'Álbum de fotos compartido'),
+      ctx.el('div', { class: 'ad-alb-banner deluxe' }, 'Activa Deluxe para tener esta función'),
+      descripcion(),
+      ctx.el('p', { class: 'ad-alb-nota' }, ctx.el('span', { class: 'ad-alb-verde' }, 'Si la invitación es Deluxe, está incluido el paquete Classic de Albunear sin cargo.'), ctx.el('br'),
+        'También puedes tener tu álbum QR, contratándolo en Albunear.', ctx.el('br'), ctx.el('strong', {}, '¡Hay planes gratis!')),
+      ctx.el('div', { class: 'ad-botones' }, enlace('Conocer Albunear', 'https://albunear.com', 'btn btn-albunear')));
   })();
   return [caja];
 }
@@ -991,7 +990,10 @@ function dibujar(caja) {
   });
   // README (ronda 95): el título de la pestaña con su ícono grande (como las secciones de «Editar invitación»)
   const nombreSec = (SECCIONES.find(([x]) => x === seccion) || [])[1] || '';
-  const tituloSec = ctx.el('h2', { class: 'ad-titulo-sec' }, ctx.el('span', { class: 'ico-titulo', html: ctx.icono?.(seccion, 22) || '' }), nombreSec);
+  let tituloSec = ctx.el('h2', { class: 'ad-titulo-sec' }, ctx.el('span', { class: 'ico-titulo', html: ctx.icono?.(seccion, 22) || '' }), nombreSec);
+  // README (ronda 108): Álbum QR: «Powered by Albunear» a la derecha del título (link a Albunear). Los profesionales, como antes
+  if (seccion === 'album' && !ctx.S.empresa) tituloSec = ctx.el('div', { class: 'ad-titulo-fila' }, tituloSec,
+    ctx.el('a', { class: 'ad-powered', href: 'https://albunear.com', target: '_blank', rel: 'noopener' }, ctx.el('small', {}, 'Powered by'), ctx.el('img', { src: '/comun/img/albunear.svg', alt: 'Albunear', width: 104, height: 33 })));
   caja.querySelector('.ad-contenido').replaceChildren(tituloSec, ...((bloqueo(seccion) ? vistaBloqueada(seccion) : VISTAS[seccion]()) || []).filter(Boolean));
 }
 // ── README (ronda 29): lo que incluye cada plan ──

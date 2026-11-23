@@ -34,9 +34,35 @@ const env = {
   ALBUNEAR: { albumDeluxe: async (id) => ({ codigo: 'PRUEBA12', crear: 'https://albunear.com/crear?regalo=PRUEBA12',
     album: process.env.ALBUM_CREADO ? { link: 'https://albunear.com/a/prueba', panel: `https://albunear.com/panel/album?id=${id}`, plan: 'classic', estado: 'active' } : null }),
     // README (ronda 52): crear el álbum Classic ya armado y entrar a su panel (acá devuelve lo recibido, para revisarlo)
-    crearAlbum: async (d) => { env.ULTIMO_ALBUM = d; return { album: { link: 'https://albunear.com/a/prueba', panel: 'https://albunear.com/panel/album?id=prueba', plan: 'classic', estado: 'active' }, entrar: 'https://albunear.com/auth/verify?t=PRUEBA' }; } },
+    crearAlbum: async (d) => { env.ULTIMO_ALBUM = { ...d, portada: d.portada ? { tipo: d.portada.tipo, bytes: d.portada.bytes?.byteLength } : null }; return { album: { link: 'https://albunear.com/a/prueba', panel: 'https://albunear.com/panel/album?id=prueba', plan: 'classic', estado: 'active' }, entrar: 'https://albunear.com/auth/verify?t=PRUEBA' }; },
+    // README (ronda 108): el álbum administrado desde Amo Invitar! (acá, fotos de ejemplo en memoria)
+    album: async (id, p) => albumDePrueba(p) },
   ASSETS: { fetch: async (u) => (await estatico(new URL(typeof u === 'string' || u instanceof URL ? u : u.url).pathname)) || new Response('', { status: 404 }) },
 };
+// README (ronda 108): álbum de prueba para la pestaña Álbum QR (como responde Socios.album de Albunear)
+const FOTOS_PRUEBA = ['bg20.jpg', 'bg21.jpg', 'bg33.jpg', 'bg-oliva-2.jpg', 'bg-oliva-6.jpg'].flatMap((f, i) => [0, 1, 2].map((k) => ({ id: `m${i}${k}`, kind: i === 4 && k === 0 ? 'video' : 'photo',
+  thumb: `/modelos/garden/img/${f}`, src: `/modelos/garden/img/${f}`, original: `/modelos/garden/img/${f}`, duration: i === 4 && k === 0 ? 16 : null, name: ['Ana', 'Leo', ''][k], likes: k, t: 1795000000 - (i * 3 + k) * 3600,
+  status: 'visible', favorite: false, featured: false })));
+const ALBUM_PRUEBA = { guestsCanView: true, moderation: 'off' };
+function albumDePrueba(p) {
+  const vivas = FOTOS_PRUEBA.filter((m) => !m.borrada);
+  const counts = { total: vivas.length, fav: vivas.filter((m) => m.favorite).length, featured: vivas.filter((m) => m.featured).length, hidden: vivas.filter((m) => m.status === 'hidden').length, pending: 0, videos: vivas.filter((m) => m.kind === 'video').length };
+  const event = { slug: 'prueba', screenUrl: 'https://albunear.com/pantalla/prueba?k=x', guestUrl: 'https://albunear.com/a/prueba', planFeatures: { moderation: 'advanced', zip: true }, ...ALBUM_PRUEBA };
+  const album = { link: 'https://albunear.com/a/prueba', panel: 'https://albunear.com/panel/album?id=prueba', plan: 'classic', estado: 'active' };
+  switch (p.accion) {
+    case 'info': return { album, event, counts };
+    case 'media': { const f = { fav: (m) => m.favorite, featured: (m) => m.featured, hidden: (m) => m.status !== 'visible', video: (m) => m.kind === 'video' }[p.filtro] || (() => true);
+      const l = vivas.filter(f).sort((a, b) => (p.orden === 'oldest' ? a.t - b.t : p.orden === 'likes' ? b.likes - a.likes : b.t - a.t)); return { media: l.slice(p.desde || 0, (p.desde || 0) + (p.cantidad || 120)), more: false }; }
+    case 'lote': { if (p.que === 'feature' && counts.featured + p.ids.length > 3) return { error: 'err.maxFeatured', status: 400 };
+      for (const m of FOTOS_PRUEBA.filter((x) => p.ids.includes(x.id))) Object.assign(m, { fav: { favorite: true }, unfav: { favorite: false }, feature: { featured: true }, unfeature: { featured: false }, hide: { status: 'hidden' }, show: { status: 'visible' }, delete: { borrada: true } }[p.que]);
+      return { ok: true }; }
+    case 'ajustes': Object.assign(ALBUM_PRUEBA, p.guestsCanView !== undefined ? { guestsCanView: p.guestsCanView } : {}, p.moderation ? { moderation: p.moderation } : {}); return albumDePrueba({ accion: 'info' });
+    case 'zip': return { files: vivas.map((m, i) => ({ url: m.original, name: `fotos/${String(i + 1).padStart(4, '0')}.jpg`, size: 1000 })), slug: 'prueba' };
+    case 'entrar': return { url: `https://albunear.com/auth/verify?t=PRUEBA#${p.pestana}` };
+    case 'qr': return { tarjeta: '/comun/img/albunear.svg', imprimir: 'https://albunear.com/panel/tarjetas?t=PRUEBA' };
+    default: return { error: 'err.badData', status: 400 };
+  }
+}
 const puerto = Number(process.env.PORT || 8787);
 
 http.createServer(async (req, res) => {

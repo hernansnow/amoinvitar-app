@@ -372,13 +372,13 @@ function pasosInvitacion({ tipo, modelo }) {
     { id: 'album', seccion: 'album', titulo: 'Álbum de fotos QR', excluye: 'instagram', campos: [
       titulo('album.titulo'),
       { id: 'textos.album.texto', tipo: 'area', etiqueta: 'Texto', max: 300, base: 'album.texto' },
-      { id: 'album.origen', tipo: 'opciones', etiqueta: 'Álbum', defecto: 'albunear', valores: [
-        { v: 'albunear', etiqueta: 'Usar álbum Classic de Albunear incluido en Deluxe', ayuda: 'En Basic y Premium se contrata en Albunear (hay planes gratis).' },
-        { v: 'propio', etiqueta: 'Usar link de álbum propio' }] },
-      { id: 'nota.albumAlbunear', tipo: 'nota', estilo: 'ayuda', texto: 'Luego podrás configurar el álbum en la pestaña Administración.', si: { campo: 'album.origen', no: 'propio' } },
+      // README (ronda 108): sin elegir entre Albunear y un link propio: el álbum QR es siempre el de Albunear, que se crea solo
+      // al pagar Deluxe y se maneja desde Administración → Álbum QR. Solo el álbum regalado desde la consola (sin Deluxe, no
+      // vinculado) y los eventos de profesionales (paraEmpresa) pegan el link a mano.
+      { id: 'nota.albumAlbunear', tipo: 'nota', estilo: 'ayuda', texto: 'Luego podrás configurar el álbum en la pestaña Administración.', si: { campo: 'album.regalo', no: true } },
       // README (ronda 78): Deluxe pagada y sin álbum creado: botón llamativo que lleva a Administración → Álbum
-      { id: 'nota.albumActivar', tipo: 'nota', estilo: 'albunear', texto: 'Activar álbum QR gratis', si: { campo: 'album.origen', no: 'propio' } },
-      { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', si: { campo: 'album.origen', es: 'propio' } },
+      { id: 'nota.albumActivar', tipo: 'nota', estilo: 'albunear', texto: 'Activar álbum QR gratis', si: { campo: 'album.regalo', no: true } },
+      { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', placeholder: 'https://albunear.com/a/…', ayuda: 'Pega el link de tu álbum de Albunear.', si: { campo: 'album.regalo', es: true } },
       conFotos('album'),
       // La misma foto que Instagram Wall (van una u otra): si ya la cargó allá, aquí aparece cargada
       { id: 'fotos.instagram', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album'), ayuda: 'Es la misma foto de Instagram Wall.' },
@@ -497,16 +497,17 @@ const pasoTarjeta = (clase, modelo, tipo) => (clase === 'std' ? {
       ? 'Una tarjeta para mandar antes de la invitación. La del mismo diseño viene incluida en Premium y Deluxe.'
       : 'Una tarjeta para mandar antes de la invitación, con una foto y el diseño que se elija. Se suma en cualquier plan.', si: noMedida },
     // Las opciones de siempre, con su precio: tarjeta del diseño, con foto y web (la foto y la web, en boda y 15)
-    { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de Save The Date', defecto: modelo?.tarjetas?.std ? 'tarjeta' : 'foto', rearmar: true, si: noMedida,
-      oculto: !!modelo?.tarjetas?.std && !CON_FOTO_STD.has(tipo), valores: [
+    // README (ronda 108): «A medida» es una ficha más, al final (antes era un recuadro debajo de «Generar tarjeta»)
+    { id: 'std.tipo', tipo: 'opciones', etiqueta: 'Tipo de Save The Date', defecto: modelo?.tarjetas?.std ? 'tarjeta' : 'foto', rearmar: true, si: noMedida, valores: [
       ...(modelo?.tarjetas?.std ? [{ v: 'tarjeta', etiqueta: 'Tarjeta', ayuda: 'Con el mismo diseño que la invitación.', extra: 'std-tarjeta' }] : []),
       ...(CON_FOTO_STD.has(tipo) ? [{ v: 'foto', etiqueta: 'Foto', ayuda: 'Tu foto con el diseño que elijas.', extra: 'std-foto' }] : []),
       ...(CON_FOTO.has(tipo) ? [
         // README (ronda 22): la Save The Date web (Classic o Soft) solo en boda y 15, con su propio link
         { v: 'web', etiqueta: 'Web', ayuda: 'Una página con su link: foto, nombres, fecha y botón para agendar.', extra: 'std-web' },
       ] : []),
-      // Válidas pero sin radio propio: se eligen desde "Diseño a medida"
-      ...OPCIONES_STD_MEDIDA.filter((o) => o.v === 'tarjeta-medida' || CON_FOTO.has(tipo)).map((o) => ({ ...o, oculta: true })),
+      { v: 'tarjeta-medida', etiqueta: 'A medida', ayuda: 'Actívalo para enviarnos tu idea y estilo, así diseñamos la tarjeta de tus sueños.', extra: 'std-tarjeta-medida', medida: true },
+      // Válida pero sin ficha propia: se elige desde los diseños de la web
+      ...OPCIONES_STD_MEDIDA.filter((o) => o.v === 'web-medida' && CON_FOTO.has(tipo)).map((o) => ({ ...o, oculta: true })),
     ] },
     { id: 'std.web', tipo: 'disenoStd', etiqueta: 'Diseño de la Save The Date web', defecto: 'std-classic', valores: DISENOS_STD_WEB, rearmar: true, si: { campo: 'std.tipo', es: 'web' },
       medida: { campo: 'std.tipo', v: 'web-medida', extra: 'std-web-medida', img: '/comun/img/std-medida-web.webp' } },
@@ -518,10 +519,6 @@ const pasoTarjeta = (clase, modelo, tipo) => (clase === 'std' ? {
     { id: 'std.diseno', tipo: 'disenoFoto', etiqueta: 'Diseños', defecto: DISENOS_FOTO[0].v, valores: DISENOS_FOTO, rearmar: true, colapsar: 'std.disenoOk', si: { campo: 'std.tipo', es: 'foto' },
       medida: { campo: 'std.tipo', v: 'tarjeta-medida', extra: 'std-tarjeta-medida', img: '/comun/img/std-medida-tarjeta.jpg' } },
     { id: 'std.tarjeta', tipo: 'tarjeta', clase: 'std', etiqueta: 'Tarjeta', sinEtiqueta: true, si: [{ campo: 'std.tipo', no: 'web' }, ...noMedida] },
-    // Debajo de la tarjeta del diseño, la opción de pedirla a medida
-    ...(modelo?.tarjetas?.std ? [{ id: 'std.activarMedida', tipo: 'activarMedida', etiqueta: 'Diseño a medida', sinEtiqueta: true, campo: 'std.tipo', v: 'tarjeta-medida', extra: 'std-tarjeta-medida',
-      texto: '¿Quieres un diseño a medida? Actívalo para enviarnos tu idea y estilo, así diseñamos la tarjeta de tus sueños.', boton: 'Activar diseño a medida',
-      si: [{ campo: 'std.tipo', no: 'web' }, { campo: 'std.tipo', no: 'foto' }, ...noMedida] }] : []),
     ...CAMPOS_STD_MEDIDA,
   ],
 } : {
@@ -730,6 +727,7 @@ export function planNecesario(esquema, datos, { gratisPosible = false } = {}) {
   const subir = (p) => { n = Math.max(n, NIVELES.indexOf(p)); };
   for (const paso of esquema.pasos) {
     if (!seccionActiva(paso, datos)) continue;
+    if (paso.seccion === 'album' && datos.album?.regalo) continue; // README (ronda 108): álbum QR regalado desde la consola
     if ((paso.seccion || paso.nivelPaso) && !paso.complemento && paso.nivel) subir(paso.nivel);
     for (const c of paso.campos) {
       if (c.si && !cumple(c.si, datos)) continue;
@@ -783,6 +781,7 @@ export function recortarSinPagar(esquema, datos, { pagado, extras = [] }) {
   const recortado = [];
   for (const paso of esquema.pasos) {
     if (!seccionActiva(paso, d)) continue;
+    if (paso.seccion === 'album' && d.album?.regalo) continue; // README (ronda 108): regalado desde la consola
     if ((paso.seccion || paso.nivelPaso) && !paso.complemento && paso.seccion && sobra(paso.nivel)) { d.secciones[paso.seccion] = false; recortado.push(paso.seccion); continue; }
     for (const c of paso.campos) {
       const v = leer(d, c.id);
@@ -1035,7 +1034,7 @@ function paraEmpresa(pasos) {
   for (const p of pasos) {
     if (!p) continue;
     // README (ronda 89): sin el selector (con una sola opción no hay nada que elegir): solo el link del álbum
-    if (p.id === 'album') p.campos = p.campos.filter((c) => !['nota.albumAlbunear', 'nota.albumActivar', 'album.origen'].includes(c.id)).map((c) => (c.id === 'album.url' ? { ...c, si: undefined } : c));
+    if (p.id === 'album') p.campos = p.campos.filter((c) => !['nota.albumAlbunear', 'nota.albumActivar'].includes(c.id)).map((c) => (c.id === 'album.url' ? { ...c, si: undefined, placeholder: undefined, ayuda: undefined } : c));
     if (p.id === 'idiomaAdicional') p.campos = p.campos.map((c) => (c.id === 'nota.idiomas' ? { ...c, texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' } : c));
   }
 }

@@ -93,6 +93,7 @@ function cambio(ruta, valor, { rearmar = false } = {}) {
     Object.assign(a, { modo: { abierta: 'abierta', pin: 'pin', lista: 'codigo', listaPin: 'pin' }[valor] || 'abierta',
       lista: valor === 'lista' || valor === 'listaPin', pinPorInvitado: valor === 'listaPin' });
   }
+  if (ruta === 'miniatura.conTexto' && datos.miniatura?.foto) { encuadrandoMiniatura = false; setTimeout(() => dibujarPaso(), 0); } // README (ronda 108): la vista previa pasa a la miniatura con nombres
   if (ruta === 'meta.descripcion' && $('#compartir-desc')) $('#compartir-desc').textContent = valor || String(S.textos?.['meta.descripcion'] || '');
   if (ruta === 'std.tipo' || ruta === 'std.diseno') escribir(datos, 'std.tarjeta.textos', {});
   if (ruta === 'agradecimiento.tipo' || ruta === 'agradecimiento.diseno') escribir(datos, 'agradecimiento.tarjeta.textos', {});
@@ -818,16 +819,24 @@ function campoFotoCompartir(c, valor, alCambiar) {
 
 // Cómo se ve el link al compartirlo (como en Facebook o WhatsApp). Con foto propia se
 // encuadra arrastrándola ahí mismo; la ✕ la quita.
+let encuadrandoMiniatura = false; // README (ronda 108)
 function vistaCompartir() {
   const nombres = [datos.nombres?.a, datos.nombres?.b].filter(Boolean).join(' & ');
   const t = (k) => String(S.textos?.[k] || '');
   const tituloLink = t('meta.titulo').replace('{evento}', t('evento.nombre')).replace('{nombres}', nombres || '…');
   const desc = datos.meta?.descripcion || t('meta.descripcion');
   const propia = datos.miniatura?.foto;
-  const imagen = propia
-    ? el('div', { class: 'con-quitar' }, marcoEncuadre({ url: propia, pos: datos.miniatura?.fotoPos, proporcion: '1.91:1', etiqueta: 'Foto al compartir', alSoltar: (p) => cambio('miniatura.fotoPos', p) }),
-      el('button', { type: 'button', class: 'quitar', 'aria-label': 'Quitar foto', onclick: () => { escribir(datos, 'miniatura.fotoPos', undefined); cambio('miniatura.foto', '', { rearmar: true }); } }, '✕'))
-    : el('img', { id: 'miniatura-previa', alt: '', src: fuenteMiniatura() });
+  const quitar = el('button', { type: 'button', class: 'quitar', 'aria-label': 'Quitar foto', onclick: () => { escribir(datos, 'miniatura.fotoPos', undefined); cambio('miniatura.foto', '', { rearmar: true }); } }, '✕');
+  // README (ronda 108): con foto propia y «Imagen y nombres», la vista previa es la miniatura armada (con los nombres), igual
+  // a lo que se ve al compartir; el encuadre se ajusta aparte, con «Ajustar encuadre». Antes se veía solo la foto, sin nombres.
+  const conNombres = !!datos.miniatura?.conTexto && !encuadrandoMiniatura;
+  const imagen = propia && !conNombres
+    ? el('div', {}, el('div', { class: 'con-quitar' }, marcoEncuadre({ url: propia, pos: datos.miniatura?.fotoPos, proporcion: '1.91:1', etiqueta: 'Foto al compartir', alSoltar: (p) => cambio('miniatura.fotoPos', p) }), quitar),
+      datos.miniatura?.conTexto ? el('button', { type: 'button', class: 'btn-link', onclick: () => { encuadrandoMiniatura = false; dibujarPaso(); } }, 'Listo: ver con los nombres') : null)
+    : propia
+      ? el('div', {}, el('div', { class: 'con-quitar' }, el('img', { id: 'miniatura-previa', alt: '', src: fuenteMiniatura() }), quitar),
+        el('button', { type: 'button', class: 'btn-link', onclick: () => { encuadrandoMiniatura = true; dibujarPaso(); } }, 'Ajustar encuadre'))
+      : el('img', { id: 'miniatura-previa', alt: '', src: fuenteMiniatura() });
   return el('div', { class: 'tarjeta-compartir' }, imagen,
     el('div', { class: 'cuerpo' }, el('small', {}, dominioInv().toUpperCase()), el('strong', { id: 'compartir-titulo' }, tituloLink), el('span', { id: 'compartir-desc' }, desc)));
 }
@@ -1121,7 +1130,12 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
         const nombre = `r-${idHtml}`;
         return el('div', { class: 'opciones-acceso', role: 'radiogroup' }, c.valores.map((o) => {
           const i = el('input', { type: 'radio', name: nombre, value: o.v, checked: o.v === actual, disabled: dis });
-          i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
+          i.addEventListener('change', () => {
+            // README (ronda 108): la ficha «A medida» de la Save The Date: se recuerda lo que estaba elegido (para «Volver a los diseños»)
+            if (o.medida && actual && !/-medida$/.test(actual)) cambio('std.tipoAntes', actual);
+            alCambiar(o.v, { rearmar: true });
+            if (o.medida) aviso('Cuéntanos tu idea y envíala al equipo de diseño');
+          });
           return el('label', { class: `opcion-acceso${o.v === actual ? ' elegida' : ''}` }, i,
             el('span', { class: 'oa-icono', 'aria-hidden': 'true' }, o.icono),
             el('span', { class: 'oa-texto' }, el('strong', {}, o.etiqueta, ' ', insigniaNivel(o.nivel)), el('small', {}, o.ayuda)));
@@ -1134,7 +1148,12 @@ function control(c, valor, alCambiar, idHtml, extra = {}) {
           // Opción que necesita otra cosa activada antes (p. ej. link personal → lista de invitados)
           const falta = o.requiere && !cumple(o.requiere) && o.v !== actual;
           const i = el('input', { type: 'radio', name: nombre, value: o.v, checked: o.v === actual, disabled: dis || falta });
-          i.addEventListener('change', () => alCambiar(o.v, { rearmar: true }));
+          i.addEventListener('change', () => {
+            // README (ronda 108): la ficha «A medida» de la Save The Date: se recuerda lo que estaba elegido (para «Volver a los diseños»)
+            if (o.medida && actual && !/-medida$/.test(actual)) cambio('std.tipoAntes', actual);
+            alCambiar(o.v, { rearmar: true });
+            if (o.medida) aviso('Cuéntanos tu idea y envíala al equipo de diseño');
+          });
           // Opciones con precio (tarjetas): lo que cuesta con el plan actual
           const precio = o.extra && S.plan?.preciosExtras?.[o.extra];
           return el('label', { class: `opcion${falta ? ' apagada' : ''}` }, i, el('span', {}, o.etiqueta, precio ? el('b', { class: 'precio-opcion' }, ` ${precio}`) : null, o.ayuda ? el('small', {}, o.ayuda) : null,

@@ -227,7 +227,7 @@ export async function eventos(request, env) {
   const out = rows.slice(0, POR_PAGINA).map((e) => {
     const d = JSON.parse(e.datos || '{}');
     return { id: e.id, producto: e.producto, tipo: e.tipo, modelo: e.modelo, paquete: e.paquete, estado: e.estado, slug: e.slug, nombres: nombresDe(d), fecha: fechaEvento(d) || null,
-      vence: venceEvento({ ...e, datos: d }), venceManual: e.vence || null, clientes: e.clientes || '', empresa: e.empresa || null, respuestas: e.respuestas, extras: d.extras || [], recuerdo: Object.keys(d.recuerdo || {}).filter((k) => ['pdf', 'web', 'online'].includes(k)), // README (ronda 95)
+      vence: venceEvento({ ...e, datos: d }), venceManual: e.vence || null, clientes: e.clientes || '', empresa: e.empresa || null, respuestas: e.respuestas, extras: d.extras || [], albumRegalo: !!d.album?.regalo /* README (ronda 108) */, recuerdo: Object.keys(d.recuerdo || {}).filter((k) => ['pdf', 'web', 'online'].includes(k)), // README (ronda 95)
      
       link: e.estado === 'publicado' && e.slug ? `/${e.tipo}/${e.slug}` : null, actualizado: e.actualizado, creado: e.creado,
       ingreso: e.ingreso || null, mails: (() => { try { return JSON.parse(e.mails || '[]'); } catch { return []; } })(),
@@ -327,6 +327,16 @@ export async function accionEvento(request, env, id, accion) {
     await alm.guardarEvento(ev);
     await registrar(env, u, 'evento.recuerdo', objeto, { opciones: [...quiero] });
     return json({ ok: true, vence: venceEvento(ev) });
+  }
+  // README (ronda 108): sumar la sección «Álbum QR» sin Deluxe. Ese álbum no queda vinculado: el cliente pega el link de su
+  // álbum de Albunear en la sección (como en los paneles de profesionales). Quitarlo vuelve a pedir Deluxe para el álbum.
+  if (accion === 'album-regalo') {
+    const activo = b.activo === true;
+    ev.datos.album = { ...(ev.datos.album || {}), regalo: activo };
+    if (activo) { ev.datos.album.origen = 'propio'; ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, instagram: false }; }
+    await alm.guardarEvento(ev);
+    await registrar(env, u, 'evento.album-regalo', objeto, { activo });
+    return json({ ok: true });
   }
   if (accion === 'extras') {
     const lista = [].concat(b.extras || []).filter((x) => EXTRAS[x]);

@@ -733,8 +733,14 @@ const fechaAlbum = (ev) => ev.datos.celebracion?.fecha || ev.datos.ceremonia?.fe
 const TIPO_ALB = { boda: 'boda', 15: 'quince', bautismo: 'bautizo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', empresarial: 'corporativo' };
 async function crearAlbumIncluido(env, ev, { email, pais }) {
   const d = ev.datos;
+  // README (ronda 108): la foto de la sección del álbum (la misma que Instagram Wall) pasa a ser la portada del álbum
+  let portada = null;
+  const foto = d.fotosOn?.album !== false ? (d.fotos?.instagram || d.fotos?.album || '') : '';
+  if (String(foto).startsWith('/media/')) {
+    try { const o = await almacenDe(env).archivo(foto.slice(7)); if (o) portada = { bytes: await new Response(o.cuerpo).arrayBuffer(), tipo: o.tipo || 'image/jpeg' }; } catch (e) { console.error('portada álbum', e); }
+  }
   const r = await env.ALBUNEAR.crearAlbum({ evento: ev.id, email, tipo: TIPO_ALB[ev.tipo] || 'otro', nombre1: d.nombres?.a || '', nombre2: d.nombres?.b || '',
-    fecha: fechaAlbum(ev).slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais, lang: String(d.variante || 'es').slice(0, 2) });
+    fecha: fechaAlbum(ev).slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais, lang: String(d.variante || 'es').slice(0, 2), ...(portada ? { portada } : {}) });
   // El álbum pasa a la invitación (sección «Álbum de fotos QR» con Albunear, en lugar de Instagram Wall)
   if (r?.album?.link) {
     ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
@@ -748,7 +754,7 @@ async function crearAlbumIncluido(env, ev, { email, pais }) {
 async function albumAutomatico(env, ev, pais) {
   try {
     const d = ev.datos;
-    if (!deluxePagada(ev) || d.album?.albunear || d.album?.origen === 'propio' || d.secciones?.album === false) return;
+    if (!deluxePagada(ev) || d.album?.albunear || d.album?.regalo || d.secciones?.album === false) return; // README (ronda 108): sin link propio
     if (!env.ALBUNEAR?.crearAlbum || !/^\d{4}-\d{2}-\d{2}/.test(fechaAlbum(ev))) return;
     const email = (await almacenDe(env).accesos(ev.id)).find((a) => a.rol === 'cliente')?.email;
     if (!email) return;
@@ -1327,6 +1333,22 @@ async function apiPanel(env, request, url, partes) {
       return json({ error: 'No se pudo crear el álbum en Albunear. Prueba en un rato.' }, 502);
     }
     return json({ entrar: r?.entrar, album: r?.album || null });
+  }
+  // README (ronda 108): Administración → Álbum QR. El álbum incluido en Deluxe se administra desde acá: Albunear ejecuta sus
+  // propias rutas del panel en nombre del dueño del álbum (Socios.album). Lo pide quien entra al panel de la invitación.
+  if (accion === 'albumqr' && request.method === 'POST') {
+    if (!deluxePagada(ev) || !ev.datos.album?.albunear) return json({ error: 'El álbum QR se activa con el plan Deluxe pagado.' }, 402);
+    if (!env.ALBUNEAR?.album) return json({ error: 'Albunear no responde en este momento. Prueba en un rato.', sinPuerta: true }, 503);
+    const b = await request.json().catch(() => ({}));
+    const ACCIONES = ['info', 'media', 'lote', 'ajustes', 'zip', 'entrar', 'qr'];
+    if (!ACCIONES.includes(b.accion)) return json({ error: 'Acción desconocida' }, 400);
+    const pedido = { accion: b.accion, filtro: b.filtro, orden: b.orden, desde: b.desde, cantidad: b.cantidad, ids: b.ids, que: b.que, pestana: b.pestana, lang: b.lang,
+      ...(typeof b.guestsCanView === 'boolean' ? { guestsCanView: b.guestsCanView } : {}), ...(b.moderation ? { moderation: b.moderation } : {}) };
+    let r;
+    try { r = await env.ALBUNEAR.album(ev.id, pedido); } catch (e) { console.error('albunear album', e); return json({ error: 'Albunear no responde en este momento. Prueba en un rato.' }, 502); }
+    if (!r || r.album === null) return json({ error: 'Todavía no hay un álbum creado para esta invitación.', sinAlbum: true }, 404);
+    if (r.error) return json({ error: r.error, codigo: r.error }, r.status || 400);
+    return json(r);
   }
   // El interruptor "Activar" de la pestaña Álbum: prende la sección con el álbum de Albunear (reemplaza Instagram Wall)
   if (accion === 'album' && request.method === 'POST') {

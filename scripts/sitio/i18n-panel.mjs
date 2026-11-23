@@ -20,6 +20,7 @@ const agrega = (t) => {
   if (t.length < 2 || t.length > 1500 || /* README (ronda 98): antes 400 (quedaban afuera las ayudas largas) */ !/[A-Za-zÁÉÍÓÚáéíóúñ]/.test(t) || /^[a-z0-9_.-]+$/.test(t) || /[<>{}=]|https?:|\/\w+\/|;\s*$|^[a-z-]+:/.test(sinHuecos) || /^[^\wÁÉÍÓÚáéíóúñ¿¡"«(☰←→＋+✓{]/.test(t)) return;
   if (/^\{\w+\}$/.test(t)) return;
   if (/\.replace\(|=>|JSON\.|\?\?/.test(t)) return; // código, no texto
+  if (/^Arrow(Left|Right|Up|Down)$|^(Escape|Enter)$/.test(t)) return; // README (ronda 108): nombres de teclas
   if (!/^[A-ZÁÉÍÓÚÑ¿¡0-9"«(☰←→＋+✓]/.test(t) && !ES.test(t) && !/^\{\w+\} [a-záéíóúñ]{3}/.test(t)) return;
   if (/^[A-Z][a-zA-Z]+$/.test(t) && !/[áéíóúñ]/.test(t) && t.length < 4) return;
   if (!hay.has(t)) { hay.add(t); nuevos.push(t); }
@@ -63,7 +64,7 @@ function cadenas(src) {
   }
   return out;
 }
-const ARCHIVOS_JS = ['public/panel/panel.js', 'public/panel/admin.js', 'public/panel/tarjeta.js', 'public/panel/planilla.js', 'src/panel/esquemas.js'];
+const ARCHIVOS_JS = ['public/panel/panel.js', 'public/panel/admin.js', 'public/panel/tarjeta.js', 'public/panel/planilla.js', 'public/panel/album-qr.js' /* README (ronda 108) */, 'src/panel/esquemas.js'];
 // README (ronda 87): el código del tablero profesional (va dentro de su HTML) se lee igual que los .js
 const codigoDe = (f) => (f.endsWith('.html') ? [...readFileSync(join(RAIZ, f), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n') : readFileSync(join(RAIZ, f), 'utf8'));
 for (const f of [...ARCHIVOS_JS, 'public/empresa/index.html', 'public/muestrario/index.html']) {
