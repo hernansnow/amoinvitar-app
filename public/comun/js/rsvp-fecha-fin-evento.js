@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const bloqueInvitadoClass = texto.dataset.bloqueInvitadoClass || "";
         const bloqueInvitadoInner = texto.dataset.bloqueInvitadoInner || "";
         const bloqueGeneralClass  = texto.dataset.bloqueGeneralClass  || "";
-        const textoLibre          = texto.dataset.textoAbiertoLibre   || "";
+        const textoLibre          = (texto.dataset.textoAbiertoLibre   || "").replace(/\r?\n/g, "<br>"); // README (ronda 107): respeta los saltos de línea
 
         // bloqueGeneral siempre visible
         const bloqueGeneral = textoLibre

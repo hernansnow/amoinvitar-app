@@ -148,6 +148,8 @@ function separadores(doc) {
 
 // ── data-si / data-no globales ───────────────────────────────────────────
 function condiciones(doc, v) {
+  // README (ronda 107): historia sin título (el cliente borró el título): se quita el encabezado entero, en todos los diseños
+  if (v.historia?.activa && !v.historia.conTitulo) for (const el of todos(doc, '[data-t="historia.titulo"]')) (el.closest('h1,h2,h3,h4,h5,h6') || el).remove();
   for (const el of todos(doc, '[data-si],[data-no]')) {
     if (!el.isConnected) continue;
     const si = el.getAttribute('data-si'), no = el.getAttribute('data-no');
@@ -158,10 +160,17 @@ function condiciones(doc, v) {
 }
 
 // ── datos y textos ───────────────────────────────────────────────────────
+// README (ronda 107): los saltos de línea que deja el cliente (también los renglones en blanco) se respetan
+function conSaltos(el, texto) {
+  const s = String(texto ?? '');
+  if (!s.includes('\n') || el.hasAttribute('data-caso')) { el.textContent = s; return; }
+  el.textContent = '';
+  s.split('\n').forEach((linea, i) => { if (i) el.append(el.ownerDocument.createElement('br')); el.append(linea); });
+}
 function textos(doc, v, t) {
-  for (const el of todos(doc, '[data-campo]')) { el.textContent = valor(v, el.getAttribute('data-campo')) ?? ''; el.removeAttribute('data-campo'); }
-  for (const el of todos(doc, '[data-campo-html]')) { el.innerHTML = valor(v, el.getAttribute('data-campo-html')) ?? ''; el.removeAttribute('data-campo-html'); }
-  for (const el of todos(doc, '[data-t]')) { el.textContent = t(el.getAttribute('data-t')); el.removeAttribute('data-t'); }
+  for (const el of todos(doc, '[data-campo]')) { conSaltos(el, valor(v, el.getAttribute('data-campo'))); el.removeAttribute('data-campo'); }
+  for (const el of todos(doc, '[data-campo-html]')) { el.innerHTML = String(valor(v, el.getAttribute('data-campo-html')) ?? '').replace(/\r?\n/g, '<br>'); el.removeAttribute('data-campo-html'); }
+  for (const el of todos(doc, '[data-t]')) { conSaltos(el, t(el.getAttribute('data-t'))); el.removeAttribute('data-t'); }
   // data-caso: el texto como lo escribe el diseño ("titulo": ¡Nos Casamos! · "oracion": ¡Nos casamos!)
   for (const el of todos(doc, '[data-caso]')) {
     const caso = el.getAttribute('data-caso'), x = el.textContent.toLocaleLowerCase();

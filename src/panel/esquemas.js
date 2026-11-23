@@ -226,7 +226,9 @@ function pasosInvitacion({ tipo, modelo }) {
     { id: 'historia', seccion: 'historia', titulo: ({ graduacion: 'Mi recorrido', infantil: 'El tiempo vuela', navidad: 'Texto inicial', babyshower: 'Texto inicial', revelacion: 'Texto inicial' })[tipo] || (plural ? 'Nuestra historia' : 'Mi historia'),
       ayudaSeccion: 'Apagada: en su lugar va un saludo corto de bienvenida.',
       campos: [
-        titulo('historia.titulo'),
+        // README (ronda 107): el título por defecto, uno propio o ninguno (vacío = la historia va sin título), en todos los modelos
+        titulo('historia.titulo', { vacioOculta: 'historia.sinTitulo', ayuda: 'Si lo dejas vacío, la historia va sin título.' }),
+        { id: 'historia.sinTitulo', tipo: 'switch', oculto: true, etiqueta: 'Sin título' },
         { id: 'historia.texto', tipo: 'area', etiqueta: 'Texto', max: 600, base: 'historia.texto' },
         // Diseños con una foto junto a la historia (la "inicial" de Armonía, Lila, Style, Oliva…)
         ...(modelo.fotoHistoria ? [conFotos('historia'),
@@ -1078,8 +1080,7 @@ function sinPlanes(pasos) {
 function paraMedida(pasos) {
   for (const p of pasos) {
     if (!p?.campos) continue;
-    if (p.id === 'historia') p.campos = p.campos.flatMap((c) => (c.id === 'textos.historia.titulo'
-      ? [{ ...c, titulo: false, vacioOculta: 'historia.sinTitulo', max: 60, ayuda: 'Si lo dejas vacío, el relato va sin título.' }, { id: 'historia.sinTitulo', tipo: 'switch', oculto: true, etiqueta: 'Sin título' }] : [c]));
+    if (p.id === 'historia') p.campos = p.campos.map((c) => (c.id === 'textos.historia.titulo' ? { ...c, titulo: false, max: 60, ayuda: 'Si lo dejas vacío, el relato va sin título.' } : c)); // README (ronda 107): el «sin título» ya viene en todos
     p.campos = p.campos.map((c) => (c.id === 'textos.bienvenida.texto'
       ? { ...c, tipo: 'area', max: 1500, ayuda: 'El texto que va en lugar del relato (sin título). Con el relato prendido, va el relato.' } : c));
   }
