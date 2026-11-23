@@ -728,7 +728,10 @@ async function publicarEvento(env, request, ev) {
 // README (ronda 98): álbum Classic de Albunear incluido en Deluxe. Solo con el plan Deluxe ya pagado (paquete 'deluxe':
 // lo pone el pago o la consola; un borrador que solo «pide» Deluxe por sus secciones sigue en 'borrador'). Los eventos
 // de profesionales no lo traen (ven la propuesta de Albunear para sus clientes).
-const deluxePagada = (ev) => ev.producto === 'invitacion' && ev.paquete === 'deluxe' && !ev.empresaId;
+// README (ronda 111): también las invitaciones a medida y corporativas (producto 'a-medida'): pagadas quedan con paquete
+// 'deluxe' igual que las de catálogo. Antes solo contaba 'invitacion' y el panel de Degasa pedía activar un álbum ya creado.
+const CON_PLANES = ['invitacion', 'a-medida'];
+const deluxePagada = (ev) => CON_PLANES.includes(ev.producto) && ev.paquete === 'deluxe' && !ev.empresaId;
 const fechaAlbum = (ev) => ev.datos.celebracion?.fecha || ev.datos.ceremonia?.fecha || '';
 const TIPO_ALB = { boda: 'boda', 15: 'quince', bautismo: 'bautizo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', empresarial: 'corporativo' };
 async function crearAlbumIncluido(env, ev, { email, pais }) {
