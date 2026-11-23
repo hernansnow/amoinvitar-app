@@ -311,7 +311,13 @@ function conteo(st) {
     const pases = (i) => Math.max(1, separar(i.integrantes).length) + (Number(i.pases) || 0);
     const invitados = st.lista.reduce((n, i) => n + pases(i), 0);
     const sinRespuesta = st.sinResponder.reduce((n, i) => n + pases(i), 0);
-    return { invitados, asisten: st.personas, noAsisten: Math.max(0, invitados - st.personas - sinRespuesta), sinRespuesta, ninos: st.ninos };
+    const noAsisten = Math.max(0, invitados - st.personas - sinRespuesta);
+    // README (ronda 112): «No asisten» suma también los pases que no se usaron (alguien con +1 que va solo). La lista cuenta
+    // invitaciones y no personas, así que se aclara cuántos son pases sin usar y cuántas invitaciones no respondieron.
+    const porCodigo = new Map(st.lista.map((i) => [i.codigo, i]));
+    const rechazados = st.noVan.reduce((n, x) => n + (porCodigo.has(x.datos.inv) ? pases(porCodigo.get(x.datos.inv)) : 1), 0);
+    return { invitados, asisten: st.personas, noAsisten, sinRespuesta, ninos: st.ninos,
+      sinUsar: Math.max(0, noAsisten - rechazados), invitacionesSinRespuesta: st.sinResponder.length };
   }
   return { invitados: st.personas + st.noVan.length, asisten: st.personas, noAsisten: st.noVan.length, sinRespuesta: null, ninos: st.ninos };
 }
@@ -320,8 +326,9 @@ const numerosConteo = (st) => {
   return ctx.el('div', { class: `ad-numeros ad-conteo${c.sinRespuesta === null ? ' ad-conteo-3' : ''}` },
     numero(c.invitados, conLista() ? 'Invitados + pases' : 'Invitados', 'total', conLista() ? '' : 'Respondieron'),
     numero(c.asisten, '✓ Asisten', 'si', c.ninos ? `+ ${c.ninos} ${c.ninos === 1 ? 'niño' : 'niños'}` : ''),
-    numero(c.noAsisten, '✗ No asisten', 'no'),
-    c.sinRespuesta !== null ? numero(c.sinRespuesta, '⏳ Sin respuesta', 'pend') : null);
+    numero(c.noAsisten, '✗ No asisten', 'no', c.sinUsar ? (c.sinUsar === 1 ? tr('incluye 1 pase sin usar') : tr('incluye {n} pases sin usar', { n: c.sinUsar })) : ''),
+    c.sinRespuesta !== null ? numero(c.sinRespuesta, '⏳ Sin respuesta', 'pend', c.invitacionesSinRespuesta !== c.sinRespuesta
+      ? (c.invitacionesSinRespuesta === 1 ? tr('1 invitación') : tr('{n} invitaciones', { n: c.invitacionesSinRespuesta })) : '') : null);
 };
 const numero = (n, texto, clase = '', sub = '', icono = '') => ctx.el('div', { class: `ad-numero ${clase}` }, ctx.el('strong', {}, String(n)),
   ctx.el('span', {}, icono ? ctx.el('span', { class: 'ad-ico', html: icono }) : null, texto), sub ? ctx.el('small', {}, sub) : null);
