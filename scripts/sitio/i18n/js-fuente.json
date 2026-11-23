@@ -2014,5 +2014,7 @@
  "2016": "incluye {n} pases sin usar",
  "2017": "1 invitación",
  "2018": "{n} invitaciones",
- "2019": "Falta pagar {precio}"
+ "2019": "Falta pagar {precio}",
+ "2020": "Lo que agregaste se paga con el botón Pagar. Las secciones se prenden y apagan desde los pasos.",
+ "2021": "Tu invitación ya está pagada. Las secciones se prenden y apagan desde los pasos."
 }

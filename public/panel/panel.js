@@ -2187,7 +2187,10 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
     plan.pagado ? el('p', { class: 'ayuda' }, plan.medida ? 'Tu diseño a medida ya está pagado.' : `Ya pagado: plan ${NOMBRE_NIVEL[plan.pagado]}. Se paga solo la diferencia.`) : null,
     el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? (plan.promo?.total || plan.aPagar.texto) : plan.cero || 'Gratis')), // README (ronda 113): «Total 0 €»
   ];
-  if (!paraPagar) { abrirModal(plan.producto ? plan.nombre : 'Tu invitación', ...partes.filter(Boolean), el('p', { class: 'ayuda' }, plan.medida ? 'Incluye todas las secciones. Se paga una sola vez, al enviar tu proyecto a producción (cuando el equipo de diseño lo aprueba).' : 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
+  if (!paraPagar) { abrirModal(plan.producto ? plan.nombre : 'Tu invitación', ...partes.filter(Boolean), el('p', { class: 'ayuda' }, plan.medida ? 'Incluye todas las secciones. Se paga una sola vez, al enviar tu proyecto a producción (cuando el equipo de diseño lo aprueba).' : plan.pagado && !plan.activar
+      // README (ronda 114): ya pagada: el link ya está; lo que se agregue se paga aparte
+      ? (plan.aPagar?.eur ? 'Lo que agregaste se paga con el botón Pagar. Las secciones se prenden y apagan desde los pasos.' : 'Tu invitación ya está pagada. Las secciones se prenden y apagan desde los pasos.')
+      : 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
   // Pago: mail (si no entró con su cuenta), cupón y medio de pago
   const mail = S.usuario ? null : el('input', { type: 'email', required: true, placeholder: 'tu@mail.com', autocomplete: 'email' });
   const cupon = el('input', { type: 'text', placeholder: 'Cupón (opcional)', maxlength: 30 });

@@ -2014,5 +2014,7 @@
  "2016": "inclusi {n} pass non usati",
  "2017": "1 invito",
  "2018": "{n} inviti",
- "2019": "Da pagare: {precio}"
+ "2019": "Da pagare: {precio}",
+ "2020": "Quello che hai aggiunto si paga con il pulsante Paga. Le sezioni si attivano e disattivano dai passaggi.",
+ "2021": "Il tuo invito è già pagato. Le sezioni si attivano e disattivano dai passaggi."
 }
