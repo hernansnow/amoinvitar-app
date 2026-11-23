@@ -1925,12 +1925,15 @@ function pintarPlan() {
   }
   const pl = S.plan;
   if (!pl) { $('#caja-plan').hidden = true; $('#plan-mini').hidden = true; return; }
-  const extra = pl.complementos.length ? ` + ${pl.complementos.length} complemento${pl.complementos.length > 1 ? 's' : ''}` : '';
+  // README (ronda 113): ya pagada, solo el nombre del plan; si después suma algo pago, lo que resta pagar
+  const yaPago = !!pl.pagado && !pl.activar;
+  const precioBarra = () => (!yaPago ? precioConPromo(pl) : pl.aPagar?.eur ? [el('span', { class: 'precio-resta' }, tr('Falta pagar {precio}', { precio: pl.aPagar.texto }))] : []);
+  const extra = !yaPago && pl.complementos.length ? ` + ${pl.complementos.length} complemento${pl.complementos.length > 1 ? 's' : ''}` : '';
   const cambiarPlan = pl.gratisPosible && !pl.pagado
     ? el('button', { type: 'button', class: 'btn-link chico', onclick: () => pasarAGratis(pl.plan !== 'gratis') }, pl.plan === 'gratis' ? 'Ver planes pagos' : 'Pasar a plan gratis') : null;
   $('#caja-plan').replaceChildren(...[el('button', { type: 'button', class: 'plan-resumen', onclick: () => mostrarResumen(false) },
-    el('span', {}, pl.producto ? '' : el('span', { class: 'plan-rotulo' }, 'Plan: '), el('strong', {}, pl.nombre), ' ', ...precioConPromo(pl)), extra ? el('small', {}, extra) : null), cambiarPlan].filter(Boolean));
-  $('#plan-mini').replaceChildren(...[el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ' ', ...precioConPromo(pl)), extra ? el('small', {}, extra) : null].filter(Boolean));
+    el('span', {}, pl.producto ? '' : el('span', { class: 'plan-rotulo' }, 'Plan: '), el('strong', {}, pl.nombre), ' ', ...precioBarra()), extra ? el('small', {}, extra) : null), cambiarPlan].filter(Boolean));
+  $('#plan-mini').replaceChildren(...[el('span', {}, pl.producto ? '' : 'Plan: ', el('strong', {}, pl.nombre), ' ', ...precioBarra()), extra ? el('small', {}, extra) : null].filter(Boolean));
   $('#plan-mini').onclick = () => mostrarResumen(false);
   document.body.classList.toggle('suelta', !!S.esquema?.suelta);
   pintarMedida(); if (typeof pintarPublicar === "function" && S.evento) pintarPublicar();
@@ -2182,7 +2185,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
     el('ul', { class: 'lista-precios' }, lineas),
     // README (ronda 91): a medida y corporativo: sin planes ni «diferencia»; pagada, se dice así
     plan.pagado ? el('p', { class: 'ayuda' }, plan.medida ? 'Tu diseño a medida ya está pagado.' : `Ya pagado: plan ${NOMBRE_NIVEL[plan.pagado]}. Se paga solo la diferencia.`) : null,
-    el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? (plan.promo?.total || plan.aPagar.texto) : plan.medida && plan.pagado ? 'Pagado' : 'Gratis')),
+    el('p', { class: 'total' }, el('span', {}, paraPagar ? 'Total a pagar' : 'Total'), el('strong', {}, plan.aPagar.eur ? (plan.promo?.total || plan.aPagar.texto) : plan.cero || 'Gratis')), // README (ronda 113): «Total 0 €»
   ];
   if (!paraPagar) { abrirModal(plan.producto ? plan.nombre : 'Tu invitación', ...partes.filter(Boolean), el('p', { class: 'ayuda' }, plan.medida ? 'Incluye todas las secciones. Se paga una sola vez, al enviar tu proyecto a producción (cuando el equipo de diseño lo aprueba).' : 'Se paga recién al obtener el link. Las secciones se prenden y apagan desde los pasos.')); return; }
   // Pago: mail (si no entró con su cuenta), cupón y medio de pago
@@ -2203,7 +2206,7 @@ async function mostrarResumen(paraPagar, plan = S.plan) {
         el('span', {}, ({ stripe: 'Tarjeta', mercadopago: 'Mercado Pago', paypal: 'PayPal', transfer: 'Transferencia' })[m.id] || m.id, el('small', {}, m.antes ? `${m.texto} (antes ${m.antes})` : m.texto)))));
       if (r.medios?.length) total.lastChild.textContent = r.medios[0].texto;
       if (lineaPromo && r.medios?.[0]?.descuentoPromo) lineaPromo.lastChild.textContent = `−${r.medios[0].descuentoPromo}`;
-      else if (r.gratis) total.lastChild.textContent = 'Gratis';
+      else if (r.gratis) total.lastChild.textContent = plan.cero || 'Gratis';
     } catch { error.textContent = 'No se pudo calcular el total. Revisar la conexión.'; }
   };
   cupon.addEventListener('change', cotizar);

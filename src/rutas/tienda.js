@@ -660,6 +660,7 @@ export async function estadoPlan(env, request, ev, esquema) {
     promo: ev.datos.vinculo?.incluido === plan ? null : promoPanel(env, ev, { item: PLANES_PROMO.includes(plan) ? plan : null, clave: plan, eurLista: precioPaquete(plan), eurPagar: eurPlan, eurTotal: eur, moneda, rates, pais }),
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: ev.empresaId ? '' : precioExtra(x) ? texto(x, precioExtra(x)) : `Incluida en ${NOMBRES_PAQUETE[plan]}`, pagado: !extrasAPagar.includes(x) })),
     aPagar: { eur, eurPlan, texto: texto(plan, eur), plan: eurPlan ? texto(plan, eurPlan) : null, extras: extrasAPagar },
+    cero: formatMoney(0, moneda), // README (ronda 113): «Total 0 €» cuando no se debe nada
     secciones,
     // Precio de cada tarjeta con este plan (para mostrarlo en los selectores del panel)
     // README (ronda 87): en los eventos de empresas no se muestran precios
@@ -692,6 +693,7 @@ async function estadoProducto(env, request, ev, esquema) {
     promo: promoPanel(env, ev, { item: claveDePromo({ producto: ev.producto, aMedida: ev.aMedida }), clave, eurLista: base, eurPagar: pagado ? 0 : base, eurTotal: eur, moneda, rates, pais }),
     complementos: elegidos.map((x) => ({ id: x, nombre: EXTRAS[x]?.nombre || x, precio: texto(x, EXTRAS[x]?.precio || 0), pagado: !extrasAPagar.includes(x) })),
     aPagar: { eur, eurBase: pagado ? 0 : base, texto: texto(clave, eur), plan: pagado ? null : texto(clave, base), extras: extrasAPagar },
+    cero: formatMoney(0, moneda),
     secciones: [],
     preciosExtras: Object.fromEntries(['std-tarjeta', 'std-foto', 'std-web', 'std-tarjeta-medida', 'std-web-medida', 'agradecimiento', 'video-portada', 'idioma', 'diseno'].map((x) => [x, `+${texto(x, EXTRAS[x]?.precio || 0)}`])),
     activar: !pagado,
