@@ -5,15 +5,21 @@ import { downloadZip } from './client-zip.js';
 
 const PART_BYTES = 450 * 1024 * 1024; // sin "guardar como" (móviles, Safari): partes de ~450 MB
 
+// README (ronda 109): cada archivo se baja entero (con 3 intentos) antes de entrar al ZIP. Antes se pasaba la respuesta
+// sin leer: si la conexión se cortaba a mitad de un video, se rompía todo el ZIP y quedaba el temporal (.crswap) sin terminar.
+// El ?zip=1 evita una copia en caché guardada sin los permisos CORS (la de una miniatura vista antes en la página).
 async function* entries(files, progress, state) {
   for (const f of files) {
-    let res;
-    for (let i = 0; i < 3; i++) {
-      try { res = await fetch(f.url); if (res.ok) break; } catch (e) { res = null; }
-      await new Promise((r) => setTimeout(r, 800 * (i + 1)));
+    let blob = null;
+    for (let i = 0; i < 3 && !blob; i++) {
+      try {
+        const res = await fetch(f.url + (f.url.includes('?') ? '&' : '?') + 'zip=1', { mode: 'cors', cache: 'no-store' });
+        if (res.ok) blob = await res.blob();
+      } catch (e) { blob = null; }
+      if (!blob) await new Promise((r) => setTimeout(r, 800 * (i + 1)));
     }
     state.done++;
-    if (res && res.ok) yield { name: f.name, input: res };
+    if (blob) yield { name: f.name, input: blob };
     else state.failed++;
     progress(state.done, state.total);
   }
@@ -45,7 +51,9 @@ window.FWZip = {
     const state = { done: 0, failed: 0, total: files.length };
     const writable = await writablePromise;
     if (writable) {
-      await downloadZip(entries(files, progress, state)).body.pipeTo(writable);
+      // Si algo falla a mitad, se descarta el archivo a medio escribir (no queda el .crswap)
+      try { await downloadZip(entries(files, progress, state)).body.pipeTo(writable); }
+      catch (e) { try { await writable.abort(); } catch (e2) { /* ya cerrado */ } throw e; }
       return state;
     }
     // Sin "Guardar como": se descarga en partes para no agotar la memoria del dispositivo
