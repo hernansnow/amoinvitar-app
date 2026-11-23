@@ -1406,7 +1406,7 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
   .aq > *, .aq-cuerpo > *, .aq-barra > * { min-width: 0; max-width: 100%; }
   .aq-cabeza { align-items: center; }
   .aq-acciones .aq-chip { padding: 5px 10px; }
-  .aq-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 2px; gap: 6px; }
+  .aq-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 0 0 2px; gap: 6px; }
   .aq-tabs::-webkit-scrollbar { display: none; }
   .aq-tab { padding: 7px 12px; font-size: .82rem; white-space: nowrap; flex: 0 0 auto; gap: 6px; }
   .aq-cuerpo { padding: 10px; margin: 0 -8px; border-radius: 12px; }
@@ -1442,3 +1442,8 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
   .aq-qr { height: 560px; }
   .ad-powered img { width: 84px; }
 }
+
+/* README (ronda 110): flecha «>» en las filas que se deslizan de Álbum QR (solo en el celular, donde no entran) */
+.aq-desliza { position: relative; min-width: 0; }
+.aq-flecha { display: none; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0), var(--fondo-flecha, #fff) 45%); }
+@media (max-width: 640px) { .aq-flecha { display: flex; } .aq-flecha[hidden] { display: none; } .aq-tabs { scroll-padding: 0 48px; } }

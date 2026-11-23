@@ -35,6 +35,19 @@ const I = {
   vistaGrande: SVG('<rect x="3" y="3" width="18" height="18" rx="1"/>'),
 };
 
+// README (ronda 110): en el celular, las filas que se deslizan (botones y filtros) llevan la flecha «>» del menú del panel:
+// avisa que hay más y, al tocarla, corre la fila. Se esconde si todo entra o al llegar al final.
+const FLECHA = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function conFlecha(el, fila, fondo) {
+  const mas = el('button', { type: 'button', class: 'ad-menu-mas aq-flecha', 'aria-label': 'Ver más opciones', html: FLECHA, onclick: () => fila.scrollBy({ left: fila.clientWidth * 0.6, behavior: 'smooth' }) });
+  mas.style.setProperty('--fondo-flecha', fondo);
+  const ver = () => { mas.hidden = fila.scrollLeft + fila.clientWidth >= fila.scrollWidth - 4; };
+  fila.addEventListener('scroll', ver, { passive: true });
+  addEventListener('resize', ver);
+  requestAnimationFrame(ver); setTimeout(ver, 300);
+  return el('div', { class: 'aq-desliza' }, fila, mas);
+}
+
 export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
   const el = ctx.el;
   const boda = ctx.S.evento.tipo === 'boda';
@@ -61,7 +74,7 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
       el('div', { class: 'aq-acciones' },
         el('a', { class: 'aq-chip', href: album.link, target: '_blank', rel: 'noopener' }, ...conIco('ojo', 'Ver álbum')),
         el('button', { type: 'button', class: 'aq-chip', onclick: () => entrarAjustes('ajustes') }, ...conIco('ajustes', 'Ajustes')))),
-    el('div', { class: 'aq-tabs' }, ...botonesTab, slideshow, zipBtn),
+    conFlecha(el, el('div', { class: 'aq-tabs' }, ...botonesTab, slideshow, zipBtn), '#fff'),
     cuerpo);
 
   // ── Datos del álbum (contadores, ajustes, link del slideshow) ──
@@ -120,7 +133,7 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
     const grid = el('div', { class: `aq-grid v-${vista}` });
     const masBtn = el('button', { type: 'button', class: 'btn btn-sec btn-chico aq-mas', hidden: true, onclick: () => cargar(false) }, tr('Cargar más'));
     const vacio = el('p', { class: 'aq-vacio', hidden: true }, tr('Todavía no hay fotos. Comparte tu QR y aparecerán aquí en tiempo real.'));
-    cuerpo.replaceChildren(el('div', { class: 'aq-barra' }, filtros, el('div', { class: 'aq-barra-der' }, selBtn, ordenSel, vistas)), barraLote, grid, vacio, masBtn);
+    cuerpo.replaceChildren(el('div', { class: 'aq-barra' }, conFlecha(el, filtros, '#d4e9e0'), el('div', { class: 'aq-barra-der' }, selBtn, ordenSel, vistas)), barraLote, grid, vacio, masBtn);
 
     function pintarLote() {
       barraLote.hidden = !seleccion;
@@ -307,7 +320,7 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
   import('/panel/albunear/zip.js').then(() => { zipMod = window.FWZip; }).catch(() => {});
   // Si Albunear todavía no tiene la puerta nueva (o no responde), quedan los botones de siempre: ver el álbum y abrir su panel
   const deRespaldo = (e) => {
-    caja.querySelector('.aq-tabs').hidden = true;
+    caja.querySelector('.aq-desliza').hidden = true;
     cuerpo.replaceChildren(el('p', { class: 'aq-texto' }, tr('Las fotos y videos que suben los invitados se ven y se descargan desde el panel de Albunear.')),
       el('div', { class: 'aq-fila' },
         el('button', { type: 'button', class: 'btn btn-albunear btn-chico', onclick: async () => { const w = window.open('', '_blank'); try { const x = await ctx.api('/albunear', { method: 'POST', body: '{}' }); if (w) w.location = x.entrar; } catch (x) { w?.close(); ctx.aviso(x.message, true); } } }, tr('Abrir el panel de Albunear')),
