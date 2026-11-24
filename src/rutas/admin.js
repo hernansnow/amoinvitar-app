@@ -4,7 +4,7 @@
 //   GET  /admin/facturas.csv?year=&q= libro registro de facturas emitidas (Excel)
 //   GET  /api/admin/facturas?year=&q= listado, estado de VeriFactu y umbral OSS
 //   POST /api/admin/verifactu/enviar  reenvía ya lo pendiente a la AEAT
-import { recordatoriosBorradores } from '../borradores.js';
+import { recordatoriosAutomaticos, limpiarCuponesSistema } from '../recordatorios.js';
 import { json, HttpError, escapeHtml, now } from '../lib/util.js';
 import { avisosCierre, resumenRespuestas } from '../avisos.js';
 import { avisosVencimiento } from '../recuerdo.js';
@@ -89,6 +89,11 @@ export async function tareas(controller, env) {
   if (controller.cron === '* * * * *') {
     const r = await sendPending(env);
     if (r && !r.skipped) console.log('[verifactu]', JSON.stringify(r));
+    // README (ronda 118): una vez por hora, el 1.º recordatorio a quien lleva 24 h sin entrar a su invitación sin terminar
+    if (new Date(controller.scheduledTime || Date.now()).getUTCMinutes() === 17) {
+      const rec = await recordatoriosAutomaticos(env).catch((e) => console.error('[recordatorios]', e));
+      if (rec?.enviados) console.log('[recordatorios]', JSON.stringify(rec));
+    }
     return;
   }
   await alertasOss(env);
@@ -97,8 +102,8 @@ export async function tareas(controller, env) {
   await avisosVencimiento(env).catch((e) => console.error('[recuerdo]', e));
   await avisosCreditos(env).catch((e) => console.error('[creditos]', e));
   await resumenRespuestas(env).catch((e) => console.error('[resumen rsvp]', e));
-  // README (ronda 83): recordatorios automáticos a quien dejó la invitación sin terminar (si están prendidos en la consola)
-  await recordatoriosBorradores(env).catch((e) => console.error('[borradores]', e));
+  // README (ronda 118): los cupones del sistema (2.º recordatorio) vencidos y sin usar se borran solos
+  await limpiarCuponesSistema(env).catch((e) => console.error('[cupones sistema]', e));
 }
 
 // Invitaciones armadas sin pagar ni guardar en una cuenta: se borran a los 60 días sin cambios

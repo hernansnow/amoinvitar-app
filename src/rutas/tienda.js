@@ -14,7 +14,7 @@ import { formatMoney } from '../lib/dinero.js';
 import { methodsFor, transferInfo, createMpPreference, findMpApproved, getMpPayment } from '../lib/pagos.js';
 import { createCheckoutSession, retrieveCheckoutSession, verifyWebhook } from '../lib/stripe.js';
 import { createPaypalOrder, capturePaypalOrder } from '../lib/paypal.js';
-import { sendEmail, mailPedidoListo, mailRecuerdoListo, mailTransferencia, mailAvisoInterno, mailFactura } from '../lib/email.js';
+import { sendEmail, mailPedidoListo, mailRecuerdoListo, mailAdicionalPagado, mailTransferencia, mailAvisoInterno, mailFactura } from '../lib/email.js';
 import { issueInvoice, invoiceUrl } from '../lib/facturas.js';
 import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { reverseChargeFor } from '../lib/vies.js';
@@ -29,6 +29,7 @@ import { diceBautizo } from '../sitio/variantes.js';
 import { planNecesario, complementos, NIVELES } from '../panel/esquemas.js';
 import { venceEvento, fechaEvento } from '../vencimiento.js';
 import { ZONAS } from '../datos/zonas.js';
+import { idiomaPara, recordarIdioma, idiomaDeRequest } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const ORDEN = ['gratis', 'basic', 'premium', 'deluxe'];
 // index.js pasa cómo armar el esquema del panel (necesita los modelos de public/)
@@ -283,7 +284,7 @@ export async function comprar(request, env) {
   } : null;
   await env.DB.prepare(`INSERT INTO pedidos (id, numero, usuario_id, email, tipo, detalle, evento_id, medio, moneda, importe, iva, iva_tasa, eur, cupon, descuento, pais, factura, inversion, vies, creado)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .bind(id, numero, usuario?.id || null, email, borrador ? 'borrador' : rec ? 'recuerdo' : adic ? 'adicional' : mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null, ...(adic ? { adicional: adic.adicional.id } : {}) }), adic ? (adic.adicional.evento || null) : mejora?.evento.id || null, medio,
+    .bind(id, numero, usuario?.id || null, email, borrador ? 'borrador' : rec ? 'recuerdo' : adic ? 'adicional' : mejora ? 'mejora' : 'nuevo', JSON.stringify({ ...pedido, pais: b.pais || null, idioma: idiomaDeRequest(request) || null /* README (ronda 118) */, ...(adic ? { adicional: adic.adicional.id } : {}) }), adic ? (adic.adicional.evento || null) : mejora?.evento.id || null, medio,
       elegido?.moneda || moneda, total, elegido?.iva || 0, elegido?.ivaTasa || 0, eur, cupon?.codigo || null, 0, pais, factura ? JSON.stringify(factura) : null,
       rc ? 1 : 0, rc ? (rc.consultation || 'VIES ' + new Date().toISOString().slice(0, 10)) : null, now()).run();
 
@@ -328,9 +329,11 @@ export async function comprar(request, env) {
   }
   // Transferencia: el evento se crea ya (se puede ir cargando) y se publica cuando llega el pago
   const datos = transferInfo(env, elegido.moneda) || 'Escribirnos para recibir los datos de la cuenta.';
+  await recordarIdioma(env, email, request);
+  const idioma = await idiomaPara(env, email, { request });
   if (adic) { // README (ronda 95): el cobro adicional no crea ninguna invitación
     try {
-      await sendEmail(env, { to: email, ...mailTransferencia(env, { url: `${base}/pagar/${adic.adicional.id}`, producto: pedido.nombre, numero, importe: elegido.texto, datos }) });
+      await sendEmail(env, { to: email, ...mailTransferencia(env, { url: `${base}/pagar/${adic.adicional.id}`, producto: pedido.nombre, numero, importe: elegido.texto, datos, idioma }) });
       if (env.SUPPORT_EMAIL) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Transferencia pendiente #${numero} · ${elegido.texto}`, lineas: [`${email} eligió transferencia para ${pedido.nombre}.`, `Cuando llegue, marcar como cobrado: POST /api/admin/pedidos/${id}/cobrado`] }) });
     } catch (e) { console.error('[mail]', e); }
     return responder({ url: gracias });
@@ -338,7 +341,7 @@ export async function comprar(request, env) {
   const ev = mejora ? mejora.evento : await crearEventoDePedido(env, { ...(await leerPedido(env, id)) });
   const panel = `${base}/panel/${ev.id}?k=${ev.clave}`;
   try {
-    await sendEmail(env, { to: email, ...mailTransferencia(env, { url: panel, producto: pedido.nombre, numero, importe: elegido.texto, datos }) });
+    await sendEmail(env, { to: email, ...mailTransferencia(env, { url: panel, producto: pedido.nombre, numero, importe: elegido.texto, datos, idioma }) });
     if (env.SUPPORT_EMAIL) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Transferencia pendiente #${numero} · ${elegido.texto}`, lineas: [`${email} eligió transferencia para ${pedido.nombre}.`, `Cuando llegue, marcar como cobrado: POST /api/admin/pedidos/${id}/cobrado`] }) });
   } catch (e) { console.error('[mail]', e); }
   return responder({ url: gracias });
@@ -409,16 +412,18 @@ export async function cumplirPedido(env, request, id) {
   }
   if (p.cupon) await env.DB.prepare('UPDATE cupones SET usos = usos + 1 WHERE codigo = ?').bind(p.cupon).run();
   const base = sitio(env, request);
+  // README (ronda 118): en el idioma del cliente (el guardado para su mail, el de la compra o el de su invitación)
+  const idioma = await idiomaPara(env, p.email, { evento: p.detalle.idioma ? null : ev?.id, variante: p.detalle.idioma || ev?.datos?.variante });
   // Factura automática (numerada, con huella VeriFactu) y su link para verla o descargarla en PDF
   try {
     const inv = await issueInvoice(env, ordenParaFactura(await leerPedido(env, id)));
-    if (inv) await sendEmail(env, { to: p.email, ...mailFactura(env, { url: await invoiceUrl(env, base, inv), numero: inv.number, producto: p.detalle.nombre }) });
+    if (inv) await sendEmail(env, { to: p.email, ...mailFactura(env, { url: await invoiceUrl(env, base, inv), numero: inv.number, producto: p.detalle.nombre, idioma }) });
     if (verifactuMode(env)) await sendPending(env);
   } catch (e) { console.error('[factura]', e); }
   try {
-    if (p.tipo === 'adicional') await sendEmail(env, { to: p.email, ...mailAvisoInterno(env, { asunto: `Pago recibido · ${p.detalle.nombre}`, lineas: ['¡Gracias! Recibimos tu pago.', `${p.detalle.nombre} · Pedido #${p.numero} · ${formatMoney(p.importe, p.moneda)}`, 'La factura te llega en un mail aparte.'] }) });
-    else if (p.tipo === 'recuerdo') await sendEmail(env, { to: p.email, ...mailRecuerdoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}#recuerdo`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null }) });
-    else await sendEmail(env, { to: p.email, ...mailPedidoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, gratis: ['gratis', 'admin'].includes(p.medio) }) });
+    if (p.tipo === 'adicional') await sendEmail(env, { to: p.email, ...mailAdicionalPagado(env, { titulo: p.detalle.nombre, detalle: `#${p.numero} · ${formatMoney(p.importe, p.moneda)}`, idioma }) });
+    else if (p.tipo === 'recuerdo') await sendEmail(env, { to: p.email, ...mailRecuerdoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}#recuerdo`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, idioma }) });
+    else await sendEmail(env, { to: p.email, ...mailPedidoListo(env, { url: `${base}/panel/${ev.id}?k=${ev.clave}`, producto: p.detalle.nombre, numero: p.importe ? p.numero : null, gratis: ['gratis', 'admin'].includes(p.medio), idioma }) });
     if (env.SUPPORT_EMAIL && p.importe) await sendEmail(env, { to: env.SUPPORT_EMAIL, ...mailAvisoInterno(env, { asunto: `Venta #${p.numero} · ${formatMoney(p.importe, p.moneda)}`, lineas: [`${p.email} · ${p.detalle.nombre} · ${p.medio}`] }) });
   } catch (e) { console.error('[mail]', e); }
   return true;
@@ -755,7 +760,7 @@ export async function empezar(request, env) {
     estado: 'borrador', clave: randomId(16), empresaId: null, slug: null,
     datos: {
       // README (ronda 42): idioma y bautismo/bautizo del país que eligió en la web (o el de su IP)
-      variante: varianteVisitante(request), zonaHoraria: zona, acceso: { modo: 'abierta' }, extras: [], secciones, ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}), ...(tipo === '15' && (b.sweet16 || sweet16Visitante(request)) ? { sweet16: true } : {}),
+      variante: varianteVisitante(request), zonaHoraria: zona, paisAlta: /^[A-Z]{2}$/.test(pais || '') && pais !== 'XX' ? pais : null /* README (ronda 118): país del visitante al crearla (consola) */, acceso: { modo: 'abierta' }, extras: [], secciones, ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}), ...(tipo === '15' && (b.sweet16 || sweet16Visitante(request)) ? { sweet16: true } : {}),
       nombres: bb ? { a, b: bb } : { a }, celebracion: fecha ? { fecha, inicio: fecha } : {},
       planElegido: gratisPosible ? 'gratis' : null,
       // README (ronda 28): los modelos con plan gratis arrancan gratis (sin galería ni cuenta regresiva); al prender
@@ -796,7 +801,7 @@ async function empezarProducto(request, env, b, producto) {
   if (!a) throw new HttpError(400, 'Falta el nombre');
   const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';
   let modelo = null;
-  const datos = { variante: varianteVisitante(request), ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}), ...(tipo === '15' && (b.sweet16 || sweet16Visitante(request)) ? { sweet16: true } : {}), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
+  const datos = { variante: varianteVisitante(request), paisAlta: /^[A-Z]{2}$/.test(paisReal(request) || '') && paisReal(request) !== 'XX' ? paisReal(request) : null, ...(tipo === 'bautismo' && bautizoVisitante(request) ? { bautizo: true } : {}), ...(tipo === '15' && (b.sweet16 || sweet16Visitante(request)) ? { sweet16: true } : {}), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a },
     celebracion: fecha ? { fecha, inicio: fecha } : {}, std: { ...(fecha ? { fecha } : {}) } };
   if (producto === 'std-tarjeta') {
     // Sin diseño elegido (desde la tienda): el primero con tarjeta para ese evento

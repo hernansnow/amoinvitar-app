@@ -13,6 +13,7 @@ import { almacenD1 } from '../almacen.js';
 import { TIPOS_EVENTO, MODELOS, nombreModelo } from '../modelos.js';
 import { venceEvento } from '../vencimiento.js';
 import { empresasDe } from '../pro/empresa.js';
+import { idiomaPara, recordarIdioma, idiomaDeRequest } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
 const pais = (request) => request.cf?.country || request.headers.get('cf-ipcountry') || null;
@@ -23,7 +24,8 @@ export async function pedirEnlace(request, env) {
   if (!isEmail(email)) throw new HttpError(400, 'El mail no parece válido');
   const token = await crearTokenLogin(env, email, b.siguiente);
   const url = `${sitio(env, request)}/auth/enlace?t=${token}`;
-  await sendEmail(env, { to: email, ...mailAcceso(env, url) });
+  await recordarIdioma(env, email, request); // README (ronda 118): el link llega en el idioma de la web desde la que lo pidió
+  await sendEmail(env, { to: email, ...mailAcceso(env, url, await idiomaPara(env, email, { request })) });
   // Probando en la compu (sin servicio de mail) el link vuelve en la respuesta
   return json({ ok: true, ...(!env.RESEND_API_KEY && env.MODO_LOCAL ? { prueba: url } : {}) });
 }

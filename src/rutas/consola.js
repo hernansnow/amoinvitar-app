@@ -22,6 +22,7 @@ import { sumarMeses, nuevoLote, renovarPase as renovarPaseBase, catalogoCompras 
 import { pagarCompra } from '../pro/compras.js';
 import { extrasDe, cambiarExtras, sumarSaldo, COMPLEMENTOS_PRO } from '../pro/extras.js';
 import { dominiosParaAdmin, marcarDominio, quitarDominio, revisarDominio, conCloudflare, cnameDe } from '../pro/dominios.js';
+import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const ahora = () => new Date().toISOString();
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
@@ -120,7 +121,7 @@ async function aprobar(request, env, id, b) {
   const creditos = Math.max(0, Math.min(1000, parseInt(b.creditos, 10) || 0));
   if (creditos) await nuevoLote(env, empresaId, creditos, 'inicial', str(b.nota, 200) || 'Créditos iniciales');
   await env.DB.prepare("UPDATE solicitudes_pro SET estado = 'aprobada', empresa_id = ?, nota = ?, resuelto = ? WHERE id = ?").bind(empresaId, str(b.nota, 300) || null, t, id).run();
-  try { await sendEmail(env, { to: s.email, ...mailProAprobada(env, { nombre: s.nombre, nivel: PROFESIONALES[nivel].nombre, url: sitio(env, request) }) }); } catch (e) { console.error('[pro aprobada]', e); }
+  try { await sendEmail(env, { to: s.email, ...mailProAprobada(env, { idioma: await idiomaPara(env, s.email), nombre: s.nombre, nivel: PROFESIONALES[nivel].nombre, url: sitio(env, request) }) }); } catch (e) { console.error('[pro aprobada]', e); }
   return json({ ok: true, empresa: empresaId });
 }
 
@@ -130,7 +131,7 @@ async function rechazar(request, env, id, b) {
   if (s.estado !== 'pendiente') throw new HttpError(409, 'Esa solicitud ya se resolvió');
   const motivo = str(b.motivo, 400);
   await env.DB.prepare("UPDATE solicitudes_pro SET estado = 'rechazada', nota = ?, resuelto = ? WHERE id = ?").bind(motivo || null, ahora(), id).run();
-  if (b.avisar !== false) { try { await sendEmail(env, { to: s.email, ...mailProRechazada(env, { nombre: s.nombre, motivo }) }); } catch (e) { console.error('[pro rechazada]', e); } }
+  if (b.avisar !== false) { try { await sendEmail(env, { to: s.email, ...mailProRechazada(env, { idioma: await idiomaPara(env, s.email), nombre: s.nombre, motivo }) }); } catch (e) { console.error('[pro rechazada]', e); } }
   return json({ ok: true });
 }
 
@@ -226,7 +227,7 @@ export async function medida(request, env, eventoId, accion) {
   if (accion === 'aprobar') {
     const nombres = [ev.datos.nombres?.a, ev.datos.nombres?.b].filter(Boolean).join(' & ');
     for (const c of (await alm.accesos(ev.id)).filter((x) => x.rol === 'cliente')) {
-      try { await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { url: `${sitio(env, request)}/panel/${ev.id}?k=${ev.clave}`, nombres }) }); avisados++; } catch (e) { console.error('[medida]', e); }
+      try { await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { idioma: await idiomaPara(env, c.email, { evento: ev.id, variante: ev.datos?.variante }), url: `${sitio(env, request)}/panel/${ev.id}?k=${ev.clave}`, nombres }) }); avisados++; } catch (e) { console.error('[medida]', e); }
     }
   }
   return json({ ok: true, avisados });

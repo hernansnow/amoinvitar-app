@@ -6,6 +6,7 @@
 import { RECUERDO } from './catalogo.js';
 import { sendEmail, mailRecuerdoVence } from './lib/email.js';
 import { venceEvento } from './vencimiento.js';
+import { idiomaPara, recordarIdioma } from './lib/idioma-mail.js'; // README (ronda 118)
 
 export const ILIMITADO = '2099-12-31T23:59:59.000Z';
 export const esIlimitado = (ev) => String(ev.vence || '') >= '2090';
@@ -46,7 +47,7 @@ export async function avisosVencimiento(env) {
       const url = `${base}/panel/${r.id}?k=${r.clave_panel}#recuerdo`;
       const compradas = Object.keys(RECUERDO).filter((o) => o !== 'online' && datos.recuerdo?.[o]);
       for (const to of new Set((mails || []).map((m) => String(m.email || '').toLowerCase()).filter(Boolean))) {
-        await sendEmail(env, { to, ...mailRecuerdoVence(env, { nombres, dias, fecha: v.slice(0, 10), url, compradas }) });
+        await sendEmail(env, { to, ...mailRecuerdoVence(env, { idioma: await idiomaPara(env, to, { evento: r.id, variante: datos.variante }), nombres, dias, fecha: v.slice(0, 10), url, compradas }) });
       }
       datos.recuerdo = { ...(datos.recuerdo || {}), avisos: [...new Set([...previos, ...toca])] };
       await env.DB.prepare('UPDATE eventos SET datos = ? WHERE id = ?').bind(JSON.stringify(datos), r.id).run();

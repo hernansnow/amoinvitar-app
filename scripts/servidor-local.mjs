@@ -77,6 +77,8 @@ http.createServer(async (req, res) => {
   // README (ronda 83): probar los recordatorios a borradores como si pasaran N días, y el aviso al volver (ingreso viejo)
   if (url.pathname === '/__borradores') { const { recordatoriosBorradores } = await import('../src/borradores.js'); const out = await recordatoriosBorradores(env, { ahora: Date.now() + Number(url.searchParams.get('dias') || 0) * 86400000 }); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(out)); }
   if (url.pathname === '/__ingreso') { await env.DB.prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2").bind(`ingreso:${url.searchParams.get('id')}`, new Date(Date.now() - Number(url.searchParams.get('dias') || 0) * 86400000).toISOString(), Date.now()).run(); res.writeHead(200); return res.end('ok'); }
+  // README (ronda 118): correr los recordatorios con el reloj adelantado (?horas=30) para probarlos sin esperar
+  if (url.pathname === '/__recordatorios') { const { recordatoriosAutomaticos } = await import('../src/recordatorios.js'); const r = await recordatoriosAutomaticos(env, { ahora: Date.now() + (Number(url.searchParams.get('horas')) || 0) * 3600000 }); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(r)); }
   if (url.pathname === '/__mails') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(env.ULTIMOS_MAILS)); }
   const request = new Request(url, { method: req.method, headers: req.headers, body: cuerpo, duplex: 'half' });
   // Como en Cloudflare (run_worker_first): todo pasa por el Worker, que sirve los archivos con ASSETS

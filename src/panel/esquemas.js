@@ -191,7 +191,7 @@ function pasosInvitacion({ tipo, modelo }) {
         { id: 'portada.video', tipo: 'video', etiqueta: 'Video de portada', maxSeg: 30, maxMB: 40, si: [siFotos('portada'), { campo: 'portada.tipo', es: 'video' }],
           ayuda: 'MP4 de hasta 30 segundos. En pantallas horizontales un video vertical se ve al centro, con una copia desenfocada de fondo.' }] : []),
         // Más de una foto de portada es de Premium
-        { id: 'fotos.portada', tipo: 'fotos', etiqueta: maxPortada > 1 ? 'Fotos de portada' : 'Foto de portada', sinEtiqueta: true, max: maxPortada, portada: true, nivelCantidad: maxPortada > maxPortadaBasic ? [maxPortadaBasic + 1, 'premium'] : null,
+        { id: 'fotos.portada', tipo: 'fotos', etiqueta: maxPortada > 1 ? 'Fotos de portada' : 'Foto de portada', sinEtiqueta: true, max: maxPortada, portada: true, sinEncuadre: !!modelo.portadaSinEncuadre /* README (ronda 118): Romantic respeta la proporción de la foto */, nivelCantidad: maxPortada > maxPortadaBasic ? [maxPortadaBasic + 1, 'premium'] : null,
           si: modelo.videoPortada ? [siFotos('portada'), { campo: 'portada.tipo', no: 'video' }] : siFotos('portada') },
         { id: 'nota.portadaSinFoto', tipo: 'nota', texto: 'Sin fotos, la portada usa el fondo del diseño con los nombres.', si: { campo: 'fotosOn.portada', es: false } },
         ] : []),

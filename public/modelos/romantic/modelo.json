@@ -19,6 +19,7 @@
     "byn": true,
     "enRsvp": false
   },
+  "portadaSinEncuadre": true,
   "videoPortada": false,
   "textosCaso": {
     "rsvp.botonHtml": "oracion",

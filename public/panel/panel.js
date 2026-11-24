@@ -603,7 +603,8 @@ function fotosEnPestanas(c, lista, alCambiar) {
       lista.splice(activa, 1); activa = Math.min(activa, Math.max(0, lista.length - 1)); emitir(); dibujar(); }, html: `${icono('quitar', 15)}<span>Quitar esta foto</span>` }) : null;
     caja.replaceChildren(...[tabs, el('div', { class: `pestana-cuerpo${max > 1 ? '' : ' sola'}` },
       el('div', { class: 'subir-portada' }, subir, quitar || el('span', { class: 'sin-archivo' }, 'Ninguna foto elegida')),
-      f ? encuadrePortada({ url: f.url, pos: f.pos, posPc: f.posPc, zoom: f.zoom, zoomPc: f.zoomPc, alCambiar: ({ pos, posPc, zoom, zoomPc }) => { f.pos = pos; f.posPc = posPc; if (zoom) f.zoom = zoom; else delete f.zoom; if (zoomPc) f.zoomPc = zoomPc; else delete f.zoomPc; emitir(); } }) : null)].filter(Boolean));
+      // README (ronda 118): modelos que muestran la foto con su proporción (Romantic): sin encuadre por dispositivo
+      f && c.sinEncuadre ? el('img', { class: 'portada-sin-encuadre', src: f.url, alt: '', style: 'display:block;max-width:100%;max-height:320px;border-radius:10px;margin-top:10px' }) : f ? encuadrePortada({ url: f.url, pos: f.pos, posPc: f.posPc, zoom: f.zoom, zoomPc: f.zoomPc, alCambiar: ({ pos, posPc, zoom, zoomPc }) => { f.pos = pos; f.posPc = posPc; if (zoom) f.zoom = zoom; else delete f.zoom; if (zoomPc) f.zoomPc = zoomPc; else delete f.zoomPc; emitir(); } }) : null)].filter(Boolean));
   };
   dibujar();
   return caja;

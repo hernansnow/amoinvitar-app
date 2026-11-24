@@ -4,6 +4,7 @@ import { sendEmail, mailCreditosVencen } from '../lib/email.js';
 import { getState, setState } from '../lib/verifactu.js';
 import { asegurarTablasPro } from './esquema.js';
 import { paseVigente, proDe } from './empresa.js';
+import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const AVISOS = [30, 7];
 
@@ -31,7 +32,7 @@ export async function avisosCreditos(env) {
     try {
       const { results: duenios } = await env.DB.prepare("SELECT u.email FROM miembros m JOIN usuarios u ON u.id = m.usuario_id WHERE m.empresa_id = ? AND m.rol = 'duenio'").bind(empresaId).all();
       const studio = paseVigente(await proDe(env, empresaId));
-      for (const d of duenios || []) await sendEmail(env, { to: d.email, ...mailCreditosVencen(env, { empresa: g.nombre, lotes: g.lotes, dias: g.dias, url: `${base}/empresa/`, studio }) });
+      for (const d of duenios || []) await sendEmail(env, { to: d.email, ...mailCreditosVencen(env, { idioma: await idiomaPara(env, d.email), empresa: g.nombre, lotes: g.lotes, dias: g.dias, url: `${base}/empresa/`, studio }) });
       for (const k of g.marcas) await setState(env, k, new Date().toISOString());
     } catch (e) { console.error('[creditos aviso]', empresaId, e); }
   }

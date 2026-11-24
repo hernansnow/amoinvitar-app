@@ -1,8 +1,7 @@
 // README (ronda 83) · Para que terminen su invitación:
 //   1. «Guardar mi invitación» en el panel: dejan un mail (y, si quieren, aceptan recibir novedades) y les llega
 //      el link para volver desde cualquier dispositivo. Queda en app_state['contacto:<evento>'].
-//   2. Recordatorios automáticos a los borradores con mail (se prenden en la consola → Invitaciones):
-//      el primero sin cupón (¿les ayudamos?) y, días después, el segundo con el cupón elegido.
+//   2. Recordatorios a los borradores con mail: ver src/recordatorios.js (ronda 118).
 //   3. El aviso de ayuda al volver al panel está en public/panel/panel.js (ayudaAlVolver).
 // Los mails van en el idioma del cliente (es, en, pt, fr, it, de, nl) y siempre con el link de baja.
 import { plantilla, sendEmail } from './lib/email.js';
@@ -68,6 +67,8 @@ const T = {
   },
 };
 export const idiomaMail = (x) => { const l = String(x || '').slice(0, 2).toLowerCase(); return T[l] ? l : 'es'; };
+// README (ronda 118): los textos fijos del pie (botón, firma, baja) en el idioma del cliente
+export const textosFijos = (x) => T[idiomaMail(x)].fijos;
 
 export async function linkBaja(env, email) {
   return `${sitio(env)}/baja?e=${encodeURIComponent(email)}&t=${await hmacHex(secreto(env), `baja:${String(email).toLowerCase()}`)}`;
@@ -103,63 +104,4 @@ export async function contactoDe(env, id) {
   try { return JSON.parse((await getState(env, `contacto:${id}`)) || 'null'); } catch { return null; }
 }
 
-// 2 · Recordatorios automáticos (tarea diaria). Configuración en app_state['auto_borradores']
-export const AUTO_DEFECTO = { activo: false, dias1: 1, dias2: 6, cupon: '', diasCupon: 7 };
-export async function configAuto(env) {
-  try { return { ...AUTO_DEFECTO, ...JSON.parse((await getState(env, 'auto_borradores')) || '{}') }; } catch { return { ...AUTO_DEFECTO }; }
-}
-export async function guardarConfigAuto(env, b) {
-  const n = (x, min, max, d) => Math.min(max, Math.max(min, parseInt(x, 10) || d));
-  const c = { activo: b.activo === true, dias1: n(b.dias1, 1, 30, 1), dias2: n(b.dias2, 2, 60, 6), cupon: str(b.cupon, 40).toUpperCase(), diasCupon: n(b.diasCupon, 1, 60, 7) };
-  if (c.dias2 <= c.dias1) c.dias2 = c.dias1 + 1;
-  if (c.cupon && !(await env.DB.prepare('SELECT 1 FROM cupones WHERE codigo = ? AND activo = 1').bind(c.cupon).first())) throw new HttpError(400, `No existe un cupón activo «${c.cupon}». Se crea en la pestaña Cupones.`);
-  await setState(env, 'auto_borradores', JSON.stringify(c));
-  return c;
-}
-
-export async function recordatoriosBorradores(env, { ahora = Date.now(), tope = 100 } = {}) {
-  const cfg = await configAuto(env);
-  if (!cfg.activo) return { enviados: 0, apagado: true };
-  // Solo borradores con movimiento en los últimos 30 días (no se escribe a los viejos al prenderlo)
-  const desde = new Date(ahora - 30 * DIA).toISOString();
-  const { results = [] } = await env.DB.prepare(`SELECT e.id, e.datos, e.clave_panel, e.actualizado,
-      (SELECT value FROM app_state WHERE key = 'ingreso:' || e.id) AS ingreso,
-      (SELECT value FROM app_state WHERE key = 'contacto:' || e.id) AS contacto,
-      (SELECT value FROM app_state WHERE key = 'mailborrador:' || e.id) AS mails,
-      (SELECT u.email FROM accesos_evento a JOIN usuarios u ON u.id = a.usuario_id WHERE a.evento_id = e.id AND a.rol = 'cliente' LIMIT 1) AS cliente
-    FROM eventos e WHERE e.estado != 'publicado' AND e.producto = 'invitacion' AND e.empresa_id IS NULL AND e.actualizado > ? LIMIT 1000`).bind(desde).all();
-  let enviados = 0;
-  for (const e of results) {
-    if (enviados >= tope) break;
-    let contacto = null, hist = [], datos = {};
-    try { contacto = JSON.parse(e.contacto || 'null'); } catch { /* nada */ }
-    try { hist = JSON.parse(e.mails || '[]'); } catch { /* nada */ }
-    try { datos = JSON.parse(e.datos || '{}'); } catch { /* nada */ }
-    const email = contacto?.email || e.cliente;
-    if (!email || await getState(env, `baja:${email.toLowerCase()}`)) continue;
-    // El evento ya pasó: no tiene sentido
-    const fecha = Date.parse(fechaEvento(datos) || '');
-    if (fecha && fecha + DIA < ahora) continue;
-    const ultima = Math.max(Date.parse(e.ingreso || '') || 0, Date.parse(e.actualizado || '') || 0);
-    const inactivo = (ahora - ultima) / DIA;
-    const ultimoMail = Math.max(0, ...hist.map((h) => Date.parse(h.fecha) || 0));
-    if (ahora - ultimoMail < 3 * DIA) continue; // nunca dos mails seguidos (manual o automático) en menos de 3 días
-    const r1 = hist.find((h) => h.tipo === 'auto1'), r2 = hist.find((h) => h.tipo === 'auto2');
-    let tipo = null;
-    if (!r1 && inactivo >= cfg.dias1) tipo = 'auto1';
-    else if (r1 && !r2 && cfg.cupon && inactivo >= cfg.dias2) tipo = 'auto2';
-    if (!tipo) continue;
-    const cupon = tipo === 'auto2' ? cfg.cupon : '';
-    if (cupon && !(await env.DB.prepare('SELECT 1 FROM cupones WHERE codigo = ? AND activo = 1').bind(cupon).first())) continue;
-    const idioma = idiomaMail(contacto?.idioma || datos.variante);
-    const url = `${sitio(env)}/panel/${e.id}?k=${e.clave_panel}`;
-    try {
-      const m = armar(env, idioma, tipo === 'auto1' ? 'r1' : 'r2', { nombres: nombresDe(datos), url, cupon, dias: cfg.diasCupon, baja: await linkBaja(env, email) });
-      await sendEmail(env, { to: email, ...m });
-      hist.push({ fecha: new Date(ahora).toISOString(), asunto: m.subject, cupon: cupon || null, para: [email], tipo });
-      await setState(env, `mailborrador:${e.id}`, JSON.stringify(hist.slice(-20)));
-      enviados++;
-    } catch (err) { console.error('[recordatorio borrador]', e.id, err); }
-  }
-  return { enviados };
-}
+// 2 · Los recordatorios (1.º automático y 2.º con descuento) están en src/recordatorios.js (README ronda 118)

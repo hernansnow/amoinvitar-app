@@ -75,6 +75,7 @@ import { getCookie, hmacHex } from './lib/util.js';
 import { resolverMapa } from './lib/mapas.js';
 import { leerPlaylist } from './lib/spotify.js';
 import { guardarContacto, contactoDe } from './borradores.js';
+import { idiomaPara, recordarIdioma } from './lib/idioma-mail.js'; // README (ronda 118)
 
 const PAQUETES = ['gratis', 'basic', 'premium', 'deluxe'];
 const cache = new Map();
@@ -956,6 +957,11 @@ async function apiPanel(env, request, url, partes) {
   if (!accion && request.method === 'GET' && !usuario?.esAdmin) {
     await env.DB?.prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = ?3")
       .bind(`ingreso:${ev.id}`, new Date().toISOString(), Date.now()).run().catch(() => {});
+    // README (ronda 118): el idioma del panel del cliente (para los mails: recordatorios, avisos, compra…)
+    const idiomaCli = /(?:^|;\s*)idioma=([a-z-]{2,8})/i.exec(request.headers.get('cookie') || '')?.[1];
+    if (idiomaCli && usuario?.email) await recordarIdioma(env, usuario.email, request);
+    if (idiomaCli) await env.DB?.prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = ?3")
+      .bind(`idiomacli:${ev.id}`, idiomaCli.toLowerCase(), Date.now()).run().catch(() => {});
   }
   if (!accion && request.method === 'GET') {
     const v = variante(ev.datos.variante);
@@ -1115,7 +1121,7 @@ async function apiPanel(env, request, url, partes) {
     else ev.datos.medida = { ...(ev.datos.medida || {}), aprobado: new Date().toISOString() };
     await almacen.guardarEvento(ev);
     const clientes = (await almacen.accesos(ev.id)).filter((x) => x.rol === 'cliente');
-    for (const c of clientes) await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { url: `${url.origin}/panel/${ev.id}?k=${ev.clave}`, nombres: nombresDe(ev.datos.nombres) }) }).catch(() => {});
+    for (const c of clientes) await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { idioma: await idiomaPara(env, c.email, { evento: ev.id, variante: ev.datos?.variante }), url: `${url.origin}/panel/${ev.id}?k=${ev.clave}`, nombres: nombresDe(ev.datos.nombres) }) }).catch(() => {});
     return json({ ok: true, avisados: clientes.length });
   }
   // README (ronda 29): el equipo marca el diseño a medida como listo: el cliente vuelve a poder editar el contenido
@@ -1269,7 +1275,7 @@ async function apiPanel(env, request, url, partes) {
       const nombreAcc = String(b.nombre || '').trim().slice(0, 80), cargo = String(b.cargo || '').trim().slice(0, 60);
       if (nombreAcc || cargo) { ev.datos.accesosInfo = { ...(ev.datos.accesosInfo || {}), [u.id]: { nombre: nombreAcc, cargo } }; await almacen.guardarEvento(ev); }
       const base = String(env.SITE_URL || url.origin).replace(/\/$/, '');
-      await sendEmail(env, { to: email, ...mailNuevoAcceso(env, { nombres: nombresDe(ev.datos.nombres) || 'la invitación', rol, quien: mio?.nombre || mio?.email || '',
+      await sendEmail(env, { to: email, ...mailNuevoAcceso(env, { idioma: await idiomaPara(env, email, { request }), nombres: nombresDe(ev.datos.nombres) || '', rol, quien: mio?.nombre || mio?.email || '',
         url: `${base}/entrar?siguiente=${encodeURIComponent(`/panel/${ev.id}`)}` }) }).catch((e) => console.error('[acceso]', e));
       return json({ ok: true });
     }

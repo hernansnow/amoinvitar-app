@@ -3,6 +3,7 @@
 // Se apaga por evento con datos.admin.avisosMail = false.
 import { sendEmail, mailAvisoCierre, mailRespuestas } from './lib/email.js';
 import { usaLista } from './acceso.js';
+import { idiomaPara, recordarIdioma } from './lib/idioma-mail.js'; // README (ronda 118)
 
 const DIAS_AVISO = [7, 3, 1];
 
@@ -27,7 +28,7 @@ export async function avisosCierre(env) {
       const nombres = [d.nombres?.a, d.nombres?.b].filter(Boolean).join(' & ') || 'la invitación';
       const url = `${base}/panel/${ev.id}?k=${ev.clave_panel}#admin`;
       for (const to of new Set(mails.map((m) => String(m.email || '').toLowerCase()).filter(Boolean))) {
-        await sendEmail(env, { to, ...mailAvisoCierre(env, { nombres, dias, sinResponder: faltan.length, noAbrieron: faltan.filter((i) => !i.abierto).length, url }) });
+        await sendEmail(env, { to, ...mailAvisoCierre(env, { idioma: await idiomaPara(env, to, { evento: ev.id, variante: d.variante }), nombres, dias, sinResponder: faltan.length, noAbrieron: faltan.filter((i) => !i.abierto).length, url }) });
       }
     } catch (e) { console.error('[avisos]', ev.id, e); }
   }
@@ -51,7 +52,7 @@ export async function avisoRespuesta(env, ev, datos) {
   const hoy = await env.DB.prepare("SELECT COUNT(*) AS n FROM respuestas WHERE evento_id = ? AND tipo = 'rsvp' AND creado >= ?").bind(ev.id, desde.toISOString()).first();
   if ((hoy?.n || 0) > TOPE_DIARIO) return;
   const url = linkPanel(env, ev.id, ev.clave);
-  for (const to of await mailsDe(env, ev.id)) await sendEmail(env, { to, ...mailRespuestas(env, { nombres: nombresDe(ev.datos), respuestas: [fila(datos)], url, tope: (hoy?.n || 0) === TOPE_DIARIO }) });
+  for (const to of await mailsDe(env, ev.id)) await sendEmail(env, { to, ...mailRespuestas(env, { idioma: await idiomaPara(env, to, { evento: ev.id, variante: ev.datos?.variante }), nombres: nombresDe(ev.datos), respuestas: [fila(datos)], url, tope: (hoy?.n || 0) === TOPE_DIARIO }) });
 }
 
 export async function resumenRespuestas(env) {
@@ -66,7 +67,7 @@ export async function resumenRespuestas(env) {
       // Con "cada" solo va el resumen si ese día se pasó del tope (las que no tuvieron su mail)
       if (!lista.length || (d.admin.avisoRespuestas === 'cada' && lista.length <= TOPE_DIARIO)) continue;
       const url = linkPanel(env, ev.id, ev.clave_panel);
-      for (const to of await mailsDe(env, ev.id)) await sendEmail(env, { to, ...mailRespuestas(env, { nombres: nombresDe(d), respuestas: lista.map(fila), url, resumen: true }) });
+      for (const to of await mailsDe(env, ev.id)) await sendEmail(env, { to, ...mailRespuestas(env, { idioma: await idiomaPara(env, to, { evento: ev.id, variante: d.variante }), nombres: nombresDe(d), respuestas: lista.map(fila), url, resumen: true }) });
     } catch (e) { console.error('[resumen rsvp]', ev.id, e); }
   }
 }

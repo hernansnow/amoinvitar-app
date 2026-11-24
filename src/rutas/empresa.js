@@ -24,6 +24,7 @@ import { dominioDe, pedirDominio, revisarDominio, quitarDominio, conCloudflare, 
 import { transferInfo } from '../lib/pagos.js';
 import { getInvoice, invoiceUrl } from '../lib/facturas.js';
 import { extrasDe, COMPLEMENTOS_PRO } from '../pro/extras.js';
+import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
 const pais = (request) => request.cf?.country || request.headers.get('cf-ipcountry') || null;
@@ -271,7 +272,7 @@ async function sumarMiembro(request, env, c) {
   await env.DB.prepare('INSERT INTO miembros (empresa_id, usuario_id, rol) VALUES (?, ?, ?) ON CONFLICT(empresa_id, usuario_id) DO UPDATE SET rol = CASE WHEN miembros.rol = \'duenio\' THEN \'duenio\' ELSE excluded.rol END').bind(c.e.id, u.id, rol).run();
   const nombre = str(b.nombre, 80), cargo = str(b.cargo, 60);
   if (nombre || cargo) { const info = await leerInfoEquipo(env, c.e.id); info[u.id] = { nombre, cargo }; await guardarInfoEquipo(env, c.e.id, info); }
-  try { await sendEmail(env, { to: email, ...mailEquipoPro(env, { empresa: c.e.nombre, quien: c.u.nombre || c.u.email, url: `${sitio(env, request)}/entrar?siguiente=/empresa/` }) }); } catch (e) { console.error('[equipo]', e); }
+  try { await sendEmail(env, { to: email, ...mailEquipoPro(env, { idioma: await idiomaPara(env, email, { request }), empresa: c.e.nombre, quien: c.u.nombre || c.u.email, url: `${sitio(env, request)}/entrar?siguiente=/empresa/` }) }); } catch (e) { console.error('[equipo]', e); }
   return json({ ok: true });
 }
 async function quitarMiembro(env, c, usuarioId) {

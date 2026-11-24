@@ -3,6 +3,7 @@
 import { json, readJson, isEmail, str, randomId, HttpError } from '../lib/util.js';
 import { sendEmail, mailAvisoInterno, mailSolicitudProRecibida } from '../lib/email.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
+import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 export const RUBROS = { planner: 'Wedding planner / organizador de eventos', fotografia: 'Fotografía o video', salon: 'Salón o espacio de eventos', agencia: 'Agencia', otro: 'Otro' };
 const linea = (v, max = 200) => String(v ?? '').replace(/[\r\n\t]+/g, ' ').trim().slice(0, max);
@@ -40,7 +41,8 @@ export async function solicitud(request, env) {
     const para = String(env.ADMINS || '').split(/[,\s]+/).filter(Boolean)[0] || env.SUPPORT_EMAIL;
     if (para) await sendEmail(env, { to: para, replyTo: s.email, ...mailAvisoInterno(env, { asunto: `Solicitud de cuenta profesional (${s.nivel === 'studio' ? 'Studio' : 'Pro'}) · ${s.empresa || s.nombre}`,
       lineas: [`${s.nombre} · ${s.email}${s.telefono ? ` · ${s.telefono}` : ''}`, `${RUBROS[s.rubro]}${s.profesion ? ` · ${s.profesion}` : ''}${s.pais ? ` · ${s.pais}` : ''}`, `Web o red: ${s.web}`, s.descripcion, `Revisar y aprobar: ${new URL(request.url).origin}/admin/`] }) });
-    await sendEmail(env, { to: s.email, ...mailSolicitudProRecibida(env, { nombre: s.nombre }) });
+    await recordarIdioma(env, s.email, request);
+    await sendEmail(env, { to: s.email, ...mailSolicitudProRecibida(env, { idioma: await idiomaPara(env, s.email, { request }), nombre: s.nombre }) });
   } catch (e) { console.error('[solicitud pro]', e); }
   return json({ ok: true });
 }

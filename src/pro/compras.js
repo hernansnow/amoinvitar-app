@@ -12,6 +12,7 @@ import { sendEmail, mailCompraPro, mailCompraProPagada, mailAvisoInterno } from 
 import { PROFESIONALES } from '../catalogo.js';
 import { catalogoCompras, siguienteNumeroCompra, nuevoLote, renovarPase } from './empresa.js';
 import { sumarSaldo } from './extras.js';
+import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const r2 = (n) => Math.round(n * 100) / 100;
 const eur = (n) => `${Number(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
@@ -48,7 +49,7 @@ export async function crearCompra(env, { empresaId, usuarioId, item, pais, fisca
   if (medio !== 'transfer') return { id, numero, nombre: cat.nombre, ...calc, rc: undefined, medio, ...(await iniciarPago(env, { id, numero, cat, total: calc.total, medio, email, base })) };
   const datos = transferInfo(env, 'EUR');
   try {
-    if (email) await sendEmail(env, { to: email, ...mailCompraPro(env, { numero, producto: cat.nombre, total: eur(calc.total), referencia: `PRO-${numero}`, datos }) });
+    if (email) await sendEmail(env, { to: email, ...mailCompraPro(env, { idioma: await idiomaPara(env, email), numero, producto: cat.nombre, total: eur(calc.total), referencia: `PRO-${numero}`, datos }) });
     const para = String(env.ADMINS || '').split(/[,\s]+/).filter(Boolean)[0] || env.SUPPORT_EMAIL;
     if (para) await sendEmail(env, { to: para, ...mailAvisoInterno(env, { asunto: `Compra Pro pendiente #${numero} · ${eur(calc.total)}`, lineas: [`${empresaNombre} · ${email || ''}`, `${cat.nombre} · neto ${eur(cat.neto)} + IVA ${calc.tasa}% = ${eur(calc.total)}`, `Confirmar el cobro en ${env.SITE_URL || ''}/admin/`] }) });
   } catch (e) { console.error('[compra pro]', e); }
@@ -80,7 +81,7 @@ export async function pagarCompra(env, id, { medio = 'transferencia', nota = nul
       urlFactura = await invoiceUrl(env, base, inv);
     }
     if (verifactuMode(env)) await sendPending(env);
-    if (email) await sendEmail(env, { to: email, ...mailCompraProPagada(env, { numero: c.numero, producto: cat?.nombre || c.item, url: `${base}/empresa/`, urlFactura }) });
+    if (email) await sendEmail(env, { to: email, ...mailCompraProPagada(env, { idioma: await idiomaPara(env, email), numero: c.numero, producto: cat?.nombre || c.item, url: `${base}/empresa/`, urlFactura }) });
   } catch (e) { console.error('[factura compra pro]', e); }
   return true;
 }
