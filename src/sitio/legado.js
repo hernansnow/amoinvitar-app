@@ -77,6 +77,10 @@ async function entregar(env, request, encontrado) {
   if (!h.get('content-type')) h.set('content-type', TIPOS[ext(clave)] || 'application/octet-stream');
   h.set('cache-control', cache(ext(clave)));
   h.set('accept-ranges', 'bytes');
+  // README (ronda 115): como el .htaccess de Hostinger («CORS para panel»): los paneles viejos (panel.amoinvitar.com)
+  // cargan fuentes, estilos e imágenes de amoinvitar.com. Sin este permiso el navegador bloquea la fuente icomoon y
+  // los íconos no se ven.
+  if (/^(html|jpe?g|png|gif|webp|svg|woff2?|ttf|eot|otf|css)$/.test(ext(clave))) { h.set('access-control-allow-origin', '*'); }
   if (!('body' in o) || !o.body) return new Response(null, { status: 304, headers: h });
   if (rango && o.range) {
     const ini = o.range.offset ?? 0, largo = o.range.length ?? (o.size - ini);

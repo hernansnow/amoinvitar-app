@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>¡Feliz cumpleaños, Lore!</title>
+<meta name="description" content="Tenés un regalo esperándote 🎁">
+<meta property="og:title" content="¡Feliz cumpleaños, Lore! 🎁">
+<meta property="og:description" content="Tenés un regalo esperándote. Tocá para abrirlo.">
+<meta property="og:image" content="https://amoinvitar.com/lore/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#7ec8ee">
+<!-- README (ronda 115): tarjeta de regalo personal del dueño (no es parte del sitio; no está enlazada en ningún lado) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Fredoka:wght@400;500;600;700&family=Gochi+Hand&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="portada.webp">
+<style>
+  :root {
+    --amarillo: #ffd90f; --amarillo-osc: #f2b705; --cielo: #7ec8ee; --cielo-claro: #bfe6fa;
+    --rosa: #ff8fb8; --rosa-claro: #ffd3e4; --naranja: #ff9f1c; --verde: #6cc04a; --tinta: #1d1a17; --crema: #fffaf0;
+    --borde: 3px solid var(--tinta);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--tinta); background: var(--cielo); overflow: hidden; -webkit-tap-highlight-color: transparent; }
+  body.abierto { overflow-y: auto; overflow-x: hidden; }
+
+  /* ── Portada ─────────────────────────────────────────── */
+  #portada { position: fixed; inset: 0; z-index: 20; overflow: hidden; background: #2b2420; }
+  /* Fondo extendido: la misma ilustración, ampliada y desenfocada, completa lo que falta a los costados (computadora) */
+  #portada .fondo { position: absolute; inset: -40px; background: url(portada.webp) center / cover no-repeat; filter: blur(26px) saturate(1.15) brightness(.9); transform: scale(1.08); }
+  #portada .fondo::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 35%, rgba(30, 20, 10, .35)); }
+  /* La ilustración: alto completo; en el celular ocupa toda la pantalla (se recortan apenas los costados) */
+  #portada .foto { position: absolute; top: 0; left: 50%; height: 100%; aspect-ratio: 941 / 1672; transform: translateX(-50%);
+    background: url(portada.webp) center / cover no-repeat; box-shadow: 0 0 60px rgba(0, 0, 0, .45); }
+  @supports not (aspect-ratio: 1) { #portada .foto { width: calc(100vh * 941 / 1672); } }
+  #portada .foto::before, #portada .foto::after { content: ''; position: absolute; top: 0; bottom: 0; width: 60px; pointer-events: none; }
+  #portada .foto::before { left: 0; background: linear-gradient(90deg, rgba(43, 36, 32, .5), transparent); }
+  #portada .foto::after { right: 0; background: linear-gradient(-90deg, rgba(43, 36, 32, .5), transparent); }
+
+  /* Botón: a la mitad de las piernas */
+  .abrir { position: absolute; left: 50%; top: 71%; transform: translate(-50%, -50%) rotate(-3deg); z-index: 2;
+    font: 400 clamp(1.15rem, min(4.2vh, 6.4vw), 2.3rem)/1 'Luckiest Guy', 'Fredoka', sans-serif; letter-spacing: .02em; color: var(--tinta);
+    background: var(--amarillo); border: 4px solid var(--tinta); border-radius: 999px; padding: .55em 1em .45em; cursor: pointer;
+    box-shadow: 0 7px 0 var(--tinta), 0 14px 30px rgba(0, 0, 0, .45); display: inline-flex; align-items: center; gap: .45em; white-space: nowrap;
+    animation: saltito 2.2s ease-in-out infinite; }
+  .abrir svg { width: 1.15em; height: 1.15em; flex: none; }
+  .abrir:hover { background: #ffe45a; }
+  .abrir:active { box-shadow: 0 2px 0 var(--tinta), 0 6px 16px rgba(0, 0, 0, .4); translate: 0 5px; }
+  .abrir:focus-visible { outline: 4px dashed #fff; outline-offset: 6px; }
+  .pista { position: absolute; left: 50%; top: calc(71% + 9vh); transform: translateX(-50%); z-index: 2; margin: 0;
+    font: 600 clamp(.85rem, 1.9vh, 1.05rem) 'Fredoka', sans-serif; color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, .7); white-space: nowrap; }
+  @keyframes saltito {
+    0%, 100% { transform: translate(-50%, -50%) rotate(-3deg) scale(1); }
+    45% { transform: translate(-50%, -54%) rotate(2deg) scale(1.05); }
+    60% { transform: translate(-50%, -50%) rotate(-2deg) scale(1); }
+  }
+  /* Al abrir: el regalo «explota» y la portada se va para arriba */
+  #portada.saliendo .foto { animation: acercar 1.3s cubic-bezier(.6, 0, .4, 1) forwards; }
+  #portada.saliendo .abrir, #portada.saliendo .pista { animation: none; opacity: 0; transition: opacity .25s; }
+  #portada.saliendo { animation: subir 1s cubic-bezier(.7, 0, .3, 1) .75s forwards; }
+  @keyframes acercar { to { transform: translateX(-50%) scale(1.25); filter: brightness(1.3); } }
+  @keyframes subir { to { transform: translateY(-105%); } }
+  #destello { position: fixed; inset: 0; z-index: 25; pointer-events: none; opacity: 0;
+    background: radial-gradient(circle at 50% 70%, #fff 0%, #fff7c2 30%, rgba(255, 217, 15, 0) 70%); }
+  #destello.si { animation: destello 1.1s ease-out forwards; }
+  @keyframes destello { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
+
+  /* ── Cielo con nubes ─────────────────────────────────── */
+  .cielo { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: linear-gradient(#5fb6e8, var(--cielo) 45%, var(--cielo-claro)); }
+  .nube { position: absolute; width: 220px; height: 70px; background: #fff; border-radius: 70px; opacity: .95;
+    animation: flotar linear infinite; }
+  .nube::before, .nube::after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
+  .nube::before { width: 110px; height: 110px; top: -55px; left: 30px; }
+  .nube::after { width: 80px; height: 80px; top: -35px; right: 30px; }
+  @keyframes flotar { from { transform: translateX(-320px) scale(var(--s, 1)); } to { transform: translateX(calc(100vw + 320px)) scale(var(--s, 1)); } }
+
+  /* ── Contenido ───────────────────────────────────────── */
+  main { position: relative; z-index: 1; min-height: 100vh; padding: max(28px, env(safe-area-inset-top)) 16px 80px; display: flex; flex-direction: column; align-items: center; }
+  .tarjeta { width: min(100%, 620px); background: var(--crema); border: var(--borde); border-radius: 28px; box-shadow: 8px 10px 0 var(--tinta);
+    padding: 34px clamp(18px, 5vw, 44px) 30px; text-align: center; position: relative; margin-top: 46px; }
+  .foto-chica { width: min(62%, 260px); margin: -86px auto 10px; position: relative; transform: rotate(-4deg); }
+  .foto-chica img { width: 100%; display: block; border: var(--borde); border-radius: 14px; background: #fff; padding: 7px; box-shadow: 5px 6px 0 var(--tinta); height: auto; aspect-ratio: 1455 / 1200; object-fit: cover; }
+  .cinta { position: absolute; width: 86px; height: 26px; background: rgba(255, 217, 15, .85); border: 2px solid rgba(29, 26, 23, .5); top: -10px; }
+  .cinta.i { left: -18px; transform: rotate(-28deg); } .cinta.d { right: -18px; transform: rotate(24deg); background: rgba(255, 143, 184, .85); }
+  h1 { font: 400 clamp(2.5rem, 10.5vw, 4.2rem)/.98 'Luckiest Guy', 'Fredoka', sans-serif; margin: 14px 0 6px; color: var(--amarillo); letter-spacing: .01em;
+    -webkit-text-stroke: 2px var(--tinta); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--tinta), 6px 6px 0 #3a8fc7; transform: rotate(-2deg); }
+  h1 span { display: inline-block; }
+  .para { display: inline-block; font: 400 1.5rem 'Gochi Hand', cursive; background: var(--rosa); border: var(--borde); border-radius: 999px; padding: 2px 18px; box-shadow: 3px 3px 0 var(--tinta); transform: rotate(3deg); margin-bottom: 16px; }
+  .texto { font-size: clamp(1.08rem, 4.2vw, 1.25rem); line-height: 1.5; margin: 8px auto 0; max-width: 30em; font-weight: 500; }
+  .queremos { font: 400 clamp(1.6rem, 6.5vw, 2.2rem) 'Luckiest Guy', 'Fredoka', sans-serif; color: var(--rosa); -webkit-text-stroke: 1.5px var(--tinta); paint-order: stroke fill; text-shadow: 2px 2px 0 var(--tinta); margin: 18px 0 4px; }
+  .firma { font: 400 clamp(1.5rem, 6vw, 1.9rem) 'Gochi Hand', cursive; margin: 6px 0 0; }
+  .firma::before { content: '— '; }
+  .corazones { display: flex; justify-content: center; gap: 6px; margin-top: 4px; }
+  .corazones svg { width: 22px; height: 22px; }
+
+  /* ── Vale (cupón) ────────────────────────────────────── */
+  .seccion-vale { width: min(100%, 680px); margin-top: 44px; text-align: center; }
+  .seccion-vale h2 { font: 400 clamp(1.5rem, 6vw, 2rem) 'Luckiest Guy', 'Fredoka', sans-serif; color: #fff; -webkit-text-stroke: 1.5px var(--tinta); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--tinta); margin: 0 0 14px; transform: rotate(-1.5deg); }
+  .vale { --hueco: 18px; position: relative; display: grid; grid-template-columns: 1fr 190px; border: var(--borde); border-radius: 22px; overflow: hidden;
+    background: var(--amarillo); box-shadow: 8px 10px 0 var(--tinta); text-align: left; transform: rotate(1deg); transition: transform .3s; }
+  .vale:hover { transform: rotate(0) scale(1.01); }
+  /* Muescas del troquel */
+  .vale::before, .vale::after { content: ''; position: absolute; left: calc(100% - 190px); width: calc(var(--hueco) * 2); height: calc(var(--hueco) * 2); border: var(--borde); border-radius: 50%;
+    background: var(--cielo); transform: translateX(-50%); z-index: 2; }
+  .vale::before { top: calc(var(--hueco) * -1 - 3px); } .vale::after { bottom: calc(var(--hueco) * -1 - 3px); background: var(--cielo-claro); }
+  .vale-cuerpo { position: relative; padding: 22px 26px 20px; background:
+      repeating-linear-gradient(-45deg, transparent 0 16px, rgba(255, 255, 255, .18) 16px 32px), var(--amarillo); }
+  .vale-cuerpo .sello { position: absolute; right: 18px; top: 16px; width: 64px; height: 64px; border-radius: 50%; border: 3px dashed var(--tinta); display: grid; place-items: center;
+    font: 400 .72rem/1.05 'Luckiest Guy', sans-serif; text-align: center; transform: rotate(14deg); color: var(--tinta); background: rgba(255, 255, 255, .55); }
+  .vale-cuerpo .chico { font: 600 .82rem 'Fredoka', sans-serif; letter-spacing: .22em; text-transform: uppercase; margin: 0; }
+  .vale-cuerpo .grande { font: 400 clamp(2rem, 7.5vw, 3rem)/.95 'Luckiest Guy', 'Fredoka', sans-serif; margin: 6px 0 2px; color: #fff; -webkit-text-stroke: 2px var(--tinta); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--tinta); }
+  .vale-cuerpo .grande em { font-style: normal; color: var(--rosa); }
+  .vale-cuerpo .yoga { display: flex; align-items: center; gap: 10px; margin: 12px 0 14px; font: 600 1.05rem 'Fredoka', sans-serif; }
+  .vale-cuerpo .yoga svg { width: 46px; height: 46px; flex: none; }
+  .datos { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: .98rem; border-top: 2px dashed rgba(29, 26, 23, .55); padding-top: 10px; }
+  .datos dt { font-weight: 700; } .datos dd { margin: 0; }
+  .vale-talon { position: relative; background: var(--rosa-claro); border-left: 3px dashed var(--tinta); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px 14px; gap: 10px; }
+  .vale-talon .cara { width: 132px; height: 132px; border-radius: 50%; border: var(--borde); overflow: hidden; background: #e8e8e8; box-shadow: 4px 4px 0 var(--tinta); }
+  .vale-talon .cara img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
+  .vale-talon .nombre { font: 400 1.6rem 'Luckiest Guy', sans-serif; -webkit-text-stroke: 1px var(--tinta); color: var(--amarillo); paint-order: stroke fill; text-shadow: 2px 2px 0 var(--tinta); }
+  .vale-talon .codigo { font: 600 .78rem 'Fredoka', sans-serif; letter-spacing: .18em; background: #fff; border: 2px solid var(--tinta); border-radius: 8px; padding: 3px 8px; }
+  .huellitas { position: absolute; bottom: 8px; left: 10px; display: flex; gap: 6px; opacity: .5; }
+  .huellitas svg { width: 18px; height: 18px; }
+  .nota-vale { margin: 16px auto 0; font: 400 1.25rem 'Gochi Hand', cursive; color: var(--tinta); background: rgba(255, 255, 255, .75); display: inline-block; padding: 4px 14px; border-radius: 12px; border: 2px solid var(--tinta); }
+
+  @media (max-width: 560px) {
+    .vale { grid-template-columns: 1fr; transform: rotate(.6deg); }
+    .vale::before, .vale::after { left: auto; top: auto; bottom: auto; }
+    .vale::before { left: calc(var(--hueco) * -1 - 3px); top: 178px; transform: translateY(-50%); }
+    .vale::after { right: calc(var(--hueco) * -1 - 3px); top: 178px; transform: translateY(-50%); background: var(--cielo); }
+    .vale-talon { order: -1; border-left: 0; border-bottom: 3px dashed var(--tinta); height: 178px; flex-direction: row; gap: 16px; }
+    .vale-talon .cara { width: 116px; height: 116px; }
+    .vale-talon .lado { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .vale-cuerpo { padding: 20px 18px 18px; }
+    .vale-cuerpo .sello { width: 56px; height: 56px; font-size: .64rem; right: 12px; top: 12px; }
+  }
+
+  /* Música */
+  .musica { position: fixed; right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); z-index: 30; width: 52px; height: 52px; border-radius: 50%;
+    border: var(--borde); background: var(--amarillo); box-shadow: 3px 4px 0 var(--tinta); display: none; place-items: center; cursor: pointer; padding: 0; }
+  body.abierto .musica { display: grid; }
+  .musica svg { width: 26px; height: 26px; }
+  .musica.sonando svg { animation: latido 1s ease-in-out infinite; }
+  @keyframes latido { 50% { transform: scale(1.15) rotate(-8deg); } }
+
+  /* Entrada del contenido */
+  .aparece { opacity: 0; transform: translateY(30px) scale(.96); }
+  body.abierto .aparece { animation: aparecer .8s cubic-bezier(.2, .9, .3, 1.3) forwards; animation-delay: var(--d, 0s); }
+  @keyframes aparecer { to { opacity: 1; transform: none; } }
+
+  #confeti { position: fixed; inset: 0; z-index: 26; pointer-events: none; width: 100%; height: 100%; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .abrir, .nube, .musica.sonando svg { animation: none !important; }
+    body.abierto .aparece { animation-duration: .01s; }
+  }
+</style>
+</head>
+<body>
+  <!-- Portada -->
+  <section id="portada" aria-label="Tu regalo">
+    <div class="fondo" aria-hidden="true"></div>
+    <div class="foto" role="img" aria-label="Lore, rodeada de sus gatos">
+      <button class="abrir" id="abrir" type="button">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="#1d1a17" stroke-width="4" stroke-linejoin="round"><rect x="8" y="26" width="48" height="32" rx="4" fill="#ff8fb8"/><rect x="4" y="16" width="56" height="12" rx="4" fill="#ff8fb8"/><path d="M28 16h8v42h-8z" fill="#6cc04a"/><path d="M32 16c-6-12-20-10-16-2 3 5 12 3 16 2zm0 0c6-12 20-10 16-2-3 5-12 3-16 2z" fill="#6cc04a"/></g></svg>
+        <span>Abrí tu regalo</span>
+      </button>
+      <p class="pista">🔊 Subí el volumen</p>
+    </div>
+  </section>
+  <div id="destello" aria-hidden="true"></div>
+  <canvas id="confeti" aria-hidden="true"></canvas>
+
+  <!-- Cielo -->
+  <div class="cielo" aria-hidden="true">
+    <div class="nube" style="top:8%;animation-duration:48s;animation-delay:-10s;--s:1"></div>
+    <div class="nube" style="top:26%;animation-duration:64s;animation-delay:-40s;--s:.7"></div>
+    <div class="nube" style="top:48%;animation-duration:56s;animation-delay:-25s;--s:1.25"></div>
+    <div class="nube" style="top:70%;animation-duration:72s;animation-delay:-5s;--s:.85"></div>
+    <div class="nube" style="top:88%;animation-duration:60s;animation-delay:-50s;--s:1.1"></div>
+  </div>
+
+  <main id="regalo" aria-hidden="true">
+    <article class="tarjeta aparece" style="--d:.1s">
+      <figure class="foto-chica" style="margin-bottom:6px">
+        <span class="cinta i" aria-hidden="true"></span><span class="cinta d" aria-hidden="true"></span>
+        <img src="familia.webp" alt="Lore con mamá, Hernán y Ceci" width="720" height="594">
+      </figure>
+      <h1><span>¡Feliz</span> <span>cumpleaños!</span></h1>
+      <div class="para">¡Lore!</div>
+      <p class="texto">Queremos que pases un excelente día y para que sigas en movimiento, te regalamos este vaucher especial.</p>
+      <p class="queremos">¡Te queremos mucho!</p>
+      <p class="firma">Mamá, Hernán y Ceci</p>
+      <div class="corazones" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" fill="#ff8fb8" stroke="#1d1a17" stroke-width="2"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" fill="#ffd90f" stroke="#1d1a17" stroke-width="2"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" fill="#7ec8ee" stroke="#1d1a17" stroke-width="2"/></svg>
+      </div>
+    </article>
+
+    <section class="seccion-vale aparece" style="--d:.45s" aria-label="Tu vaucher">
+      <h2>✂ Tu vaucher</h2>
+      <div class="vale">
+        <div class="vale-cuerpo">
+          <div class="sello" aria-hidden="true">100%<br>válido</div>
+          <p class="chico">Vale por</p>
+          <p class="grande">6 meses<br>de <em>Yoga</em></p>
+          <div class="yoga">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="#1d1a17" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M32 46c-10-6-12-18-12-24 6 2 10 8 12 12 2-4 6-10 12-12 0 6-2 18-12 24z" fill="#ff8fb8"/>
+              <path d="M32 46c-4-8-4-20 0-30 4 10 4 22 0 30z" fill="#ffd3e4"/>
+              <path d="M32 46c-12 0-22-6-26-12 8-2 18 2 26 12zm0 0c12 0 22-6 26-12-8-2-18 2-26 12z" fill="#6cc04a"/>
+              <path d="M14 54h36" fill="none"/></g></svg>
+            <span>Para estirarte, respirar y seguir en movimiento</span>
+          </div>
+          <dl class="datos">
+            <dt>Para:</dt><dd>Lore</dd>
+            <dt>De:</dt><dd>Mamá, Hernán y Ceci</dd>
+          </dl>
+          <div class="huellitas" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><g fill="#1d1a17"><ellipse cx="12" cy="16" rx="5" ry="4"/><circle cx="6" cy="10" r="2"/><circle cx="10" cy="7" r="2"/><circle cx="14" cy="7" r="2"/><circle cx="18" cy="10" r="2"/></g></svg>
+            <svg viewBox="0 0 24 24"><g fill="#1d1a17"><ellipse cx="12" cy="16" rx="5" ry="4"/><circle cx="6" cy="10" r="2"/><circle cx="10" cy="7" r="2"/><circle cx="14" cy="7" r="2"/><circle cx="18" cy="10" r="2"/></g></svg>
+          </div>
+        </div>
+        <div class="vale-talon">
+          <div class="cara"><img src="lore.webp" alt="Lore" width="520" height="548"></div>
+          <div class="lado">
+            <div class="nombre">Lore</div>
+            <div class="codigo">Nº YOGA-6M</div>
+          </div>
+        </div>
+      </div>
+      <p class="nota-vale">¡Namasté y feliz cumple! 🧘‍♀️</p>
+    </section>
+  </main>
+
+  <button class="musica" id="musica" type="button" aria-label="Pausar la música">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13" fill="none" stroke="#1d1a17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.8" fill="#ff8fb8" stroke="#1d1a17" stroke-width="2"/><circle cx="17.5" cy="16" r="2.8" fill="#ff8fb8" stroke="#1d1a17" stroke-width="2"/></svg>
+  </button>
+  <audio id="cancion" src="cancion.mp3" preload="auto" loop></audio>
+
+<script>
+(function () {
+  var portada = document.getElementById('portada'), boton = document.getElementById('abrir'), musica = document.getElementById('musica'),
+    audio = document.getElementById('cancion'), regalo = document.getElementById('regalo'), abierto = false;
+
+  function abrir() {
+    if (abierto) return; abierto = true;
+    // La canción arranca con el toque (los navegadores solo dejan sonar audio después de un clic)
+    var p = audio.play(); if (p && p.catch) p.catch(function () { musica.classList.remove('sonando'); });
+    musica.classList.add('sonando');
+    document.getElementById('destello').classList.add('si');
+    portada.classList.add('saliendo');
+    setTimeout(function () { document.body.classList.add('abierto'); regalo.removeAttribute('aria-hidden'); confeti(); }, 900);
+    setTimeout(function () { portada.remove(); }, 1900);
+  }
+  boton.addEventListener('click', abrir);
+
+  musica.addEventListener('click', function () {
+    if (audio.paused) { audio.play(); musica.classList.add('sonando'); musica.setAttribute('aria-label', 'Pausar la música'); }
+    else { audio.pause(); musica.classList.remove('sonando'); musica.setAttribute('aria-label', 'Escuchar la música'); }
+  });
+
+  // Confeti y estrellitas
+  function confeti() {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var c = document.getElementById('confeti'), x = c.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
+    function medir() { c.width = innerWidth * dpr; c.height = innerHeight * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    medir(); addEventListener('resize', medir);
+    var colores = ['#ffd90f', '#ff8fb8', '#7ec8ee', '#6cc04a', '#ff9f1c', '#ffffff'], piezas = [], W = innerWidth, H = innerHeight;
+    for (var i = 0; i < 170; i++) piezas.push({
+      x: W / 2 + (Math.random() - .5) * 80, y: H * .62, vx: (Math.random() - .5) * 15, vy: -Math.random() * 17 - 6,
+      r: Math.random() * Math.PI, vr: (Math.random() - .5) * .3, t: Math.random() * 8 + 6, c: colores[i % colores.length], estrella: i % 7 === 0
+    });
+    var inicio = performance.now();
+    (function cuadro(ahora) {
+      var pasado = ahora - inicio; x.clearRect(0, 0, W, H);
+      piezas.forEach(function (p) {
+        p.vy += .38; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.strokeStyle = '#1d1a17'; x.lineWidth = 1.5;
+        if (p.estrella) { x.beginPath(); for (var k = 0; k < 10; k++) { var a = k * Math.PI / 5, rr = k % 2 ? p.t * .45 : p.t; x.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } x.closePath(); x.fill(); x.stroke(); }
+        else { x.fillRect(-p.t / 2, -p.t / 4, p.t, p.t / 2); x.strokeRect(-p.t / 2, -p.t / 4, p.t, p.t / 2); }
+        x.restore();
+      });
+      if (pasado < 5200) requestAnimationFrame(cuadro); else { x.clearRect(0, 0, W, H); c.remove(); }
+    })(inicio);
+  }
+})();
+</script>
+</body>
+</html>
