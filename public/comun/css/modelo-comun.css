@@ -120,6 +120,11 @@ h2.hojas[data-ajustar] > .text-bronce { color: #fff !important; }
 /* README (ronda 29): Rouge (Dantina) en dos líneas, con interlineado para que los nombres no se encimen */
 html[data-modelo="rouge"] [data-ajustar].ai-nombres-2, html[data-modelo="rouge"] [data-ajustar].ai-nombres-2 span, html[data-modelo="rouge"] [data-ajustar].ai-nombres-2 > span:not(.ai-n) { line-height: 2.05 !important; }
 [data-modelo="rouge"] [data-ajustar].ai-nombres-2 { margin-top: .5em !important; margin-bottom: .7em !important; }
+/* README (ronda 116): White y Black (letra cursiva con trazos largos): aire alrededor del corazón para que los nombres no lo
+   pisen; si igual van en dos líneas, más interlineado */
+html[data-modelo="white"] [data-ajustar] > i, html[data-modelo="black"] [data-ajustar] > i { margin: 0 .22em; }
+html[data-modelo="white"] [data-ajustar].ai-nombres-2 > .ai-n, html[data-modelo="black"] [data-ajustar].ai-nombres-2 > .ai-n { line-height: 1.9 !important; }
+html[data-modelo="white"] [data-ajustar].ai-nombres-2.ai-nombres-3 > :not(.ai-n), html[data-modelo="black"] [data-ajustar].ai-nombres-2.ai-nombres-3 > :not(.ai-n) { margin: .1em auto !important; }
 /* Sky y Travel (Amsterdam Four): la mayúscula inicial tiene un trazo largo hacia la izquierda y el nombre parecía
    corrido a la derecha; en dos o tres líneas, cada nombre se corre un poco para que se vea centrado */
 .amsterdam-four-font.ai-nombres-2 > .ai-n, .amsterdam-four-font.ai-nombres-3 > .ai-n { position: relative; left: -.14em; }

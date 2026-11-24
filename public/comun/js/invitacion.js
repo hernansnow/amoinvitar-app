@@ -162,7 +162,9 @@
   // Para los ajustes de cada modelo en la hoja común (README ronda 29: Rouge con más interlineado)
   if (MODELO) document.documentElement.setAttribute('data-modelo', MODELO);
   // Modelos con los dos nombres en una línea: hasta qué fracción de la letra del diseño se puede achicar
-  var UNA_LINEA = { 'std-classic': [0.5, 0.95, 1], rockabilly: [0.45, 0.86], rouge: [0.27, 0.92], oliva: [0.45, 0.86], garden: [0.4, 0.66], hojas: [0.4, 0.66], travel: [0.4, 0.9], aquarella: [0.5, 0.88], minimal: [0.5, 0.88], sky: [0.5, 0.74], lovestory: [0.42, 0.86], black: [0.42, 0.8], white: [0.42, 0.8] };
+  var UNA_LINEA = { 'std-classic': [0.5, 0.95, 1], rockabilly: [0.45, 0.86], rouge: [0.27, 0.92], oliva: [0.45, 0.86], garden: [0.4, 0.66], hojas: [0.4, 0.66], travel: [0.4, 0.9], aquarella: [0.5, 0.88], minimal: [0.5, 0.88], sky: [0.5, 0.74], lovestory: [0.42, 0.86], black: [0.3, 0.88, 0, 17, 1], white: [0.3, 0.88, 0, 17, 1] };
+  // README (ronda 116): White y Black priorizan la línea única (cuarto valor: letra mínima en px, por defecto 22; quinto: si
+  // igual van en varias líneas, usan el mismo ancho que la línea única y no la fracción del diseño)
   // Modelos donde el "&" ya va en su propia línea con su espacio (Elegance: el círculo entre los nombres)
   var SIN_TRES = { elegance: 1, style: 1 };
   function ajustarNombres() {
@@ -219,9 +221,10 @@
         // (tercer valor) sin pasarse de la columna del diseño (Save The Date Classic: la columna es más angosta)
         if (UNA_LINEA[MODELO][2] && h.parentElement) ancho1 = Math.min(ancho1, h.parentElement.clientWidth);
         h.style.maxWidth = ancho1 + 'px';
-        var legible = Math.max(22, fs0 * UNA_LINEA[MODELO][0]);
+        var legible = Math.max(UNA_LINEA[MODELO][3] || 22, fs0 * UNA_LINEA[MODELO][0]);
         for (var j = 0; j < 40 && medidas(h).ancho > ancho1 + 1 && fs > legible; j++) { fs = Math.max(legible, fs * 0.96); h.style.fontSize = fs.toFixed(1) + 'px'; }
         if (medidas(h).ancho <= ancho1 + 1) return;
+        if (UNA_LINEA[MODELO][4]) disponible = ancho1;
         h.style.whiteSpace = ''; h.style.fontSize = ''; h.style.maxWidth = disponible + 'px'; fs = fs0;
         saltos.forEach(function (b) { b.style.display = ''; });
         h.classList.add('ai-nombres-2');
