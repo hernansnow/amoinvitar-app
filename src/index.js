@@ -1463,7 +1463,9 @@ async function vistaPrevia(env, url, request, id) {
   let invitado = null;
   if (usaLista(ev.datos)) {
     const lista = await almacenDe(env).invitados(ev.id).catch(() => []);
-    invitado = lista[0] || { codigo: 'ejemplo', nombre: 'Nombre del invitado', pases: 1, mesa: '1' };
+    // README (ronda 117): el invitado de ejemplo, en el idioma de la invitación
+    const EJEMPLO = { es: 'Nombre del invitado', en: 'Guest name', pt: 'Nome do convidado', fr: 'Nom de l’invité', it: 'Nome dell’invitato', de: 'Name des Gastes', nl: 'Naam van de gast', ca: 'Nom del convidat' };
+    invitado = lista[0] || { codigo: 'ejemplo', nombre: EJEMPLO[String(ev.datos.variante || 'es').slice(0, 2)] || EJEMPLO.es, pases: 1, mesa: '1' };
   }
   const r = await pagina(env, url, evento, { marca: await marcaEfectiva(env, empresa), sinSobre: true, prueba: true, invitado, forzarPropio });
   // README (ronda 85): abierta fuera del panel y sin activar: un aviso de que solo la ve el cliente hasta pagar
