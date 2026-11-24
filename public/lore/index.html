@@ -8,7 +8,7 @@
 <meta name="description" content="Tenés un regalo esperándote 🎁">
 <meta property="og:title" content="¡Feliz cumpleaños, Lore! 🎁">
 <meta property="og:description" content="Tenés un regalo esperándote. Tocá para abrirlo.">
-<meta property="og:image" content="https://amoinvitar.com/lore/og.jpg">
+<meta property="og:image" content="https://amoinvitar.com/lore/og-portada.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:type" content="website">
@@ -34,13 +34,8 @@
   /* Fondo extendido: la misma ilustración, ampliada y desenfocada, completa lo que falta a los costados (computadora) */
   #portada .fondo { position: absolute; inset: -40px; background: url(portada.webp) center / cover no-repeat; filter: blur(26px) saturate(1.15) brightness(.9); transform: scale(1.08); }
   #portada .fondo::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 35%, rgba(30, 20, 10, .35)); }
-  /* La ilustración: alto completo; en el celular ocupa toda la pantalla (se recortan apenas los costados) */
-  #portada .foto { position: absolute; top: 0; left: 50%; height: 100%; aspect-ratio: 941 / 1672; transform: translateX(-50%);
-    background: url(portada.webp) center / cover no-repeat; box-shadow: 0 0 60px rgba(0, 0, 0, .45); }
-  @supports not (aspect-ratio: 1) { #portada .foto { width: calc(100vh * 941 / 1672); } }
-  #portada .foto::before, #portada .foto::after { content: ''; position: absolute; top: 0; bottom: 0; width: 60px; pointer-events: none; }
-  #portada .foto::before { left: 0; background: linear-gradient(90deg, rgba(43, 36, 32, .5), transparent); }
-  #portada .foto::after { right: 0; background: linear-gradient(-90deg, rgba(43, 36, 32, .5), transparent); }
+  /* README: la ilustración horizontal ocupa toda la pantalla; en el celular se recortan los costados y queda Lore en el centro */
+  #portada .foto { position: absolute; inset: 0; background: url(portada.webp) 50% 50% / cover no-repeat; }
 
   /* Botón: a la mitad de las piernas */
   .abrir { position: absolute; left: 50%; top: 71%; transform: translate(-50%, -50%) rotate(-3deg); z-index: 2;
@@ -63,7 +58,7 @@
   #portada.saliendo .foto { animation: acercar 1.3s cubic-bezier(.6, 0, .4, 1) forwards; }
   #portada.saliendo .abrir, #portada.saliendo .pista { animation: none; opacity: 0; transition: opacity .25s; }
   #portada.saliendo { animation: subir 1s cubic-bezier(.7, 0, .3, 1) .75s forwards; }
-  @keyframes acercar { to { transform: translateX(-50%) scale(1.25); filter: brightness(1.3); } }
+  @keyframes acercar { to { transform: scale(1.2); filter: brightness(1.3); } }
   @keyframes subir { to { transform: translateY(-105%); } }
   #destello { position: fixed; inset: 0; z-index: 25; pointer-events: none; opacity: 0;
     background: radial-gradient(circle at 50% 70%, #fff 0%, #fff7c2 30%, rgba(255, 217, 15, 0) 70%); }
