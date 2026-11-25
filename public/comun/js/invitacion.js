@@ -64,7 +64,7 @@
     ];
   }
   var estilo = document.createElement('style');
-  estilo.textContent = '.agendar-menu{position:absolute;z-index:8000;min-width:220px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.18);padding:6px;text-align:left;font-family:Jost,system-ui,sans-serif}' +
+  estilo.textContent = '.agendar-menu{position:absolute;z-index:100001;min-width:220px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.18);padding:6px;text-align:left;font-family:Jost,system-ui,sans-serif}' +
     '.agendar-menu a,.agendar-menu button{display:block;width:100%;box-sizing:border-box;padding:10px 14px;border:0;background:none;border-radius:8px;color:#212529;text-decoration:none;font-size:.95rem;text-align:left;font-family:inherit;cursor:pointer}' +
     '.agendar-menu a:hover,.agendar-menu a:focus,.agendar-menu button:hover{background:rgba(0,0,0,.06)}' +
     '.agendar-menu .agendar-cancelar{text-align:center;color:#6c757d;margin-top:4px;border-top:1px solid rgba(0,0,0,.08);border-radius:0 0 8px 8px}' +
@@ -72,7 +72,7 @@
     '.agendar-menu a{display:flex;align-items:center;gap:12px}.agendar-menu .agendar-ico{flex:none;width:20px;font-size:18px;line-height:1;color:#000;text-align:center}' +
     '.agendar-menu.hoja a{justify-content:flex-start;padding-left:28px}' +
     // Celular: hoja desde abajo, siempre a la vista, con el fondo oscurecido
-    '.agendar-fondo{position:fixed;inset:0;z-index:7999;background:rgba(0,0,0,.35)}' +
+    '.agendar-fondo{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.35)}' +
     '.agendar-menu.hoja{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));top:auto;min-width:0;border-radius:16px;padding:8px}' +
     '.agendar-menu.hoja a,.agendar-menu.hoja button{padding:14px 16px;font-size:1.05rem;text-align:center}';
   document.head.appendChild(estilo);
@@ -84,6 +84,9 @@
     b.addEventListener('click', function (e) {
       e.stopPropagation(); e.preventDefault();
       if (document.querySelector('.agendar-menu')) { cerrarMenu(); return; }
+      // README (ronda 121): si el botón está dentro de un modal (<dialog> de Civil, Party y otros), el menú se agrega dentro
+      // del mismo <dialog>: el modal está en la capa superior del navegador y tapaba al menú, que se abría por detrás
+      var caja = (b.closest && b.closest('dialog[open]')) || document.body;
       var m = document.createElement('div');
       m.className = 'agendar-menu' + (MOVIL ? ' hoja' : ''); m.setAttribute('role', 'menu');
       enlaces(cfg).forEach(function (x) {
@@ -98,17 +101,20 @@
       });
       if (MOVIL) {
         var c = document.createElement('button'); c.type = 'button'; c.className = 'agendar-cancelar'; c.textContent = tx2.cerrar || '✕'; c.addEventListener('click', cerrarMenu); m.appendChild(c);
-        var fondo = document.createElement('div'); fondo.className = 'agendar-fondo'; fondo.addEventListener('click', cerrarMenu); document.body.appendChild(fondo);
-        document.body.appendChild(m);
+        var fondo = document.createElement('div'); fondo.className = 'agendar-fondo'; fondo.addEventListener('click', cerrarMenu); caja.appendChild(fondo);
+        caja.appendChild(m);
         return;
       }
-      document.body.appendChild(m);
+      caja.appendChild(m);
       // Computadora: debajo del botón; si no entra abajo, arriba
       var r = b.getBoundingClientRect(), alto = m.offsetHeight, vh = window.innerHeight;
       var izq = Math.max(8, Math.min(r.left + r.width / 2 - m.offsetWidth / 2, document.documentElement.clientWidth - m.offsetWidth - 8));
       var arriba = r.bottom + 6 + alto > vh - 8 && r.top - 6 - alto > 8;
-      m.style.left = (izq + window.scrollX) + 'px';
-      m.style.top = ((arriba ? r.top - 6 - alto : r.bottom + 6) + window.scrollY) + 'px';
+      // README (ronda 121): dentro de un modal el menú va fijo a la pantalla (si no, al deslizar el modal se despega)
+      var fijo = caja !== document.body;
+      if (fijo) m.style.position = 'fixed';
+      m.style.left = (izq + (fijo ? 0 : window.scrollX)) + 'px';
+      m.style.top = ((arriba ? r.top - 6 - alto : r.bottom + 6) + (fijo ? 0 : window.scrollY)) + 'px';
       m.querySelector('a').focus();
     });
   });
