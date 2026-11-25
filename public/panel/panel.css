@@ -1460,21 +1460,22 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
 .aq-lote-cab { flex: 0 0 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .aq-lote-n { font-size: .74rem; font-weight: 600; color: var(--suave, #6b706c); }
 .aq-lote-cab .btn-link { font-size: .78rem; }
+/* README (ronda 120): celular — 1.ª línea solo los filtros (a lo ancho, con aire para números de 3 cifras); 2.ª línea
+   orden + Seleccionar + vista. Si no entran (pantalla angosta o idioma largo), la vista baja sola a una 3.ª línea. */
 @media (max-width: 640px) {
-  .aq-barra { display: grid; grid-template-columns: minmax(0, auto) auto; justify-content: space-between; align-items: center; gap: 8px 6px; }
-  .aq-barra > .aq-filtros { order: 1; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; border-radius: 999px; padding: 3px; gap: 0; }
-  .aq-barra .aq-filtro { padding: 6px 5px; gap: 2px; font-size: .78rem; }
-  .aq-barra .aq-filtro b { font-size: .68rem; }
-  .aq-barra .aq-filtro.activo b { padding: 0 4px; }
-  .aq-barra .aq-f-ico svg { width: 16px; height: 16px; }
-  .aq-barra > .aq-vistas { padding: 2px; gap: 0; }
-  .aq-barra > .aq-vistas button { width: 26px; height: 27px; }
+  .aq-barra { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 5px; }
+  .aq-barra > .aq-filtros { order: 1; flex: 1 1 100%; flex-wrap: nowrap; justify-content: space-between; overflow-x: auto; scrollbar-width: none; border-radius: 999px; padding: 3px; gap: 2px; }
+  .aq-barra .aq-filtro { flex: 0 0 auto; padding: 6px 7px; gap: 3px; font-size: .8rem; }
+  .aq-barra .aq-filtro b { font-size: .7rem; }
+  .aq-barra .aq-filtro.activo b { padding: 0 5px; }
+  .aq-barra .aq-f-ico svg { width: 17px; height: 17px; }
   .aq-filtro .aq-f-ico { display: block; }
   .aq-filtro .aq-f-nombre { display: none; }
-  .aq-barra > .aq-vistas { order: 2; margin-left: auto; }
-  .aq-barra > .aq-barra-der { order: 3; grid-column: 1 / -1; width: 100%; margin-left: 0; display: flex; gap: 8px; }
-  .aq-barra-der .aq-orden { flex: 1 1 0; max-width: none; font-size: .82rem; height: 40px !important; padding: 0 8px; border-radius: 10px; }
-  .aq-barra-der .aq-sel { min-height: 40px; }
-  .aq-barra-der .aq-sel { flex: 1 1 0; justify-content: center; padding: 8px 10px; }
+  .aq-barra > .aq-barra-der { order: 2; flex: 0 0 auto; min-width: auto; max-width: none; margin-left: 0; display: flex; flex-wrap: nowrap; gap: 5px; }
+  .aq-barra-der .aq-orden { flex: 0 0 auto; width: auto !important; min-width: auto; max-width: none; font-size: .72rem; height: 32px !important; padding: 0 0 0 7px; border-radius: 999px; }
+  .aq-barra-der .aq-sel { flex: 0 0 auto; justify-content: center; min-height: 32px; padding: 0 9px; gap: 4px; font-size: .72rem; }
+  .aq-barra-der .aq-sel svg { width: 14px; height: 14px; }
+  .aq-barra > .aq-vistas { order: 3; flex: 0 0 auto; margin-left: auto; padding: 2px; gap: 0; }
+  .aq-barra > .aq-vistas button { width: 25px; height: 28px; }
 }
-@media (max-width: 374px) { .aq-barra .aq-filtro { padding: 6px 3px; } .aq-barra > .aq-vistas button { width: 24px; } }
+@media (max-width: 374px) { .aq-barra .aq-filtro { padding: 6px 4px; gap: 2px; font-size: .76rem; } .aq-barra .aq-filtro b { font-size: .66rem; } .aq-barra .aq-f-ico svg { width: 15px; height: 15px; } }
