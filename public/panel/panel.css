@@ -1447,3 +1447,34 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
 .aq-desliza { position: relative; min-width: 0; }
 .aq-flecha { display: none; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0), var(--fondo-flecha, #fff) 45%); }
 @media (max-width: 640px) { .aq-flecha { display: flex; } .aq-flecha[hidden] { display: none; } .aq-tabs { scroll-padding: 0 48px; } }
+
+/* README (ronda 119): barra de fotos del Álbum QR armada como en Albunear. Compu: filtros en palabras · orden y
+   «Seleccionar» · vista. Celular: filtros con íconos («Todas» en palabra) y la vista en la misma línea; debajo, el orden
+   y «Seleccionar» a lo ancho. El lote: «N seleccionadas» chico arriba y los botones debajo. */
+.aq-barra { justify-content: flex-start; }
+.aq-barra .aq-barra-der { margin-left: auto; flex-wrap: nowrap; }
+.aq-f-ico { display: none; }
+.aq-f-ico svg { width: 17px; height: 17px; display: block; }
+.aq-sel { white-space: nowrap; }
+.aq-barra-der .aq-orden { height: 36px !important; min-height: 0 !important; padding: 0 8px; border-radius: 999px; }
+.aq-lote-cab { flex: 0 0 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.aq-lote-n { font-size: .74rem; font-weight: 600; color: var(--suave, #6b706c); }
+.aq-lote-cab .btn-link { font-size: .78rem; }
+@media (max-width: 640px) {
+  .aq-barra { display: grid; grid-template-columns: minmax(0, auto) auto; justify-content: space-between; align-items: center; gap: 8px 6px; }
+  .aq-barra > .aq-filtros { order: 1; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; border-radius: 999px; padding: 3px; gap: 0; }
+  .aq-barra .aq-filtro { padding: 6px 5px; gap: 2px; font-size: .78rem; }
+  .aq-barra .aq-filtro b { font-size: .68rem; }
+  .aq-barra .aq-filtro.activo b { padding: 0 4px; }
+  .aq-barra .aq-f-ico svg { width: 16px; height: 16px; }
+  .aq-barra > .aq-vistas { padding: 2px; gap: 0; }
+  .aq-barra > .aq-vistas button { width: 26px; height: 27px; }
+  .aq-filtro .aq-f-ico { display: block; }
+  .aq-filtro .aq-f-nombre { display: none; }
+  .aq-barra > .aq-vistas { order: 2; margin-left: auto; }
+  .aq-barra > .aq-barra-der { order: 3; grid-column: 1 / -1; width: 100%; margin-left: 0; display: flex; gap: 8px; }
+  .aq-barra-der .aq-orden { flex: 1 1 0; max-width: none; font-size: .82rem; height: 40px !important; padding: 0 8px; border-radius: 10px; }
+  .aq-barra-der .aq-sel { min-height: 40px; }
+  .aq-barra-der .aq-sel { flex: 1 1 0; justify-content: center; padding: 8px 10px; }
+}
+@media (max-width: 374px) { .aq-barra .aq-filtro { padding: 6px 3px; } .aq-barra > .aq-vistas button { width: 24px; } }

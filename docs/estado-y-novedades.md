@@ -232,6 +232,7 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   verde para a medida y corporativo, «Lista» activa el diseño propio, textos corporativos en todos los idiomas, panel
   corporativo con logo/texto en portada y cierre, consola con la idea completa del cliente, cuadro de galería arreglado.
 
+- **Ronda 119**: Álbum QR → Fotos con la barra armada como en Albunear (solo la disposición, no los colores). Compu: filtros en palabras · orden y «Seleccionar» · vista. Celular: filtros con íconos («Todas» en palabra) y la vista en la misma línea (si no entran, los filtros se deslizan); debajo, el orden y «Seleccionar» a lo ancho. El botón pasa de «Seleccionar» a «Seleccionar todo» y a «Desmarcar» (deja todo sin marcar). En el lote, «N seleccionadas» va chico arriba con Cancelar y los botones debajo. `public/panel/album-qr.js` (`tabFotos`, `pintarLote`) y el final de `public/panel/panel.css`.
 ## 5. Probar en la compu
 
 - `npm run local` levanta http://localhost:8787 con base en memoria.

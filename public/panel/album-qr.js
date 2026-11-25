@@ -32,6 +32,7 @@ const I = {
   whatsapp: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3 1 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2 .7 2.8.6.4-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.3-.2Z"/></svg>',
   vistaChica: SVG('<rect x="3" y="3" width="5" height="5"/><rect x="9.5" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="9.5" width="5" height="5"/><rect x="9.5" y="9.5" width="5" height="5"/><rect x="16" y="9.5" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><rect x="9.5" y="16" width="5" height="5"/><rect x="16" y="16" width="5" height="5"/>'),
   vistaMedia: SVG('<rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>'),
+  video: SVG('<path d="M7 5l12 7-12 7z"/>'),
   vistaGrande: SVG('<rect x="3" y="3" width="18" height="18" rx="1"/>'),
 };
 
@@ -121,36 +122,45 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
   }
   function tabFotos() {
     const c = info?.counts || {};
-    const chips = [['all', 'Todas', c.total], ['fav', 'Favoritas', c.fav], ['featured', 'Destacadas', `${c.featured || 0}/3`], ['hidden', 'Ocultas', (c.hidden || 0) + (c.pending || 0)], ['video', 'Videos', c.videos]];
-    const filtros = el('div', { class: 'aq-filtros', role: 'tablist' }, chips.map(([k, t, n]) => el('button', { type: 'button', class: `aq-filtro${filtro === k ? ' activo' : ''}`, onclick: () => { filtro = k; tabFotos(); } },
-      tr(t), el('b', {}, String(n ?? 0)))));
+    // README (ronda 119): como en Albunear, en el celular los filtros van con ícono («Todas» queda en palabra) y la vista
+    // de la grilla en la misma línea; debajo, el orden y «Seleccionar». En la compu siguen las palabras.
+    const chips = [['all', 'Todas', c.total, ''], ['fav', 'Favoritas', c.fav, 'corazon'], ['featured', 'Destacadas', `${c.featured || 0}/3`, 'pin'], ['hidden', 'Ocultas', (c.hidden || 0) + (c.pending || 0), 'ocultar'], ['video', 'Videos', c.videos, 'video']];
+    const filtros = el('div', { class: 'aq-filtros', role: 'tablist' }, chips.map(([k, t, n, ico]) => el('button', { type: 'button', class: `aq-filtro${filtro === k ? ' activo' : ''}`, title: tr(t), 'aria-label': tr(t), onclick: () => { filtro = k; tabFotos(); } },
+      ...(ico ? [el('span', { class: 'aq-f-ico', html: I[ico] })] : []), el('span', { class: ico ? 'aq-f-nombre' : '' }, tr(t)), el('b', {}, String(n ?? 0)))));
     const ordenSel = el('select', { class: 'aq-orden', 'aria-label': tr('Ordenar') }, [['recent', 'Más recientes'], ['oldest', 'Más antiguas'], ['likes', 'Más gustadas']].map(([v, t]) => el('option', { value: v, selected: v === orden }, tr(t))));
     ordenSel.addEventListener('change', () => { orden = ordenSel.value; cargar(true); });
     const vistas = el('div', { class: 'aq-vistas' }, [['l', 'vistaGrande'], ['m', 'vistaMedia'], ['s', 'vistaChica']].map(([v, k]) => el('button', { type: 'button', class: vista === v ? 'activo' : '', 'aria-label': tr('Vista'), html: I[k],
       onclick: (e) => { vista = v; grid.className = `aq-grid v-${v}`; e.currentTarget.parentNode.querySelectorAll('button').forEach((b) => b.classList.toggle('activo', b === e.currentTarget)); } })));
-    const selBtn = el('button', { type: 'button', class: 'aq-chip', onclick: () => { seleccion = seleccion ? null : new Set(); pintarLote(); pintar(); } }, ...conIco('seleccionar', 'Seleccionar'));
+    // README (ronda 119): «Seleccionar» → «Seleccionar todo» → «Desmarcar» (deja todo sin marcar); «Cancelar» sale
+    const todas = () => !!seleccion && media.length > 0 && media.every((m) => seleccion.has(m.id));
+    const selBtn = el('button', { type: 'button', class: 'aq-chip aq-sel', onclick: () => {
+      if (!seleccion) seleccion = new Set();
+      else seleccion = todas() ? new Set() : new Set(media.map((m) => m.id));
+      pintarLote(); pintar();
+    } });
     const barraLote = el('div', { class: 'aq-lote', hidden: true });
     const grid = el('div', { class: `aq-grid v-${vista}` });
     const masBtn = el('button', { type: 'button', class: 'btn btn-sec btn-chico aq-mas', hidden: true, onclick: () => cargar(false) }, tr('Cargar más'));
     const vacio = el('p', { class: 'aq-vacio', hidden: true }, tr('Todavía no hay fotos. Comparte tu QR y aparecerán aquí en tiempo real.'));
-    cuerpo.replaceChildren(el('div', { class: 'aq-barra' }, conFlecha(el, filtros, '#d4e9e0'), el('div', { class: 'aq-barra-der' }, selBtn, ordenSel, vistas)), barraLote, grid, vacio, masBtn);
+    cuerpo.replaceChildren(el('div', { class: 'aq-barra' }, filtros, el('div', { class: 'aq-barra-der' }, ordenSel, selBtn), vistas), barraLote, grid, vacio, masBtn);
+    pintarLote();
 
     function pintarLote() {
       barraLote.hidden = !seleccion;
       selBtn.classList.toggle('activo', !!seleccion);
+      selBtn.replaceChildren(...conIco('seleccionar', !seleccion ? 'Seleccionar' : todas() ? 'Desmarcar' : 'Seleccionar todo'));
       if (!seleccion) return;
       const ids = [...seleccion];
       const hacer = (que, msg) => async () => { if (!ids.length) return; if (await lote(ids, que, msg)) { seleccion = new Set(); await refrescar(); } };
-      barraLote.replaceChildren(el('strong', {}, tr('{n} seleccionadas', { n: ids.length })),
-        el('button', { type: 'button', class: 'btn-link', onclick: () => { seleccion = new Set(media.map((m) => m.id)); pintarLote(); pintar(); } }, tr('Seleccionar todo')),
-        el('span', { class: 'aq-lote-sep' }),
+      // README (ronda 119): arriba «N seleccionadas» (chico) y Cancelar; los botones, en la línea de abajo
+      barraLote.replaceChildren(el('div', { class: 'aq-lote-cab' }, el('span', { class: 'aq-lote-n' }, tr('{n} seleccionadas', { n: ids.length })),
+        el('button', { type: 'button', class: 'btn-link', onclick: () => { seleccion = null; pintarLote(); pintar(); } }, tr('Cancelar'))),
         el('button', { type: 'button', class: 'aq-chip', disabled: !ids.length, onclick: hacer('fav', 'Marcadas como favoritas') }, ...conIco('corazon', 'Favorita')),
         el('button', { type: 'button', class: 'aq-chip', disabled: !ids.length, onclick: hacer('feature', 'Destacadas') }, ...conIco('pin', 'Destacar')),
         el('button', { type: 'button', class: 'aq-chip', disabled: !ids.length, onclick: hacer('hide', 'Ocultas') }, ...conIco('ocultar', 'Ocultar')),
         el('button', { type: 'button', class: 'aq-chip', disabled: !ids.length, onclick: hacer('show', 'Visibles de nuevo') }, ...conIco('ojo', 'Mostrar')),
         el('button', { type: 'button', class: 'aq-chip', disabled: !ids.length, onclick: async () => { for (const m of media.filter((x) => seleccion.has(x.id))) await bajar(m); } }, ...conIco('descargar', 'Descargar')),
-        el('button', { type: 'button', class: 'aq-chip peligro', disabled: !ids.length, onclick: hacer('delete', 'Borradas') }, ...conIco('borrar', 'Borrar')),
-        el('button', { type: 'button', class: 'btn-link', onclick: () => { seleccion = null; pintarLote(); pintar(); } }, tr('Cancelar')));
+        el('button', { type: 'button', class: 'aq-chip peligro', disabled: !ids.length, onclick: hacer('delete', 'Borradas') }, ...conIco('borrar', 'Borrar')));
     }
     function pintar() {
       vacio.hidden = media.length > 0;
@@ -185,7 +195,7 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
         const r = await pedir('media', { filtro, orden, desde: desde0 ? 0 : media.length, cantidad: 120 });
         media = desde0 ? r.media || [] : media.concat(r.media || []);
         hayMas = !!r.more;
-        pintar();
+        pintar(); pintarLote();
       } catch (e) { cuerpo.replaceChildren(el('p', { class: 'aq-vacio' }, e.message)); }
     }
     async function refrescar() { await cargarInfo().catch(() => {}); const sel = seleccion; tabFotos(); seleccion = sel; }
