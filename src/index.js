@@ -759,7 +759,8 @@ async function sincronizarMarcaAlbum(env, ev, event) {
   if (event && (event.brand || 'albunear') === marca && (!url || event.guestUrl === url) && ev.datos.album?.albunear === esperado) return event;
   try {
     const r = await env.ALBUNEAR.album(ev.id, { accion: 'marca', marca, ...(url ? { url } : {}), ...(eventoDuo(ev) ? { plan: 'platinum' } : {}) });
-    const link = r?.guestUrl || esperado;
+    // El link propio solo se usa cuando Albunear confirma que lo guardó (si todavía no tiene la marca blanca, sigue el de siempre)
+    const link = r?.guestUrl || (url ? `https://albunear.com/a/${slug}` : esperado);
     if (event) { event.brand = marca; event.guestUrl = link; }
     if (ev.datos.album?.origen === 'albunear' && ev.datos.album.albunear !== link) { ev.datos.album = { ...ev.datos.album, albunear: link }; await almacenDe(env).guardarEvento(ev); }
   } catch (e) { console.error('marca álbum', e); }
