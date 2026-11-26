@@ -1637,7 +1637,7 @@ function proximamente(request, env, url) {
 // README (ronda 125): archivo público de Albunear (diseños del álbum) servido desde Amo Invitar! con caché de un día
 async function recursoAlbum(env, ctx, url, ruta) {
   if (!/^(css\/themes\.css|themes\/[\w.-]+|fonts\/[\w.-]+|fonts\/files\/[\w.-]+)$/.test(ruta) || !env.ALBUNEAR?.fetch) return new Response('', { status: 404 });
-  const cache = globalThis.caches?.default, clave = new Request(url.origin + '/panel/albunear/r/' + ruta);
+  const cache = globalThis.caches?.default, clave = new Request(url.origin + '/album-recursos/' + ruta);
   const guardada = cache ? await cache.match(clave).catch(() => null) : null;
   if (guardada) return guardada;
   let r;
@@ -1645,7 +1645,7 @@ async function recursoAlbum(env, ctx, url, ruta) {
   if (!r.ok) return new Response('', { status: r.status });
   const tipo = r.headers.get('content-type') || '';
   const cuerpo = /css/.test(tipo) || ruta.endsWith('.css')
-    ? (await r.text()).replace(/url\((['"]?)\/(themes|fonts)\//g, 'url($1/panel/albunear/r/$2/')
+    ? (await r.text()).replace(/url\((['"]?)\/(themes|fonts)\//g, 'url($1/album-recursos/$2/')
     : await r.arrayBuffer();
   const res = new Response(cuerpo, { headers: { 'content-type': tipo || 'application/octet-stream', 'cache-control': 'public, max-age=86400' } });
   if (cache) ctx.waitUntil(cache.put(clave, res.clone()).catch(() => {}));
@@ -1664,7 +1664,8 @@ export default {
     // README (ronda 125): estilos, fondos y fuentes de los diseños del álbum para la pestaña Diseño (sin iframe). Vienen de
     // Albunear por el enlace interno (Socios.fetch) y se sirven desde este dominio (también el del profesional): el panel no
     // carga nada de albunear.com. En el CSS, las rutas /themes/ y /fonts/ se reescriben a esta misma carpeta.
-    if (p0 === 'panel' && p1 === 'albunear' && partes[2] === 'r' && request.method === 'GET') return await recursoAlbum(env, ctx, url, partes.slice(3).join('/'));
+    // Va fuera de /panel/: ahí los .css y .js los sirve Cloudflare directo (run_worker_first en wrangler.jsonc) y daban 404.
+    if (p0 === 'album-recursos' && request.method === 'GET') return await recursoAlbum(env, ctx, url, partes.slice(1).join('/'));
     tienda.opcionesTienda.esquemaDe = (ev) => esquemaDe(env, url, ev);
     tienda.opcionesTienda.publicar = publicarEvento;
     tienda.opcionesTienda.album = (ev) => albumAutomatico(env, ev, null); // README (ronda 98)

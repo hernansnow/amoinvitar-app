@@ -274,8 +274,8 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos', empresa = fals
   }
 
   // ── Diseño (ronda 125): estilos del álbum y foto de portada, dentro del panel (sin iframe) ──
-  // Los estilos, fondos y fuentes de Albunear se sirven desde este mismo dominio (/panel/albunear/r/…, ver src/index.js).
-  const R = '/panel/albunear/r/';
+  // Los estilos, fondos y fuentes de Albunear se sirven desde este mismo dominio (/album-recursos/…, ver src/index.js).
+  const R = '/album-recursos/';
   const cargarCss = (href) => { if (!document.querySelector(`link[href="${href}"]`)) document.head.append(el('link', { rel: 'stylesheet', href })); };
   const slug = (f) => String(f || '').split(',')[0].replace(/["']/g, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const NOMBRE_TEMA = { generico: 'Genérico', armonia: 'Armonía', byn: 'ByN', lovestory: 'Love Story', savethedate: 'Save The Date', 'noche-verde': 'Noche verde',

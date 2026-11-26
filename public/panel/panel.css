@@ -1506,7 +1506,7 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
 }
 
 /* README (ronda 125): pestaña Diseño del álbum dentro del panel (sin iframe). Las miniaturas usan la hoja de estilos de los
-   diseños (/panel/albunear/r/css/themes.css: .theme-prev y sus variables). */
+   diseños (/album-recursos/css/themes.css: .theme-prev y sus variables). */
 .aq-temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(112px, 30%), 1fr)); min-width: 0; gap: 12px; margin: 12px 0 4px; }
 .aq-tema { position: relative; min-width: 0; border: 2px solid transparent; border-radius: 16px; padding: 0; background: none; cursor: pointer; font: inherit; color: inherit; text-align: center; }
 .aq-tema .theme-prev { width: 100%; min-width: 0; aspect-ratio: 3 / 4; border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.1); border: 1px solid #e3e0d8; }
