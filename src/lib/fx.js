@@ -56,11 +56,22 @@ export const descuentoPais = (c) => Number((CONFIG.descuentos ?? DESCUENTO_PAIS)
 // Categoría de la promo según el tipo de evento del pedido
 export const categoriaDeTipo = (t) => ({ infantil: 'cumple', revelacion: 'babyshower', navidad: 'otros', 'save-the-date': 'boda' }[t] || t);
 export const PLANES_PROMO = ['basic', 'premium', 'deluxe'];
+// README (ronda 126): las fechas de las promos se toman en hora de España (Europe/Madrid): «desde» empieza a las 0:00 de ese
+// día y «hasta» incluye el día entero (antes se tomaban en UTC y en España arrancaban a la 1:00, o a las 2:00 en verano).
+export function medianocheMadrid(ymd) {
+  const utc = Date.parse(ymd + 'T00:00:00Z');
+  if (Number.isNaN(utc)) return NaN;
+  const partes = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+    .formatToParts(new Date(utc)).map((x) => [x.type, x.value]));
+  const comoMadrid = Date.UTC(+partes.year, +partes.month - 1, +partes.day, +partes.hour, +partes.minute);
+  return utc - (comoMadrid - utc); // la hora de Madrid adelanta 1 h (invierno) o 2 h (verano) a UTC
+}
+const diaSiguiente = (ymd) => new Date(Date.parse(ymd + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10);
 // Promociones vigentes para un país (activas, dentro de sus fechas)
 export function promosVigentes(pais, ahora = Date.now()) {
   return CONFIG.promos.filter((p) => p && p.activa && Number(p.porcentaje) > 0
     && (!p.paises?.length || p.paises.includes(pais))
-    && (!p.desde || Date.parse(p.desde) <= ahora) && (!p.hasta || Date.parse(p.hasta) + 86400000 > ahora));
+    && (!p.desde || medianocheMadrid(p.desde) <= ahora) && (!p.hasta || medianocheMadrid(diaSiguiente(p.hasta)) > ahora));
 }
 // La mejor promo (mayor porcentaje) que alcanza a un plan de una categoría; categoria null = página sin categoría
 // README (ronda 48): además de los planes, una promo puede alcanzar al diseño a medida, al corporativo, a las Save The Date y a

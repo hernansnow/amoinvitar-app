@@ -726,7 +726,7 @@
       var t = el('div', { class: 'tarjeta', style: 'margin:10px 0' }, [
         el('div', { class: 'dos' }, [el('label', {}, ['Nombre', nombre]), el('label', {}, ['Descuento (%)', pct])]),
         el('label', {}, ['Países', paises]),
-        el('div', { class: 'dos' }, [el('label', {}, ['Desde (opcional)', desde]), el('label', {}, ['Hasta (opcional)', hasta])]),
+        el('div', { class: 'dos' }, [el('label', {}, ['Desde (opcional, 0:00 hora de España)', desde]), el('label', {}, ['Hasta (opcional, incluye todo el día)', hasta])]),
         el('div', { class: 'grupo' }, [el('h3', {}, 'Categorías (sin marcar: todas)'), el('div', { class: 'marcas' }, cats)]),
         el('div', { class: 'grupo' }, [el('h3', {}, 'Se aplica a (sin marcar: los tres planes de pago). Los complementos no llevan descuento.'), el('div', { class: 'marcas' }, pls)]),
         el('div', { class: 'fila', style: 'gap:12px;align-items:center;flex-wrap:wrap' }, [el('label', { style: 'display:flex;gap:6px;align-items:center' }, [activa, 'Activa (se ve en toda la web)']), btn('Quitar promoción', 'mal', function () { tarjetas.splice(tarjetas.indexOf(t), 1); t.remove(); })])]);

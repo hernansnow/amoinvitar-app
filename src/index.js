@@ -742,6 +742,29 @@ async function marcaAlbumDe(env, ev) {
   if (!ev.empresaId) return 'amoinvitar';
   return paseVigente(await proDe(env, ev.empresaId)) ? 'none' : 'amoinvitar';
 }
+// README (ronda 126): con marca blanca el link de los invitados (y el del QR) va al dominio propio activo del profesional,
+// o a amoinvitar.com si no tiene: /a/<slug> lo sirve este Worker (paginaAlbum) con la página de Albunear sin su marca.
+async function linkAlbumBlanco(env, ev, slug) {
+  let base = String(env.SITE_URL || 'https://amoinvitar.com').replace(/\/$/, '');
+  try { const x = await extrasDe(env, ev.empresaId); if (!x.demo) { const d = await dominioDe(env, ev.empresaId).catch(() => null); if (d?.estado === 'activo' && d.host) base = `https://${d.host}`; } } catch { /* queda amoinvitar.com */ }
+  return `${base}/a/${slug}`;
+}
+// Avisa a Albunear la marca (y el link propio con marca blanca) y deja el link del álbum de la invitación al día
+async function sincronizarMarcaAlbum(env, ev, event) {
+  const marca = await marcaAlbumDe(env, ev);
+  const slug = event?.slug || String(ev.datos.album?.albunear || '').split('/a/')[1];
+  if (!slug) return event;
+  const url = marca === 'none' ? await linkAlbumBlanco(env, ev, slug) : null;
+  const esperado = url || `https://albunear.com/a/${slug}`;
+  if (event && (event.brand || 'albunear') === marca && (!url || event.guestUrl === url) && ev.datos.album?.albunear === esperado) return event;
+  try {
+    const r = await env.ALBUNEAR.album(ev.id, { accion: 'marca', marca, ...(url ? { url } : {}), ...(eventoDuo(ev) ? { plan: 'platinum' } : {}) });
+    const link = r?.guestUrl || esperado;
+    if (event) { event.brand = marca; event.guestUrl = link; }
+    if (ev.datos.album?.origen === 'albunear' && ev.datos.album.albunear !== link) { ev.datos.album = { ...ev.datos.album, albunear: link }; await almacenDe(env).guardarEvento(ev); }
+  } catch (e) { console.error('marca álbum', e); }
+  return event;
+}
 // El dueño del álbum: el cliente (Deluxe) o el dueño de la empresa (Duo)
 async function duenoAlbum(env, ev) {
   if (ev.empresaId) {
@@ -768,6 +791,8 @@ async function crearAlbumIncluido(env, ev, { email, pais }) {
     ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
     ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, instagram: false };
     await almacenDe(env).guardarEvento(ev);
+    // README (ronda 126): con marca blanca, el link pasa enseguida al dominio del profesional
+    if ((await marcaAlbumDe(env, ev)) === 'none') { await sincronizarMarcaAlbum(env, ev, null); r.album.link = ev.datos.album.albunear; }
   }
   return r;
 }
@@ -1410,8 +1435,9 @@ async function apiPanel(env, request, url, partes) {
     if (r.error) return json({ error: ERR_ALBUM[r.error] || r.error, codigo: r.error }, r.status || 400);
     // La marca del slideshow sigue al nivel del profesional (si pasa a Studio, sin logos; si vuelve a Pro, Amo Invitar!)
     if (b.accion === 'info' && r.event && env.ALBUNEAR.album) {
-      const marca = await marcaAlbumDe(env, ev);
-      if ((r.event.brand || 'albunear') !== marca) { try { await env.ALBUNEAR.album(ev.id, { accion: 'marca', marca, ...(eventoDuo(ev) ? { plan: 'platinum' } : {}) }); r.event.brand = marca; } catch (e) { console.error('marca álbum', e); } }
+      // README (ronda 126): marca y, con marca blanca, link propio de los invitados (también el del QR)
+      await sincronizarMarcaAlbum(env, ev, r.event);
+      if (r.album && r.event.guestUrl) r.album.link = r.event.guestUrl;
     }
     // Borrado: la invitación vuelve a la sección sin álbum (se puede crear uno nuevo después)
     if (b.accion === 'borrar') {
@@ -1635,8 +1661,27 @@ function proximamente(request, env, url) {
 }
 
 // README (ronda 125): archivo público de Albunear (diseños del álbum) servido desde Amo Invitar! con caché de un día
-async function recursoAlbum(env, ctx, url, ruta) {
-  if (!/^(css\/themes\.css|themes\/[\w.-]+|fonts\/[\w.-]+|fonts\/files\/[\w.-]+)$/.test(ruta) || !env.ALBUNEAR?.fetch) return new Response('', { status: 404 });
+// README (ronda 126): también la página del álbum para los invitados con marca blanca (/a/<slug>) y lo que usa: estilos, scripts,
+// imágenes, traducciones y su API (sin cookies: el invitado se identifica con el encabezado x-guest).
+const RUTA_ALBUM_API = /^(api\/a\/[\w-]+(\/[\w/-]*)?|api\/config|api\/up|i18n\/[a-z0-9-]+\.js)$/;
+async function pasarAAlbunear(env, request, ruta, url) {
+  const h = new Headers();
+  for (const k of ['accept', 'accept-language', 'content-type', 'x-guest', 'x-lang', 'cf-ipcountry', 'user-agent', 'range']) { const v = request.headers.get(k); if (v) h.set(k, v); }
+  h.set('x-socio-base', '/album-recursos');
+  const r = await env.ALBUNEAR.fetch(new Request('https://albunear.interno/' + ruta + url.search, { method: request.method, headers: h, body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.arrayBuffer() }));
+  const out = new Headers();
+  for (const k of ['content-type', 'cache-control', 'content-range', 'accept-ranges', 'vary']) { const v = r.headers.get(k); if (v) out.set(k, v); }
+  return new Response(r.body, { status: r.status, headers: out });
+}
+async function paginaAlbum(env, request, url, slug) {
+  if (!env.ALBUNEAR?.fetch) return new Response('', { status: 404 });
+  try { return await pasarAAlbunear(env, request, 'a/' + slug, url); } catch (e) { console.error('álbum invitado', e); return new Response('', { status: 502 }); }
+}
+async function recursoAlbum(env, ctx, url, ruta, request) {
+  if (RUTA_ALBUM_API.test(ruta) && env.ALBUNEAR?.fetch) {
+    try { return await pasarAAlbunear(env, request, ruta, url); } catch (e) { console.error('álbum api', e); return new Response('', { status: 502 }); }
+  }
+  if (request.method !== 'GET' || !/^(css\/[\w.-]+\.css|js\/[\w./-]+\.js|img\/[\w./-]+|themes\/[\w.-]+|fonts\/[\w.-]+|fonts\/files\/[\w.-]+)$/.test(ruta) || !env.ALBUNEAR?.fetch) return new Response('', { status: 404 });
   const cache = globalThis.caches?.default, clave = new Request(url.origin + '/album-recursos/' + ruta);
   const guardada = cache ? await cache.match(clave).catch(() => null) : null;
   if (guardada) return guardada;
@@ -1645,7 +1690,7 @@ async function recursoAlbum(env, ctx, url, ruta) {
   if (!r.ok) return new Response('', { status: r.status });
   const tipo = r.headers.get('content-type') || '';
   const cuerpo = /css/.test(tipo) || ruta.endsWith('.css')
-    ? (await r.text()).replace(/url\((['"]?)\/(themes|fonts)\//g, 'url($1/album-recursos/$2/')
+    ? (await r.text()).replace(/url\((['"]?)\/(themes|fonts|img)\//g, 'url($1/album-recursos/$2/')
     : await r.arrayBuffer();
   const res = new Response(cuerpo, { headers: { 'content-type': tipo || 'application/octet-stream', 'cache-control': 'public, max-age=86400' } });
   if (cache) ctx.waitUntil(cache.put(clave, res.clone()).catch(() => {}));
@@ -1665,7 +1710,9 @@ export default {
     // Albunear por el enlace interno (Socios.fetch) y se sirven desde este dominio (también el del profesional): el panel no
     // carga nada de albunear.com. En el CSS, las rutas /themes/ y /fonts/ se reescriben a esta misma carpeta.
     // Va fuera de /panel/: ahí los .css y .js los sirve Cloudflare directo (run_worker_first en wrangler.jsonc) y daban 404.
-    if (p0 === 'album-recursos' && request.method === 'GET') return await recursoAlbum(env, ctx, url, partes.slice(1).join('/'));
+    if (p0 === 'album-recursos') return await recursoAlbum(env, ctx, url, partes.slice(1).join('/'), request);
+    // README (ronda 126): álbum de los invitados con marca blanca (Event Studio Duo), en este dominio o en el del profesional
+    if (p0 === 'a' && /^[\w-]{2,80}$/.test(p1 || '') && partes.length === 2 && request.method === 'GET') return await paginaAlbum(env, request, url, p1);
     tienda.opcionesTienda.esquemaDe = (ev) => esquemaDe(env, url, ev);
     tienda.opcionesTienda.publicar = publicarEvento;
     tienda.opcionesTienda.album = (ev) => albumAutomatico(env, ev, null); // README (ronda 98)

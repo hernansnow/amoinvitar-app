@@ -258,6 +258,10 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - **Tablero:** fichas de packs Duo con fondo dorado muy claro y botón dorado; el pase Event Studio Duo al revés que el de Studio (fondo dorado, botón negro).
   - **De Studio a Event Studio Duo pagando la diferencia** (`mejora-duo`: 149 − 99 = 50 € + IVA): con el pase Studio vigente y sin Duo se ofrece esto en lugar del pase Duo completo, con un banner «Pásate a Event Studio Duo» debajo de «Duo: invitación + álbum QR». El pase Duo vence el mismo día que el Studio (`pagarCompra` en `src/pro/compras.js`); al renovar se paga el pase Event Studio Duo completo.
   - Web: el recuadro «¿Organizas eventos todas las semanas?» (`empresas()` en `construir.mjs`) suma Duo y Event Studio Duo, y el «hasta X %» es el mayor descuento entre Studio y Event Studio Duo (hoy 54 %).
+- **Ronda 126**:
+  - **Álbum de los invitados con marca blanca (Event Studio Duo).** `/a/<slug>` lo sirve este Worker (`paginaAlbum` en `src/index.js`), en amoinvitar.com o en el dominio propio del profesional, con la página de Albunear sin nada de su marca. La página, sus archivos y su API pasan por `/album-recursos/…` (`recursoAlbum` / `pasarAAlbunear`, sin cookies: el invitado usa el encabezado `x-guest`). `sincronizarMarcaAlbum` le avisa a Albunear la marca y el link propio (`marca { marca: 'none', url }`), y deja ese link en la invitación, el panel y el QR. Pro Duo sigue con su link de albunear.com.
+  - Para que los invitados suban fotos desde el dominio del profesional, el CORS del bucket `albunear-media` tiene que permitir PUT desde esos dominios (o `*`).
+  - **Promos en hora de España** (`medianocheMadrid` en `src/lib/fx.js`): «desde» empieza a las 0:00 de España y «hasta» incluye el día entero (antes era UTC: arrancaban a la 1:00 en invierno y a las 2:00 en verano).
 
 ## 5. Probar en la compu
 

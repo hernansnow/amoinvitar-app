@@ -41,7 +41,12 @@ const env = {
     album: async (id, p) => albumDePrueba(p),
     // README (ronda 125): archivos de los diseños del álbum (en local, desde la copia de Albunear si está al lado; si no, 404)
     fetch: async (req) => {
-      const ruta = new URL(req.url).pathname, f = path.join(process.env.ALBUNEAR_PUBLIC || path.resolve('../albunear/public'), ruta);
+      const ruta = new URL(req.url).pathname;
+      // README (ronda 126): la página del invitado y su API van al Albunear local (npx wrangler dev en ALBUNEAR_LOCAL), si está
+      if (process.env.ALBUNEAR_LOCAL && /^\/(a\/|api\/|i18n\/)/.test(ruta)) {
+        const u = new URL(req.url); return fetch(process.env.ALBUNEAR_LOCAL + ruta + u.search, { method: req.method, headers: req.headers, body: ['GET', 'HEAD'].includes(req.method) ? undefined : await req.arrayBuffer() });
+      }
+      const f = path.join(process.env.ALBUNEAR_PUBLIC || path.resolve('../albunear/public'), ruta);
       if (!fs.existsSync(f)) return new Response('', { status: 404 });
       const tipo = { '.css': 'text/css', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.jpg': 'image/jpeg', '.png': 'image/png' }[path.extname(f)] || 'application/octet-stream';
       return new Response(fs.readFileSync(f), { headers: { 'content-type': tipo } });
@@ -56,7 +61,7 @@ const ALBUM_PRUEBA = { guestsCanView: true, moderation: 'off', coverTitle: null,
 function albumDePrueba(p) {
   const vivas = FOTOS_PRUEBA.filter((m) => !m.borrada);
   const counts = { total: vivas.length, fav: vivas.filter((m) => m.favorite).length, featured: vivas.filter((m) => m.featured).length, hidden: vivas.filter((m) => m.status === 'hidden').length, pending: 0, videos: vivas.filter((m) => m.kind === 'video').length };
-  const event = { slug: 'prueba', name1: 'Ana', name2: 'Leo', screenUrl: 'https://albunear.com/pantalla/prueba?k=x', guestUrl: 'https://albunear.com/a/prueba', planFeatures: { moderation: 'advanced', zip: true }, ...ALBUM_PRUEBA };
+  const event = { slug: 'prueba', name1: 'Ana', name2: 'Leo', screenUrl: 'https://albunear.com/pantalla/prueba?k=x', guestUrl: ALBUM_PRUEBA.guestUrl || 'https://albunear.com/a/prueba', planFeatures: { moderation: 'advanced', zip: true }, ...ALBUM_PRUEBA };
   const album = { link: 'https://albunear.com/a/prueba', panel: 'https://albunear.com/panel/album?id=prueba', plan: 'classic', estado: 'active' };
   switch (p.accion) {
     case 'info': return { album, event, counts };
@@ -76,7 +81,7 @@ function albumDePrueba(p) {
     case 'encuadre': ALBUM_PRUEBA.coverPos = p.pos; return albumDePrueba({ accion: 'estilos' });
     case 'portada': ALBUM_PRUEBA.cover = p.quitar ? null : (p.bytes?.byteLength ? '/modelos/garden/img/bg21.jpg' : null); ALBUM_PRUEBA.ultimaPortada = p.bytes?.byteLength || 0; return albumDePrueba({ accion: 'estilos' });
     case 'borrar': return { ok: true };
-    case 'marca': ALBUM_PRUEBA.brand = p.marca || 'albunear'; return { ok: true, brand: ALBUM_PRUEBA.brand };
+    case 'marca': ALBUM_PRUEBA.brand = p.marca || 'albunear'; ALBUM_PRUEBA.guestUrl = p.url || 'https://albunear.com/a/prueba'; env.ULTIMA_MARCA = p; return { ok: true, brand: ALBUM_PRUEBA.brand, guestUrl: ALBUM_PRUEBA.guestUrl };
     case 'mejora': return { url: 'https://albunear.com/auth/verify?t=PRUEBA-MEJORA', cupon: 'AMO5PRUEBA', porcentaje: p.porcentaje };
     case 'zip': return { files: vivas.map((m, i) => ({ url: m.original, name: `fotos/${String(i + 1).padStart(4, '0')}.jpg`, size: 1000 })), slug: 'prueba' };
     case 'entrar': return { url: `https://albunear.com/auth/verify?t=PRUEBA#${p.pestana}` };
