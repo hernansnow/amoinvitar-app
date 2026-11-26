@@ -107,10 +107,11 @@ export function precioInvitacion({ paquete, aMedida = null, extras = [] }) {
 // No cubre: diseño a medida, cambio de diseño, idioma adicional ni complementos (se contratan aparte).
 export const PROFESIONALES = {
   // README (ronda 122): precios nuevos (sin IVA). Un crédito publica la invitación Deluxe Pro (todas las secciones y funciones)
-  credito: 30,
+  // README (ronda 124): precios por crédito del dueño. Pro: 32 / 29 / 27; Pro Duo: 64 / 60; Event Studio Duo: 53 / 47 / 42 / 37
+  credito: 32,
   pro: {
     nombre: 'Pro', pase: 0, administradores: 2, marcaBlanca: false, dominioPropio: false,
-    packs: [{ creditos: 5, precio: 140 }, { creditos: 10, precio: 260 }],
+    packs: [{ creditos: 5, precio: 145 }, { creditos: 10, precio: 270 }],
   },
   studio: {
     nombre: 'Studio', pase: 99, administradores: 10, marcaBlanca: true, dominioPropio: true,
@@ -118,14 +119,13 @@ export const PROFESIONALES = {
     packs: [{ creditos: 10, precio: 230 }, { creditos: 25, precio: 525 }, { creditos: 50, precio: 950 }, { creditos: 100, precio: 1700 }],
   },
   // README (ronda 122): Duo = invitación Deluxe Pro + álbum QR Platinum Pro (un crédito Duo publica los dos).
-  // Precio = invitación + álbum de cada pack, con un 5 % menos, redondeado hacia abajo por crédito (los precios del álbum para
-  // profesionales están en ALBUM_PRO). Pro Duo: sin pase, packs de 5 y 10. Event Studio Duo: pase anual (incluye Studio).
+  // Precios por crédito fijados por el dueño (ronda 124); el descuento se muestra contra invitación + álbum sueltos (ALBUM_PRO). Pro Duo: sin pase, packs de 5 y 10. Event Studio Duo: pase anual (incluye Studio).
   duo: {
-    nombre: 'Pro Duo', packs: [{ creditos: 5, precio: 320 }, { creditos: 10, precio: 580 }],
+    nombre: 'Pro Duo', packs: [{ creditos: 5, precio: 320 }, { creditos: 10, precio: 600 }],
   },
   studioDuo: {
     nombre: 'Event Studio Duo', pase: 149, paseSinDescuento: 198, administradores: 10, marcaBlanca: true, dominioPropio: true,
-    packs: [{ creditos: 10, precio: 560 }, { creditos: 25, precio: 1250 }, { creditos: 50, precio: 2250 }, { creditos: 100, precio: 4000 }],
+    packs: [{ creditos: 10, precio: 530 }, { creditos: 25, precio: 1175 }, { creditos: 50, precio: 2100 }, { creditos: 100, precio: 3700 }],
   },
 };
 // Precio del álbum QR para profesionales (sin IVA), solo para calcular y mostrar el ahorro del Duo

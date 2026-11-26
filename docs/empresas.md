@@ -5,6 +5,9 @@
 > (`empresas`, `miembros`, `accesos_evento`). Precios y niveles viven en `src/catalogo.js` (`PROFESIONALES`) y
 > alimentan la página `/profesionales` de la web (se genera con `npm run sitio`).
 
+> **Ronda 124:** Pro 32 € suelto, 5 = 145, 10 = 270; Pro Duo 5 = 320, 10 = 600; Event Studio Duo 10/25/50/100 = 530/1.175/2.100/3.700
+> (el resto, como en la ronda 122).
+>
 > **Ronda 122:** precios nuevos (crédito 30 €; Pro 5/10 = 140/260; Studio 99/año y 10/25/50/100 = 230/525/950/1.700; dominio
 > sin cargo desde el pack de 50) y nivel **Duo** (invitación + álbum QR): Pro Duo 5/10 = 320/580, Event Studio Duo 149/año con
 > packs 10/25/50/100 = 560/1.250/2.250/4.000. Detalle en `docs/estado-y-novedades.md` (Ronda 122). Las tablas de abajo

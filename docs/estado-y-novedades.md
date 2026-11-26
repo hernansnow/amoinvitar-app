@@ -251,6 +251,8 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - Panel → Álbum QR: «Slideshow en vivo» y «Descargar todo (ZIP)» solos en una línea, verdes y rellenos (`.aq-principales`, `.aq-tab-verde`); debajo las pestañas.
   - Si Albunear todavía no tiene publicada una acción nueva (diseno, borrar, mejora) responde `err.badData`: el panel muestra «Esta función estará disponible en unos minutos».
   - Albunear (commit «Arranque más liviano…»): el deploy fallaba con el error 10021 (arranque por encima del límite de CPU) porque las variantes de idioma se calculaban al cargar el Worker. Ahora se calculan al leerlas.
+- **Ronda 124**: precios por crédito del dueño (`PROFESIONALES` en `src/catalogo.js`, sin IVA). Pro: suelto 32, pack 5 = 145 (29), pack 10 = 270 (27). Studio sin cambios (23/21/19/17). Pro Duo: 5 = 320 (64), 10 = 600 (60). Event Studio Duo: 10 = 530 (53), 25 = 1.175 (47), 50 = 2.100 (42), 100 = 3.700 (37). Los descuentos de las tablas se calculan solos (contra 32 € y contra 81 € = invitación + álbum sueltos).
+  - Albunear: la pestaña Diseño suma la foto de portada (subir, encuadrar y borrar, solo Platinum) y ya no deja un hueco al final (el alto se mide sobre el contenido).
 
 ## 5. Probar en la compu
 
