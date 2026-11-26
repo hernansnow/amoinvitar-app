@@ -326,7 +326,7 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos', empresa = fals
     const actual = () => ev.chosenTheme || ev.theme;
     const grilla = el('div', { class: 'aq-temas' }, ...lista.map((t) => {
       const b = el('button', { type: 'button', class: `aq-tema${t === actual() ? ' on' : ''}${puede(t) ? '' : ' off'}`, 'data-tema': t, 'aria-pressed': String(t === actual()) },
-        miniatura(t, ev), el('span', { class: 'aq-tema-nombre' }, nombreTema(t)));
+        el('span', { class: 'aq-tema-caja' }, miniatura(t, ev), el('span', { class: 'aq-tema-check', 'aria-hidden': 'true' }, '✓')), el('span', { class: 'aq-tema-nombre' }, nombreTema(t)));
       b.onclick = async () => {
         if (!puede(t)) { ctx.aviso(tr('Incluido en el álbum Platinum'), true); return; }
         if (t === actual()) return;
