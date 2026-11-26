@@ -16,14 +16,14 @@ import { almacenD1 } from '../almacen.js';
 import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { sendEmail, mailEquipoPro } from '../lib/email.js';
-import { PROFESIONALES } from '../catalogo.js';
+import { PROFESIONALES, descuentoCredito } from '../catalogo.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { empresasDe, creditosDe, paseVigente, limiteUsuarios, catalogoCompras } from '../pro/empresa.js';
 import { crearCompra, mediosPro, confirmarCompra } from '../pro/compras.js';
 import { dominioDe, pedirDominio, revisarDominio, quitarDominio, conCloudflare, cnameDe } from '../pro/dominios.js';
 import { transferInfo } from '../lib/pagos.js';
 import { getInvoice, invoiceUrl } from '../lib/facturas.js';
-import { extrasDe, COMPLEMENTOS_PRO } from '../pro/extras.js';
+import { extrasDe, COMPLEMENTOS_PRO, duoVigente } from '../pro/extras.js';
 import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const sitio = (env, request) => String(env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
@@ -115,6 +115,7 @@ async function resumen(request, env, c) {
     return { id: f.id, nombres: nombresDe(d), tipo: f.tipo, tipoNombre: TIPOS_EVENTO.find((t) => t.id === f.tipo)?.nombre || f.tipo, modelo: m ? nombreModelo(m, f.tipo) : f.modelo,
       paquete: f.paquete, estado: f.estado, link: f.estado === 'publicado' && f.slug ? `/${f.tipo}/${f.slug}` : null, vence: f.vence, fecha: d.celebracion?.fecha || d.ceremonia?.fecha || null,
       respuestas: f.respuestas, invitados: f.invitados, creditoUsado: !!d.empresa?.credito, clientePublica: !!d.empresa?.clientePublica,
+      duo: !!d.empresa?.duo, duoPedido: !!d.empresa?.duoPedido, // README (ronda 122)
       linkCliente: `/panel/${f.id}?k=${f.clave_panel}`, actualizado: f.actualizado };
   });
   const { results: miembros0 } = await env.DB.prepare('SELECT u.id AS usuarioId, u.email, u.nombre, m.rol FROM miembros m JOIN usuarios u ON u.id = m.usuario_id WHERE m.empresa_id = ? ORDER BY (m.rol = \'duenio\') DESC, u.email').bind(e.id).all();
@@ -131,7 +132,9 @@ async function resumen(request, env, c) {
     usuario: { id: u.id, email: u.email, nombre: u.nombre },
     empresas: c.empresas.map((x) => ({ id: x.id, nombre: x.nombre })),
     dominio: dom,
-    empresa: { id: e.id, nombre: e.nombre, rol: e.rol, nivel, studio: c.studio, paseVence: e.pase_vence, paseVencido: nivel === 'studio' && !c.studio, estado: e.estado, dominio: !!e.dominio, demo: c.extras.demo },
+    empresa: { id: e.id, nombre: e.nombre, rol: e.rol, nivel, studio: c.studio, paseVence: e.pase_vence, paseVencido: nivel === 'studio' && !c.studio, estado: e.estado, dominio: !!e.dominio, demo: c.extras.demo,
+      // README (ronda 122): Duo (invitación + álbum QR): saldo de créditos Duo y pase Event Studio Duo
+      duo: { saldo: parseInt(c.extras.duo?.saldo, 10) || 0, pase: duoVigente(c.extras) && c.studio, paseVence: c.extras.duo?.paseVence || null } },
     // README (ronda 87): créditos de complementos (ocultos hasta que el admin los habilita; los regalados se ven siempre)
     complementos: (c.extras.habilitado || Object.values(c.extras.saldo).some((n) => n > 0)) ? { habilitado: c.extras.habilitado, saldo: c.extras.saldo,
       lista: Object.entries(COMPLEMENTOS_PRO).map(([k, v]) => ({ id: k, nombre: v.nombre, neto: v.neto, manual: !!v.manual, saldo: parseInt(c.extras.saldo[k], 10) || 0 })) } : null,
@@ -147,15 +150,21 @@ async function resumen(request, env, c) {
     modelos: MODELOS.filter((m) => !m.simple && !m.std && !m.kit).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
     tienda: {
       credito: PROFESIONALES.credito, pase: PROFESIONALES.studio.pase, config: PROFESIONALES.studio.configuracionDominio,
-      productos: Object.entries(cat).filter(([k, v]) => v.nivel !== 'complemento').filter(([k, v]) => v.nivel === 'studio-dominio' ? (c.studio && !e.dominio) : (nivel === 'studio' ? (v.nivel === 'studio' && c.studio) || v.nivel === 'studio-pase' : v.nivel === 'pro' || v.nivel === 'studio-pase'))
-        .map(([k, v]) => ({ id: k, nombre: v.nombre, creditos: v.creditos, neto: v.neto, nivel: v.nivel })),
+      productos: Object.entries(cat).filter(([k, v]) => v.nivel !== 'complemento').filter(([k, v]) => v.nivel === 'studio-dominio' ? (c.studio && !e.dominio)
+        : v.nivel === 'duo' ? !(duoVigente(c.extras) && c.studio) : v.nivel === 'studio-duo' ? duoVigente(c.extras) && c.studio : v.nivel === 'studio-duo-pase' ? true
+        : (nivel === 'studio' ? (v.nivel === 'studio' && c.studio) || v.nivel === 'studio-pase' : v.nivel === 'pro' || v.nivel === 'studio-pase'))
+        .map(([k, v]) => ({ id: k, nombre: v.nombre, creditos: v.creditos, neto: v.neto, nivel: v.nivel, duo: !!v.duo,
+          // README (ronda 122): packs de 50 y 100 (Studio y Event Studio Duo): configuración del dominio sin cargo
+          dominioSinCargo: /^(studio|sduo)-/.test(k) && v.creditos >= PROFESIONALES.studio.dominioSinCargoDesdePack })),
+      paseDuo: PROFESIONALES.studioDuo.pase, paseDuoSinDescuento: PROFESIONALES.studioDuo.paseSinDescuento,
+      mejorStudio: Math.max(...PROFESIONALES.studio.packs.map((k) => descuentoCredito(k.precio / k.creditos, PROFESIONALES.credito))),
       transferencia: transferInfo(env, 'EUR'),
       // Medios de pago online según el país de facturación (el de Argentina cobra en pesos con Mercado Pago)
       medios: { general: mediosPro(env, 'ES'), AR: mediosPro(env, 'AR') },
     },
     contacto: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, ''), email: env.SUPPORT_EMAIL || 'hola@amoinvitar.com' },
     base,
-    moneda: await monedaTablero(env, request, [PROFESIONALES.studio.pase, PROFESIONALES.studio.configuracionDominio,
+    moneda: await monedaTablero(env, request, [PROFESIONALES.studio.pase, PROFESIONALES.studio.configuracionDominio, PROFESIONALES.studioDuo.paseSinDescuento,
       ...Object.values(cat).flatMap((v) => [v.neto, v.creditos > 1 ? v.neto / v.creditos : 0])]),
   };
 }
@@ -176,7 +185,7 @@ async function crearEvento(request, env, c) {
   const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') ? b.fecha : '';
   const ev = {
     id: `ev_${randomId(5)}`, producto: 'invitacion', tipo: tipoReal, modelo: m.id, paquete: 'borrador', aMedida: null, estado: 'borrador', clave: randomId(16), empresaId: c.e.id, slug: null,
-    datos: { variante: varianteDePais(pais(request)), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a }, celebracion: fecha ? { fecha, inicio: fecha } : {}, empresa: { clientePublica: false } },
+    datos: { variante: varianteDePais(pais(request)), acceso: { modo: 'abierta' }, extras: [], nombres: bb ? { a, b: bb } : { a }, celebracion: fecha ? { fecha, inicio: fecha } : {}, empresa: { clientePublica: false, duoPedido: b.duo === true } },
   };
   await almacenD1(env).guardarEvento(ev);
   return json({ id: ev.id, panel: `/panel/${ev.id}` }, 201);
@@ -191,7 +200,9 @@ async function ajustesEvento(request, env, c, id) {
   exigir(c.puedeEditar);
   const ev = await eventoDeEmpresa(env, c, id);
   const b = await readJson(request);
-  ev.datos.empresa = { ...(ev.datos.empresa || {}), clientePublica: !!b.clientePublica };
+  ev.datos.empresa = { ...(ev.datos.empresa || {}), ...(b.clientePublica !== undefined ? { clientePublica: !!b.clientePublica } : {}),
+    // README (ronda 122): «Duo» (con álbum QR) se elige mientras el evento no usó su crédito
+    ...(b.duoPedido !== undefined && !ev.datos.empresa?.credito ? { duoPedido: !!b.duoPedido } : {}) };
   await almacenD1(env).guardarEvento(ev);
   return json({ ok: true });
 }
@@ -290,8 +301,11 @@ async function comprar(request, env, c) {
   const b = await readJson(request);
   const item = str(b.item, 20), cat = catalogoCompras()[item];
   if (!cat) throw new HttpError(400, 'Producto desconocido');
-  const permitido = (cat.nivel === 'complemento' && c.extras.habilitado) || (cat.nivel === 'studio-dominio' && c.studio && !c.e.dominio) || cat.nivel === 'studio-pase' || (cat.nivel === 'pro' && c.e.nivel === 'pro') || (cat.nivel === 'studio' && c.studio);
-  if (!permitido) throw new HttpError(409, cat.nivel === 'studio' ? 'Los packs Studio necesitan el pase anual vigente' : 'Ese producto no está disponible para tu nivel');
+  // README (ronda 122): Pro Duo para todos; los packs Event Studio Duo, con su pase vigente
+  const conDuo = duoVigente(c.extras) && c.studio;
+  const permitido = (cat.nivel === 'complemento' && c.extras.habilitado) || (cat.nivel === 'studio-dominio' && c.studio && !c.e.dominio) || cat.nivel === 'studio-pase' || cat.nivel === 'studio-duo-pase'
+    || (cat.nivel === 'pro' && c.e.nivel === 'pro') || (cat.nivel === 'studio' && c.studio) || (cat.nivel === 'duo' && !conDuo) || (cat.nivel === 'studio-duo' && conDuo);
+  if (!permitido) throw new HttpError(409, cat.nivel === 'studio' ? 'Los packs Studio necesitan el pase anual vigente' : cat.nivel === 'studio-duo' ? 'Los packs Event Studio Duo necesitan el pase anual Event Studio Duo vigente' : 'Ese producto no está disponible para tu nivel');
   const pend = await env.DB.prepare("SELECT COUNT(*) AS n FROM compras_pro WHERE empresa_id = ? AND estado = 'pendiente'").bind(c.e.id).first();
   if (pend.n >= 5) throw new HttpError(409, 'Hay varios pedidos pendientes de pago. Se pueden cancelar los que no se vayan a abonar.');
   const paisFiscal = str(b.pais, 2).toUpperCase();

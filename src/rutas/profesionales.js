@@ -20,7 +20,7 @@ export async function solicitud(request, env) {
   const s = {
     nombre: linea(d.nombre, 100), email: linea(d.email, 150).toLowerCase(), telefono: linea(d.telefono, 40), empresa: linea(d.empresa, 120),
     web: linea(d.web, 300), rubro: Object.hasOwn(RUBROS, d.rubro) ? d.rubro : '', profesion: linea(d.profesion, 120),
-    descripcion: String(d.descripcion ?? '').trim().slice(0, 3000), nivel: d.nivel === 'studio' ? 'studio' : 'pro', pais: linea(d.pais, 60),
+    descripcion: String(d.descripcion ?? '').trim().slice(0, 3000), nivel: ['studio', 'pro-duo', 'studio-duo'].includes(d.nivel) ? d.nivel : 'pro', // README (ronda 122): también Duo pais: linea(d.pais, 60),
   };
   if (s.nombre.length < 2) throw new HttpError(400, 'Falta el nombre');
   if (!isEmail(s.email)) throw new HttpError(400, 'El mail no parece válido');
@@ -39,7 +39,7 @@ export async function solicitud(request, env) {
     .bind(id, s.nombre, s.email, s.telefono || null, s.empresa || null, s.web, s.rubro, s.profesion || null, s.descripcion, s.nivel, s.pais || null, new Date().toISOString()).run();
   try {
     const para = String(env.ADMINS || '').split(/[,\s]+/).filter(Boolean)[0] || env.SUPPORT_EMAIL;
-    if (para) await sendEmail(env, { to: para, replyTo: s.email, ...mailAvisoInterno(env, { asunto: `Solicitud de cuenta profesional (${s.nivel === 'studio' ? 'Studio' : 'Pro'}) · ${s.empresa || s.nombre}`,
+    if (para) await sendEmail(env, { to: para, replyTo: s.email, ...mailAvisoInterno(env, { asunto: `Solicitud de cuenta profesional (${{ studio: 'Studio', 'pro-duo': 'Pro Duo', 'studio-duo': 'Event Studio Duo' }[s.nivel] || 'Pro'}) · ${s.empresa || s.nombre}`,
       lineas: [`${s.nombre} · ${s.email}${s.telefono ? ` · ${s.telefono}` : ''}`, `${RUBROS[s.rubro]}${s.profesion ? ` · ${s.profesion}` : ''}${s.pais ? ` · ${s.pais}` : ''}`, `Web o red: ${s.web}`, s.descripcion, `Revisar y aprobar: ${new URL(request.url).origin}/admin/`] }) });
     await recordarIdioma(env, s.email, request);
     await sendEmail(env, { to: s.email, ...mailSolicitudProRecibida(env, { idioma: await idiomaPara(env, s.email, { request }), nombre: s.nombre }) });

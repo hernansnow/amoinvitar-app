@@ -1479,3 +1479,23 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
   .aq-barra > .aq-vistas button { width: 25px; height: 28px; }
 }
 @media (max-width: 374px) { .aq-barra .aq-filtro { padding: 6px 4px; gap: 2px; font-size: .76rem; } .aq-barra .aq-filtro b { font-size: .66rem; } .aq-barra .aq-f-ico svg { width: 15px; height: 15px; } }
+
+/* README (ronda 122): Álbum QR → banner para pasar a Platinum, pestaña Diseño (iframe) y Ajustes */
+.aq-mejora { display: flex; align-items: center; gap: 12px; background: linear-gradient(90deg, #fbf6e7, #f6efe0); border: 1px solid #e8d9b0; border-radius: 12px; padding: 10px 14px; }
+.aq-mejora[hidden] { display: none; }
+.aq-mejora-ico { flex: none; color: #b38a2e; display: grid; place-items: center; }
+.aq-mejora-ico svg { width: 22px; height: 22px; }
+.aq-mejora > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.aq-mejora strong { font-size: .9rem; color: #5b4718; }
+.aq-mejora small { font-size: .76rem; color: #6d6450; line-height: 1.35; }
+.aq-mejora-btn { flex: none; background: #b38a2e !important; border-color: #b38a2e !important; color: #fff !important; white-space: nowrap; }
+.aq-diseno { width: 100%; height: 640px; border: 0; display: block; background: transparent; }
+.aq-campo { display: grid; gap: 4px; max-width: 560px; }
+.aq-campo small { color: var(--suave); font-size: .76rem; }
+.aq-input { width: 100%; border: 1px solid var(--borde); border-radius: 10px; padding: 9px 11px; font: inherit; font-size: .9rem; background: #fff; }
+.aq-cuerpo .btn-peligro { background: #fff; color: #c0392b; border: 1.5px solid #c0392b; display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 640px) {
+  .aq-mejora { flex-wrap: wrap; }
+  .aq-mejora-btn { width: 100%; justify-content: center; }
+  .aq-diseno { height: 900px; }
+}

@@ -20,7 +20,7 @@ import { sendEmail, mailMedidaAprobada, mailProAprobada, mailProRechazada } from
 import { PROFESIONALES } from '../catalogo.js';
 import { sumarMeses, nuevoLote, renovarPase as renovarPaseBase, catalogoCompras } from '../pro/empresa.js';
 import { pagarCompra } from '../pro/compras.js';
-import { extrasDe, cambiarExtras, sumarSaldo, COMPLEMENTOS_PRO } from '../pro/extras.js';
+import { extrasDe, cambiarExtras, sumarSaldo, COMPLEMENTOS_PRO, sumarDuo, paseDuo } from '../pro/extras.js';
 import { dominiosParaAdmin, marcarDominio, quitarDominio, revisarDominio, conCloudflare, cnameDe } from '../pro/dominios.js';
 import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
@@ -108,7 +108,9 @@ async function aprobar(request, env, id, b) {
   const s = await env.DB.prepare('SELECT * FROM solicitudes_pro WHERE id = ?').bind(id).first();
   if (!s) throw new HttpError(404, 'No existe esa solicitud');
   if (s.estado !== 'pendiente') throw new HttpError(409, 'Esa solicitud ya se resolvió');
-  const nivel = b.nivel === 'studio' ? 'studio' : 'pro';
+  // README (ronda 122): Event Studio Duo = Studio + pase Duo (los dos vencen juntos)
+  const conDuo = b.nivel === 'studio-duo';
+  const nivel = b.nivel === 'studio' || conDuo ? 'studio' : 'pro';
   const empresaId = 'em_' + randomId(5);
   const t = ahora();
   const paseMeses = nivel === 'studio' ? Math.max(0, Math.min(36, parseInt(b.paseMeses, 10) || 0)) : 0;
@@ -120,8 +122,11 @@ async function aprobar(request, env, id, b) {
   await env.DB.prepare('INSERT INTO miembros (empresa_id, usuario_id, rol) VALUES (?, ?, ?) ON CONFLICT DO NOTHING').bind(empresaId, u.id, 'duenio').run();
   const creditos = Math.max(0, Math.min(1000, parseInt(b.creditos, 10) || 0));
   if (creditos) await nuevoLote(env, empresaId, creditos, 'inicial', str(b.nota, 200) || 'Créditos iniciales');
+  if (conDuo && paseMeses) await paseDuo(env, empresaId, sumarMeses(t, paseMeses));
+  const creditosDuo = Math.max(0, Math.min(1000, parseInt(b.creditosDuo, 10) || 0));
+  if (creditosDuo) await sumarDuo(env, empresaId, creditosDuo, 'regalo', str(b.nota, 200) || 'Créditos Duo iniciales');
   await env.DB.prepare("UPDATE solicitudes_pro SET estado = 'aprobada', empresa_id = ?, nota = ?, resuelto = ? WHERE id = ?").bind(empresaId, str(b.nota, 300) || null, t, id).run();
-  try { await sendEmail(env, { to: s.email, ...mailProAprobada(env, { idioma: await idiomaPara(env, s.email), nombre: s.nombre, nivel: PROFESIONALES[nivel].nombre, url: sitio(env, request) }) }); } catch (e) { console.error('[pro aprobada]', e); }
+  try { await sendEmail(env, { to: s.email, ...mailProAprobada(env, { idioma: await idiomaPara(env, s.email), nombre: s.nombre, nivel: conDuo ? PROFESIONALES.studioDuo.nombre : PROFESIONALES[nivel].nombre, url: sitio(env, request) }) }); } catch (e) { console.error('[pro aprobada]', e); }
   return json({ ok: true, empresa: empresaId });
 }
 
@@ -145,6 +150,8 @@ async function darCreditos(env, id, b) {
   const e = await empresaPro(env, id);
   const cantidad = parseInt(b.cantidad, 10);
   if (!(cantidad > 0 && cantidad <= 1000)) throw new HttpError(400, 'La cantidad de créditos no es válida');
+  // README (ronda 122): créditos Duo (invitación + álbum QR)
+  if (String(b.origen || '').startsWith('duo') || String(b.origen || '').startsWith('sduo')) { await sumarDuo(env, id, cantidad, 'regalo', str(b.nota, 200) || b.origen); return json({ ok: true }); }
   // Los packs Studio son exclusivos con el pase anual activo
   const esStudio = String(b.origen || '').startsWith('studio');
   if (esStudio && !(e.nivel === 'studio' && e.pase_vence && e.pase_vence >= ahora())) throw new HttpError(409, 'Los packs Studio necesitan el pase anual vigente. Renovar o activar el pase primero.');
@@ -185,13 +192,17 @@ async function modoDemo(env, id, b) {
 async function cambiarEstado(env, id, b) {
   await empresaPro(env, id);
   const estado = b.estado === 'suspendida' ? 'suspendida' : 'activa';
-  const nivel = b.nivel === 'studio' ? 'studio' : b.nivel === 'pro' ? 'pro' : null;
+  const conDuo = b.nivel === 'studio-duo'; // README (ronda 122)
+  const nivel = b.nivel === 'studio' || conDuo ? 'studio' : b.nivel === 'pro' ? 'pro' : null;
   await env.DB.prepare('UPDATE empresas_pro SET estado = ?, nivel = COALESCE(?, nivel) WHERE empresa_id = ?').bind(estado, nivel, id).run();
   if (nivel) await env.DB.prepare('UPDATE empresas SET plan = ? WHERE id = ?').bind(nivel, id).run();
   // README (ronda 89): al subir a Studio sin un pase vigente, el pase anual arranca hoy y dura 12 meses
   // (la DEMO, en cambio, da un pase de prueba de 1 mes)
   const e = await empresaPro(env, id);
   if (nivel === 'studio' && !(e.pase_vence && e.pase_vence >= ahora())) await env.DB.prepare('UPDATE empresas_pro SET pase_vence = ? WHERE empresa_id = ?').bind(sumarMeses(ahora(), 12), id).run();
+  // Event Studio Duo: el pase Duo vence con el de Studio; al bajar a Pro o a Studio solo, se quita
+  if (conDuo) await paseDuo(env, id, (await empresaPro(env, id)).pase_vence);
+  else if (nivel) await paseDuo(env, id, null);
   return json({ ok: true });
 }
 

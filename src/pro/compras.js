@@ -11,7 +11,7 @@ import { verifactuMode, sendPending } from '../lib/verifactu.js';
 import { sendEmail, mailCompraPro, mailCompraProPagada, mailAvisoInterno } from '../lib/email.js';
 import { PROFESIONALES } from '../catalogo.js';
 import { catalogoCompras, siguienteNumeroCompra, nuevoLote, renovarPase } from './empresa.js';
-import { sumarSaldo } from './extras.js';
+import { sumarSaldo, sumarDuo, paseDuo } from './extras.js';
 import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const r2 = (n) => Math.round(n * 100) / 100;
@@ -63,8 +63,13 @@ export async function pagarCompra(env, id, { medio = 'transferencia', nota = nul
   const c = await env.DB.prepare('SELECT * FROM compras_pro WHERE id = ?').bind(id).first();
   const cat = catalogoCompras()[c.item];
   const emp = await env.DB.prepare('SELECT nombre FROM empresas WHERE id = ?').bind(c.empresa_id).first();
-  if (c.item === 'dominio' || c.item === `studio-${PROFESIONALES.dominioSinCargoDesdePack}`) await env.DB.prepare('UPDATE empresas_pro SET dominio = 1 WHERE empresa_id = ?').bind(c.empresa_id).run();
+  // README (ronda 122): la configuración del dominio propio va sin cargo desde el pack de 50 (Studio y Event Studio Duo)
+  const packDominio = /^(studio|sduo)-(\d+)$/.exec(c.item);
+  if (c.item === 'dominio' || (packDominio && Number(packDominio[2]) >= PROFESIONALES.studio.dominioSinCargoDesdePack)) await env.DB.prepare('UPDATE empresas_pro SET dominio = 1 WHERE empresa_id = ?').bind(c.empresa_id).run();
   if (c.item === 'pase') await renovarPase(env, c.empresa_id, 12);
+  // Event Studio Duo: renueva el pase Studio y el de Duo (los dos vencen juntos)
+  else if (c.item === 'pase-duo') { const r0 = await renovarPase(env, c.empresa_id, 12); await paseDuo(env, c.empresa_id, r0.paseVence); }
+  else if (cat?.duo) await sumarDuo(env, c.empresa_id, c.creditos, 'compra', `Pedido #${c.numero}`);
   else if (cat?.comp) await sumarSaldo(env, c.empresa_id, cat.comp, c.creditos, 'compra', `Pedido #${c.numero}`); // README (ronda 87)
   else await nuevoLote(env, c.empresa_id, c.creditos, c.item, `Pedido #${c.numero}`);
   let urlFactura = null;

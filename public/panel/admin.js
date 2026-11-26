@@ -748,6 +748,27 @@ function vistaAlbum() {
     let r = { incluido: false, crear: 'https://albunear.com/empezar', album: null };
     try { r = await ctx.api('/albunear'); } catch { /* sin conexión: quedan los links generales */ }
     const deluxe = !!r.incluido, deluxeSinPagar = !deluxe && ctx.S.plan?.plan === 'deluxe';
+    // README (ronda 122): evento Duo de un profesional: el álbum QR conectado, administrado desde acá (sin nada que lleve a Albunear)
+    if (ctx.S.empresa && (r.duo || ctx.S.empresa.duo)) {
+      const linkDuo = r.album?.link || ctx.datos.album?.albunear;
+      if (linkDuo && albumActivo()) {
+        const { vistaAlbumQr } = await import('/panel/album-qr.js');
+        caja.replaceWith(vistaAlbumQr(ctx, { tr, album: { ...(r.album || {}), link: linkDuo }, empresa: true, mejora: false }));
+        return;
+      }
+      caja.classList.add('ad-alb-oferta');
+      caja.replaceChildren(ctx.el('h2', {}, 'Álbum de fotos compartido'), descripcion(),
+        ctx.el('p', { class: 'ad-alb-texto' }, 'Este evento incluye el álbum QR. Se crea ya armado con los datos y el estilo de la invitación.'),
+        ctx.el('div', { class: 'ad-botones' }, boton('Activar y crear el Álbum', (e) => activarAlbum(e.currentTarget), 'btn btn-albunear')));
+      return;
+    }
+    // Pedido como Duo y todavía sin publicar: el álbum se crea al publicar (con un crédito Duo)
+    if (ctx.S.empresa?.duoPedido) {
+      caja.classList.add('ad-alb-oferta');
+      caja.replaceChildren(ctx.el('h2', {}, 'Álbum de fotos compartido'), descripcion(),
+        ctx.el('p', { class: 'ad-alb-texto' }, 'Este evento es Duo: al publicarlo se usa un crédito Duo y el álbum QR se crea y se conecta solo a la invitación y a este panel.'));
+      return;
+    }
     // README (ronda 87): evento de un profesional: la propuesta de Albunear para sus clientes (sin el álbum incluido). Igual que antes
     if (ctx.S.empresa) {
       const pie = ctx.el('p', { class: 'ad-alb-pie' }, 'No es obligatorio usar el álbum de Albunear: se puede sumar el link de otro proveedor en la sección "Álbum de fotos QR" de la invitación.');
@@ -965,7 +986,8 @@ function dibujar(caja) {
   if (!menu) {
     // Álbum: siempre, salvo que la sección use un link propio (ahí no hay nada que administrar)
     // README (ronda 87): en los eventos de empresa la ve solo el profesional (con la propuesta de Albunear para sus clientes)
-    const verAlbum = ctx.S.empresa ? !ctx.S.empresa.cliente : !(albumActivo() && albumPropio());
+    // README (ronda 122): con Duo, también el cliente del profesional ve su álbum
+    const verAlbum = ctx.S.empresa ? (!ctx.S.empresa.cliente || !!ctx.S.empresa.duo) : !(albumActivo() && albumPropio());
     if (!verAlbum && seccion === 'album') seccion = 'resumen';
     const tabs = SECCIONES.filter(([id]) => (id !== 'album' || verAlbum) && visible(id));
     if (!tabs.some(([id]) => id === seccion)) seccion = 'resumen';
@@ -1001,6 +1023,9 @@ function dibujar(caja) {
   // README (ronda 108): Álbum QR: «Powered by Albunear» a la derecha del título (link a Albunear). Los profesionales, como antes
   if (seccion === 'album' && !ctx.S.empresa) tituloSec = ctx.el('div', { class: 'ad-titulo-fila' }, tituloSec,
     ctx.el('a', { class: 'ad-powered', href: 'https://albunear.com', target: '_blank', rel: 'noopener' }, ctx.el('small', {}, 'Powered by'), ctx.el('img', { src: '/comun/img/albunear.svg', alt: 'Albunear', width: 104, height: 33 })));
+  // README (ronda 122): Pro Duo: «Powered by» con el logo, sin link (el cliente del profesional no sale del panel). Studio: nada
+  else if (seccion === 'album' && ctx.S.empresa?.duo && !ctx.S.empresa.studio) tituloSec = ctx.el('div', { class: 'ad-titulo-fila' }, tituloSec,
+    ctx.el('span', { class: 'ad-powered' }, ctx.el('small', {}, 'Powered by'), ctx.el('img', { src: '/comun/img/albunear.svg', alt: 'Albunear', width: 104, height: 33 })));
   caja.querySelector('.ad-contenido').replaceChildren(tituloSec, ...((bloqueo(seccion) ? vistaBloqueada(seccion) : VISTAS[seccion]()) || []).filter(Boolean));
 }
 // ── README (ronda 29): lo que incluye cada plan ──

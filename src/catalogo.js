@@ -106,17 +106,34 @@ export function precioInvitacion({ paquete, aMedida = null, extras = [] }) {
 // (docs/empresas.md). Un crédito = una invitación publicada de cualquier paquete (hasta Deluxe) y cualquier modelo.
 // No cubre: diseño a medida, cambio de diseño, idioma adicional ni complementos (se contratan aparte).
 export const PROFESIONALES = {
-  credito: 25,
+  // README (ronda 122): precios nuevos (sin IVA). Un crédito publica la invitación Deluxe Pro (todas las secciones y funciones)
+  credito: 30,
   pro: {
     nombre: 'Pro', pase: 0, administradores: 2, marcaBlanca: false, dominioPropio: false,
-    packs: [{ creditos: 5, precio: 115 }, { creditos: 10, precio: 200 }],
+    packs: [{ creditos: 5, precio: 140 }, { creditos: 10, precio: 260 }],
   },
   studio: {
     nombre: 'Studio', pase: 99, administradores: 10, marcaBlanca: true, dominioPropio: true,
-    configuracionDominio: 49, dominioSinCargoDesdePack: 100, // el dominio propio es gratis con el pack de 100 créditos
-    packs: [{ creditos: 10, precio: 170 }, { creditos: 25, precio: 375 }, { creditos: 50, precio: 650 }, { creditos: 100, precio: 1100 }],
+    configuracionDominio: 49, dominioSinCargoDesdePack: 50, // la configuración del dominio propio es sin cargo con los packs de 50 y 100
+    packs: [{ creditos: 10, precio: 230 }, { creditos: 25, precio: 525 }, { creditos: 50, precio: 950 }, { creditos: 100, precio: 1700 }],
+  },
+  // README (ronda 122): Duo = invitación Deluxe Pro + álbum QR Platinum Pro (un crédito Duo publica los dos).
+  // Precio = invitación + álbum de cada pack, con un 5 % menos, redondeado hacia abajo por crédito (los precios del álbum para
+  // profesionales están en ALBUM_PRO). Pro Duo: sin pase, packs de 5 y 10. Event Studio Duo: pase anual (incluye Studio).
+  duo: {
+    nombre: 'Pro Duo', packs: [{ creditos: 5, precio: 320 }, { creditos: 10, precio: 580 }],
+  },
+  studioDuo: {
+    nombre: 'Event Studio Duo', pase: 149, paseSinDescuento: 198, administradores: 10, marcaBlanca: true, dominioPropio: true,
+    packs: [{ creditos: 10, precio: 560 }, { creditos: 25, precio: 1250 }, { creditos: 50, precio: 2250 }, { creditos: 100, precio: 4000 }],
   },
 };
+// Precio del álbum QR para profesionales (sin IVA), solo para calcular y mostrar el ahorro del Duo
+export const ALBUM_PRO = { 1: 49, 5: 200, 10: 360, 25: 800, 50: 1450, 100: 2600 };
+// Precio de venta al público (sin IVA) que se usa para mostrar el valor de reventa: la invitación Deluxe y el álbum Platinum
+export const PVP_PRO = { invitacion: 58, album: 50 };
+// Descuento de un precio por crédito frente al crédito suelto (%), redondeado
+export const descuentoCredito = (porCredito, suelto) => Math.round((1 - porCredito / suelto) * 100);
 
 // ── README (ronda 47): precios base editables desde /admin (Precios y promos) ──
 // Se guardan en app_state['config_precios'].base como { 'grupo.id': euros } y se aplican sobre estos mismos objetos

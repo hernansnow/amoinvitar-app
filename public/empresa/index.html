@@ -11,7 +11,7 @@
 <script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
   if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
   document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
-<script src="/comun/js/regional.js?v=b274e284" defer></script>
+<script src="/comun/js/regional.js?v=7daac30b" defer></script>
 <script src="/comun/js/selector-pais.js?v=r89" defer></script>
 <style>
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
@@ -54,6 +54,11 @@
   .aviso-caja { border-radius: 14px; padding: 14px 18px; margin-bottom: 16px; background: var(--claro); display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
   .aviso-caja.mal { background: #fde3df; } .aviso-caja p { margin: 0; flex: 1; min-width: 220px; }
   .productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+  /* README (ronda 122): Duo */
+  .producto.duo { border-color: #c9b27a; }
+  .tachado { opacity: .55; font-weight: 400; font-size: .8em; }
+  .duo-info { margin-top: 22px; }
+  .ganchos { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 6px; font-size: .9rem; }
   .producto { background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 16px; display: grid; gap: 4px; align-content: start; }
   .producto b { font: 500 28px/1.1 Jost, sans-serif; } .producto small { color: var(--suave); }
   table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--linea); border-radius: 14px; overflow: hidden; font-size: 15px; }
@@ -223,9 +228,11 @@
       { n: 'tipo', l: 'Tipo de evento', tipo: 'select', v: tipoInicial, op: D.tipos.map(function (t) { return [t.id, t.nombre]; }), on: function (sel, ins) { var m = ins[1]; m.replaceChildren.apply(m, porTipo(sel.value).map(function (x) { return el('option', { value: x.id }, x.nombre); })); nombres(sel.value, ins); } },
       { n: 'modelo', l: 'Diseño', tipo: 'select', op: porTipo(tipoInicial).map(function (m) { return [m.id, m.nombre]; }) },
       { n: 'a', l: 'Nombre', ph: 'Ej.: Sofi' }, { n: 'b', l: 'Nombre 2', ph: 'Ej.: Pablo' }, { n: 'fecha', l: 'Fecha del evento', tipo: 'date' },
-      { nota: 'Cada evento publicado usa 1 crédito. El diseño se puede cambiar después desde el panel del evento.' }], 'Crear y abrir el panel').then(function (r) {
+      // README (ronda 122): Duo = invitación + álbum QR (se publica con un crédito Duo; se puede cambiar antes de publicar)
+      { n: 'duo', l: 'Qué incluye', tipo: 'select', v: D.empresa.duo && D.empresa.duo.saldo > 0 ? '1' : '0', op: [['0', 'Invitación Deluxe Pro (1 crédito)'], ['1', 'Duo: invitación + álbum QR (1 crédito Duo)']] },
+      { nota: 'Cada evento publicado usa 1 crédito (o 1 crédito Duo, con el álbum QR). El diseño se puede cambiar después desde el panel del evento.' }], 'Crear y abrir el panel').then(function (r) {
       if (!r) return;
-      api(base('/eventos'), { tipo: r.tipo, modelo: r.modelo, nombres: { a: r.a, b: r.tipo === 'boda' ? r.b : '' }, fecha: r.fecha }).then(function (j) { location.href = j.panel; }).catch(function (e) { aviso(e.message, true); });
+      api(base('/eventos'), { tipo: r.tipo, modelo: r.modelo, nombres: { a: r.a, b: r.tipo === 'boda' ? r.b : '' }, fecha: r.fecha, duo: r.duo === '1' }).then(function (j) { location.href = j.panel; }).catch(function (e) { aviso(e.message, true); });
     });
     nombres(tipoInicial, [].slice.call($('#dlg-c').querySelectorAll('input,select')));
   }
@@ -233,7 +240,7 @@
   function vistaEventos() {
     var v = el('div'), puede = D.empresa.rol !== 'lectura' && D.empresa.estado === 'activa';
     var pub = D.eventos.filter(function (e) { return e.estado === 'publicado'; }).length, conf = D.eventos.reduce(function (t, e) { return t + e.respuestas; }, 0);
-    v.append(el('div', { class: 'cifras' }, [['Eventos', D.eventos.length], ['Publicados', pub], ['Confirmaciones', conf], ['Créditos', D.creditos.disponibles]].map(function (x) { return el('div', {}, [el('b', {}, String(x[1])), el('span', {}, x[0])]); })));
+    v.append(el('div', { class: 'cifras' }, [['Eventos', D.eventos.length], ['Publicados', pub], ['Confirmaciones', conf], ['Créditos', D.creditos.disponibles]].concat(conDuo() ? [['Créditos Duo', D.empresa.duo.saldo]] : []).map(function (x) { return el('div', {}, [el('b', {}, String(x[1])), el('span', {}, x[0])]); })));
     // README (ronda 88): «Catálogo»: el muestrario de modelos para compartir con el cliente (con el dominio propio, si está activo)
     var catalogo = (D.dominio && D.dominio.estado === 'activo' && D.dominio.host && D.empresa.studio && !D.empresa.demo ? 'https://' + D.dominio.host : location.origin) + '/muestrario/' + D.empresa.id;
     v.append(el('div', { class: 'cabecera' }, [el('h2', { style: 'margin:0' }, 'Eventos'), el('div', { class: 'fila', style: 'margin:0' }, [el('a', { class: 'b sec', href: catalogo, target: '_blank', rel: 'noopener' }, 'Catálogo'), puede ? el('button', { class: 'b', type: 'button', onclick: nuevoEvento }, '＋ Nuevo evento') : null])]));
@@ -249,14 +256,28 @@
         if (e.estado !== 'publicado' && !e.creditoUsado) { var bd = el('button', { class: 'b mal', type: 'button' }, 'Borrar'); bd.onclick = function () { if (confirm('¿Borrar este borrador? No se puede deshacer.')) accion(bd, base('/eventos/' + e.id), undefined, 'Borrado', 'DELETE'); }; botones.push(bd); }
       }
       var cp = el('label', { class: 'casilla', style: 'margin-top:8px' }, [el('input', { type: 'checkbox', checked: e.clientePublica, disabled: !puede, onchange: function (ev) { accion(null, base('/eventos/' + e.id + '/ajustes'), { clientePublica: ev.target.checked }, ev.target.checked ? 'Tu cliente puede publicar' : 'Solo tu equipo publica'); } }), el('span', {}, 'Mi cliente puede publicar su invitación (con su link del panel)')]);
+      // README (ronda 122): Duo (invitación + álbum QR): se elige mientras el evento no usó su crédito
+      var cd = !e.creditoUsado ? el('label', { class: 'casilla', style: 'margin-top:6px' }, [el('input', { type: 'checkbox', checked: e.duoPedido, disabled: !puede, onchange: function (ev) { accion(null, base('/eventos/' + e.id + '/ajustes'), { duoPedido: ev.target.checked }, ev.target.checked ? 'Duo: se publica con el álbum QR' : 'Solo la invitación'); } }), el('span', {}, 'Duo: con álbum QR (al publicar usa 1 crédito Duo)')]) : null;
       v.append(el('div', { class: 'tarjeta' }, [el('div', { class: 'evento' }, [
         el('div', {}, [el('h3', {}, [e.nombres || 'Sin nombre', ' ', el('span', { class: 'tag ' + est[1] }, est[0])]),
           el('div', { class: 'meta' }, [el('span', {}, e.tipoNombre), ' · ', e.modelo, e.paquete && e.paquete !== 'borrador' ? ' · ' + e.paquete : '', e.fecha ? ' · ' + fecha(e.fecha) : '']),
           // README (ronda 88): cada parte fija en su propio texto, así se traduce
-          el('div', { class: 'meta' }, [String(e.invitados), ' ', el('span', {}, 'invitados cargados'), ' · ', String(e.respuestas), ' ', el('span', {}, 'confirmaciones'), e.vence && e.estado === 'publicado' ? el('span', {}, [' · ', el('span', {}, 'online hasta'), ' ' + fecha(e.vence)]) : null, e.creditoUsado ? el('span', {}, [' · ', el('span', {}, 'crédito usado')]) : null])]),
-        el('div', { class: 'fila', style: 'margin:0' }, botones)]), puede ? cp : null]));
+          el('div', { class: 'meta' }, [String(e.invitados), ' ', el('span', {}, 'invitados cargados'), ' · ', String(e.respuestas), ' ', el('span', {}, 'confirmaciones'), e.vence && e.estado === 'publicado' ? el('span', {}, [' · ', el('span', {}, 'online hasta'), ' ' + fecha(e.vence)]) : null, e.creditoUsado ? el('span', {}, [' · ', el('span', {}, e.duo ? 'crédito Duo usado · con álbum QR' : 'crédito usado')]) : null])]),
+        el('div', { class: 'fila', style: 'margin:0' }, botones)]), puede ? cp : null, puede ? cd : null]));
     });
     return v;
+  }
+
+  // ── README (ronda 122): Duo (invitación + álbum QR, sin nombrar a Albunear) ──
+  function conDuo() { var d = D.empresa.duo; return !!(d && (d.saldo > 0 || d.pase)); }
+  function mejorDescuentoStudio() { return D.tienda.mejorStudio || 43; }
+  function tarjetaDuo() {
+    return el('div', { class: 'tarjeta duo-info' }, [el('h3', {}, 'Duo: invitación + álbum QR'),
+      el('p', { class: 'meta' }, [el('strong', {}, 'Una cuenta profesional. Dos plataformas. Tu marca.'), ' ', el('span', {}, 'Cada crédito Duo publica la invitación Deluxe Pro y un álbum QR Platinum Pro, conectados en el mismo panel: los invitados suben sus fotos y videos escaneando un QR, sin descargar nada, y tu cliente las ve, las descarga y las proyecta en vivo sin salir de su panel.')]),
+      el('ul', { class: 'ganchos' }, [
+        el('li', {}, [el('strong', {}, 'Fotógrafos: '), el('span', {}, 'Entrega las fotos oficiales junto con el álbum colaborativo donde todos los invitados subieron sus selfies y los bloopers de la fiesta.')]),
+        el('li', {}, [el('strong', {}, 'Salones: '), el('span', {}, 'Proyecta en vivo todas las fotos de los invitados en las pantallas del salón.')]),
+        el('li', {}, [el('strong', {}, 'Wedding planners: '), el('span', {}, 'Ideal para ampliar tu paquete de propuestas y dar una imagen impecable y muy profesional frente a tus clientes.')])])]);
   }
 
   // ── Créditos y compras ──
@@ -284,14 +305,20 @@
   }
   function vistaCreditos() {
     var v = el('div'), c = D.creditos, e = D.empresa;
-    v.append(el('div', { class: 'cifras' }, [[c.disponibles, 'Créditos disponibles'], [c.proximoVence ? fecha(c.proximoVence) : '—', 'Primer vencimiento'], [e.nivel === 'studio' ? fecha(e.paseVence) : '—', e.nivel === 'studio' ? 'Pase Studio hasta' : 'Pase']].map(function (x) { return el('div', {}, [el('b', {}, String(x[0])), el('span', {}, x[1])]); })));
+    v.append(el('div', { class: 'cifras' }, [[c.disponibles, 'Créditos disponibles'], [c.proximoVence ? fecha(c.proximoVence) : '—', 'Primer vencimiento'], [e.nivel === 'studio' ? fecha(e.paseVence) : '—', e.duo && e.duo.pase ? 'Pase Event Studio Duo hasta' : e.nivel === 'studio' ? 'Pase Studio hasta' : 'Pase']].concat(conDuo() ? [[e.duo.saldo, 'Créditos Duo']] : []).map(function (x) { return el('div', {}, [el('b', {}, String(x[0])), el('span', {}, x[1])]); })));
     if (e.paseVencido) v.append(el('div', { class: 'aviso-caja mal' }, [el('p', {}, 'El pase Studio venció: la marca blanca y los packs Studio están pausados. Al renovarlo, los créditos que no venzan antes pasan al año siguiente.')]));
-    v.append(el('p', { class: 'meta' }, [el('span', {}, 'Cada crédito publica una invitación de cualquier paquete (hasta Deluxe) y modelo.'), ' ', el('span', {}, e.nivel === 'studio' ? 'Los créditos vencen a los 12 meses de la compra; si renuevas el pase antes de que venzan, los que sobran pasan al año siguiente.' : 'Los créditos vencen a los 12 meses de la compra.'), ' ', el('span', {}, 'No incluyen diseño a medida, cambio de diseño, idiomas adicionales ni complementos.')]));
+    v.append(el('p', { class: 'meta' }, [el('span', {}, 'Cada crédito publica nuestra invitación más completa, la Deluxe Pro de cualquier modelo y tipo de evento.'), ' ', el('span', {}, e.nivel === 'studio' ? 'Los créditos vencen a los 12 meses de la compra; si renuevas el pase antes de que venzan, los que sobran pasan al año siguiente.' : 'Los créditos vencen a los 12 meses de la compra.'), ' ', el('span', {}, 'No incluyen diseño a medida, cambio de diseño, idiomas adicionales ni complementos.')]));
     if (e.rol === 'duenio') {
-      v.append(el('h2', {}, 'Comprar'), el('div', { class: 'productos' }, D.tienda.productos.map(function (p) {
+      // README (ronda 122): invitación por un lado y Duo (invitación + álbum QR) por otro. Packs de 50 y 100: dominio sin cargo
+      var tarjetaProd = function (p) {
         var b = el('button', { class: 'b', type: 'button' }, 'Comprar'); b.onclick = function () { comprar(p); };
-        return el('div', { class: 'producto' + (p.id === 'pase' ? ' studio' : '') }, [el('span', { class: 'meta' }, p.nombre), el('b', {}, pr(p.neto)), el('small', {}, p.creditos > 1 ? [pr(p.neto / p.creditos) + ' ', el('span', {}, 'por crédito'), iva()] : iva().trim() || '\u00a0'), el('div', { class: 'fila' }, b)]);
-      })));
+        var detalle = p.creditos > 1 ? [pr(p.neto / p.creditos) + ' ', el('span', {}, 'por crédito'), iva()].concat(p.dominioSinCargo ? [' + ', el('span', {}, 'configuración de dominio sin cargo')] : []) : iva().trim() || '\u00a0';
+        return el('div', { class: 'producto' + (p.id === 'pase' ? ' studio' : '') + (p.duo || p.id === 'pase-duo' ? ' duo' : '') }, [el('span', { class: 'meta' }, p.nombre),
+          p.id === 'pase-duo' ? el('b', {}, [el('s', { class: 'tachado' }, pr(D.tienda.paseDuoSinDescuento)), ' ', pr(p.neto)]) : el('b', {}, pr(p.neto)), el('small', {}, detalle), el('div', { class: 'fila' }, b)]);
+      };
+      var invit = D.tienda.productos.filter(function (p) { return !p.duo && p.id !== 'pase-duo'; }), duos = D.tienda.productos.filter(function (p) { return p.duo || p.id === 'pase-duo'; });
+      v.append(el('h2', {}, 'Comprar'), el('div', { class: 'productos' }, invit.map(tarjetaProd)));
+      if (duos.length) v.append(tarjetaDuo(), el('div', { class: 'productos' }, duos.map(tarjetaProd)));
     }
     if (D.complementos) v.append(vistaComplementos());
     v.append(el('h2', { style: 'margin-top:26px' }, 'Pedidos'));
@@ -398,7 +425,7 @@
 
   function promoStudio(texto) {
     var wa = D.contacto.whatsapp ? 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent('Hola! Quiero pasar a Studio. Empresa: ' + D.empresa.nombre) : null;
-    return el('div', { class: 'aviso-caja studio' }, [el('p', {}, [el('strong', {}, 'Pasa a Studio.'), ' ', el('span', {}, texto), ' ', el('span', {}, 'Pase anual:'), ' ', el('b', {}, pr(D.tienda.pase) + iva()), '. ', el('span', {}, 'Hasta 10 usuarios y packs de hasta 56 % de descuento.')]),
+    return el('div', { class: 'aviso-caja studio' }, [el('p', {}, [el('strong', {}, 'Pasa a Studio.'), ' ', el('span', {}, texto), ' ', el('span', {}, 'Pase anual:'), ' ', el('b', {}, pr(D.tienda.pase) + iva()), '. ', el('span', {}, 'Hasta 10 usuarios y packs de hasta'), ' ' + mejorDescuentoStudio() + ' % ', el('span', {}, 'de descuento.')]),
       el('button', { class: 'b', type: 'button', onclick: function () { TAB = 'creditos'; pinta(); window.scrollTo(0, 0); } }, 'Ver el pase'), wa ? el('a', { class: 'b sec', href: wa, target: '_blank', rel: 'noopener' }, 'Hablar con Amo Invitar!') : null]);
   }
 
@@ -411,7 +438,7 @@
     if (!d.studio) { c.append(el('p', { class: 'meta' }, 'El dominio propio es de Studio: renueva el pase para usarlo.')); return c; }
     if (!d.derecho) {
       var prod = D.tienda.productos.filter(function (p) { return p.id === 'dominio'; })[0];
-      c.append(el('p', { class: 'meta' }, [el('span', {}, 'Tus invitaciones y el panel de tus clientes pueden salir desde tu propio dominio o subdominio (por ejemplo invitaciones.tusalon.com), sin ninguna marca de Amo Invitar!.'), ' ', el('span', {}, 'La configuración se incluye con el pack Studio de 100 créditos o se contrata una sola vez por'), ' ' + pr(D.tienda.config) + iva() + '.']));
+      c.append(el('p', { class: 'meta' }, [el('span', {}, 'Tus invitaciones y el panel de tus clientes pueden salir desde tu propio dominio o subdominio (por ejemplo invitaciones.tusalon.com), sin ninguna marca de Amo Invitar!.'), ' ', el('span', {}, 'La configuración se incluye con los packs de 50 y 100 créditos o se contrata una sola vez por'), ' ' + pr(D.tienda.config) + iva() + '.']));
       if (prod) { var bc = el('button', { class: 'b', type: 'button' }, 'Contratar la configuración'); bc.onclick = function () { comprar(prod); }; c.append(el('div', { class: 'fila' }, bc)); }
       return c;
     }
@@ -437,7 +464,7 @@
   function vistaCuenta() {
     var e = D.empresa, v = el('div');
     v.append(el('h2', {}, 'Cuenta'));
-    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, e.nombre), el('div', { class: 'meta' }, [el('span', {}, 'Nivel'), ' ' + (e.nivel === 'studio' ? 'Studio' : 'Pro') + ' · ', e.nivel === 'studio' ? el('span', {}, [el('span', {}, 'Pase Studio hasta'), ' ' + fecha(e.paseVence)]) : el('span', {}, 'sin pase anual'), ' · ' + D.limites.usados + ' / ' + D.limites.usuarios + ' ', el('span', {}, 'usuarios')])]));
+    v.append(el('div', { class: 'tarjeta' }, [el('h3', {}, e.nombre), el('div', { class: 'meta' }, [el('span', {}, 'Nivel'), ' ' + (e.duo && e.duo.pase ? 'Event Studio Duo' : e.nivel === 'studio' ? 'Studio' : 'Pro') + ' · ', e.nivel === 'studio' ? el('span', {}, [el('span', {}, 'Pase Studio hasta'), ' ' + fecha(e.paseVence)]) : el('span', {}, 'sin pase anual'), ' · ' + D.limites.usados + ' / ' + D.limites.usuarios + ' ', el('span', {}, 'usuarios')])]));
     if (e.nivel !== 'studio') v.append(promoStudio('Marca blanca, 10 usuarios, dominio propio y los packs más baratos.'));
     if ((e.nivel === 'studio' || e.demo) && e.rol === 'duenio') v.append(tarjetaDominio());
     if (e.rol === 'duenio') {

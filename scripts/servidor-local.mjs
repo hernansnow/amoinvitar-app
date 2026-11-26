@@ -43,11 +43,11 @@ const env = {
 const FOTOS_PRUEBA = ['bg20.jpg', 'bg21.jpg', 'bg33.jpg', 'bg-oliva-2.jpg', 'bg-oliva-6.jpg'].flatMap((f, i) => [0, 1, 2].map((k) => ({ id: `m${i}${k}`, kind: i === 4 && k === 0 ? 'video' : 'photo',
   thumb: `/modelos/garden/img/${f}`, src: `/modelos/garden/img/${f}`, original: `/modelos/garden/img/${f}`, duration: i === 4 && k === 0 ? 16 : null, name: ['Ana', 'Leo', ''][k], likes: k, t: 1795000000 - (i * 3 + k) * 3600,
   status: 'visible', favorite: false, featured: false })));
-const ALBUM_PRUEBA = { guestsCanView: true, moderation: 'off' };
+const ALBUM_PRUEBA = { guestsCanView: true, moderation: 'off', coverTitle: null, qrSub: null, welcome: null, brand: 'albunear', planId: 'classic', status: 'active' };
 function albumDePrueba(p) {
   const vivas = FOTOS_PRUEBA.filter((m) => !m.borrada);
   const counts = { total: vivas.length, fav: vivas.filter((m) => m.favorite).length, featured: vivas.filter((m) => m.featured).length, hidden: vivas.filter((m) => m.status === 'hidden').length, pending: 0, videos: vivas.filter((m) => m.kind === 'video').length };
-  const event = { slug: 'prueba', screenUrl: 'https://albunear.com/pantalla/prueba?k=x', guestUrl: 'https://albunear.com/a/prueba', planFeatures: { moderation: 'advanced', zip: true }, ...ALBUM_PRUEBA };
+  const event = { slug: 'prueba', name1: 'Ana', name2: 'Leo', screenUrl: 'https://albunear.com/pantalla/prueba?k=x', guestUrl: 'https://albunear.com/a/prueba', planFeatures: { moderation: 'advanced', zip: true }, ...ALBUM_PRUEBA };
   const album = { link: 'https://albunear.com/a/prueba', panel: 'https://albunear.com/panel/album?id=prueba', plan: 'classic', estado: 'active' };
   switch (p.accion) {
     case 'info': return { album, event, counts };
@@ -56,7 +56,13 @@ function albumDePrueba(p) {
     case 'lote': { if (p.que === 'feature' && counts.featured + p.ids.length > 3) return { error: 'err.maxFeatured', status: 400 };
       for (const m of FOTOS_PRUEBA.filter((x) => p.ids.includes(x.id))) Object.assign(m, { fav: { favorite: true }, unfav: { favorite: false }, feature: { featured: true }, unfeature: { featured: false }, hide: { status: 'hidden' }, show: { status: 'visible' }, delete: { borrada: true } }[p.que]);
       return { ok: true }; }
-    case 'ajustes': Object.assign(ALBUM_PRUEBA, p.guestsCanView !== undefined ? { guestsCanView: p.guestsCanView } : {}, p.moderation ? { moderation: p.moderation } : {}); return albumDePrueba({ accion: 'info' });
+    case 'ajustes': Object.assign(ALBUM_PRUEBA, p.guestsCanView !== undefined ? { guestsCanView: p.guestsCanView } : {}, p.moderation ? { moderation: p.moderation } : {},
+      ...['coverTitle', 'qrSub', 'welcome'].filter((k) => p[k] !== undefined).map((k) => ({ [k]: p[k] }))); return albumDePrueba({ accion: 'info' });
+    // README (ronda 122): diseño (iframe), borrar, marca del slideshow y pasar a Platinum
+    case 'diseno': return { url: '/comun/img/albunear.svg' };
+    case 'borrar': return { ok: true };
+    case 'marca': ALBUM_PRUEBA.brand = p.marca || 'albunear'; return { ok: true, brand: ALBUM_PRUEBA.brand };
+    case 'mejora': return { url: 'https://albunear.com/auth/verify?t=PRUEBA-MEJORA', cupon: 'AMO5PRUEBA', porcentaje: p.porcentaje };
     case 'zip': return { files: vivas.map((m, i) => ({ url: m.original, name: `fotos/${String(i + 1).padStart(4, '0')}.jpg`, size: 1000 })), slug: 'prueba' };
     case 'entrar': return { url: `https://albunear.com/auth/verify?t=PRUEBA#${p.pestana}` };
     case 'qr': return { tarjeta: '/comun/img/albunear.svg', imprimir: 'https://albunear.com/panel/tarjetas?t=PRUEBA' };
@@ -69,6 +75,8 @@ http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${puerto}`);
   const cuerpo = req.method === 'GET' || req.method === 'HEAD' ? undefined : await new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); });
   // Solo en la compu: correr las tareas diarias (avisos de vencimiento, créditos…) y ver los últimos mails «enviados»
+  // README (ronda 122): lo último que recibió crearAlbum (para revisar plan, marca y portada en las pruebas)
+  if (url.pathname === '/__ultimo-album') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(env.ULTIMO_ALBUM || null)); }
   if (url.pathname === '/__tareas') { const esperar = []; await worker.scheduled({ cron: '0 4 * * *' }, env, { waitUntil: (p) => esperar.push(p) }); await Promise.all(esperar); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true, mails: env.ULTIMOS_MAILS.length })); }
   // README (ronda 52): probar la puerta interna para Albunear (Socios) sin el otro Worker: POST /__socios?m=<método> { … }
   if (url.pathname === '/__socios') { const { Socios } = await import('../src/socios.js'); let out; try { out = await new Socios({}, env)[url.searchParams.get('m')](JSON.parse(String(cuerpo || '{}'))); } catch (e) { out = { error: e.message }; } res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(out)); }

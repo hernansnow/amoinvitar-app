@@ -320,6 +320,14 @@
       var y = { en: ' and ', pt: ' e ', fr: ' et ', it: ' e ', de: ' und ', nl: ' en ' }[IDI] || ' y ';
       e.textContent = nn.length ? np[1].replace('{x}', nn.length > 1 ? nn.slice(0, -1).join(', ') + y + nn[nn.length - 1] : nn[0]) : '';
     });
+    // README (ronda 122): preguntas frecuentes «¿Cómo puedo pagar?» / «¿Cómo pago?»: el mismo texto de medios de la nota de los planes
+    $$('[data-medios-faq]').forEach(function (e) {
+      var nn = m.nombres.map(function (t) { return window.AI_REGIONAL && IDI ? AI_REGIONAL.traduce(t) : t; });
+      var y = { en: ' and ', pt: ' e ', fr: ' et ', it: ' e ', de: ' und ', nl: ' en ' }[IDI] || ' y ';
+      if (!nn.length) return;
+      e.setAttribute('data-sin-regional', '');
+      e.textContent = np[1].replace('{x}', nn.length > 1 ? nn.slice(0, -1).join(', ') + y + nn[nn.length - 1] : nn[0]);
+    });
     // README (ronda 44): «IVA incluido» solo si el precio lo lleva (lo dice la tienda según el país de quien mira)
     var conIva = c.iva === undefined ? c.moneda === 'EUR' : c.iva;
     $$('[data-iva]').forEach(function (e) { e.hidden = !conIva; });

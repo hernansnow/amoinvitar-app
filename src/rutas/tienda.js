@@ -21,7 +21,7 @@ import { reverseChargeFor } from '../lib/vies.js';
 import { pagarCompra } from '../pro/compras.js';
 import { usuarioActual, crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
-import { RECUERDO, PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, PROFESIONALES, precioPedido, comprable } from '../catalogo.js';
+import { RECUERDO, PAQUETES, PRODUCTOS, EXTRAS, NOMBRES_PAQUETE, RESUMEN_PAQUETES, MODELOS_GRATIS, A_MEDIDA, PROFESIONALES, ALBUM_PRO, PVP_PRO, precioPedido, comprable } from '../catalogo.js';
 import { MODELOS, TIPOS_EVENTO, CON_TARJETA_STD, modelo as buscarModelo, nombreModelo, conEvento } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { varianteVisitante, bautizoVisitante, sweet16Visitante } from '../sitio/visitante.js';
@@ -160,6 +160,9 @@ export async function catalogo(request, env) {
     // README (ronda 41): precios de profesionales en la moneda del visitante (sin IVA ni descuento por país). Clave: el importe en euros
     pro: Object.fromEntries([PROFESIONALES.credito, PROFESIONALES.pro.pase, PROFESIONALES.studio.pase, PROFESIONALES.studio.configuracionDominio,
       ...PROFESIONALES.pro.packs.flatMap((k) => [k.precio, k.precio / k.creditos]), ...PROFESIONALES.studio.packs.flatMap((k) => [k.precio, k.precio / k.creditos]),
+      // README (ronda 122): Duo (packs, pases, crédito suelto de invitación + álbum) y el valor de reventa (precio de venta al público)
+      ...PROFESIONALES.duo.packs.flatMap((k) => [k.precio, k.precio / k.creditos]), ...PROFESIONALES.studioDuo.packs.flatMap((k) => [k.precio, k.precio / k.creditos]),
+      PROFESIONALES.studioDuo.pase, PROFESIONALES.studioDuo.paseSinDescuento, PROFESIONALES.credito + ALBUM_PRO[1], PVP_PRO.invitacion, PVP_PRO.invitacion + PVP_PRO.album,
     ].filter((v) => v > 0).map((v) => [String(v), formatMoney(convertirSimple(v, moneda, rates), moneda)])),
     paquetes: ORDEN.map((id) => ({ id, nombre: NOMBRES_PAQUETE[id], incluye: RESUMEN_PAQUETES[id], precio: precio(id, PAQUETES[id].precio) })),
     extras: Object.entries(EXTRAS).map(([id, e]) => ({ id, nombre: e.nombre, precio: precio(id, e.precio) })),

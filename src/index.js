@@ -70,7 +70,7 @@ import * as sa from './rutas/superadmin.js';
 import * as empresaApi from './rutas/empresa.js';
 import { paginaMuestrario, apiMuestrario } from './pro/muestrario.js';
 import { marcaEfectiva, rolEnEmpresa, proDe, paseVigente, usarCredito, devolverCredito } from './pro/empresa.js';
-import { extrasDe, cubrirComplementos, COMPLEMENTO_DE_CREDITO } from './pro/extras.js';
+import { extrasDe, cubrirComplementos, COMPLEMENTO_DE_CREDITO, usarDuo, sumarDuo } from './pro/extras.js';
 import { getCookie, hmacHex } from './lib/util.js';
 import { resolverMapa } from './lib/mapas.js';
 import { leerPlaylist } from './lib/spotify.js';
@@ -733,6 +733,22 @@ async function publicarEvento(env, request, ev) {
 // 'deluxe' igual que las de catálogo. Antes solo contaba 'invitacion' y el panel de Degasa pedía activar un álbum ya creado.
 const CON_PLANES = ['invitacion', 'a-medida'];
 const deluxePagada = (ev) => CON_PLANES.includes(ev.producto) && ev.paquete === 'deluxe' && !ev.empresaId;
+// README (ronda 122): evento Duo de un profesional (invitación Deluxe Pro + álbum QR Platinum Pro): se marca al publicarlo
+// con un crédito Duo. El álbum se administra desde el panel igual que el de Deluxe, sin nada que lleve a Albunear.
+const eventoDuo = (ev) => !!ev.empresaId && !!ev.datos?.empresa?.duo;
+const albumConectado = (ev) => deluxePagada(ev) || eventoDuo(ev);
+// Marca del slideshow del álbum: la de Amo Invitar!; con Studio (marca blanca), ninguna
+async function marcaAlbumDe(env, ev) {
+  if (!ev.empresaId) return 'amoinvitar';
+  return paseVigente(await proDe(env, ev.empresaId)) ? 'none' : 'amoinvitar';
+}
+// El dueño del álbum: el cliente (Deluxe) o el dueño de la empresa (Duo)
+async function duenoAlbum(env, ev) {
+  if (ev.empresaId) {
+    try { return (await env.DB.prepare("SELECT u.email FROM miembros m JOIN usuarios u ON u.id = m.usuario_id WHERE m.empresa_id = ? AND m.rol = 'duenio' LIMIT 1").bind(ev.empresaId).first())?.email || null; } catch { return null; }
+  }
+  return (await almacenDe(env).accesos(ev.id)).find((a) => a.rol === 'cliente')?.email || null;
+}
 const fechaAlbum = (ev) => ev.datos.celebracion?.fecha || ev.datos.ceremonia?.fecha || '';
 const TIPO_ALB = { boda: 'boda', 15: 'quince', bautismo: 'bautizo', comunion: 'comunion', cumple: 'cumple', infantil: 'cumple', graduacion: 'graduacion', empresarial: 'corporativo' };
 async function crearAlbumIncluido(env, ev, { email, pais }) {
@@ -744,7 +760,9 @@ async function crearAlbumIncluido(env, ev, { email, pais }) {
     try { const o = await almacenDe(env).archivo(foto.slice(7)); if (o) portada = { bytes: await new Response(o.cuerpo).arrayBuffer(), tipo: o.tipo || 'image/jpeg' }; } catch (e) { console.error('portada álbum', e); }
   }
   const r = await env.ALBUNEAR.crearAlbum({ evento: ev.id, email, tipo: TIPO_ALB[ev.tipo] || 'otro', nombre1: d.nombres?.a || '', nombre2: d.nombres?.b || '',
-    fecha: fechaAlbum(ev).slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais, lang: String(d.variante || 'es').slice(0, 2), ...(portada ? { portada } : {}) });
+    fecha: fechaAlbum(ev).slice(0, 10), tema: ALBUNEAR_TEMA[ev.modelo] || ev.modelo, pais, lang: String(d.variante || 'es').slice(0, 2), ...(portada ? { portada } : {}),
+    // README (ronda 122): Duo → álbum Platinum; marca del slideshow (Amo Invitar!, o ninguna con Studio)
+    ...(eventoDuo(ev) ? { plan: 'platinum' } : {}), marca: await marcaAlbumDe(env, ev) });
   // El álbum pasa a la invitación (sección «Álbum de fotos QR» con Albunear, en lugar de Instagram Wall)
   if (r?.album?.link) {
     ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
@@ -758,9 +776,9 @@ async function crearAlbumIncluido(env, ev, { email, pais }) {
 async function albumAutomatico(env, ev, pais) {
   try {
     const d = ev.datos;
-    if (!deluxePagada(ev) || d.album?.albunear || d.album?.regalo || d.secciones?.album === false) return; // README (ronda 108): sin link propio
+    if (!albumConectado(ev) || d.album?.albunear || d.album?.regalo || d.secciones?.album === false) return; // README (ronda 108): sin link propio
     if (!env.ALBUNEAR?.crearAlbum || !/^\d{4}-\d{2}-\d{2}/.test(fechaAlbum(ev))) return;
-    const email = (await almacenDe(env).accesos(ev.id)).find((a) => a.rol === 'cliente')?.email;
+    const email = await duenoAlbum(env, ev);
     if (!email) return;
     await crearAlbumIncluido(env, ev, { email, pais });
   } catch (e) { console.error('albunear automático', e); }
@@ -784,6 +802,8 @@ async function empresaContexto(env, ev, usuario, admin) {
     // README (ronda 89): Studio con el dominio propio activo: los links y la miniatura muestran ese dominio
     host: await (async () => { if (!studio) return null; const x = await extrasDe(env, ev.empresaId); if (x.demo) return null; const d = await dominioDe(env, ev.empresaId).catch(() => null); return d?.estado === 'activo' ? d.host : null; })(),
     puedePublicar: admin || (!!rol && rol !== 'lectura') || !!ev.datos.empresa?.clientePublica,
+    // README (ronda 122): evento Duo (con álbum QR conectado) o pedido como Duo (se publica con un crédito Duo)
+    duo: eventoDuo(ev), duoPedido: !!ev.datos.empresa?.duoPedido,
   };
 }
 // Publicar un evento de empresa: gasta un crédito (una sola vez por evento). Devuelve una respuesta de error o null.
@@ -803,9 +823,15 @@ async function publicarConCredito(env, request, ev, esquema, emp) {
   if (sin.length) return json({ error: aviso(`Esta invitación incluye complementos que el crédito no cubre (${sin.join(', ')}). Quitarlos de la invitación o contratarlos con Amo Invitar!.`, `Esta invitación incluye complementos que todavía no están incluidos (${sin.join(', ')}). Consúltalo con quien organiza tu evento.`) }, 402);
   const nivel = plan.plan === 'gratis' ? 'basic' : plan.plan;
   if (!ev.datos.empresa?.credito) {
-    const lote = await usarCredito(env, ev.empresaId);
-    if (!lote) return json({ error: aviso('La empresa no tiene créditos disponibles. Se pueden comprar desde el tablero.', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 402);
-    ev.datos.empresa = { ...(ev.datos.empresa || {}), credito: lote, usadoEn: new Date().toISOString() };
+    // README (ronda 122): evento pedido como Duo (invitación + álbum QR): gasta un crédito Duo y el álbum se crea al publicar
+    if (ev.datos.empresa?.duoPedido) {
+      if (!(await usarDuo(env, ev.empresaId, ev.id))) return json({ error: aviso('La empresa no tiene créditos Duo disponibles. Se pueden comprar desde el tablero (o quitar «Duo» del evento para publicarlo con un crédito de invitación).', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 402);
+      ev.datos.empresa = { ...(ev.datos.empresa || {}), credito: 'duo', duo: true, usadoEn: new Date().toISOString() };
+    } else {
+      const lote = await usarCredito(env, ev.empresaId);
+      if (!lote) return json({ error: aviso('La empresa no tiene créditos disponibles. Se pueden comprar desde el tablero.', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 402);
+      ev.datos.empresa = { ...(ev.datos.empresa || {}), credito: lote, usadoEn: new Date().toISOString() };
+    }
   }
   const orden = ['basic', 'premium', 'deluxe'];
   if (orden.indexOf(nivel) > orden.indexOf(ev.paquete)) ev.paquete = nivel;
@@ -997,7 +1023,8 @@ async function apiPanel(env, request, url, partes) {
       // README (ronda 87): Studio (logo propio en el panel del cliente), paleta del panel, DEMO y créditos de complementos (para el equipo)
       empresa: emp ? { id: ev.empresaId, limpio: emp.limpio, puedePublicar: emp.puedePublicar, nombre: emp.nombre, logo: emp.logo, pie: emp.pie, rol: emp.rol, credito: !!ev.datos.empresa?.credito, conCredito: true,
         studio: !!emp.studio, host: emp.host || null, paleta: emp.empresa.marca?.paleta || '', demo: !!emp.extras?.demo, cliente: !emp.rol && (!admin || conClaveCliente),
-        saldo: emp.rol && emp.rol !== 'lectura' || admin ? emp.extras?.saldo || {} : null } : null,
+        saldo: emp.rol && emp.rol !== 'lectura' || admin ? emp.extras?.saldo || {} : null,
+        duo: emp.duo, duoPedido: emp.duoPedido, saldoDuo: emp.rol && emp.rol !== 'lectura' || admin ? parseInt(emp.extras?.duo?.saldo, 10) || 0 : null } : null, // README (ronda 122)
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
     });
   }
@@ -1308,30 +1335,32 @@ async function apiPanel(env, request, url, partes) {
   // Álbum de fotos: con Deluxe viene el Classic de Albunear sin cargo (un código de regalo por invitación,
   // pedido al Worker de Albunear por el enlace interno). Cuando el álbum ya está creado, su link pasa a la invitación.
   if (accion === 'albunear' && request.method === 'GET') {
-    const incluido = deluxePagada(ev);
+    const incluido = albumConectado(ev);
     // README (ronda 98): publicada y pagada sin álbum todavía (por ejemplo, de antes de este cambio): se crea y se vincula solo
     if (incluido && ev.estado === 'publicado') await albumAutomatico(env, ev, paisVisitante(request) || null);
     let r = null;
-    if (incluido && env.ALBUNEAR?.albumDeluxe) { try { r = await env.ALBUNEAR.albumDeluxe(ev.id); } catch (e) { console.error('albunear', e); } }
+    if (incluido && !eventoDuo(ev) && env.ALBUNEAR?.albumDeluxe) { try { r = await env.ALBUNEAR.albumDeluxe(ev.id); } catch (e) { console.error('albunear', e); } }
+    if (eventoDuo(ev) && ev.datos.album?.albunear) r = { album: { link: ev.datos.album.albunear } };
     if (r?.album?.link && ev.datos.album?.albunear !== r.album.link) {
       ev.datos.album = { ...(ev.datos.album || {}), albunear: r.album.link };
       await almacen.guardarEvento(ev);
     }
-    return json({ incluido, crear: r?.crear || 'https://albunear.com/empezar', album: r?.album || null, conectado: !!r });
+    // README (ronda 122): duo (evento de profesional con álbum) y marca: 'amoinvitar' o 'none' (Studio: sin «Powered by»)
+    return json({ incluido, crear: r?.crear || 'https://albunear.com/empezar', album: r?.album || null, conectado: !!r, duo: eventoDuo(ev), marca: await marcaAlbumDe(env, ev) });
   }
   // README (ronda 52): POST /albunear → crea en Albunear el álbum Classic incluido en Deluxe (una sola vez), con el tipo de
   // evento, los nombres, la fecha y el estilo de la invitación, y devuelve un link de un solo uso que entra al panel del
   // álbum con la cuenta del dueño. Solo con la cuenta del dueño iniciada (el link del panel solo no alcanza).
   if (accion === 'albunear' && request.method === 'POST') {
     // README (ronda 98): solo con Deluxe pagado (tampoco un administrador puede crearlo antes: el código de regalo es del pago)
-    if (!deluxePagada(ev)) return json({ error: 'El álbum Classic de Albunear se activa al publicar y pagar la invitación Deluxe.' }, 402);
+    if (!albumConectado(ev)) return json({ error: 'El álbum Classic de Albunear se activa al publicar y pagar la invitación Deluxe.' }, 402);
     const usuario = await usuarioActual(request, env);
-    const conAcceso = usuario && (usuario.esAdmin || await almacen.tieneAcceso(ev.id, usuario.id));
+    const conAcceso = usuario && (usuario.esAdmin || await almacen.tieneAcceso(ev.id, usuario.id) || (ev.empresaId && await rolEnEmpresa(env, ev.empresaId, usuario.id)));
     if (!conAcceso) return json({ error: 'Para abrir el álbum, entra con tu cuenta (la del mail con el que compraste la invitación).', entrar: `/entrar?siguiente=${encodeURIComponent(`/panel/${ev.id}?k=${ev.clave}`)}` }, 401);
     if (!env.ALBUNEAR?.crearAlbum) return json({ error: 'Albunear no responde en este momento. Prueba en un rato.' }, 503);
     if (!/^\d{4}-\d{2}-\d{2}/.test(fechaAlbum(ev))) return json({ error: 'Primero carga la fecha del evento.' }, 400);
     // El dueño (si entra un administrador de Amo Invitar!, el álbum igual queda a nombre del cliente)
-    const email = usuario.esAdmin ? ((await almacen.accesos(ev.id)).find((a) => a.rol === 'cliente')?.email || usuario.email) : usuario.email;
+    const email = ev.empresaId ? (await duenoAlbum(env, ev) || usuario.email) : usuario.esAdmin ? ((await almacen.accesos(ev.id)).find((a) => a.rol === 'cliente')?.email || usuario.email) : usuario.email;
     let r;
     try {
       r = await crearAlbumIncluido(env, ev, { email, pais: paisVisitante(request) || null });
@@ -1346,17 +1375,39 @@ async function apiPanel(env, request, url, partes) {
   // README (ronda 108): Administración → Álbum QR. El álbum incluido en Deluxe se administra desde acá: Albunear ejecuta sus
   // propias rutas del panel en nombre del dueño del álbum (Socios.album). Lo pide quien entra al panel de la invitación.
   if (accion === 'albumqr' && request.method === 'POST') {
-    if (!deluxePagada(ev) || !ev.datos.album?.albunear) return json({ error: 'El álbum QR se activa con el plan Deluxe pagado.' }, 402);
+    if (!albumConectado(ev) || !ev.datos.album?.albunear) return json({ error: 'El álbum QR se activa con el plan Deluxe pagado.' }, 402);
     if (!env.ALBUNEAR?.album) return json({ error: 'Albunear no responde en este momento. Prueba en un rato.', sinPuerta: true }, 503);
     const b = await request.json().catch(() => ({}));
-    const ACCIONES = ['info', 'media', 'lote', 'ajustes', 'zip', 'entrar', 'qr'];
+    // README (ronda 122): también ajustes de textos, diseño, borrar y pasar a Platinum (solo Deluxe, con 5 % de descuento)
+    const ACCIONES = ['info', 'media', 'lote', 'ajustes', 'zip', 'entrar', 'qr', 'diseno', 'borrar', 'mejora'];
     if (!ACCIONES.includes(b.accion)) return json({ error: 'Acción desconocida' }, 400);
+    // Los profesionales y sus clientes no salen de Amo Invitar!: ni panel de Albunear ni pago allá
+    if (ev.empresaId && ['entrar', 'mejora'].includes(b.accion)) return json({ error: 'No disponible' }, 403);
+    if (b.accion === 'mejora' && !deluxePagada(ev)) return json({ error: 'No disponible' }, 403);
+    const texto = (x, max) => (x === null ? null : typeof x === 'string' ? x.trim().slice(0, max) : undefined);
     const pedido = { accion: b.accion, filtro: b.filtro, orden: b.orden, desde: b.desde, cantidad: b.cantidad, ids: b.ids, que: b.que, pestana: b.pestana, lang: b.lang,
-      ...(typeof b.guestsCanView === 'boolean' ? { guestsCanView: b.guestsCanView } : {}), ...(b.moderation ? { moderation: b.moderation } : {}) };
+      ...(typeof b.guestsCanView === 'boolean' ? { guestsCanView: b.guestsCanView } : {}), ...(b.moderation ? { moderation: b.moderation } : {}),
+      ...(texto(b.coverTitle, 80) !== undefined ? { coverTitle: texto(b.coverTitle, 80) } : {}),
+      ...(texto(b.qrSub, 60) !== undefined ? { qrSub: texto(b.qrSub, 60) } : {}),
+      ...(texto(b.welcome, 600) !== undefined ? { welcome: texto(b.welcome, 600) } : {}),
+      ...(b.accion === 'mejora' ? { porcentaje: 5 } : {}),
+      ...(eventoDuo(ev) ? { plan: 'platinum' } : {}) };
     let r;
     try { r = await env.ALBUNEAR.album(ev.id, pedido); } catch (e) { console.error('albunear album', e); return json({ error: 'Albunear no responde en este momento. Prueba en un rato.' }, 502); }
     if (!r || r.album === null) return json({ error: 'Todavía no hay un álbum creado para esta invitación.', sinAlbum: true }, 404);
     if (r.error) return json({ error: r.error, codigo: r.error }, r.status || 400);
+    // La marca del slideshow sigue al nivel del profesional (si pasa a Studio, sin logos; si vuelve a Pro, Amo Invitar!)
+    if (b.accion === 'info' && r.event && env.ALBUNEAR.album) {
+      const marca = await marcaAlbumDe(env, ev);
+      if ((r.event.brand || 'albunear') !== marca) { try { await env.ALBUNEAR.album(ev.id, { accion: 'marca', marca, ...(eventoDuo(ev) ? { plan: 'platinum' } : {}) }); r.event.brand = marca; } catch (e) { console.error('marca álbum', e); } }
+    }
+    // Borrado: la invitación vuelve a la sección sin álbum (se puede crear uno nuevo después)
+    if (b.accion === 'borrar') {
+      const { albunear, ...resto } = ev.datos.album || {};
+      ev.datos.album = resto;
+      ev.datos.secciones = { ...(ev.datos.secciones || {}), album: false };
+      await almacen.guardarEvento(ev);
+    }
     return json(r);
   }
   // El interruptor "Activar" de la pestaña Álbum: prende la sección con el álbum de Albunear (reemplaza Instagram Wall)

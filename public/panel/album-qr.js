@@ -33,6 +33,8 @@ const I = {
   vistaChica: SVG('<rect x="3" y="3" width="5" height="5"/><rect x="9.5" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="9.5" width="5" height="5"/><rect x="9.5" y="9.5" width="5" height="5"/><rect x="16" y="9.5" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><rect x="9.5" y="16" width="5" height="5"/><rect x="16" y="16" width="5" height="5"/>'),
   vistaMedia: SVG('<rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>'),
   video: SVG('<path d="M7 5l12 7-12 7z"/>'),
+  estrella: SVG('<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>'),
+  texto: SVG('<path d="M4 6h16M4 12h10M4 18h13"/>'),
   vistaGrande: SVG('<rect x="3" y="3" width="18" height="18" rx="1"/>'),
 };
 
@@ -49,7 +51,9 @@ function conFlecha(el, fila, fondo) {
   return el('div', { class: 'aq-desliza' }, fila, mas);
 }
 
-export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
+// README (ronda 122): opciones · empresa: evento de un profesional (Duo): nada lleva a Albunear (ni panel, ni pago, ni links)
+//                              · mejora: Deluxe con el álbum Classic → banner para pasar a Platinum (diferencia −5 %)
+export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos', empresa = false, mejora = true }) {
   const el = ctx.el;
   const boda = ctx.S.evento.tipo === 'boda';
   const pedir = (accion, extra = {}) => ctx.api('/albumqr', { method: 'POST', body: JSON.stringify({ accion, ...extra }) });
@@ -61,30 +65,42 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
   let zipMod = null;
 
   const cuerpo = el('div', { class: 'aq-cuerpo' }, el('p', { class: 'ayuda' }, tr('Cargando…')));
-  const BOTONES = [['fotos', 'Fotos'], ['qr', 'QR'], ['link', 'Link'], ['moderar', 'Moderar']];
-  const botonesTab = BOTONES.map(([id, t]) => el('button', { type: 'button', class: 'aq-tab', 'data-id': id, onclick: () => abrir(id) }, ...conIco(id, t)));
-  const slideshow = el('a', { class: 'aq-tab', target: '_blank', rel: 'noopener', href: '#' }, ...conIco('pantalla', 'Slideshow en vivo'));
+  // README (ronda 122): Diseño y Ajustes también se manejan desde acá (sin entrar a Albunear)
+  const BOTONES = [['fotos', 'Fotos'], ['qr', 'QR'], ['link', 'Link'], ['moderar', 'Moderar'], ['diseno', 'Diseño'], ['ajustes', 'Ajustes']];
+  const ICONO_TAB = { diseno: 'paleta' };
+  const botonesTab = BOTONES.map(([id, t]) => el('button', { type: 'button', class: 'aq-tab', 'data-id': id, onclick: () => abrir(id) }, ...conIco(ICONO_TAB[id] || id, t)));
+  // El slideshow se abre en una página de Amo Invitar! (también en el dominio del profesional), con la pantalla del álbum adentro
+  const claveCli = (() => { try { return sessionStorage.getItem(`clave_${ctx.S.evento.id}`) || ''; } catch { return ''; } })();
+  const slideshow = el('a', { class: 'aq-tab', target: '_blank', rel: 'noopener', href: `/panel/slideshow.html?ev=${encodeURIComponent(ctx.S.evento.id)}${claveCli ? `&k=${encodeURIComponent(claveCli)}` : ''}` }, ...conIco('pantalla', 'Slideshow en vivo'));
   const zipBtn = el('button', { type: 'button', class: 'aq-tab', onclick: () => descargarZip() }, ...conIco('zip', 'Descargar todo (ZIP)'));
-  const entrarAjustes = async (pest = 'ajustes') => {
-    const w = window.open('', '_blank');
-    try { const r = await pedir('entrar', { pestana: pest }); if (w) w.location = r.url; else location.href = r.url; } catch (e) { w?.close(); ctx.aviso(e.message, true); }
-  };
   const caja = el('section', { class: 'ad-tarjeta aq' },
     el('div', { class: 'aq-cabeza' },
       el('div', {}, el('h3', {}, tr('Álbum de fotos')), el('p', { class: 'aq-sub' }, tr('Activo reemplaza Instagram Wall.'))),
       el('div', { class: 'aq-acciones' },
-        el('a', { class: 'aq-chip', href: album.link, target: '_blank', rel: 'noopener' }, ...conIco('ojo', 'Ver álbum')),
-        el('button', { type: 'button', class: 'aq-chip', onclick: () => entrarAjustes('ajustes') }, ...conIco('ajustes', 'Ajustes')))),
+        el('a', { class: 'aq-chip', href: album.link, target: '_blank', rel: 'noopener' }, ...conIco('ojo', 'Ver álbum')))),
     conFlecha(el, el('div', { class: 'aq-tabs' }, ...botonesTab, slideshow, zipBtn), '#fff'),
     cuerpo);
+  // README (ronda 122): Deluxe con el álbum Classic: banner chico para pasar a Platinum pagando la diferencia con 5 % menos.
+  // El botón lleva a la página de pago del álbum con el cupón ya aplicado (se ve el precio tachado y el monto con descuento).
+  const banner = el('div', { class: 'aq-mejora', hidden: true },
+    el('span', { class: 'aq-mejora-ico', html: I.estrella }),
+    el('div', {}, el('strong', {}, tr('Pasa tu álbum a Platinum')),
+      el('small', {}, tr('Fotos originales, videos 4K, portada con foto y diseños exclusivos. Pagas solo la diferencia, con un 5 % de descuento.'))),
+    el('button', { type: 'button', class: 'btn btn-chico aq-mejora-btn', onclick: async (e) => {
+      const b = e.currentTarget; b.disabled = true;
+      const w = window.open('', '_blank');
+      try { const r = await pedir('mejora', { lang: idioma() }); if (w) w.location = r.url; else location.href = r.url; } catch (x) { w?.close(); ctx.aviso(x.message, true); }
+      b.disabled = false;
+    } }, tr('Pasar a Platinum')));
+  caja.insertBefore(banner, caja.querySelector('.aq-desliza'));
 
   // ── Datos del álbum (contadores, ajustes, link del slideshow) ──
   const cargarInfo = async () => {
     info = await pedir('info');
     const url = info.event?.screenUrl;
-    slideshow.href = url || '#';
     slideshow.classList.toggle('apagado', !url);
-    if (!url) slideshow.onclick = (e) => { e.preventDefault(); ctx.aviso(tr('El slideshow en vivo no está incluido en el plan de este álbum.'), true); };
+    slideshow.onclick = url ? null : (e) => { e.preventDefault(); ctx.aviso(tr('El slideshow en vivo no está incluido en el plan de este álbum.'), true); };
+    banner.hidden = !(mejora && !empresa && ['classic', 'esencial'].includes(info.event?.planId) && info.event?.status === 'active');
     return info;
   };
 
@@ -92,7 +108,7 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
     pestana = id;
     botonesTab.forEach((b) => b.classList.toggle('activo', b.dataset.id === id));
     clearInterval(caja._reloj);
-    ({ fotos: tabFotos, qr: tabQr, link: tabLink, moderar: tabModerar })[id]();
+    ({ fotos: tabFotos, qr: tabQr, link: tabLink, moderar: tabModerar, diseno: tabDiseno, ajustes: tabAjustes })[id]();
   }
 
   // ── Fotos ──
@@ -247,11 +263,69 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
     cuerpo.replaceChildren(el('p', { class: 'ayuda' }, tr('Cargando…')));
     try {
       const r = await pedir('qr', { lang: idioma() });
+      // Con los profesionales, el QR sin el link a las tarjetas de Albunear (solo la descarga del QR)
       cuerpo.replaceChildren(el('h3', {}, tr('Tu código QR')),
         el('p', { class: 'aq-texto' }, tr('Imprímelo en las mesas, la entrada o la barra. Al escanearlo se abre tu álbum.')),
-        el('iframe', { class: 'aq-qr', src: r.tarjeta, title: tr('Código QR del álbum'), loading: 'lazy' }),
-        el('button', { type: 'button', class: 'aq-chip aq-cambiar', onclick: () => entrarAjustes('ajustes') }, ...conIco('paleta', 'Cambiar diseño en Albunear')));
+        el('iframe', { class: 'aq-qr', src: r.tarjeta + (empresa ? '&sinlinks=1' : ''), title: tr('Código QR del álbum'), loading: 'lazy' }),
+        el('button', { type: 'button', class: 'aq-chip aq-cambiar', onclick: () => abrir('diseno') }, ...conIco('paleta', 'Cambiar diseño')));
     } catch (e) { cuerpo.replaceChildren(el('p', { class: 'aq-vacio' }, e.message)); }
+  }
+
+  // ── Diseño: el selector de estilos del álbum (y de su QR), en un iframe con permiso temporal ──
+  async function tabDiseno() {
+    cuerpo.replaceChildren(el('p', { class: 'ayuda' }, tr('Cargando…')));
+    try {
+      const r = await pedir('diseno', { lang: idioma() });
+      const marco = el('iframe', { class: 'aq-diseno', src: r.url, title: tr('Diseño del álbum'), loading: 'lazy' });
+      const alMensaje = (e) => {
+        if (e.source !== marco.contentWindow || !e.data?.albumDiseno) return;
+        if (e.data.alto) marco.style.height = `${Math.min(4000, Math.max(300, e.data.alto + 8))}px`;
+        if (e.data.albumDiseno === 'cambio') ctx.aviso(tr('Diseño aplicado al álbum y al QR'));
+      };
+      addEventListener('message', alMensaje);
+      cuerpo.replaceChildren(el('h3', {}, tr('Diseño del álbum')),
+        el('p', { class: 'aq-texto' }, tr('El estilo se aplica al álbum de los invitados, al QR y al slideshow.')), marco);
+    } catch (e) { cuerpo.replaceChildren(el('p', { class: 'aq-vacio' }, e.message)); }
+  }
+
+  // ── Ajustes: textos del álbum y borrarlo ──
+  function tabAjustes() {
+    const e = info?.event || {};
+    const campo = (etiqueta, ayuda, valor, max, multi) => {
+      const i = el(multi ? 'textarea' : 'input', { class: 'aq-input', maxlength: max, ...(multi ? { rows: 3 } : { type: 'text' }) });
+      i.value = valor || '';
+      return [i, el('label', { class: 'aq-campo' }, el('span', { class: 'aq-etiqueta' }, tr(etiqueta)), i, ayuda ? el('small', {}, tr(ayuda)) : null)];
+    };
+    const [titulo, cTitulo] = campo('Título de la portada', 'Vacío = automático según el tipo de evento.', e.coverTitle, 80);
+    const [sub, cSub] = campo('Subtítulo de la tarjeta QR', 'Vacío = automático.', e.qrSub, 60);
+    const [bienvenida, cBienvenida] = campo('Mensaje de bienvenida', 'Lo ven los invitados al entrar al álbum.', e.welcome, 600, true);
+    const guardarBtn = el('button', { type: 'button', class: 'btn btn-chico', onclick: async () => {
+      guardarBtn.disabled = true;
+      try {
+        const r = await pedir('ajustes', { coverTitle: titulo.value.trim() || null, qrSub: sub.value.trim() || null, welcome: bienvenida.value.trim() || null });
+        info = { ...info, event: r.event, counts: r.counts || info.counts };
+        ctx.aviso(tr('Guardado'));
+      } catch (x) { ctx.aviso(x.message, true); }
+      guardarBtn.disabled = false;
+    } }, tr('Guardar'));
+    const borrarBtn = el('button', { type: 'button', class: 'btn btn-chico btn-peligro', onclick: async () => {
+      if (!confirm(tr('¿Borrar el álbum con todas sus fotos y videos? No se puede deshacer.'))) return;
+      if (prompt(tr('Para confirmar, escribe BORRAR')) !== 'BORRAR') return;
+      borrarBtn.disabled = true;
+      try {
+        await pedir('borrar');
+        ctx.datos.secciones = { ...(ctx.datos.secciones || {}), album: false };
+        if (ctx.datos.album) delete ctx.datos.album.albunear;
+        ctx.aviso(tr('Álbum borrado'));
+        ctx.redibujarAdmin?.();
+      } catch (x) { ctx.aviso(x.message, true); borrarBtn.disabled = false; }
+    } }, ...conIco('borrar', 'Borrar el álbum'));
+    cuerpo.replaceChildren(el('h3', {}, tr('Ajustes del álbum')),
+      el('p', { class: 'aq-texto' }, tr('El nombre, la fecha, el tipo de evento y el link se toman de la invitación.')),
+      cTitulo, cSub, cBienvenida, el('div', { class: 'aq-fila' }, guardarBtn),
+      el('h4', {}, tr('Borrar el álbum')),
+      el('p', { class: 'aq-texto' }, tr('Se borran todas las fotos, videos y mensajes del álbum. Descárgalas antes en ZIP.')),
+      el('div', { class: 'aq-fila' }, borrarBtn));
   }
 
   // ── Link para compartir ──
@@ -331,9 +405,10 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos' }) {
   // Si Albunear todavía no tiene la puerta nueva (o no responde), quedan los botones de siempre: ver el álbum y abrir su panel
   const deRespaldo = (e) => {
     caja.querySelector('.aq-desliza').hidden = true;
-    cuerpo.replaceChildren(el('p', { class: 'aq-texto' }, tr('Las fotos y videos que suben los invitados se ven y se descargan desde el panel de Albunear.')),
+    // Con los profesionales, sin nada que lleve a Albunear: solo ver el álbum y reintentar
+    cuerpo.replaceChildren(el('p', { class: 'aq-texto' }, tr(empresa ? 'El álbum no responde en este momento. Prueba en un rato.' : 'Las fotos y videos que suben los invitados se ven y se descargan desde el panel de Albunear.')),
       el('div', { class: 'aq-fila' },
-        el('button', { type: 'button', class: 'btn btn-albunear btn-chico', onclick: async () => { const w = window.open('', '_blank'); try { const x = await ctx.api('/albunear', { method: 'POST', body: '{}' }); if (w) w.location = x.entrar; } catch (x) { w?.close(); ctx.aviso(x.message, true); } } }, tr('Abrir el panel de Albunear')),
+        empresa ? null : el('button', { type: 'button', class: 'btn btn-albunear btn-chico', onclick: async () => { const w = window.open('', '_blank'); try { const x = await ctx.api('/albunear', { method: 'POST', body: '{}' }); if (w) w.location = x.entrar; } catch (x) { w?.close(); ctx.aviso(x.message, true); } } }, tr('Abrir el panel de Albunear')),
         el('a', { class: 'btn btn-sec btn-chico', href: album.link, target: '_blank', rel: 'noopener' }, tr('Ver el álbum'))));
     if (e?.datos && !e.datos.sinPuerta) console.warn('albumqr', e.message);
   };

@@ -10,7 +10,8 @@
   var estado = f.querySelector('[data-contacto-estado]');
   // Los botones de cada nivel eligen la opción del formulario
   document.querySelectorAll('[data-nivel]').forEach(function (b) {
-    b.addEventListener('click', function () { var s = f.elements.nivel; if (s && /^(pro|studio)$/i.test(b.getAttribute('data-nivel'))) s.value = b.getAttribute('data-nivel').toLowerCase(); });
+    // README (ronda 122): también «Event Studio Duo»
+    b.addEventListener('click', function () { var s = f.elements.nivel, n = b.getAttribute('data-nivel') || ''; var v = /^event studio duo$/i.test(n) ? 'studio-duo' : /^(pro|studio)$/i.test(n) ? n.toLowerCase() : ''; if (s && v) s.value = v; });
   });
   f.addEventListener('submit', function (e) {
     e.preventDefault();

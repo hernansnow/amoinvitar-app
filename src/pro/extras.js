@@ -26,7 +26,8 @@ export async function extrasDe(env, empresaId) {
   if (!empresaId) return { demo: false, habilitado: false, saldo: {} };
   let x = {};
   try { x = JSON.parse((await getState(env, clave(empresaId))) || '{}') || {}; } catch { x = {}; }
-  return { demo: !!x.demo, previo: x.previo || null, habilitado: !!x.habilitado, saldo: x.saldo && typeof x.saldo === 'object' ? x.saldo : {}, historial: Array.isArray(x.historial) ? x.historial : [] };
+  return { demo: !!x.demo, previo: x.previo || null, habilitado: !!x.habilitado, saldo: x.saldo && typeof x.saldo === 'object' ? x.saldo : {}, historial: Array.isArray(x.historial) ? x.historial : [],
+    duo: x.duo && typeof x.duo === 'object' ? x.duo : {} }; // README (ronda 122)
 }
 async function guardar(env, empresaId, x) {
   await setState(env, clave(empresaId), JSON.stringify({ ...x, historial: (x.historial || []).slice(-60) }));
@@ -65,3 +66,30 @@ export async function cubrirComplementos(env, ev, sinPagar) {
   await guardar(env, ev.empresaId, x);
   return { cubiertos: lista, faltan: [] };
 }
+
+// ── README (ronda 122): Duo = invitación Deluxe Pro + álbum QR Platinum Pro (Albunear, sin nombrarlo al cliente) ──
+//   duo.saldo        créditos Duo disponibles (cada uno publica una invitación con su álbum)
+//   duo.paseVence    pase anual Event Studio Duo (incluye Studio): habilita los packs Duo de 10 a 100
+// Se guardan en el mismo app_state que los complementos. Al publicar un evento con «Duo» se gasta uno.
+export async function sumarDuo(env, empresaId, cantidad, origen, nota = '') {
+  const x = await extrasDe(env, empresaId);
+  const duo = x.duo || {};
+  duo.saldo = Math.max(0, (parseInt(duo.saldo, 10) || 0) + cantidad);
+  x.duo = duo;
+  x.historial.push({ f: new Date().toISOString(), item: 'duo', cantidad, origen, nota: String(nota || '').slice(0, 120) });
+  await guardar(env, empresaId, x);
+  return x;
+}
+export async function usarDuo(env, empresaId, nota = '') {
+  const x = await extrasDe(env, empresaId);
+  if (!((parseInt(x.duo?.saldo, 10) || 0) > 0)) return false;
+  await sumarDuo(env, empresaId, -1, 'uso', nota);
+  return true;
+}
+export async function paseDuo(env, empresaId, vence) {
+  const x = await extrasDe(env, empresaId);
+  x.duo = { ...(x.duo || {}), paseVence: vence };
+  await guardar(env, empresaId, x);
+  return x;
+}
+export const duoVigente = (x) => !!(x?.duo?.paseVence && x.duo.paseVence >= new Date().toISOString());

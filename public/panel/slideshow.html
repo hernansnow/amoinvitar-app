@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Slideshow</title>
+  <!-- README (ronda 122): slideshow en vivo del álbum QR sin salir de Amo Invitar! (y en el dominio del profesional con
+       Studio). La pantalla del álbum va en un iframe a pantalla completa; la placa inicial y el logo chico los pone el
+       álbum según la marca (Amo Invitar!, o ninguna con Studio). Sin textos ni marcas propias en esta página. -->
+  <style>
+    html, body { margin: 0; height: 100%; background: #000; color: #fff; overflow: hidden; font-family: system-ui, sans-serif; }
+    iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+    .msg { position: fixed; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; font-size: 16px; opacity: .75; }
+  </style>
+</head>
+<body>
+  <p class="msg" id="msg">…</p>
+  <script>
+  (function () {
+    var p = new URLSearchParams(location.search);
+    var ev = p.get('ev') || '', k = p.get('k') || '';
+    try { if (!k) k = sessionStorage.getItem('clave_' + ev) || ''; } catch (e) {}
+    history.replaceState(null, '', location.pathname + '?ev=' + encodeURIComponent(ev));
+    var msg = document.getElementById('msg');
+    if (!/^[\w-]{4,40}$/.test(ev)) { msg.textContent = '—'; return; }
+    fetch('/api/panel/' + encodeURIComponent(ev) + '/albumqr', { method: 'POST', headers: { 'content-type': 'application/json', 'x-clave': k }, body: JSON.stringify({ accion: 'info' }) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Error'); return j; }); })
+      .then(function (r) {
+        var url = r.event && r.event.screenUrl;
+        if (!url) throw new Error('El slideshow en vivo no está incluido en el plan de este álbum.');
+        var nombres = [r.event.name1, r.event.name2].filter(Boolean).join(' & ');
+        if (nombres) document.title = nombres + ' · Slideshow';
+        var f = document.createElement('iframe');
+        f.src = url;
+        f.allow = 'fullscreen; screen-wake-lock; autoplay';
+        f.setAttribute('allowfullscreen', '');
+        f.title = 'Slideshow';
+        document.body.appendChild(f);
+        msg.remove();
+      })
+      .catch(function (e) { msg.textContent = e.message; });
+  })();
+  </script>
+</body>
+</html>
