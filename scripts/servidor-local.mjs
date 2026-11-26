@@ -4,6 +4,8 @@
 //   npm run local   →   muestra el link de la demo, la tienda y un panel de prueba
 //   BASE=prueba.db npm run local   →   guarda la base en un archivo (si no, en memoria)
 import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,14 +38,21 @@ const env = {
     // README (ronda 52): crear el álbum Classic ya armado y entrar a su panel (acá devuelve lo recibido, para revisarlo)
     crearAlbum: async (d) => { env.ULTIMO_ALBUM = { ...d, portada: d.portada ? { tipo: d.portada.tipo, bytes: d.portada.bytes?.byteLength } : null }; return { album: { link: 'https://albunear.com/a/prueba', panel: 'https://albunear.com/panel/album?id=prueba', plan: 'classic', estado: 'active' }, entrar: 'https://albunear.com/auth/verify?t=PRUEBA' }; },
     // README (ronda 108): el álbum administrado desde Amo Invitar! (acá, fotos de ejemplo en memoria)
-    album: async (id, p) => albumDePrueba(p) },
+    album: async (id, p) => albumDePrueba(p),
+    // README (ronda 125): archivos de los diseños del álbum (en local, desde la copia de Albunear si está al lado; si no, 404)
+    fetch: async (req) => {
+      const ruta = new URL(req.url).pathname, f = path.join(process.env.ALBUNEAR_PUBLIC || path.resolve('../albunear/public'), ruta);
+      if (!fs.existsSync(f)) return new Response('', { status: 404 });
+      const tipo = { '.css': 'text/css', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.jpg': 'image/jpeg', '.png': 'image/png' }[path.extname(f)] || 'application/octet-stream';
+      return new Response(fs.readFileSync(f), { headers: { 'content-type': tipo } });
+    } },
   ASSETS: { fetch: async (u) => (await estatico(new URL(typeof u === 'string' || u instanceof URL ? u : u.url).pathname)) || new Response('', { status: 404 }) },
 };
 // README (ronda 108): álbum de prueba para la pestaña Álbum QR (como responde Socios.album de Albunear)
 const FOTOS_PRUEBA = ['bg20.jpg', 'bg21.jpg', 'bg33.jpg', 'bg-oliva-2.jpg', 'bg-oliva-6.jpg'].flatMap((f, i) => [0, 1, 2].map((k) => ({ id: `m${i}${k}`, kind: i === 4 && k === 0 ? 'video' : 'photo',
   thumb: `/modelos/garden/img/${f}`, src: `/modelos/garden/img/${f}`, original: `/modelos/garden/img/${f}`, duration: i === 4 && k === 0 ? 16 : null, name: ['Ana', 'Leo', ''][k], likes: k, t: 1795000000 - (i * 3 + k) * 3600,
   status: 'visible', favorite: false, featured: false })));
-const ALBUM_PRUEBA = { guestsCanView: true, moderation: 'off', coverTitle: null, qrSub: null, welcome: null, brand: 'albunear', planId: 'classic', status: 'active' };
+const ALBUM_PRUEBA = { guestsCanView: true, moderation: 'off', coverTitle: null, qrSub: null, welcome: null, brand: 'albunear', planId: process.env.ALBUM_PLAN || 'classic', status: 'active' };
 function albumDePrueba(p) {
   const vivas = FOTOS_PRUEBA.filter((m) => !m.borrada);
   const counts = { total: vivas.length, fav: vivas.filter((m) => m.favorite).length, featured: vivas.filter((m) => m.featured).length, hidden: vivas.filter((m) => m.status === 'hidden').length, pending: 0, videos: vivas.filter((m) => m.kind === 'video').length };
@@ -60,6 +69,12 @@ function albumDePrueba(p) {
       ...['coverTitle', 'qrSub', 'welcome'].filter((k) => p[k] !== undefined).map((k) => ({ [k]: p[k] }))); return albumDePrueba({ accion: 'info' });
     // README (ronda 122): diseño (iframe), borrar, marca del slideshow y pasar a Platinum
     case 'diseno': return { url: '/comun/img/albunear.svg' };
+    // README (ronda 125): pestaña Diseño sin iframe
+    case 'estilos': return { event: { ...ALBUM_PRUEBA, name1: 'Ana', name2: 'Leo', type: 'boda', theme: ALBUM_PRUEBA.theme || 'lovestory', chosenTheme: ALBUM_PRUEBA.theme || 'lovestory', cover: ALBUM_PRUEBA.cover || null, coverPos: ALBUM_PRUEBA.coverPos || '50% 22%' },
+      tier: ALBUM_PRUEBA.planId === 'platinum' ? 'all' : 'classic', cover: ALBUM_PRUEBA.planId === 'platinum', classicThemes: ['arena', 'salvia', 'terracota', 'medianoche', 'bosque', 'boho'], premiumThemes: ['aquarella', 'garden', 'lovestory', 'noche', 'romantic', 'travel'] };
+    case 'estilo': ALBUM_PRUEBA.theme = p.theme; return albumDePrueba({ accion: 'estilos' });
+    case 'encuadre': ALBUM_PRUEBA.coverPos = p.pos; return albumDePrueba({ accion: 'estilos' });
+    case 'portada': ALBUM_PRUEBA.cover = p.quitar ? null : (p.bytes?.byteLength ? '/modelos/garden/img/bg21.jpg' : null); ALBUM_PRUEBA.ultimaPortada = p.bytes?.byteLength || 0; return albumDePrueba({ accion: 'estilos' });
     case 'borrar': return { ok: true };
     case 'marca': ALBUM_PRUEBA.brand = p.marca || 'albunear'; return { ok: true, brand: ALBUM_PRUEBA.brand };
     case 'mejora': return { url: 'https://albunear.com/auth/verify?t=PRUEBA-MEJORA', cupon: 'AMO5PRUEBA', porcentaje: p.porcentaje };

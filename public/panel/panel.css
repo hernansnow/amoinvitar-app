@@ -1504,3 +1504,26 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
   .aq-mejora-btn { width: 100%; justify-content: center; }
   .aq-diseno { height: 900px; }
 }
+
+/* README (ronda 125): pestaña Diseño del álbum dentro del panel (sin iframe). Las miniaturas usan la hoja de estilos de los
+   diseños (/panel/albunear/r/css/themes.css: .theme-prev y sus variables). */
+.aq-temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(112px, 30%), 1fr)); min-width: 0; gap: 12px; margin: 12px 0 4px; }
+.aq-tema { position: relative; min-width: 0; border: 2px solid transparent; border-radius: 16px; padding: 0; background: none; cursor: pointer; font: inherit; color: inherit; text-align: center; }
+.aq-tema .theme-prev { width: 100%; min-width: 0; aspect-ratio: 3 / 4; border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,.1); border: 1px solid #e3e0d8; }
+.aq-tema-nombre { display: block; padding: 6px 0 2px; font-size: 13.5px; }
+.aq-tema.on { border-color: var(--acento); }
+.aq-tema.on .aq-tema-nombre { color: var(--acento); font-weight: 600; }
+.aq-tema.off { cursor: not-allowed; }
+.aq-tema.off .theme-prev { filter: grayscale(.7) opacity(.6); }
+.aq-tema.off::after { content: '🔒'; position: absolute; top: 6px; right: 6px; background: #1f2421; border-radius: 50%; width: 24px; height: 24px; display: grid; place-items: center; font-size: 11px; }
+.aq-portada { margin-top: 26px; padding-top: 20px; border-top: 1px solid #ece9e2; display: grid; gap: 8px; }
+.aq-portada-prev { position: relative; aspect-ratio: 16 / 10; max-width: 440px; width: 100%; overflow: hidden; border-radius: 14px; background: #f3f1ec center / cover;
+  display: grid; place-items: center; border: 1px dashed #d9d5cb; color: #6b736f; font-size: 14px; }
+.aq-portada-prev.arrastrable { cursor: grab; touch-action: none; }
+.aq-portada-prev.arrastrando { cursor: grabbing; }
+.aq-portada-prev .cp-sombra { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.42), transparent 30%, transparent 45%, rgba(0,0,0,.65)); pointer-events: none; }
+.aq-portada-prev .cp-arriba { position: absolute; top: 8%; left: 0; right: 0; text-align: center; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.9); pointer-events: none; }
+.aq-portada-prev .cp-abajo { position: absolute; left: 0; right: 0; bottom: 8%; text-align: center; color: #fff; pointer-events: none; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+.aq-portada-prev .cp-nombre { font-size: 24px; line-height: 1.1; }
+.aq-pista { font-size: 12.5px; }
+@media (max-width: 560px) { .aq-temas { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .aq-tema-nombre { font-size: 12px; } }

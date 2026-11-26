@@ -253,6 +253,11 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - Albunear (commit «Arranque más liviano…»): el deploy fallaba con el error 10021 (arranque por encima del límite de CPU) porque las variantes de idioma se calculaban al cargar el Worker. Ahora se calculan al leerlas.
 - **Ronda 124**: precios por crédito del dueño (`PROFESIONALES` en `src/catalogo.js`, sin IVA). Pro: suelto 32, pack 5 = 145 (29), pack 10 = 270 (27). Studio sin cambios (23/21/19/17). Pro Duo: 5 = 320 (64), 10 = 600 (60). Event Studio Duo: 10 = 530 (53), 25 = 1.175 (47), 50 = 2.100 (42), 100 = 3.700 (37). Los descuentos de las tablas se calculan solos (contra 32 € y contra 81 € = invitación + álbum sueltos).
   - Albunear: la pestaña Diseño suma la foto de portada (subir, encuadrar y borrar, solo Platinum) y ya no deja un hueco al final (el alto se mide sobre el contenido).
+- **Ronda 125**:
+  - **Diseño del álbum sin iframe** (`tabDiseno` en `public/panel/album-qr.js`): grilla de estilos con las miniaturas de Albunear y foto de portada (subir, encuadrar arrastrando y borrar; solo Platinum). Acciones nuevas de `/albumqr`: `estilos`, `estilo`, `encuadre`, `portada` (la foto se achica a 2400 px en el navegador y viaja en base64 por el enlace interno). La hoja de estilos, los fondos y las fuentes de los diseños se sirven desde este dominio en `/panel/albunear/r/…` (`recursoAlbum` en `src/index.js`, vía `env.ALBUNEAR.fetch`, caché de un día; en el CSS se reescriben las rutas `/themes/` y `/fonts/`).
+  - **Tablero:** fichas de packs Duo con fondo dorado muy claro y botón dorado; el pase Event Studio Duo al revés que el de Studio (fondo dorado, botón negro).
+  - **De Studio a Event Studio Duo pagando la diferencia** (`mejora-duo`: 149 − 99 = 50 € + IVA): con el pase Studio vigente y sin Duo se ofrece esto en lugar del pase Duo completo, con un banner «Pásate a Event Studio Duo» debajo de «Duo: invitación + álbum QR». El pase Duo vence el mismo día que el Studio (`pagarCompra` en `src/pro/compras.js`); al renovar se paga el pase Event Studio Duo completo.
+  - Web: el recuadro «¿Organizas eventos todas las semanas?» (`empresas()` en `construir.mjs`) suma Duo y Event Studio Duo, y el «hasta X %» es el mayor descuento entre Studio y Event Studio Duo (hoy 54 %).
 
 ## 5. Probar en la compu
 

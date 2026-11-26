@@ -273,21 +273,137 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos', empresa = fals
     } catch (e) { cuerpo.replaceChildren(el('p', { class: 'aq-vacio' }, e.message)); }
   }
 
-  // ── Diseño: el selector de estilos del álbum (y de su QR), en un iframe con permiso temporal ──
+  // ── Diseño (ronda 125): estilos del álbum y foto de portada, dentro del panel (sin iframe) ──
+  // Los estilos, fondos y fuentes de Albunear se sirven desde este mismo dominio (/panel/albunear/r/…, ver src/index.js).
+  const R = '/panel/albunear/r/';
+  const cargarCss = (href) => { if (!document.querySelector(`link[href="${href}"]`)) document.head.append(el('link', { rel: 'stylesheet', href })); };
+  const slug = (f) => String(f || '').split(',')[0].replace(/["']/g, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const NOMBRE_TEMA = { generico: 'Genérico', armonia: 'Armonía', byn: 'ByN', lovestory: 'Love Story', savethedate: 'Save The Date', 'noche-verde': 'Noche verde',
+    te: 'Té', oceano: 'Océano', geometrico: 'Geométrico', citrico: 'Cítrico' };
+  const nombreTema = (t) => NOMBRE_TEMA[t] || t.charAt(0).toUpperCase() + t.slice(1);
+  const QR_MINI = '<svg viewBox="0 0 11 11" aria-hidden="true"><path fill-rule="evenodd" d="M0 0h5v5h-5zM1 1v3h3v-3zM2 2h1v1h-1zM6 0h5v5h-5zM7 1v3h3v-3zM8 2h1v1h-1zM0 6h5v5h-5zM1 7v3h3v-3zM2 8h1v1h-1zM6 6h2v3h-2zM8 6h3v2h-3zM9 9h2v2h-2zM6 10h2v1h-2z"/></svg>';
+  const tituloAlbum = (ev) => [ev.name1, ev.name2].filter(Boolean).join(' & ') || tr('Nuestro álbum');
+  const miniatura = (tema, ev) => {
+    const prev = el('span', { class: 'theme-prev', 'data-theme': tema });
+    prev.innerHTML = `<span class="tp-card"><span class="tp-k"></span><span class="tp-t"></span><span class="tp-l"><i></i><i></i><i></i></span><span class="tp-q">${QR_MINI}</span><span class="tp-b"></span></span>`;
+    prev.querySelector('.tp-k').textContent = tr('¡Comparte tus fotos!');
+    prev.querySelector('.tp-t').textContent = tituloAlbum(ev);
+    prev.querySelector('.tp-b').textContent = tr('Subir fotos');
+    return prev;
+  };
+  // Fuentes de cada diseño: se leen de su hoja de estilos (variables --t-name y --t-body) y se cargan una sola vez
+  const cargarFuentes = (raiz) => {
+    const vistas = new Set();
+    raiz.querySelectorAll('.theme-prev').forEach((x) => {
+      const cs = getComputedStyle(x);
+      [cs.getPropertyValue('--t-name'), cs.getPropertyValue('--t-body')].map(slug).filter((f) => f && !['jost', 'serif', 'sans-serif', 'cursive'].includes(f)).forEach((f) => vistas.add(f));
+    });
+    vistas.forEach((f) => cargarCss(`${R}fonts/${f}.css`));
+  };
+  // Foto elegida → JPEG de hasta 2400 px, en base64 (se manda por el enlace interno; nada se sube a otro dominio)
+  const prepararFoto = async (archivo) => {
+    if (!/^image\//.test(archivo.type)) throw new Error(tr('Elige una foto (JPG, PNG o WEBP).'));
+    const bmp = await createImageBitmap(archivo);
+    const escala = Math.min(1, 2400 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * escala); c.height = Math.round(bmp.height * escala);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.86));
+    const buf = new Uint8Array(await blob.arrayBuffer());
+    let bin = '';
+    for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+    return btoa(bin);
+  };
+
   async function tabDiseno() {
     cuerpo.replaceChildren(el('p', { class: 'ayuda' }, tr('Cargando…')));
-    try {
-      const r = await pedir('diseno', { lang: idioma() });
-      const marco = el('iframe', { class: 'aq-diseno', src: r.url, title: tr('Diseño del álbum'), loading: 'lazy' });
-      const alMensaje = (e) => {
-        if (e.source !== marco.contentWindow || !e.data?.albumDiseno) return;
-        if (e.data.alto) marco.style.height = `${Math.min(4000, Math.max(300, e.data.alto + 8))}px`;
-        if (e.data.albumDiseno === 'cambio') ctx.aviso(tr('Diseño aplicado al álbum y al QR'));
+    cargarCss(`${R}css/themes.css`);
+    let d;
+    try { d = await pedir('estilos'); } catch (e) { cuerpo.replaceChildren(el('p', { class: 'aq-vacio' }, e.message)); return; }
+    let ev = d.event || {};
+    const puede = (t) => d.tier === 'all' || (d.tier === 'classic' && d.classicThemes.includes(t));
+    const lista = d.tier === 'classic' ? d.classicThemes.concat(d.premiumThemes) : d.premiumThemes.concat(d.classicThemes);
+    const actual = () => ev.chosenTheme || ev.theme;
+    const grilla = el('div', { class: 'aq-temas' }, ...lista.map((t) => {
+      const b = el('button', { type: 'button', class: `aq-tema${t === actual() ? ' on' : ''}${puede(t) ? '' : ' off'}`, 'data-tema': t, 'aria-pressed': String(t === actual()) },
+        miniatura(t, ev), el('span', { class: 'aq-tema-nombre' }, nombreTema(t)));
+      b.onclick = async () => {
+        if (!puede(t)) { ctx.aviso(tr('Incluido en el álbum Platinum'), true); return; }
+        if (t === actual()) return;
+        grilla.querySelectorAll('.aq-tema').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
+        try { const r = await pedir('estilo', { theme: t }); ev = r.event || { ...ev, theme: t, chosenTheme: t }; ctx.aviso(tr('Diseño aplicado al álbum y al QR')); }
+        catch (e) { ctx.aviso(e.message, true); tabDiseno(); }
       };
-      addEventListener('message', alMensaje);
-      cuerpo.replaceChildren(el('h3', {}, tr('Diseño del álbum')),
-        el('p', { class: 'aq-texto' }, tr('El estilo se aplica al álbum de los invitados, al QR y al slideshow.')), marco);
-    } catch (e) { cuerpo.replaceChildren(el('p', { class: 'aq-vacio' }, e.message)); }
+      return b;
+    }));
+    // Foto de portada (solo Platinum): subir, encuadrar arrastrando y borrar
+    const caja = el('div', { class: 'aq-portada-prev' });
+    const pista = el('p', { class: 'aq-texto aq-pista' }, tr('Arrastra la foto para elegir el encuadre: así se verá en el celular de tus invitados.'));
+    const archivo = el('input', { type: 'file', accept: 'image/*', hidden: true });
+    const subir = el('button', { type: 'button', class: 'aq-tab aq-tab-verde' }, ...conIco('fotos', 'Subir foto'));
+    const quitar = el('button', { type: 'button', class: 'aq-tab' }, ...conIco('borrar', 'Borrar'));
+    const candado = el('p', { class: 'aq-texto' }, '🔒 ', tr('La foto de portada está incluida en el álbum Platinum.'));
+    let img = null;
+    const pintarPortada = () => {
+      caja.style.backgroundImage = ev.cover ? `url("${ev.cover}")` : '';
+      caja.style.backgroundPosition = ev.coverPos || '50% 22%';
+      caja.replaceChildren(...(ev.cover ? [el('span', { class: 'cp-sombra' }), el('span', { class: 'cp-arriba' }, ev.coverTitle || ''), el('span', { class: 'cp-abajo' }, el('span', { class: 'cp-nombre' }, tituloAlbum(ev)))]
+        : [el('span', { class: 'cp-vacia' }, tr('Sin foto de portada'))]));
+      caja.classList.toggle('arrastrable', !!ev.cover && d.cover);
+      pista.hidden = !(ev.cover && d.cover);
+      quitar.hidden = !ev.cover; subir.hidden = !d.cover; candado.hidden = !!d.cover;
+      if (ev.cover) { img = new Image(); img.src = ev.cover; }
+    };
+    subir.onclick = () => archivo.click();
+    archivo.onchange = async () => {
+      const f = archivo.files[0]; archivo.value = '';
+      if (!f) return;
+      subir.disabled = true; const txt = subir.querySelector('span:last-child'); const orig = txt.textContent; txt.textContent = tr('Subiendo…');
+      try { const r = await pedir('portada', { datos: await prepararFoto(f), tipo: 'image/jpeg' }); ev = r.event || ev; pintarPortada(); ctx.aviso(tr('Foto de portada guardada')); }
+      catch (e) { ctx.aviso(e.message, true); }
+      finally { subir.disabled = false; txt.textContent = orig; }
+    };
+    quitar.onclick = async () => {
+      try { const r = await pedir('portada', { quitar: true }); ev = r.event || { ...ev, cover: null }; pintarPortada(); } catch (e) { ctx.aviso(e.message, true); }
+    };
+    // Encuadre: arrastrar la foto dentro del recuadro (con mouse o con el dedo)
+    let ini = null;
+    const pos = () => { const m = /([\d.]+)% ([\d.]+)%/.exec(caja.style.backgroundPosition || ''); return m ? [+m[1], +m[2]] : [50, 22]; };
+    const medir = () => {
+      if (!img || !img.complete || !img.naturalWidth) return false;
+      const r = caja.getBoundingClientRect(), k = Math.max(r.width / img.naturalWidth, r.height / img.naturalHeight);
+      ini.ox = img.naturalWidth * k - r.width; ini.oy = img.naturalHeight * k - r.height;
+      return true;
+    };
+    caja.addEventListener('pointerdown', (e) => {
+      if (!caja.classList.contains('arrastrable')) return;
+      ini = { x: e.clientX, y: e.clientY, p: pos(), ox: null, oy: null };
+      caja.classList.add('arrastrando'); caja.setPointerCapture(e.pointerId);
+    });
+    caja.addEventListener('pointermove', (e) => {
+      if (!ini || (ini.ox === null && !medir())) return;
+      const x = ini.ox > 1 ? ini.p[0] - (e.clientX - ini.x) / ini.ox * 100 : 50;
+      const y = ini.oy > 1 ? ini.p[1] - (e.clientY - ini.y) / ini.oy * 100 : 50;
+      caja.style.backgroundPosition = `${Math.max(0, Math.min(100, x)).toFixed(1)}% ${Math.max(0, Math.min(100, y)).toFixed(1)}%`;
+    });
+    const soltar = async () => {
+      if (!ini) return;
+      const movio = ini.ox !== null; ini = null; caja.classList.remove('arrastrando');
+      if (!movio) return;
+      const p = pos(), valor = `${p[0].toFixed(1)}% ${p[1].toFixed(1)}%`;
+      try { await pedir('encuadre', { pos: valor }); ev.coverPos = valor; ctx.aviso(tr('Encuadre guardado')); } catch (e) { ctx.aviso(e.message, true); }
+    };
+    caja.addEventListener('pointerup', soltar);
+    caja.addEventListener('pointercancel', soltar);
+    pintarPortada();
+    cuerpo.replaceChildren(
+      el('h3', {}, tr('Diseño del álbum')),
+      el('p', { class: 'aq-texto' }, tr('El estilo se aplica al álbum de los invitados, al QR y al slideshow.')),
+      grilla,
+      el('div', { class: 'aq-portada' }, el('h3', {}, tr('Foto de portada')),
+        el('p', { class: 'aq-texto' }, tr('Aparece arriba de todo en la página de tus invitados.')),
+        caja, pista, el('div', { class: 'aq-fila' }, subir, quitar, archivo), candado));
+    requestAnimationFrame(() => cargarFuentes(grilla));
   }
 
   // ── Ajustes: textos del álbum y borrarlo ──

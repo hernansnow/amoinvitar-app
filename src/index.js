@@ -1379,7 +1379,7 @@ async function apiPanel(env, request, url, partes) {
     if (!env.ALBUNEAR?.album) return json({ error: 'Albunear no responde en este momento. Prueba en un rato.', sinPuerta: true }, 503);
     const b = await request.json().catch(() => ({}));
     // README (ronda 122): también ajustes de textos, diseño, borrar y pasar a Platinum (solo Deluxe, con 5 % de descuento)
-    const ACCIONES = ['info', 'media', 'lote', 'ajustes', 'zip', 'entrar', 'qr', 'diseno', 'borrar', 'mejora'];
+    const ACCIONES = ['info', 'media', 'lote', 'ajustes', 'zip', 'entrar', 'qr', 'diseno', 'borrar', 'mejora', 'estilos', 'estilo', 'encuadre', 'portada'];
     if (!ACCIONES.includes(b.accion)) return json({ error: 'Acción desconocida' }, 400);
     // Los profesionales y sus clientes no salen de Amo Invitar!: ni panel de Albunear ni pago allá
     if (ev.empresaId && ['entrar', 'mejora'].includes(b.accion)) return json({ error: 'No disponible' }, 403);
@@ -1391,14 +1391,23 @@ async function apiPanel(env, request, url, partes) {
       ...(texto(b.qrSub, 60) !== undefined ? { qrSub: texto(b.qrSub, 60) } : {}),
       ...(texto(b.welcome, 600) !== undefined ? { welcome: texto(b.welcome, 600) } : {}),
       ...(b.accion === 'mejora' ? { porcentaje: 5 } : {}),
+      // README (ronda 125): pestaña Diseño sin iframe (estilo, encuadre y foto de portada en base64, ya optimizada en el navegador)
+      ...(b.accion === 'estilo' ? { theme: String(b.theme || '').slice(0, 40) } : {}),
+      ...(b.accion === 'encuadre' ? { pos: String(b.pos || '').slice(0, 20) } : {}),
+      ...(b.accion === 'portada' ? (b.quitar ? { quitar: true } : (() => {
+        try { const bin = atob(String(b.datos || '')); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return { bytes: u, tipo: b.tipo }; } catch { return {}; }
+      })()) : {}),
       ...(eventoDuo(ev) ? { plan: 'platinum' } : {}) };
     let r;
     try { r = await env.ALBUNEAR.album(ev.id, pedido); } catch (e) { console.error('albunear album', e); return json({ error: 'Albunear no responde en este momento. Prueba en un rato.' }, 502); }
     if (!r || r.album === null) return json({ error: 'Todavía no hay un álbum creado para esta invitación.', sinAlbum: true }, 404);
     // README (ronda 123): si Albunear todavía no tiene publicada una acción nueva (diseno, borrar, mejora), responde
     // err.badData: se muestra un aviso legible en lugar del código.
-    if (r.error === 'err.badData' && ['diseno', 'borrar', 'mejora'].includes(b.accion)) return json({ error: 'Esta función estará disponible en unos minutos. Prueba más tarde.', codigo: r.error }, 503);
-    if (r.error) return json({ error: r.error, codigo: r.error }, r.status || 400);
+    if (r.error === 'err.badData' && ['diseno', 'borrar', 'mejora', 'estilos', 'estilo', 'encuadre'].includes(b.accion)) return json({ error: 'Esta función estará disponible en unos minutos. Prueba más tarde.', codigo: r.error }, 503);
+    // Mensajes de Albunear que llegan como código (reglas del plan del álbum)
+    const ERR_ALBUM = { 'err.upgradeCover': 'La foto de portada está incluida en el álbum Platinum.', 'err.upgradePremium': 'Ese diseño está incluido en el álbum Platinum.',
+      'err.upgradeThemes': 'Los diseños están incluidos en los álbumes Classic y Platinum.' };
+    if (r.error) return json({ error: ERR_ALBUM[r.error] || r.error, codigo: r.error }, r.status || 400);
     // La marca del slideshow sigue al nivel del profesional (si pasa a Studio, sin logos; si vuelve a Pro, Amo Invitar!)
     if (b.accion === 'info' && r.event && env.ALBUNEAR.album) {
       const marca = await marcaAlbumDe(env, ev);
@@ -1625,6 +1634,24 @@ function proximamente(request, env, url) {
 <body><main><img src="/comun/img/amoinvitar-fondo-claro.svg" alt="Amo Invitar!"><h1>Muy pronto</h1><p>Estamos preparando la nueva tienda de invitaciones digitales.</p><p><a href="https://amoinvitar.com">amoinvitar.com</a></p></main></body></html>`, 503, { 'retry-after': '86400', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' });
 }
 
+// README (ronda 125): archivo público de Albunear (diseños del álbum) servido desde Amo Invitar! con caché de un día
+async function recursoAlbum(env, ctx, url, ruta) {
+  if (!/^(css\/themes\.css|themes\/[\w.-]+|fonts\/[\w.-]+|fonts\/files\/[\w.-]+)$/.test(ruta) || !env.ALBUNEAR?.fetch) return new Response('', { status: 404 });
+  const cache = globalThis.caches?.default, clave = new Request(url.origin + '/panel/albunear/r/' + ruta);
+  const guardada = cache ? await cache.match(clave).catch(() => null) : null;
+  if (guardada) return guardada;
+  let r;
+  try { r = await env.ALBUNEAR.fetch(new Request('https://albunear.interno/' + ruta)); } catch (e) { console.error('recurso álbum', e); return new Response('', { status: 502 }); }
+  if (!r.ok) return new Response('', { status: r.status });
+  const tipo = r.headers.get('content-type') || '';
+  const cuerpo = /css/.test(tipo) || ruta.endsWith('.css')
+    ? (await r.text()).replace(/url\((['"]?)\/(themes|fonts)\//g, 'url($1/panel/albunear/r/$2/')
+    : await r.arrayBuffer();
+  const res = new Response(cuerpo, { headers: { 'content-type': tipo || 'application/octet-stream', 'cache-control': 'public, max-age=86400' } });
+  if (cache) ctx.waitUntil(cache.put(clave, res.clone()).catch(() => {}));
+  return res;
+}
+
 export default {
   async scheduled(controller, env, ctx) {
     ctx.waitUntil(admin.tareas(controller, env).catch((e) => console.error('[tareas]', e)));
@@ -1634,6 +1661,10 @@ export default {
     const url = new URL(request.url);
     const partes = url.pathname.split('/').filter(Boolean);
     const [p0, p1] = partes;
+    // README (ronda 125): estilos, fondos y fuentes de los diseños del álbum para la pestaña Diseño (sin iframe). Vienen de
+    // Albunear por el enlace interno (Socios.fetch) y se sirven desde este dominio (también el del profesional): el panel no
+    // carga nada de albunear.com. En el CSS, las rutas /themes/ y /fonts/ se reescriben a esta misma carpeta.
+    if (p0 === 'panel' && p1 === 'albunear' && partes[2] === 'r' && request.method === 'GET') return await recursoAlbum(env, ctx, url, partes.slice(3).join('/'));
     tienda.opcionesTienda.esquemaDe = (ev) => esquemaDe(env, url, ev);
     tienda.opcionesTienda.publicar = publicarEvento;
     tienda.opcionesTienda.album = (ev) => albumAutomatico(env, ev, null); // README (ronda 98)

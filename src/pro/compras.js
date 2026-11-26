@@ -69,6 +69,12 @@ export async function pagarCompra(env, id, { medio = 'transferencia', nota = nul
   if (c.item === 'pase') await renovarPase(env, c.empresa_id, 12);
   // Event Studio Duo: renueva el pase Studio y el de Duo (los dos vencen juntos)
   else if (c.item === 'pase-duo') { const r0 = await renovarPase(env, c.empresa_id, 12); await paseDuo(env, c.empresa_id, r0.paseVence); }
+  // README (ronda 125): de Studio a Event Studio Duo pagando la diferencia: el pase Duo vence junto con el Studio
+  else if (c.item === 'mejora-duo') {
+    const pro = await env.DB.prepare('SELECT pase_vence FROM empresas_pro WHERE empresa_id = ?').bind(c.empresa_id).first();
+    const vence = pro?.pase_vence && pro.pase_vence > new Date().toISOString() ? pro.pase_vence : (await renovarPase(env, c.empresa_id, 12)).paseVence;
+    await paseDuo(env, c.empresa_id, vence);
+  }
   else if (cat?.duo) await sumarDuo(env, c.empresa_id, c.creditos, 'compra', `Pedido #${c.numero}`);
   else if (cat?.comp) await sumarSaldo(env, c.empresa_id, cat.comp, c.creditos, 'compra', `Pedido #${c.numero}`); // README (ronda 87)
   else await nuevoLote(env, c.empresa_id, c.creditos, c.item, `Pedido #${c.numero}`);

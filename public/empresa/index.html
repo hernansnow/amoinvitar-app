@@ -11,7 +11,7 @@
 <script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
   if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
   document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
-<script src="/comun/js/regional.js?v=7daac30b" defer></script>
+<script src="/comun/js/regional.js?v=6e82b5da" defer></script>
 <script src="/comun/js/selector-pais.js?v=r89" defer></script>
 <style>
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
@@ -55,7 +55,7 @@
   .aviso-caja.mal { background: #fde3df; } .aviso-caja p { margin: 0; flex: 1; min-width: 220px; }
   .productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
   /* README (ronda 122): Duo */
-  .producto.duo { border-color: #c9b27a; }
+  /* .producto.duo: ver ronda 125 más abajo */
   .tachado { opacity: .55; font-weight: 400; font-size: .8em; }
   .duo-info { margin-top: 22px; }
   .ganchos { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 6px; font-size: .9rem; }
@@ -97,6 +97,21 @@
   .producto.studio { background: #111; border-color: #111; color: #fff; }
   .producto.studio .meta, .producto.studio small { color: rgba(255,255,255,.75); }
   .producto.studio .b { background: var(--oro); border-color: var(--oro); color: #111; }
+  /* README (ronda 125): Duo en dorado. Packs Duo: fondo dorado muy claro y botón dorado. Pase Event Studio Duo (y el pase
+     desde Studio): al revés que el de Studio, fondo dorado y botón negro. Banner para pasar de Studio a Event Studio Duo. */
+  .producto.duo { background: #f7f2e7; border-color: #e3cfa6; }
+  .producto.duo .b { background: var(--oro); border-color: var(--oro); color: #111; }
+  .producto.duo .b:hover { background: var(--oro-2); border-color: var(--oro-2); }
+  .producto.pase-duo { background: linear-gradient(135deg, #d8b866, var(--oro) 55%, var(--oro-2)); border-color: var(--oro-2); color: #111; }
+  .producto.pase-duo .meta, .producto.pase-duo small, .producto.pase-duo .tachado { color: rgba(17,17,17,.72); }
+  .producto.pase-duo .b { background: #111; border-color: #111; color: #fff; }
+  .producto.pase-duo .b:hover { background: #000; color: var(--oro); }
+  .banner-duo { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin: 14px 0 4px; padding: 14px 18px; border-radius: 14px;
+    background: linear-gradient(135deg, #d8b866, var(--oro) 55%, var(--oro-2)); color: #111; }
+  .banner-duo div { flex: 1 1 260px; display: grid; gap: 2px; }
+  .banner-duo strong { font: 600 17px/1.25 Jost, sans-serif; }
+  .banner-duo small { color: rgba(17,17,17,.78); font-size: 13.5px; }
+  .banner-duo .b { background: #111; border-color: #111; color: #fff; white-space: nowrap; }
   .demo-cinta { background: #111; color: #fff; border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .demo-cinta b { background: var(--oro); color: #111; border-radius: 6px; padding: 2px 8px; letter-spacing: .08em; }
   .paletas { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -313,12 +328,21 @@
       var tarjetaProd = function (p) {
         var b = el('button', { class: 'b', type: 'button' }, 'Comprar'); b.onclick = function () { comprar(p); };
         var detalle = p.creditos > 1 ? [pr(p.neto / p.creditos) + ' ', el('span', {}, 'por crédito'), iva()].concat(p.dominioSinCargo ? [' + ', el('span', {}, 'configuración de dominio sin cargo')] : []) : iva().trim() || '\u00a0';
-        return el('div', { class: 'producto' + (p.id === 'pase' ? ' studio' : '') + (p.duo || p.id === 'pase-duo' ? ' duo' : '') }, [el('span', { class: 'meta' }, p.nombre),
+        return el('div', { class: 'producto' + (p.id === 'pase' ? ' studio' : '') + (p.id === 'pase-duo' || p.id === 'mejora-duo' ? ' pase-duo' : p.duo ? ' duo' : '') }, [el('span', { class: 'meta' }, p.nombre),
           p.id === 'pase-duo' ? el('b', {}, [el('s', { class: 'tachado' }, pr(D.tienda.paseDuoSinDescuento)), ' ', pr(p.neto)]) : el('b', {}, pr(p.neto)), el('small', {}, detalle), el('div', { class: 'fila' }, b)]);
       };
-      var invit = D.tienda.productos.filter(function (p) { return !p.duo && p.id !== 'pase-duo'; }), duos = D.tienda.productos.filter(function (p) { return p.duo || p.id === 'pase-duo'; });
+      var esDuo = function (p) { return p.duo || p.id === 'pase-duo' || p.id === 'mejora-duo'; };
+      var invit = D.tienda.productos.filter(function (p) { return !esDuo(p); }), duos = D.tienda.productos.filter(esDuo);
       v.append(el('h2', {}, 'Comprar'), el('div', { class: 'productos' }, invit.map(tarjetaProd)));
       if (duos.length) v.append(tarjetaDuo(), el('div', { class: 'productos' }, duos.map(tarjetaProd)));
+      // README (ronda 125): con Studio vigente, banner para pasar a Event Studio Duo pagando solo la diferencia
+      var mejora = D.tienda.productos.filter(function (p) { return p.id === 'mejora-duo'; })[0];
+      if (mejora) {
+        var bm = el('button', { class: 'b', type: 'button' }, 'Pasarme a Event Studio Duo'); bm.onclick = function () { comprar(mejora); };
+        var banner = el('div', { class: 'banner-duo' }, [el('div', {}, [el('strong', {}, 'Pásate a Event Studio Duo'),
+          el('small', {}, [el('span', {}, 'Ya tienes el pase Studio: pagas solo la diferencia'), ' (' + pr(mejora.neto) + iva() + ') ', el('span', {}, 'y el pase Duo vence el mismo día que tu pase Studio'), D.tienda.mejoraDuo && D.tienda.mejoraDuo.hasta ? ' (' + fecha(D.tienda.mejoraDuo.hasta) + ').' : '.'])]), bm]);
+        var info = v.querySelector('.duo-info'); if (info) info.after(banner);
+      }
     }
     if (D.complementos) v.append(vistaComplementos());
     v.append(el('h2', { style: 'margin-top:26px' }, 'Pedidos'));

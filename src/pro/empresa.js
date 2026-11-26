@@ -20,6 +20,9 @@ export function catalogoCompras() {
   for (const k of P.duo.packs) out[`duo-${k.creditos}`] = { nombre: `Pack Duo ${k.creditos} créditos`, creditos: k.creditos, neto: k.precio, nivel: 'duo', duo: true };
   for (const k of P.studioDuo.packs) out[`sduo-${k.creditos}`] = { nombre: `Pack Event Studio Duo ${k.creditos} créditos`, creditos: k.creditos, neto: k.precio, nivel: 'studio-duo', duo: true };
   out['pase-duo'] = { nombre: 'Pase anual Event Studio Duo (12 meses)', creditos: 0, neto: P.studioDuo.pase, nivel: 'studio-duo-pase' };
+  // README (ronda 125): con el pase Studio vigente se pasa a Event Studio Duo pagando solo la diferencia entre los dos pases;
+  // el pase Duo vence el mismo día que el Studio (al renovar, se renueva el pase Event Studio Duo completo).
+  out['mejora-duo'] = { nombre: 'Pasar a Event Studio Duo (hasta el vencimiento del pase Studio)', creditos: 0, neto: P.studioDuo.pase - P.studio.pase, nivel: 'studio-duo-mejora' };
   // README (ronda 87): créditos de complementos (solo si el admin se los habilitó a la empresa): de a 1 o de a 5
   for (const [k, v] of Object.entries(COMPLEMENTOS_PRO)) {
     out[`comp-${k}`] = { nombre: `Crédito de complemento · ${v.nombre}`, creditos: 1, neto: v.neto, nivel: 'complemento', comp: k };
