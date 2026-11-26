@@ -244,6 +244,13 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - Página /profesionales: tres niveles (Pro, Studio, Event Studio Duo), tablas Pro con crédito suelto, Studio, Pro Duo y Event Studio Duo, valor de reventa (`PVP_PRO`), sección del álbum QR con los ganchos por rubro, «Todo en un solo lugar / Funciones» sin insignias de planes (`funciones(E, { pro: true })`), comparativa de tres columnas y preguntas nuevas. «¿Cómo pago?» y «¿Cómo puedo pagar?» (resto del sitio) muestran los medios del país con el mismo texto de la nota de los planes (`[data-medios-faq]` en `sitio.js`).
   - Formulario de profesionales y consola: niveles Pro Duo y Event Studio Duo; la consola aprueba como Event Studio Duo, regala créditos Duo (origen «Créditos Duo») y sube/baja de nivel quitando o poniendo el pase Duo.
   - Depende de Albunear (rama `claude/conexion-amoinvitar`, commit «Slideshow con marca…»): hasta que se publique, Diseño, Platinum, borrar y la marca responden «no disponible» y los álbumes Duo salen Classic.
+- **Ronda 123**: retoques de /profesionales y del Álbum QR.
+  - Créditos en una sola sección: título «Un crédito, una Invitación», línea en negrita «O un crédito, una invitación + un álbum QR.» y las cuatro tablas seguidas (Pro, Studio, Pro Duo, Event Studio Duo), cada una con el nombre y debajo «No requiere pase anual» / «Requiere pase anual activo» (`tabla(n, [nombre, sub], …)` en `construir.mjs`, `.comparar-sub`).
+  - Títulos con la palabra en Dantina: «Cada crédito se paga *Solo*», «Las *Fotos* que nadie más puede tomar», «Tu equipo, tus *Clientes*».
+  - Precios tachados: solo el número va tachado, no el símbolo de moneda (`soloNumero` en `sitio.js`, `eurTachado` en `construir.mjs`, `.tn` en `sitio.css`). Vale también para las promos de los planes y de crear-invitacion.
+  - Panel → Álbum QR: «Slideshow en vivo» y «Descargar todo (ZIP)» solos en una línea, verdes y rellenos (`.aq-principales`, `.aq-tab-verde`); debajo las pestañas.
+  - Si Albunear todavía no tiene publicada una acción nueva (diseno, borrar, mejora) responde `err.badData`: el panel muestra «Esta función estará disponible en unos minutos».
+  - Albunear (commit «Arranque más liviano…»): el deploy fallaba con el error 10021 (arranque por encima del límite de CPU) porque las variantes de idioma se calculaban al cargar el Worker. Ahora se calculan al leerlas.
 
 ## 5. Probar en la compu
 

@@ -341,7 +341,7 @@
         promo ? el('span', { class: 'ci-gratis ci-promo-mini', text: '−' + promo.p.porcentaje + ' %' }) : null),
       it.etiqueta ? el('small', { class: 'ci-etiqueta', text: it.etiqueta }) : null,
       el('h4', { class: 'ci-nombre', text: it.nombre }),
-      promo ? (function () { var p = el('p', { class: 'ci-precio' }); p.innerHTML = (/^desde /.test(precioTxt) ? tr('desde') + ' ' : '') + '<s class="tachado">' + promo.x.antes + '</s> <span class="promo-precio">' + promo.x.texto + '</span>'; return p; })()
+      promo ? (function () { var p = el('p', { class: 'ci-precio' }); p.innerHTML = (/^desde /.test(precioTxt) ? tr('desde') + ' ' : '') + '<s class="tachado">' + (window.aiSoloNumero ? window.aiSoloNumero(promo.x.antes) : promo.x.antes) + '</s> <span class="promo-precio">' + promo.x.texto + '</span>'; return p; })()
         : precioTxt ? el('p', { class: 'ci-precio', text: precioTxt }) : null,
       el('button', { type: 'button', class: 'ci-btn ci-btn-borde', onclick: function () { personalizar(it, ev); } }, it.medida ? 'Comenzar' : 'Personalizar'),
       it.medida && !it.ejemplos && !it.galeria ? null : el('button', { type: 'button', class: 'ci-btn ci-btn-verde', onclick: ver }, it.medida ? 'Ver ejemplos' : (it.galeria ? 'Ver diseños' : 'Ver diseño')));

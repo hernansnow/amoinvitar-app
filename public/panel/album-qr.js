@@ -71,14 +71,16 @@ export function vistaAlbumQr(ctx, { tr, album, inicial = 'fotos', empresa = fals
   const botonesTab = BOTONES.map(([id, t]) => el('button', { type: 'button', class: 'aq-tab', 'data-id': id, onclick: () => abrir(id) }, ...conIco(ICONO_TAB[id] || id, t)));
   // El slideshow se abre en una página de Amo Invitar! (también en el dominio del profesional), con la pantalla del álbum adentro
   const claveCli = (() => { try { return sessionStorage.getItem(`clave_${ctx.S.evento.id}`) || ''; } catch { return ''; } })();
-  const slideshow = el('a', { class: 'aq-tab', target: '_blank', rel: 'noopener', href: `/panel/slideshow.html?ev=${encodeURIComponent(ctx.S.evento.id)}${claveCli ? `&k=${encodeURIComponent(claveCli)}` : ''}` }, ...conIco('pantalla', 'Slideshow en vivo'));
-  const zipBtn = el('button', { type: 'button', class: 'aq-tab', onclick: () => descargarZip() }, ...conIco('zip', 'Descargar todo (ZIP)'));
+  const slideshow = el('a', { class: 'aq-tab aq-tab-verde', target: '_blank', rel: 'noopener', href: `/panel/slideshow.html?ev=${encodeURIComponent(ctx.S.evento.id)}${claveCli ? `&k=${encodeURIComponent(claveCli)}` : ''}` }, ...conIco('pantalla', 'Slideshow en vivo'));
+  const zipBtn = el('button', { type: 'button', class: 'aq-tab aq-tab-verde', onclick: () => descargarZip() }, ...conIco('zip', 'Descargar todo (ZIP)'));
   const caja = el('section', { class: 'ad-tarjeta aq' },
     el('div', { class: 'aq-cabeza' },
       el('div', {}, el('h3', {}, tr('Álbum de fotos')), el('p', { class: 'aq-sub' }, tr('Activo reemplaza Instagram Wall.'))),
       el('div', { class: 'aq-acciones' },
         el('a', { class: 'aq-chip', href: album.link, target: '_blank', rel: 'noopener' }, ...conIco('ojo', 'Ver álbum')))),
-    conFlecha(el, el('div', { class: 'aq-tabs' }, ...botonesTab, slideshow, zipBtn), '#fff'),
+    // README (ronda 123): como en el panel de Albunear, primero Slideshow y ZIP (verdes, rellenos) y abajo las pestañas
+    el('div', { class: 'aq-principales' }, slideshow, zipBtn),
+    conFlecha(el, el('div', { class: 'aq-tabs' }, ...botonesTab), '#fff'),
     cuerpo);
   // README (ronda 122): Deluxe con el álbum Classic: banner chico para pasar a Platinum pagando la diferencia con 5 % menos.
   // El botón lleva a la página de pago del álbum con el cupón ya aplicado (se ve el precio tachado y el monto con descuento).

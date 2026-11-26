@@ -1395,6 +1395,9 @@ async function apiPanel(env, request, url, partes) {
     let r;
     try { r = await env.ALBUNEAR.album(ev.id, pedido); } catch (e) { console.error('albunear album', e); return json({ error: 'Albunear no responde en este momento. Prueba en un rato.' }, 502); }
     if (!r || r.album === null) return json({ error: 'Todavía no hay un álbum creado para esta invitación.', sinAlbum: true }, 404);
+    // README (ronda 123): si Albunear todavía no tiene publicada una acción nueva (diseno, borrar, mejora), responde
+    // err.badData: se muestra un aviso legible en lugar del código.
+    if (r.error === 'err.badData' && ['diseno', 'borrar', 'mejora'].includes(b.accion)) return json({ error: 'Esta función estará disponible en unos minutos. Prueba más tarde.', codigo: r.error }, 503);
     if (r.error) return json({ error: r.error, codigo: r.error }, r.status || 400);
     // La marca del slideshow sigue al nivel del profesional (si pasa a Studio, sin logos; si vuelve a Pro, Amo Invitar!)
     if (b.accion === 'info' && r.event && env.ALBUNEAR.album) {

@@ -28,7 +28,7 @@
       function ir() { window.AmoCrear.medida(slug, titulo, producto); }
       if (window.AmoCrear) return ir();
       if (!d.querySelector('link[href*="crear-invitacion.css"]')) { var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/web/css/crear-invitacion.css?v=19596bcb'; d.head.appendChild(l); }
-      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js?v=09e8ab30'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
+      var sc = d.createElement('script'); sc.src = '/web/js/crear-invitacion.js?v=ff74e94a'; sc.setAttribute('data-app', ''); sc.setAttribute('data-img', '/web/img/ci/'); sc.setAttribute('data-raiz', d.documentElement.getAttribute('data-raiz') || '/'); sc.onload = ir; d.body.appendChild(sc);
     });
   });
 
@@ -249,7 +249,7 @@
       promos.forEach(function (pr) { if (pr.precios[p.id] && (!mejor || pr.porcentaje > mejor.porcentaje)) mejor = pr; });
       if (!mejor) return;
       var x = mejor.precios[p.id];
-      $$('[data-precio="' + p.id + '"]').forEach(function (e) { e.innerHTML = '<s class="tachado">' + x.antes + '</s> <span class="promo-precio">' + x.texto + '</span>'; });
+      $$('[data-precio="' + p.id + '"]').forEach(function (e) { e.innerHTML = '<s class="tachado">' + soloNumero(x.antes) + '</s> <span class="promo-precio">' + x.texto + '</span>'; });
       $$('[data-promo-de="' + p.id + '"]').forEach(function (e) { e.textContent = '−' + mejor.porcentaje + ' %' + (mejor.nombre ? ' · ' + mejor.nombre : ''); e.hidden = false; });
     });
     // «0 €» del plan Gratis, con la moneda del visitante (se toma el formato del plan Basic)
@@ -259,14 +259,14 @@
     // README (ronda 41): precio de un producto suelto (Save The Date a medida…)
     $$('[data-prod]').forEach(function (e) { var p = (c.productos || []).filter(function (x) { return x.id === e.getAttribute('data-prod'); })[0]; if (p && p.precio && p.precio.texto) e.textContent = p.precio.texto; });
     // README (ronda 41): precios de profesionales en la moneda del visitante
-    $$('[data-eur]').forEach(function (e) { var v = c.pro && c.pro[e.getAttribute('data-eur')]; if (v) e.textContent = v; });
+    $$('[data-eur]').forEach(function (e) { var v = c.pro && c.pro[e.getAttribute('data-eur')]; if (v) { if (e.hasAttribute('data-tachar')) e.innerHTML = soloNumero(v); else e.textContent = v; } });
     // README (ronda 48): la promo también en el diseño a medida / corporativo y en los productos sueltos (Save The Date, simple),
     // con el precio de lista tachado, el precio con descuento y la cinta roja con el porcentaje
     function mejorPromo(k) { var m = null; promos.forEach(function (pr) { if (pr.precios[k] && (!m || pr.porcentaje > m.porcentaje)) m = pr; }); return m; }
     function conPromo(e, k) {
       var pr = mejorPromo(k); if (!pr) return;
       var x = pr.precios[k];
-      e.innerHTML = '<s class="tachado">' + x.antes + '</s> <span class="promo-precio">' + x.texto + '</span>';
+      e.innerHTML = '<s class="tachado">' + soloNumero(x.antes) + '</s> <span class="promo-precio">' + x.texto + '</span>';
       var p = e.parentNode;
       // README (ronda 49): en la muestra de los 5 pasos («Realizás el pago») solo el precio tachado, sin cinta
       if (p && !e.closest('.plan-l') && !p.querySelector('.promo-cinta')) { var b = d.createElement('span'); b.className = 'promo-cinta promo-cinta-suelta'; b.textContent = '−' + pr.porcentaje + ' %' + (pr.nombre ? ' · ' + pr.nombre : ''); p.insertBefore(b, e); }
@@ -349,6 +349,9 @@
     }
   }
   var catalogo = null;
+  // README (ronda 123): en los precios tachados solo se tacha el número, no el símbolo de la moneda (si no, parece subrayado)
+  function soloNumero(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\d(?:[\d.,\s\u00a0\u202f]*\d)?/, '<span class="tn">$&</span>'); }
+  window.aiSoloNumero = soloNumero;
   function cargaCatalogo(moneda) {
     fetch('/api/tienda/catalogo' + (moneda ? '?moneda=' + moneda : '')).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (c) { catalogo = c; pintaPrecios(c); }).catch(function () {
       // Sin catálogo: los precios quedan como "Ver en la tienda" y el texto usa lo general

@@ -1331,6 +1331,11 @@ body.edicion-oculta #aviso-medida p + p { margin-top: 12px; }
 .aq-tab.activo { background: #1f2421; color: #fff; }
 .aq-tab.apagado { opacity: .45; }
 .aq-tab:disabled { opacity: .6; cursor: progress; }
+/* README (ronda 123): Slideshow en vivo y Descargar todo (ZIP), solos en una línea, verdes y rellenos */
+.aq-principales { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.aq-tab.aq-tab-verde { background: var(--acento); border-color: var(--acento); color: var(--acento-texto); font-weight: 600; }
+.aq-tab.aq-tab-verde:hover { filter: brightness(.94); background: var(--acento); }
+@media (max-width: 560px) { .aq-principales .aq-tab { flex: 1 1 0; justify-content: center; padding: 9px 12px; } }
 .aq-cuerpo { background: #e8f3ee; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-height: 200px; }
 .aq-cuerpo h3 { margin: 0; font-size: 1.1rem; }
 .aq-cuerpo h4 { margin: 8px 0 0; font-size: 1rem; }
