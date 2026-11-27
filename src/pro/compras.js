@@ -12,6 +12,7 @@ import { sendEmail, mailCompraPro, mailCompraProPagada, mailAvisoInterno } from 
 import { PROFESIONALES } from '../catalogo.js';
 import { catalogoCompras, siguienteNumeroCompra, nuevoLote, renovarPase } from './empresa.js';
 import { sumarSaldo, sumarDuo, paseDuo } from './extras.js';
+import { cerrarDemoPorCompra } from './demo.js'; // README (ronda 128)
 import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
 
 const r2 = (n) => Math.round(n * 100) / 100;
@@ -66,6 +67,8 @@ export async function pagarCompra(env, id, { medio = 'transferencia', nota = nul
   // README (ronda 122): la configuración del dominio propio va sin cargo desde el pack de 50 (Studio y Event Studio Duo)
   const packDominio = /^(studio|sduo)-(\d+)$/.exec(c.item);
   if (c.item === 'dominio' || (packDominio && Number(packDominio[2]) >= PROFESIONALES.studio.dominioSinCargoDesdePack)) await env.DB.prepare('UPDATE empresas_pro SET dominio = 1 WHERE empresa_id = ?').bind(c.empresa_id).run();
+  // README (ronda 128): el pase comprado durante la demo empieza hoy (la cuenta deja de ser demo)
+  if (['pase', 'pase-duo'].includes(c.item)) await cerrarDemoPorCompra(env, c.empresa_id);
   if (c.item === 'pase') await renovarPase(env, c.empresa_id, 12);
   // Event Studio Duo: renueva el pase Studio y el de Duo (los dos vencen juntos)
   else if (c.item === 'pase-duo') { const r0 = await renovarPase(env, c.empresa_id, 12); await paseDuo(env, c.empresa_id, r0.paseVence); }

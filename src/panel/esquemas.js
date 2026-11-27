@@ -818,7 +818,8 @@ export function recortarSinPagar(esquema, datos, { pagado, extras = [] }) {
 }
 
 // Cada paso con su nivel (para los avisos Basic / Premium / Deluxe / Complemento del menú)
-function anotar(pasos, { vinculo = false, modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false, motivoCerrada = null }) {
+// README (ronda 128): fijos = nombres y fecha bloqueados aunque no esté publicada (invitación demo que volvió a borrador)
+function anotar(pasos, { vinculo = false, modelo, gratis = false, disenoEnviado = false, publicada = false, cerrada = false, admin = false, motivoCerrada = null, fijos = false }) {
   return pasos.map((paso) => ({
     ...paso,
     nivel: paso.complemento ? 'complemento' : paso.nivelPaso || (paso.seccion ? paqueteMinimo(modelo, paso.seccion) : 'basic'),
@@ -830,7 +831,7 @@ function anotar(pasos, { vinculo = false, modelo, gratis = false, disenoEnviado 
       if (admin) return c;
       if (cerrada && !['nota', 'linkStd', 'medidaStd', 'avisoDiseno', 'avisoPersonalizacion'].includes(c.tipo)) return { ...c, cerrado: motivoCerrada || 'El evento ya pasó: la invitación no se puede modificar. Si necesitas un cambio, escríbenos por WhatsApp.', pedirCambio: true };
       if (vinculo && !publicada && FIJOS_VINCULO.includes(c.id)) return { ...c, cerrado: MOTIVO_VINCULO, pedirCambio: true };
-      if (publicada && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'Invitación publicada: solicitar cambio', pedirCambio: true /* README (ronda 104): texto corto + botón de WhatsApp */ };
+      if ((publicada || fijos) && FIJOS_PUBLICADA.includes(c.id)) return { ...c, cerrado: 'Invitación publicada: solicitar cambio', pedirCambio: true /* README (ronda 104): texto corto + botón de WhatsApp */ };
       return c;
     }),
   }));
@@ -951,7 +952,7 @@ function pasosStdWeb({ tipo, modelo, datos }) {
 
 // ── Entrada principal ─────────────────────────────────────────────────
 // producto: 'invitacion' | 'a-medida' | 'std-web' | 'std-tarjeta' | …
-export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false, empresa = false }) {
+export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false, empresa = false, fijos = false }) {
   // README (ronda 28): Save The Date (tarjeta o foto) y agradecimiento comprados sueltos: el mismo editor que en la
   // invitación, con el diseño elegido; se paga al generar la tarjeta
   if (['std-tarjeta', 'std-foto', 'agradecimiento'].includes(producto)) {
@@ -990,7 +991,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     // al publicar solo quedan fijos los nombres y la fecha, y se cierran unos días después del evento.
     const cerrada = !admin && publicada && edicionCerrada(datos);
     return { producto, tipo, paquete, publicada, simple: !!m.simple, std: !!m.std, sinAdmin: !!m.std, sinNiveles: true, cerrada,
-      pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin }) };
+      pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, fijos }) };
   }
   const base = pasosInvitacion({ tipo, modelo: m });
   // Sin lista de invitados en el modelo (a medida, etc.), la seguridad va sola antes del idioma
@@ -1026,7 +1027,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
   if (producto === 'a-medida') { sinPlanes(pasos); paraMedida(pasos); if (!bloqueada && !admin && personalizacionBloqueada(datos)) cerrarPersonalizacion(pasos); }
   // README (ronda 29): el diseño a medida ya trae todo (Deluxe): sin insignias de plan
   return { producto, tipo, paquete, publicada, cerrada: cerrada && !admin, admin, ...(producto === 'a-medida' ? { sinNiveles: true } : {}),
-    edicionOculta: bloqueada && !admin ? estadoMedida(datos.medida) : null, /* README (ronda 93): solo el mensaje, sin los campos */ pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
+    edicionOculta: bloqueada && !admin ? estadoMedida(datos.medida) : null, /* README (ronda 93): solo el mensaje, sin los campos */ pasos: anotar(pasos, { vinculo: !!datos?.vinculo?.albunear, modelo: m, gratis, disenoEnviado, publicada, cerrada, admin, fijos, ...(bloqueada ? { motivoCerrada: MOTIVO_ENVIADA } : {}) }) };
 }
 // README (ronda 87): eventos de empresas (Pro y Studio): el álbum QR solo con link propio (el de Albunear lo ofrece el
 // profesional por su cuenta) y los textos de los complementos sin precios

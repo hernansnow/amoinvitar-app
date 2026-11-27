@@ -82,6 +82,7 @@ function albumDePrueba(p) {
     case 'portada': ALBUM_PRUEBA.cover = p.quitar ? null : (p.bytes?.byteLength ? '/modelos/garden/img/bg21.jpg' : null); ALBUM_PRUEBA.ultimaPortada = p.bytes?.byteLength || 0; return albumDePrueba({ accion: 'estilos' });
     case 'borrar': return { ok: true };
     case 'marca': ALBUM_PRUEBA.brand = p.marca || 'albunear'; ALBUM_PRUEBA.guestUrl = p.url || 'https://albunear.com/a/prueba'; env.ULTIMA_MARCA = p; if (p.responsable) console.log('[prueba] responsable del álbum:', JSON.stringify(p.responsable)); return { ok: true, brand: ALBUM_PRUEBA.brand, guestUrl: ALBUM_PRUEBA.guestUrl, privacidad: !!p.responsable };
+    case 'plan': env.ULTIMO_PLAN = p.nuevo; console.log('[prueba] plan del álbum →', p.nuevo); ALBUM_PRUEBA.plan = p.nuevo; return { ok: true, plan: p.nuevo }; // README (ronda 128)
     case 'mejora': return { url: 'https://albunear.com/auth/verify?t=PRUEBA-MEJORA', cupon: 'AMO5PRUEBA', porcentaje: p.porcentaje };
     case 'zip': return { files: vivas.map((m, i) => ({ url: m.original, name: `fotos/${String(i + 1).padStart(4, '0')}.jpg`, size: 1000 })), slug: 'prueba' };
     case 'entrar': return { url: `https://albunear.com/auth/verify?t=PRUEBA#${p.pestana}` };
@@ -107,6 +108,7 @@ http.createServer(async (req, res) => {
   if (url.pathname === '/__ingreso') { await env.DB.prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = ?2").bind(`ingreso:${url.searchParams.get('id')}`, new Date(Date.now() - Number(url.searchParams.get('dias') || 0) * 86400000).toISOString(), Date.now()).run(); res.writeHead(200); return res.end('ok'); }
   // README (ronda 118): correr los recordatorios con el reloj adelantado (?horas=30) para probarlos sin esperar
   if (url.pathname === '/__recordatorios') { const { recordatoriosAutomaticos } = await import('../src/recordatorios.js'); const r = await recordatoriosAutomaticos(env, { ahora: Date.now() + (Number(url.searchParams.get('horas')) || 0) * 3600000 }); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(r)); }
+  if (url.pathname === '/__demo') { const { tareasDemo } = await import('../src/pro/demo.js'); const r = await tareasDemo(env, Date.now() + Number(url.searchParams.get('dias') || 0) * 86400000); res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(r)); } // README (ronda 128)
   if (url.pathname === '/__mails') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(env.ULTIMOS_MAILS)); }
   const request = new Request(url, { method: req.method, headers: req.headers, body: cuerpo, duplex: 'half' });
   // Como en Cloudflare (run_worker_first): todo pasa por el Worker, que sirve los archivos con ASSETS

@@ -4,6 +4,7 @@
 //   GET  /admin/facturas.csv?year=&q= libro registro de facturas emitidas (Excel)
 //   GET  /api/admin/facturas?year=&q= listado, estado de VeriFactu y umbral OSS
 //   POST /api/admin/verifactu/enviar  reenvía ya lo pendiente a la AEAT
+import { tareasDemo } from '../pro/demo.js'; // README (ronda 128)
 import { recordatoriosAutomaticos, limpiarCuponesSistema } from '../recordatorios.js';
 import { json, HttpError, escapeHtml, now } from '../lib/util.js';
 import { avisosCierre, resumenRespuestas } from '../avisos.js';
@@ -93,6 +94,9 @@ export async function tareas(controller, env) {
     if (new Date(controller.scheduledTime || Date.now()).getUTCMinutes() === 17) {
       const rec = await recordatoriosAutomaticos(env).catch((e) => console.error('[recordatorios]', e));
       if (rec?.enviados) console.log('[recordatorios]', JSON.stringify(rec));
+      // README (ronda 128): fin de las demos Event Studio Duo (cuenta a Pro, invitación a borrador, borrar a los 30 días)
+      const dem = await tareasDemo(env).catch((e) => console.error('[demo]', e));
+      if (dem && (dem.cuentas || dem.desactivadas || dem.borradas)) console.log('[demo]', JSON.stringify(dem));
     }
     return;
   }

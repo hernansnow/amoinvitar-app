@@ -7,7 +7,7 @@
 //   POST /api/admin/pro/empresas/<id>/estado       { estado: 'activa' | 'suspendida', nivel? }
 //   POST /api/admin/pro/empresas/<id>/complementos { habilitado }   (README ronda 87) el profesional ve y compra créditos de complementos
 //   POST /api/admin/pro/empresas/<id>/regalar      { item, cantidad, nota }   créditos de complementos sin cargo (negativo = descontar)
-//   POST /api/admin/pro/empresas/<id>/demo         { demo }   cuenta DEMO de Studio (pase 30 días y 1 crédito si no tiene)
+//   POST /api/admin/pro/empresas/<id>/demo         { demo }   demo Event Studio Duo de 7 días (README ronda 128)
 //   POST /api/admin/medidas/<evento>/<aprobar|lista|abrir|cerrar>  { parte: 'std' | 'medida' | 'diseno' }
 // Quien entra: un administrador (ADMINS) con su sesión, o la clave ADMIN_CLAVE.
 import { json, readJson, str, randomId, HttpError } from '../lib/util.js';
@@ -20,6 +20,7 @@ import { sendEmail, mailMedidaAprobada, mailProAprobada, mailProRechazada } from
 import { PROFESIONALES } from '../catalogo.js';
 import { sumarMeses, nuevoLote, renovarPase as renovarPaseBase, catalogoCompras } from '../pro/empresa.js';
 import { pagarCompra } from '../pro/compras.js';
+import { activarDemo, terminarDemo } from '../pro/demo.js'; // README (ronda 128)
 import { extrasDe, cambiarExtras, sumarSaldo, COMPLEMENTOS_PRO, sumarDuo, paseDuo } from '../pro/extras.js';
 import { dominiosParaAdmin, marcarDominio, quitarDominio, revisarDominio, conCloudflare, cnameDe } from '../pro/dominios.js';
 import { idiomaPara, recordarIdioma } from '../lib/idioma-mail.js'; // README (ronda 118)
@@ -61,7 +62,12 @@ export async function resumen(request, env) {
   const compras = (await q(`SELECT c.id, c.numero, c.item, c.neto, c.iva_tasa, c.iva, c.total, c.estado, c.creado, c.pagada, c.factura, e.nombre AS empresa FROM compras_pro c JOIN empresas e ON e.id = c.empresa_id ORDER BY (c.estado = 'pendiente') DESC, c.creado DESC LIMIT 100`)).map((x) => ({ ...x, nombre: cat[x.item]?.nombre || x.item }));
   const dominios = await dominiosParaAdmin(env);
   // README (ronda 87): DEMO y créditos de complementos de cada empresa
-  for (const e of empresas) { const x = await extrasDe(env, e.id); e.demo = x.demo; e.compHabilitado = x.habilitado; e.compSaldo = x.saldo; }
+  for (const e of empresas) {
+    const x = await extrasDe(env, e.id); e.demo = x.demo; e.compHabilitado = x.habilitado; e.compSaldo = x.saldo;
+    // README (ronda 128): demo Event Studio Duo y Duo (créditos, crédito demo y pase Event Studio Duo)
+    e.demoHasta = x.demoHasta; e.demoFin = x.demoFin; e.duoSaldo = parseInt(x.duo?.saldo, 10) || 0; e.duoDemo = parseInt(x.duo?.demo, 10) || 0;
+    e.duoPase = x.duo?.paseVence && e.pase_vence && x.duo.paseVence >= hoy ? x.duo.paseVence : null;
+  }
   return json({ solicitudes, empresas, complementosPro: Object.entries(COMPLEMENTOS_PRO).map(([k, v]) => ({ id: k, nombre: v.nombre, neto: v.neto })), dominios, dominiosInfo: { cname: cnameDe(env), automatico: conCloudflare(env) }, medidas, transferencias, compras, base: { pase: PROFESIONALES.studio.pase, credito: PROFESIONALES.credito } });
 }
 
@@ -166,27 +172,10 @@ async function renovarPase(env, id, b) {
   return json({ ok: true, paseVence: r.paseVence, lotesExtendidos: r.lotesExtendidos });
 }
 
-// README (ronda 87): cuenta DEMO de Studio: arma invitaciones con 1 crédito, pero no las publica (solo vista previa)
+// README (ronda 128): demo Event Studio Duo de 7 días (antes, ronda 87, DEMO de Studio sin publicar). Ver src/pro/demo.js
 async function modoDemo(env, id, b) {
-  const e = await empresaPro(env, id);
-  const x = await extrasDe(env, id);
-  if (b.demo) {
-    // README (ronda 88): se guarda el nivel y el pase de antes, para volver a ellos al quitar la DEMO
-    const previo = x.demo && x.previo ? x.previo : { nivel: e.nivel, pase_vence: e.pase_vence || null };
-    if (!(e.nivel === 'studio' && e.pase_vence && e.pase_vence >= ahora())) {
-      await env.DB.prepare("UPDATE empresas_pro SET nivel = 'studio', pase_vence = ? WHERE empresa_id = ?").bind(sumarMeses(ahora(), 1), id).run();
-      await env.DB.prepare("UPDATE empresas SET plan = 'studio' WHERE id = ?").bind(id).run();
-    }
-    const c = await env.DB.prepare('SELECT COALESCE(SUM(cantidad - usados), 0) AS n FROM creditos_lotes WHERE empresa_id = ? AND vence >= ?').bind(id, ahora()).first();
-    if (!c?.n) await nuevoLote(env, id, 1, 'demo', 'Crédito de la cuenta DEMO');
-    return json({ ok: true, ...(await cambiarExtras(env, id, { demo: true, previo })) });
-  }
-  // Al quitarla: vuelve al nivel y al pase que tenía (una cuenta Pro vuelve a Pro)
-  if (x.demo && x.previo) {
-    await env.DB.prepare('UPDATE empresas_pro SET nivel = ?, pase_vence = ? WHERE empresa_id = ?').bind(x.previo.nivel || 'pro', x.previo.pase_vence || null, id).run();
-    await env.DB.prepare('UPDATE empresas SET plan = ? WHERE id = ?').bind(x.previo.nivel || 'pro', id).run();
-  }
-  return json({ ok: true, ...(await cambiarExtras(env, id, { demo: false, previo: null })) });
+  await empresaPro(env, id);
+  return json({ ok: true, ...(b.demo ? await activarDemo(env, id) : await terminarDemo(env, id)) });
 }
 
 async function cambiarEstado(env, id, b) {

@@ -2253,8 +2253,9 @@ function textoPublicar() {
   const md = S.plan?.medida;
   if (md) return md.aprobado && !S.plan.pagado ? ['Completar el pago', 'Pagar'] : ['Enviar al equipo de diseño', 'Enviar'];
   if (!esInvitacionWeb()) return ['Enviar al diseño', 'Enviar'];
-  // README (ronda 87): el cliente final sin permiso para publicar solo guarda; la cuenta DEMO no publica (vista previa)
-  if (S.empresa && (!S.empresa.puedePublicar || (S.empresa.demo && S.evento.estado !== 'publicado'))) return S.empresa.demo && S.empresa.puedePublicar ? ['Ver vista previa (DEMO)', 'Vista previa'] : ['Guardar cambios', 'Guardar'];
+  // README (ronda 87): el cliente final sin permiso para publicar solo guarda
+  // README (ronda 128): la demo Event Studio Duo sí publica (con su crédito Duo demo)
+  if (S.empresa && !S.empresa.puedePublicar) return ['Guardar cambios', 'Guardar'];
   if (S.empresa) return S.evento.estado === 'publicado' ? ['Guardar cambios', 'Guardar'] : ['Publicar la invitación', 'Publicar'];
   return S.evento.estado === 'publicado' ? ['Guardar cambios', 'Guardar'] : ['Obtener mi link', 'Obtener link'];
 }
@@ -2268,7 +2269,6 @@ function pintarPublicar() {
 async function publicar() {
   clearTimeout(guardarTimer); await guardar();
   if (S.empresa && !S.empresa.puedePublicar) { aviso(S.evento.estado === 'publicado' ? '¡Cambios guardados en tu invitación!' : 'Cambios guardados. La invitación la publica quien organiza tu evento.'); return; }
-  if (S.empresa?.demo && S.evento.estado !== 'publicado') { verPrevia(true); aviso('Cuenta DEMO: la invitación no se publica. Así se vería.'); return; }
   // Diseño a medida: primero se envía al equipo; con el proyecto aprobado, se paga
   const md = S.plan?.medida;
   if (md) {
@@ -2389,6 +2389,12 @@ function aplicarEmpresa(e) {
   if (!e) return;
   document.body.classList.add('con-empresa');
   if (PALETAS[e.paleta]) document.documentElement.style.setProperty('--acento', PALETAS[e.paleta]);
+  // README (ronda 128): colores libres elegidos por el profesional (uno oscuro para botones y barras, uno claro de fondo)
+  if (e.paleta === 'libre' && /^#[0-9a-f]{6}$/i.test(e.panelOscuro || '')) document.documentElement.style.setProperty('--acento', e.panelOscuro);
+  if (e.paleta === 'libre' && /^#[0-9a-f]{6}$/i.test(e.panelClaro || '')) document.documentElement.style.setProperty('--fondo', e.panelClaro);
+  // README (ronda 128): favicon del profesional (el ícono que subió o uno genérico), nunca el de Amo Invitar!
+  document.querySelectorAll('link[rel~="icon"], link[rel="apple-touch-icon"]').forEach((x) => x.remove());
+  document.head.append(el('link', { rel: 'icon', href: e.icono || '/comun/img/pro-icono.svg' }));
   if (e.demo) document.body.classList.add('cuenta-demo');
   // El cliente final no va a «Mis invitaciones» ni a otras invitaciones
   if (e.cliente || e.limpio) document.querySelectorAll('.btn-mis-invitaciones').forEach((x) => x.remove());

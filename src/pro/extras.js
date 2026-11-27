@@ -26,7 +26,7 @@ export async function extrasDe(env, empresaId) {
   if (!empresaId) return { demo: false, habilitado: false, saldo: {} };
   let x = {};
   try { x = JSON.parse((await getState(env, clave(empresaId))) || '{}') || {}; } catch { x = {}; }
-  return { demo: !!x.demo, previo: x.previo || null, habilitado: !!x.habilitado, saldo: x.saldo && typeof x.saldo === 'object' ? x.saldo : {}, historial: Array.isArray(x.historial) ? x.historial : [],
+  return { demo: !!x.demo, demoHasta: x.demoHasta || null, demoFin: x.demoFin || null, previo: x.previo || null, habilitado: !!x.habilitado, saldo: x.saldo && typeof x.saldo === 'object' ? x.saldo : {}, historial: Array.isArray(x.historial) ? x.historial : [],
     duo: x.duo && typeof x.duo === 'object' ? x.duo : {} }; // README (ronda 122)
 }
 async function guardar(env, empresaId, x) {
@@ -36,6 +36,9 @@ export async function cambiarExtras(env, empresaId, cambios) {
   const x = await extrasDe(env, empresaId);
   for (const k of ['demo', 'habilitado']) if (k in cambios) x[k] = !!cambios[k];
   if ('previo' in cambios) x.previo = cambios.previo || null; // README (ronda 88): nivel y pase de antes de la DEMO
+  // README (ronda 128): demo Event Studio Duo: hasta cuándo dura y cuándo terminó
+  for (const k of ['demoHasta', 'demoFin']) if (k in cambios) x[k] = cambios[k] || null;
+  if ('duoDemo' in cambios) x.duo = { ...(x.duo || {}), demo: Math.max(0, parseInt(cambios.duoDemo, 10) || 0) };
   await guardar(env, empresaId, x);
   return x;
 }
@@ -93,3 +96,12 @@ export async function paseDuo(env, empresaId, vence) {
   return x;
 }
 export const duoVigente = (x) => !!(x?.duo?.paseVence && x.duo.paseVence >= new Date().toISOString());
+// README (ronda 128): el crédito Duo de la demo (uno solo): publica la invitación con su álbum mientras dura la prueba
+export async function usarDuoDemo(env, empresaId, nota = '') {
+  const x = await extrasDe(env, empresaId);
+  if (!x.demo || !((parseInt(x.duo?.demo, 10) || 0) > 0) || !(x.demoHasta > new Date().toISOString())) return false;
+  x.duo = { ...(x.duo || {}), demo: (parseInt(x.duo.demo, 10) || 0) - 1 };
+  x.historial.push({ f: new Date().toISOString(), item: 'duo-demo', cantidad: -1, origen: 'uso', nota: String(nota || '').slice(0, 120) });
+  await guardar(env, empresaId, x);
+  return true;
+}

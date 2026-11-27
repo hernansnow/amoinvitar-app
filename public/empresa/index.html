@@ -11,7 +11,7 @@
 <script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
   if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
   document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
-<script src="/comun/js/regional.js?v=6e82b5da" defer></script>
+<script src="/comun/js/regional.js?v=7de05fd0" defer></script>
 <script src="/comun/js/selector-pais.js?v=r89" defer></script>
 <style>
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
@@ -155,6 +155,16 @@
   header .b.sec:hover { background: rgba(255,255,255,.14); }
   header select { background: rgba(255,255,255,.95); }
   header .sel-pais-boton { border-color: rgba(255,255,255,.85); }
+  /* README (ronda 128): botón y manual de ayuda */
+  header .ayuda-btn { width: 34px; height: 34px; padding: 0; border-radius: 50%; font-weight: 600; }
+  dialog.ayuda { max-width: 680px; width: calc(100% - 24px); border: 0; border-radius: 18px; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+  dialog.ayuda::backdrop { background: rgba(0,0,0,.4); }
+  .ayuda-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--linea); position: sticky; top: 0; background: #fff; }
+  .ayuda-cab h2 { margin: 0; font-size: 20px; }
+  .ayuda-cuerpo { padding: 8px 20px 20px; max-height: 70vh; overflow: auto; }
+  .ayuda-cuerpo details { border-bottom: 1px solid var(--linea); padding: 10px 0; }
+  .ayuda-cuerpo summary { cursor: pointer; font-weight: 600; font-size: 16px; }
+  .ayuda-cuerpo p { margin: 8px 0 0; color: var(--suave); font-size: 15px; }
   pre.datos { background: #f6f9f8; border-radius: 10px; padding: 12px; white-space: pre-wrap; font: 14px/1.5 Jost, sans-serif; margin: 8px 0; }
 </style>
 </head>
@@ -212,21 +222,65 @@
   }
   function tabla(cab, filas) { return el('div', { class: 'envuelve' }, el('table', {}, [el('thead', {}, el('tr', {}, cab.map(function (c) { return el('th', {}, c); }))), el('tbody', {}, filas.map(function (f) { return el('tr', {}, f.map(function (c, i) { return el('td', { 'data-l': cab[i] || null }, c); })); }))])); }
   var wa = function (t) { return D.contacto.whatsapp ? 'https://wa.me/' + D.contacto.whatsapp + '?text=' + encodeURIComponent(t + ' · ' + D.empresa.nombre) : 'mailto:' + D.contacto.email + '?subject=' + encodeURIComponent(t + ' · ' + D.empresa.nombre); };
-  // README (ronda 87): cuenta DEMO de Studio (se ve en todas las pestañas)
-  function cintaDemo() { return el('div', { class: 'demo-cinta' }, [el('b', {}, 'DEMO'), el('span', {}, 'Cuenta de prueba de Studio: puedes armar una invitación con tu crédito, pero no se publica (solo la ves tú en la vista previa).')]); }
+  // README (ronda 128): demo Event Studio Duo (se ve en todas las pestañas) con la fecha de fin de la prueba
+  function cintaDemo() {
+    var e = D.empresa, quedan = e.duo && e.duo.demo > 0;
+    return el('div', { class: 'demo-cinta' }, [el('b', {}, 'DEMO'), el('span', {}, [el('strong', {}, 'Prueba gratis de Event Studio Duo hasta el'), ' ' + fecha(e.demoHasta) + '. ',
+      el('span', {}, quedan ? 'Tienes 1 crédito Duo de prueba: publica una invitación completa con su álbum QR, todo con tu marca.' : 'Ya usaste tu crédito Duo de prueba.'), ' ',
+      el('span', {}, 'Al terminar, tu cuenta pasa a Pro y la invitación de prueba vuelve a borrador hasta que le apliques un crédito.')])]);
+  }
 
   // ── Encabezado: con Studio, sin la marca de Amo Invitar ──
   function pintaCab() {
     // README (ronda 87): el tablero del profesional (Pro o Studio) lleva el logo de Amo Invitar
     var e = D.empresa, marca = $('#marca'); marca.replaceChildren();
+    // README (ronda 128): favicon del profesional (su ícono o uno genérico) y colores elegidos para el panel
+    document.querySelectorAll('link[rel~="icon"]').forEach(function (x) { x.remove(); });
+    document.head.append(el('link', { rel: 'icon', href: (D.marca && D.marca.icono) || '/comun/img/pro-icono.svg' }));
+    var cols = coloresPanel(D.marca || {}), rs = document.documentElement.style;
+    if (cols) { rs.setProperty('--verde', cols[0]); rs.setProperty('--verde-2', cols[0]); rs.setProperty('--claro', cols[1]); } else ['--verde', '--verde-2', '--claro'].forEach(function (k) { rs.removeProperty(k); });
     marca.append(el('a', { href: 'https://amoinvitar.com/' }, el('img', { src: '/comun/img/amoinvitar-blanco.svg', alt: 'Amo Invitar!' })), el('strong', {}, e.nombre)); document.title = 'Tablero profesional · ' + e.nombre;
     var der = $('#der'); der.replaceChildren();
     if (D.empresas.length > 1) { var s = el('select', { style: 'width:auto', onchange: function () { EMP = s.value; cargar(); } }, D.empresas.map(function (x) { return el('option', { value: x.id }, x.nombre); })); s.value = e.id; der.append(s); }
     // README (ronda 87): país e idioma, antes de «Salir» (se arma una sola vez y se reusa al repintar)
     var pais = pintaCab.pais || (pintaCab.pais = el('div', { class: 'pais' }));
     if (!pais.firstChild) { var monta = function () { if (window.AI_PAIS && !pais.firstChild) window.AI_PAIS(pais); }; monta(); if (!pais.firstChild) addEventListener('load', monta); }
-    der.append(el('span', { class: 'correo' }, D.usuario.email), el('span', { class: 'tag' + (e.nivel === 'studio' ? ' studio' : '') }, e.demo ? 'Studio DEMO' : e.nivel === 'studio' ? 'Studio' : 'Pro'), pais,
+    der.append(el('span', { class: 'correo' }, D.usuario.email), el('span', { class: 'tag' + (e.nivel === 'studio' ? ' studio' : '') }, e.demo ? 'Event Studio Duo DEMO' : e.duo && e.duo.pase ? 'Event Studio Duo' : e.nivel === 'studio' ? 'Studio' : 'Pro'), pais,
+      el('button', { class: 'b sec ayuda-btn', type: 'button', title: 'Ayuda', 'aria-label': 'Ayuda', onclick: abrirAyuda }, '?'),
       el('form', { method: 'post', action: '/auth/salir', style: 'margin:0' }, el('button', { class: 'b sec', type: 'submit', style: 'padding:7px 14px' }, 'Salir')));
+  }
+
+  // README (ronda 128): colores del panel: una de las paletas o los colores libres (uno oscuro y uno claro)
+  var PALETAS = [['', 'Verde', '#4e9c87', '#e5f3ec'], ['negro', 'Negro', '#1f1f1f', '#e6e6e6'], ['azul', 'Azul', '#2f5d9e', '#e3edfa'], ['rojo', 'Rojo', '#b0353f', '#f8e3e6'], ['dorado', 'Dorado', '#a8823c', '#f5ecd9'], ['violeta', 'Violeta', '#6b4c9a', '#eee6f7']]; // README (ronda 88): un solo nombre por color
+  function coloresPanel(m) {
+    if (m.paleta === 'libre' && m.panelOscuro) return [m.panelOscuro, m.panelClaro || '#f4f4f4'];
+    var p = PALETAS.filter(function (x) { return x[0] && x[0] === m.paleta; })[0];
+    return p ? [p[2], p[3]] : null;
+  }
+
+  // ── README (ronda 128): ayuda del tablero (manual de cómo funciona todo) ──
+  var MANUAL = [
+    ['Cómo funciona', ['Desde este tablero creas los eventos de tus clientes, los publicas con tus créditos y manejas tu marca, tu equipo y tus compras. Cada evento tiene su panel, el mismo que usa tu cliente para completar la invitación.']],
+    ['Crear un evento', ['Toca «Nuevo evento», elige el tipo de evento, el diseño, los nombres y la fecha. Se abre el panel del evento para completarlo. El diseño se puede cambiar mientras no esté publicado.', 'Con «Link para el cliente» copias el link del panel para que tu cliente cargue sus datos, fotos e invitados. Si marcas «Mi cliente puede publicar su invitación», también puede publicarla él.']],
+    ['Publicar y créditos', ['Cada invitación publicada usa 1 crédito, una sola vez por evento: después se puede seguir editando sin costo. Los créditos vencen a los 12 meses de la compra.', 'Con Duo, cada crédito Duo publica la invitación y además un álbum QR conectado: los invitados suben sus fotos y videos escaneando el QR y tu cliente los ve, los descarga y los proyecta desde su panel.']],
+    ['Nombres y fecha', ['Una vez publicada, los nombres y la fecha de la invitación quedan fijos para que no se use para otro evento. Si hay un error, pídenos el cambio y lo hacemos nosotros.']],
+    ['Tu marca', ['En «Marca» subes tu logo, tu ícono cuadrado (el que se ve en la pestaña del navegador del tablero, de los paneles y de las invitaciones) y el texto y el color del pie. Si no subes un ícono, se usa uno genérico.', 'También eliges los colores del panel: una de las paletas o tus colores libres, uno oscuro para los botones y la barra y uno claro para el fondo.', 'Con Studio y Event Studio Duo, las invitaciones, los paneles y el álbum QR salen sin la marca de Amo Invitar!.']],
+    ['Tu equipo', ['En «Equipo» sumas a las personas que trabajan contigo. Entran con su mail, sin contraseñas. Editor: crea, edita y publica eventos. Solo lectura: mira.']],
+    ['Comprar', ['En «Créditos y pedidos» compras créditos, packs y pases. Con tarjeta o PayPal se acreditan al instante; con transferencia, cuando confirmamos el pago. Las facturas quedan en «Pedidos».']],
+    ['Dominio propio', ['Con Studio o Event Studio Duo, tus invitaciones, el panel de tus clientes y el álbum QR pueden salir desde tu propio dominio, por ejemplo invitaciones.tusalon.com. En «Cuenta» cargas el dominio y te mostramos el registro DNS que hay que crear.']],
+    ['Prueba gratis', ['La prueba gratis dura 7 días e incluye todo Event Studio Duo, menos el dominio propio, con 1 crédito Duo de prueba. Al terminar, tu cuenta pasa a Pro sola y la invitación de prueba vuelve a borrador: se reactiva aplicándole un crédito. Si en 30 días no le aplicas ninguno, se borra.', 'El álbum de la prueba pasa a gratis y se borra a los 15 días con todo lo subido, salvo que le apliques un crédito Duo.']],
+    ['¿Necesitas ayuda?', ['Escríbenos por WhatsApp o por mail desde la pestaña «Cuenta» y te respondemos.']],
+  ];
+  function abrirAyuda() {
+    var d = $('#ayuda');
+    if (!d) {
+      d = el('dialog', { id: 'ayuda', class: 'ayuda' }, [el('div', { class: 'ayuda-cab' }, [el('h2', {}, 'Ayuda del tablero'), el('button', { class: 'b sec', type: 'button', onclick: function () { d.close(); } }, 'Cerrar')]),
+        el('div', { class: 'ayuda-cuerpo' }, MANUAL.map(function (s) { return el('details', {}, [el('summary', {}, s[0])].concat(s[1].map(function (p) { return el('p', {}, p); }))); }))]);
+      d.addEventListener('click', function (ev) { if (ev.target === d) d.close(); });
+      document.body.append(d);
+      var p = d.querySelector('details'); if (p) p.open = true;
+    }
+    d.showModal();
   }
 
   // ── Eventos ──
@@ -244,7 +298,7 @@
       { n: 'modelo', l: 'Diseño', tipo: 'select', op: porTipo(tipoInicial).map(function (m) { return [m.id, m.nombre]; }) },
       { n: 'a', l: 'Nombre', ph: 'Ej.: Sofi' }, { n: 'b', l: 'Nombre 2', ph: 'Ej.: Pablo' }, { n: 'fecha', l: 'Fecha del evento', tipo: 'date' },
       // README (ronda 122): Duo = invitación + álbum QR (se publica con un crédito Duo; se puede cambiar antes de publicar)
-      { n: 'duo', l: 'Qué incluye', tipo: 'select', v: D.empresa.duo && D.empresa.duo.saldo > 0 ? '1' : '0', op: [['0', 'Invitación Deluxe Pro (1 crédito)'], ['1', 'Duo: invitación + álbum QR (1 crédito Duo)']] },
+      { n: 'duo', l: 'Qué incluye', tipo: 'select', v: D.empresa.duo && (D.empresa.duo.saldo > 0 || D.empresa.duo.demo > 0) ? '1' : '0', op: [['0', 'Invitación Deluxe Pro (1 crédito)'], ['1', 'Duo: invitación + álbum QR (1 crédito Duo)']] },
       { nota: 'Cada evento publicado usa 1 crédito (o 1 crédito Duo, con el álbum QR). El diseño se puede cambiar después desde el panel del evento.' }], 'Crear y abrir el panel').then(function (r) {
       if (!r) return;
       api(base('/eventos'), { tipo: r.tipo, modelo: r.modelo, nombres: { a: r.a, b: r.tipo === 'boda' ? r.b : '' }, fecha: r.fecha, duo: r.duo === '1' }).then(function (j) { location.href = j.panel; }).catch(function (e) { aviso(e.message, true); });
@@ -278,9 +332,17 @@
           el('div', { class: 'meta' }, [el('span', {}, e.tipoNombre), ' · ', e.modelo, e.paquete && e.paquete !== 'borrador' ? ' · ' + e.paquete : '', e.fecha ? ' · ' + fecha(e.fecha) : '']),
           // README (ronda 88): cada parte fija en su propio texto, así se traduce
           el('div', { class: 'meta' }, [String(e.invitados), ' ', el('span', {}, 'invitados cargados'), ' · ', String(e.respuestas), ' ', el('span', {}, 'confirmaciones'), e.vence && e.estado === 'publicado' ? el('span', {}, [' · ', el('span', {}, 'online hasta'), ' ' + fecha(e.vence)]) : null, e.creditoUsado ? el('span', {}, [' · ', el('span', {}, e.duo ? 'crédito Duo usado · con álbum QR' : 'crédito usado')]) : null])]),
-        el('div', { class: 'fila', style: 'margin:0' }, botones)]), puede ? cp : null, puede ? cd : null]));
+        el('div', { class: 'fila', style: 'margin:0' }, botones)]), demoEvento(e), puede ? cp : null, puede ? cd : null]));
     });
     return v;
+  }
+
+  // README (ronda 128): invitación de la demo: hasta cuándo está publicada, o que espera un crédito (y cuándo se borra)
+  function demoEvento(e) {
+    if (!e.demo) return null;
+    if (!e.demoFin) return el('div', { class: 'aviso-caja', style: 'margin-top:8px' }, el('p', {}, [el('strong', {}, 'Invitación de prueba.'), ' ', el('span', {}, 'Publicada con el crédito Duo de prueba hasta el'), ' ' + fecha(e.demoHasta) + '.']));
+    var borra = new Date(Date.parse(e.demoFin) + 30 * 86400000).toISOString();
+    return el('div', { class: 'aviso-caja mal', style: 'margin-top:8px' }, el('p', {}, [el('strong', {}, 'La prueba terminó.'), ' ', el('span', {}, 'Para reactivarla, publícala con un crédito (con Duo, vuelve también el álbum QR).'), ' ', el('span', {}, 'Si no le aplicas un crédito, se borra el'), ' ' + fecha(borra) + '.']));
   }
 
   // ── README (ronda 122): Duo (invitación + álbum QR, sin nombrar a Albunear) ──
@@ -333,7 +395,9 @@
       };
       var esDuo = function (p) { return p.duo || p.id === 'pase-duo' || p.id === 'mejora-duo'; };
       var invit = D.tienda.productos.filter(function (p) { return !esDuo(p); }), duos = D.tienda.productos.filter(esDuo);
-      v.append(el('h2', {}, 'Comprar'), el('div', { class: 'productos' }, invit.map(tarjetaProd)));
+      v.append(el('h2', {}, 'Comprar'));
+      if (e.demo) v.append(el('p', { class: 'meta' }, 'Durante la prueba gratis puedes comprar el pase anual Studio o el Event Studio Duo. Los packs de créditos se habilitan con el pase pagado.'));
+      v.append(el('div', { class: 'productos' }, invit.map(tarjetaProd)));
       if (duos.length) v.append(tarjetaDuo(), el('div', { class: 'productos' }, duos.map(tarjetaProd)));
       // README (ronda 125): con Studio vigente, banner para pasar a Event Studio Duo pagando solo la diferencia
       var mejora = D.tienda.productos.filter(function (p) { return p.id === 'mejora-duo'; })[0];
@@ -411,8 +475,35 @@
     var nombre = el('input', { name: 'nombre', value: m.nombre, maxlength: 80, disabled: !duenio || !!m.logo, placeholder: 'Nombre de la empresa' });
     var color = el('input', { type: 'color', value: m.color || '#333333', disabled: !duenio, style: 'width:56px;height:40px;padding:3px' });
     var conColor = el('input', { type: 'checkbox', checked: !!m.color, disabled: !duenio });
-    var PALETAS = [['', 'Verde', '#4e9c87', '#e5f3ec'], ['negro', 'Negro', '#1f1f1f', '#e6e6e6'], ['azul', 'Azul', '#2f5d9e', '#e3edfa'], ['rojo', 'Rojo', '#b0353f', '#f8e3e6'], ['dorado', 'Dorado', '#a8823c', '#f5ecd9'], ['violeta', 'Violeta', '#6b4c9a', '#eee6f7']]; // README (ronda 88): un solo nombre por color
     var paletas = el('div', { class: 'paletas' }, PALETAS.map(function (p) { return el('label', {}, [el('input', { type: 'radio', name: 'paleta', value: p[0], checked: (m.paleta || '') === p[0], disabled: !duenio }), el('i', { style: 'background:linear-gradient(135deg,' + p[2] + ' 50%,' + p[3] + ' 50%)' }), p[1]]); }));
+    // README (ronda 128): colores libres (como en el tablero de profesionales de Albunear): uno oscuro y uno claro
+    var oscuro = el('input', { type: 'color', value: m.panelOscuro || '#2b2b2b', disabled: !duenio, style: 'width:56px;height:40px;padding:3px' });
+    var clarito = el('input', { type: 'color', value: m.panelClaro || '#f4efe6', disabled: !duenio, style: 'width:56px;height:40px;padding:3px' });
+    var muestraLibre = el('i', {});
+    var pintaLibre = function () { muestraLibre.style.background = 'linear-gradient(135deg,' + oscuro.value + ' 50%,' + clarito.value + ' 50%)'; };
+    var radioLibre = el('input', { type: 'radio', name: 'paleta', value: 'libre', checked: m.paleta === 'libre', disabled: !duenio });
+    [oscuro, clarito].forEach(function (i) { i.addEventListener('input', function () { pintaLibre(); radioLibre.checked = true; }); });
+    pintaLibre();
+    paletas.append(el('label', {}, [radioLibre, muestraLibre, 'Libre']));
+    var libres = el('div', { class: 'fila', style: 'margin:10px 0 0;align-items:center' }, [el('label', { class: 'casilla' }, [oscuro, el('span', {}, 'Color oscuro (botones y barra)')]), el('label', { class: 'casilla' }, [clarito, el('span', {}, 'Color claro (fondo)')])]);
+    // README (ronda 128): ícono cuadrado propio (favicon). Se recorta al centro y se guarda en 256 × 256
+    var icono = el('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', disabled: !duenio });
+    icono.addEventListener('change', function () {
+      var a = icono.files[0]; if (!a) return;
+      var img = new Image(), u = URL.createObjectURL(a);
+      img.onload = function () {
+        var lado = Math.min(img.naturalWidth, img.naturalHeight), c = document.createElement('canvas'); c.width = c.height = 256;
+        c.getContext('2d').drawImage(img, (img.naturalWidth - lado) / 2, (img.naturalHeight - lado) / 2, lado, lado, 0, 0, 256, 256);
+        URL.revokeObjectURL(u);
+        c.toBlob(function (b) { api(base('/icono'), b, 'POST', 'image/png').then(function () { aviso('Ícono guardado'); cargar(); }).catch(function (x) { aviso(x.message, true); }); }, 'image/png');
+      };
+      img.onerror = function () { aviso('No se pudo leer la imagen', true); };
+      img.src = u;
+    });
+    var cajaIcono = el('div', { class: 'tarjeta', style: 'margin-top:14px' }, [el('h3', { style: 'margin-top:0' }, 'Ícono (favicon)'),
+      el('p', { class: 'meta', style: 'margin:0 0 8px' }, 'El ícono cuadrado que se ve en la pestaña del navegador del tablero, de los paneles de tus clientes y de tus invitaciones. Si no subes uno, se usa un ícono genérico.'),
+      el('div', { class: 'fila', style: 'align-items:center;margin:0' }, [el('img', { src: m.icono || '/comun/img/pro-icono.svg', alt: '', style: 'width:48px;height:48px;border-radius:10px;background:#eee' }), icono,
+        m.icono && duenio ? el('button', { class: 'b mal', type: 'button', onclick: function () { accion(null, base('/icono'), undefined, 'Ícono quitado', 'DELETE'); } }, 'Quitar ícono') : null])]);
     var pie = el('input', { name: 'pie', value: m.pie, maxlength: 140, disabled: !duenio, placeholder: 'Ej.: Salón La Esperanza · Eventos desde 1998' });
     var blanca = el('input', { type: 'checkbox', checked: e.studio, disabled: true }); // README (ronda 87): con Studio siempre es marca blanca
     var sinPie = el('input', { type: 'checkbox', checked: m.sinPie && e.studio, disabled: !duenio || !e.studio });
@@ -439,10 +530,10 @@
       el('label', { class: 'casilla' }, [sinPie, el('span', {}, [el('strong', {}, 'No mostrar ningún pie '), '(con marca blanca; la invitación no lleva pie)'])])]));
     f.append(el('div', { style: 'display:grid;gap:8px;margin-top:14px' }, [el('label', { class: 'casilla' }, [conColor, el('span', {}, [el('strong', {}, 'Color del pie: '), 'usar mi color en el pie de las invitaciones'])]), el('div', { class: 'fila', style: 'margin:0' }, [color, el('span', { class: 'meta' }, 'Elige el color (con un color claro, el texto pasa a oscuro).')])]));
     f.append(el('h3', { style: 'margin-top:16px' }, 'Así queda el pie de la invitación'), prev);
-    f.append(el('h3', { style: 'margin-top:18px' }, 'Colores del panel de tus clientes'), el('p', { class: 'meta', style: 'margin:0 0 8px' }, 'El panel donde tus clientes completan la invitación toma estos colores.'), paletas);
+    f.append(el('h3', { style: 'margin-top:18px' }, 'Colores del panel'), el('p', { class: 'meta', style: 'margin:0 0 8px' }, 'Tu tablero y el panel donde tus clientes completan la invitación toman estos colores. Con «Libre» eliges un color oscuro y uno claro.'), paletas, libres);
     if (duenio) f.append(el('div', { class: 'fila' }, el('button', { class: 'b', type: 'submit' }, 'Guardar marca')));
-    f.addEventListener('submit', function (ev) { ev.preventDefault(); var pal = f.querySelector('input[name=paleta]:checked'); accion(f.querySelector('[type=submit]'), base('/marca'), { nombre: nombre.value, pie: pie.value, blanca: blanca.checked, sinPie: sinPie.checked, color: conColor.checked ? color.value : '', paleta: pal ? pal.value : '' }, 'Marca guardada'); });
-    previa(); v.append(f);
+    f.addEventListener('submit', function (ev) { ev.preventDefault(); var pal = f.querySelector('input[name=paleta]:checked'); accion(f.querySelector('[type=submit]'), base('/marca'), { nombre: nombre.value, pie: pie.value, blanca: blanca.checked, sinPie: sinPie.checked, color: conColor.checked ? color.value : '', paleta: pal ? pal.value : '', panelOscuro: oscuro.value, panelClaro: clarito.value }, 'Marca guardada'); });
+    previa(); v.append(f, cajaIcono);
     if (!e.studio) v.append(promoStudio('Con Studio: marca blanca (sin el pie de Amo Invitar), panel sin la marca de Amo Invitar y dominio propio.'));
     return v;
   }

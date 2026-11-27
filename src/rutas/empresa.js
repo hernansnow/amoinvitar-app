@@ -71,6 +71,9 @@ export async function api(request, env, partes) {
   if (recurso === 'marca' && M === 'POST') return guardarMarca(request, env, c);
   if (recurso === 'logo' && M === 'POST') return subirLogo(request, env, c);
   if (recurso === 'logo' && M === 'DELETE') return quitarLogo(env, c);
+  // README (ronda 128): ícono cuadrado propio (favicon del tablero, los paneles y las invitaciones)
+  if (recurso === 'icono' && M === 'POST') return subirIcono(request, env, c);
+  if (recurso === 'icono' && M === 'DELETE') return quitarIcono(env, c);
   if (recurso === 'equipo') {
     if (!id && M === 'POST') return sumarMiembro(request, env, c);
     if (id && M === 'DELETE') return quitarMiembro(env, c, id);
@@ -116,6 +119,7 @@ async function resumen(request, env, c) {
       paquete: f.paquete, estado: f.estado, link: f.estado === 'publicado' && f.slug ? `/${f.tipo}/${f.slug}` : null, vence: f.vence, fecha: d.celebracion?.fecha || d.ceremonia?.fecha || null,
       respuestas: f.respuestas, invitados: f.invitados, creditoUsado: !!d.empresa?.credito, clientePublica: !!d.empresa?.clientePublica,
       duo: !!d.empresa?.duo, duoPedido: !!d.empresa?.duoPedido, // README (ronda 122)
+      demo: !!d.empresa?.demo, demoHasta: d.empresa?.demoHasta || null, demoFin: d.empresa?.demoFin || null, // README (ronda 128)
       linkCliente: `/panel/${f.id}?k=${f.clave_panel}`, actualizado: f.actualizado };
   });
   const { results: miembros0 } = await env.DB.prepare('SELECT u.id AS usuarioId, u.email, u.nombre, m.rol FROM miembros m JOIN usuarios u ON u.id = m.usuario_id WHERE m.empresa_id = ? ORDER BY (m.rol = \'duenio\') DESC, u.email').bind(e.id).all();
@@ -132,15 +136,16 @@ async function resumen(request, env, c) {
     usuario: { id: u.id, email: u.email, nombre: u.nombre },
     empresas: c.empresas.map((x) => ({ id: x.id, nombre: x.nombre })),
     dominio: dom,
-    empresa: { id: e.id, nombre: e.nombre, rol: e.rol, nivel, studio: c.studio, paseVence: e.pase_vence, paseVencido: nivel === 'studio' && !c.studio, estado: e.estado, dominio: !!e.dominio, demo: c.extras.demo,
+    empresa: { id: e.id, nombre: e.nombre, rol: e.rol, nivel, studio: c.studio, paseVence: e.pase_vence, paseVencido: nivel === 'studio' && !c.studio, estado: e.estado, dominio: !!e.dominio, demo: c.extras.demo, demoHasta: c.extras.demo ? c.extras.demoHasta : null, // README (ronda 128)
       // README (ronda 122): Duo (invitación + álbum QR): saldo de créditos Duo y pase Event Studio Duo
-      duo: { saldo: parseInt(c.extras.duo?.saldo, 10) || 0, pase: duoVigente(c.extras) && c.studio, paseVence: c.extras.duo?.paseVence || null } },
+      duo: { saldo: parseInt(c.extras.duo?.saldo, 10) || 0, demo: c.extras.demo ? parseInt(c.extras.duo?.demo, 10) || 0 : 0, pase: duoVigente(c.extras) && c.studio, paseVence: c.extras.duo?.paseVence || null } },
     // README (ronda 87): créditos de complementos (ocultos hasta que el admin los habilita; los regalados se ven siempre)
     complementos: (c.extras.habilitado || Object.values(c.extras.saldo).some((n) => n > 0)) ? { habilitado: c.extras.habilitado, saldo: c.extras.saldo,
       lista: Object.entries(COMPLEMENTOS_PRO).map(([k, v]) => ({ id: k, nombre: v.nombre, neto: v.neto, manual: !!v.manual, saldo: parseInt(c.extras.saldo[k], 10) || 0 })) } : null,
     limites: { usuarios: limiteUsuarios(nivel), usados: (miembros || []).length },
     creditos: cred,
-    marca: { nombre: e.marca.nombre || '', pie: e.marca.pie || '', logo: e.marca.logo || '', sinPie: !!e.marca.sinPie, blanca: !!e.marca.blanca, color: e.marca.color || '', paleta: e.marca.paleta || '' },
+    marca: { nombre: e.marca.nombre || '', pie: e.marca.pie || '', logo: e.marca.logo || '', icono: e.marca.icono || '', panelOscuro: e.marca.panelOscuro || '', panelClaro: e.marca.panelClaro || '', // README (ronda 128)
+       sinPie: !!e.marca.sinPie, blanca: !!e.marca.blanca, color: e.marca.color || '', paleta: e.marca.paleta || '' },
     // README (ronda 87): con el dominio propio activo, la invitación y el panel del cliente salen desde ese dominio
     eventos: dom.estado === 'activo' && !c.extras.demo ? eventos.map((x) => ({ ...x, link: x.link ? `https://${dom.host}${x.link}` : null, linkCliente: `https://${dom.host}${x.linkCliente}` })) : eventos, equipo: miembros || [], compras: await Promise.all((compras || []).map(async (x) => {
       const inv = x.factura ? await getInvoice(env, x.factura).catch(() => null) : null;
@@ -150,7 +155,8 @@ async function resumen(request, env, c) {
     modelos: MODELOS.filter((m) => !m.simple && !m.std && !m.kit).map((m) => ({ id: m.id, nombre: m.nombre, eventos: m.eventos })),
     tienda: {
       credito: PROFESIONALES.credito, pase: PROFESIONALES.studio.pase, config: PROFESIONALES.studio.configuracionDominio,
-      productos: Object.entries(cat).filter(([k, v]) => v.nivel !== 'complemento').filter(([k, v]) => v.nivel === 'studio-dominio' ? (c.studio && !e.dominio)
+      // README (ronda 128): en la demo Event Studio Duo solo se compran los pases (los packs Studio piden el pase pagado)
+      productos: Object.entries(cat).filter(([k, v]) => v.nivel !== 'complemento').filter(([k, v]) => !c.extras.demo || ['pase', 'pase-duo'].includes(k)).filter(([k, v]) => v.nivel === 'studio-dominio' ? (c.studio && !e.dominio)
         : v.nivel === 'duo' ? !(duoVigente(c.extras) && c.studio) : v.nivel === 'studio-duo' ? duoVigente(c.extras) && c.studio
         // README (ronda 125): con Studio vigente y sin Duo se ofrece pasar pagando la diferencia (en lugar del pase Duo completo)
         : v.nivel === 'studio-duo-mejora' ? c.studio && !duoVigente(c.extras)
@@ -237,7 +243,12 @@ async function guardarMarca(request, env, c) {
   marca.blanca = quiereBlanca; marca.sinPie = quiereBlanca && quiereSinPie;
   // README (ronda 87): color del pie de las invitaciones y paleta del panel del cliente final
   if ('color' in b) marca.color = /^#[0-9a-f]{6}$/i.test(String(b.color || '')) ? String(b.color).toLowerCase() : '';
-  if ('paleta' in b) marca.paleta = ['negro', 'azul', 'rojo', 'dorado', 'violeta'].includes(b.paleta) ? b.paleta : '';
+  if ('paleta' in b) marca.paleta = ['negro', 'azul', 'rojo', 'dorado', 'violeta', 'libre'].includes(b.paleta) ? b.paleta : '';
+  // README (ronda 128): colores libres del panel (como el tablero de profesionales de Albunear): uno oscuro y uno claro
+  const hex = (v) => (/^#[0-9a-f]{6}$/i.test(String(v || '')) ? String(v).toLowerCase() : '');
+  if ('panelOscuro' in b) marca.panelOscuro = hex(b.panelOscuro);
+  if ('panelClaro' in b) marca.panelClaro = hex(b.panelClaro);
+  if (marca.paleta === 'libre' && !marca.panelOscuro) marca.paleta = '';
   // Con logo, el nombre no se usa en el pie (se mantiene el que estaba)
   if (marca.logo) marca.nombre = c.e.marca.nombre || marca.nombre;
   await guardarMarcaEmpresa(env, c.e.id, marca);
@@ -260,6 +271,27 @@ async function subirLogo(request, env, c) {
 async function quitarLogo(env, c) {
   exigir(c.duenio);
   const marca = { ...c.e.marca }; delete marca.logo;
+  await guardarMarcaEmpresa(env, c.e.id, marca);
+  return json({ ok: true });
+}
+
+async function subirIcono(request, env, c) {
+  exigir(c.duenio, 'Solo el dueño puede cambiar el ícono');
+  const tipo = (request.headers.get('content-type') || '').split(';')[0].trim();
+  const ext = TIPOS_LOGO[tipo];
+  if (!ext) throw new HttpError(415, 'El ícono tiene que ser PNG, JPG o WEBP');
+  const cuerpo = await request.arrayBuffer();
+  if (!cuerpo.byteLength) throw new HttpError(400, 'Falta el archivo');
+  if (cuerpo.byteLength > 512 * 1024) throw new HttpError(413, 'El ícono supera 512 KB');
+  const clave = `empresas/${c.e.id}/icono-${randomId(4)}.${ext}`;
+  await almacenD1(env).subir(clave, cuerpo, tipo);
+  const marca = { ...c.e.marca, icono: `/media/${clave}` };
+  await guardarMarcaEmpresa(env, c.e.id, marca);
+  return json({ ok: true, icono: marca.icono });
+}
+async function quitarIcono(env, c) {
+  exigir(c.duenio);
+  const marca = { ...c.e.marca }; delete marca.icono;
   await guardarMarcaEmpresa(env, c.e.id, marca);
   return json({ ok: true });
 }
@@ -305,6 +337,8 @@ async function comprar(request, env, c) {
   const b = await readJson(request);
   const item = str(b.item, 20), cat = catalogoCompras()[item];
   if (!cat) throw new HttpError(400, 'Producto desconocido');
+  // README (ronda 128): durante la demo solo los pases (Studio o Event Studio Duo)
+  if (c.extras.demo && !['pase', 'pase-duo'].includes(item)) throw new HttpError(409, 'Durante la prueba gratis solo se puede comprar el pase anual Studio o Event Studio Duo');
   // README (ronda 122): Pro Duo para todos; los packs Event Studio Duo, con su pase vigente
   const conDuo = duoVigente(c.extras) && c.studio;
   const permitido = (cat.nivel === 'complemento' && c.extras.habilitado) || (cat.nivel === 'studio-dominio' && c.studio && !c.e.dominio) || cat.nivel === 'studio-pase' || cat.nivel === 'studio-duo-pase' || (cat.nivel === 'studio-duo-mejora' && c.studio && !conDuo)

@@ -70,7 +70,7 @@ import * as sa from './rutas/superadmin.js';
 import * as empresaApi from './rutas/empresa.js';
 import { paginaMuestrario, apiMuestrario } from './pro/muestrario.js';
 import { marcaEfectiva, rolEnEmpresa, proDe, paseVigente, usarCredito, devolverCredito } from './pro/empresa.js';
-import { extrasDe, cubrirComplementos, COMPLEMENTO_DE_CREDITO, usarDuo, sumarDuo } from './pro/extras.js';
+import { extrasDe, cubrirComplementos, COMPLEMENTO_DE_CREDITO, usarDuo, sumarDuo, usarDuoDemo } from './pro/extras.js';
 import { getCookie, hmacHex } from './lib/util.js';
 import { resolverMapa } from './lib/mapas.js';
 import { leerPlaylist } from './lib/spotify.js';
@@ -179,7 +179,18 @@ function idiomaPedido(url, datos) {
   return todos.find((x) => x.slice(0, 2) === q.slice(0, 2)) || todos[0];
 }
 
-async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false, prueba = false, forzarPropio = false, idPropio = null } = {}) {
+// README (ronda 128): favicon de las invitaciones de un profesional con su marca: el ícono que subió o uno genérico (sobre blanco
+// sobre negro), nunca el de Amo Invitar!
+const ICONO_PRO = '/comun/img/pro-icono.svg';
+function conIconoPro(h, icono) {
+  const href = String(icono || ICONO_PRO).replace(/"/g, '');
+  const sin = h.replace(/<link[^>]+rel=["'](?:shortcut )?icon["'][^>]*>\s*/gi, '').replace(/<link[^>]+rel=["']apple-touch-icon["'][^>]*>\s*/gi, '');
+  return sin.replace(/<\/head>/i, `<link rel="icon" href="${href}"><link rel="apple-touch-icon" href="${href}">\n</head>`);
+}
+// README (ronda 128): cartel flotante de las invitaciones publicadas con la demo Event Studio Duo
+const TXT_DEMO = { es: 'Invitación en modo Demo', en: 'Invitation in Demo mode', pt: 'Convite em modo Demo', fr: 'Invitation en mode Démo', it: 'Invito in modalità Demo', de: 'Einladung im Demo-Modus', nl: 'Uitnodiging in demomodus', ca: 'Invitació en mode Demo' };
+const avisoDemoHTML = (v) => `<div id="ai-demo-aviso" style="position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147483000;background:rgba(17,17,17,.9);color:#fff;font:600 13px/1.2 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:.04em;padding:9px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;white-space:nowrap">${TXT_DEMO[String(v || 'es').slice(0, 2)] || TXT_DEMO.es}</div>`;
+async function pagina(env, url, evento, { demo = false, invitado = null, marca = null, sinSobre = false, prueba = false, forzarPropio = false, idPropio = null, avisoDemo = false } = {}) {
   // README (ronda 57): diseño propio (carpeta de la invitación sobre la del modelo base). En a medida/corporativo,
   // el modelo base es el punto de partida del diseño.
   const propio = demo ? null : propioDe(evento, forzarPropio);
@@ -218,6 +229,8 @@ async function pagina(env, url, evento, { demo = false, invitado = null, marca =
   let armada = await renderGuardado(plantilla, vista, t, url.origin, [evento.tipo, v, evento.textos, evento.nombres]);
   // README (ronda 94): un diseño propio sin el lugar de la ventana de bienvenida (data-componente="sobre"): va igual, antes de </body>
   if (vista.bienvenidaModal?.activa && !/id="ai-bienvenida"/.test(armada)) armada = armada.replace(/<\/body>/i, `${bienvenidaGenerica({ t, v: vista })}\n</body>`);
+  if (!demo && marca && (marca.blanca || marca.coBrand)) armada = conIconoPro(armada, marca.icono); // README (ronda 128)
+  if (avisoDemo) armada = armada.replace(/<\/body>/i, `${avisoDemoHTML(v)}\n</body>`);
   return html(conExtrasPropios(traducirEstaticos(armada, v), propio), 200, {
     'cache-control': demo ? 'public, max-age=300' : 'private, no-store',
     'x-robots-tag': 'noindex',
@@ -404,7 +417,7 @@ async function publicada(env, url, request, tipo, slug, ctx = null) {
     if (!delEquipo) await almacen.visita(ev.id, invitado.codigo).catch(() => {});
     invitado = { ...invitado, respuesta: await almacen.respuestaDe(ev.id, invitado.codigo).catch(() => null), pase: !!ev.datos.admin?.checkin };
   }
-  let r = await pagina(env, url, evento, { invitado, marca });
+  let r = await pagina(env, url, evento, { invitado, marca, avisoDemo: !!ev.datos.empresa?.demo && !ev.datos.empresa?.demoFin });
   if (acc.dueno && pendiente) r = await conAvisoDueno(r, ev, 'pendiente', `/panel/${ev.id}?k=${ev.clave}`);
   if (acc.cookie) r.headers.append('set-cookie', acc.cookie);
   return r;
@@ -695,7 +708,12 @@ async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {})
   const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web', 'std-tarjeta'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
     gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: disenoBloqueado(datos), // README (ronda 93): reabierto desde la consola = se puede volver a editar
-    publicada: ev.estado === 'publicado', admin, empresa: !!ev.empresaId }); // README (ronda 87)
+    publicada: ev.estado === 'publicado', admin, empresa: !!ev.empresaId, fijos: nombresFijos(ev) }); // README (ronda 87)
+}
+// README (ronda 128): de una invitación de empresa que ya se publicó alguna vez (p. ej. la demo que volvió a borrador), los
+// nombres y la fecha no cambian: solo el administrador de Amo Invitar!, si se lo piden (evita reciclarla para otro evento)
+function nombresFijos(ev) {
+  return ev.estado === 'publicado' || !!(ev.empresaId && (ev.datos?.empresa?.usadoEn || ev.datos?.empresa?.demoFin));
 }
 
 // Plan con el que se ve la invitación: el que ya pagó o, en el borrador, el que piden las secciones elegidas
@@ -841,8 +859,6 @@ async function publicarConCredito(env, request, ev, esquema, emp) {
   const aviso = (propio, ajeno) => (emp.rol ? propio : ajeno); // README (ronda 87): el equipo (también con Studio) ve el mensaje para el profesional
   if (!emp.puedePublicar) return json({ error: 'Esta invitación la publica quien organiza el evento. Pídele que lo haga.' }, 403);
   if (emp.pro && emp.pro.estado !== 'activa') return json({ error: aviso('La cuenta de la empresa está suspendida. Escribir a Amo Invitar!.', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 403);
-  // README (ronda 87): cuenta DEMO de Studio: se arma todo, pero no se publica (el dueño la ve en la vista previa)
-  if (emp.extras?.demo) return json({ error: aviso('Cuenta DEMO: la invitación no se publica. Puedes verla completa con «Vista previa».', 'Esta invitación es una demostración: no se publica.') }, 403);
   const plan = await tienda.estadoPlan(env, request, ev, esquema);
   // README (ronda 87): los complementos se cubren con los créditos de complementos del profesional (si alcanzan para todos)
   if (plan.aPagar?.extras?.length) {
@@ -852,11 +868,21 @@ async function publicarConCredito(env, request, ev, esquema, emp) {
   const sin = (plan.complementos || []).filter((x) => !x.pagado).map((x) => x.nombre);
   if (sin.length) return json({ error: aviso(`Esta invitación incluye complementos que el crédito no cubre (${sin.join(', ')}). Quitarlos de la invitación o contratarlos con Amo Invitar!.`, `Esta invitación incluye complementos que todavía no están incluidos (${sin.join(', ')}). Consúltalo con quien organiza tu evento.`) }, 402);
   const nivel = plan.plan === 'gratis' ? 'basic' : plan.plan;
+  // README (ronda 128): demo Event Studio Duo: la primera invitación se publica con el crédito Duo demo (invitación + álbum
+  // QR con marca blanca) hasta el fin de la prueba; después vuelve a borrador y necesita un crédito comprado
+  if (!ev.datos.empresa?.credito && !ev.datos.empresa?.demoFin && emp.extras?.demo && await usarDuoDemo(env, ev.empresaId, ev.id)) {
+    ev.datos.empresa = { ...(ev.datos.empresa || {}), credito: 'duo-demo', duo: true, duoPedido: true, demo: true, demoHasta: emp.extras.demoHasta, usadoEn: new Date().toISOString() };
+  }
   if (!ev.datos.empresa?.credito) {
+    // README (ronda 128): invitación demo terminada que se reactiva con un crédito comprado: deja de ser demo (sin banner)
+    const reactivada = !!ev.datos.empresa?.demoFin;
+    if (reactivada) ev.datos.empresa = { ...ev.datos.empresa, demo: false };
     // README (ronda 122): evento pedido como Duo (invitación + álbum QR): gasta un crédito Duo y el álbum se crea al publicar
     if (ev.datos.empresa?.duoPedido) {
       if (!(await usarDuo(env, ev.empresaId, ev.id))) return json({ error: aviso('La empresa no tiene créditos Duo disponibles. Se pueden comprar desde el tablero (o quitar «Duo» del evento para publicarlo con un crédito de invitación).', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 402);
       ev.datos.empresa = { ...(ev.datos.empresa || {}), credito: 'duo', duo: true, usadoEn: new Date().toISOString() };
+      // El álbum de la demo (Gratis desde el fin de la prueba) vuelve a Platinum con lo que todavía tenga
+      if (reactivada && ev.datos.album?.albunear && env.ALBUNEAR?.album) { try { await env.ALBUNEAR.album(ev.id, { accion: 'plan', nuevo: 'platinum' }); } catch (e) { console.error('álbum demo', e); } }
     } else {
       const lote = await usarCredito(env, ev.empresaId);
       if (!lote) return json({ error: aviso('La empresa no tiene créditos disponibles. Se pueden comprar desde el tablero.', 'No se puede publicar por ahora. Consúltalo con quien organiza tu evento.') }, 402);
@@ -1052,7 +1078,9 @@ async function apiPanel(env, request, url, partes) {
       recuerdo: ev.estado === 'publicado' && !emp ? await recuerdo.infoRecuerdo(ev, (clave, eur) => tienda.precioATexto(env, request, clave, eur)) : null,
       // README (ronda 87): Studio (logo propio en el panel del cliente), paleta del panel, DEMO y créditos de complementos (para el equipo)
       empresa: emp ? { id: ev.empresaId, limpio: emp.limpio, puedePublicar: emp.puedePublicar, nombre: emp.nombre, logo: emp.logo, pie: emp.pie, rol: emp.rol, credito: !!ev.datos.empresa?.credito, conCredito: true,
-        studio: !!emp.studio, host: emp.host || null, paleta: emp.empresa.marca?.paleta || '', demo: !!emp.extras?.demo, cliente: !emp.rol && (!admin || conClaveCliente),
+        studio: !!emp.studio, host: emp.host || null, paleta: emp.empresa.marca?.paleta || '', demo: !!emp.extras?.demo,
+        icono: emp.empresa.marca?.icono || '', panelOscuro: emp.empresa.marca?.panelOscuro || '', panelClaro: emp.empresa.marca?.panelClaro || '', // README (ronda 128)
+        cliente: !emp.rol && (!admin || conClaveCliente),
         saldo: emp.rol && emp.rol !== 'lectura' || admin ? emp.extras?.saldo || {} : null,
         duo: emp.duo, duoPedido: emp.duoPedido, saldoDuo: emp.rol && emp.rol !== 'lectura' || admin ? parseInt(emp.extras?.duo?.saldo, 10) || 0 : null } : null, // README (ronda 122)
       ayuda: { whatsapp: String(env.WHATSAPP || '').replace(/\D/g, '') },
@@ -1064,7 +1092,7 @@ async function apiPanel(env, request, url, partes) {
     // Publicada: los nombres y la fecha quedan como estaban (evita reciclar la invitación para otro evento)
     // README (ronda 52): invitación incluida con un álbum de Albunear: los nombres y la fecha del álbum no cambian
     if (ev.datos.vinculo?.albunear && !admin && datos) for (const ruta of FIJOS_VINCULO) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
-    if (ev.estado === 'publicado' && !admin && datos) for (const ruta of FIJOS_PUBLICADA) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
+    if (nombresFijos(ev) && !admin && datos) for (const ruta of FIJOS_PUBLICADA) escribirRuta(datos, ruta, ruta.split('.').reduce((o, k) => o?.[k], ev.datos));
     // Los campos de cada idioma (bandera, traducciones) dependen de los idiomas que llegan ahora
     const conIdiomas = datos?.idiomas ? await esquemaDe(env, url, ev, { ...ev.datos, idiomas: datos.idiomas, variante: datos.variante ?? ev.datos.variante }, { admin }) : esquema;
     const limpio = limpiarDatos(conIdiomas, datos || {}, ev.datos);
@@ -1567,7 +1595,7 @@ async function vistaPrevia(env, url, request, id) {
     const EJEMPLO = { es: 'Nombre del invitado', en: 'Guest name', pt: 'Nome do convidado', fr: 'Nom de l’invité', it: 'Nome dell’invitato', de: 'Name des Gastes', nl: 'Naam van de gast', ca: 'Nom del convidat' };
     invitado = lista[0] || { codigo: 'ejemplo', nombre: EJEMPLO[String(ev.datos.variante || 'es').slice(0, 2)] || EJEMPLO.es, pases: 1, mesa: '1' };
   }
-  const r = await pagina(env, url, evento, { marca: await marcaEfectiva(env, empresa), sinSobre: true, prueba: true, invitado, forzarPropio });
+  const r = await pagina(env, url, evento, { marca: await marcaEfectiva(env, empresa), sinSobre: true, prueba: true, invitado, forzarPropio, avisoDemo: !!ev.empresaId && !!ev.datos.empresa?.demo && !ev.datos.empresa?.demoFin });
   // README (ronda 85): abierta fuera del panel y sin activar: un aviso de que solo la ve el cliente hasta pagar
   return ev.estado === 'publicado' || ev.empresaId ? r : conAvisoDueno(r, ev, 'sinPagar', `/panel/${ev.id}?k=${ev.clave}`, true);
 }
