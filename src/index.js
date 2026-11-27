@@ -756,9 +756,13 @@ async function sincronizarMarcaAlbum(env, ev, event) {
   if (!slug) return event;
   const url = marca === 'none' ? await linkAlbumBlanco(env, ev, slug) : null;
   const esperado = url || `https://albunear.com/a/${slug}`;
-  if (event && (event.brand || 'albunear') === marca && (!url || event.guestUrl === url) && ev.datos.album?.albunear === esperado) return event;
+  if (event && (event.brand || 'albunear') === marca && (!url || event.guestUrl === url) && ev.datos.album?.albunear === esperado && (!url || ev.datos.album?.privacidad)) return event;
   try {
-    const r = await env.ALBUNEAR.album(ev.id, { accion: 'marca', marca, ...(url ? { url } : {}), ...(eventoDuo(ev) ? { plan: 'platinum' } : {}) });
+    // README (ronda 127): con marca blanca, el profesional es el responsable de los datos ante los invitados (página de privacidad neutra)
+    let responsable = null;
+    if (url) { const emp = await almacenDe(env).empresa(ev.empresaId).catch(() => null); responsable = { nombre: emp?.marca?.nombre || emp?.nombre || '', email: await duenoAlbum(env, ev) }; }
+    const r = await env.ALBUNEAR.album(ev.id, { accion: 'marca', marca, ...(url ? { url, responsable } : {}), ...(eventoDuo(ev) ? { plan: 'platinum' } : {}) });
+    if (url && r?.privacidad && !ev.datos.album?.privacidad) { ev.datos.album = { ...ev.datos.album, privacidad: true }; await almacenDe(env).guardarEvento(ev); }
     // El link propio solo se usa cuando Albunear confirma que lo guardó (si todavía no tiene la marca blanca, sigue el de siempre)
     const link = r?.guestUrl || (url ? `https://albunear.com/a/${slug}` : esperado);
     if (event) { event.brand = marca; event.guestUrl = link; }
@@ -1714,6 +1718,8 @@ export default {
     if (p0 === 'album-recursos') return await recursoAlbum(env, ctx, url, partes.slice(1).join('/'), request);
     // README (ronda 126): álbum de los invitados con marca blanca (Event Studio Duo), en este dominio o en el del profesional
     if (p0 === 'a' && /^[\w-]{2,80}$/.test(p1 || '') && partes.length === 2 && request.method === 'GET') return await paginaAlbum(env, request, url, p1);
+    // README (ronda 127): su página de privacidad neutra (responsable: el profesional)
+    if (p0 === 'a' && /^[\w-]{2,80}$/.test(p1 || '') && partes.length === 3 && partes[2] === 'privacidad' && request.method === 'GET') return await paginaAlbum(env, request, url, `${p1}/privacidad`);
     tienda.opcionesTienda.esquemaDe = (ev) => esquemaDe(env, url, ev);
     tienda.opcionesTienda.publicar = publicarEvento;
     tienda.opcionesTienda.album = (ev) => albumAutomatico(env, ev, null); // README (ronda 98)

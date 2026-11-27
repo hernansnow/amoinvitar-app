@@ -81,7 +81,7 @@ function albumDePrueba(p) {
     case 'encuadre': ALBUM_PRUEBA.coverPos = p.pos; return albumDePrueba({ accion: 'estilos' });
     case 'portada': ALBUM_PRUEBA.cover = p.quitar ? null : (p.bytes?.byteLength ? '/modelos/garden/img/bg21.jpg' : null); ALBUM_PRUEBA.ultimaPortada = p.bytes?.byteLength || 0; return albumDePrueba({ accion: 'estilos' });
     case 'borrar': return { ok: true };
-    case 'marca': ALBUM_PRUEBA.brand = p.marca || 'albunear'; ALBUM_PRUEBA.guestUrl = p.url || 'https://albunear.com/a/prueba'; env.ULTIMA_MARCA = p; return { ok: true, brand: ALBUM_PRUEBA.brand, guestUrl: ALBUM_PRUEBA.guestUrl };
+    case 'marca': ALBUM_PRUEBA.brand = p.marca || 'albunear'; ALBUM_PRUEBA.guestUrl = p.url || 'https://albunear.com/a/prueba'; env.ULTIMA_MARCA = p; if (p.responsable) console.log('[prueba] responsable del álbum:', JSON.stringify(p.responsable)); return { ok: true, brand: ALBUM_PRUEBA.brand, guestUrl: ALBUM_PRUEBA.guestUrl, privacidad: !!p.responsable };
     case 'mejora': return { url: 'https://albunear.com/auth/verify?t=PRUEBA-MEJORA', cupon: 'AMO5PRUEBA', porcentaje: p.porcentaje };
     case 'zip': return { files: vivas.map((m, i) => ({ url: m.original, name: `fotos/${String(i + 1).padStart(4, '0')}.jpg`, size: 1000 })), slug: 'prueba' };
     case 'entrar': return { url: `https://albunear.com/auth/verify?t=PRUEBA#${p.pestana}` };
