@@ -1715,6 +1715,7 @@ const insigniasPaso = (p) => (p.niveles ? el('span', { class: 'insignias' }, p.n
 const insigniaNivel = (n) => (n && n !== 'complemento' && !S.esquema?.sinNiveles && !S.empresa ? el('span', { class: `insignia-nivel nivel-${nivelDe(n)}` }, NOMBRE_NIVEL[nivelDe(n)]) : null);
 
 // Si un paso está prendido en la invitación (las obligatorias siempre)
+function albumPrendido(d) { return d?.secciones?.album === true || (d?.secciones?.album !== false && !!(d?.album?.albunear || d?.album?.url)); }
 function pasoActivo(p) {
   if (p.obligatoria) return true;
   if (p.interruptor) return !!leer(datos, p.interruptor) || !!(p.fijoSi && cumple(p.fijoSi));
@@ -2318,7 +2319,7 @@ $('#btn-completa').addEventListener('click', () => {
 $('#btn-volver').addEventListener('click', () => {
   if (document.body.classList.contains('ver-previa')) { verPrevia(false); return; }
   if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) history.back();
-  else location.href = S.empresa ? (S.empresa.limpio ? location.pathname + location.search : '/empresa/') : '/crear-invitacion';
+  else location.href = S.empresa ? (S.empresa.limpio && !S.empresa.rol ? location.pathname + location.search : '/empresa/') : '/crear-invitacion';
 });
 // La división entre la invitación (arriba) y el panel (abajo) se mueve arrastrando la manija
 (function division() {
@@ -2443,6 +2444,8 @@ function recordarBorrador() {
     return;
   }
   datos = S.datos || {};
+  // README (ronda 130): con el álbum QR prendido (o ya con su álbum) el Instagram Wall queda apagado: van uno u otro
+  if (albumPrendido(datos) && leer(datos, 'secciones.instagram') !== false) escribir(datos, 'secciones.instagram', false);
   S.esquema = paraCliente(S.esquema);
   // Volvió de entrar con Google o con el mail: la invitación queda guardada en su cuenta
   if (params.has('vincular')) {

@@ -908,7 +908,7 @@ body.modo-admin .layout, body.modo-admin .barra-inferior, body.modo-admin #linea
 .barra .btn-modelo { background: #1f2421; color: #fff; }
 .barra .caja-plan { background: #d6e4dd; }
 .barra .plan-resumen span, .barra .plan-resumen small { color: #3d4a44; }
-.barra .marca.propia img { filter: none; }
+.barra .marca.propia img { filter: brightness(0) invert(1); } /* README (ronda 130): el logo del profesional en la barra, siempre blanco */
 /* Separador después del logo, con más aire */
 @media (min-width: 1024px) {
   .barra { gap: 14px; }

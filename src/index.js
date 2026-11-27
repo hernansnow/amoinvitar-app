@@ -164,7 +164,9 @@ function aplanar(o, pre = '', salida = {}) {
 }
 
 // El evento guardado → lo que espera el motor
-const paraMotor = (ev) => ({ ...ev.datos, id: ev.id, tipo: ev.tipo, producto: ev.producto, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, gratis: ev.paquete === 'gratis', variante: ev.datos.variante });
+// README (ronda 130): con el álbum QR prendido (o con su álbum) no se muestra el Instagram Wall: van uno u otro
+const sinInstagramSiAlbum = (d) => (d.secciones?.album === true || (d.secciones?.album !== false && (d.album?.albunear || d.album?.url))) && d.secciones?.instagram !== false ? { ...d.secciones, instagram: false } : d.secciones;
+const paraMotor = (ev) => ({ ...ev.datos, secciones: sinInstagramSiAlbum(ev.datos || {}), id: ev.id, tipo: ev.tipo, producto: ev.producto, modelo: ev.modelo, paquete: ev.paquete === 'gratis' ? 'basic' : ev.paquete, gratis: ev.paquete === 'gratis', variante: ev.datos.variante });
 
 // Idiomas de la invitación: el principal y los adicionales contratados (el visitante
 // la ve en el suyo si está, y puede cambiarlo con ?lang=)
@@ -818,8 +820,7 @@ async function crearAlbumIncluido(env, ev, { email, pais }) {
   // El álbum pasa a la invitación (sección «Álbum de fotos QR» con Albunear, en lugar de Instagram Wall)
   if (r?.album?.link) {
     ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
-    // README (ronda 129): en los eventos Duo el Instagram Wall puede seguir prendido junto con el álbum
-    ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, ...(eventoDuo(ev) ? {} : { instagram: false }) };
+    ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, instagram: false };
     await almacenDe(env).guardarEvento(ev);
     // README (ronda 126): con marca blanca, el link pasa enseguida al dominio del profesional
     if ((await marcaAlbumDe(env, ev)) === 'none') { await sincronizarMarcaAlbum(env, ev, null); r.album.link = ev.datos.album.albunear; }
@@ -852,7 +853,8 @@ async function empresaContexto(env, ev, usuario, admin) {
     empresa, pro, rol, studio, nombre: marca.nombre || empresa.nombre, logo: marca.logo || null, pie: marca.pie || null,
     marcaEfectiva: await marcaEfectiva(env, empresa),
     // Sin la marca de Amo Invitar: el cliente final del profesional y, con Studio, también su equipo
-    limpio: !admin && (!rol || studio),
+    // README (ronda 130): también el equipo Pro ve el panel como su cliente (su logo o nombre y el «Powered by»); solo el admin no
+    limpio: !admin,
     extras: await extrasDe(env, ev.empresaId), // README (ronda 87): DEMO y créditos de complementos
     // README (ronda 89): Studio con el dominio propio activo: los links y la miniatura muestran ese dominio
     host: await (async () => { if (!studio) return null; const x = await extrasDe(env, ev.empresaId); if (x.demo) return null; const d = await dominioDe(env, ev.empresaId).catch(() => null); return d?.estado === 'activo' ? d.host : null; })(),
@@ -1104,6 +1106,7 @@ async function apiPanel(env, request, url, partes) {
     const conIdiomas = datos?.idiomas ? await esquemaDe(env, url, ev, { ...ev.datos, idiomas: datos.idiomas, variante: datos.variante ?? ev.datos.variante }, { admin }) : esquema;
     const limpio = limpiarDatos(conIdiomas, datos || {}, ev.datos);
     if (disenoBloqueado(ev.datos) && !admin) limpio.diseno = ev.datos.diseno;
+    if (limpio.secciones) limpio.secciones = sinInstagramSiAlbum(limpio); // README (ronda 130): álbum QR prendido → Instagram Wall apagado
     // Tarjetas ya generadas: quedan fijas
     if (ev.datos.admin) limpio.admin = ev.datos.admin; // lo de la administración se guarda aparte
     if (ev.datos.empresa) limpio.empresa = ev.datos.empresa; // crédito usado y permisos del cliente (empresas)

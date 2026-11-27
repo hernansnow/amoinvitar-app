@@ -196,7 +196,7 @@
   .pase-ficha.duo { background: linear-gradient(135deg, #d8b866, var(--oro) 55%, var(--oro-2)); color: #111; } .pase-ficha.duo .meta { color: rgba(17,17,17,.75); } .pase-ficha.duo .b { background: #111; border-color: #111; color: #fff; }
   .plan-ficha.oscura .pase-ficha:not(.duo) { background: #262626; }
   /* Fichas de compra: insignia del nivel, descuento y candado */
-  .producto { position: relative; } .insignias { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; } .insignia { white-space: nowrap; }
+  .producto { position: relative; min-width: 0; } .productos > * { min-width: 0; } .insignias { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; } .insignia { white-space: nowrap; }
   @media (max-width: 640px) { .insignia { font-size: 9px; letter-spacing: .04em; padding: 3px 6px; } .dto { font-size: 11px; padding: 3px 7px; } }
   .insignia { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; border-radius: 99px; padding: 3px 8px; background: var(--claro); color: var(--verde-2); }
   .insignia .ic { width: 12px; height: 12px; } .ins-studio { background: #111; color: var(--oro); } .ins-duo { background: #f1e3bf; color: #6d5214; } .ins-studio-duo { background: linear-gradient(135deg, #d8b866, var(--oro)); color: #111; }

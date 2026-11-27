@@ -279,7 +279,11 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - **Vencimiento del pase**: banda fija bajo la barra cuando faltan 30 días o menos, y un mail al dueño un mes antes (`avisosPase` en `src/pro/avisos.js`, diario; uno por vencimiento; `proPase` en 7 idiomas).
   - **Dominio** en su propia pestaña: todos la ven; Pro y demo con candado y los banners para cambiar de nivel.
   - **Marca** en dos columnas (pie | colores del panel con vista previa + favicon). **Equipo** en dos columnas.
-  - Panel del evento: con el álbum incluido (evento Duo o cuenta Event Studio Duo, también demo) la sección Álbum QR dice «Luego podrás configurar el álbum en la pestaña Administración.» (sin campo de link) y el Instagram Wall puede ir junto con el álbum (`albumIncluido` en `esquemaPanel`). Se quitó «Es la misma foto de Instagram Wall.» en todos los paneles.
+  - Panel del evento: con el álbum incluido (evento Duo o cuenta Event Studio Duo, también demo) la sección Álbum QR dice «Luego podrás configurar el álbum en la pestaña Administración.» (sin campo de link) (`albumIncluido` en `esquemaPanel`). Se quitó «Es la misma foto de Instagram Wall.» en todos los paneles.
+- **Ronda 130**:
+  - Álbum QR e Instagram Wall van uno u otro también en Duo. Con el álbum prendido (o con su álbum ya creado) el Instagram Wall queda apagado: al cargar el panel, al guardar (`sinInstagramSiAlbum` en `src/index.js`) y en la invitación (`paraMotor`).
+  - El equipo de una cuenta Pro ve el panel del evento igual que su cliente: su logo o nombre y el «Powered by» (`limpio: !admin` en `empresaContexto`). El logo del profesional en la barra del panel va siempre en blanco; el del pie de la invitación conserva sus colores.
+  - Tablero: las fichas de compra ya no se salen de la pantalla en el celular.
 
 ## 5. Probar en la compu
 

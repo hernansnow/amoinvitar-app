@@ -1032,12 +1032,12 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
 // README (ronda 87): eventos de empresas (Pro y Studio): el álbum QR solo con link propio (el de Albunear lo ofrece el
 // profesional por su cuenta) y los textos de los complementos sin precios
 // README (ronda 129): con el álbum QR incluido (evento Duo o cuenta Event Studio Duo, también en la demo) la sección dice que se
-// configura en Administración, como en Deluxe, y el álbum y el Instagram Wall pueden ir juntos
+// configura en Administración, como en Deluxe
 function paraEmpresa(pasos, { albumIncluido = false } = {}) {
   for (const p of pasos) {
     if (!p) continue;
-    if (albumIncluido && (p.id === 'album' || p.id === 'instagram')) {
-      delete p.excluye;
+    if (albumIncluido && p.id === 'album') {
+      // README (ronda 130): el álbum y el Instagram Wall se siguen excluyendo (si uno se prende, el otro se apaga)
       if (p.id === 'album') p.campos = p.campos.filter((c) => !['album.url', 'nota.albumActivar'].includes(c.id)).map((c) => (c.id === 'nota.albumAlbunear' ? { ...c, si: undefined } : c));
       continue;
     }
