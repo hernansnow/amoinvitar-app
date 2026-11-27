@@ -1266,11 +1266,11 @@ body.modo-admin.con-barra-pago #admin { padding-bottom: 90px; }
 @keyframes girar { to { transform: rotate(360deg); } }
 /* README (ronda 88/89): «Powered by Amo Invitar» en el panel del cliente de un profesional Pro (no mueve nada).
    Compu: al lado del idioma, centrado. Celular/tablet: chiquito abajo de los botones. El logo alineado con el texto. */
-.powered { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; line-height: 1; letter-spacing: .02em; color: var(--acento-texto); opacity: .55; white-space: nowrap; }
-.powered img { height: 11px; width: auto; display: block; margin-top: -1px; }
+.powered { display: inline-flex; align-items: center; gap: 3px; /* README (ronda 132): logo más grande y más pegado a «by» */ font-size: 10.5px; line-height: 1; letter-spacing: .02em; color: var(--acento-texto); opacity: .55; white-space: nowrap; }
+.powered img { height: 15px; width: auto; display: block; margin-top: -3px; }
 @media (max-width: 1023px) {
   .powered { position: absolute; right: 14px; bottom: 10px; /* README (ronda 90): centrado entre los botones y el borde de la barra */ font-size: 8.5px; opacity: .6; }
-  .powered img { height: 9px; }
+  .powered img { height: 12px; margin-top: -2px; }
 }
 
 /* README (ronda 89): sin precio que mostrar, la cajita del plan no deja su fondo vacío */

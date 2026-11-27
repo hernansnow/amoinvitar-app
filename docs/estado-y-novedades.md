@@ -284,6 +284,7 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - Álbum QR e Instagram Wall van uno u otro también en Duo. Con el álbum prendido (o con su álbum ya creado) el Instagram Wall queda apagado: al cargar el panel, al guardar (`sinInstagramSiAlbum` en `src/index.js`) y en la invitación (`paraMotor`).
   - El logo del profesional en la barra del panel (el que ve su cliente) va siempre en blanco; el del pie de la invitación conserva sus colores.
 - **Ronda 131**: se volvió atrás la vista del panel de la ronda 130: el profesional y su equipo ven su panel completo (con manual y ayuda); el cliente final, el limpio (`limpio: !admin && (!rol || studio)`). En el tablero, debajo de los botones de cada evento: «A tu cliente debes enviarle el link de su panel, no el tuyo (la vista y el acceso son diferentes).»
+- **Ronda 132**: «Powered by» más grande y alineado: en la barra del panel del cliente Pro el logo de Amo Invitar! pasa a 15 px (12 px en el celular) con menos espacio después de «by» (`.powered` en `panel.css`); en el pie de la invitación Pro, a 16 px y en la misma línea que «Powered by» (`bloques.js`).
   - Tablero: las fichas de compra ya no se salen de la pantalla en el celular.
 
 ## 5. Probar en la compu

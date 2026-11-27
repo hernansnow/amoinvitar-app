@@ -115,7 +115,7 @@ export function pieMarca({ v }) {
   if (!m.logo && !texto) return '';
   const logo = m.logo ? `<img class="img-fluid mb-1" style="max-height:40px" src="${esc(m.logo)}" alt="${esc(m.nombre || '')}">` : '';
   // README (ronda 88): en Pro, debajo del logo del profesional y más chico: «Powered by (logo)» y «© año | amoinvitar.com»
-  const powered = m.coBrand ? `<div class="ai-powered" style="margin-top:14px;font-size:10px;line-height:1.5;opacity:.7;letter-spacing:.03em"><span style="display:inline-flex;align-items:center;gap:5px">Powered by <img src="/comun/img/amoinvitar-blanco.svg" alt="Amo Invitar!" style="height:11px;width:auto"></span><br><a href="https://amoinvitar.com/" style="color:inherit;text-decoration:none">© ${new Date().getFullYear()} | amoinvitar.com</a></div>` : '';
+  const powered = m.coBrand ? `<div class="ai-powered" style="margin-top:14px;font-size:10px;line-height:1.5;opacity:.7;letter-spacing:.03em"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">Powered by <img src="/comun/img/amoinvitar-blanco.svg" alt="Amo Invitar!" style="height:16px;width:auto;display:block;position:relative;top:-2px"></span><br><a href="https://amoinvitar.com/" style="color:inherit;text-decoration:none">© ${new Date().getFullYear()} | amoinvitar.com</a></div>` : '';
   return `${colorPie(m.color)}<footer class="site-footer pt-4 pb-4"><div class="container text-center text-white-50">${logo}${texto ? `<p class="text-small mb-0 mt-1 text-white-50">${esc(texto)}</p>` : ''}${powered}</div></footer>`;
 }
 
