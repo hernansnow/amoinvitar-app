@@ -16,7 +16,7 @@ import { almacenD1 } from '../almacen.js';
 import { MODELOS, TIPOS_EVENTO, modelo as buscarModelo, nombreModelo } from '../modelos.js';
 import { varianteDePais } from '../textos/index.js';
 import { sendEmail, mailEquipoPro } from '../lib/email.js';
-import { PROFESIONALES, descuentoCredito } from '../catalogo.js';
+import { PROFESIONALES, descuentoCredito, ALBUM_PRO } from '../catalogo.js';
 import { asegurarTablasPro } from '../pro/esquema.js';
 import { empresasDe, creditosDe, paseVigente, limiteUsuarios, catalogoCompras } from '../pro/empresa.js';
 import { crearCompra, mediosPro, confirmarCompra } from '../pro/compras.js';
@@ -42,6 +42,16 @@ async function contexto(request, env, url) {
   return { u, empresas, e, extras, duenio: e.rol === 'duenio', puedeEditar: ['duenio', 'editor'].includes(e.rol), studio: paseVigente(e) };
 }
 const exigir = (ok, msg = 'Sin permiso para esto') => { if (!ok) throw new HttpError(403, msg); };
+// README (ronda 129): créditos que se compran en cada nivel. Pro: sueltos y packs Pro y Pro Duo. Studio: packs Studio.
+// Event Studio Duo: packs Studio y Event Studio Duo. En la demo, ninguno (solo los pases).
+function permitidoComprar(c, v) {
+  if (c.extras.demo) return false;
+  const conDuo = duoVigente(c.extras) && c.studio;
+  if (v.nivel === 'pro' || v.nivel === 'duo') return !c.studio;
+  if (v.nivel === 'studio') return c.studio;
+  if (v.nivel === 'studio-duo') return conDuo;
+  return false;
+}
 
 export async function api(request, env, partes) {
   const url = new URL(request.url);
@@ -165,6 +175,18 @@ async function resumen(request, env, c) {
         .map(([k, v]) => ({ id: k, nombre: v.nombre, creditos: v.creditos, neto: v.neto, nivel: v.nivel, duo: !!v.duo,
           // README (ronda 122): packs de 50 y 100 (Studio y Event Studio Duo): configuración del dominio sin cargo
           dominioSinCargo: /^(studio|sduo)-/.test(k) && v.creditos >= PROFESIONALES.studio.dominioSinCargoDesdePack })),
+      // README (ronda 129): todas las fichas de créditos (las del nivel se compran; las de otro nivel, con candado) con su descuento
+      catalogo: Object.entries(cat).filter(([k, v]) => ['pro', 'studio', 'duo', 'studio-duo'].includes(v.nivel)).map(([k, v]) => ({ id: k, nombre: v.nombre, creditos: v.creditos, neto: v.neto, nivel: v.nivel, duo: !!v.duo,
+        off: v.creditos > 1 ? descuentoCredito(v.neto / v.creditos, v.duo ? PROFESIONALES.credito + ALBUM_PRO[1] : PROFESIONALES.credito) : 0,
+        dominioSinCargo: /^(studio|sduo)-/.test(k) && v.creditos >= PROFESIONALES.studio.dominioSinCargoDesdePack, permitido: permitidoComprar(c, v) })),
+      plan: (() => {
+        const conDuo = duoVigente(c.extras) && c.studio;
+        const dias = c.studio && e.pase_vence ? Math.ceil((Date.parse(e.pase_vence) - Date.now()) / 86400000) : null;
+        return { nivel: c.extras.demo ? 'demo' : conDuo ? 'esd' : c.studio ? 'studio' : 'pro', dias, porVencer: !c.extras.demo && dias != null && dias <= 30,
+          pase: PROFESIONALES.studio.pase, paseDuo: PROFESIONALES.studioDuo.pase, mejora: PROFESIONALES.studioDuo.pase - PROFESIONALES.studio.pase,
+          mejorStudio: Math.max(...PROFESIONALES.studio.packs.map((k) => descuentoCredito(k.precio / k.creditos, PROFESIONALES.credito))),
+          mejorDuo: Math.max(...PROFESIONALES.studioDuo.packs.map((k) => descuentoCredito(k.precio / k.creditos, PROFESIONALES.credito + ALBUM_PRO[1]))) };
+      })(),
       paseDuo: PROFESIONALES.studioDuo.pase, paseDuoSinDescuento: PROFESIONALES.studioDuo.paseSinDescuento,
       mejoraDuo: c.studio && !duoVigente(c.extras) ? { neto: PROFESIONALES.studioDuo.pase - PROFESIONALES.studio.pase, hasta: e.pase_vence || null } : null,
       mejorStudio: Math.max(...PROFESIONALES.studio.packs.map((k) => descuentoCredito(k.precio / k.creditos, PROFESIONALES.credito))),
@@ -342,7 +364,7 @@ async function comprar(request, env, c) {
   // README (ronda 122): Pro Duo para todos; los packs Event Studio Duo, con su pase vigente
   const conDuo = duoVigente(c.extras) && c.studio;
   const permitido = (cat.nivel === 'complemento' && c.extras.habilitado) || (cat.nivel === 'studio-dominio' && c.studio && !c.e.dominio) || cat.nivel === 'studio-pase' || cat.nivel === 'studio-duo-pase' || (cat.nivel === 'studio-duo-mejora' && c.studio && !conDuo)
-    || (cat.nivel === 'pro' && c.e.nivel === 'pro') || (cat.nivel === 'studio' && c.studio) || (cat.nivel === 'duo' && !conDuo) || (cat.nivel === 'studio-duo' && conDuo);
+    || permitidoComprar(c, cat);
   if (!permitido) throw new HttpError(409, cat.nivel === 'studio' ? 'Los packs Studio necesitan el pase anual vigente' : cat.nivel === 'studio-duo' ? 'Los packs Event Studio Duo necesitan el pase anual Event Studio Duo vigente' : 'Ese producto no está disponible para tu nivel');
   const pend = await env.DB.prepare("SELECT COUNT(*) AS n FROM compras_pro WHERE empresa_id = ? AND estado = 'pendiente'").bind(c.e.id).first();
   if (pend.n >= 5) throw new HttpError(409, 'Hay varios pedidos pendientes de pago. Se pueden cancelar los que no se vayan a abonar.');

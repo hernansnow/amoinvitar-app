@@ -254,6 +254,16 @@ export const mailCreditosVencen = (env, { empresa, lotes, dias, url, studio, idi
   };
 };
 
+// README (ronda 129): el pase anual Studio o Event Studio Duo vence en un mes
+export const mailPaseVence = (env, { empresa, pase, vence, dias, url, idioma }) => {
+  const L = T(idioma).proPase;
+  const d = poner(dias === 1 ? L.dia : L.dias, { k: dias });
+  return {
+    subject: poner(L.asunto, { e: empresa, p: pase, d }),
+    ...plantilla(env, { titulo: L.titulo, lineas: [poner(escapeHtml(L.linea1), { p: b(pase), e: b(empresa), f: b(fechaDMY(vence)), d }), escapeHtml(L.linea2)], boton: L.boton, url, fijos: fijosDe(idioma) }),
+  };
+};
+
 export const mailCompraProPagada = (env, { numero, producto, url, urlFactura, idioma }) => {
   producto = productoEn(producto, lenguaMail(idioma)); // README (ronda 118)
   const L = T(idioma).proPagada;

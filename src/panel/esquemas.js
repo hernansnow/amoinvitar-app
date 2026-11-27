@@ -381,7 +381,7 @@ function pasosInvitacion({ tipo, modelo }) {
       { id: 'album.url', tipo: 'url', etiqueta: 'Link del álbum', placeholder: 'https://albunear.com/a/…', ayuda: 'Pega el link de tu álbum de Albunear.', si: { campo: 'album.regalo', es: true } },
       conFotos('album'),
       // La misma foto que Instagram Wall (van una u otra): si ya la cargó allá, aquí aparece cargada
-      { id: 'fotos.instagram', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album'), ayuda: 'Es la misma foto de Instagram Wall.' },
+      { id: 'fotos.instagram', tipo: 'foto', etiqueta: 'Foto de la sección', sinRecorte: true, si: siFotos('album') }, // README (ronda 129): sin «Es la misma foto de Instagram Wall.»
     ] },
     { id: 'canciones', seccion: 'canciones', titulo: 'Sugerir canciones', campos: [
       { id: 'nota.canciones', tipo: 'nota', texto: 'Un formulario para que los invitados sugieran canciones. Las sugerencias se ven en la administración de la invitación.' },
@@ -952,7 +952,7 @@ function pasosStdWeb({ tipo, modelo, datos }) {
 
 // ── Entrada principal ─────────────────────────────────────────────────
 // producto: 'invitacion' | 'a-medida' | 'std-web' | 'std-tarjeta' | …
-export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false, empresa = false, fijos = false }) {
+export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete = 'basic', modelo, aMedida = null, gratis = false, disenoEnviado = false, datos = {}, publicada = false, admin = false, empresa = false, fijos = false, albumIncluido = false }) {
   // README (ronda 28): Save The Date (tarjeta o foto) y agradecimiento comprados sueltos: el mismo editor que en la
   // invitación, con el diseño elegido; se paga al generar la tarjeta
   if (['std-tarjeta', 'std-foto', 'agradecimiento'].includes(producto)) {
@@ -1021,7 +1021,7 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
     const p = pasos.find((x) => x?.id === 'std');
     if (p) { p.bloqueado = true; p.campos = p.campos.filter((c) => c.tipo === 'medidaStd').map((c) => ({ ...c, si: undefined })); }
   }
-  if (empresa) paraEmpresa(pasos);
+  if (empresa) paraEmpresa(pasos, { albumIncluido });
   // README (ronda 91): corporativo con sus campos y sin lo de bodas; a medida (y corporativo) siempre es Deluxe: sin planes
   if (tipo === 'empresarial') paraCorporativo(pasos);
   if (producto === 'a-medida') { sinPlanes(pasos); paraMedida(pasos); if (!bloqueada && !admin && personalizacionBloqueada(datos)) cerrarPersonalizacion(pasos); }
@@ -1031,9 +1031,16 @@ export function esquemaPanel({ producto = 'invitacion', tipo = 'boda', paquete =
 }
 // README (ronda 87): eventos de empresas (Pro y Studio): el álbum QR solo con link propio (el de Albunear lo ofrece el
 // profesional por su cuenta) y los textos de los complementos sin precios
-function paraEmpresa(pasos) {
+// README (ronda 129): con el álbum QR incluido (evento Duo o cuenta Event Studio Duo, también en la demo) la sección dice que se
+// configura en Administración, como en Deluxe, y el álbum y el Instagram Wall pueden ir juntos
+function paraEmpresa(pasos, { albumIncluido = false } = {}) {
   for (const p of pasos) {
     if (!p) continue;
+    if (albumIncluido && (p.id === 'album' || p.id === 'instagram')) {
+      delete p.excluye;
+      if (p.id === 'album') p.campos = p.campos.filter((c) => !['album.url', 'nota.albumActivar'].includes(c.id)).map((c) => (c.id === 'nota.albumAlbunear' ? { ...c, si: undefined } : c));
+      continue;
+    }
     // README (ronda 89): sin el selector (con una sola opción no hay nada que elegir): solo el link del álbum
     if (p.id === 'album') p.campos = p.campos.filter((c) => !['nota.albumAlbunear', 'nota.albumActivar'].includes(c.id)).map((c) => (c.id === 'album.url' ? { ...c, si: undefined, placeholder: undefined, ayuda: undefined } : c));
     if (p.id === 'idiomaAdicional') p.campos = p.campos.map((c) => (c.id === 'nota.idiomas' ? { ...c, texto: 'Cada invitado ve la invitación en su idioma y puede cambiarlo desde el botón flotante. Los textos se traducen solos y se pueden ajustar.' } : c));

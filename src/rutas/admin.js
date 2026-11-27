@@ -9,7 +9,7 @@ import { recordatoriosAutomaticos, limpiarCuponesSistema } from '../recordatorio
 import { json, HttpError, escapeHtml, now } from '../lib/util.js';
 import { avisosCierre, resumenRespuestas } from '../avisos.js';
 import { avisosVencimiento } from '../recuerdo.js';
-import { avisosCreditos } from '../pro/avisos.js';
+import { avisosCreditos, avisosPase } from '../pro/avisos.js';
 import { usuarioActual } from '../lib/auth.js';
 import { sendEmail } from '../lib/email.js';
 import { listInvoices, getInvoice, checkInvoiceKey, invoicesCsv, invoicesPage, periodOf, invoiceUrl, invoicesEnabled, ossStatus } from '../lib/facturas.js';
@@ -105,6 +105,7 @@ export async function tareas(controller, env) {
   await avisosCierre(env).catch((e) => console.error('[avisos]', e));
   await avisosVencimiento(env).catch((e) => console.error('[recuerdo]', e));
   await avisosCreditos(env).catch((e) => console.error('[creditos]', e));
+  await avisosPase(env).catch((e) => console.error('[pase]', e)); // README (ronda 129)
   await resumenRespuestas(env).catch((e) => console.error('[resumen rsvp]', e));
   // README (ronda 118): los cupones del sistema (2.º recordatorio) vencidos y sin usar se borran solos
   await limpiarCuponesSistema(env).catch((e) => console.error('[cupones sistema]', e));

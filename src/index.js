@@ -708,7 +708,13 @@ async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {})
   const modelo = ev.producto === 'invitacion' || (ev.modelo && ['compromiso-web', 'std-web', 'std-tarjeta'].includes(ev.producto)) ? await modeloJSON(env, ev.modelo, url.origin, ev.tipo) : null;
   return esquemaPanel({ producto: ev.producto, tipo: ev.tipo, paquete: ev.paquete, modelo, aMedida: ev.aMedida, datos,
     gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: disenoBloqueado(datos), // README (ronda 93): reabierto desde la consola = se puede volver a editar
-    publicada: ev.estado === 'publicado', admin, empresa: !!ev.empresaId, fijos: nombresFijos(ev) }); // README (ronda 87)
+    publicada: ev.estado === 'publicado', admin, empresa: !!ev.empresaId, fijos: nombresFijos(ev), albumIncluido: await albumIncluidoEmpresa(env, ev) }); // README (ronda 87)
+}
+// README (ronda 129): evento de empresa con el álbum QR incluido: Duo (pedido o publicado) o cuenta Event Studio Duo (pagada o demo)
+async function albumIncluidoEmpresa(env, ev) {
+  if (!ev.empresaId) return false;
+  if (ev.datos?.empresa?.duo || ev.datos?.empresa?.duoPedido) return true;
+  try { const x = await extrasDe(env, ev.empresaId); return !!(x.duo?.paseVence && x.duo.paseVence >= new Date().toISOString() && paseVigente(await proDe(env, ev.empresaId))); } catch { return false; }
 }
 // README (ronda 128): de una invitación de empresa que ya se publicó alguna vez (p. ej. la demo que volvió a borrador), los
 // nombres y la fecha no cambian: solo el administrador de Amo Invitar!, si se lo piden (evita reciclarla para otro evento)
@@ -812,7 +818,8 @@ async function crearAlbumIncluido(env, ev, { email, pais }) {
   // El álbum pasa a la invitación (sección «Álbum de fotos QR» con Albunear, en lugar de Instagram Wall)
   if (r?.album?.link) {
     ev.datos.album = { ...(ev.datos.album || {}), origen: 'albunear', albunear: r.album.link };
-    ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, instagram: false };
+    // README (ronda 129): en los eventos Duo el Instagram Wall puede seguir prendido junto con el álbum
+    ev.datos.secciones = { ...(ev.datos.secciones || {}), album: true, ...(eventoDuo(ev) ? {} : { instagram: false }) };
     await almacenDe(env).guardarEvento(ev);
     // README (ronda 126): con marca blanca, el link pasa enseguida al dominio del profesional
     if ((await marcaAlbumDe(env, ev)) === 'none') { await sincronizarMarcaAlbum(env, ev, null); r.album.link = ev.datos.album.albunear; }

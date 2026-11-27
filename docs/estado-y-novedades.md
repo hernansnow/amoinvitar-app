@@ -270,7 +270,16 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - **Colores libres del panel** (como el tablero de profesionales de Albunear): paleta `libre` con `marca.panelOscuro` (botones y barra) y `marca.panelClaro` (fondo). Las paletas se aplican al tablero y al panel de los clientes.
   - **Ayuda del tablero**: botón «?» en la barra con el manual (10 secciones, 7 idiomas).
   - **Consola**: «＋ Créditos Duo» (Pro Duo y Event Studio Duo) y «Cambiar nivel» (Pro, Studio o Event Studio Duo) en cada empresa, con los créditos Duo y el pase Duo a la vista.
-  - Web de profesionales: Studio y Event Studio Duo con el botón «Prueba gratuita» y la nota «La prueba gratis incluye el plan Event Studio Duo, no requiere tarjeta y dura 7 días.»
+  - Web de profesionales: Studio y Event Studio Duo con el botón «Prueba gratis» (ronda 129; antes «Prueba gratuita») y la nota «La prueba gratis incluye el plan Event Studio Duo, no requiere tarjeta y dura 7 días.»
+- **Ronda 129** (tablero profesional rediseñado, `public/empresa/index.html`):
+  - El tablero queda siempre verde y con el favicon de Amo Invitar!: los colores y el ícono del profesional son solo para el panel de sus clientes (y sus invitaciones).
+  - Íconos en pestañas, títulos y botones; pestañas deslizantes en el celular con la flecha negra; «Salir» con ícono redondo; la insignia del nivel en la línea del logo y el nombre (el nombre termina con «…»). `?tab=<pestaña>` abre una pestaña.
+  - **Eventos** en dos columnas (crear + catálogo | lista). El banner «Pasa a Studio. Marca blanca y más descuento…» solo en Eventos de Pro.
+  - **Créditos y pedidos**: una ficha con los créditos (disponibles, Duo, vencimientos y lotes) y al lado la del nivel (Pro: pases Studio y Event Studio Duo; Studio: pase Duo pagando la diferencia y, si vence en 30 días, renovar; Event Studio Duo: renovar cuando vence; demo: los dos pases). **Comprar** por nivel con insignias (PRO, STUDIO, PRO DUO, EVENT STUDIO DUO), el descuento en rojo y candado en las de otro nivel (`tienda.catalogo` con `off` y `permitido`, `permitidoComprar` en `src/rutas/empresa.js`; Studio ya no compra Pro Duo).
+  - **Vencimiento del pase**: banda fija bajo la barra cuando faltan 30 días o menos, y un mail al dueño un mes antes (`avisosPase` en `src/pro/avisos.js`, diario; uno por vencimiento; `proPase` en 7 idiomas).
+  - **Dominio** en su propia pestaña: todos la ven; Pro y demo con candado y los banners para cambiar de nivel.
+  - **Marca** en dos columnas (pie | colores del panel con vista previa + favicon). **Equipo** en dos columnas.
+  - Panel del evento: con el álbum incluido (evento Duo o cuenta Event Studio Duo, también demo) la sección Álbum QR dice «Luego podrás configurar el álbum en la pestaña Administración.» (sin campo de link) y el Instagram Wall puede ir junto con el álbum (`albumIncluido` en `esquemaPanel`). Se quitó «Es la misma foto de Instagram Wall.» en todos los paneles.
 
 ## 5. Probar en la compu
 
