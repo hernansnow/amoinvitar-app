@@ -11,7 +11,7 @@
 <script>(function () { var m = document.cookie.match(/(?:^|; )idioma=([^;]*)/), c = m ? decodeURIComponent(m[1]) : '';
   if (!c || c.indexOf('es') === 0) return; document.documentElement.lang = c.split('-')[0];
   document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { if (window.AI_REGIONAL) AI_REGIONAL.activar(c); }, 0); }); })();</script>
-<script src="/comun/js/regional.js?v=a7a98ad3" defer></script>
+<script src="/comun/js/regional.js?v=27c86253" defer></script>
 <script src="/comun/js/selector-pais.js?v=r89" defer></script>
 <style>
   :root { --verde: #4e9c87; --verde-2: #3f8a77; --claro: #e5f3ec; --tinta: #1e2a26; --suave: #66736e; --linea: #d8e8e1; --rojo: #b3392c; --ambar: #8a5a00; }
@@ -170,7 +170,7 @@
   h2 > .ic { width: 22px; height: 22px; color: var(--verde); } h3 > .ic { color: var(--verde); }
   .titulo-grande { font-size: 26px; margin-top: 30px; } .subtitulo { margin: 22px 0 12px; font-size: 19px; }
   .b.grande { padding: 14px 22px; font-size: 15.5px; } .b.redondo { width: 34px; height: 34px; padding: 0; border-radius: 50%; }
-  .chico { font-size: 13.5px; }
+  .chico { font-size: 13.5px; } .nota-link { display: flex; gap: 6px; align-items: flex-start; margin: 8px 0 0; } .nota-link .ic { width: 15px; height: 15px; margin-top: 2px; }
   .cols { display: grid; gap: 16px; align-items: start; }
   .cols > * { min-width: 0; }
   @media (min-width: 900px) { .cols { grid-template-columns: 1fr 1fr; } .eventos-cols { grid-template-columns: minmax(280px, 360px) 1fr; } .eventos-cols .crear { position: sticky; top: 90px; } }
@@ -427,7 +427,10 @@
           el('div', { class: 'meta' }, [el('span', {}, e.tipoNombre), ' · ', e.modelo, e.paquete && e.paquete !== 'borrador' ? ' · ' + e.paquete : '', e.fecha ? ' · ' + fecha(e.fecha) : '']),
           // README (ronda 88): cada parte fija en su propio texto, así se traduce
           el('div', { class: 'meta' }, [String(e.invitados), ' ', el('span', {}, 'invitados cargados'), ' · ', String(e.respuestas), ' ', el('span', {}, 'confirmaciones'), e.vence && e.estado === 'publicado' ? el('span', {}, [' · ', el('span', {}, 'online hasta'), ' ' + fecha(e.vence)]) : null, e.creditoUsado ? el('span', {}, [' · ', el('span', {}, e.duo ? 'crédito Duo usado · con álbum QR' : 'crédito usado')]) : null])]),
-        el('div', { class: 'fila', style: 'margin:0' }, botones)]), demoEvento(e), puede ? cp : null, puede ? cd : null]));
+        el('div', { class: 'fila', style: 'margin:0' }, botones)]),
+        // README (ronda 131): el link del panel del cliente no es el del profesional
+        puede ? el('p', { class: 'meta chico nota-link' }, [ic('enlace'), el('span', {}, 'A tu cliente debes enviarle el link de su panel, no el tuyo (la vista y el acceso son diferentes).')]) : null,
+        demoEvento(e), puede ? cp : null, puede ? cd : null]));
     });
     v.append(el('div', { class: 'cols eventos-cols' }, [crear, lista]));
     return v;

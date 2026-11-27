@@ -282,7 +282,8 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - Panel del evento: con el álbum incluido (evento Duo o cuenta Event Studio Duo, también demo) la sección Álbum QR dice «Luego podrás configurar el álbum en la pestaña Administración.» (sin campo de link) (`albumIncluido` en `esquemaPanel`). Se quitó «Es la misma foto de Instagram Wall.» en todos los paneles.
 - **Ronda 130**:
   - Álbum QR e Instagram Wall van uno u otro también en Duo. Con el álbum prendido (o con su álbum ya creado) el Instagram Wall queda apagado: al cargar el panel, al guardar (`sinInstagramSiAlbum` en `src/index.js`) y en la invitación (`paraMotor`).
-  - El equipo de una cuenta Pro ve el panel del evento igual que su cliente: su logo o nombre y el «Powered by» (`limpio: !admin` en `empresaContexto`). El logo del profesional en la barra del panel va siempre en blanco; el del pie de la invitación conserva sus colores.
+  - El logo del profesional en la barra del panel (el que ve su cliente) va siempre en blanco; el del pie de la invitación conserva sus colores.
+- **Ronda 131**: se volvió atrás la vista del panel de la ronda 130: el profesional y su equipo ven su panel completo (con manual y ayuda); el cliente final, el limpio (`limpio: !admin && (!rol || studio)`). En el tablero, debajo de los botones de cada evento: «A tu cliente debes enviarle el link de su panel, no el tuyo (la vista y el acceso son diferentes).»
   - Tablero: las fichas de compra ya no se salen de la pantalla en el celular.
 
 ## 5. Probar en la compu

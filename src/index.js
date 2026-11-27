@@ -853,8 +853,8 @@ async function empresaContexto(env, ev, usuario, admin) {
     empresa, pro, rol, studio, nombre: marca.nombre || empresa.nombre, logo: marca.logo || null, pie: marca.pie || null,
     marcaEfectiva: await marcaEfectiva(env, empresa),
     // Sin la marca de Amo Invitar: el cliente final del profesional y, con Studio, también su equipo
-    // README (ronda 130): también el equipo Pro ve el panel como su cliente (su logo o nombre y el «Powered by»); solo el admin no
-    limpio: !admin,
+    // README (ronda 131): el profesional y su equipo ven el panel completo (con manual); el cliente final, el limpio
+    limpio: !admin && (!rol || studio),
     extras: await extrasDe(env, ev.empresaId), // README (ronda 87): DEMO y créditos de complementos
     // README (ronda 89): Studio con el dominio propio activo: los links y la miniatura muestran ese dominio
     host: await (async () => { if (!studio) return null; const x = await extrasDe(env, ev.empresaId); if (x.demo) return null; const d = await dominioDe(env, ev.empresaId).catch(() => null); return d?.estado === 'activo' ? d.host : null; })(),

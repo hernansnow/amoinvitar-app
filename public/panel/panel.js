@@ -2319,7 +2319,7 @@ $('#btn-completa').addEventListener('click', () => {
 $('#btn-volver').addEventListener('click', () => {
   if (document.body.classList.contains('ver-previa')) { verPrevia(false); return; }
   if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) history.back();
-  else location.href = S.empresa ? (S.empresa.limpio && !S.empresa.rol ? location.pathname + location.search : '/empresa/') : '/crear-invitacion';
+  else location.href = S.empresa ? (S.empresa.limpio ? location.pathname + location.search : '/empresa/') : '/crear-invitacion';
 });
 // La división entre la invitación (arriba) y el panel (abajo) se mueve arrastrando la manija
 (function division() {
