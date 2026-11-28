@@ -292,6 +292,7 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
   - Los borradores a medida/corporativos que ya existían se adaptan solos: conservan sus datos y caen en el paso que corresponde a su estado.
   - Modal de creación: sin «(desde …)»; nota «Completa tu idea paso a paso…».
 - **Ronda 134**: el panel viejo de a medida/corporativa ya no se muestra a nadie hasta que el diseño está «lista» (o la invitación publicada): `/panel/<id>` va siempre a `/medida/` (también desde «Editar» en Mis invitaciones y para los administradores), y `panel.js` hace lo mismo si se llega por otro camino. `/medida/` funciona también sin `?k=` con la sesión de la cuenta (si no hay acceso, manda a entrar). El administrador abre el panel completo solo desde la consola: los links «Panel» llevan `?admin=1`. Se quitó el texto «La portada, los lugares y la fecha… van siempre…» de Secciones.
+  - Botones del administrador (solo los ve el superusuario): en `/medida/` «⚙ Entrar como administrador (panel completo)» → `/panel/<id>?admin=1`; en ese panel «👁 Ver como el cliente (pasos)» → `/medida/<id>`.
 
 ## 5. Probar en la compu
 

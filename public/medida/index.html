@@ -121,6 +121,9 @@
   .dlg-cuerpo { padding: 14px 20px 20px; } .dlg-cuerpo ol { padding-left: 20px; margin: 0; display: grid; gap: 8px; } .dlg-cuerpo li { color: var(--suave); } .dlg-cuerpo li strong { color: var(--tinta); }
   #aviso { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: var(--tinta); color: #fff; padding: 11px 18px; border-radius: 12px; z-index: 30; max-width: 90vw; font-size: 14.5px; }
   #aviso.error { background: var(--rojo); }
+  /* README (ronda 134): botón del administrador para abrir el panel completo */
+  .como-admin { position: fixed; left: 12px; bottom: 92px; z-index: 40; border-radius: 999px; padding: 8px 14px; font: 600 12px/1.2 Jost, system-ui, sans-serif; background: #1f2421; color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.25); text-decoration: none; opacity: .85; }
+  .como-admin:hover { opacity: 1; }
   .cargando { text-align: center; color: var(--suave); padding: 60px 0; }
   .guardado { font-size: 13px; color: var(--suave); }
 </style>
@@ -463,6 +466,10 @@
       $('#tipo-titulo').textContent = tituloTipo(); $('#nombres').textContent = nombres(); document.title = tituloTipo() + (nombres() ? ' · ' + nombres() : '');
       if (S.ayuda && S.ayuda.whatsapp) $('#btn-wa').href = 'https://wa.me/' + S.ayuda.whatsapp + '?text=' + encodeURIComponent('Hola! Tengo una consulta sobre mi ' + tituloTipo().toLowerCase() + ' (' + nombres() + ')'); else $('#btn-wa').hidden = true;
       var md = datos.medida || {};
+      if (S.usuario && S.usuario.superusuario && !$('#como-admin')) {
+        var q = new URLSearchParams(location.search); q.delete('enviar'); q.delete('vincular'); q.set('admin', '1');
+        document.body.appendChild(el('a', { id: 'como-admin', class: 'como-admin', title: 'Solo lo ves vos (administración)', href: '/panel/' + ID + '?' + q.toString() }, '⚙ Entrar como administrador (panel completo)'));
+      }
       // Con el diseño listo (o si no es una invitación a medida), al panel
       if (md.listo || S.evento.estado === 'publicado' || S.evento.producto !== 'a-medida') { location.replace('/panel/' + ID + location.search.replace(/[?&](enviar|vincular)=1/g, '')); return; }
       if (S.evento.paquete && S.evento.paquete !== 'borrador') return ir('gracias');

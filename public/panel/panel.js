@@ -2380,6 +2380,12 @@ const PALETAS = { negro: '#1f1f1f', azul: '#2f5d9e', rojo: '#b0353f', dorado: '#
 // README (ronda 95): botón flotante del administrador para alternar entre su vista (superusuario) y la del cliente
 function botonComoCliente() {
   if (!S.usuario?.superusuario || $('#como-cliente')) return;
+  // README (ronda 134): a medida/corporativa sin el diseño listo: el cliente ve los pasos, no este panel
+  if (S.evento.producto === 'a-medida' && !S.empresa && !datos.medida?.listo && S.evento.estado !== 'publicado') {
+    const q = new URLSearchParams(location.search); q.delete('admin');
+    document.body.append(el('a', { id: 'como-cliente', class: 'como-cliente', title: 'Solo lo ves vos (administración)', href: `/medida/${id}${q.toString() ? '?' + q : ''}` }, '👁 Ver como el cliente (pasos)'));
+    return;
+  }
   const b = el('button', { type: 'button', id: 'como-cliente', class: `como-cliente${comoCliente ? ' activo' : ''}`, title: 'Solo lo ves vos (administración)',
     onclick: () => { try { if (comoCliente) sessionStorage.removeItem('ai-como-cliente'); else sessionStorage.setItem('ai-como-cliente', '1'); } catch { /* sin almacenamiento */ } location.reload(); } },
   comoCliente ? '👁 Viendo como el cliente · Volver a administración' : '👁 Ver como el cliente');
