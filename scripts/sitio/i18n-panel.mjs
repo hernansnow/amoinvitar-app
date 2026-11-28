@@ -67,13 +67,13 @@ function cadenas(src) {
 const ARCHIVOS_JS = ['public/panel/panel.js', 'public/panel/admin.js', 'public/panel/tarjeta.js', 'public/panel/planilla.js', 'public/panel/album-qr.js' /* README (ronda 108) */, 'src/panel/esquemas.js'];
 // README (ronda 87): el código del tablero profesional (va dentro de su HTML) se lee igual que los .js
 const codigoDe = (f) => (f.endsWith('.html') ? [...readFileSync(join(RAIZ, f), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n') : readFileSync(join(RAIZ, f), 'utf8'));
-for (const f of [...ARCHIVOS_JS, 'public/empresa/index.html', 'public/muestrario/index.html']) {
+for (const f of [...ARCHIVOS_JS, 'public/empresa/index.html', 'public/muestrario/index.html', 'public/medida/index.html' /* README (ronda 133) */]) {
   for (const { t, fijo } of cadenas(codigoDe(f))) {
     // Con HTML adentro («<span>Solicitar asistencia…</span>»): cada trozo de texto por separado
     for (const x of t.split(/<[^>]*>/)) if (fijo || /<[^>]*>/.test(t) ? /[a-záéíóúñ] [a-záéíóúñ]|[áéíóúñ]|^[A-ZÁÉÍÓÚ][a-záéíóúñ]+|^¡[A-Za-z]|\{\w+\} ?[a-z]{3}|[a-z]{2} \{\w+\}|^\+1? ?\{?\w*\}? [a-z]+$|^1 [a-z]{4,}$/.test(x) : /[a-záéíóúñ]{3,} [a-záéíóúñ]/.test(x)) agrega(x);
   }
 }
-for (const f of ['public/mi-cuenta/index.html', 'public/entrar/index.html', 'public/panel/index.html', 'public/empresa/index.html', 'public/muestrario/index.html', 'src/componentes/checkin.js']) // README (ronda 98): también la Recepción // README (ronda 87/88): también el tablero profesional
+for (const f of ['public/mi-cuenta/index.html', 'public/entrar/index.html', 'public/panel/index.html', 'public/empresa/index.html', 'public/muestrario/index.html', 'public/medida/index.html', 'src/componentes/checkin.js']) // README (ronda 98): también la Recepción // README (ronda 87/88): también el tablero profesional
   {
   const h = readFileSync(join(RAIZ, f), 'utf8');
   const sinJs = h.replace(/<style[\s\S]*?<\/style>/g, '');

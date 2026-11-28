@@ -660,8 +660,20 @@ const DOMINANCIA = [
 export function camposBrief({ aMedida = null, clase = 'invitacion', pre = 'brief', si = null } = {}) {
   const std = clase === 'std';
   const pieza = std ? 'la tarjeta' : 'la invitación';
-  const conSi = (c) => (si ? { ...c, si } : c);
+  const conSi = (c) => (si ? { ...c, si: c.si ? [si, c.si].flat() : si } : c);
+  // README (ronda 133): la portada (obligatoria) en el brief de la invitación: color liso, hasta 4 fotos o video (sin el
+  // cargo del video, que es solo para el catálogo) y el logo
+  const siPortada = (v) => ({ campo: `${pre}.portadaTipo`, es: v });
+  const portada = std ? [] : [
+    { id: `${pre}.portadaTipo`, tipo: 'opciones', etiqueta: 'Portada', requerido: true, subtitulo: '¿Cómo imaginas el fondo de la portada de tu invitación?',
+      valores: [{ v: 'color', etiqueta: 'Fondo de un color' }, { v: 'fotos', etiqueta: 'Fondo con fotos (hasta 4)' }, { v: 'video', etiqueta: 'Portada con video (hasta 30 segundos)' }] },
+    { id: `${pre}.portadaColor`, tipo: 'color', etiqueta: 'Color del fondo', requerido: true, etiquetaFalta: 'Portada: color del fondo', si: siPortada('color') },
+    { id: `${pre}.portadaFotos`, tipo: 'fotos', etiqueta: 'Fotos de la portada', requerido: true, etiquetaFalta: 'Portada: fotos', max: 4, si: siPortada('fotos') },
+    { id: `${pre}.portadaVideo`, tipo: 'video', etiqueta: 'Video de la portada', requerido: true, etiquetaFalta: 'Portada: video', si: siPortada('video'), ayuda: 'MP4 de hasta 30 segundos.' },
+    { id: `${pre}.logo`, tipo: 'foto', etiqueta: 'Logo (opcional)', sinRecorte: true, ayuda: aMedida === 'empresarial' ? 'El logo de la empresa o del evento.' : 'Un logo, monograma o iniciales, si tienes.' },
+  ];
   return [
+    ...portada.map(conSi),
     aMedida === 'empresarial' || std
       ? { id: `${pre}.tematica`, tipo: 'texto', etiqueta: 'Temática', requerido: true, max: 120, placeholder: std ? 'Viaje, playa, campo, vintage…' : 'Lanzamiento, aniversario de la empresa, congreso…' }
       : { id: `${pre}.personaje`, tipo: 'texto', etiqueta: 'Temática o personaje (si es infantil)', requerido: true, etiquetaFalta: 'Temática', max: 120, placeholder: 'Bluey, Frozen, Minecraft, rústico, playa…' },

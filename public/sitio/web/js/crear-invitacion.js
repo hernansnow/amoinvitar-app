@@ -268,7 +268,8 @@
       : ev.tipo === 'babyshower' && it.link.evento === 'revelacion' ? [campo('a', 'Nombres', 'Dani & Marce')]
       : [campo('a', 'Nombre', 'Sofi')];
     var nota = it.medida
-      ? 'Completa tu idea en el panel y envíala al equipo de diseño. Pagas al enviar tu proyecto a producción' + (it.precio ? ' (desde ' + it.precio + ').' : '.')
+      // README (ronda 133): sin el precio «(desde …)»; la idea ya no se completa en el panel sino paso a paso
+      ? 'Completa tu idea paso a paso y envíala al equipo de diseño. Pagas al enviar tu proyecto a producción.'
       : it.gratis ? 'Después puedes cambiar todo en el panel. Este modelo es gratis: tienes tu link sin pagar nada.'
       : 'Después puedes cambiar todo en el panel. No pagas nada hasta publicar.';
     // README (ronda 39): el diseño a medida elige el tipo de evento acá mismo (salvo que se entre desde la página de un evento)

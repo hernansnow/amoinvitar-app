@@ -286,6 +286,11 @@ Detalle completo en `docs/empresas.md` §11. Resumen:
 - **Ronda 131**: se volvió atrás la vista del panel de la ronda 130: el profesional y su equipo ven su panel completo (con manual y ayuda); el cliente final, el limpio (`limpio: !admin && (!rol || studio)`). En el tablero, debajo de los botones de cada evento: «A tu cliente debes enviarle el link de su panel, no el tuyo (la vista y el acceso son diferentes).»
 - **Ronda 132**: «Powered by» más grande y alineado: en la barra del panel del cliente Pro el logo de Amo Invitar! pasa a 15 px (12 px en el celular) con menos espacio después de «by» (`.powered` en `panel.css`); en el pie de la invitación Pro, a 16 px y en la misma línea que «Powered by» (`bloques.js`).
   - Tablero: las fichas de compra ya no se salen de la pantalla en el celular.
+- **Ronda 133**: la invitación web **a medida** y la **corporativa** se piden paso a paso en `/medida/<id>?k=` (`public/medida/index.html`), no en el panel. El STD a medida sigue como antes.
+  - Al crear (`/api/tienda/empezar`) y al abrir `/panel/<id>` (`aMedidaEnPasos` en `src/index.js`) se va a `/medida/` mientras el diseño no esté «lista» (salvo eventos de profesionales y superadmin).
+  - Pasos: 1) Ideas para el diseño (brief de siempre + **Portada** obligatoria: color, hasta 4 fotos o video ≤30 s sin recargo, y logo opcional; campos `brief.portada*` y `brief.logo` en `camposBrief`); 2) Secciones (switches; sin complementos ni secciones fijas; álbum QR e Instagram Wall uno u otro) con «Enviar al equipo de diseño» desactivado y la lista de lo que falta; 3) sin sesión pide entrar con Google o email (`/enviarMedida` responde 401 `cuenta`; el link del mail vuelve con `enviar=1` y envía solo) → «Gracias, recibimos tu proyecto» (sin poder editar); 4) aprobado (mail con link a `/medida/`) → página de pago (cotizar/comprar); 5) pagado → «¡Gracias por confiar en nosotros!»; 6) al marcar «Lista» en la consola se manda mail al cliente (`avisarMedidaLista`, `src/medida-avisos.js`) y desde ahí entra al panel completo, con Ideas para pedir cambios como siempre.
+  - Los borradores a medida/corporativos que ya existían se adaptan solos: conservan sus datos y caen en el paso que corresponde a su estado.
+  - Modal de creación: sin «(desde …)»; nota «Completa tu idea paso a paso…».
 
 ## 5. Probar en la compu
 

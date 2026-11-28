@@ -779,7 +779,7 @@ export async function empezar(request, env) {
   // Sin cuenta: el navegador recuerda el borrador (al entrar con la cuenta se suma solo a "Mi cuenta")
   const previos = (getCookie(request, 'ai_bor') || '').split(',').filter((x) => /^ev_[a-z0-9]+:[a-z0-9]+$/i.test(x));
   const lista = [...new Set([`${ev.id}:${ev.clave}`, ...previos])].slice(0, 20).join(',');
-  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201,
+  return json({ id: ev.id, clave: ev.clave, panel: `/${ev.producto === "a-medida" ? "medida" : "panel"}/${ev.id}?k=${ev.clave}` } /* README (ronda 133) */, 201,
     usuario ? {} : { 'set-cookie': cookie('ai_bor', lista, { maxAge: 365 * 86400, secure: isSecureRequest(request) }) });
 }
 
@@ -834,6 +834,6 @@ async function empezarProducto(request, env, b, producto) {
   if (usuario) await almacen.darAcceso(ev.id, usuario.id, 'cliente');
   const previos = (getCookie(request, 'ai_bor') || '').split(',').filter((x) => /^ev_[a-z0-9]+:[a-z0-9]+$/i.test(x));
   const lista = [...new Set([`${ev.id}:${ev.clave}`, ...previos])].slice(0, 20).join(',');
-  return json({ id: ev.id, clave: ev.clave, panel: `/panel/${ev.id}?k=${ev.clave}` }, 201,
+  return json({ id: ev.id, clave: ev.clave, panel: `/${ev.producto === "a-medida" ? "medida" : "panel"}/${ev.id}?k=${ev.clave}` } /* README (ronda 133): a medida, paso a paso */, 201,
     usuario ? {} : { 'set-cookie': cookie('ai_bor', lista, { maxAge: 365 * 86400, secure: isSecureRequest(request) }) });
 }

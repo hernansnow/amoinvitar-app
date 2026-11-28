@@ -167,6 +167,12 @@ export const mailMedidaAprobada = (env, { url, nombres, idioma }) => {
   return { subject: L.asunto, ...plantilla(env, { titulo: L.titulo, lineas: [poner(escapeHtml(L.linea1), { de: nombres ? poner(escapeHtml(L.de), { x: b(nombres) }) : '' }), escapeHtml(L.linea2)], boton: L.boton, url, fijos: fijosDe(idioma) }) };
 };
 
+// README (ronda 133): el diseño a medida está listo: entrar al panel a completar todo
+export const mailMedidaLista = (env, { url, nombres, idioma }) => {
+  const L = T(idioma).medidaLista;
+  return { subject: L.asunto, ...plantilla(env, { titulo: L.titulo, lineas: [poner(escapeHtml(L.linea1), { de: nombres ? poner(escapeHtml(L.de), { x: b(nombres) }) : '' }), escapeHtml(L.linea2)], boton: L.boton, url, fijos: fijosDe(idioma) }) };
+};
+
 // README (ronda 33) · Cuentas profesionales
 export const mailSolicitudProRecibida = (env, { nombre, idioma }) => {
   const L = T(idioma).proSolicitud;

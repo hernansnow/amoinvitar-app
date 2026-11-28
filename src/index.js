@@ -38,6 +38,7 @@ import { MODELOS, TIPOS_EVENTO, nombreModelo, conEvento, CON_TARJETA_STD } from 
 import { MODELOS_GRATIS, A_MEDIDA, PRODUCTOS, LIMITE_INVITADOS } from './catalogo.js';
 import { HttpError } from './lib/util.js';
 import { sendEmail, mailNuevoAcceso, mailMedidaAprobada, mailAvisoInterno } from './lib/email.js';
+import { avisarMedidaLista } from './medida-avisos.js'; // README (ronda 133)
 import { usuarioActual, crearUsuario } from './lib/auth.js';
 import * as cuenta from './rutas/cuenta.js';
 import { servirLegado } from './sitio/legado.js';
@@ -712,6 +713,15 @@ async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {})
     gratis: (ev.paquete === 'gratis' || datos.planElegido === 'gratis') && !!MODELOS.find((m) => m.id === ev.modelo && (m.gratis || MODELOS_GRATIS.includes(m.id))), disenoEnviado: disenoBloqueado(datos), // README (ronda 93): reabierto desde la consola = se puede volver a editar
     publicada: ev.estado === 'publicado', admin, empresa: !!ev.empresaId, fijos: nombresFijos(ev), albumIncluido: await albumIncluidoEmpresa(env, ev) }); // README (ronda 87)
 }
+// README (ronda 133): invitación a medida o corporativa (de un cliente, no de una empresa) con el diseño todavía sin terminar:
+// el panel lleva a la página paso a paso (/medida/<id>). El administrador sigue entrando al panel.
+async function aMedidaEnPasos(env, request, url, idEv) {
+  const ev = await almacenDe(env).evento(idEv).catch(() => null);
+  if (!ev || ev.producto !== 'a-medida' || ev.empresaId || ev.datos.medida?.listo) return null;
+  const u = await usuarioActual(request, env).catch(() => null);
+  if (u?.esAdmin) return null;
+  return Response.redirect(new URL(`/medida/${idEv}${url.search}`, url.origin).href, 302);
+}
 // README (ronda 129): evento de empresa con el álbum QR incluido: Duo (pedido o publicado) o cuenta Event Studio Duo (pagada o demo)
 async function albumIncluidoEmpresa(env, ev) {
   if (!ev.empresaId) return false;
@@ -1200,8 +1210,16 @@ async function apiPanel(env, request, url, partes) {
     const std = parte === 'std';
     const tipoStd = ev.datos.std?.tipo || esquema.pasos.find((p) => p.id === 'std')?.campos.find((c) => c.id === 'std.tipo')?.defecto;
     if (std ? !['tarjeta-medida', 'web-medida'].includes(tipoStd) : !['a-medida', 'std-tarjeta-medida', 'std-web-medida'].includes(ev.producto)) return json({ error: 'No es un diseño a medida' }, 400);
-    const faltan = faltantes(esquema, ev.datos).filter((x) => !std || x.paso === 'std');
+    // README (ronda 133): la invitación a medida se envía con las ideas para el diseño (el resto se completa con el diseño listo)
+    const soloBrief = !std && ev.producto === 'a-medida';
+    const faltan = faltantes(esquema, ev.datos).filter((x) => (std ? x.paso === 'std' : !soloBrief || x.paso === 'brief'));
     if (faltan.length) return json({ error: 'faltan', faltan }, 422);
+    // README (ronda 133): para enviar el proyecto hay que entrar con la cuenta (Google o mail): así el equipo puede contactar
+    if (soloBrief && !admin) {
+      const u = await usuarioActual(request, env);
+      if (!u) return json({ error: 'cuenta' }, 401);
+      await almacen.darAcceso(ev.id, u.id, 'cliente');
+    }
     if (std) { ev.datos.std = { tipo: tipoStd, ...(ev.datos.std || {}) }; ev.datos.std.medida = { ...(ev.datos.std.medida || {}), enviado: new Date().toISOString() }; }
     else ev.datos.medida = { ...(ev.datos.medida || {}), enviado: new Date().toISOString() };
     await almacen.guardarEvento(ev);
@@ -1216,7 +1234,7 @@ async function apiPanel(env, request, url, partes) {
     else ev.datos.medida = { ...(ev.datos.medida || {}), aprobado: new Date().toISOString() };
     await almacen.guardarEvento(ev);
     const clientes = (await almacen.accesos(ev.id)).filter((x) => x.rol === 'cliente');
-    for (const c of clientes) await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { idioma: await idiomaPara(env, c.email, { evento: ev.id, variante: ev.datos?.variante }), url: `${url.origin}/panel/${ev.id}?k=${ev.clave}`, nombres: nombresDe(ev.datos.nombres) }) }).catch(() => {});
+    for (const c of clientes) await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { idioma: await idiomaPara(env, c.email, { evento: ev.id, variante: ev.datos?.variante }), url: `${url.origin}/medida/${ev.id}?k=${ev.clave}`, nombres: nombresDe(ev.datos.nombres) }) }).catch(() => {});
     return json({ ok: true, avisados: clientes.length });
   }
   // README (ronda 29): el equipo marca el diseño a medida como listo: el cliente vuelve a poder editar el contenido
@@ -1229,6 +1247,7 @@ async function apiPanel(env, request, url, partes) {
     if (parte === 'std') ev.datos.std = { ...ev.datos.std, medida: { ...(ev.datos.std?.medida || {}), listo: new Date().toISOString() } };
     else ev.datos.medida = { ...(ev.datos.medida || {}), listo: new Date().toISOString() };
     await almacen.guardarEvento(ev);
+    if (parte !== 'std') await avisarMedidaLista(env, ev, url.origin); // README (ronda 133)
     return json({ ok: true });
   }
   // README (ronda 92): el equipo entrega la tarjeta Save The Date a medida (las imágenes terminadas, subidas desde el
@@ -1856,7 +1875,9 @@ export default {
         return r;
       }
       if (p0 === 'std' && partes.length === 2 && p1.startsWith('ev_')) return await saveTheDate(env, url, request, p1);
-      if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) return await conPais(await env.ASSETS.fetch(new URL('/panel/', url.origin)), request);
+      // README (ronda 133): la invitación a medida o corporativa, hasta que el diseño esté listo, se pide paso a paso en /medida/
+      if (p0 === 'panel' && partes.length === 2 && p1.startsWith('ev_')) { const r = await aMedidaEnPasos(env, request, url, p1); if (r) return r; return await conPais(await env.ASSETS.fetch(new URL('/panel/', url.origin)), request); }
+      if (p0 === 'medida' && partes.length === 2 && p1.startsWith('ev_')) return await conPais(await env.ASSETS.fetch(new URL('/medida/', url.origin)), request);
       // README (ronda 89): el tablero profesional con el país del visitante (para la bandera, sin pasar por la web)
       if (p0 === 'empresa' && partes.length === 1 && M === 'GET') return await conPais(await env.ASSETS.fetch(new URL('/empresa/', url.origin)), request);
       if (p0 === 'mesa' && partes.length === 2) return await paginaMesa(env, url, p1, request);

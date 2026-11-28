@@ -17,6 +17,7 @@ import { crearUsuario } from '../lib/auth.js';
 import { almacenD1 } from '../almacen.js';
 import { prepararLista } from '../propio.js'; // README (ronda 92)
 import { sendEmail, mailMedidaAprobada, mailProAprobada, mailProRechazada } from '../lib/email.js';
+import { avisarMedidaLista } from '../medida-avisos.js'; // README (ronda 133)
 import { PROFESIONALES } from '../catalogo.js';
 import { sumarMeses, nuevoLote, renovarPase as renovarPaseBase, catalogoCompras } from '../pro/empresa.js';
 import { pagarCompra } from '../pro/compras.js';
@@ -227,9 +228,11 @@ export async function medida(request, env, eventoId, accion) {
   if (accion === 'aprobar') {
     const nombres = [ev.datos.nombres?.a, ev.datos.nombres?.b].filter(Boolean).join(' & ');
     for (const c of (await alm.accesos(ev.id)).filter((x) => x.rol === 'cliente')) {
-      try { await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { idioma: await idiomaPara(env, c.email, { evento: ev.id, variante: ev.datos?.variante }), url: `${sitio(env, request)}/panel/${ev.id}?k=${ev.clave}`, nombres }) }); avisados++; } catch (e) { console.error('[medida]', e); }
+      try { await sendEmail(env, { to: c.email, ...mailMedidaAprobada(env, { idioma: await idiomaPara(env, c.email, { evento: ev.id, variante: ev.datos?.variante }), url: `${sitio(env, request)}/medida/${ev.id}?k=${ev.clave}`, nombres }) }); avisados++; } catch (e) { console.error('[medida]', e); }
     }
   }
+  // README (ronda 133): diseño a medida listo: se avisa al cliente para que entre a su panel
+  if (accion === 'lista' && clave === 'medida' && ev.producto === 'a-medida') avisados = await avisarMedidaLista(env, ev, sitio(env, request));
   return json({ ok: true, avisados });
 }
 
