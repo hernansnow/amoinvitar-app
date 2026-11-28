@@ -2444,6 +2444,11 @@ function recordarBorrador() {
     return;
   }
   datos = S.datos || {};
+  // README (ronda 134): la invitación a medida/corporativa se arma paso a paso en /medida/ hasta que el diseño está listo
+  if (S.evento.producto === 'a-medida' && !S.empresa && !datos.medida?.listo && S.evento.estado !== 'publicado'
+    && !(S.usuario?.superusuario && new URLSearchParams(location.search).get('admin') === '1')) {
+    location.replace(`/medida/${id}${location.search}`); return;
+  }
   // README (ronda 130): con el álbum QR prendido (o ya con su álbum) el Instagram Wall queda apagado: van uno u otro
   if (albumPrendido(datos) && leer(datos, 'secciones.instagram') !== false) escribir(datos, 'secciones.instagram', false);
   S.esquema = paraCliente(S.esquema);

@@ -297,7 +297,7 @@
   }
   function cabeza(icono, titulo, bajada) { return el('div', { class: 'cabeza' }, [el('div', { class: 'ic-grande' }, ic(icono)), el('div', {}, [el('h1', {}, titulo), el('p', { class: 'bajada' }, bajada)])]); }
   function pie(izq, der) { $('#pie').hidden = false; $('#pie-c').replaceChildren(izq || el('span', { class: 'guardado', id: 'estado-guardado' }), der); }
-  var paginaUrl = function (extra) { return location.pathname + '?k=' + encodeURIComponent(CLAVE) + (extra || ''); };
+  var paginaUrl = function (extra) { return location.pathname + (CLAVE ? '?k=' + encodeURIComponent(CLAVE) + (extra || '') : (extra ? '?' + extra.slice(1) : '')); };
   // Aviso para guardar el progreso (sin cuenta)
   function avisoGuardar() {
     if (S.usuario) return null;
@@ -360,7 +360,6 @@
     pinta();
     var falta = faltanEnviar();
     var v = el('div', {}, [cabeza('capas', 'Elegir las secciones y funciones', 'Tu invitación puede tener todas estas secciones y funciones sin ningún costo adicional. Puedes activar todas las que quieras, para que el equipo de diseño pueda crear el estilo de cada una. No te preocupes: cuando estén listos el diseño y la invitación, si lo necesitas, podrás activar o desactivar las que quieras.'),
-      el('p', { class: 'ayuda', style: 'margin:-6px 0 14px' }, 'La portada, los lugares y la fecha, los invitados, la confirmación y el cierre van siempre: los completas en tu panel cuando el diseño esté listo.'),
       lista, cajaFaltan(falta)]);
     $('#vista').replaceChildren(v);
     pie(el('button', { class: 'b sec', type: 'button', onclick: function () { ir('ideas'); } }, [ic('atras'), el('span', {}, 'Atrás')]),
@@ -465,7 +464,7 @@
       if (S.ayuda && S.ayuda.whatsapp) $('#btn-wa').href = 'https://wa.me/' + S.ayuda.whatsapp + '?text=' + encodeURIComponent('Hola! Tengo una consulta sobre mi ' + tituloTipo().toLowerCase() + ' (' + nombres() + ')'); else $('#btn-wa').hidden = true;
       var md = datos.medida || {};
       // Con el diseño listo (o si no es una invitación a medida), al panel
-      if (md.listo || S.evento.producto !== 'a-medida') { location.replace('/panel/' + ID + location.search.replace(/[?&](enviar|vincular)=1/g, '')); return; }
+      if (md.listo || S.evento.estado === 'publicado' || S.evento.producto !== 'a-medida') { location.replace('/panel/' + ID + location.search.replace(/[?&](enviar|vincular)=1/g, '')); return; }
       if (S.evento.paquete && S.evento.paquete !== 'borrador') return ir('gracias');
       if (md.aprobado) return ir('pago');
       if (md.enviado) return ir('recibido');
@@ -475,12 +474,14 @@
   }
   // Volver de entrar con la cuenta: guardar en la cuenta y, si venía de «Enviar», enviar
   function inicio() {
-    if (!CLAVE) { $('#vista').replaceChildren(el('p', { class: 'cargando' }, 'El link no es válido.')); return; }
+    // README (ronda 134): sin la clave del link (p. ej. desde Mis invitaciones) entra con la sesión de la cuenta
     var p = Promise.resolve();
     if (Q.has('vincular') || Q.has('enviar')) p = api('/vincular', { method: 'POST' }).catch(function () { /* sin cuenta todavía */ });
     p.then(function () { return Q.has('enviar') ? api('/enviarMedida', { method: 'POST', body: JSON.stringify({}) }).catch(function () { /* se ve en la pantalla */ }) : null; })
       .then(function () { if (Q.has('vincular') || Q.has('enviar')) history.replaceState(null, '', paginaUrl()); return cargar(); })
-      .catch(function (e) { $('#vista').replaceChildren(el('p', { class: 'cargando' }, e.status === 403 || e.status === 404 ? 'El link no es válido.' : e.message)); });
+      .catch(function (e) {
+        if (e.status === 403 && !CLAVE) { location.href = '/entrar?siguiente=' + encodeURIComponent(location.pathname); return; }
+        $('#vista').replaceChildren(el('p', { class: 'cargando' }, e.status === 403 || e.status === 404 ? 'El link no es válido.' : e.message)); });
   }
   $('#btn-ayuda').onclick = function () { $('#ayuda').showModal(); };
   $('#ayuda-cerrar').onclick = function () { $('#ayuda').close(); };

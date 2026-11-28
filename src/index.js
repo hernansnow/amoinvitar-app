@@ -717,9 +717,9 @@ async function esquemaDe(env, url, ev, datos = ev.datos, { admin = false } = {})
 // el panel lleva a la página paso a paso (/medida/<id>). El administrador sigue entrando al panel.
 async function aMedidaEnPasos(env, request, url, idEv) {
   const ev = await almacenDe(env).evento(idEv).catch(() => null);
-  if (!ev || ev.producto !== 'a-medida' || ev.empresaId || ev.datos.medida?.listo) return null;
-  const u = await usuarioActual(request, env).catch(() => null);
-  if (u?.esAdmin) return null;
+  if (!ev || ev.producto !== 'a-medida' || ev.empresaId || ev.datos.medida?.listo || ev.estado === 'publicado') return null;
+  // README (ronda 134): el panel viejo de a medida ya no se muestra; solo el administrador lo abre a propósito (?admin=1, desde la consola)
+  if (url.searchParams.get('admin') === '1' && (await usuarioActual(request, env).catch(() => null))?.esAdmin) return null;
   return Response.redirect(new URL(`/medida/${idEv}${url.search}`, url.origin).href, 302);
 }
 // README (ronda 129): evento de empresa con el álbum QR incluido: Duo (pedido o publicado) o cuenta Event Studio Duo (pagada o demo)
